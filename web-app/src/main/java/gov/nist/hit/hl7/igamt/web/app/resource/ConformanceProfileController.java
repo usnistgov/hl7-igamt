@@ -7,6 +7,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,17 +65,15 @@ public class ConformanceProfileController extends BaseController {
 
     @RequestMapping(value = "/api/conformanceprofiles/{id}/resources", method = RequestMethod.GET, produces = {
             "application/json" })
-
+    @PreAuthorize("AccessResource('CONFORMANCEPROFILE', #id, READ)")
     public Set<Resource> getResources(@PathVariable("id") String id, Authentication authentication) {
         ConformanceProfile conformanceProfile = conformanceProfileService.findById(id);
-
         return conformanceProfileService.getDependencies(conformanceProfile);
-
     }
 
     @RequestMapping(value = "/api/conformanceprofiles/{id}/structure/{contextId}", method = RequestMethod.GET, produces = {
             "application/json" })
-
+    @PreAuthorize("AccessResource('CONFORMANCEPROFILE', #id, READ)")
     public ConformanceProfileStructureDisplay getConformanceProfileStructure(@PathVariable("id") String id,
                                                                              @PathVariable("contextId") String contextId, Authentication authentication) {
         ConformanceProfile conformanceProfile = conformanceProfileService.findById(id);
@@ -86,7 +85,7 @@ public class ConformanceProfileController extends BaseController {
 
     @RequestMapping(value = "/api/conformanceprofiles/{id}/conformancestatement/{did}", method = RequestMethod.GET, produces = {
             "application/json" })
-
+    @PreAuthorize("AccessResource('CONFORMANCEPROFILE', #id, READ)")
     public ConformanceProfileConformanceStatement getConformanceProfileConformanceStatement(
             @PathVariable("id") String id, @PathVariable("did") String did, Authentication authentication)
             throws ConformanceProfileNotFoundException {
@@ -120,6 +119,7 @@ public class ConformanceProfileController extends BaseController {
 
     @RequestMapping(value = "/api/conformanceprofiles/{id}", method = RequestMethod.POST, produces = {
             "application/json" })
+    @PreAuthorize("AccessResource('CONFORMANCEPROFILE', #id, WRITE)")
     @ResponseBody
     public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
                                            @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
@@ -148,7 +148,7 @@ public class ConformanceProfileController extends BaseController {
 
     @RequestMapping(value = "/api/conformanceprofiles/{id}", method = RequestMethod.GET,
             produces = {"application/json"})
-
+    @PreAuthorize("AccessResource('CONFORMANCEPROFILE', #id, READ)")
     public ConformanceProfile getConformanceProfile(
             @PathVariable("id") String id, Authentication authentication) throws ConformanceProfileNotFoundException {
         return this.findById(id);

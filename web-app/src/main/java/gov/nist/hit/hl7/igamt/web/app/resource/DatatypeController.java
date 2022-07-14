@@ -6,6 +6,7 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -66,6 +67,7 @@ public class DatatypeController extends BaseController {
 
   @RequestMapping(value = "/api/datatypes/{id}/resources", method = RequestMethod.GET, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('DATATYPE', #id, READ)")
   public Set<Resource> getResources(@PathVariable("id") String id, Authentication authentication) {
     Datatype datatype = datatypeService.findById(id);
     return datatypeService.getDependencies(datatype);
@@ -73,6 +75,7 @@ public class DatatypeController extends BaseController {
 
   @RequestMapping(value = "/api/datatypes/{id}/{idPath}/{path}/{viewscope}/structure-by-ref", method = RequestMethod.GET, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('DATATYPE', #id, READ)")
   public Set<?> getComponentStructure(@PathVariable("id") String id, @PathVariable("idPath") String idPath,
       @PathVariable("path") String path, @PathVariable("viewscope") String viewScope,
       Authentication authentication) throws DatatypeNotFoundException {
@@ -91,6 +94,7 @@ public class DatatypeController extends BaseController {
 
   @RequestMapping(value = "/api/datatypes/{id}/conformancestatement/{did}", method = RequestMethod.GET, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('DATATYPE', #id, READ)")
   public ConformanceStatementDisplay getDatatypeConformanceStatement(@PathVariable("id") String id,
       @PathVariable("did") String did, Authentication authentication) throws DatatypeNotFoundException {
     Datatype datatype = findById(id);
@@ -135,6 +139,7 @@ public class DatatypeController extends BaseController {
   }
 
   @RequestMapping(value = "/api/datatypes/{id}", method = RequestMethod.GET, produces = {"application/json"})
+  @PreAuthorize("AccessResource('DATATYPE', #id, READ)")
   public Datatype getSegment(
       @PathVariable("id") String id,
       Authentication authentication) throws DatatypeNotFoundException {
@@ -143,6 +148,7 @@ public class DatatypeController extends BaseController {
 
   @RequestMapping(value = "/api/datatypes/{id}", method = RequestMethod.POST, produces = { "application/json" })
   @ResponseBody
+  @PreAuthorize("AccessResource('DATATYPE', #id, WRITE)")
   public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
       @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
       Authentication authentication) throws DatatypeException, IOException, ForbiddenOperationException, ApplyChangeException {

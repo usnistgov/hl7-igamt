@@ -11,6 +11,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,6 +69,7 @@ public class SegmentController extends BaseController {
 
 	@RequestMapping(value = "/api/segments/{id}/resources", method = RequestMethod.GET, produces = {
 			"application/json" })
+	@PreAuthorize("AccessResource('SEGMENT', #id, READ)")
 	public Set<Resource> getResources(@PathVariable("id") String id, Authentication authentication) {
 		Segment segment = segmentService.findById(id);
 		return segmentService.getDependencies(segment);
@@ -75,6 +77,7 @@ public class SegmentController extends BaseController {
 
 	@RequestMapping(value = "/api/segments/{id}/{idPath}/{path}/structure-by-ref", method = RequestMethod.GET, produces = {
 			"application/json" })
+	@PreAuthorize("AccessResource('SEGMENT', #id, READ)")
 	public Set<?> getComponentStructure(@PathVariable("id") String id, @PathVariable("idPath") String idPath,
 			@PathVariable("path") String path, Authentication authentication) throws SegmentNotFoundException {
 		Segment segment = findById(id);
@@ -83,6 +86,7 @@ public class SegmentController extends BaseController {
 
 	@RequestMapping(value = "/api/segments/{id}/conformancestatement/{did}", method = RequestMethod.GET, produces = {
 			"application/json" })
+	@PreAuthorize("AccessResource('SEGMENT', #id, READ)")
 	public ConformanceStatementDisplay getSegmentConformanceStatement(@PathVariable("id") String id,
 			@PathVariable("did") String did, Authentication authentication) throws SegmentNotFoundException {
 		Segment segment = findById(id);
@@ -130,6 +134,7 @@ public class SegmentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/segments/{id}", method = RequestMethod.GET, produces = {"application/json"})
+	@PreAuthorize("AccessResource('SEGMENT', #id, READ)")
 	public Segment getSegment(
 			@PathVariable("id") String id,
 			Authentication authentication) throws SegmentNotFoundException {
@@ -137,6 +142,7 @@ public class SegmentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/segments/{id}", method = RequestMethod.POST, produces = { "application/json" })
+	@PreAuthorize("AccessResource('SEGMENT', #id, WRITE)")
 	@ResponseBody
 	public ResponseMessage<?> applyStructureChanges(@PathVariable("id") String id,
 			@RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,

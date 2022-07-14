@@ -16,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -69,6 +70,7 @@ public class ValuesetController extends BaseController {
 
 	@RequestMapping(value = "/api/valuesets/{scope}/info", method = RequestMethod.GET, produces = {
 	"application/json" })
+	// TODO
 	public @ResponseBody ResponseMessage<List<Valueset>> findDisplayFormatByScope(
 			@PathVariable String scope, Authentication authentication) {
 		return new ResponseMessage<List<Valueset>>(Status.SUCCESS, "", "", null, false, null,
@@ -77,7 +79,7 @@ public class ValuesetController extends BaseController {
 
 	@RequestMapping(value = "/api/valuesets/{id}/resources", method = RequestMethod.GET, produces = {
 	"application/json" })
-
+	@PreAuthorize("AccessResource('VALUESET', #id, READ)")
 	public Set<Resource> getResources(@PathVariable("id") String id, Authentication authentication) {
 		Valueset valueset = valuesetService.findById(id);
 		Set<Resource> resources = new HashSet<Resource>();
@@ -86,13 +88,14 @@ public class ValuesetController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/valuesets/{id}", method = RequestMethod.GET, produces = { "application/json" })
-
+	@PreAuthorize("AccessResource('VALUESET', #id, READ)")
 	public Valueset getValueSet(@PathVariable("id") String id, Authentication authentication) {
 		Valueset valueset = valuesetService.findById(id);
 		return valueset;
 	}
 
 	@RequestMapping(value = "/api/valuesets/exportCSV/{id}", method = RequestMethod.POST, produces = "text/xml", consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	@PreAuthorize("AccessResource('VALUESET', #tableId, READ)")
 	public void exportCSV(@PathVariable("id") String tableId, HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ValuesetNotFoundException {
 		log.info("Export table " + tableId);
@@ -115,6 +118,7 @@ public class ValuesetController extends BaseController {
 	}
 	@RequestMapping(value = "/api/valuesets/{id}", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
+	@PreAuthorize("AccessResource('VALUESET', #id, WRITE)")
 	public ResponseMessage<?> applyStructureChanges(@PathVariable("id") String id,
 			@RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
 			Authentication authentication) throws ValuesetException, IOException, ForbiddenOperationException {

@@ -9,6 +9,7 @@ import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.segment.exception.CoConstraintNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,16 +23,16 @@ public class CoConstraintController extends BaseController {
     @Autowired
     CoConstraintService ccService;
 
-    @RequestMapping(value = "/api/coconstraints/group/{id}", method = RequestMethod.GET, produces = {
-            "application/json" })
+    @RequestMapping(value = "/api/coconstraints/group/{id}", method = RequestMethod.GET, produces = {"application/json" })
+    @PreAuthorize("AccessResource('COCONSTRAINTGROUP', #id, READ)")
     public CoConstraintGroup getCoConstraintGroup(@PathVariable("id") String id,
                                                   Authentication authentication) throws EntityNotFound {
         CoConstraintGroup group = ccService.findById(id);
         return group;
     }
 
-    @RequestMapping(value = "/api/coconstraints/group", method = RequestMethod.POST, produces = {
-            "application/json" })
+    @RequestMapping(value = "/api/coconstraints/group", method = RequestMethod.POST, produces = {"application/json" })
+    @PreAuthorize("AccessResource('COCONSTRAINTGROUP', #group.id, WRITE)")
     public ResponseMessage getCoConstraintGroup(@RequestBody CoConstraintGroup group,
                                                 Authentication authentication) throws CoConstraintNotFoundException {
         CoConstraintGroup gp = this.ccService.saveCoConstraintGroup(group);
@@ -40,6 +41,7 @@ public class CoConstraintController extends BaseController {
 
     @RequestMapping(value = "/api/coconstraints/group/{id}/resources", method = RequestMethod.GET, produces = {
             "application/json" })
+    @PreAuthorize("AccessResource('COCONSTRAINTGROUP', #id, READ)")
     public Set<Resource> getResources(@PathVariable("id") String id, Authentication authentication) throws EntityNotFound {
         CoConstraintGroup group = ccService.findById(id);
         Set<Resource> resources = new HashSet<>();

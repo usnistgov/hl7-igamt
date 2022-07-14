@@ -20,6 +20,7 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyDynamicMa
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -71,6 +72,7 @@ public class ProfileComponentController extends BaseController {
   CommonService commonService;
     
   @RequestMapping(value = "/api/profile-component/{id}", method = RequestMethod.GET, produces = {"application/json"})
+  @PreAuthorize("AccessResource('PROFILECOMPONENT', #id, READ)")
   public ProfileComponent getProfileComponent(
           @PathVariable("id") String id,
           Authentication authentication) throws ProfileComponentNotFoundException  {
@@ -79,6 +81,7 @@ public class ProfileComponentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}", method = RequestMethod.GET, produces = {"application/json"})
+  @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, READ)")
   public ProfileComponentContext getProfileComponentChild(
           @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId,
           Authentication authentication) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException  {
@@ -86,6 +89,7 @@ public class ProfileComponentController extends BaseController {
   }
   
   @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/resources", method = RequestMethod.GET, produces = {"application/json"})
+  @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, READ)")
   public Set<Resource> getResources(
           @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId,
           Authentication authentication) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException  {
@@ -94,6 +98,7 @@ public class ProfileComponentController extends BaseController {
   
   
   @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/update", method = RequestMethod.POST, produces = {"application/json"})
+  @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE)")
   @ResponseBody
   public ProfileComponentContext updateContext(
           @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody ProfileComponentContext ctx,
@@ -102,6 +107,7 @@ public class ProfileComponentController extends BaseController {
   }
 
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/conformance-statements", method = RequestMethod.POST, produces = {"application/json"})
+    @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE)")
     @ResponseBody
     public List<PropertyConformanceStatement> updateContextConformanceStatements(
             @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody List<PropertyConformanceStatement> conformanceStatements,
@@ -110,6 +116,7 @@ public class ProfileComponentController extends BaseController {
     }
 
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/co-constraints", method = RequestMethod.POST, produces = {"application/json"})
+    @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE)")
     @ResponseBody
     public ProfileComponentContext updateContextCoConstraints(
             @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody PropertyCoConstraintBindings coConstraintBindings,
@@ -118,6 +125,7 @@ public class ProfileComponentController extends BaseController {
     }
 
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/co-constraints", method = RequestMethod.DELETE, produces = {"application/json"})
+    @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE)")
     @ResponseBody
     public ProfileComponentContext removeContextCoConstraints(
             @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId,
@@ -126,6 +134,7 @@ public class ProfileComponentController extends BaseController {
     }
   
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/dynamic-mapping", method = RequestMethod.POST, produces = {"application/json"})
+    @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE)")
     @ResponseBody
     public PropertyDynamicMapping updateDynamicMapping(
             @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody PropertyDynamicMapping dynamicMapping,
@@ -135,6 +144,7 @@ public class ProfileComponentController extends BaseController {
 
   @RequestMapping(value = "/api/profile-component/{id}", method = RequestMethod.POST, produces = {
           "application/json" })
+  @PreAuthorize("AccessResource('PROFILECOMPONENT', #id, WRITE)")
   @ResponseBody
   public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
                                          @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
