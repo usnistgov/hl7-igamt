@@ -736,12 +736,13 @@ public class IGDocumentController extends BaseController {
    * @throws IGNotFoundException
    * @throws XReferenceFoundException
    * @throws XReferenceException
+ * @throws ForbiddenOperationException 
    */
   @RequestMapping(value = "/api/igdocuments/{id}/valuesets/{valuesetId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
   @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage deleteValueSet(@PathVariable("id") String id, @PathVariable("valuesetId") String valuesetId,
-      Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException {
+      Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
 
     Ig ig = findIgById(id);
     Link found = findLinkById(valuesetId, ig.getValueSetRegistry().getChildren());
@@ -992,7 +993,7 @@ public class IGDocumentController extends BaseController {
   "application/json" })
   @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage<IGDisplayInfo> addSegments(@PathVariable("id") String id, @RequestBody AddingWrapper wrapper,
-      Authentication authentication) throws IGNotFoundException, ValidationException, AddingException, EntityNotFound {
+      Authentication authentication) throws IGNotFoundException, ValidationException, AddingException, EntityNotFound, ForbiddenOperationException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
 
@@ -1185,7 +1186,7 @@ public class IGDocumentController extends BaseController {
   "application/json" })
   @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id, @RequestBody CopyInfo info,  Authentication authentication)
-      throws IGNotFoundException, EntityNotFound {
+      throws IGNotFoundException, EntityNotFound, ForbiddenOperationException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
     Ig clone = cloneService.clone(ig, username, info);

@@ -25,7 +25,6 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBi
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
@@ -88,7 +87,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
   SegmentService segmentService;
 
   @Override
-  public <T extends Resource> T createFlavor(Registry reg, String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected) throws EntityNotFound {
+  public <T extends Resource> T createFlavor(Registry reg, String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected) throws EntityNotFound, ForbiddenOperationException {
 
     T resource = this.getElmentFormAddingInfo(username, documentInfo, resourceType, selected);
     if(selected.isFlavor()) {
@@ -156,7 +155,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
    */
   @Override
   public ConformanceProfile createProfile(String username, DocumentInfo documentInfo,
-      AddingInfo ev) {
+      AddingInfo ev) throws ForbiddenOperationException {
     MessageStructure profile = messageStructureRepository.findOneById(ev.getOriginalId());
 
     ConformanceProfile clone = new ConformanceProfile(profile, ev.getName());
@@ -296,7 +295,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
   
   
-  public void subsitute(ConformanceProfile cp, List<Substitue> substitutes, String username, DocumentInfo documentInfo) {
+  public void subsitute(ConformanceProfile cp, List<Substitue> substitutes, String username, DocumentInfo documentInfo) throws ForbiddenOperationException {
     HashMap<RealKey, String> newKeys = new HashMap<RealKey, String>();
     for(Substitue sub: substitutes) {
       RealKey segKey = new RealKey(sub.getOriginalId(), Type.SEGMENT);

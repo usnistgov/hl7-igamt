@@ -23,6 +23,6 @@ import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 @FunctionalInterface
 public interface ApplyBindingPropertyFunction {
 
-	void apply(ChangeItemDomain change, StructureElementBinding elm, String documentId, Level level) throws ApplyChangeException;
+	void apply(ChangeItemDomain change, StructureElementBinding elm, Level level) throws ApplyChangeException;
 
 }

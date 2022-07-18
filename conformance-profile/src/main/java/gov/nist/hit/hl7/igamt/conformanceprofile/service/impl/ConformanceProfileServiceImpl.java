@@ -170,26 +170,17 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   }
 
   @Override
-  public void removeCollection() {
-    conformanceProfileRepository.deleteAll();
-
-  }
-
-  @Override
   public List<ConformanceProfile> findByIdentifier(String identifier) {
-    // TODO Auto-generated method stub
     return conformanceProfileRepository.findByIdentifier(identifier);
   }
 
   @Override
   public List<ConformanceProfile> findByMessageType(String messageType) {
-    // TODO Auto-generated method stub
     return conformanceProfileRepository.findByMessageType(messageType);
   }
 
   @Override
   public List<ConformanceProfile> findByEvent(String messageType) {
-    // TODO Auto-generated method stub
     return conformanceProfileRepository.findByEvent(messageType);
   }
 
@@ -200,44 +191,37 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Override
   public List<ConformanceProfile> findByDomainInfoVersion(String version) {
-    // TODO Auto-generated method stub
     return conformanceProfileRepository.findByDomainInfoVersion(version);
   }
 
   @Override
   public List<ConformanceProfile> findByDomainInfoScope(String scope) {
-    // TODO Auto-generated method stub
     return conformanceProfileRepository.findByDomainInfoScope(scope);
   }
 
   @Override
   public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion) {
-    // TODO Auto-generated method stub
     return conformanceProfileRepository.findByDomainInfoScopeAndDomainInfoVersion(scope, verion);
   }
 
   @Override
   public List<ConformanceProfile> findByName(String name) {
-    // TODO Auto-generated method stub
     return conformanceProfileRepository.findByName(name);
   }
 
   @Override
   public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version,
       String name) {
-    // TODO Auto-generated method stub
     return conformanceProfileRepository.findByDomainInfoScopeAndDomainInfoVersionAndName(scope, version, name);
   }
 
   @Override
   public List<ConformanceProfile> findByDomainInfoVersionAndName(String version, String name) {
-    // TODO Auto-generated method stub
     return conformanceProfileRepository.findByDomainInfoVersionAndName(version, name);
   }
 
   @Override
   public List<ConformanceProfile> findByDomainInfoScopeAndName(String scope, String name) {
-    // TODO Auto-generated method stub
     return conformanceProfileRepository.findByDomainInfoScopeAndName(scope, name);
   }
 
@@ -1352,22 +1336,22 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   }
 
   @Override
-  public void applyChanges(ConformanceProfile conformanceProfile, List<ChangeItemDomain> cItems, String documentId) throws Exception {
+  public void applyChanges(ConformanceProfile conformanceProfile, List<ChangeItemDomain> cItems) throws Exception {
     //Resource part
     Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
-    this.applyMetaData(conformanceProfile, singlePropertyMap , documentId);
+    this.applyMetaData(conformanceProfile, singlePropertyMap );
 
     Map<PropertyType, List<ChangeItemDomain>> map = applyChange.convertToMultiplePropertyChangeMap(cItems);
-    this.applyChildrenChange(map, conformanceProfile.getChildren(), documentId);
+    this.applyChildrenChange(map, conformanceProfile.getChildren());
     if (map.containsKey(PropertyType.COCONSTRAINTBINDINGS)) {
-      this.applyCoConstraintsBindingChanges(conformanceProfile, map.get(PropertyType.COCONSTRAINTBINDINGS) , documentId);
+      this.applyCoConstraintsBindingChanges(conformanceProfile, map.get(PropertyType.COCONSTRAINTBINDINGS));
     }
-    applyChange.applyBindingChanges(map, conformanceProfile.getBinding(), documentId, Level.CONFORMANCEPROFILE);
+    applyChange.applyBindingChanges(map, conformanceProfile.getBinding(), Level.CONFORMANCEPROFILE);
     if (map.containsKey(PropertyType.SLICING)) {
       if(conformanceProfile.getSlicings() == null) {
         conformanceProfile.setSlicings(new HashSet<Slicing>());
       }
-      applyChange.applySlicingChanges(map, conformanceProfile.getSlicings(), documentId, Type.CONFORMANCEPROFILE);
+      applyChange.applySlicingChanges(map, conformanceProfile.getSlicings(), Type.CONFORMANCEPROFILE);
 
     }   
     conformanceProfile.setBinding(this.makeLocationInfo(conformanceProfile));
@@ -1376,7 +1360,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   private void applyCoConstraintsBindingChanges(
       ConformanceProfile conformanceProfile,
-      List<ChangeItemDomain> items, String documentId
+      List<ChangeItemDomain> items
       ) throws ApplyChangeException {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -1395,11 +1379,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   private void applyMetaData(
       ConformanceProfile cp,
-      Map<PropertyType, ChangeItemDomain> singlePropertyMap,
-      String documentId
-      ) throws ApplyChangeException{
+      Map<PropertyType, ChangeItemDomain> singlePropertyMap) throws ApplyChangeException{
 
-    applyChange.applyResourceChanges(cp, singlePropertyMap , documentId);
+    applyChange.applyResourceChanges(cp, singlePropertyMap);
     ObjectMapper mapper = new ObjectMapper();
 
     if (singlePropertyMap.containsKey(PropertyType.NAME)) {
@@ -1456,22 +1438,22 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
    * @throws ApplyChangeException 
    */
   private void applyChildrenChange(Map<PropertyType, List<ChangeItemDomain>> map,
-      Set<SegmentRefOrGroup> children, String documentId) throws ApplyChangeException {
+      Set<SegmentRefOrGroup> children) throws ApplyChangeException {
 
-    applyChange.applyStructureElementChanges(map, children, documentId, this::findSegmentRefOrGroupByIdAsStructureElement);
+    applyChange.applyStructureElementChanges(map, children, this::findSegmentRefOrGroupByIdAsStructureElement);
 
     if (map.containsKey(PropertyType.CARDINALITYMIN)) {
-      applyChange.applyAll(map.get(PropertyType.CARDINALITYMIN), children, documentId, this::applyCardMin, this::findSegmentRefOrGroupByIdAsStructureElement);
+      applyChange.applyAll(map.get(PropertyType.CARDINALITYMIN), children, this::applyCardMin, this::findSegmentRefOrGroupByIdAsStructureElement);
     }
     if (map.containsKey(PropertyType.CARDINALITYMAX)) {
-      applyChange.applyAll(map.get(PropertyType.CARDINALITYMAX), children, documentId, this::applyCardMax, this::findSegmentRefOrGroupByIdAsStructureElement);
+      applyChange.applyAll(map.get(PropertyType.CARDINALITYMAX), children, this::applyCardMax, this::findSegmentRefOrGroupByIdAsStructureElement);
     } 
     if(map.containsKey((PropertyType.SEGMENTREF))){
-      applyChange.applyAll(map.get(PropertyType.SEGMENTREF), children, documentId, this::applyRef, this::findSegmentRefOrGroupByIdAsStructureElement);
+      applyChange.applyAll(map.get(PropertyType.SEGMENTREF), children, this::applyRef, this::findSegmentRefOrGroupByIdAsStructureElement);
     }
   }
 
-  public void applyCardMin( ChangeItemDomain change, SegmentRefOrGroup elm, String documentId) {
+  public void applyCardMin( ChangeItemDomain change, SegmentRefOrGroup elm) {
     change.setOldPropertyValue(elm.getMin());
     if (change.getPropertyValue() == null) {
       elm.setMin(0);
@@ -1480,7 +1462,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
   }
 
-  public void applyCardMax( ChangeItemDomain change, SegmentRefOrGroup elm, String documentId) {
+  public void applyCardMax( ChangeItemDomain change, SegmentRefOrGroup elm) {
     change.setOldPropertyValue(elm.getMax());
     if (change.getPropertyValue() == null) {
       elm.setMax("NA");
@@ -1489,7 +1471,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
   }
 
-  public void applyRef( ChangeItemDomain change, SegmentRefOrGroup elm, String documentId) throws ApplyChangeException {
+  public void applyRef( ChangeItemDomain change, SegmentRefOrGroup elm) throws ApplyChangeException {
     ObjectMapper mapper = new ObjectMapper();
     try {
       if ( elm instanceof SegmentRef) {

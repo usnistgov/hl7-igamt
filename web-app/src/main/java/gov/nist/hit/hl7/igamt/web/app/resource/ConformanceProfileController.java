@@ -13,27 +13,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.web.app.service.DateUpdateService;
 
 @RestController
 public class ConformanceProfileController extends BaseController {
@@ -48,6 +43,9 @@ public class ConformanceProfileController extends BaseController {
 
     @Autowired 
     CommonService commonService;
+    
+	@Autowired
+	DateUpdateService dateUpdateService;
     
     public ConformanceProfileController() {
         // TODO Auto-generated constructor stub
@@ -117,33 +115,17 @@ public class ConformanceProfileController extends BaseController {
         this.conformanceProfileService = conformanceProfileService;
     }
 
-    @RequestMapping(value = "/api/conformanceprofiles/{id}", method = RequestMethod.POST, produces = {
+    @SuppressWarnings("rawtypes")
+	@RequestMapping(value = "/api/conformanceprofiles/{id}", method = RequestMethod.POST, produces = {
             "application/json" })
     @PreAuthorize("AccessResource('CONFORMANCEPROFILE', #id, WRITE)")
     @ResponseBody
-    public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
-                                           @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
+    public ResponseMessage<?> applyChanges(@PathVariable("id") String id, @RequestBody List<ChangeItemDomain> cItems,
                                            Authentication authentication) throws Exception {
-      
         ConformanceProfile cp = this.conformanceProfileService.findById(id);
-        commonService.checkRight(authentication, cp.getCurrentAuthor(), cp.getUsername());
-        validateSaveOperation(cp);
-        this.conformanceProfileService.applyChanges(cp, cItems, documentId);
-        EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-        entityChangeDomain.setDocumentId(documentId);
-        entityChangeDomain.setDocumentType(DocumentType.IG);
-        entityChangeDomain.setTargetId(id);
-        entityChangeDomain.setTargetType(EntityType.CONFORMANCEPROFILE);
-        entityChangeDomain.setChangeItems(cItems);
-        entityChangeDomain.setTargetVersion(cp.getVersion());
-        entityChangeService.save(entityChangeDomain);
+        this.conformanceProfileService.applyChanges(cp, cItems);
+		dateUpdateService.updateDate(cp.getDocumentInfo());
         return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, cp.getId(), new Date());
-    }
-
-    private void validateSaveOperation(ConformanceProfile cp) throws ForbiddenOperationException {
-        if (Scope.HL7STANDARD.equals(cp.getDomainInfo().getScope())) {
-            throw new ForbiddenOperationException("FORBIDDEN_SAVE_CONFORMANCEPROFILE");
-        }
     }
 
     @RequestMapping(value = "/api/conformanceprofiles/{id}", method = RequestMethod.GET,

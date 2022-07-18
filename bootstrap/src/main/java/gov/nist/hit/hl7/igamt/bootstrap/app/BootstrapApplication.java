@@ -48,6 +48,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
@@ -247,7 +248,7 @@ public class BootstrapApplication implements CommandLineRunner {
   }
   
   //@PostConstruct
-  void fixUsage() throws ValidationException{
+  void fixUsage() throws ValidationException, ForbiddenOperationException{
     List<Segment> segments = this.segmentService.findAll();
     for(Segment s : segments) {
       if(checkAndSetUsages(s.getChildren())) {
@@ -296,11 +297,12 @@ public class BootstrapApplication implements CommandLineRunner {
   /**
    * @param s
    * @throws ValidationException 
+ * @throws ForbiddenOperationException 
    */
 
 
   //@PostConstruct
-  void fixSegmentduplicatedBinding() throws ValidationException {
+  void fixSegmentduplicatedBinding() throws ValidationException, ForbiddenOperationException {
     tableFixes.removeSegmentsDuplicatedBinding();
   }
 
@@ -365,12 +367,12 @@ public class BootstrapApplication implements CommandLineRunner {
 
 
   //@PostConstruct
-  public void fixBinding() throws ValidationException {
+  public void fixBinding() throws ValidationException, ForbiddenOperationException {
       this.dataFixer.readCsv();
    }
 
   //@PostConstruct
-  public void fix0396() throws ValidationException{
+  public void fix0396() throws ValidationException, ForbiddenOperationException{
     tableFixes.fix0396();
   }
   //@PostConstruct
@@ -386,7 +388,11 @@ public class BootstrapApplication implements CommandLineRunner {
           }
         });
       }
-      this.valuesetService.save(v);
+      try {
+		this.valuesetService.save(v);
+	} catch (ForbiddenOperationException e) {
+		e.printStackTrace();
+	}
     });
   }
 
@@ -406,12 +412,12 @@ public class BootstrapApplication implements CommandLineRunner {
   }
 
   //@PostConstruct
-  private void fixIGs() throws EntityNotFound{
+  private void fixIGs() throws EntityNotFound, ForbiddenOperationException{
     this.igFixer.fixIgComponents();
   }
 
   //@PostConstruct
-  void fixConformanceStatements() throws IGUpdateException, EntityNotFound {
+  void fixConformanceStatements() throws IGUpdateException, EntityNotFound, ForbiddenOperationException {
     // this.conformanceStatementFixer.fixConformanceStatmentsId();
     this.igFixer.deriveChildren();
     this.conformanceStatementFixer.lockCfsForDerived();
@@ -420,7 +426,7 @@ public class BootstrapApplication implements CommandLineRunner {
   }
 
   //@PostConstruct
-  void addDynamicMappingInfo() {
+  void addDynamicMappingInfo() throws ForbiddenOperationException {
     codeFixer.fixTableHL70125();
     dynamicMappingFixer.processSegments();
   }
@@ -441,22 +447,22 @@ public class BootstrapApplication implements CommandLineRunner {
   }
 
   // @PostConstruct
-  void fixIgWithDynamicMapping() throws AddingException {
+  void fixIgWithDynamicMapping() throws AddingException, ForbiddenOperationException {
     dynamicMappingFixer.addMissingDatatypesBasedOnDynamicMapping();
   }
 
 
   //@PostConstruct
-  void fixData() {
+  void fixData() throws ForbiddenOperationException {
     this.dataFixer.fixDatatypeConstraintsLevel();
     this.dataFixer.fixConformanceProfileConstaintsLevel();
   }
   //@PostConstruct
-  void shiftBinding() {
+  void shiftBinding() throws ForbiddenOperationException {
     this.dataFixer.shiftAllBinding();
   }
   //@PostConstruct
-  void updateSegmentDatatype() {
+  void updateSegmentDatatype() throws ForbiddenOperationException {
     this.dataFixer.changeHL7SegmentDatatype("OMC", "9", "ID", "2.8.2");
 
   }
@@ -466,11 +472,11 @@ public class BootstrapApplication implements CommandLineRunner {
   }
 
   //@PostConstruct
-  void fixStructureIds() {
+  void fixStructureIds() throws ForbiddenOperationException {
     this.dataFixer.addStructureIds();
   }
   //@PostConstruct
-  void addFixedExt() {
+  void addFixedExt() throws ForbiddenOperationException {
     this.dataFixer.addFixedExt();
   }
 

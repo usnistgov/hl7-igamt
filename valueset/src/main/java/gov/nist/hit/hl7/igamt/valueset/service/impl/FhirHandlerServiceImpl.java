@@ -25,6 +25,7 @@ import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionComponent;
 import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionContainsComponent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -49,7 +50,12 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 
 	RestTemplate restTemplate;
 	
-	String url = "http://hit-dev.nist.gov:8095/vocabulary-service/";
+	@Autowired
+	Environment env;
+
+	private static final String VOCABULARY_URL = "vocabulary.url";
+	
+	//String url = "http://hit-dev-admin.nist.gov:8095/vocabulary-service/";
 	//String url = "http://129.6.24.81:8095/vocabulary-service/";
 
 
@@ -84,7 +90,7 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 		System.out.println(restTemplate);
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(
-					url+"phinvads/ValueSet", HttpMethod.GET, entity,
+					env.getProperty(VOCABULARY_URL)+"phinvads/ValueSet", HttpMethod.GET, entity,
 					String.class);
 
 			if (response != null) {
@@ -108,7 +114,7 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
 		System.out.println(restTemplate);
 		ResponseEntity<String> response = restTemplate.exchange(
-				url+"phinvads/ValueSet/"+oid+"/$expand", HttpMethod.GET, entity,
+				env.getProperty(VOCABULARY_URL)+"phinvads/ValueSet/"+oid+"/$expand", HttpMethod.GET, entity,
 				String.class);		
 
 		if (response != null) {
@@ -152,11 +158,11 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 		System.out.println(restTemplate);
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(
-					url+"hl7/ValueSet/HL70396/$expand", HttpMethod.GET, entity,
+					env.getProperty(VOCABULARY_URL)+"hl7/ValueSet/HL70396/$expand", HttpMethod.GET, entity,
 					String.class);
 
 			ResponseEntity<String> responseHL7nnn = restTemplate.exchange(
-					url+"hl7/ValueSet/HL7nnnn/$expand", HttpMethod.GET, entity,
+					env.getProperty(VOCABULARY_URL)+"hl7/ValueSet/HL7nnnn/$expand", HttpMethod.GET, entity,
 					String.class);
 			if (response != null) {
 				IParser parser = fhirR4Context.newJsonParser();

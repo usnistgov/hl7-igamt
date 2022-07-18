@@ -13,31 +13,20 @@
  */
 package gov.nist.hit.hl7.igamt.segment.service;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
-import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.service.ResourceService;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
-import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
-import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
-import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
@@ -47,7 +36,6 @@ import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
-//import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 
 /**
  *
@@ -58,14 +46,12 @@ public interface SegmentService extends ResourceService {
   Segment findById(String id);
 
   Segment create(Segment segment);
-
-  Segment save(Segment segment);
+  Segment save(Segment segment) throws ForbiddenOperationException;
 
   List<Segment> findAll();
+  
+  void delete(Segment segment) throws ForbiddenOperationException;
 
-  void delete(Segment segment);
-
-  void removeCollection();
 
   List<Segment> findByDomainInfoVersion(String version);
 
@@ -86,14 +72,14 @@ public interface SegmentService extends ResourceService {
   List<Valueset> getDependentValueSets(Set<Segment> resources);
 
   Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
-      throws SegmentNotFoundException, SegmentValidationException;
+      throws SegmentNotFoundException, SegmentValidationException, ForbiddenOperationException;
 
   void validate(SegmentDynamicMapping dynamicMapping) throws SegmentValidationException;
 
   SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment, boolean readOnly);
 
-  void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId)
-      throws ApplyChangeException;
+  void applyChanges(Segment s, List<ChangeItemDomain> cItems)
+      throws ApplyChangeException, ForbiddenOperationException;
 
   Set<?> convertSegmentStructurForMessage(Segment segment, String idPath, String path);
 
@@ -123,8 +109,7 @@ public interface SegmentService extends ResourceService {
   Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry);
 
   String findObx2VsId(Segment s);  
-  List<Segment> saveAll(Set<Segment> segments);
-
+  List<Segment> saveAll(Set<Segment> segments) throws ForbiddenOperationException;
 
 
 }

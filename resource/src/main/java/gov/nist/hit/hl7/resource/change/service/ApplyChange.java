@@ -40,154 +40,138 @@ public interface ApplyChange {
 	/**
 	 * @param resource
 	 * @param map
-	 * @param documentId
 	 * @throws Exception
 	 */
-	void applyResourceChanges(Resource resource, Map<PropertyType, ChangeItemDomain> map, String documentId) throws ApplyChangeException;
+	void applyResourceChanges(Resource resource, Map<PropertyType, ChangeItemDomain> map) throws ApplyChangeException;
 
 
 	/**
 	 * @param change
 	 * @param elm
-	 * @param documentId
 	 * @throws Exception
 	 */
-	void applyUsage(ChangeItemDomain change, StructureElement elm, String documentId);
+	void applyUsage(ChangeItemDomain change, StructureElement elm);
 	
-	<T extends SubStructElement> void applySubstructureElementChanges(Map<PropertyType, List<ChangeItemDomain>> map, Set<T> children, String documentId, FindByFunction<T> findBy)
+	<T extends SubStructElement> void applySubstructureElementChanges(Map<PropertyType, List<ChangeItemDomain>> map, Set<T> children, FindByFunction<T> findBy)
 			throws ApplyChangeException;
 
-	<T extends StructureElement> void applyStructureElementChanges(Map<PropertyType, List<ChangeItemDomain>> map, Set<T> children, String documentId, FindByFunction<T> findBy)
+	<T extends StructureElement> void applyStructureElementChanges(Map<PropertyType, List<ChangeItemDomain>> map, Set<T> children, FindByFunction<T> findBy)
 			throws ApplyChangeException;
 
 	/**
 	 * @param change
 	 * @param elm
-	 * @param documentId
 	 */
-	void applyName(ChangeItemDomain change, StructureElement elm, String documentId);
+	void applyName(ChangeItemDomain change, StructureElement elm);
 
 
 	/**
 	 * @param change
 	 * @param elm
-	 * @param documentId
 	 */
-	void applyMinLength(ChangeItemDomain change, SubStructElement elm, String documentId);
+	void applyMinLength(ChangeItemDomain change, SubStructElement elm);
 
 
 	/**
 	 * @param change
 	 * @param elm
-	 * @param documentId
 	 */
-	void applyMaxLength(ChangeItemDomain change, SubStructElement elm, String documentId);
+	void applyMaxLength(ChangeItemDomain change, SubStructElement elm);
 
 
 	/**
 	 * @param change
 	 * @param elm
-	 * @param documentId
 	 */
-	void applyLengthType(ChangeItemDomain change, SubStructElement elm, String documentId);
+	void applyLengthType(ChangeItemDomain change, SubStructElement elm);
 
 
 	/**
 	 * @param change
 	 * @param elm
-	 * @param documentId
 	 */
-	void applyConfLength(ChangeItemDomain change, SubStructElement elm, String documentId);
+	void applyConfLength(ChangeItemDomain change, SubStructElement elm);
 
 
 	/**
 	 * @param change
 	 * @param elm
-	 * @param documentId
 	 * @throws JsonProcessingException 
 	 * @throws ApplyChangeException 
 	 */
-	void applyDatatype(ChangeItemDomain change, SubStructElement elm, String documentId) throws JsonProcessingException, ApplyChangeException;
+	void applyDatatype(ChangeItemDomain change, SubStructElement elm) throws JsonProcessingException, ApplyChangeException;
 
 
 	/**
 	 * @param change
 	 * @param elm
-	 * @param documentId
 	 * @throws ApplyChangeException 
 	 */
-	void applyComments(ChangeItemDomain change, StructureElement elm, String documentId) throws ApplyChangeException;
+	void applyComments(ChangeItemDomain change, StructureElement elm) throws ApplyChangeException;
 
 
 	/**
 	 * @param change
 	 * @param elm
-	 * @param documentId
 	 */
-	void applyConstantValue(ChangeItemDomain change, SubStructElement elm, String documentId);
+	void applyConstantValue(ChangeItemDomain change, SubStructElement elm);
 
 
 	/**
 	 * @param change
 	 * @param elm
-	 * @param documentId
 	 */
-	void applyDefinitionText(ChangeItemDomain change, StructureElement elm, String documentId);
+	void applyDefinitionText(ChangeItemDomain change, StructureElement elm);
 
 	/**
 	 * @param change
 	 * @param binding
-	 * @param documentId
 	 * @throws ApplyChangeException 
 	 */
-	public void applyConformanceStatements(ChangeItemDomain change, ResourceBinding binding, String documentId, Level level) throws ApplyChangeException ;
+	public void applyConformanceStatements(ChangeItemDomain change, ResourceBinding binding, Level level) throws ApplyChangeException ;
 
 
 	/**
 	 * @param change
 	 * @param elm
-	 * @param documentId
 	 * @param level
 	 * @throws ApplyChangeException
 	 */
-	void applyPredicate(ChangeItemDomain change, StructureElementBinding elm, String documentId, Level level)
+	void applyPredicate(ChangeItemDomain change, StructureElementBinding elm, Level level)
 			throws ApplyChangeException;
 
 
 	/**
 	 * @param change
 	 * @param elm
-	 * @param documentId
 	 * @param level
 	 * @throws ApplyChangeException
 	 */
-	void applyValueSet(ChangeItemDomain change, StructureElementBinding elm, String documentId, Level level)
+	void applyValueSet(ChangeItemDomain change, StructureElementBinding elm, Level level)
 			throws ApplyChangeException;
 
 
 	/**
 	 * @param change
 	 * @param elm
-	 * @param documentId
 	 * @param level
 	 * @throws ApplyChangeException
 	 */
-	void applySingleCode(ChangeItemDomain change, StructureElementBinding elm, String documentId, Level level)
+	void applySingleCode(ChangeItemDomain change, StructureElementBinding elm, Level level)
 			throws ApplyChangeException;
 
 
 	/**
 	 * @param map
 	 * @param binding
-	 * @param documentId
 	 * @param level
 	 * @throws ApplyChangeException
 	 */
-	void applyBindingChanges(Map<PropertyType, List<ChangeItemDomain>> map, ResourceBinding binding, String documentId,
+	void applyBindingChanges(Map<PropertyType, List<ChangeItemDomain>> map, ResourceBinding binding,
 			Level level) throws ApplyChangeException;
 
 
-	<T extends StructureElement> void applyAll( List<ChangeItemDomain> changes, Set<T> structureElments,  String documentId, ApplyPropertyFunction<T> fn, FindByFunction<T> findBy) throws ApplyChangeException;
+	<T extends StructureElement> void applyAll( List<ChangeItemDomain> changes, Set<T> structureElments, ApplyPropertyFunction<T> fn, FindByFunction<T> findBy) throws ApplyChangeException;
 
 
 	/**
@@ -215,11 +199,10 @@ public interface ApplyChange {
 	/**
 	 * @param map
 	 * @param slicings
-	 * @param documentId
 	 * @param segment
 	 * @throws ApplyChangeException 
 	 */
-	 <T extends Slicing>  void applySlicingChanges(Map<PropertyType, List<ChangeItemDomain>> map, Set<T> slicings, String documentId,
+	 <T extends Slicing>  void applySlicingChanges(Map<PropertyType, List<ChangeItemDomain>> map, Set<T> slicings,
 			Type segment) throws ApplyChangeException;
 
 

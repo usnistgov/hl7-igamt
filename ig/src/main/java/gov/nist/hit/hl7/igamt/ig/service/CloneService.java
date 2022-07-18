@@ -10,13 +10,7 @@
  * that they have been modified.
  */
 package gov.nist.hit.hl7.igamt.ig.service;
-
-import java.util.HashMap;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
@@ -27,6 +21,6 @@ import gov.nist.hit.hl7.igamt.ig.domain.Ig;
  */
 public interface CloneService {
 
-  public Ig clone(Ig ig, String username, CopyInfo info) throws EntityNotFound;
+  public Ig clone(Ig ig, String username, CopyInfo info) throws EntityNotFound, ForbiddenOperationException;
 
 }

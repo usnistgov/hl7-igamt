@@ -196,7 +196,7 @@ public class DatatypeLibraryController {
 
   public @ResponseBody ResponseMessage<String> create(@RequestBody CreationWrapper wrapper,
       Authentication authentication) throws JsonParseException, JsonMappingException,
-  FileNotFoundException, IOException, AddingException, DatatypeNotFoundException {
+  FileNotFoundException, IOException, AddingException, DatatypeNotFoundException, ForbiddenOperationException {
 
     String username = authentication.getPrincipal().toString();
     DatatypeLibrary empty = dataypeLibraryService.createEmptyDatatypeLibrary();
@@ -384,7 +384,6 @@ public class DatatypeLibraryController {
     DatatypeLibrary library = findLibraryById(id);
     if (library.getUsername().equals(authentication.getPrincipal().toString())) {
       dataypeLibraryService.delete(id);
-      //delete(library.getId());
       return new ResponseMessage(Status.SUCCESS, DATATYPE_LIBRARY_DELETED, id, new Date());
     } else {
       throw new OperationNotAllowedException("Operation Not allowed");
@@ -540,7 +539,7 @@ public class DatatypeLibraryController {
   @RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
   public ResponseMessage deleteDatatype(@PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
-      Authentication authentication) throws DatatypeLibraryNotFoundException {
+      Authentication authentication) throws DatatypeLibraryNotFoundException, ForbiddenOperationException {
     DatatypeLibrary library = dataypeLibraryService.findById(id);
     Link found = findLinkById(datatypeId, library.getDatatypeRegistry().getChildren());
     if (found != null) {
@@ -563,7 +562,7 @@ public class DatatypeLibraryController {
   @RequestMapping(value = "/api/datatype-library/{id}/datatypes/add", method = RequestMethod.POST, produces = {
   "application/json" })
   public ResponseMessage<DocumentDisplayInfo> add(@PathVariable("id") String id,
-      @RequestBody AddingWrapper wrapper, Authentication authentication) throws AddingException{
+      @RequestBody AddingWrapper wrapper, Authentication authentication) throws AddingException, ForbiddenOperationException{
     String username = authentication.getPrincipal().toString();
     DatatypeLibrary library = dataypeLibraryService.findById(id);
     Set<String> savedIds = new HashSet<String>();
@@ -610,7 +609,7 @@ public class DatatypeLibraryController {
   @RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
   public ResponseMessage<AddResourceResponse> copyDatatype(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
-      @PathVariable("datatypeId") String datatypeId, Authentication authentication) throws CloneException
+      @PathVariable("datatypeId") String datatypeId, Authentication authentication) throws CloneException, ForbiddenOperationException
   {
     DatatypeLibrary library = dataypeLibraryService.findById(id);
     String username = authentication.getPrincipal().toString();

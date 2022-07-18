@@ -42,6 +42,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.exception.ValuesetException;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.valueset.service.impl.TableCSVGenerator;
+import gov.nist.hit.hl7.igamt.web.app.service.DateUpdateService;
 
 @RestController
 public class ValuesetController extends BaseController {
@@ -54,6 +55,8 @@ public class ValuesetController extends BaseController {
 	EntityChangeService entityChangeService;
 	@Autowired
 	CommonService commonService;
+	@Autowired
+	DateUpdateService dateUpdateService;
 
 	private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
 
@@ -116,25 +119,16 @@ public class ValuesetController extends BaseController {
 		}
 		return valueset;
 	}
+	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/api/valuesets/{id}", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
 	@PreAuthorize("AccessResource('VALUESET', #id, WRITE)")
-	public ResponseMessage<?> applyStructureChanges(@PathVariable("id") String id,
-			@RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
+	public ResponseMessage<?> applyStructureChanges(@PathVariable("id") String id, @RequestBody List<ChangeItemDomain> cItems,
 			Authentication authentication) throws ValuesetException, IOException, ForbiddenOperationException {
-		Valueset s = this.valuesetService.findById(id);
-		commonService.checkRight(authentication,s.getCurrentAuthor(), s.getUsername());
-
-		this.valuesetService.applyChanges(s, cItems, documentId);
-		EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-		entityChangeDomain.setDocumentId(documentId);
-		entityChangeDomain.setDocumentType(DocumentType.IG);
-		entityChangeDomain.setTargetId(id);
-		entityChangeDomain.setTargetType(EntityType.VALUESET);
-		entityChangeDomain.setChangeItems(cItems);
-		entityChangeDomain.setTargetVersion(s.getVersion());
-		entityChangeService.save(entityChangeDomain);
-		return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, s.getId(), new Date());
+		Valueset vs = this.valuesetService.findById(id);
+		this.valuesetService.applyChanges(vs, cItems);
+		this.dateUpdateService.updateDate(vs.getDocumentInfo());
+		return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, vs.getId(), vs.getUpdateDate());
 	}
 
 }
