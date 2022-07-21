@@ -40,7 +40,7 @@ public class VocabularyBindingVerificationService extends VerificationUtils {
                                     bindingInfo,
                                     target.getParent().getDomainInfo().getVersion(),
                                     target.getPosition(),
-                                    target.getLocationInfo().getType(),
+                                    target.getParent().getType(),
                                     target.getParent().getFixedName())
                     ) {
                         if(!bindingInfo.isMultiple() && valuesetBindings.size() > 1) {
@@ -138,7 +138,7 @@ public class VocabularyBindingVerificationService extends VerificationUtils {
                                     bindingInfo,
                                     target.getParent().getDomainInfo().getVersion(),
                                     target.getPosition(),
-                                    target.getLocationInfo().getType(),
+                                    target.getParent().getType(),
                                     target.getParent().getFixedName()) &&
                             bindingInfo.isAllowSingleCode()
                     ) {
