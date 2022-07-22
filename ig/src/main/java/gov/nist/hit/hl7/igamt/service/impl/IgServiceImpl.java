@@ -1581,15 +1581,13 @@ public class IgServiceImpl implements IgService {
   @Override
   public void updateChildrenAttribute( Ig ig, String attributeName, Object value, boolean updateDate) throws IGUpdateException {
     for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
-      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
         UpdateResult updateResult = this.updateAttribute(l.getId(), attributeName, value, ConformanceProfile.class, updateDate);
         if(! updateResult.wasAcknowledged()) {
           throw new IGUpdateException("Could not update Conformance profile:" +l.getId());
         }
-      }
     }
     for ( Link l: ig.getSegmentRegistry().getChildren()) {
-      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        if(!l.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
         UpdateResult updateResult = this.updateAttribute(l.getId(), attributeName, value, Segment.class, updateDate);
         if(! updateResult.wasAcknowledged()) {
           throw new IGUpdateException("Could not update segment:" +l.getId());
@@ -1598,7 +1596,7 @@ public class IgServiceImpl implements IgService {
     }
 
     for ( Link l: ig.getDatatypeRegistry().getChildren()) {
-      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        if(!l.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
         UpdateResult updateResult = this.updateAttribute(l.getId(), attributeName, value, Datatype.class, updateDate);
         if(! updateResult.wasAcknowledged()) {
           throw new IGUpdateException("Could not update Datatype:" +l.getId());
@@ -1606,7 +1604,7 @@ public class IgServiceImpl implements IgService {
       }
     }
     for ( Link l: ig.getValueSetRegistry().getChildren()) {
-      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        if(!l.getDomainInfo().getScope().equals(Scope.HL7STANDARD) &&  !l.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
         UpdateResult updateResult = this.updateAttribute(l.getId(), attributeName, value, Valueset.class, updateDate);
         if(! updateResult.wasAcknowledged()) {
           throw new IGUpdateException("Could not update Value set:" +l.getId());
@@ -1615,7 +1613,7 @@ public class IgServiceImpl implements IgService {
     }
 
     for ( Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
-      if(l.getId() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        if(!l.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
         UpdateResult updateResult = this.updateAttribute(l.getId(), attributeName, value, CoConstraintGroup.class, updateDate);
         if(! updateResult.wasAcknowledged()) {
           throw new IGUpdateException("Could not update coConstraint set:" +l.getId());
