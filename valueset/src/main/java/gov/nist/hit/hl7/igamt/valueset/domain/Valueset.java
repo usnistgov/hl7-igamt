@@ -165,7 +165,10 @@ public class Valueset extends Resource {
 		elm.sourceType = sourceType;
 		elm.numberOfCodes = numberOfCodes;
 		elm.codeSystems = codeSystems;
-		elm.codes=codes;
+		elm.hl7Type = hl7Type;
+		elm.includeCodes = includeCodes;
+		elm.isFlavor = isFlavor;
+		elm.changeLogs = changeLogs;
 	}
 
 	public Set<String> getCodeSystems() {

@@ -44,7 +44,7 @@ public class CoConstraint extends WithDelta {
     public CoConstraint clone() throws CloneNotSupportedException{
         CoConstraint row = new CoConstraint();
         row.requirement = this.requirement.clone();
-        row.cloned = true;
+        row.cloned = this.cloned;
         Map<String, CoConstraintCell> cells = new HashMap<>();
         for(Map.Entry<String, CoConstraintCell> entry : this.cells.entrySet()){
             cells.put(entry.getKey(), entry.getValue().cloneCell());

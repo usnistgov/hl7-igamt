@@ -65,7 +65,9 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
     }, actions$, store);
     this.resourceType = Type.VALUESET;
     this.hasOrigin$ = this.store.select(fromIgamtSelectedSelectors.selectedResourceHasOrigin);
-    this.config = this.store.select(getHl7ConfigState);
+    this.config = this.store.select(getHl7ConfigState).pipe(
+      filter((config) => !!config),
+    );
     this.username = this.store.select(fromAuth.selectUsername);
     this.resourceSubject = new ReplaySubject<IValueSet>(1);
     this.changes = new ReplaySubject<IRootChanges>(1);

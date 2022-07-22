@@ -52,6 +52,15 @@ public class SerializationTools {
         }
         return result;
     }
+    public String extractPredicateDescription(Map<String, Predicate> predicateMap , String keyId){
+        String result ="";
+        for(String key : predicateMap.keySet()) {
+            if(key.equals(keyId)) {
+                return  predicateMap.get(key).generateDescription();
+            }
+        }
+        return result;
+    }
 }
 
 //	public Set<Link> sortValuesetSet(Set<ValuesetDataModel> set){

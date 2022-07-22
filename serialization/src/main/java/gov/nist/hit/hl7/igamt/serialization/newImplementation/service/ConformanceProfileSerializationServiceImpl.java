@@ -603,6 +603,8 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                 	
                 	segmentRefElement.addAttribute(
                             new Attribute("usage", segmentRef.getUsage() != null ? serializationTools.extractPredicateUsages(conformanceProfileDataModel.getPredicateMap(), segmentRef.getId()) : ""));
+                    segmentRefElement.addAttribute(
+                        new Attribute("predicate", segmentRef.getUsage() != null ? serializationTools.extractPredicateDescription(conformanceProfileDataModel.getPredicateMap(), segmentRef.getId()) : ""));
                 }
             segmentRefElement.addAttribute(new Attribute("iDRef", segmentRef.getId()));
             segmentRefElement.addAttribute(new Attribute("iDSeg", segmentRef.getRef().getId()));
@@ -649,6 +651,8 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
             	
             	elementGroupBegin.addAttribute(
                         new Attribute("usage", group.getUsage() != null ? serializationTools.extractPredicateUsages(conformanceProfileDataModel.getPredicateMap(), group.getId()) : ""));
+                elementGroupBegin.addAttribute(
+                    new Attribute("predicate", group.getUsage() != null ? serializationTools.extractPredicateDescription(conformanceProfileDataModel.getPredicateMap(), group.getId()) : ""));
             }
 //        elementGroupBegin.addAttribute(new Attribute("usage", String.valueOf(group.getUsage())));
         elementGroupBegin.addAttribute(new Attribute("min", group.getMin() + ""));

@@ -2,9 +2,9 @@ package gov.nist.hit.hl7.igamt.coconstraints.service.impl;
 
 import com.google.common.base.Strings;
 import gov.nist.diff.domain.DeltaAction;
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.coconstraints.service.TriFunction;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Assertion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

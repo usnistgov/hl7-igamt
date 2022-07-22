@@ -25,7 +25,7 @@
 
         <ng-container *ngSwitchCase="'PROFILECOMPONENTREGISTRY'">
           <div #pcLib>
-            <span [contextMenu]="ProfileComponentContextMenu"> {{node.data.path}} {{node.data.variableName}} <span style="color: red"> -Beta<strong></strong></span></span>
+            <span [contextMenu]="ProfileComponentContextMenu"> {{node.data.path}} {{node.data.variableName}} {{elementNumbers?elementNumbers.profileComponents: node.children.length}} / {{node.children.length}}</span>
             <context-menu #ProfileComponentContextMenu [disabled]="viewOnly||delta">
               <ng-template (execute)="createNew(node.data, 'PROFILECOMPONENT')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Create Profile Component
@@ -40,7 +40,7 @@
 
         <ng-container *ngSwitchCase="'CONFORMANCEPROFILEREGISTRY'">
           <div #cpLib>
-            <span [contextMenu]="conformanceProfilesContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
+            <span [contextMenu]="conformanceProfilesContextMenu"> {{node.data.path}} {{node.data.variableName}} {{elementNumbers?elementNumbers.conformanceProfiles: node.children.length}} / {{node.children.length}}</span>
             <context-menu #conformanceProfilesContextMenu [disabled]="viewOnly||delta">
               <ng-template (execute)="import(node.data, 'EVENTS', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i>Add HL7 Conformance Profiles
@@ -54,7 +54,7 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'COMPOSITEPROFILEREGISTRY'">
-          <span  #cmppLib [contextMenu]="CompositeProfileContextMenu"> {{node.data.path}} {{node.data.variableName}} <span style="color: red"> -Beta<strong></strong></span></span>
+          <span  #cmppLib [contextMenu]="CompositeProfileContextMenu"> {{node.data.path}} {{node.data.variableName}} {{elementNumbers?elementNumbers.compositeProfiles: node.children.length}} / {{node.children.length}}</span>
           <context-menu #CompositeProfileContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="createNew(node.data, 'COMPOSITEPROFILE')" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-plus"></i> Create Composite Profile
@@ -64,7 +64,7 @@
 
         <ng-container *ngSwitchCase="'DATATYPEREGISTRY'">
           <div #dtLib>
-            <span [contextMenu]="addDatatypeContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
+            <span [contextMenu]="addDatatypeContextMenu"> {{node.data.path}} {{node.data.variableName}} {{elementNumbers?elementNumbers.datatypes: node.children.length}} / {{node.children.length}}</span>
             <context-menu #addDatatypeContextMenu [disabled]="viewOnly||delta">
               <ng-template (execute)="import(node.data, 'DATATYPE', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Add HL7 Data Types
@@ -78,7 +78,7 @@
 
         <ng-container *ngSwitchCase="'COCONSTRAINTGROUPREGISTRY'">
           <div #ccgLib>
-            <span [contextMenu]="coConstraintGroupContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
+            <span [contextMenu]="coConstraintGroupContextMenu"> {{node.data.path}} {{node.data.variableName}} {{elementNumbers?elementNumbers.coConstraintGroup: node.children.length}} / {{node.children.length}}</span>
             <context-menu #coConstraintGroupContextMenu [disabled]="viewOnly||delta">
               <ng-template (execute)="createNew(node.data, 'COCONSTRAINTGROUP')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Create Co-Constraints Group
@@ -89,7 +89,7 @@
 
         <ng-container *ngSwitchCase="'VALUESETREGISTRY'">
           <div #vsLib>
-            <span [contextMenu]="valueSetsContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
+            <span [contextMenu]="valueSetsContextMenu"> {{node.data.path}} {{node.data.variableName}} {{elementNumbers?elementNumbers.valueSets: node.children.length}} / {{node.children.length}}</span>
             <context-menu #valueSetsContextMenu [disabled]="viewOnly||delta">
 
               <ng-template (execute)="createNew(node.data, 'VALUESET')" contextMenuItem [enabled]="!viewOnly&&!delta">
@@ -109,7 +109,7 @@
         </ng-container>
         <ng-container *ngSwitchCase="'SEGMENTREGISTRY'">
           <div #segLib>
-            <span [contextMenu]="segmentsContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
+            <span [contextMenu]="segmentsContextMenu"> {{node.data.path}} {{node.data.variableName}} {{elementNumbers?elementNumbers.segments: node.children.length}} / {{node.children.length}}</span>
             <context-menu #segmentsContextMenu [disabled]="viewOnly||delta">
               <ng-template (execute)="import(node.data, 'SEGMENT', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Add HL7 Segments
@@ -137,7 +137,7 @@
 
         <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
           <app-display-section [contextMenu]="conformanceProfileContextMenu" [element]="node.data" #rla="routerLinkActive"
-                               [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" [hideDescription]="true"></app-display-section>
+                               [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" [hideDescription]="true" style="cursor: move !important;"></app-display-section>
           <context-menu #conformanceProfileContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="exportDiffProfileXML(node)" contextMenuItem>
               <i class="fa fa-download"></i> Export Diff. Profile XML

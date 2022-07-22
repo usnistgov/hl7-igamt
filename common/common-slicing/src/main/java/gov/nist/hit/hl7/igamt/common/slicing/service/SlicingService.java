@@ -31,6 +31,8 @@ public interface SlicingService {
 
 	public Set<RelationShip> collectDependencies(ReferenceIndentifier referenceIndentifier, Set<Slicing> slicings,
 			Type flavorsType);
-
+    
+	
+	
 
 }

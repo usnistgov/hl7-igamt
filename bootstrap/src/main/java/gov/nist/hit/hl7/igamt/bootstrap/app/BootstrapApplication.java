@@ -39,18 +39,19 @@ import gov.nist.hit.hl7.igamt.bootstrap.data.DataFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.DynamicMappingFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.FixIGAttribute;
 import gov.nist.hit.hl7.igamt.bootstrap.data.IgFixer;
-import gov.nist.hit.hl7.igamt.bootstrap.data.PhinvadFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
@@ -69,11 +70,13 @@ import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfiguratio
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
 import gov.nist.hit.hl7.igamt.ig.data.fix.CoConstraintsFixes;
 import gov.nist.hit.hl7.igamt.ig.data.fix.PathFixes;
+import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.repository.IgTemplateRepository;
+import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
@@ -128,9 +131,6 @@ public class BootstrapApplication implements CommandLineRunner {
   MessageEventFacory messageEventFactory;
   
   @Autowired
-  PhinvadFixer phinvadFixer;
-
-  @Autowired
   Environment env;
 
   @Autowired
@@ -139,8 +139,7 @@ public class BootstrapApplication implements CommandLineRunner {
   @Autowired
   private ConformanceStatementRepository conformanceStatementRepository;
 
-  @Autowired
-  private PredicateRepository predicateRepository;
+
   @Autowired
   DynamicMappingFixer dynamicMappingFixer;
 
@@ -178,6 +177,9 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   IgRepository igRepo;
+  
+  @Autowired
+  IgService igService;
 
   @Autowired
   ConformanceStatementFixer conformanceStatementFixer;
@@ -404,12 +406,12 @@ public class BootstrapApplication implements CommandLineRunner {
   }
 
   //@PostConstruct
-  private void fixIGs() throws CoConstraintGroupNotFoundException{
+  private void fixIGs() throws EntityNotFound{
     this.igFixer.fixIgComponents();
   }
 
   //@PostConstruct
-  void fixConformanceStatements() throws IGUpdateException, CoConstraintGroupNotFoundException {
+  void fixConformanceStatements() throws IGUpdateException, EntityNotFound {
     // this.conformanceStatementFixer.fixConformanceStatmentsId();
     this.igFixer.deriveChildren();
     this.conformanceStatementFixer.lockCfsForDerived();
@@ -497,12 +499,14 @@ public class BootstrapApplication implements CommandLineRunner {
     this.pcConformanceStatementsIdFixes.fix();
   }
 
+  
   //@PostConstruct
-  void updateValueSets() throws CoConstraintGroupNotFoundException {
-    
-    phinvadFixer.update();
-    phinvadFixer.setValueSetOrigins();
-
+  void addDocumentInfo() throws IGUpdateException {
+    List<Ig> igs = this.igService.findAll();
+    for( Ig ig: igs ) {
+      DocumentInfo info = new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT);
+      igService.updateChildrenAttribute(ig, "documentInfo", info, false);
+    }
   }
-
+  
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
@@ -35,6 +36,8 @@ import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
+import gov.nist.hit.hl7.igamt.ig.model.FilterIGInput;
+import gov.nist.hit.hl7.igamt.ig.model.FilterResponse;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
@@ -50,8 +53,6 @@ public interface IgService {
   public void delete(String id);
 
   public Ig save(Ig ig);
-
-  public Ig clone(Ig ig, String username, CopyInfo info);
 
   public List<Ig> findByUsername(String username);
 
@@ -85,9 +86,6 @@ public interface IgService {
 
   public IGContentMap collectData(Ig igdoument);
 
-  void buildDependencies(IGContentMap contentMap);
-
-
   public Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException;
 
   public IgDataModel generateDataModel(Ig ig) throws Exception;
@@ -102,7 +100,7 @@ public interface IgService {
   
   public void publishIG(Ig ig) throws IGNotFoundException, IGUpdateException;
   
-  UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass);
+  UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass, boolean updateDate);
   
   public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo);
   public Ig makeSelectedIg(Ig ig, ReqId reqIds);
@@ -115,6 +113,13 @@ public interface IgService {
 
   public CompositeProfileStructure createCompositeProfileSercice(Ig ig,
       CompositeProfileCreationWrapper wrapper);
+
+  void removeChildren(String id);
+
+  void updateChildrenAttribute(Ig ig, String attributeName, Object value, boolean updateDate)
+      throws IGUpdateException;
+
+  public FilterResponse getFilterResponse(String id, FilterIGInput filter) throws EntityNotFound;
 
 
 }
