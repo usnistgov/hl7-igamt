@@ -189,11 +189,7 @@ public class BindingServiceImpl implements BindingService {
     if(elm.getValuesetBindings() !=null ) {
       this.processAndSubstitute(elm.getValuesetBindings(), newKeys);
     }
-    
-    //TODO Fix SingleCode
-//    if(elm.getInternalSingleCode() !=null) {
-//      this.processAndSubstitute(elm.getInternalSingleCode(), newKeys);
-//    }
+
     if(elm.getChildren() !=null) { 
       for (StructureElementBinding child: elm.getChildren()) {
         processAndSubstitute(child, newKeys);
