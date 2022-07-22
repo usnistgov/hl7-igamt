@@ -11,9 +11,11 @@
 			<xsl:attribute name="class">
                 <xsl:text>contentTr</xsl:text>
             </xsl:attribute>
+            			<xsl:if test="$columnDisplay.message.path = 'true'">
             <xsl:element name="td">
 					<xsl:value-of select="@id" />
 				</xsl:element>
+							</xsl:if>
 			<xsl:if test="$columnDisplay.message.segment = 'true'">
 				<xsl:element name="td">
 					<xsl:choose>

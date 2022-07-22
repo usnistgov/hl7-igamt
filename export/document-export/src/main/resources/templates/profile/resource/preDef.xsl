@@ -3,7 +3,7 @@
 	<xsl:template name="PreDef">
 		<xsl:if test="normalize-space(@preDef)!=''">
 					<xsl:element name="br" />
-			<b>PreDefinition : </b><xsl:value-of disable-output-escaping="yes" select="@preDef"></xsl:value-of>
+		<!--	<b>PreDefinition : </b><xsl:value-of disable-output-escaping="yes" select="@preDef"></xsl:value-of> -->
 			<xsl:element name="br" />
 		</xsl:if>
 	</xsl:template>

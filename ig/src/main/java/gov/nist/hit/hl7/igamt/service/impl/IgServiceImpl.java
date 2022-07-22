@@ -1018,7 +1018,9 @@ public class IgServiceImpl implements IgService {
       throw new ValuesetNotFoundException(vsId);
     }
     if(vs.getBindingIdentifier().equals("HL70396") && vs.getSourceType().equals(SourceType.EXTERNAL)) {
-      vs.setCodes(fhirHandlerService.getValusetCodeForDynamicTable());
+//      vs.setCodes(fhirHandlerService.getValusetCodeForDynamicTable());
+        vs.setCodes(new HashSet<Code>());
+
     }
     if(vs.getDomainInfo() !=null && vs.getDomainInfo().getScope() != null) {
       if(vs.getDomainInfo().getScope().equals(Scope.PHINVADS)) {

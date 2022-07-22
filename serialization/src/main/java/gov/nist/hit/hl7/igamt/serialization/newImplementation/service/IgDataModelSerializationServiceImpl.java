@@ -17,6 +17,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.AbstractDomainExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentMetadataConfiguration;
@@ -185,6 +186,9 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 		String title = resource.getLabel();
 		if(resource instanceof Valueset) {
 		  title += '-'+ resource.getName();
+		} else if(resource instanceof ConformanceProfile) {
+			  title = resource.getName();
+
 		}else {
 			if(resource.getDescription() != null && !resource.getDescription().isEmpty()) {
           title += '-'+ resource.getDescription();

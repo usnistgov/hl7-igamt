@@ -49,7 +49,7 @@
           <label class="form-label-lg"> Configuration name  </label>
           <input  type="text"  class="form-control" style="margin-bottom: 10px;" [(ngModel)]="currentConfiguration.configName" (ngModelChange)="change($event)" [disabled]="currentConfiguration.original">
           <p-tabView *ngIf="type === 'IGDOCUMENT'" [styleClass]="'configuration-tab-view'" >
-              <p-tabPanel header="Ig Display" [selected]="true">
+              <p-tabPanel header="IG Display" [selected]="true">
                   <app-ig-general-display-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.igGeneralConfiguration"  (detectChange)="change($event)" ></app-ig-general-display-configuration>
                 </p-tabPanel>
             <p-tabPanel header="Conformance Profile">
