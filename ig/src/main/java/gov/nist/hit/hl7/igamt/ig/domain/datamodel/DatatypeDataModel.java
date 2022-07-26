@@ -14,14 +14,13 @@ package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
-import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
-import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.SingleCodeBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
@@ -40,7 +39,7 @@ public class DatatypeDataModel implements Serializable, Comparable {
 
 	private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
 	private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
-	private Map<String, InternalSingleCode> singleCodeMap = new HashMap<String, InternalSingleCode>();
+	private Map<String, List<SingleCodeBinding>> singleCodeMap = new HashMap<String, List<SingleCodeBinding>>();
 	private Map<String, Set<ValuesetBindingDataModel>> valuesetMap = new HashMap<String, Set<ValuesetBindingDataModel>>();
 	private Set<ComponentDataModel> componentDataModels = new HashSet<ComponentDataModel>();
 
@@ -60,11 +59,11 @@ public class DatatypeDataModel implements Serializable, Comparable {
 		this.predicateMap = predicateMap;
 	}
 
-	public Map<String, InternalSingleCode> getSingleCodeMap() {
+	public Map<String, List<SingleCodeBinding>> getSingleCodeMap() {
 		return singleCodeMap;
 	}
 
-	public void setSingleCodeMap(Map<String, InternalSingleCode> singleCodeMap) {
+	public void setSingleCodeMap(Map<String, List<SingleCodeBinding>> singleCodeMap) {
 		this.singleCodeMap = singleCodeMap;
 	}
 
@@ -155,10 +154,11 @@ public class DatatypeDataModel implements Serializable, Comparable {
 							
 			}
 			
-			//TODO Fix SingleCode
-//			if(seb.getInternalSingleCode() != null){
-//				this.singleCodeMap.put(key, seb.getInternalSingleCode());
-//			}
+			//Fixed SingleCode_20220625
+			if(seb.getSingleCodeBindings() != null) {
+				this.singleCodeMap.put(key, seb.getSingleCodeBindings());
+				
+			}
 
 			if(seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0){
 				Set<ValuesetBindingDataModel> vbdm = new HashSet<ValuesetBindingDataModel>();

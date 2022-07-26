@@ -1247,20 +1247,14 @@ public class VerificationServiceImpl implements VerificationService {
 										position + "", "ERROR", "User"));
 				}
 
-				//TODO Fix SingleCode
+				//FixED SingleCode
 				if (this.isValueSetOrSingleCodeAllowedComponent(c, childDt)) {
 					StructureElementBinding childBinding = this.findBindingById(c.getId(), cDt.getBinding());
 					if (childBinding != null) {
 						Set<ValuesetBinding> valuesetBindings = childBinding.getValuesetBindings();
-						ExternalSingleCode externalSingleCode = childBinding.getExternalSingleCode();
-//						InternalSingleCode internalSingleCode = childBinding.getInternalSingleCode();
 
 						if (valuesetBindings != null)
 							this.checkingValueSetBindings(cDt, valuesetBindings, result, position, path);
-						if (externalSingleCode != null)
-							this.checkingExternalSingleCode(cDt, externalSingleCode, result, position, path);
-//						if (internalSingleCode != null)
-//							this.checkingInternalSingleCode(cDt, internalSingleCode, result, position, path);
 					}
 
 				} else {

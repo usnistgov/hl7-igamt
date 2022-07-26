@@ -29,10 +29,10 @@ import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 public class StructureElementBinding extends Binding {
   private Set<ValuesetBinding> valuesetBindings;
   //TODO Remove SingleCode
-  @Deprecated
-  private InternalSingleCode internalSingleCode;
-  @Deprecated
-  private ExternalSingleCode externalSingleCode;
+//  @Deprecated
+//  private InternalSingleCode internalSingleCode;
+//  @Deprecated
+//  private ExternalSingleCode externalSingleCode;
   private List<SingleCodeBinding> singleCodeBindings;
   private Predicate predicate;
   @Deprecated
@@ -65,21 +65,21 @@ public class StructureElementBinding extends Binding {
     this.changeLog = changeLog;
   }
 
-  public ExternalSingleCode getExternalSingleCode() {
-    return externalSingleCode;
-  }
-
-  public void setExternalSingleCode(ExternalSingleCode externalSingleCode) {
-    this.externalSingleCode = externalSingleCode;
-  }
-
-  public InternalSingleCode getInternalSingleCode() {
-    return internalSingleCode;
-  }
-
-  public void setInternalSingleCode(InternalSingleCode internalSingleCode) {
-    this.internalSingleCode = internalSingleCode;
-  }
+//  public ExternalSingleCode getExternalSingleCode() {
+//    return externalSingleCode;
+//  }
+//
+//  public void setExternalSingleCode(ExternalSingleCode externalSingleCode) {
+//    this.externalSingleCode = externalSingleCode;
+//  }
+//
+//  public InternalSingleCode getInternalSingleCode() {
+//    return internalSingleCode;
+//  }
+//
+//  public void setInternalSingleCode(InternalSingleCode internalSingleCode) {
+//    this.internalSingleCode = internalSingleCode;
+//  }
   
   public Predicate getPredicate() {
 	return predicate;
