@@ -123,4 +123,6 @@ public interface IgService {
   public FilterResponse getFilterResponse(String id, FilterIGInput filter) throws EntityNotFound;
 
 
+  List<Ig> findByIdIn(List<String> ids);
+
 }

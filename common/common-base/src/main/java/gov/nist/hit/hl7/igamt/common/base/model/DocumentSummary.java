@@ -5,6 +5,7 @@ import java.util.List;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class DocumentSummary {
 
@@ -22,7 +23,8 @@ public class DocumentSummary {
   private SharePermission sharePermission;
   private List<String> sharedUsers;
   private String currentAuthor;
-
+  private Type resourceType;
+ 
   public String getTitle() {
     return title;
   }
@@ -137,6 +139,14 @@ public String getCurrentAuthor() {
 
 public void setCurrentAuthor(String currentAuthor) {
 	this.currentAuthor = currentAuthor;
+}
+
+public Type getResourceType() {
+	return resourceType;
+}
+
+public void setResourceType(Type resourceType) {
+	this.resourceType = resourceType;
 }
 
 

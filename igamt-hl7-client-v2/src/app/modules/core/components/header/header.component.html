@@ -57,9 +57,25 @@
         </a>
       </li>
 
-      <li class="nav-item">
-        <a class="nav-link" href="#">Shared Elements</a>
+      <!-- <li class="nav-item" [routerLink]="[ '/workspace']" routerLinkActive="active">
+        <a class="nav-link">
+          Workspaces
+        </a>
+      </li> -->
+      <li [ngClass]="{'active': isIG | async }" class="nav-item" ngbDropdown>
+        <span class="nav-link" ngbDropdownToggle>Workspaces</span>
+        <div ngbDropdownMenu>
+          <button [routerLink]="[ '/workspace/create']" ngbDropdownItem routerLinkActive="active-dropdown">
+            Create new Workspace
+          </button>
+          <button [routerLink]="[ '/workspace/list']" ngbDropdownItem
+                  routerLinkActive="active-dropdown">
+            Workspace List
+          </button>
+        </div>
       </li>
+
+
 
       <li [ngClass]="{'active': isConfig | async }" class="nav-item" ngbDropdown>
         <span class="nav-link" ngbDropdownToggle>Configuration</span>
@@ -75,6 +91,7 @@
           </button>
         </div>
       </li>
+
       <li class="nav-item" [routerLink]="[ '/documentation']" routerLinkActive="active">
         <a class="nav-link">
           Documentation

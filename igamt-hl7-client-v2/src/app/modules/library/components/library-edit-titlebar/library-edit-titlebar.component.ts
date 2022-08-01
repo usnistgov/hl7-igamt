@@ -15,7 +15,6 @@ export class LibraryEditTitlebarComponent implements OnInit {
 
   ngOnInit() {
   }
-
 }
 
 export interface ITitleBarMetadata {

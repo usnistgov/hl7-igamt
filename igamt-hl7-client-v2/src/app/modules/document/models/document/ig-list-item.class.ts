@@ -1,11 +1,16 @@
-export class IgListItem {
+import { Type } from "src/app/modules/shared/constants/type.enum";
+
+export class DiscoverableListItem{
+  id: string;
   title: string;
+  resourceType: Type;
+}
+export class IgListItem extends DiscoverableListItem {
   position: number;
   coverpage?: any;
   subtitle: string;
   dateUpdated: string;
   type: IgListItemType;
-  id: string;
   username: any;
   participants?: any;
   elements?: string[];
@@ -16,3 +21,5 @@ export class IgListItem {
 }
 
 export type IgListItemType = 'USER' | 'PUBLISHED' | 'SHARED';
+
+

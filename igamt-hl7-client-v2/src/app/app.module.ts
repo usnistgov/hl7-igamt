@@ -15,6 +15,7 @@ import { reducers } from './root-store';
 import { ConfigEffects } from './root-store/config/config.effects';
 import {LoadedResourcesEffects} from './root-store/dam-igamt/igamt.loaded-resources.effects';
 import { ResourceLoaderEffects } from './root-store/resource-loader/resource-loader.effects';
+import { WorkspaceModule } from './modules/workspace/workspace.module';
 @NgModule({
   declarations: [
     AppComponent,
@@ -33,6 +34,7 @@ import { ResourceLoaderEffects } from './root-store/resource-loader/resource-loa
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     CoreModule,
     BlockUIModule.forRoot(),
+    WorkspaceModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

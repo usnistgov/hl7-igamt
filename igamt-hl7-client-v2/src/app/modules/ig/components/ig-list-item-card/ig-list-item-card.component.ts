@@ -6,6 +6,7 @@ import {IgListItem} from '../../../document/models/document/ig-list-item.class';
   templateUrl: './ig-list-item-card.component.html',
   styleUrls: ['./ig-list-item-card.component.scss'],
 })
+
 export class IgListItemCardComponent implements OnInit {
 
   @Input() igListItem: IgListItem;

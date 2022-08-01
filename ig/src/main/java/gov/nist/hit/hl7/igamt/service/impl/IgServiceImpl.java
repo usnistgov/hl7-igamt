@@ -280,6 +280,7 @@ public class IgServiceImpl implements IgService {
       element.setSharePermission(ig.getSharePermission());
       element.setSharedUsers(ig.getSharedUsers());
       element.setCurrentAuthor(ig.getCurrentAuthor());
+      element.setResourceType(Type.IGDOCUMENT);
       List<String> conformanceProfileNames = new ArrayList<String>();
       ConformanceProfileRegistry conformanceProfileRegistry = ig.getConformanceProfileRegistry();
       if (conformanceProfileRegistry != null) {
@@ -1666,5 +1667,10 @@ public class IgServiceImpl implements IgService {
 
     return response;
   }
+
+@Override
+public List<Ig> findByIdIn(List<String> ids) {
+	return this.igRepository.findByIdIn(ids);
+}
 
 }

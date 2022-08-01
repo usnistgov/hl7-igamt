@@ -20,7 +20,7 @@ import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
-import { ListboxModule, OverlayPanelModule } from 'primeng/primeng';
+import { BreadcrumbModule, ListboxModule, OverlayPanelModule } from 'primeng/primeng';
 import {
   AccordionModule,
   AutoCompleteModule,
@@ -133,6 +133,7 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { DocumentBrowserComponent } from './components/document-browser/document-browser.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -226,6 +227,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     SelectSlicingContextComponent,
     SlicingRowComponent,
     SlicingViewerComponent,
+    DocumentBrowserComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -286,6 +288,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     PickListModule,
     MatExpansionModule,
     MatTooltipModule,
+    BreadcrumbModule,
   ],
   exports: [
     MatExpansionModule,
@@ -405,6 +408,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ChangeReasonListDialogComponent,
     SelectSlicingContextComponent,
     SlicingRowComponent,
+    DocumentBrowserComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -434,6 +438,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ImportStructureComponent,
     ChangeReasonListDialogComponent,
     SelectSlicingContextComponent,
+    DocumentBrowserComponent
   ],
 })
 export class SharedModule {

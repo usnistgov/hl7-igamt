@@ -1,0 +1,51 @@
+<div class="create-workspace-layout">
+  <div class="title">
+    <h5>Create new IG Document</h5>
+  </div>
+  <div class="alerts">
+    <app-dam-alerts-container></app-dam-alerts-container>
+  </div>
+  <div class="metadata">
+
+    <div style=" display: flex; justify-content: flex-start;">
+
+      <label for="accessibility " class="form-label-lg"> Accessibility</label>
+      <p-radioButton name="gr" value="PRIVATE" label="Private" [(ngModel)]="workspaceType" [style]="{'margin-left': '30px'}" ></p-radioButton>
+
+
+      <p-radioButton name="gr" value="PUBLIC" label="Public" [(ngModel)]="workspaceType" [style]="{'margin-left': '10px'}" ></p-radioButton>
+
+
+      <p-radioButton name="gr" value="DISCOVERABLE" label="Discoverable" [(ngModel)]="workspaceType" [style]="{'margin-left': '10px'}" ></p-radioButton>
+
+    </div>
+
+    <form [formGroup]="metaDataForm" style="display: flex; flex-direction: column; height: 100%;">
+
+
+
+            <app-form-input formControlName="title" id="title" name="title"
+              placeholder="Workspace Title" label="Workspace title"> </app-form-input>
+
+              <app-form-input formControlName="description" id="description" name="description"
+              placeholder="description" label="Description"> </app-form-input>
+
+
+
+            <!-- <div class="form-group">
+              <label for="logo" class="form-label-lg">Logo</label>
+              <div>
+                <app-file-select-input formControlName="coverPicture"> </app-file-select-input>
+              </div>
+            </div> -->
+      </form>
+
+  <div class="igs">
+  </div>
+
+  <div class="submit">
+    <button (click)="submit()" [disabled]="metaDataForm.invalid" class="btn btn-primary"
+            type="submit">Create Workspace
+    </button>
+  </div>
+</div>

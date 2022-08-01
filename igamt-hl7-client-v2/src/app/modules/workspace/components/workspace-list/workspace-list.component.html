@@ -1,0 +1,62 @@
+<div class="workspace-list-layout">
+
+  <!-- ALERTS -->
+  <div class="alerts">
+    <app-dam-alerts-container></app-dam-alerts-container>
+  </div>
+
+  <!-- TITLE BAR -->
+  <div class="topbar">
+    <h5>Work Space List</h5>
+    <div [(ngModel)]="_shadowViewType" class="btn-group btn-group-toggle border-gray" name="radioBasic" ngbRadioGroup
+         style="border-radius: 5px;">
+      <label class="btn-light no-focus" ngbButtonLabel>
+        <input [queryParams]="{ type : 'PRIVATE' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="PRIVATE">
+        Owned
+      </label>
+      <label class="btn-light no-focus" ngbButtonLabel>
+        <input [queryParams]="{ type : 'PUBLIC' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="PUBLIC">
+        Public
+      </label>
+      <label class="btn-light no-focus" ngbButtonLabel>
+        <input [queryParams]="{ type : 'SHARED' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="SHARED">
+        Shared With Me
+      </label>
+      <label *ngIf="isAdmin | async" class="btn-light no-focus" ngbButtonLabel>
+        <input [queryParams]="{ type : 'ALL' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="ALL">
+        All
+      </label>
+    </div>
+  </div>
+
+  <!-- FILTER INPUT -->
+  <div class="search-bar">
+
+    <p-dropdown (ngModelChange)="sortPropertyChanged($event)" [(ngModel)]="sortProperty" [autoDisplayFirst]="false"
+                [options]="sortOptions" [placeholder]="'Sort Criterion'">
+    </p-dropdown>
+    <button (click)="sortOrderChanged(!sortOrder.ascending)" class="btn btn-sm btn-primary" style="height: 35px;">
+      <i [class]="'fa ' + (sortOrder.ascending ? 'fa-arrow-down' : 'fa-arrow-up')"></i>
+    </button>
+
+    <div class="input-group" style="margin-left: 10px;">
+      <div class="input-group-prepend" style="height: 35px;">
+        <span class="input-group-text" id="inputGroupPrepend3"><i [ngStyle]="{'color': filter && filter !== '' ? '#00c31b' : ''}"
+                                                                  class="fa fa-filter"></i></span>
+      </div>
+      <input (ngModelChange)="filterTextChanged($event)" [(ngModel)]="filter" class="form-control"
+             id="validationServerUsername" placeholder="Filter" required
+             style="background-color: #f0f0f0; height: 35px;" type="text">
+    </div>
+  </div>
+
+  <!-- IG LIST -->
+  <div class="workspace-list">
+    <div>
+      <div *ngFor="let item of listItems | async" class="spacer">
+         <app-workspace-list-card [controls]="controls | async" [item]="item"></app-workspace-list-card>
+      </div>
+    </div>
+  </div>
+
+</div>

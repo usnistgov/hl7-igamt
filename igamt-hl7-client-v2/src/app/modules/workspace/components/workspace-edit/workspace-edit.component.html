@@ -1,0 +1,190 @@
+<app-dam-layout>
+
+  <ng-template #alerts>
+    <app-dam-alerts-container></app-dam-alerts-container>
+  </ng-template>
+
+  <ng-template #titleBar>
+    <div style="width: 100%; display: flex; align-items: center;">
+      <img src="../../../../assets/logo_aira.jpeg" height="60" />
+      <h2 style="margin-left: 10px;">Immunization Information Systems IG Project</h2>
+    </div>
+  </ng-template>
+
+  <ng-template #toolbar>
+    <span style="margin-left: 10px; color: #818181;">
+      <i class="fa fa-calendar"></i>
+       Updated on 02/02/2022
+    </span>
+  </ng-template>
+
+  <ng-template #activeTitleBar>
+    <h4 style="margin-left: 10px; margin-bottom: 0;" >Home</h4>
+
+    <!-- <ul class="nav nav-pills">
+      <li style="cursor: pointer; margin-right: 10px;" class="nav-item">
+        <span class="nav-link active" > Description </span>
+      </li>
+      <li style="cursor: pointer; margin-right: 10px;" class="nav-item">
+        <div style="width: 100%; display: flex; align-items: center;">
+          <span class="nav-link" > <i class="fa fa-thumb-tack" ></i> Pinned IG </span> <span class="badge badge-dark">2</span>
+        </div>
+      </li>
+    </ul> -->
+  </ng-template>
+
+  <ng-template #editorContent>
+    <div>
+      <p><strong>Pellentesque habitant morbi tristique</strong> senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. <em>Aenean ultricies mi vitae est.</em> Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, <code>commodo vitae</code>, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. <a href="#">Donec non enim</a> in turpis pulvinar facilisis. Ut felis.</p>
+      <h2>Header Level 2</h2>
+      <ol>
+         <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
+         <li>Aliquam tincidunt mauris eu risus.</li>
+      </ol>
+      <blockquote><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus magna. Cras in mi at felis aliquet congue. Ut a est eget ligula molestie gravida. Curabitur massa. Donec eleifend, libero at sagittis mollis, tellus est malesuada tellus, at luctus turpis elit sit amet quam. Vivamus pretium ornare est.</p></blockquote>
+      <h3>Header Level 3</h3>
+      <ul>
+         <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
+         <li>Aliquam tincidunt mauris eu risus.</li>
+      </ul>
+    </div>
+    <div style="border: 1px solid #d4d4d4;
+    border-radius: 5px;
+    background-color: #f3f3f3;">
+    <div style="display: flex;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0px 3px 5px -2px rgb(0 0 0 / 75%);
+    background-color: white;">
+      <h5 style="margin: 0;">
+        <span><i class="fa fa-thumb-tack" ></i> Pinned Implementation Guides </span> <span class="badge badge-dark">1</span>
+        </h5>
+    </div>
+    <div style="padding: 10px;">
+      <p-card>
+
+        <!-- CARD CONTENT -->
+        <div style="display: flex; flex-direction: row;">
+
+          <!-- ITEM COVER IMAGE -->
+          <div style="height: 60px; width: 60px; background-color: #feec9d; text-align: center; display: flex; flex-direction: column; justify-content: center;">
+            <strong style="color: #c9c9c9;">HL7</strong>
+          </div>
+
+          <!-- ITEM DETAILS -->
+          <div style="display: flex; flex-direction: column;">
+            <h6 style="margin-left: 10px; margin-bottom: 0;" class="link"><strong>Immunization 2.5 National IG</strong></h6>
+            <span style="margin-left: 10px; color: #818181;">Subtitle</span>
+            <span style="margin-left: 10px; color: #818181;">
+              <i class="fa fa-user"></i>
+              User A
+            </span>
+            <span style="margin-left: 10px; color: #818181;">
+              <i class="fa fa-calendar"></i>
+               updated on:  02/02/2022
+            </span>
+          </div>
+
+        </div>
+
+
+        <!-- CARD FOOTER -->
+        <p-footer>
+          <div style="width: 100%; display: flex; flex-direction: column; justify-content: flex-start;">
+
+            <!-- BUTTONS ROW -->
+            <div style="width: 100%; display: flex; flex-direction: row; justify-content: space-between;">
+
+              <!-- ITEM MORE INFO BUTTON -->
+              <div style="width: 100%; display: flex; flex-direction: row; justify-content: flex-start;">
+                <button class="btn btn-sm btn-light border-gray" style="margin-right: 5px;">
+                  <i class="fa fa-chevron-right"></i>
+                  More Info
+                </button>
+              </div>
+
+              <!-- ITEM CONTROL BUTTONS -->
+              <div style="width: 100%; display: flex; flex-direction: row; justify-content: flex-end;">
+                <button class="btn btn-sm btn-primary" style="margin-right: 5px;">
+                  Open
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </p-footer>
+      </p-card>
+
+    </div>
+
+
+
+
+
+    </div>
+  </ng-template>
+
+  <ng-template #sideBar>
+    <div class="side-bar">
+      <ul class="list-group editors">
+        <li class="list-group-item cursor-pointer nav-active-link" >Home</li>
+        <li class="list-group-item cursor-pointer">Implementation Guides
+
+          <button class="btn btn-sm btn-primary" (click)="browse()">
+            <i class="fa fa-plus"></i>
+            Add IG
+          </button>
+        </li>
+        <li class="list-group-item cursor-pointer">Metadata</li>
+        <li class="list-group-item cursor-pointer" >Manage Access</li>
+        <li class="list-group-item" style="background-color: #f3f3f3; display: flex; justify-content: space-between; align-items: center;">
+          Folders
+          <button class="btn btn-sm btn-primary">
+            <i class="fa fa-plus"></i>
+            Add Folder
+          </button>
+        </li>
+      </ul>
+      <div class="filter">
+        <div class="input-group" style="margin-left: 5px; min-width: 400px;">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-filter"></i></span>
+          </div>
+          <input type="text" class="form-control" placeholder="filter" aria-label="filter">
+        </div>
+      </div>
+      <div class="list">
+        <div style="background-color: white; flex-grow: 1;">
+          <tree-root [nodes]="folders" [options]="options">
+            <ng-template #treeNodeTemplate let-node let-index="index">
+              <div style="width: 100%; display: flex; align-items: center;">
+                <span
+                [routerLink]="['section', node.data.id ]"
+                [contextMenu]="cm"
+                [contextMenuSubject]="node.data">{{ node.data.path }}. {{ node.data.header }}</span>
+                <span style="margin-left: 10px;" class="badge badge-primary">{{ node.data.igs }}</span>
+              </div>
+
+              <context-menu #cm>
+                <ng-template contextMenuItem>
+                  <i class="fa fa-plus" ></i>
+                  Add Child Folder
+                </ng-template>
+                <ng-template contextMenuItem divider="true"></ng-template>
+                <ng-template contextMenuItem>
+                  <i class="fa fa-trash"></i>
+                  Delete Folder
+                </ng-template>
+              </context-menu>
+            </ng-template>
+          </tree-root>
+        </div>
+      </div>
+    </div>
+
+
+  </ng-template>
+
+</app-dam-layout>
