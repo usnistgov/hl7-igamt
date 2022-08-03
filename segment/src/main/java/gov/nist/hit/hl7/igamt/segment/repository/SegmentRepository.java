@@ -53,6 +53,7 @@ public interface SegmentRepository extends MongoRepository<Segment, String> {
 
   List<Segment> findByCustomTrueAndUsername(String username);
   List<Segment> findByCustomTrueAndUsernameAndDomainInfoScope(String username, Scope scope);
+  Segment findByCustomTrueAndUsernameAndIdAndDomainInfoScope(String username, String id, Scope scope);
 
   List<Segment> findByDerived(boolean derived);
 

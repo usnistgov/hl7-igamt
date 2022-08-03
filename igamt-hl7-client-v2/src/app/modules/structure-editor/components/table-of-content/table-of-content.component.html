@@ -17,6 +17,7 @@
         <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
           <div #rla="routerLinkActive"
             [routerLink]="getElementUrl(node.data)"
+            [contextMenu]="msgStructureContextMenu"
             routerLinkActive
             class="inline-label">
 
@@ -28,19 +29,18 @@
             <span style="margin-left: 5px;">
               {{ node.data.fixedName }} - {{ node.data.description }}
             </span>
+            <context-menu #msgStructureContextMenu>
+              <ng-template (execute)="deleteMessageStructure(node.data.id)" contextMenuItem>
+                <i class="fa fa-trash"></i> Delete Structure
+              </ng-template>
+            </context-menu>
 
           </div>
 
-<!--          <context-menu #conformanceProfileContextMenu>-->
-<!--            <ng-template (execute)="publishStructure(node.data.id, node.data.type)" [enabled]="!rla.isActive && node.data.status !== 'PUBLISHED'" contextMenuItem>-->
-<!--              <i class="fa fa-lock"></i> Lock Structure-->
-<!--            </ng-template>-->
-<!--          </context-menu>-->
 
           <ng-container *ngIf="rla.isActive" >
             <ng-container *ngTemplateOutlet="subMenu; context: { $implicit : node.data }"></ng-container>
           </ng-container>
-
 
         </ng-container>
 
@@ -60,6 +60,7 @@
         <ng-container *ngSwitchCase="'SEGMENT'">
           <div #rla="routerLinkActive"
             [routerLink]="getElementUrl(node.data)"
+            [contextMenu]="sgStructureContextMenu"
             routerLinkActive
             class="inline-label">
 
@@ -72,13 +73,12 @@
 
               {{getLabel(node.data.fixedName, node.data.variableName)}} - {{node.data.description}}
             </span>
+            <context-menu #sgStructureContextMenu>
+              <ng-template (execute)="deleteSegmentStructure(node.data.id)" contextMenuItem>
+                <i class="fa fa-trash"></i> Delete Structure
+              </ng-template>
+            </context-menu>
           </div>
-
-<!--          <context-menu #segmentContextMenu>-->
-<!--            <ng-template (execute)="publishStructure(node.data.id, node.data.type)" [enabled]="!rla.isActive && node.data.status !== 'PUBLISHED'" contextMenuItem>-->
-<!--              <i class="fa fa-lock"></i> Lock Structure-->
-<!--            </ng-template>-->
-<!--          </context-menu>-->
 
           <ng-container *ngIf="rla.isActive" >
             <ng-container *ngTemplateOutlet="subMenu; context: { $implicit : node.data }"></ng-container>

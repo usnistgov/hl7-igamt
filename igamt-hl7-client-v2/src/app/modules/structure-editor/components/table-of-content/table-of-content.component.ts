@@ -22,6 +22,10 @@ export class TableOfContentComponent implements OnInit {
   @Output()
   createSegmentStructure: EventEmitter<ICreateSegmentStructure>;
   @Output()
+  deleteMessage: EventEmitter<string>;
+  @Output()
+  deleteSegment: EventEmitter<string>;
+  @Output()
   publish: EventEmitter<{
     id: string;
     type: Type;
@@ -35,6 +39,8 @@ export class TableOfContentComponent implements OnInit {
   constructor(private dialog: MatDialog, private nodeHelperService: NodeHelperService) {
     this.createMessageStructure = new EventEmitter<ICreateMessageStructure>();
     this.createSegmentStructure = new EventEmitter<ICreateSegmentStructure>();
+    this.deleteMessage = new EventEmitter<string>();
+    this.deleteSegment = new EventEmitter<string>();
     this.publish = new EventEmitter<{
       id: string;
       type: Type;
@@ -79,6 +85,14 @@ export class TableOfContentComponent implements OnInit {
     });
   }
 
+  deleteSegmentStructure(id: string) {
+    this.deleteSegment.emit(id);
+  }
+
+  deleteMessageStructure(id: string) {
+    this.deleteMessage.emit(id);
+  }
+
   getElementUrl(elm): string {
     const type = elm.type.toLowerCase();
     return './' + type + '/' + elm.id;
@@ -112,17 +126,17 @@ export class TableOfContentComponent implements OnInit {
   }
 
   getLabel(fixedName, variableName) {
-      if (fixedName && fixedName.length) {
-        if (variableName && variableName.length) {
-          return fixedName + '#' + variableName;
-        } else {
-          return fixedName;
-        }
+    if (fixedName && fixedName.length) {
+      if (variableName && variableName.length) {
+        return fixedName + '#' + variableName;
       } else {
-        if (variableName) {
-          return variableName;
-        }
+        return fixedName;
       }
+    } else {
+      if (variableName) {
+        return variableName;
+      }
+    }
   }
 
   print(nodes: TreeNode[]) {
