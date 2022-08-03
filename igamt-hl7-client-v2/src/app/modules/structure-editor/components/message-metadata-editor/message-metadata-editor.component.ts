@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, take, tap, switchMap } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, switchMap, take, tap } from 'rxjs/operators';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
