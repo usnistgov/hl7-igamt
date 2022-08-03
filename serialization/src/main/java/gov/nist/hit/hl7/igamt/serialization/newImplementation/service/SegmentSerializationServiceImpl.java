@@ -217,7 +217,7 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
       }
     }  
     if (segment.getBinding() != null) {
-      Element bindingElement = bindingSerializationService.serializeBinding((Binding) segment.getBinding(), segmentDataModel.getValuesetMap(), segmentDataModel.getModel().getName(), bindedPaths );
+      Element bindingElement = bindingSerializationService.serializeBinding((Binding) segment.getBinding(), segmentDataModel.getValuesetMap(),segmentDataModel.getSingleCodeMap() , segmentDataModel.getModel().getName(), bindedPaths );
       if (bindingElement != null) {
         segmentElement.appendChild(bindingElement);
       }

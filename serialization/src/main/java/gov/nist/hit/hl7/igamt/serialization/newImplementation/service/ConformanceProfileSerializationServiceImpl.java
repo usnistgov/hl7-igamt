@@ -215,7 +215,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                 bindedPaths = buildBindedPath(conformanceProfile.getChildren(), bindedPaths,conformanceProfileExportConfiguration);
                 		
                 if (conformanceProfile.getBinding() != null) {
-                    Element bindingElement = bindingSerializationService.serializeBinding(conformanceProfile.getBinding(), conformanceProfileDataModel.getValuesetMap(), conformanceProfileDataModel.getModel().getName(), bindedPaths);
+                    Element bindingElement = bindingSerializationService.serializeBinding(conformanceProfile.getBinding(), conformanceProfileDataModel.getValuesetMap(),conformanceProfileDataModel.getSingleCodeMap(), conformanceProfileDataModel.getModel().getName(), bindedPaths);
                     if (bindingElement != null) {
                         conformanceProfileElement.appendChild(bindingElement);
                     }

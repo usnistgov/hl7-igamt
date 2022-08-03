@@ -292,7 +292,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
       if (complexDatatype.getBinding() != null) {
         Element bindingElement;
         try {
-          bindingElement = bindingSerializationService.serializeBinding(complexDatatype.getBinding(), datatypeDataModel.getValuesetMap(), datatypeDataModel.getModel().getName(), bindedPaths);
+          bindingElement = bindingSerializationService.serializeBinding(complexDatatype.getBinding(), datatypeDataModel.getValuesetMap(), datatypeDataModel.getSingleCodeMap(), datatypeDataModel.getModel().getName(), bindedPaths);
           if(bindingElement !=null) {
             datatypeElement.appendChild(bindingElement);
           }
