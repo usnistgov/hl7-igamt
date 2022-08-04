@@ -382,4 +382,37 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .entry();
     }
 
+    @Override
+    public IgamtObjectError AssertionOccurrenceTypeOnNotRepeatable(Location location, String id, Type type, LocationInfo path, String occurrenceType, String pathQualifier) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_OCCTYPE_NOT_REPEATABLE")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Path : " + path.getHl7Path() + " is not a repeatable element, but has an occurrence selection of type '"+ occurrenceType + "'. " + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError AssertionOccurrenceTypeInstanceOnNotMultiLevelRepeatable(Location location, String id, Type type, LocationInfo path, String pathQualifier) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_OCCTYPE_INSTANCE_MULTI")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Path : " + path.getHl7Path() + " is repeating at multiple levels, selecting a specific instance of the element is not possible." + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError AssertionOccurrenceValueOverMax(Location location, String id, Type type, LocationInfo path, String occurrenceType, int max, int value, String pathQualifier) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_OCC_OVER_MAX")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Path : " + path.getHl7Path() + " is allowed a maximum repetition of " + max + ". An occurrence selector defined with type '" + occurrenceType + "' was given the value of " + value + " which is higher than the allowed"  + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
+                .entry();
+    }
+
 }
