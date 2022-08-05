@@ -1,0 +1,83 @@
+<h2 mat-dialog-title>Code Picker</h2>
+<div style="width: 100%" *ngIf="!selectedValueSet" #anchor>
+  <p-dropdown (ngModelChange)="selectValueSet($event)"
+              [(ngModel)]="selectedValueSet"
+              [autoDisplayFirst]="false"
+              [optionLabel]="'variableName'"
+              [options]="valueSets"
+              [appendTo]="anchor"
+              [filter]="true"
+              name="vsPick"
+              placeholder="select value set"
+              [style]="{'minWidth': '400px'}">
+    <ng-template let-item pTemplate="selectedItem">
+      <ng-container *ngIf="item.value">
+        <app-display-section [element]="item.value"></app-display-section>
+      </ng-container>
+    </ng-template>
+    <ng-template let-item pTemplate="item">
+      <app-display-section [element]="item.value"></app-display-section>
+    </ng-template>
+  </p-dropdown>
+
+</div>
+<p-table #tb [value]="codes | async" *ngIf="selectedValueSet" [paginator]="true" [rows]="5" [globalFilterFields]="['value','codeSystem','description']">
+  <ng-template pTemplate="caption">
+    <div style="width: 100%; display: flex; align-items: center; justify-content: center;">
+      <app-display-section [element]="selectedValueSet" [hideDescription]="true"></app-display-section>
+      <button (click)="clearSelectedValueSet()" style="margin-left: 20px;" class="btn btn-sm btn-danger">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+    <div class="input-group" style="margin-left: 10px;">
+      <div class="input-group-prepend" style="height: 35px;">
+        <span class="input-group-text" id="inputGroupPrepend2"><i class="fa fa-filter"></i></span>
+      </div>
+      <input (input)="tb.filterGlobal($event.target.value, 'contains')" class="form-control"
+             placeholder="Filter"
+             style="background-color: #f0f0f0; text-align: left; height: 35px;" type="text">
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>
+        Code
+      </th>
+      <th>
+        Description
+      </th>
+      <th>
+        CodeSystem
+      </th>
+      <th>
+        Usage
+      </th>
+      <th>
+        Action
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <tr>
+      <td>
+        {{rowData.value}}
+      </td>
+      <td>
+        {{rowData.description}}
+      </td>
+      <td>
+        {{rowData.codeSystem}}
+      </td>
+      <td>
+        {{rowData.usage}}
+      </td>
+      <td>
+        <button (click)="pick(rowData)" class="btn btn-sm btn-primary">Pick</button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<mat-dialog-actions style="justify-content: flex-end; margin-top: 10px;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+</mat-dialog-actions>

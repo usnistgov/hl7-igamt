@@ -136,8 +136,10 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
     {
     		Registry compositeProfileRegistry = igDataModel.getModel().getCompositeProfileRegistry();
             try {
-                Element compositeProfileRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+                Element compositeProfileRegistryElement = new Element("compositeProfileRegistryElement");
                 if (compositeProfileRegistry != null && !compositeProfileRegistry.getChildren().isEmpty()) {
+                                compositeProfileRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+
 //                	ArrayList<CompositeProfileDataModel> compositeProfileDataModelsList = new ArrayList<>();
 //                	for (Link compositeProfileLink : compositeProfileRegistry.getChildren()) {
 //
@@ -182,6 +184,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
             	exception.printStackTrace();
 				throw new RegistrySerializationException(exception, section, null);
             }
+    		
     	
 	}
 	private Element SerializeProfileComponentRegistry(
@@ -190,8 +193,11 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 	) throws RegistrySerializationException {
         Registry profileComponentRegistry = igDataModel.getModel().getProfileComponentRegistry();
         try {
-            Element profileComponentRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
-            if (profileComponentRegistry != null && !profileComponentRegistry.getChildren().isEmpty()) {
+            Element profileComponentRegistryElement = new Element("profileComponentRegistryElement");
+
+             if (profileComponentRegistry != null && !profileComponentRegistry.getChildren().isEmpty()) {
+                  profileComponentRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+
             	ArrayList<ProfileComponentDataModel> profileComponentDataModelsList = new ArrayList<>();
             	for (Link profileComponentLink : profileComponentRegistry.getChildren()) {
 
@@ -210,9 +216,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 							&& exportFilterDecision.getProfileComponentFilterMap() != null
 							&& exportFilterDecision.getProfileComponentFilterMap().containsKey(profileComponentDataModel.getModel().getId())
 							&& exportFilterDecision.getProfileComponentFilterMap().get(profileComponentDataModel.getModel().getId());
-
 					if (exportFilterDecisionNotSet || exportFilterDecisionIsTrue) {
-
 						boolean configurationIsOverridden = !exportFilterDecisionNotSet
 								&& exportFilterDecision.getOveriddedProfileComponentMap() != null
 								&& exportFilterDecision.getOveriddedProfileComponentMap().containsKey(profileComponentDataModel.getModel().getId());
@@ -236,12 +240,13 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 					}
 				}
             }
-            return profileComponentRegistryElement;
+			return profileComponentRegistryElement;
         } catch (Exception exception) {
         	exception.printStackTrace();
             throw new RegistrySerializationException(exception, section, profileComponentRegistry);
         }
 	}
+	
 
 
     public Element SerializeCommonSection(Section section, int level, DocumentStructureDataModel documentStructureDataModel,
@@ -315,9 +320,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
     						datatypeDataModelsList = datatypeDataModelsList.stream().filter((s) -> {
     								return !s.getModel().isGenerated();
     							}).collect(Collectors.toList());
-    							Collections.sort(datatypeDataModelsList);
-    							System.out.println("s");
-    						
+    							Collections.sort(datatypeDataModelsList);    						
         					Collections.sort(datatypeDataModelsList);
     					}
 
@@ -451,10 +454,11 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
             throws RegistrySerializationException {
         Registry valuesetRegistry = igDataModel.getModel().getValueSetRegistry();
         try {
-            Element valuesetRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+            Element valuesetRegistryElement = new Element("valuesetRegistryElement");
             if (valuesetRegistry != null) {
                 if (!valuesetRegistry.getChildren().isEmpty()) {
-                	
+                    valuesetRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+
                 	List<ValuesetDataModel> ValuesetDataModelList = igDataModel.getValuesets().stream().collect(Collectors.toList());
 					Collections.sort(ValuesetDataModelList);
 					System.out.println("s");
@@ -591,9 +595,11 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
             throws RegistrySerializationException {
         Registry segmentRegistry = igDataModel.getModel().getSegmentRegistry();
         try {
-            Element segmentRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+            Element segmentRegistryElement = new Element("segmentRegistryElement");
             if(segmentRegistry != null) {
-				if (!segmentRegistry.getChildren().isEmpty()) {					
+				if (!segmentRegistry.getChildren().isEmpty()) {	
+		             segmentRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+
 					List<SegmentDataModel> segmentDataModelsList = igDataModel.getSegments().stream().collect(Collectors.toList());
 					Collections.sort(segmentDataModelsList);
 					System.out.println("s");

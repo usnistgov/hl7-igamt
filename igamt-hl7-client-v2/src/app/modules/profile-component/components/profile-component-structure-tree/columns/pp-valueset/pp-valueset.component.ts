@@ -3,11 +3,11 @@ import { MatDialog } from '@angular/material';
 import * as _ from 'lodash';
 import { combineLatest, Observable, of } from 'rxjs';
 import { filter, flatMap, map, take, tap } from 'rxjs/operators';
-import { BindingSelectorComponent, IBindingLocationInfo, ISingleCodeDisplay, IValueSetBindingDisplay } from 'src/app/modules/shared/components/binding-selector/binding-selector.component';
+import { BindingSelectorComponent, IBindingLocationInfo, IValueSetBindingDisplay } from 'src/app/modules/shared/components/binding-selector/binding-selector.component';
 import { IValueSetOrSingleCode, IValueSetOrSingleCodeBindings, IValueSetOrSingleCodeDisplay } from 'src/app/modules/shared/components/hl7-v2-tree/columns/valueset/valueset.component';
 import { IHL7v2TreeNode } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
-import { IBindingType, InternalSingleCode, IValuesetBinding } from 'src/app/modules/shared/models/binding.interface';
+import { IBindingType, ISingleCodeBinding, IValuesetBinding } from 'src/app/modules/shared/models/binding.interface';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { IItemProperty, IPropertySingleCode, IPropertyValueSet } from 'src/app/modules/shared/models/profile.component';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
@@ -90,7 +90,7 @@ export class PpValuesetComponent extends PPColumn<IValueSetOrSingleCodeBinding> 
       this.applied$.next({
         context: this.bindingType(),
         type: IBindingType.SINGLECODE,
-        value: (values[PropertyType.SINGLECODE] as IPropertySingleCode).internalSingleCode,
+        value: (values[PropertyType.SINGLECODE] as IPropertySingleCode).singleCodeBindings,
       });
     }
   }
@@ -137,17 +137,17 @@ export class PpValuesetComponent extends PPColumn<IValueSetOrSingleCodeBinding> 
     );
   }
 
-  changeSingleCode(sgCode: ISingleCodeDisplay) {
+  changeSingleCode(sgCode: ISingleCodeBinding[]) {
     const to = this.targetLocation();
     this.onChangeForBinding<IPropertySingleCode>(
       to.location,
       to.target,
       {
-        internalSingleCode: {
-          code: sgCode.code,
-          codeSystem: sgCode.codeSystem,
-          valueSetId: sgCode.valueSet.id,
-        },
+        singleCodeBindings: sgCode.map((sg) => ({
+          code: sg.code,
+          codeSystem: sg.codeSystem,
+          locations: sg.locations,
+        })),
         target: to.target,
         propertyKey: PropertyType.SINGLECODE,
       },
@@ -165,7 +165,7 @@ export class PpValuesetComponent extends PPColumn<IValueSetOrSingleCodeBinding> 
             this.changeVsBinding(display.value as IValueSetBindingDisplay[]);
             break;
           case IBindingType.SINGLECODE:
-            this.changeSingleCode(display.value as ISingleCodeDisplay);
+            this.changeSingleCode(display.value as ISingleCodeBinding[]);
             break;
         }
       }),
@@ -197,9 +197,9 @@ export class PpValuesetComponent extends PPColumn<IValueSetOrSingleCodeBinding> 
     }
   }
 
-  selectedSingleCode(vsOrCode: IValueSetOrSingleCodeDisplay): ISingleCodeDisplay {
+  selectedSingleCode(vsOrCode: IValueSetOrSingleCodeDisplay): ISingleCodeBinding[] {
     if (vsOrCode && vsOrCode.type === IBindingType.SINGLECODE) {
-      return _.cloneDeep(vsOrCode.value) as ISingleCodeDisplay;
+      return _.cloneDeep(vsOrCode.value) as ISingleCodeBinding[];
     } else {
       return undefined;
     }
@@ -220,7 +220,7 @@ export class PpValuesetComponent extends PPColumn<IValueSetOrSingleCodeBinding> 
             obx2: resourceName === 'OBX' && this.position === 2,
             existingBindingType: display ? display.type : undefined,
             selectedValueSetBinding: this.selectedValueSetBinding(display),
-            selectedSingleCode: this.selectedSingleCode(display),
+            selectedSingleCodes: this.selectedSingleCode(display),
           },
         });
 
@@ -232,7 +232,7 @@ export class PpValuesetComponent extends PPColumn<IValueSetOrSingleCodeBinding> 
                 this.changeVsBinding(selection.selectedValueSets);
                 break;
               case IBindingType.SINGLECODE:
-                this.changeSingleCode(selection.selectedSingleCode);
+                this.changeSingleCode(selection.selectedSingleCodes);
                 break;
             }
           }),
@@ -256,15 +256,16 @@ export class PpValuesetComponent extends PPColumn<IValueSetOrSingleCodeBinding> 
         );
 
       case IBindingType.SINGLECODE:
-        return this.bindingService.getSingleCodeBindingDisplay(binding.value as InternalSingleCode, this.repository).pipe(
-          take(1),
-          map((sg) => {
-            return {
-              type: IBindingType.SINGLECODE,
-              value: sg,
-            };
-          }),
-        );
+        return of({
+          type: IBindingType.SINGLECODE,
+          value: (binding.value as ISingleCodeBinding[]).map(
+            (sg) => ({
+              code: sg.code,
+              codeSystem: sg.codeSystem,
+              locations: sg.locations,
+            }),
+          ),
+        });
     }
   }
 

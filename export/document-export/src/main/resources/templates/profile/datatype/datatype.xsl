@@ -18,6 +18,8 @@
 	<xsl:import href="/templates/profile/constraint.xsl" />
 	<xsl:import href="/templates/profile/datatype/DateTimeDatatype.xsl" />
 	<xsl:import href="/templates/profile/valueset/valueSetBindingList.xsl" />
+			<xsl:import href="/templates/profile/singleCode/singleCodeBinding.xsl" />
+	
 	<xsl:import href="/templates/profile/commentList.xsl" />
 	<xsl:import href="/templates/profile/constantValue.xsl" />
 	<xsl:import href="/templates/profile/definitionText2.xsl" />
@@ -312,6 +314,8 @@
 			<xsl:call-template name="DefinitionText2" />
 
 			<xsl:call-template name="ValueSetBindingList" />
+							<xsl:call-template name="SingleCodeBinding" />
+			
 			<xsl:call-template name="InternalSingleCode" />
 			<xsl:call-template name="Reasons"/>
 

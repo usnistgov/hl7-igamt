@@ -149,7 +149,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
         .addAttribute(new Attribute("datatypeName", datatype.getDescription() != null ? datatype.getDescription(): ""));}
       if(datatypeExportConfiguration.getMetadataConfig().isShortDescription()) {
         datatypeElement
-        .addAttribute(new Attribute("shortDescription", datatype.getShortDescription() != null ? datatype.getShortDescription(): ""));}
+        .addAttribute(new Attribute("shortDescription", datatype.getDomainInfo() != null ? datatype.getShortDescription(): ""));}
       if(datatype.getDomainInfo() != null && datatypeExportConfiguration.getMetadataConfig().isHl7version()) {
         datatypeElement
         .addAttribute(new Attribute("hl7versions", datatype.getDomainInfo().getCompatibilityVersion()!= null ? datatype.getDomainInfo().getCompatibilityVersion().toString(): ""));
@@ -294,7 +294,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
       if (complexDatatype.getBinding() != null) {
         Element bindingElement;
         try {
-          bindingElement = bindingSerializationService.serializeBinding(complexDatatype.getBinding(), datatypeDataModel.getValuesetMap(), datatypeDataModel.getModel().getName(), bindedPaths);
+          bindingElement = bindingSerializationService.serializeBinding(complexDatatype.getBinding(), datatypeDataModel.getValuesetMap(), datatypeDataModel.getSingleCodeMap(), datatypeDataModel.getModel().getName(), bindedPaths);
           if(bindingElement !=null) {
             datatypeElement.appendChild(bindingElement);
           }

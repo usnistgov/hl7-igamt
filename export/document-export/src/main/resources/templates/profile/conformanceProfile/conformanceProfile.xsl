@@ -7,6 +7,7 @@
 	<xsl:import href="/templates/profile/resource/postDef.xsl" />
 	<xsl:import href="/templates/profile/resource/organization.xsl" />
 	<xsl:import href="/templates/profile/valueset/valueSetBindingList.xsl" />
+		<xsl:import href="/templates/profile/singleCode/singleCodeBinding.xsl" />
 	<xsl:import href="/templates/profile/singleCode/internalSingleCode.xsl" />
 	<xsl:import href="/templates/profile/resource/author.xsl" />
 	<xsl:import href="/templates/profile/resource/role.xsl" />
@@ -149,6 +150,7 @@
 
 		<!-- <xsl:apply-templates select="./Binding/ValueSetBindingList" /> -->
 		<xsl:call-template name="ValueSetBindingList" />
+				<xsl:call-template name="SingleCodeBinding" />
 		<xsl:call-template name="InternalSingleCode" />
 		<xsl:call-template name="Reasons" />
 		<xsl:call-template name="Slicings" />
