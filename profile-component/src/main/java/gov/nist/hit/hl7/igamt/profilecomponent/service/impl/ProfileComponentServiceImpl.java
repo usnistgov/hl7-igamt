@@ -404,16 +404,16 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
    * @see gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService#applyChanges(gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent, java.util.List, java.lang.String)
    */
   @Override
-  public void applyChanges(ProfileComponent pc, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException {
+  public void applyChanges(ProfileComponent pc, List<ChangeItemDomain> cItems) throws ApplyChangeException {
 
     Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
-    this.applyMetaData(pc, singlePropertyMap , documentId);
+    this.applyMetaData(pc, singlePropertyMap);
     this.save(pc);
   }
 
-  private void applyMetaData( ProfileComponent cp, Map<PropertyType, ChangeItemDomain> singlePropertyMap, String documentId) throws ApplyChangeException{
+  private void applyMetaData( ProfileComponent cp, Map<PropertyType, ChangeItemDomain> singlePropertyMap) throws ApplyChangeException{
 
-    applyChange.applyResourceChanges(cp, singlePropertyMap , documentId);
+    applyChange.applyResourceChanges(cp, singlePropertyMap);
     ObjectMapper mapper = new ObjectMapper();
 
     if (singlePropertyMap.containsKey(PropertyType.NAME)) {
@@ -434,9 +434,8 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
   }
 
   @Override
-  public PropertyDynamicMapping updateContextDynamicMapping(String pcId, String contextId,
+  public PropertyDynamicMapping updateContextDynamicMapping(ProfileComponent pc, String contextId,
       PropertyDynamicMapping pcDynamicMapping) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException {
-    ProfileComponent pc = this.findById(pcId);
     for(ProfileComponentContext ctx:  pc.getChildren()) {
       if(ctx.getId().equals(contextId)) {
         ctx.setProfileComponentDynamicMapping(pcDynamicMapping);
@@ -444,7 +443,7 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
       }
     }
     this.save(pc);
-    return findContextById(pcId, contextId).getProfileComponentDynamicMapping();
+    return findContextById(pc.getId(), contextId).getProfileComponentDynamicMapping();
 
   }
 

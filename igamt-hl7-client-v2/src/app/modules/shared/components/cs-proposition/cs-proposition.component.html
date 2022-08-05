@@ -52,7 +52,7 @@
       <form #targetOccurenceValues="ngForm">
         <ng-container [ngSwitch]="subject.value.occurenceType">
           <ng-container *ngSwitchCase="_occurrenceType.INSTANCE">
-            The <input #occ="ngModel" (ngModelChange)="change()" name="target-occurence" required type="number" [(ngModel)]="subject.value.occurenceValue" [min]="1" [appMinNumber]="1" [max]="min(8, subject.repeatMax)" [appMaxNumber]="min(8, subject.repeatMax)"> occurrence of
+            The <input #occ="ngModel" [disabled]="!subject.repeatMax" (ngModelChange)="change()" name="target-occurence" required type="number" [(ngModel)]="subject.value.occurenceValue" [min]="1" [appMinNumber]="1" [max]="min(8, subject.repeatMax)" [appMaxNumber]="min(8, subject.repeatMax)"> occurrence of
             <div style="color:red; font-size: 0.7em;" *ngIf="occ?.errors">
               <span *ngIf="occ.errors.min">
                   the minimum value is 1
@@ -63,7 +63,7 @@
             </div>
           </ng-container>
           <ng-container *ngSwitchCase="_occurrenceType.COUNT">
-            <input #occ="ngModel" (ngModelChange)="change()" type="number" name="target-occurence" required [(ngModel)]="subject.value.occurenceValue" [min]="1" [appMinNumber]="1" [max]="subject.repeatMax" [appMaxNumber]="subject.repeatMax"> occurrence(s) of
+            <input #occ="ngModel" [disabled]="!subject.repeatMax" (ngModelChange)="change()" type="number" name="target-occurence" required [(ngModel)]="subject.value.occurenceValue" [min]="1" [appMinNumber]="1" [max]="subject.repeatMax" [appMaxNumber]="subject.repeatMax"> occurrence(s) of
             <div style="color:red; font-size: 0.7em;" *ngIf="occ?.errors">
               <span *ngIf="occ.errors.min">
                   the minimum value is 1
@@ -207,7 +207,7 @@
       <form #compOccurenceValues="ngForm">
         <ng-container [ngSwitch]="compare.value.occurenceType">
           <ng-container *ngSwitchCase="_occurrenceType.INSTANCE">
-            the <input class="form-control" (change)="change()" #occ="ngModel"  name="comp-occurence" required type="number" [(ngModel)]="compare.value.occurenceValue" [min]="1" [appMinNumber]="1" [max]="min(8, compare.repeatMax)" [appMaxNumber]="min(8, compare.repeatMax)"> occurrence of
+            the <input class="form-control" [disabled]="!compare.repeatMax" (change)="change()" #occ="ngModel"  name="comp-occurence" required type="number" [(ngModel)]="compare.value.occurenceValue" [min]="1" [appMinNumber]="1" [max]="min(8, compare.repeatMax)" [appMaxNumber]="min(8, compare.repeatMax)"> occurrence of
             <div style="color:red; font-size: 0.7em;" *ngIf="occ?.errors">
               <span *ngIf="occ.errors.min">
                   the minimum value is 1
@@ -218,7 +218,7 @@
             </div>
           </ng-container>
           <ng-container *ngSwitchCase="_occurrenceType.COUNT">
-            <input class="form-control" (change)="change()" #occ="ngModel" type="number" name="comp-occurence" required [(ngModel)]="compare.value.occurenceValue" [min]="1" [appMinNumber]="1" [max]="compare.repeatMax" [appMaxNumber]="compare.repeatMax"> occurrence(s) of
+            <input class="form-control" [disabled]="!compare.repeatMax" (change)="change()" #occ="ngModel" type="number" name="comp-occurence" required [(ngModel)]="compare.value.occurenceValue" [min]="1" [appMinNumber]="1" [max]="compare.repeatMax" [appMaxNumber]="compare.repeatMax"> occurrence(s) of
             <div style="color:red; font-size: 0.7em;" *ngIf="occ?.errors">
               <span *ngIf="occ.errors.min">
                   the minimum value is 1
@@ -252,7 +252,7 @@
 
     <!-- Occurrence -->
     <td *ngIf="(subject.value && subject.value.occurenceType) || subject.repeatMax > 0" class="table-font">
-      <ng-container *ngFor="let occurence of occurences">
+      <ng-container *ngFor="let occurence of subjectOccurrenceList">
         <input type="radio" [name]="id + 'target-occurences'" [value]="occurence.value" [(ngModel)]="subject.value.occurenceType" (ngModelChange)="changeOccurrenceType(subject)"/> {{ occurence.label }}<br>
       </ng-container>
     </td>
@@ -287,7 +287,7 @@
 
     <!-- Occurrence -->
     <td *ngIf="(assertion.complement && compare.value.occurenceType) || compare.repeatMax > 0" class="table-font">
-      <ng-container *ngFor="let occurence of occurences">
+      <ng-container *ngFor="let occurence of compareOccurrenceList">
         <input type="radio"  [name]="id + 'comp-occurences'" [value]="occurence.value" [(ngModel)]="compare.value.occurenceType" (ngModelChange)="changeOccurrenceType(compare)"/> {{ occurence.label }}<br>
       </ng-container>
     </td>

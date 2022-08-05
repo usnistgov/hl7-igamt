@@ -15,6 +15,7 @@ import gov.nist.hit.hl7.igamt.ig.service.ResourceBindingVerificationService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -33,8 +34,8 @@ public class BindingsController extends BaseController {
     @Autowired
     ConformanceProfileService conformanceProfileService;
 
-    @RequestMapping(value = "/api/bindings/{type}/{id}", method = RequestMethod.GET, produces = {
-            "application/json" })
+    @RequestMapping(value = "/api/bindings/{type}/{id}", method = RequestMethod.GET, produces = {"application/json" })
+    @PreAuthorize("AccessResource(#type.toString(), #id, READ)")
     public @ResponseBody
     FlatResourceBindingDisplay getBindingsSummary(
             @PathVariable("id") String id,
@@ -74,8 +75,8 @@ public class BindingsController extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/api/bindings/{type}/{id}/verify", method = RequestMethod.GET, produces = {
-            "application/json" })
+    @RequestMapping(value = "/api/bindings/{type}/{id}/verify", method = RequestMethod.GET, produces = {"application/json" })
+    @PreAuthorize("AccessResource(#type.toString(), #id, READ)")
     public @ResponseBody
     List<IgamtObjectError> verifyBindings(
             @PathVariable("id") String id,

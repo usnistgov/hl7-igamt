@@ -25,6 +25,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.DependencyWrapper;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
@@ -75,7 +76,7 @@ public class AddServiceImpl implements AddService {
   ResourceHelper resourceHelper;
 
   @Override
-  public AddMessageResponseObject addConformanceProfiles(Ig ig, List<AddingInfo> added, String username) throws EntityNotFound {
+  public AddMessageResponseObject addConformanceProfiles(Ig ig, List<AddingInfo> added, String username) throws EntityNotFound, ForbiddenOperationException {
     HashMap<RealKey, Boolean> excluded = this.buildExistingFilter(ig);
     DependencyFilter dependencyFilter = new DependencyFilter(excluded);
     AddMessageResponseObject ret = new AddMessageResponseObject();
@@ -95,7 +96,7 @@ public class AddServiceImpl implements AddService {
   
   
   @Override
-  public AddMessageResponseObject addSegments(Ig ig, List<AddingInfo> added, String username) throws EntityNotFound {
+  public AddMessageResponseObject addSegments(Ig ig, List<AddingInfo> added, String username) throws EntityNotFound, ForbiddenOperationException {
     HashMap<RealKey, Boolean> excluded = this.buildExistingFilter(ig);
     DependencyFilter dependencyFilter = new DependencyFilter(excluded);
     AddMessageResponseObject ret = new AddMessageResponseObject();
@@ -110,7 +111,7 @@ public class AddServiceImpl implements AddService {
   }
   
   @Override
-  public AddMessageResponseObject addDatatypes(Ig ig, List<AddingInfo> added, String username) throws EntityNotFound {
+  public AddMessageResponseObject addDatatypes(Ig ig, List<AddingInfo> added, String username) throws EntityNotFound, ForbiddenOperationException {
     HashMap<RealKey, Boolean> excluded = this.buildExistingFilter(ig);
     DependencyFilter dependencyFilter = new DependencyFilter(excluded);
     AddMessageResponseObject ret = new AddMessageResponseObject();

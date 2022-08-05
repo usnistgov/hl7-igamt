@@ -11,36 +11,52 @@
  */
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import java.util.Objects;
 
 public class DocumentInfo {
 
-  public DocumentInfo() {
-    super();
-  }
-  /**
-   * @param documentId
-   * @param type
-   */
-  private String documentId;
-  private DocumentType type;
-  
-  public DocumentInfo(String documentId, DocumentType type) {
-    super();
-    this.documentId = documentId;
-    this.type = type;
-  }
-  public String getDocumentId() {
-    return documentId;
-  }
-  public void setDocumentId(String id) {
-    this.documentId = id;
-  }
-  public DocumentType getType() {
-    return type;
-  }
-  public void setType(DocumentType type) {
-    this.type = type;
-  }
+	public DocumentInfo() {
+		super();
+	}
+	/**
+	 * @param documentId
+	 * @param type
+	 */
+	private String documentId;
+	private DocumentType type;
 
-  
+	public DocumentInfo(String documentId, DocumentType type) {
+		super();
+		this.documentId = documentId;
+		this.type = type;
+	}
+	public String getDocumentId() {
+		return documentId;
+	}
+	public void setDocumentId(String id) {
+		this.documentId = id;
+	}
+	public DocumentType getType() {
+		return type;
+	}
+	public void setType(DocumentType type) {
+		this.type = type;
+	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(documentId, type);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DocumentInfo other = (DocumentInfo) obj;
+		return Objects.equals(documentId, other.documentId) && type == other.type;
+	}
+
+
 }

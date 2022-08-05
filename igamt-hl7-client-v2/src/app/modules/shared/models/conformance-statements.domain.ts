@@ -38,6 +38,11 @@ export enum VerbType {
   MAY_NOT = 'MAY NOT',
 }
 
+export enum ConformanceStatementStrength {
+  SHALL = 'SHALL',
+  SHOULD = 'SHOULD',
+}
+
 export enum DeclarativeType {
   CONTAINS_VALUE = 'containValue',
   CONTAINS_VALUE_DESC = 'containValueDesc',

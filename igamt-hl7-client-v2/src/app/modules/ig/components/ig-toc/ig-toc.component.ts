@@ -255,7 +255,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     this.tree.treeModel.filterNodes((node) => {
       return this.nodeHelperService
         .getFilteringLabel(node.data.fixedName, node.data.variableName).toLowerCase()
-        .startsWith(value.toLowerCase());
+        .startsWith(value? value.toLowerCase(): '');
     });
   }
 

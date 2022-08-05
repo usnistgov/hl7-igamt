@@ -22,6 +22,7 @@ export class StatementTarget {
   public complex: boolean;
   public resourceName: string;
   public repeatMax: number;
+  public hierarchicalRepeat: boolean;
   public value: ISubject;
   public context: IPath;
   public occurrenceValuesMap = {};
@@ -40,6 +41,10 @@ export class StatementTarget {
 
   getRepeatMax(): number {
     return this.repeatMax;
+  }
+
+  getHierarchicalRepeat(): boolean {
+    return this.hierarchicalRepeat;
   }
 
   getName(): string {
@@ -76,6 +81,7 @@ export class StatementTarget {
     this.node = undefined;
     this.resourceName = undefined;
     this.repeatMax = undefined;
+    this.hierarchicalRepeat = false;
     this.context = undefined;
 
     if (subject.path) {
@@ -107,6 +113,7 @@ export class StatementTarget {
       occurenceLocationStr: undefined,
     };
     this.repeatMax = undefined;
+    this.hierarchicalRepeat = false;
     this.resourceName = undefined;
     this.context = undefined;
     if (treeClearEvent) {
@@ -146,38 +153,54 @@ export class StatementTarget {
     this.valid = true;
     if (nodeInfo) {
       this.complex = !nodeInfo.leaf;
-      this.resourceName = resourceDisplay.resourceName;
+      this.resourceName = resourceDisplay ? resourceDisplay.resourceName : '';
     }
     if (tree && node) {
       this.repeatMax = this.getNodeRepeatMax(node, tree[0]);
+      this.hierarchicalRepeat = this.getNodeHierarchyRepeat(node, tree[0]);
     }
     if (node) {
-      this.resourceName = node.data.ref.getValue().name;
+      this.resourceName = node.data.ref ? node.data.ref.getValue().name : '';
     }
     this.node = node;
     this.context = context;
   }
 
   getNodeRepeatMax(node: IHL7v2TreeNode, root: IHL7v2TreeNode) {
-    const nodeRepeat = this.getMax(node.data.cardinality);
-    if (nodeRepeat > 0) {
-      return nodeRepeat;
-    }
-
-    if (node.data.type === Type.COMPONENT || node.data.type === Type.SUBCOMPONENT) {
-      const field = this.getFieldFrom(node);
-      if (field && field.data !== root.data) {
-        return this.getMax(field.data.cardinality);
+    const loop = (n: IHL7v2TreeNode) => {
+      if (n && n.data !== root.data) {
+        const r = this.getMax(n.data.cardinality);
+        return (r === 0 ? 1 : r) * loop(n.parent);
       }
-    }
-    return 0;
+      return 1;
+    };
+    const repeat = loop(node);
+    return repeat === 1 ? 0 : repeat;
+  }
+
+  getNodeHierarchyRepeat(node: IHL7v2TreeNode, root: IHL7v2TreeNode) {
+    const field = this.getFieldFrom(node);
+
+    const findRepeat = (n: IHL7v2TreeNode) => {
+      if (n && n.data !== root.data) {
+        if (this.getMax(n.data.cardinality) > 0) {
+          return true;
+        } else {
+          return findRepeat(n.parent);
+        }
+      } else {
+        return false;
+      }
+    };
+
+    return findRepeat(field ? field.parent : node.parent);
   }
 
   getMax(cardinality: ICardinalityRange) {
     if (!cardinality) {
       return 0;
     } else if (cardinality.max === '*') {
-      return Number.MAX_VALUE;
+      return 999;
     } else if (+cardinality.max === 1) {
       return 0;
     } else {
@@ -215,6 +238,13 @@ export class StatementTarget {
       flatMap((pathInfo) => {
         const name = this.elementNamingService.getStringNameFromPathInfo(startFrom ? this.elementNamingService.getStartPathInfo(pathInfo, startFrom) : pathInfo);
         const nodeInfo = this.elementNamingService.getLeaf(pathInfo);
+        if (nodeInfo.type === Type.GROUP) {
+          return of({
+            name,
+            nodeInfo,
+            resourceDisplay: undefined,
+          });
+        }
         return repository.getResourceDisplay(nodeInfo.ref.type, nodeInfo.ref.id).pipe(
           map((resourceDisplay) => {
             return {
@@ -258,6 +288,7 @@ export class StatementTarget {
       case 2: return 'second';
       case 3: return 'third';
       case 4: return 'fourth';
+      case 5: return 'fifth';
       case 6: return 'sixth';
       case 7: return 'seventh';
       case 8: return 'eight';
@@ -283,7 +314,7 @@ export class StatementTarget {
         case OccurrenceType.COUNT:
           return +this.value.occurenceValue <= this.repeatMax && +this.value.occurenceValue >= 1;
         case OccurrenceType.INSTANCE:
-          return +this.value.occurenceValue <= Math.min(8, this.repeatMax) && +this.value.occurenceValue >= 1;
+          return this.hierarchicalRepeat ? false : +this.value.occurenceValue <= Math.min(8, this.repeatMax) && +this.value.occurenceValue >= 1;
       }
     }
     return true;

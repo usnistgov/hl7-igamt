@@ -32,7 +32,7 @@ public interface CoConstraintXMLSerialization {
 
     Element serializeCoConstraint(ResourceSkeleton segment, CoConstraintTable table, CoConstraint cc, boolean primary) throws CoConstraintXMLSerializationException;
 
-    List<Element> serializeHeaders(ResourceSkeleton segment, List<CoConstraintHeader> headers, CoConstraint cc) throws CoConstraintXMLSerializationException;
+    List<Element> serializeHeaders(ResourceSkeleton segment, List<CoConstraintHeader> headers, CoConstraint cc, boolean selector) throws CoConstraintXMLSerializationException;
 
     Element serializeCell(ResourceSkeleton segment, ColumnType type, CoConstraintCell cell, DataElementHeader header) throws CoConstraintXMLSerializationException;
 

@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -262,6 +263,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/datatypeLabels", method = RequestMethod.GET, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody Set<DatatypeLabel> getDatatypeLabels(@PathVariable("id") String id,
       Authentication authentication) throws IGNotFoundException {
     Ig igdoument = findIgById(id);
@@ -288,6 +290,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/conformancestatement", method = RequestMethod.GET, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public IgDocumentConformanceStatement getIgDocumentConformanceStatement(@PathVariable("id") String id,
       Authentication authentication) throws IGNotFoundException {
     Ig igdoument = findIgById(id);
@@ -295,18 +298,21 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/conformancestatement/summary", method = RequestMethod.GET, produces = {"application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public Set<ConformanceStatement> getIgDocumentConformanceStatementSummary(@PathVariable("id") String id, Authentication authentication) throws IGNotFoundException {
     Ig igdoument = findIgById(id);
     return igService.conformanceStatementsSummary(igdoument);
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/conformancestatement/assertion", method = RequestMethod.POST, produces = {"application/text" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody String getAssertionCS(@PathVariable("id") String id, @RequestBody ConformanceStatement cs, Authentication authentication) throws IGNotFoundException, IGUpdateException {
     return this.serializeService.generateAssertionScript(cs, id);
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/predicate/assertion", method = RequestMethod.POST, produces = {
   "application/text" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody String getAssertionPD(@PathVariable("id") String id, @RequestBody Predicate p, Authentication authentication)
       throws IGNotFoundException, IGUpdateException {
     return this.serializeService.generateConditionScript(p, id);
@@ -314,6 +320,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/{viewScope}/datatypeFalvorOptions/{dtId}", method = RequestMethod.GET, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody List<DatatypeSelectItemGroup> getDatatypeFlavorsOptions(@PathVariable("id") String id,
       @PathVariable("viewScope") String viewScope, @PathVariable("dtId") String dtId,
       Authentication authentication) throws IGNotFoundException {
@@ -329,6 +336,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/{viewScope}/segmentFalvorOptions/{segId}", method = RequestMethod.GET, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody List<SegmentSelectItemGroup> getSegmentFlavorsOptions(@PathVariable("id") String id,
       @PathVariable("viewScope") String viewScope, @PathVariable("segId") String segId,
       Authentication authentication) throws IGNotFoundException {
@@ -388,7 +396,7 @@ public class IGDocumentController extends BaseController {
    */
   @RequestMapping(value = "/api/igdocuments/{id}/display", method = RequestMethod.GET, produces = {
   "application/json" })
-
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody IGDisplay getIgDisplay(@PathVariable("id") String id, Authentication authentication)
       throws IGNotFoundException, IGConverterException, ResourceNotFoundException {
 
@@ -410,7 +418,7 @@ public class IGDocumentController extends BaseController {
    * @throws IGConverterException
    */
   @RequestMapping(value = "/api/igdocuments/{id}", method = RequestMethod.GET, produces = { "application/json" })
-
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody Ig getIg(@PathVariable("id") String id, Authentication authentication)
       throws IGNotFoundException {
     return findIgById(id);
@@ -426,7 +434,7 @@ public class IGDocumentController extends BaseController {
    */
   @RequestMapping(value = "/api/igdocuments/{id}/section", method = RequestMethod.POST, produces = {
   "application/json" })
-
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public @ResponseBody ResponseMessage<Object> updateIg(@PathVariable("id") String id, @RequestBody Section section,
       Authentication authentication) throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);
@@ -457,7 +465,7 @@ public class IGDocumentController extends BaseController {
    */
   @RequestMapping(value = "/api/igdocuments/{id}/updatetoc", method = RequestMethod.POST, produces = {
   "application/json" })
-
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public @ResponseBody ResponseMessage<Object> get(@PathVariable("id") String id, @RequestBody List<TreeNode> toc,
       Authentication authentication) throws IGNotFoundException, IGUpdateException {
 
@@ -479,7 +487,7 @@ public class IGDocumentController extends BaseController {
    */
   @RequestMapping(value = "/api/igdocuments/{id}/update/sections", method = RequestMethod.POST, produces = {
   "application/json" })
-
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public @ResponseBody ResponseMessage<Object> updateSections(@PathVariable("id") String id,
       @RequestBody Set<TextSection> content, Authentication authentication)
           throws Exception {
@@ -549,6 +557,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/updatemetadata", method = RequestMethod.POST, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public @ResponseBody ResponseMessage<Object> get(@PathVariable("id") String id,
       @RequestBody IGMetaDataDisplay metadata, Authentication authentication)
           throws IGNotFoundException, IGUpdateException {
@@ -625,7 +634,7 @@ public class IGDocumentController extends BaseController {
    */
   @RequestMapping(value = "/api/igdocuments/{id}/section/{sectionId}", method = RequestMethod.GET, produces = {
   "application/json" })
-
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody TextSection findSectionById(@PathVariable("id") String id,
       @PathVariable("sectionId") String sectionId, Authentication authentication)
           throws IGNotFoundException, SectionNotFoundException {
@@ -653,6 +662,7 @@ public class IGDocumentController extends BaseController {
    */
   @RequestMapping(value = "/api/igdocuments/{igId}/{type}/{elementId}/usage", method = RequestMethod.GET, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #igId, READ)")
   public @ResponseBody Set<RelationShip> findUsage(@PathVariable("igId") String igId, @PathVariable("type") Type type,
       @PathVariable("elementId") String elementId, Authentication authentication) throws IGNotFoundException {
     Ig ig = findIgById(igId);
@@ -664,6 +674,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage deleteDatatype(@PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
       Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
     Ig ig = findIgById(id);
@@ -696,6 +707,7 @@ public class IGDocumentController extends BaseController {
    */
   @RequestMapping(value = "/api/igdocuments/{id}/segments/{segmentId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage deleteSegment(@PathVariable("id") String id, @PathVariable("segmentId") String segmentId,
       Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
     Ig ig = findIgById(id);
@@ -724,11 +736,13 @@ public class IGDocumentController extends BaseController {
    * @throws IGNotFoundException
    * @throws XReferenceFoundException
    * @throws XReferenceException
+ * @throws ForbiddenOperationException 
    */
   @RequestMapping(value = "/api/igdocuments/{id}/valuesets/{valuesetId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage deleteValueSet(@PathVariable("id") String id, @PathVariable("valuesetId") String valuesetId,
-      Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException {
+      Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
 
     Ig ig = findIgById(id);
     Link found = findLinkById(valuesetId, ig.getValueSetRegistry().getChildren());
@@ -747,6 +761,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceprofileId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage deleteConformanceProfile(@PathVariable("id") String id,
       @PathVariable("conformanceprofileId") String conformanceProfileId, Authentication authentication)
           throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
@@ -770,6 +785,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage deletProfileComponent(@PathVariable("id") String id,
       @PathVariable("pcId") String pcId, Authentication authentication)
           throws IGNotFoundException, ForbiddenOperationException {
@@ -788,6 +804,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/composite-profile/{cpId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage deleteCompoisteProfile(@PathVariable("id") String id,
       @PathVariable("cpId") String cpId, Authentication authentication)
           throws IGNotFoundException, ForbiddenOperationException {
@@ -806,6 +823,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/removeContext", method = RequestMethod.POST, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public DisplayElement deletProfileComponentContext(@PathVariable("id") String id,
       @PathVariable("pcId") String pcId,  @RequestBody String contextId, Authentication authentication)
           throws IGNotFoundException, ForbiddenOperationException, ProfileComponentNotFoundException {
@@ -821,7 +839,9 @@ public class IGDocumentController extends BaseController {
     return this.displayInfoService.convertProfileComponent(pc, pcLink.getPosition());
 
   }
+
   @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceProfileId}/clone", method = RequestMethod.POST, produces = {"application/json"})
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage<AddResourceResponse> cloneConformanceProfile(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("conformanceProfileId") String conformanceProfileId,
       Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
@@ -843,6 +863,7 @@ public class IGDocumentController extends BaseController {
   }
   
   @RequestMapping(value = "/api/igdocuments/{id}/composite-profile/{compositeProfileId}/clone", method = RequestMethod.POST, produces = {"application/json"})
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage<AddResourceResponse> cloneProfileComposite(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("compositeProfileId") String compositeProfileId,
       Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
@@ -864,6 +885,7 @@ public class IGDocumentController extends BaseController {
 
 
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/clone", method = RequestMethod.POST, produces = {"application/json"})
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage<AddResourceResponse> cloneProfileComponent(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("pcId") String pcId,
       Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
@@ -888,6 +910,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/segments/{segmentId}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage<AddResourceResponse> cloneSegment(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
       @PathVariable("segmentId") String segmentId, Authentication authentication)
           throws IGNotFoundException, ValidationException, CloneException, ForbiddenOperationException, EntityNotFound {
@@ -909,6 +932,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage<AddResourceResponse> copyDatatype(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
       @PathVariable("datatypeId") String datatypeId, Authentication authentication)
           throws IGNotFoundException, CloneException, ForbiddenOperationException, EntityNotFound {
@@ -929,7 +953,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/valuesets/{valuesetId}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
-
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage<AddResourceResponse> cloneValueSet(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
       @PathVariable("valuesetId") String valuesetId, Authentication authentication)
           throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
@@ -949,6 +973,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/add", method = RequestMethod.POST, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage<IGDisplayInfo> addConforanceProfile(@PathVariable("id") String id,
       @RequestBody AddingWrapper wrapper, Authentication authentication)
           throws IGNotFoundException, AddingException, ForbiddenOperationException, EntityNotFound {
@@ -966,8 +991,9 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/segments/add", method = RequestMethod.POST, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage<IGDisplayInfo> addSegments(@PathVariable("id") String id, @RequestBody AddingWrapper wrapper,
-      Authentication authentication) throws IGNotFoundException, ValidationException, AddingException, EntityNotFound {
+      Authentication authentication) throws IGNotFoundException, ValidationException, AddingException, EntityNotFound, ForbiddenOperationException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
 
@@ -981,6 +1007,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/co-constraint-group/create", method = RequestMethod.POST, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage<CreateChildResponse> createCoConstraint(
       @PathVariable("id") String id,
       @RequestBody CoConstraintGroupCreateWrapper coConstraintGroupCreateWrapper,
@@ -1010,6 +1037,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/co-constraint-group/{ccGroupId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage deleteCoConstraintGroup(
       @PathVariable("id") String id,
       @PathVariable("ccGroupId") String ccGroupId,
@@ -1040,6 +1068,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/create", method = RequestMethod.POST, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage<CreateChildResponse> createProfileComponent(
       @PathVariable("id") String id,
       @RequestBody ProfileComponentCreateWrapper profileComponentCreateWrapper,
@@ -1059,6 +1088,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/composite-profile/create", method = RequestMethod.POST, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage<CreateChildResponse> createCompositeProfile(
       @PathVariable("id") String id,
       @RequestBody CompositeProfileCreationWrapper wrapper,
@@ -1081,6 +1111,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/addChildren", method = RequestMethod.POST, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage<CreateChildResponse> updatePcChildren(
       @PathVariable("id") String id,
       @PathVariable("pcId") String pcId,
@@ -1099,6 +1130,7 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/igdocuments/{documentId}/coconstraints/group/segment/{id}", method = RequestMethod.GET, produces = {"application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #documentId, READ)")
   public List<DisplayElement> getCoConstraintGroupForSegment(@PathVariable("id") String id,
       @PathVariable("documentId") String documentId,
       Authentication authentication) throws EntityNotFound {
@@ -1108,6 +1140,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/datatypes/add", method = RequestMethod.POST, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage<IGDisplayInfo> addDatatypes(@PathVariable("id") String id,
       @RequestBody AddingWrapper wrapper, Authentication authentication)
           throws IGNotFoundException, AddingException, ForbiddenOperationException, EntityNotFound {
@@ -1125,6 +1158,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/valuesets/add", method = RequestMethod.POST, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage<IGDisplayInfo> addValueSets(@PathVariable("id") String id,
       @RequestBody AddingWrapper wrapper, Authentication authentication)
           throws IGNotFoundException, AddingException, ForbiddenOperationException, EntityNotFound {
@@ -1150,8 +1184,9 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id, @RequestBody CopyInfo info,  Authentication authentication)
-      throws IGNotFoundException, EntityNotFound {
+      throws IGNotFoundException, EntityNotFound, ForbiddenOperationException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
     Ig clone = cloneService.clone(ig, username, info);
@@ -1162,6 +1197,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/publish", method = RequestMethod.POST, produces = {
   "application/json" })
+  // TODO
   public @ResponseBody ResponseMessage<String> publish(@PathVariable("id") String id, Authentication authentication)
       throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);
@@ -1173,6 +1209,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/updateSharedUser", method = RequestMethod.POST, produces = {
   "application/json" })
+  // TODO
   public @ResponseBody ResponseMessage<String> updateSharedUser(@PathVariable("id") String id, @RequestBody SharedUsersInfo sharedUsersInfo, Authentication authentication)
       throws IGNotFoundException, IGUpdateException, ResourceNotFoundException, ForbiddenOperationException {
     Ig ig = findIgById(id);
@@ -1183,6 +1220,7 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}", method = RequestMethod.DELETE, produces = { "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public @ResponseBody ResponseMessage<String> archive(@PathVariable("id") String id, Authentication authentication)
       throws IGNotFoundException, ForbiddenOperationException {
 
@@ -1196,6 +1234,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/state", method = RequestMethod.GET, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody IGDisplayInfo getState(@PathVariable("id") String id, Authentication authentication)
       throws IGNotFoundException, ForbiddenOperationException {
 
@@ -1221,6 +1260,7 @@ public class IGDocumentController extends BaseController {
   }
   @RequestMapping(value = "/api/igdocuments/{id}/valueset/{vsId}", method = RequestMethod.GET, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody Valueset getValueSetInIG(@PathVariable("id") String id ,@PathVariable("vsId") String vsId, Authentication authentication)
       throws IGNotFoundException, ValuesetNotFoundException {
     return this.igService.getValueSetInIg(id, vsId);	
@@ -1228,6 +1268,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/valueset/{vsId}/resource", method = RequestMethod.GET, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody Set<Valueset> getValueSetInIGAsResource(@PathVariable("id") String id ,@PathVariable("vsId") String vsId, Authentication authentication)
       throws IGNotFoundException, ValuesetNotFoundException {
     HashSet<Valueset> ret = new HashSet<Valueset>();
@@ -1239,6 +1280,7 @@ public class IGDocumentController extends BaseController {
   
   @RequestMapping(value = "/api/igdocuments/{id}/filter/", method = RequestMethod.POST, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody FilterResponse filter(@PathVariable("id") String id , @RequestBody FilterIGInput filter , Authentication authentication)
       throws IGNotFoundException, ValuesetNotFoundException, EntityNotFound {
     
@@ -1319,6 +1361,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/valuesets/uploadCSVFile",
       method = RequestMethod.POST)
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public ResponseMessage<AddResourceResponse> addValuesetFromCSV(@PathVariable("id") String id,
       @RequestParam("file") MultipartFile csvFile, Authentication authentication) throws ImportValueSetException, IGNotFoundException, ForbiddenOperationException {
     CSVReader reader = null;
@@ -1424,6 +1467,7 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/grand", method = RequestMethod.GET, produces = {"application/json"})
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody IgDataModel getIgGrandObject(@PathVariable("id") String id, Authentication authentication) throws Exception {
     return this.igService.generateDataModel(findIgById(id));
   }
@@ -1433,6 +1477,7 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/export/ig/{id}/xml/validation", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public void exportXML(@PathVariable("id") String id, Authentication authentication, FormData formData, HttpServletResponse response) throws Exception {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -1466,6 +1511,7 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/igdocuments/{igid}/verification", method = RequestMethod.GET, produces = {"application/json"})
+  @PreAuthorize("AccessResource('IGDOCUMENT', #igid, READ)")
   public @ResponseBody VerificationReport verificationIGById(@PathVariable("igid") String igid, Authentication authentication) {
     Ig ig = this.igService.findById(igid);
     if (ig != null) {
@@ -1486,6 +1532,7 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/igdocuments/{igid}/compliance", method = RequestMethod.GET, produces = {"application/json"})
+  @PreAuthorize("AccessResource('IGDOCUMENT', #igid, READ)")
   public @ResponseBody ComplianceReport complianceIGById(@PathVariable("igid") String igid, Authentication authentication) {
     Ig ig = this.igService.findById(igid);
     if (ig != null) return this.verificationService.verifyIgForCompliance(igid);
@@ -1493,7 +1540,8 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/igdocuments/{igid}/preverification", method = RequestMethod.POST, produces = { "application/json" })
-  public @ResponseBody VerificationReport preVerification(@PathVariable("igid") String igid, @RequestBody ReqId reqIds, Authentication authentication) throws Exception {	    
+  @PreAuthorize("AccessResource('IGDOCUMENT', #igid, READ)")
+  public @ResponseBody VerificationReport preVerification(@PathVariable("igid") String igid, @RequestBody ReqId reqIds, Authentication authentication) throws Exception {
     System.out.println(reqIds);  
     Ig ig = this.igService.findById(igid);
     if (ig != null)  {
