@@ -22,7 +22,7 @@ import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 @FunctionalInterface
 public interface ApplyPropertyFunction<T extends StructureElement> {
 
-	void apply(ChangeItemDomain change, T elm, String documentId) throws ApplyChangeException;
+	void apply(ChangeItemDomain change, T elm) throws ApplyChangeException;
 
 	
 }

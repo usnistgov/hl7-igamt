@@ -9,7 +9,11 @@
   [(selection)]="selectedNode">
   <ng-template let-node pTemplate="default">
     <app-entity-bagde [type]="node.data.type" ></app-entity-bagde>
-    <span [ngClass]="{'disabled-tree-item': !node.selectable}"><span *ngIf="node.data.position"> {{node.data.position}}.</span> {{node.data.name}}</span>
+    <span [ngClass]="{'disabled-tree-item': !node.selectable}">
+      <span *ngIf="node.data.position"> {{node.data.position}}.</span> {{node.data.name}}
+      <span *ngIf="node.data.usage"> - {{node.data.usage.value === 'CAB' ? 'C(A/B)' : node.data.usage.value}} </span>
+      <span *ngIf="node.data.cardinality"> [{{node.data.cardinality.min}}..{{node.data.cardinality.max}}] </span>
+    </span>
   </ng-template>
 </p-tree>
 

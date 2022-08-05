@@ -28,6 +28,7 @@ import org.springframework.util.ResourceUtils;
 import com.opencsv.CSVReader;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
@@ -45,7 +46,7 @@ public class CodeFixer {
   @Autowired
   private ValuesetService valueSetService;
   
-  public void fixTableHL70125() {
+  public void fixTableHL70125() throws ForbiddenOperationException {
    List<Valueset> vss = valueSetService.findByDomainInfoScopeAndBindingIdentifier(Scope.HL7STANDARD.toString(), "HL70125");
    
    for(Valueset vs: vss) {
@@ -99,7 +100,12 @@ public class CodeFixer {
          c.setDeprecated(true);
        }     
      });      
-     valueSetService.save(x);
+     try {
+		valueSetService.save(x);
+	} catch (ForbiddenOperationException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
    });
   }
   

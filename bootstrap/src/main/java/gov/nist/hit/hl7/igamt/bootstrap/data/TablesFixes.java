@@ -27,6 +27,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.StandardKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -79,7 +80,7 @@ public class TablesFixes {
   }
 
 
-  public void fix0396() throws ValidationException {
+  public void fix0396() throws ValidationException, ForbiddenOperationException {
    createTable0396();
    HashMap<String, String>  ids =collectIds();
    replaceAllSegmentbinding(ids);
@@ -88,7 +89,7 @@ public class TablesFixes {
    
   }
 
-  public void replaceAllSegmentbinding(HashMap<String, String> newKeys) throws ValidationException{
+  public void replaceAllSegmentbinding(HashMap<String, String> newKeys) throws ValidationException, ForbiddenOperationException{
     List<Segment> segments= segmentService.findAll();
     for(Segment s : segments) {
       if(s.getBinding()!=null) {
@@ -104,7 +105,7 @@ public class TablesFixes {
     
   }
 
-  public void replaceAllDataTypebinding(HashMap<String, String> newKeys){
+  public void replaceAllDataTypebinding(HashMap<String, String> newKeys) throws ForbiddenOperationException{
     List<Datatype> datatypes= datatypeService.findAll();
     for(Datatype dt : datatypes) {
       if(dt.getBinding()!=null) {
@@ -177,7 +178,7 @@ public class TablesFixes {
   
   
 
-  public void removeSegmentsDuplicatedBinding() throws ValidationException {
+  public void removeSegmentsDuplicatedBinding() throws ValidationException, ForbiddenOperationException {
     Map<String, String> vsDtMap = new HashMap<String, String>();
     vsDtMap.put("HL70061", "CX");
     vsDtMap.put("HL70064", "FC");

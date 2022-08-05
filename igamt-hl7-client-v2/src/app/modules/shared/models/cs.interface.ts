@@ -1,4 +1,5 @@
 import { Type } from '../constants/type.enum';
+import { ConformanceStatementStrength } from './conformance-statements.domain';
 
 export interface IConformanceStatement {
   id?: string;
@@ -10,6 +11,7 @@ export interface IConformanceStatement {
   structureId?: string;
   sourceIds?: string[];
   igDocumentId?: string;
+  strength?: ConformanceStatementStrength;
 }
 
 export interface IAssertionConformanceStatement extends IConformanceStatement {

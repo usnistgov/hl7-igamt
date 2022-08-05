@@ -38,7 +38,7 @@ public interface CompositeProfileStructureService {
 
   public List<CompositeProfileStructure> findByIdIn(Set<String> ids);
   
-  void applyChanges(CompositeProfileStructure pc, List<ChangeItemDomain> cItems, String documentId)
+  void applyChanges(CompositeProfileStructure pc, List<ChangeItemDomain> cItems)
       throws ApplyChangeException;
   
   List<CompositeProfileStructure> saveAll(Set<CompositeProfileStructure> compositeProfileStructures);

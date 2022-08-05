@@ -16,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +42,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.exception.ValuesetException;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.valueset.service.impl.TableCSVGenerator;
+import gov.nist.hit.hl7.igamt.web.app.service.DateUpdateService;
 
 @RestController
 public class ValuesetController extends BaseController {
@@ -53,6 +55,8 @@ public class ValuesetController extends BaseController {
 	EntityChangeService entityChangeService;
 	@Autowired
 	CommonService commonService;
+	@Autowired
+	DateUpdateService dateUpdateService;
 
 	private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
 
@@ -69,6 +73,7 @@ public class ValuesetController extends BaseController {
 
 	@RequestMapping(value = "/api/valuesets/{scope}/info", method = RequestMethod.GET, produces = {
 	"application/json" })
+	// TODO
 	public @ResponseBody ResponseMessage<List<Valueset>> findDisplayFormatByScope(
 			@PathVariable String scope, Authentication authentication) {
 		return new ResponseMessage<List<Valueset>>(Status.SUCCESS, "", "", null, false, null,
@@ -77,7 +82,7 @@ public class ValuesetController extends BaseController {
 
 	@RequestMapping(value = "/api/valuesets/{id}/resources", method = RequestMethod.GET, produces = {
 	"application/json" })
-
+	@PreAuthorize("AccessResource('VALUESET', #id, READ)")
 	public Set<Resource> getResources(@PathVariable("id") String id, Authentication authentication) {
 		Valueset valueset = valuesetService.findById(id);
 		Set<Resource> resources = new HashSet<Resource>();
@@ -86,13 +91,14 @@ public class ValuesetController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/valuesets/{id}", method = RequestMethod.GET, produces = { "application/json" })
-
+	@PreAuthorize("AccessResource('VALUESET', #id, READ)")
 	public Valueset getValueSet(@PathVariable("id") String id, Authentication authentication) {
 		Valueset valueset = valuesetService.findById(id);
 		return valueset;
 	}
 
 	@RequestMapping(value = "/api/valuesets/exportCSV/{id}", method = RequestMethod.POST, produces = "text/xml", consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	@PreAuthorize("AccessResource('VALUESET', #tableId, READ)")
 	public void exportCSV(@PathVariable("id") String tableId, HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ValuesetNotFoundException {
 		log.info("Export table " + tableId);
@@ -113,24 +119,16 @@ public class ValuesetController extends BaseController {
 		}
 		return valueset;
 	}
+	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/api/valuesets/{id}", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
-	public ResponseMessage<?> applyStructureChanges(@PathVariable("id") String id,
-			@RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
+	@PreAuthorize("AccessResource('VALUESET', #id, WRITE)")
+	public ResponseMessage<?> applyStructureChanges(@PathVariable("id") String id, @RequestBody List<ChangeItemDomain> cItems,
 			Authentication authentication) throws ValuesetException, IOException, ForbiddenOperationException {
-		Valueset s = this.valuesetService.findById(id);
-		commonService.checkRight(authentication,s.getCurrentAuthor(), s.getUsername());
-
-		this.valuesetService.applyChanges(s, cItems, documentId);
-		EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-		entityChangeDomain.setDocumentId(documentId);
-		entityChangeDomain.setDocumentType(DocumentType.IG);
-		entityChangeDomain.setTargetId(id);
-		entityChangeDomain.setTargetType(EntityType.VALUESET);
-		entityChangeDomain.setChangeItems(cItems);
-		entityChangeDomain.setTargetVersion(s.getVersion());
-		entityChangeService.save(entityChangeDomain);
-		return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, s.getId(), new Date());
+		Valueset vs = this.valuesetService.findById(id);
+		this.valuesetService.applyChanges(vs, cItems);
+		this.dateUpdateService.updateDate(vs.getDocumentInfo());
+		return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, vs.getId(), vs.getUpdateDate());
 	}
 
 }

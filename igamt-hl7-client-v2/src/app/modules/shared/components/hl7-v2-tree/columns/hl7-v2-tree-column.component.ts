@@ -1,5 +1,6 @@
 import { EventEmitter, Input, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import * as _ from 'lodash';
 import { BehaviorSubject, concat, Observable, of } from 'rxjs';
 import { flatMap, map, tap } from 'rxjs/operators';
 import { Type } from '../../../constants/type.enum';
@@ -37,11 +38,14 @@ export abstract class HL7v2TreeColumnComponent<T> {
   context: Type;
   @Input()
   node: IHL7v2TreeNode;
+  oldValue: T;
 
   @Input()
   set value(val: T) {
     this.value$.next(val);
+    this.oldValue = _.cloneDeep(val);
   }
+
   @Input()
   set changeLog(log: ILocationChangeLog) {
     this.changeLogService.init(log);

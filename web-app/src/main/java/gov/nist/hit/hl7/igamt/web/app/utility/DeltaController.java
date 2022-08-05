@@ -1,7 +1,8 @@
-package gov.nist.hit.hl7.igamt.delta.controller;
+package gov.nist.hit.hl7.igamt.web.app.utility;
 
 import gov.nist.hit.hl7.igamt.delta.domain.Delta;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,7 @@ public class DeltaController {
 
   @RequestMapping(value = "/api/delta/{type}/{ig}/{id}", method = RequestMethod.GET,
       produces = {"application/json"})
+  @PreAuthorize("AccessResource(#type.toString(), #id, READ)")
   public Delta deltaConformanceProfile(@PathVariable("type") Type type,
                                        @PathVariable("ig") String ig, @PathVariable("id") String id, Authentication authentication)
       throws Exception {
@@ -39,6 +41,7 @@ public class DeltaController {
   
   @RequestMapping(value = "/api/delta/display/{id}", method = RequestMethod.GET, produces = {
   "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody IGDisplayInfo getDeltaDisplay(@PathVariable("id") String id, Authentication authentication)
       throws IGNotFoundException, IGDeltaException {
 
@@ -52,6 +55,7 @@ public class DeltaController {
 
   @RequestMapping(value = "/api/delta/{type}/{igId}/diffable/{idSource}/{idTarget}",
       method = RequestMethod.GET, produces = {"application/json"})
+  @PreAuthorize("AccessResource('IGDOCUMENT', #ig, READ)")
   public DiffableResult diffable(@PathVariable("type") Type type, @PathVariable("igId") String ig,
       @PathVariable("idSource") String source, @PathVariable("idTarget") String target,
       Authentication authentication) throws Exception {

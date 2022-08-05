@@ -1,3 +1,4 @@
+import { ConformanceStatementStrength } from './../../models/conformance-statements.domain';
 import { Component, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
@@ -166,6 +167,14 @@ export class CsDialogComponent implements OnDestroy {
   predicateElementId: string;
   excludePaths: string[];
   options = ConditionalUsageOptions;
+  strengthOptions = [{
+    label: 'SHALL',
+    value: ConformanceStatementStrength.SHALL,
+  }, {
+    label: 'SHOULD',
+    value: ConformanceStatementStrength.SHOULD,
+  }];
+
   contextFilter: IHL7v2TreeFilter = {
     hide: false,
     restrictions: [

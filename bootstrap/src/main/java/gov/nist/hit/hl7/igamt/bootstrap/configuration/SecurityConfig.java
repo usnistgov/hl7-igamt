@@ -13,8 +13,6 @@ import gov.nist.hit.hl7.igamt.auth.config.JWTAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 

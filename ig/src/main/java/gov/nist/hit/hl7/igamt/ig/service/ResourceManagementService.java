@@ -15,6 +15,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
@@ -27,7 +28,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 public interface ResourceManagementService {
 
   <T extends Resource> T createFlavor(Registry reg, String username, DocumentInfo documentInfo, Type resourceType,
-      AddingInfo selected) throws EntityNotFound;
+      AddingInfo selected) throws EntityNotFound, ForbiddenOperationException;
 
   <T extends Resource> T getElmentFormAddingInfo(String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected)
       throws EntityNotFound;
@@ -37,9 +38,10 @@ public interface ResourceManagementService {
    * @param documentInfo
    * @param addingInfo
    * @return
+ * @throws ForbiddenOperationException 
    */
   ConformanceProfile createProfile(String username, DocumentInfo documentInfo,
-      AddingInfo addingInfo);
+      AddingInfo addingInfo) throws ForbiddenOperationException;
 
   /**
    * @param res

@@ -35,11 +35,11 @@ export class LengthComponent extends HL7v2TreeColumnComponent<ILengthRange> impl
   }
 
   minChange(value: string) {
-    this.onChange<string>(this.getInputValue().min + '', value + '', PropertyType.LENGTHMIN, ChangeType.UPDATE);
+    this.onChange<string>(this.oldValue.min + '', value + '', PropertyType.LENGTHMIN, ChangeType.UPDATE);
   }
 
   maxChange(value: string) {
-    this.onChange<string>(this.getInputValue().max + '', value + '', PropertyType.LENGTHMAX, ChangeType.UPDATE);
+    this.onChange<string>(this.oldValue.max + '', value + '', PropertyType.LENGTHMAX, ChangeType.UPDATE);
   }
 
   clear() {

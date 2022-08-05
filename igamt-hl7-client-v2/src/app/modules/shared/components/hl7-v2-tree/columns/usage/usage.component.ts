@@ -162,7 +162,7 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
       this.clear(true);
     }
 
-    this.onChange<string>(this.getInputValue().value, event.value, PropertyType.USAGE, ChangeType.UPDATE);
+    this.onChange<string>(this.oldValue.value, event.value, PropertyType.USAGE, ChangeType.UPDATE);
   }
 
   isActualChange(change: IChange<any>): boolean {

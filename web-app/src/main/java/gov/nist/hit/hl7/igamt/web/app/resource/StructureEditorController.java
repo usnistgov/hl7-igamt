@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.structure.controller;
+package gov.nist.hit.hl7.igamt.web.app.resource;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -11,6 +11,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.structure.domain.*;
 import gov.nist.hit.hl7.igamt.structure.service.impl.StructureService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +45,7 @@ public class StructureEditorController {
     }
 
     @RequestMapping(value = "api/structure-editor/structure/{id}/save", method = RequestMethod.POST, produces = {"application/json" })
+    @PreAuthorize("AccessResource('MESSAGESTRUCTURE', #id, WRITE)")
     public @ResponseBody
     ResponseMessage<Object> saveStructure(@PathVariable("id") String id, @RequestBody Set<SegmentRefOrGroup> children, Authentication authentication) throws InvalidStructureException {
         MessageStructure ms = structureService.saveMessageStructure(id, authentication.getName(), children);
@@ -51,6 +53,7 @@ public class StructureEditorController {
     }
 
     @RequestMapping(value = "api/structure-editor/structure/{id}/metadata/save", method = RequestMethod.POST, produces = {"application/json" })
+    @PreAuthorize("AccessResource('MESSAGESTRUCTURE', #id, WRITE)")
     public @ResponseBody
     ResponseMessage<Object> saveMetadata(@PathVariable("id") String id, @RequestBody MessageStructureMetadata metadata, Authentication authentication) {
         MessageStructure ms = structureService.saveMessageMetadata(id, authentication.getName(), metadata);
@@ -58,6 +61,7 @@ public class StructureEditorController {
     }
 
     @RequestMapping(value = "api/structure-editor/segment/{id}/save", method = RequestMethod.POST, produces = {"application/json" })
+    @PreAuthorize("AccessResource('SEGMENT', #id, WRITE)")
     public @ResponseBody
     ResponseMessage<Object> saveSegment(@PathVariable("id") String id, @RequestBody Set<Field> children, Authentication authentication) {
         Segment ms = structureService.saveSegment(id, authentication.getName(), children);
@@ -65,6 +69,7 @@ public class StructureEditorController {
     }
 
     @RequestMapping(value = "api/structure-editor/segment/{id}/metadata/save", method = RequestMethod.POST, produces = {"application/json" })
+    @PreAuthorize("AccessResource('SEGMENT', #id, WRITE)")
     public @ResponseBody
     ResponseMessage<Object> saveSegmentMetadata(@PathVariable("id") String id, @RequestBody SegmentStructureMetadata metadata, Authentication authentication) {
         Segment ms = structureService.saveSegmentMetadata(id, authentication.getName(), metadata);
@@ -72,6 +77,7 @@ public class StructureEditorController {
     }
 
     @RequestMapping(value = "api/structure-editor/segment/{id}/publish", method = RequestMethod.GET, produces = {"application/json" })
+    @PreAuthorize("AccessResource('SEGMENT', #id, WRITE)")
     public @ResponseBody
     ResponseMessage<SegmentStructureAndDisplay> publishSegment(@PathVariable("id") String id, Authentication authentication) {
         SegmentStructureAndDisplay ms = structureService.publishSegment(id, authentication.getName());
@@ -79,6 +85,7 @@ public class StructureEditorController {
     }
 
     @RequestMapping(value = "api/structure-editor/structure/{id}/publish", method = RequestMethod.GET, produces = {"application/json" })
+    @PreAuthorize("AccessResource('MESSAGESTRUCTURE', #id, WRITE)")
     public @ResponseBody
     ResponseMessage<MessageStructureAndDisplay> publishMessage(@PathVariable("id") String id, Authentication authentication) {
         MessageStructureAndDisplay ms = structureService.publishMessageStructure(id, authentication.getName());
@@ -86,6 +93,7 @@ public class StructureEditorController {
     }
 
     @RequestMapping(value = "api/structure-editor/structures/{id}", method = RequestMethod.GET, produces = {"application/json" })
+    @PreAuthorize("AccessResource('MESSAGESTRUCTURE', #id, READ)")
     public @ResponseBody
     MessageStructure structure(@PathVariable("id") String id, Authentication authentication) {
         MessageStructure messageStructure = structureService.getMessageStructureForUser(id, authentication.getName());
@@ -96,6 +104,7 @@ public class StructureEditorController {
     }
 
     @RequestMapping(value = "api/structure-editor/segments/{id}", method = RequestMethod.GET, produces = {"application/json" })
+    @PreAuthorize("AccessResource('SEGMENT', #id, READ)")
     public @ResponseBody
     Segment segment(@PathVariable("id") String id, Authentication authentication) {
         Segment segment = structureService.getSegmentForUser(id, authentication.getName());
@@ -107,6 +116,7 @@ public class StructureEditorController {
 
     @RequestMapping(value = "/api/structure-editor/structure/{id}/state", method = RequestMethod.GET, produces = {
             "application/json" })
+    @PreAuthorize("AccessResource('MESSAGESTRUCTURE', #id, READ)")
     public MessageStructureState messageState(@PathVariable("id") String id, Authentication authentication) {
         MessageStructure messageStructure = structureService.getMessageStructureForUser(id, authentication.getName());
         if(messageStructure == null) {
@@ -118,6 +128,7 @@ public class StructureEditorController {
 
     @RequestMapping(value = "/api/structure-editor/structure/{id}/custom-children", method = RequestMethod.GET, produces = {
             "application/json" })
+    @PreAuthorize("AccessResource('MESSAGESTRUCTURE', #id, READ)")
     public Set<DisplayElement> customChildren(@PathVariable("id") String id, Authentication authentication) {
         MessageStructure messageStructure = structureService.getMessageStructureForUser(id, authentication.getName());
         if(messageStructure == null) {
@@ -128,6 +139,7 @@ public class StructureEditorController {
 
     @RequestMapping(value = "/api/structure-editor/segment/{id}/state", method = RequestMethod.GET, produces = {
             "application/json" })
+    @PreAuthorize("AccessResource('SEGMENT', #id, READ)")
     public SegmentStructureState segmentState(@PathVariable("id") String id, Authentication authentication) {
         Segment segment = structureService.getSegmentForUser(id, authentication.getName());
         if(segment == null) {
@@ -138,13 +150,13 @@ public class StructureEditorController {
 
     @RequestMapping(value = "/api/structure-editor/valueSets/{type}/{id}", method = RequestMethod.GET, produces = {
             "application/json" })
+    @PreAuthorize("AccessResource(type.toString(), #id, READ)")
     public List<DisplayElement> getResourceValueSets(@PathVariable("type") Type type, @PathVariable("id") String id, Authentication authentication) {
         return this.structureService.getResourceValueSets(type, id);
     }
 
     @RequestMapping(value = "/api/structure-editor/structure/resources/{type}/{scope}/{version}", method = RequestMethod.GET, produces = {
             "application/json" })
-
     public List<DisplayElement> getResources(@PathVariable("type") Type type, @PathVariable String version, @PathVariable Scope scope, Authentication authentication) {
         return this.structureService.getResources(type, scope, version, authentication.getName());
     }

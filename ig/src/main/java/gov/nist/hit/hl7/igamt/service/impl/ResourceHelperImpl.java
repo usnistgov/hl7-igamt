@@ -23,6 +23,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
@@ -90,7 +91,7 @@ public class ResourceHelperImpl implements ResourceHelper {
   
   @SuppressWarnings("unchecked")
   @Override
-  public  <T extends Resource>  T saveByType( T resource, Type type ){
+  public  <T extends Resource>  T saveByType( T resource, Type type ) throws ForbiddenOperationException{
 
   switch(type) {
       case CONFORMANCEPROFILE:
