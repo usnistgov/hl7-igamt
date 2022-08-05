@@ -60,8 +60,6 @@ public interface ConformanceProfileService {
 
   public void delete(String id);
 
-  public void removeCollection();
-
   public List<ConformanceProfile> findByIdentifier(String identifier);
 
   public List<ConformanceProfile> findByMessageType(String messageType);
@@ -94,7 +92,7 @@ public interface ConformanceProfileService {
   
   public ConformanceProfileStructureDisplay convertDomainToDisplayStructureFromContext(ConformanceProfile conformanceProfile, String contextId, boolean readOnly);
   
-  public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems, String documentId) throws Exception;
+  public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems) throws Exception;
 
   public ConformanceProfileStructureTreeModel convertDomainToContextStructure(ConformanceProfile conformanceProfile, HashMap<String, ConformanceStatementsContainer> segMap, HashMap<String, ConformanceStatementsContainer> dtMap);
 
@@ -108,9 +106,8 @@ public interface ConformanceProfileService {
   Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles, ConformanceProfileRegistry conformanceProfileRegistry);
   Set<DisplayElement> convertConformanceProfileRegistry(ConformanceProfileRegistry registry);
 
-  void subsitute(ConformanceProfile clone, List<Substitue> substitutes, String username);
-
   public List<ConformanceProfile> saveAll(Set<ConformanceProfile> datatypes);
+  void processAndSubstitute(ConformanceProfile cp, HashMap<RealKey, String> newKeys);
 
 
 

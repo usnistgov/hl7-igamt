@@ -13,6 +13,7 @@ package gov.nist.hit.hl7.igamt.ig.service;
 
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
@@ -24,7 +25,7 @@ import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
  */
 public interface AddService {
 
-AddMessageResponseObject addConformanceProfiles(Ig ig, List<AddingInfo> added, String username) throws EntityNotFound;
+AddMessageResponseObject addConformanceProfiles(Ig ig, List<AddingInfo> added, String username) throws EntityNotFound, ForbiddenOperationException;
 
 /**
  * @param ig
@@ -32,9 +33,10 @@ AddMessageResponseObject addConformanceProfiles(Ig ig, List<AddingInfo> added, S
  * @param username
  * @return
  * @throws EntityNotFound
+ * @throws ForbiddenOperationException 
  */
 AddMessageResponseObject addSegments(Ig ig, List<AddingInfo> added, String username)
-    throws EntityNotFound;
+    throws EntityNotFound, ForbiddenOperationException;
 
 /**
  * @param ig
@@ -42,8 +44,9 @@ AddMessageResponseObject addSegments(Ig ig, List<AddingInfo> added, String usern
  * @param username
  * @return
  * @throws EntityNotFound
+ * @throws ForbiddenOperationException 
  */
 AddMessageResponseObject addDatatypes(Ig ig, List<AddingInfo> added, String username)
-    throws EntityNotFound;
+    throws EntityNotFound, ForbiddenOperationException;
   
 }

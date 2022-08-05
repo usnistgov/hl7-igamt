@@ -33,7 +33,10 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import gov.nist.hit.hl7.igamt.web.app.service.DateUpdateService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -89,22 +92,28 @@ public class CompositeProfileController {
   
   @Autowired
   EntityChangeService entityChangeService;
+  
+  @Autowired
+  DateUpdateService dateUpdateService;
 
   @RequestMapping(value = "/api/composite-profile/{id}", method = RequestMethod.GET,
       produces = {"application/json"})
-
+  @PreAuthorize("AccessResource('COMPOSITEPROFILE', #id, READ)")
   public CompositeProfileStructure getCompositeProfile(@PathVariable("id") String id, Authentication authentication) {
     return compositeProfileService.findById(id);
   }
 
   @RequestMapping(value = "/api/composite-profile", method = RequestMethod.POST,
       produces = {"application/json"})
+  @PreAuthorize("AccessResource('COMPOSITEPROFILE', #compositeProfileStructure.id, WRITE)")
   public CompositeProfileStructure save(Authentication authentication, @RequestBody CompositeProfileStructure compositeProfileStructure) {
+	dateUpdateService.updateDate(compositeProfileStructure.getDocumentInfo());
     return compositeProfileService.save(compositeProfileStructure);
   }
 
   @RequestMapping(value = "/api/composite-profile/{id}/compose", method = RequestMethod.GET,
           produces = {"application/json"})
+  @PreAuthorize("AccessResource('COMPOSITEPROFILE', #id, READ)")
   public CompositeProfileState eval(@PathVariable("id") String id, Authentication authentication) {
     ProfileComponentsEvaluationResult<ConformanceProfile> profileComponentsEvaluationResult = compose.create(compositeProfileService.findById(id));
 
@@ -129,24 +138,18 @@ public class CompositeProfileController {
   }
   
   
-  @RequestMapping(value = "/api/composite-profile/{id}", method = RequestMethod.POST, produces = {
-  "application/json" })
-@ResponseBody
-public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
-                                 @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
+    @RequestMapping(value = "/api/composite-profile/{id}", method = RequestMethod.POST, produces = {
+    "application/json" })
+    @PreAuthorize("AccessResource('COMPOSITEPROFILE', #id, WRITE)")
+    @ResponseBody
+    public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
+                                 @RequestBody List<ChangeItemDomain> cItems,
                                  Authentication authentication) throws Exception {
-
       CompositeProfileStructure cp = this.compositeProfileService.findById(id);
       commonService.checkRight(authentication, cp.getCurrentAuthor(), cp.getUsername());
-      this.compositeProfileService.applyChanges(cp, cItems, documentId);
-      EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-      entityChangeDomain.setDocumentId(documentId);
-      entityChangeDomain.setDocumentType(DocumentType.IG);
-      entityChangeDomain.setTargetId(id);
-      entityChangeDomain.setTargetType(EntityType.COMPOSITEPROFILE);
-      entityChangeDomain.setChangeItems(cItems);
-      entityChangeDomain.setTargetVersion(cp.getVersion());
-      entityChangeService.save(entityChangeDomain);
+      this.compositeProfileService.applyChanges(cp, cItems);
+  	  dateUpdateService.updateDate(cp.getDocumentInfo());
+
       return new ResponseMessage(Status.SUCCESS, "Composite Profile Saved", cp.getId(), new Date());
 }
 

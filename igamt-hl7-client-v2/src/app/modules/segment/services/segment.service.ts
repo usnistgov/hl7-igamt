@@ -39,11 +39,7 @@ export class SegmentService {
   }
 
   saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<string>> {
-    return this.http.post<Message<string>>(this.URL + id, changes, {
-      params: {
-        dId: documentRef.documentId,
-      },
-    });
+    return this.http.post<Message<string>>(this.URL + id, changes);
   }
   getValueSetBindingByLocation(obj: ISegment, location: number): string[] {
     if (obj.binding != null && obj.binding.children && obj.binding.children.length) {

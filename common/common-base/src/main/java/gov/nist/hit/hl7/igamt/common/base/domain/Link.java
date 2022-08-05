@@ -140,7 +140,7 @@ public class Link implements Serializable, Comparable {
 	}
 
 	public boolean isUser() {
-		return this.domainInfo != null && this.domainInfo.getScope() != null
+		return this.getId() != null && this.domainInfo != null && this.domainInfo.getScope() != null
 				&& this.domainInfo.getScope().equals(Scope.USER);
 	}
 

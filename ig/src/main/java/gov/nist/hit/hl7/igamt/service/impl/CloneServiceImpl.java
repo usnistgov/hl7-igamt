@@ -35,6 +35,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
@@ -161,7 +162,7 @@ public class CloneServiceImpl implements  CloneService {
   
 
   @Override
-  public Ig clone(Ig ig, String username, CopyInfo copyInfo) throws EntityNotFound {
+  public Ig clone(Ig ig, String username, CopyInfo copyInfo) throws ForbiddenOperationException, EntityNotFound {
 
     updateIGAttributes(ig, username, copyInfo);
     HashMap<RealKey, String> newKeys = generateNewIds(ig); 
@@ -242,6 +243,7 @@ public class CloneServiceImpl implements  CloneService {
     } else if(info.getMode().equals(CloneMode.DERIVE)) {
       ig.getMetadata().setTitle(ig.getMetadata().getTitle() + "[derived]");
       ig.setDerived(true); 
+      ig.setOrigin(ig.getFrom());
       if(!info.isInherit()) {
 
         Set<TextSection> content = new HashSet<TextSection>();
