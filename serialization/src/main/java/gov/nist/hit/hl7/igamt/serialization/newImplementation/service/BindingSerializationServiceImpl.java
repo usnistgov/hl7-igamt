@@ -199,7 +199,7 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 	private Element serializeSingleCodeBinding(String elementIdParent, SingleCodeBinding singleCodeBinding,
 			String name) {
 
-		if (singleCodeBinding != null && singleCodeBinding.getCodeSystem() != null) {
+		if (singleCodeBinding != null) {
 //			List<ValuesetBindingDataModel> vsDataModel = valuesetMap.values().stream().flatMap((set) -> {
 //				return set.stream();
 //			}).collect(Collectors.toList());

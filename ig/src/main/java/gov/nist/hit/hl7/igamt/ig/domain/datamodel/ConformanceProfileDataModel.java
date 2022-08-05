@@ -35,7 +35,7 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
  * @author jungyubw
  *
  */
-public class ConformanceProfileDataModel implements Serializable, Comparable{
+public class ConformanceProfileDataModel implements Serializable, Comparable<ConformanceProfileDataModel>{
 	private ConformanceProfile model;
 
 	private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
@@ -196,7 +196,7 @@ public class ConformanceProfileDataModel implements Serializable, Comparable{
 	}
 
 	@Override
-	public int compareTo(Object u) {
+	public int compareTo(ConformanceProfileDataModel u) {
 		// TODO Auto-generated method stub
 		if (getModel().getLabel() == null || ((ConformanceProfileDataModel) u).getModel().getLabel() == null) {
 		      return 0;

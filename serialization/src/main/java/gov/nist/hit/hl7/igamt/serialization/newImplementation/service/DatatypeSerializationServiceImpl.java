@@ -149,7 +149,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
         .addAttribute(new Attribute("datatypeName", datatype.getDescription() != null ? datatype.getDescription(): ""));}
       if(datatypeExportConfiguration.getMetadataConfig().isShortDescription()) {
         datatypeElement
-        .addAttribute(new Attribute("shortDescription", datatype.getShortDescription() != null ? datatype.getShortDescription(): ""));}
+        .addAttribute(new Attribute("shortDescription", datatype.getDomainInfo() != null ? datatype.getShortDescription(): ""));}
       if(datatype.getDomainInfo() != null && datatypeExportConfiguration.getMetadataConfig().isHl7version()) {
         datatypeElement
         .addAttribute(new Attribute("hl7versions", datatype.getDomainInfo().getCompatibilityVersion()!= null ? datatype.getDomainInfo().getCompatibilityVersion().toString(): ""));
@@ -278,7 +278,9 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
               	
             	  componentElement.addAttribute(
                           new Attribute("usage", component.getUsage() != null ? serializationTools.extractPredicateUsages(datatypeDataModel.getPredicateMap(), component.getId()) : ""));
-              }
+                  componentElement.addAttribute(
+                    new Attribute("predicate", component.getUsage() != null ? serializationTools.extractPredicateDescription(datatypeDataModel.getPredicateMap(), component.getId()) : ""));
+             }
         
           datatypeElement.appendChild(componentElement);
         } catch (Exception exception) {

@@ -11,25 +11,28 @@
 			<xsl:attribute name="class">
                 <xsl:text>contentTr</xsl:text>
             </xsl:attribute>
+            			<xsl:if test="$columnDisplay.message.path = 'true'">
             <xsl:element name="td">
 					<xsl:value-of select="@id" />
 				</xsl:element>
+							</xsl:if>
 			<xsl:if test="$columnDisplay.message.segment = 'true'">
 				<xsl:element name="td">
 					<xsl:choose>
-						<xsl:when test="@innerLink!=''">
+						<xsl:when test="@idGpe">
 							<xsl:element name="a">
-								<xsl:attribute name="href">
+		<!-- 						<xsl:attribute name="href">
                     				<xsl:value-of select="@innerLink" />
                     			</xsl:attribute>
 								<xsl:attribute name="target">
-                    				<xsl:text>_blank</xsl:text>
+                    				<xsl:text>TEST</xsl:text>
                     			</xsl:attribute>
+                    			-->
 								<xsl:value-of select="@ref" />
 							</xsl:element>
 						</xsl:when>
 						<xsl:otherwise>
-							<xsl:value-of select="@ref" />
+							<xsl:value-of select="@Ref" />
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:element>
