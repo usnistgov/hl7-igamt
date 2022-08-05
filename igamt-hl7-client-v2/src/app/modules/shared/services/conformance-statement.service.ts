@@ -8,6 +8,7 @@ import { map, take } from 'rxjs/operators';
 import { IConformanceStatementEditorData, IDependantConformanceStatements, IEditableConformanceStatementGroup, IEditableListNode } from '../../core/components/conformance-statement-editor/conformance-statement-editor.component';
 import { Assertion, BinaryOperator, IfThenOperator, LeafStatementType, NaryOperator, Operator, OperatorType, Pattern, Position, Statement, SubContextOperator, UnaryOperator } from '../components/pattern-dialog/cs-pattern.domain';
 import { Usage } from '../constants/usage.enum';
+import { ConformanceStatementStrength } from '../models/conformance-statements.domain';
 import { IConformanceStatementList, IConformanceStatementsContainerMap, ICPConformanceStatementList } from '../models/cs-list.interface';
 import { AssertionMode, ConstraintType, IAssertion, IAssertionConformanceStatement, IConformanceStatement, IFreeTextConformanceStatement, IIfThenAssertion, INotAssertion, IOperatorAssertion, IPath, ISimpleAssertion, ISubContext, ISubContextAssertion, Operator as CsOperator } from '../models/cs.interface';
 import { IDisplayElement } from '../models/display-element.interface';
@@ -153,6 +154,7 @@ export class ConformanceStatementService {
         identifier: '',
         type: ConstraintType.ASSERTION,
         assertion: bag.assertion,
+        strength: ConformanceStatementStrength.SHALL,
       },
       statements: bag.leafs,
     };

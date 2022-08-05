@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { Observable, of, ReplaySubject, Subscription } from 'rxjs';
-import { concatMap, map, filter } from 'rxjs/operators';
+import { concatMap, filter, map } from 'rxjs/operators';
 import { AbstractEditorComponent } from 'src/app/modules/core/components/abstract-editor-component/abstract-editor-component.component';
 import { BindingLegend } from 'src/app/modules/core/components/structure-editor/structure-editor.component';
 import { Message } from 'src/app/modules/dam-framework/models/messages/message.class';

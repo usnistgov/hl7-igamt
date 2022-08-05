@@ -34,7 +34,7 @@ export class ConstantValueComponent extends HL7v2TreeColumnComponent<IStringValu
   toggleEdit() {
     if (this.edit) {
       this.constant.value = this.tmp;
-      this.onChange(this.getInputValue().value, this.constant.value, PropertyType.CONSTANTVALUE, ChangeType.UPDATE);
+      this.onChange(this.oldValue ? this.oldValue.value : '', this.constant.value, PropertyType.CONSTANTVALUE, ChangeType.UPDATE);
     } else {
       this.tmp = this.constant.value;
     }
@@ -43,7 +43,7 @@ export class ConstantValueComponent extends HL7v2TreeColumnComponent<IStringValu
 
   clear() {
     this.constant.value = '';
-    this.onChange(this.getInputValue().value, this.constant.value, PropertyType.CONSTANTVALUE, ChangeType.UPDATE);
+    this.onChange(this.oldValue ? this.oldValue.value : '', this.constant.value, PropertyType.CONSTANTVALUE, ChangeType.UPDATE);
   }
 
   ngOnInit() {
