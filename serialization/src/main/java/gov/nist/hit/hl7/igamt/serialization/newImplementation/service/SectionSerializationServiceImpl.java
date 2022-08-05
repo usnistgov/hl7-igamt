@@ -2,8 +2,10 @@ package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -533,8 +535,12 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 //							conformanceProfileDataModelsList.add(conformanceProfileModel);
 ////						}
 //					}
-					List<ConformanceProfileDataModel> conformanceProfileDataModelsList = igDataModel.getConformanceProfiles().stream().collect(Collectors.toList());
-					Collections.sort(conformanceProfileDataModelsList);
+					Map<String,Integer> positions = new HashMap<String,Integer>();
+					for(Link l : conformanceProfileRegistry.getChildren()) {
+						positions.put(l.getId(),l.getPosition());
+					}
+					List<ConformanceProfileDataModel> conformanceProfileDataModelsList = igDataModel.getConformanceProfiles().stream().sorted((a,b) -> { return positions.get(a.getModel().getId()) - positions.get(b.getModel().getId()); }).collect(Collectors.toList());
+//					Collections.sort(conformanceProfileDataModelsList);
 
 					for(ConformanceProfileDataModel conformanceProfileDataModel : conformanceProfileDataModelsList) {
 							Element conformanceProfileElement;

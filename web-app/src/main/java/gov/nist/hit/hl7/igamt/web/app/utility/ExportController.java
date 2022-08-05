@@ -110,13 +110,14 @@ public class ExportController {
       HttpServletResponse response, FormData formData) throws ExportException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String username = authentication.getPrincipal().toString(); 
+    System.out.println("IN controller");
     ExportedFile exportedFile = null;
     try {
       ExportFilterDecision decision = null;
       ExportConfiguration config = null;
       Ig ig = igService.findById(igId);		
       IgDataModel igDataModel = igService.generateDataModel(ig);
-      ig = igDataModel.getModel();
+//      ig = igDataModel.getModel();
       ExportType type = ExportType.fromString(formData.getDocumentType());
       if(type == null) {
         throw new ExportException("Unspecified Export Type");
@@ -147,7 +148,6 @@ public class ExportController {
       }
       if(format.equalsIgnoreCase(ExportDocType.HTML.toString())) {
         exportedFile = igExportService.exportIgDocumentToHtml(username, igDataModel, decision, config.getId());
-
         response.setContentType("text/html");
         response.setHeader("Content-disposition",
             "attachment;filename=" + exportedFile.getFileName());
@@ -166,6 +166,7 @@ public class ExportController {
       throw new ExportException(e, "Error while sending back exported IG Document with id " + igId);
     }
   }
+
 
   @RequestMapping(value = "/api/export/library/{igId}/configuration/{configId}/{format}", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
   // TODO Library
