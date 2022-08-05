@@ -330,8 +330,8 @@ public class SanityChecker {
 					System.out.println("IGID:"+ ig.getId()+ "Type:"+ l.getType() +",ResourceID:"+ l.getId());
 				}
 			}
-
 		}
+		
 		for ( Link l: ig.getSegmentRegistry().getChildren()) {
 			Resource res = this.getResouce(l.getId(), Type.SEGMENT);
 			if(res.getDocumentInfo() != null) {
@@ -350,6 +350,7 @@ public class SanityChecker {
 			}
 
 		}
+		
 		for ( Link l: ig.getValueSetRegistry().getChildren()) {
 			Resource res = this.getResouce(l.getId(), Type.VALUESET);
 			if(res.getDocumentInfo() != null) {
@@ -368,6 +369,7 @@ public class SanityChecker {
 			}
 
 		}
+		
 		for ( Link l: ig.getProfileComponentRegistry().getChildren()) {
 			Resource res = this.getResouce(l.getId(), Type.PROFILECOMPONENT);
 			if(res.getDocumentInfo() != null) {
@@ -376,6 +378,7 @@ public class SanityChecker {
 				}
 			}
 		}	
+		
 		for ( Link l: ig.getCompositeProfileRegistry().getChildren()) {
 
 			Resource res = this.getResouce(l.getId(), Type.COMPOSITEPROFILE);
@@ -384,7 +387,6 @@ public class SanityChecker {
 					System.out.println("IGID:"+ ig.getId()+ "Type:"+ l.getType() +",ResourceID:"+ l.getId());
 				}
 			}
-
 		}	
 	}
 
@@ -423,7 +425,80 @@ public class SanityChecker {
 
 		}
 	}
+	
+	public void checkMissingOrigin(Ig ig){
 
 
+			DocumentInfo documentInfo = new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT);
+
+			for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
+
+				Resource res = this.getResouce(l.getId(), Type.CONFORMANCEPROFILE);
+				if(res.isDerived() && res.getOrigin() ==null) {
+					if(!documentInfo.equals(res.getDocumentInfo())) {
+						System.out.println("IGID:"+ ig.getId()+ "Type:"+ l.getType() +",ResourceID:"+ l.getId());
+					}
+				}
+			}
+			
+			for ( Link l: ig.getSegmentRegistry().getChildren()) {
+				Resource res = this.getResouce(l.getId(), Type.SEGMENT);
+				if(res.isDerived() && res.getOrigin() ==null) {
+					if(!documentInfo.equals(res.getDocumentInfo())) {
+						System.out.println("IGID:"+ ig.getId()+ "Type:"+ l.getType() +",ResourceID:"+ l.getId());
+					}
+				}
+			}
+
+			for ( Link l: ig.getDatatypeRegistry().getChildren()) {
+				Resource res = this.getResouce(l.getId(), Type.DATATYPE);
+				if(res.isDerived() && res.getOrigin() ==null) {
+					if(!documentInfo.equals(res.getDocumentInfo())) {
+						System.out.println("IGID:"+ ig.getId()+ "Type:"+ l.getType() +",ResourceID:"+ l.getId());
+					}
+				}
+
+			}
+			
+			for ( Link l: ig.getValueSetRegistry().getChildren()) {
+				Resource res = this.getResouce(l.getId(), Type.VALUESET);
+				if(res.isDerived() && res.getOrigin() ==null) {
+					if(!documentInfo.equals(res.getDocumentInfo())) {
+						System.out.println("IGID:"+ ig.getId()+ "Type:"+ l.getType() +",ResourceID:"+ l.getId());
+					}
+				}
+			}  
+
+			for ( Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
+				Resource res = this.getResouce(l.getId(), Type.COCONSTRAINTGROUP);
+				if(res.getDocumentInfo() != null) {
+					if(!documentInfo.equals(res.getDocumentInfo())) {
+						System.out.println("IGID:"+ ig.getId()+ "Type:"+ l.getType() +",ResourceID:"+ l.getId());
+					}
+				}
+
+			}
+			
+			for ( Link l: ig.getProfileComponentRegistry().getChildren()) {
+				Resource res = this.getResouce(l.getId(), Type.PROFILECOMPONENT);
+				if(res.getDocumentInfo() != null) {
+					if(!documentInfo.equals(res.getDocumentInfo())) {
+						System.out.println("IGID:"+ ig.getId()+ "Type:"+ l.getType() +",ResourceID:"+ l.getId());
+					}
+				}
+			}	
+			
+			for ( Link l: ig.getCompositeProfileRegistry().getChildren()) {
+
+				Resource res = this.getResouce(l.getId(), Type.COMPOSITEPROFILE);
+				if(res.getDocumentInfo() != null) {
+					if(!documentInfo.equals(res.getDocumentInfo())) {
+						System.out.println("IGID:"+ ig.getId()+ "Type:"+ l.getType() +",ResourceID:"+ l.getId());
+					}
+				}
+			}	
+		}		
+		
+	
 
 }

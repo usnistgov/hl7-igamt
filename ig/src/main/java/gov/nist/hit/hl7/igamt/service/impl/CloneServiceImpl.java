@@ -243,6 +243,7 @@ public class CloneServiceImpl implements  CloneService {
     } else if(info.getMode().equals(CloneMode.DERIVE)) {
       ig.getMetadata().setTitle(ig.getMetadata().getTitle() + "[derived]");
       ig.setDerived(true); 
+      ig.setOrigin(ig.getFrom());
       if(!info.isInherit()) {
 
         Set<TextSection> content = new HashSet<TextSection>();

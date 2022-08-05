@@ -551,10 +551,12 @@ public class BootstrapApplication implements CommandLineRunner {
 			//sanityChecker.checkWrongDomainInfo(ig);
 			//sanityChecker.checkNullDocumentInfo(ig);
 			//sanityChecker.checkWrongDocumentInfo(ig);
-					}
+			sanityChecker.checkMissingOrigin(ig);
+					
+		}
 	}
 	
-	@PostConstruct
+	//@PostConstruct
 	void checkCustomStructures() {
 		this.sanityChecker.checkCustomStructures();
 	}

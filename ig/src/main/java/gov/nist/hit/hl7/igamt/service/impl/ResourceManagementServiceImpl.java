@@ -184,6 +184,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     if(mode.equals(CloneMode.DERIVE)) {
       this.lockConformanceStatements(resource);
       resource.setDerived(true);
+      resource.setOrigin(resource.getFrom());
     }
     this.updateReasonForChange(resource);
   }
