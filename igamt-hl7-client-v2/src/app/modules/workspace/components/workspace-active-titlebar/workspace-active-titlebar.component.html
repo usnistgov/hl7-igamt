@@ -1,0 +1,15 @@
+<ng-container *ngIf="active$ | async as active">
+  <div style="display: flex; justify-content: space-between; width: 100%;">
+    <div>
+      <ng-container *ngIf="!header">
+        <ng-container *ngTemplateOutlet="defaultHeader; context: { $implicit : active }"></ng-container>
+      </ng-container>
+      <ng-container *ngIf="header">
+        <ng-container *ngTemplateOutlet="header; context : { $implicit: active, defaultTemplate: defaultHeader }"></ng-container>
+      </ng-container>
+    </div>
+    <div *ngIf="controls" style="flex: none;">
+      <ng-container *ngTemplateOutlet="controls; context : { $implicit: active }"></ng-container>
+    </div>
+  </div>
+</ng-container>

@@ -11,11 +11,11 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './modules/core/core.module';
 import { DamRoutingModule } from './modules/dam-framework/dam-framework.module';
+import { WorkspaceModule } from './modules/workspace/workspace.module';
 import { reducers } from './root-store';
 import { ConfigEffects } from './root-store/config/config.effects';
 import {LoadedResourcesEffects} from './root-store/dam-igamt/igamt.loaded-resources.effects';
 import { ResourceLoaderEffects } from './root-store/resource-loader/resource-loader.effects';
-import { WorkspaceModule } from './modules/workspace/workspace.module';
 @NgModule({
   declarations: [
     AppComponent,

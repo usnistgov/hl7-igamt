@@ -1,10 +1,10 @@
-import { IWorkspaceListItem } from './../../shared/models/workspace-list-item.interface';
-import { WorkspaceLoadType } from './../../../root-store/workspace/workspace-list/workspace-list.actions';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Message } from '../../dam-framework/models/messages/message.class';
+import { WorkspaceLoadType } from './../../../root-store/workspace/workspace-list/workspace-list.actions';
+import { IWorkspaceListItem } from './../../shared/models/workspace-list-item.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -30,7 +30,7 @@ export class WorkspaceListService {
   fetchWorkspaceList(type: WorkspaceLoadType): Observable<IWorkspaceListItem[]> {
     return this.http.get<IWorkspaceListItem[]>('api/workspaces', {
       params: {
-        type:type,
+        type,
       },
     }).pipe(
       map((list) => {

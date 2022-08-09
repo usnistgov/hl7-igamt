@@ -13,11 +13,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Workspace {
 	@Id
 	private String id;
-	private  WorkspaceAccessType accessType;
+	private WorkspaceAccessType accessType;
 	private WorkspaceMetadata metadata;
-	private  UserAccessInfo userAccessInfo;
-	private  Set<DocumentLink>  documents;
+	private UserAccessInfo userAccessInfo;
+	private Set<DocumentLink>  documents;
 	private Set<Folder>  folders;
+	private String homePageContent;
+	// Owner
 	private String username;
 	@CreatedDate
 	private Date creationDate;
@@ -26,10 +28,16 @@ public class Workspace {
 	
 	public Workspace() {
 		super();
-		folders = new HashSet<Folder>();
-		documents = new HashSet<DocumentLink>();
+		folders = new HashSet<>();
+		documents = new HashSet<>();
 	}
-	
+
+	public String getHomePageContent() {
+		return homePageContent;
+	}
+	public void setHomePageContent(String homePageContent) {
+		this.homePageContent = homePageContent;
+	}
 	public String getId() {
 		return id;
 	}
@@ -66,21 +74,23 @@ public class Workspace {
 	public void setFolders(Set<Folder> folders) {
 		this.folders = folders;
 	}
-
 	public String getUsername() {
 		return username;
 	}
-
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
 	public Date getUpdateDate() {
 		return updateDate;
 	}
-
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
 	}
-	
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
 }

@@ -1,9 +1,9 @@
-import { WorkspaceLoadType } from './workspace-list.actions';
-import { IWorkspaceListItem } from './../../../modules/shared/models/workspace-list-item.interface';
 import {createSelector} from '@ngrx/store';
 import {ISortOptions} from 'src/app/modules/shared/models/sort.class';
+import { IWorkspaceListItem } from './../../../modules/shared/models/workspace-list-item.interface';
 import {selectWorkspaceList} from './../workspace.reducer';
-import {workspaceListItemAdapter, IState} from './workspace-list.reducer';
+import { WorkspaceLoadType } from './workspace-list.actions';
+import {IState, workspaceListItemAdapter} from './workspace-list.reducer';
 
 export const {
   selectAll,

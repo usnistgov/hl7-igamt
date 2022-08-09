@@ -1,0 +1,56 @@
+<ng-template #headerControls>
+  <ng-container *ngIf="isEditor$ | async" >
+    <div style="display: flex; align-items: flex-start; justify-content: flex-end;" ngbDropdown display="dynamic" placement="bottom-right">
+      <button class="btn btn-sm btn-primary" ngbDropdownToggle >
+        <i class="fa fa-fw fa-list"></i> Implementation Guides
+      </button>
+      <div ngbDropdownMenu>
+        <button ngbDropdownItem class="btn btn-sm" >
+          <i class="fa fa-plus"></i>
+          Add New
+        </button>
+        <button ngbDropdownItem class="btn btn-sm" (click)="importIg()" >
+          <i class="fa fa-download"></i>
+          Import
+        </button>
+      </div>
+    </div>
+  </ng-container>
+</ng-template>
+<ng-template #headerTitle let-active>
+  <h4 style="margin: 0;">
+    <i class="fa fa-folder" style="margin-right: 5px;"></i>
+    {{active.display.name}}
+  </h4>
+</ng-template>
+
+<div>
+  <div class="search-bar">
+
+    <p-dropdown (ngModelChange)="sortPropertyChanged($event)" [(ngModel)]="sortProperty" [autoDisplayFirst]="false"
+                [options]="sortOptions" [placeholder]="'Sort Criterion'">
+    </p-dropdown>
+    <button (click)="sortOrderChanged(!sortOrder.ascending)" class="btn btn-sm btn-primary" style="height: 35px;">
+      <i [class]="'fa ' + (sortOrder.ascending ? 'fa-arrow-down' : 'fa-arrow-up')"></i>
+    </button>
+
+    <div class="input-group" style="margin-left: 10px;">
+      <div class="input-group-prepend" style="height: 35px;">
+        <span class="input-group-text" id="inputGroupPrepend3"><i [ngStyle]="{'color': filter && filter !== '' ? '#00c31b' : ''}"
+                                                                  class="fa fa-filter"></i></span>
+      </div>
+      <input (ngModelChange)="filterTextChanged($event)" [(ngModel)]="filter" class="form-control"
+             id="validationServerUsername" placeholder="Filter" required
+             style="background-color: #f0f0f0; height: 35px;" type="text">
+    </div>
+  </div>
+
+  <!-- IG LIST -->
+  <div class="ig-list">
+    <div>
+      <!-- <div *ngFor="let item of listItems | async" class="spacer">
+        <app-ig-list-item-card [controls]="controls | async" [igListItem]="item"></app-ig-list-item-card>
+      </div> -->
+    </div>
+  </div>
+</div>

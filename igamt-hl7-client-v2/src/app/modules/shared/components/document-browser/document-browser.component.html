@@ -23,14 +23,10 @@
 
     <div class="folder-content">
       <p-breadcrumb *ngIf="items.length" [model]="items"></p-breadcrumb>
-
         <div *ngFor="let elm of currentList">
-
           <ng-container *ngTemplateOutlet="getTemplateByListItem(elm); context: {$implicit: elm}"></ng-container>
         </div>
     </div>
-
-
 
   </div>
 

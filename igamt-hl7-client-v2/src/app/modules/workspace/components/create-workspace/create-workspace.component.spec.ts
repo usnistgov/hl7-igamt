@@ -8,7 +8,7 @@ describe('CreateWorkspaceComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CreateWorkspaceComponent ]
+      declarations: [ CreateWorkspaceComponent ],
     })
     .compileComponents();
   }));

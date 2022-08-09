@@ -4,15 +4,11 @@ public class WorkspaceMetadata {
 
 	private String title; 
 	private String description;
-	private String coverPicture;
-	
-	
+	private String logoImageId;
 	
 	public WorkspaceMetadata() {
 		super();
 	}
-	
-	
 	public String getTitle() {
 		return title;
 	}
@@ -25,13 +21,10 @@ public class WorkspaceMetadata {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public String getCoverPicture() {
-		return coverPicture;
+	public String getLogoImageId() {
+		return logoImageId;
 	}
-	public void setCoverPicture(String coverPicture) {
-		this.coverPicture = coverPicture;
+	public void setLogoImageId(String logoImageId) {
+		this.logoImageId = logoImageId;
 	}
-
-	
-	
 }

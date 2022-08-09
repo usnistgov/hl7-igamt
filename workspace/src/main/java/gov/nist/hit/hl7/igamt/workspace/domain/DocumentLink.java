@@ -3,11 +3,11 @@ package gov.nist.hit.hl7.igamt.workspace.domain;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class DocumentLink {
+
 	String id;
-	int positin;
+	int position;
 	Type type;
-	
-	
+
 	public DocumentLink() {
 		super();
 	}
@@ -17,11 +17,11 @@ public class DocumentLink {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public int getPositin() {
-		return positin;
+	public int getPosition() {
+		return position;
 	}
-	public void setPositin(int positin) {
-		this.positin = positin;
+	public void setPosition(int position) {
+		this.position = position;
 	}
 	public Type getType() {
 		return type;
@@ -29,6 +29,5 @@ public class DocumentLink {
 	public void setType(Type type) {
 		this.type = type;
 	}
-	
-	
+
 }

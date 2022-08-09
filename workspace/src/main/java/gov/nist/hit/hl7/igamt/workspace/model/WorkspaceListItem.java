@@ -1,26 +1,19 @@
 package gov.nist.hit.hl7.igamt.workspace.model;
 
-import java.util.List;
-
-import ch.qos.logback.core.status.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class WorkspaceListItem {
 
-	  String title;
-	  int position;
-	  String coverPicture;
-	  String string;
-	  String dateUpdated;
-//	  type: IWorkspaceListItemType;
-	  String id;
-	  String username;
-	  List<String> elements;
-	  Status status;
-	  Type resourceType;
-//	  List<String> sharedUsers: string[];
-	  
-	  
+	String id;
+	String title;
+	int position;
+	String coverPicture;
+	String description;
+	String dateUpdated;
+	String username;
+	Type resourceType;
+
+
 	public WorkspaceListItem() {
 		super();
 		this.resourceType= Type.WORKSPACE;
@@ -43,12 +36,23 @@ public class WorkspaceListItem {
 	public void setCoverPicture(String coverPicture) {
 		this.coverPicture = coverPicture;
 	}
-	public String getString() {
-		return string;
+
+	public String getDescription() {
+		return description;
 	}
-	public void setString(String string) {
-		this.string = string;
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
+
+	public Type getResourceType() {
+		return resourceType;
+	}
+
+	public void setResourceType(Type resourceType) {
+		this.resourceType = resourceType;
+	}
+
 	public String getDateUpdated() {
 		return dateUpdated;
 	}
@@ -67,18 +71,5 @@ public class WorkspaceListItem {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	public List<String> getElements() {
-		return elements;
-	}
-	public void setElements(List<String> elements) {
-		this.elements = elements;
-	}
-	public Status getStatus() {
-		return status;
-	}
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-	
-	
+
 }

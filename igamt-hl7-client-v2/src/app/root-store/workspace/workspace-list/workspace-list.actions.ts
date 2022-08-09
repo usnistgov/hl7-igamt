@@ -1,6 +1,6 @@
-import { IWorkspaceListItem } from './../../../modules/shared/models/workspace-list-item.interface';
 import { Action } from '@ngrx/store';
 import { ISortOptions } from 'src/app/modules/shared/models/sort.class';
+import { IWorkspaceListItem } from './../../../modules/shared/models/workspace-list-item.interface';
 export enum  WorkspaceListActionTypes {
   LoadWorkspaceList = '[WorkspaceList] Load Workspace List Items',
   UpdateWorkspaceList = '[WorkspaceList] Update Workspace List Items',

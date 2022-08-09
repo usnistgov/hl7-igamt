@@ -1,43 +1,47 @@
-import { IgListItem } from './../../document/models/document/ig-list-item.class';
-import { IDocumentRef } from './../../shared/models/abstract-domain.interface';
-import { Type } from "../../shared/constants/type.enum";
+import { Type } from '../../shared/constants/type.enum';
 
 export enum WorkspaceAccessType {
   PUBLIC = 'PUBLIC',
-  DISCOVERABLE = 'DISCOVERABLE',
-  PRIVATE = 'PRIVATE'
+  PRIVATE = 'PRIVATE',
 }
 
-export interface IWorkspace {
-  id: string,
-  accessType?: WorkspaceAccessType,
-  metadata: IWorkspaceMetadata,
-  userAccessInfo?: IUserAccessInfo,
-  documents: IDocumentLinks[],
-  folders: IFolder[]
+export enum WorkspacePermissionType {
+  VIEW = 'VIEW',
+  EDIT = 'EDIT',
+}
+export interface IWorkspaceInfo {
+  id: string;
+  admin: boolean;
+  accessType: WorkspaceAccessType;
+  metadata: IWorkspaceMetadata;
+  homePageContent: string;
+  owner: string;
+  folders: IFolderInfo[];
+  created: Date;
+  updated: Date;
 }
 
 export interface IWorkspaceMetadata {
-  title: string,
-  description?: string,
-  coverPicture?: string,
+  title: string;
+  description?: string;
+  logoImageId?: string;
 }
 export interface IDocumentLinks {
-  id: string,
-  type: Type,
-  position: number,
+  id: string;
+  type: Type;
+  position: number;
 }
-export interface IFolder {
-  metadata : IWorkspaceMetadata,
-  userAccessInfo?: IUserAccessInfo,
-  documents: IDocumentLinks[],
-  position: number,
-}
-export interface IUserAccessInfo {
-  owner?: string,
+export interface IFolderInfo {
+  id: string;
+  type: 'FOLDER';
+  metadata: IFolderMetadata;
+  children: IDocumentLinks[];
+  position: number;
+  permissionType: WorkspacePermissionType;
+  editors: string[];
 }
 
-export interface IWorkspaceDisplayInfo {
-  igs?: IgListItem[]
-  workspace?: IWorkspace,
+export interface IFolderMetadata {
+  title: string;
+  description?: string;
 }

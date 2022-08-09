@@ -7,7 +7,7 @@ public class Folder {
 
 	private String id; 
 	private int position;
-	private WorkspaceMetadata metadata;
+	private FolderMetadata metadata;
 	private Set<DocumentLink> children;
 
 	public Folder() {
@@ -31,11 +31,11 @@ public class Folder {
 		this.position = position;
 	}
 
-	public WorkspaceMetadata getMetadata() {
+	public FolderMetadata getMetadata() {
 		return metadata;
 	}
 
-	public void setMetadata(WorkspaceMetadata metadata) {
+	public void setMetadata(FolderMetadata metadata) {
 		this.metadata = metadata;
 	}
 

@@ -1,0 +1,28 @@
+@import '../../../../../assets/variables';
+
+.ig-list-layout {
+  display: grid;
+  grid-template-areas: 'search-bar' 'ig-list';
+  grid-template-columns: 1fr;
+  grid-template-rows: minmax(min-content, max-content) 70px 60px auto;
+  height: 100%;
+}
+
+
+.search-bar {
+  grid-area: search-bar;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.ig-list {
+  grid-area: ig-list;
+  max-height: 100%;
+  overflow: scroll;
+}
+
+.spacer {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}

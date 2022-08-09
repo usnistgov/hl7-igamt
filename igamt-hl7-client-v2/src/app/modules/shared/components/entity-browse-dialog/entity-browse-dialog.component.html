@@ -1,0 +1,100 @@
+<!-- <h3 mat-dialog-title style="text-align: center;">Pick {{browser.browserType === 'TARGET' ? 'a destination' : 'an Ig Document'}} </h3> -->
+<div mat-dialog-body>
+  <div style="display: flex;">
+    <div style="border-right: 1px solid lightgray; padding-right: 20px; text-align: center;">
+      <span style="color: #9b9898;">Scope</span>
+      <ul class="list-group" style="margin-top: 15px; margin-bottom: 15px;" >
+        <li (click)="getTreeByScope(BrowserScope.PRIVATE_IG_LIST)" [ngClass]="{'nav-active-link': scope === BrowserScope.PRIVATE_IG_LIST}" class="list-group-item list-item cursor-pointer" *ngIf="browser?.scope?.privateIgList">
+          <span>
+            <i class="fa fa-lock" style="margin-right: 5px;"></i> Private Ig List
+          </span>
+        </li>
+        <li (click)="getTreeByScope(BrowserScope.PUBLIC_IG_LIST)" [ngClass]="{'nav-active-link': scope === BrowserScope.PUBLIC_IG_LIST}" class="list-group-item list-item cursor-pointer" *ngIf="browser?.scope?.publicIgList">
+          <span>
+            <i class="fa fa-globe" style="margin-right: 5px;"></i> Public Ig List
+          </span>
+        </li>
+        <li (click)="getTreeByScope(BrowserScope.WORKSPACES)" [ngClass]="{'nav-active-link': scope === BrowserScope.WORKSPACES}" class="list-group-item list-item cursor-pointer" *ngIf="browser?.scope?.workspaces">
+          <span>
+            <i class="fa fa-briefcase" style="margin-right: 5px;"></i> Workspaces
+          </span>
+        </li>
+      </ul>
+      <span style="color: #9b9898; margin-bottom: 15px;">Options</span>
+      <form [formGroup]="options" style="margin-top: 15px;">
+        <p-checkbox *ngFor="let item of browser.options; trackBy: track" [binary]="true" [name]="item.key"
+        [formControl]="options.controls[item.key]" [label]="item.label"></p-checkbox>
+      </form>
+    </div>
+    <div  style="padding-left: 20px;">
+      <div style="color: #9b9898; margin-bottom: 15px; text-align: center;">Pick an Implementation Guide</div>
+      <p-treeTable [value]="browserTree" [columns]="columns" [paginator]="true" [rows]="5" [reorderableColumns]="true" [resizableColumns]="true" selectionMode="single"
+      [(selection)]="selected"
+      (onNodeUnselect)="nodeUpdate($event, false)"
+      (onNodeSelect)="nodeUpdate($event, true)"
+      dataKey="id" >
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+              <ng-container *ngFor="let col of columns" [ngSwitch]="col">
+                <th *ngSwitchCase="colType.NAME" style="width: 700px;" ttReorderableColumn ttResizableColumn>
+                  Name
+                </th>
+                <th *ngSwitchCase="colType.TYPE" ttReorderableColumn ttResizableColumn>
+                  Type
+                </th>
+                <th *ngSwitchCase="colType.DATE" ttReorderableColumn ttResizableColumn>
+                  Date
+                </th>
+              </ng-container>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+            <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode" [ttSelectableRowDisabled]="!rowNode.node.selectable">
+                <td [ngSwitch]="col" class="text-cell" *ngFor="let col of columns; let i = index" >
+                  <ng-container *ngSwitchCase="colType.NAME">
+                    <tbody>
+                      <tr>
+                        <td style="width: 30px;">
+                          <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
+                        </td>
+                        <td style="white-space: normal;">
+                          <app-entity-bagde [type]="rowData.type"></app-entity-bagde>
+                          <app-scope-badge *ngIf="rowData.domainInfo" [scope]="rowData.domainInfo.scope" [version]="rowData.domainInfo.version"></app-scope-badge>
+                          <strong style="margin-left: 10px">{{rowData.label}}</strong>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="colType.TYPE">
+                    {{rowData.type}}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="colType.DATE">
+                    {{rowData.dateUpdated | date}}
+                  </ng-container>
+                </td>
+            </tr>
+        </ng-template>
+    </p-treeTable>
+    <div *ngIf="selected"  style="color: #9b9898; margin: 15px; text-align: center;">Selection</div>
+    <ul class="list-group" *ngIf="selected" >
+      <li class="list-group-item list-item" >
+        <div>
+          <app-entity-bagde [type]="selected.data.type"></app-entity-bagde>
+          <app-scope-badge *ngIf="selected.data.domainInfo" [scope]="selected.data.domainInfo.scope" [version]="selected.data.domainInfo.version"></app-scope-badge>
+          <strong style="margin-left: 10px">{{selected.data.label}}</strong>
+        </div>
+        <div>
+          <button class="btn btn-sm btn-danger">
+            <i class="fa fa-trash"></i>
+          </button>
+        </div>
+      </li>
+    </ul>
+    </div>
+  </div>
+
+</div>
+<mat-dialog-actions style="justify-content: flex-end; margin-top: 10px;">
+  <button class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button class="btn btn-sm btn-success">Done</button>
+</mat-dialog-actions>

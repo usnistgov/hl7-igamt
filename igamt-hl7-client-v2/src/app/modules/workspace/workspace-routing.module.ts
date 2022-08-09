@@ -1,22 +1,24 @@
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
 import { WORKSPACE_EDIT_WIDGET_ID } from 'src/app/modules/workspace/components/workspace-edit/workspace-edit.component';
-import { WorkspaceEditResolverLoad, WorkspaceEditActionTypes, OpenWorkspaceMetadataEditorNode } from './../../root-store/workspace/workspace-edit/workspace-edit.actions';
-import { WorkspaceMetadataComponent } from './components/workspace-edit/workspace-metadata/workspace-metadata.component';
-import { Type } from './../shared/constants/type.enum';
-import { EditorID } from './../shared/models/editor.enum';
-import { IG_EDIT_WIDGET_ID } from './../ig/components/ig-edit-container/ig-edit-container.component';
+import { OpenWorkspaceFolderEditor, OpenWorkspaceHomeEditor } from '../../root-store/workspace/workspace-edit/workspace-edit.actions';
+import { ErrorPageComponent } from '../core/components/error-page/error-page.component';
+import { OpenWorkspaceMetadataEditor, WorkspaceEditActionTypes, WorkspaceEditResolverLoad } from './../../root-store/workspace/workspace-edit/workspace-edit.actions';
+import { DamWidgetContainerComponent } from './../dam-framework/components/data-widget/dam-widget-container/dam-widget-container.component';
+import { AuthenticatedGuard } from './../dam-framework/guards/auth-guard.guard';
+import { DataLoaderGuard } from './../dam-framework/guards/data-loader.guard';
 import { EditorActivateGuard } from './../dam-framework/guards/editor-activate.guard';
 import { EditorDeactivateGuard } from './../dam-framework/guards/editor-deactivate.guard';
 import { WidgetDeactivateGuard } from './../dam-framework/guards/widget-deactivate.guard';
-import { DataLoaderGuard } from './../dam-framework/guards/data-loader.guard';
 import { WidgetSetupGuard } from './../dam-framework/guards/widget-setup.guard';
-import { WorkspaceEditComponent } from './components/workspace-edit/workspace-edit.component';
-import { DamWidgetContainerComponent } from './../dam-framework/components/data-widget/dam-widget-container/dam-widget-container.component';
+import { Type } from './../shared/constants/type.enum';
+import { EditorID } from './../shared/models/editor.enum';
 import { CreateWorkspaceComponent } from './components/create-workspace/create-workspace.component';
+import { WorkspaceEditComponent } from './components/workspace-edit/workspace-edit.component';
+import { WorkspaceFolderEditorComponent } from './components/workspace-folder-editor/workspace-folder-editor.component';
+import { WorkspaceHomeEditorComponent } from './components/workspace-home-editor/workspace-home-editor.component';
 import { WorkspaceListComponent } from './components/workspace-list/workspace-list.component';
-import { AuthenticatedGuard } from './../dam-framework/guards/auth-guard.guard';
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { ErrorPageComponent } from '../core/components/error-page/error-page.component';
+import { WorkspaceMetadataEditorComponent } from './components/workspace-metadata-editor/workspace-metadata-editor.component';
 
 const routes: Routes = [
   {
@@ -53,14 +55,33 @@ const routes: Routes = [
     ],
     path: ':workspaceId',
     children: [
-      // {
-      //   path: '',
-      //   redirectTo: 'metadata',
-      //   pathMatch: 'full',
-      // },
+      {
+        path: '',
+        redirectTo: 'home',
+        pathMatch: 'full',
+      },
+      {
+        path: 'home',
+        component: WorkspaceHomeEditorComponent,
+        canActivate: [EditorActivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.WORKSPACE_HOME,
+            title: 'Home',
+            resourceType: Type.WORKSPACE,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenWorkspaceHomeEditor,
+          idKey: 'workspaceId',
+        },
+        canDeactivate: [EditorDeactivateGuard],
+      },
       {
         path: 'metadata',
-        component: WorkspaceMetadataComponent,
+        component: WorkspaceMetadataEditorComponent,
         canActivate: [EditorActivateGuard],
         data: {
           editorMetadata: {
@@ -72,35 +93,35 @@ const routes: Routes = [
             saveEditor: true,
             saveTableOfContent: true,
           },
-          action: OpenWorkspaceMetadataEditorNode,
+          action: OpenWorkspaceMetadataEditor,
           idKey: 'workspaceId',
         },
         canDeactivate: [EditorDeactivateGuard],
       },
-      // {
-      //   path: 'folder/:folderId',
-      //   component: WorkspaceFolderEditorComponent,
-      //   canActivate: [EditorActivateGuard],
-      //   data: {
-      //     editorMetadata: {
-      //       id: EditorID.SECTION_NARRATIVE,
-      //       resourceType: Type.TEXT,
-      //     },
-      //     onLeave: {
-      //       saveEditor: true,
-      //       saveTableOfContent: true,
-      //     },
-      //     action: OpenFolderEditorNode,
-      //     idKey: 'folderId',
-      //   },
-      //   canDeactivate: [EditorDeactivateGuard],
-      // },
+      {
+        path: 'folder/:folderId',
+        component: WorkspaceFolderEditorComponent,
+        canActivate: [EditorActivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.WORKSPACE_FOLDER,
+            resourceType: Type.FOLDER,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenWorkspaceFolderEditor,
+          idKey: 'folderId',
+        },
+        canDeactivate: [EditorDeactivateGuard],
+      },
     ],
-  }
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class WorkspaceRoutingModule { }

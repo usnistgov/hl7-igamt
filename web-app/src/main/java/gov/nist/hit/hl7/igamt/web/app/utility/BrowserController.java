@@ -1,0 +1,26 @@
+package gov.nist.hit.hl7.igamt.web.app.utility;
+
+import gov.nist.hit.hl7.igamt.web.app.service.impl.BrowserScope;
+import gov.nist.hit.hl7.igamt.web.app.service.impl.BrowserTreeNode;
+import gov.nist.hit.hl7.igamt.web.app.service.impl.EntityBrowserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+public class BrowserController {
+
+    @Autowired
+    EntityBrowserService browserService;
+
+    @RequestMapping(value = "/api/browser/{scope}", method = RequestMethod.GET, produces = { "application/json" })
+    @ResponseBody
+    public List<BrowserTreeNode> getBrowserTree(
+            Authentication authentication,
+            @PathVariable("scope") BrowserScope scope
+    ) throws Exception {
+        String username = authentication.getPrincipal().toString();
+        return browserService.getBrowserTreeNodeByScope(scope, username);
+    }
+}

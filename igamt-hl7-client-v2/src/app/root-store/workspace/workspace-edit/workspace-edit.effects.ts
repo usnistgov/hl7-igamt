@@ -1,17 +1,19 @@
-import { Store } from '@ngrx/store';
-import { catchError, flatMap, take, switchMap, map } from 'rxjs/operators';
-import { of } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
-import { WorkspaceEditActionTypes, WorkspaceEditResolverLoad, WorkspaceEditResolverLoadSuccess, WorkspaceEditResolverLoadFailure, WorkspaceEditActions } from './workspace-edit.actions';
-import { WorkspaceService } from './../../../modules/workspace/services/workspace.service';
+import { Injectable } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { DamWidgetEffect } from './../../../modules/dam-framework/store/dam-widget-effect.class';
-import { Injectable } from "@angular/core";
-import * as fromDAM from 'src/app/modules/dam-framework/store/index';
-import {ActivatedRoute, Router} from '@angular/router';
+import { Store } from '@ngrx/store';
+import { of } from 'rxjs';
+import { catchError, concatMap, flatMap, map, switchMap, take } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { WORKSPACE_EDIT_WIDGET_ID } from 'src/app/modules/workspace/components/workspace-edit/workspace-edit.component';
-import { IWorkspaceDisplayInfo } from 'src/app/modules/workspace/models/models';
+import { EditorSave } from '../../../modules/dam-framework/store/data/dam.actions';
+import { IWorkspaceInfo } from '../../../modules/workspace/models/models';
+import { DamWidgetEffect } from './../../../modules/dam-framework/store/dam-widget-effect.class';
+import { WorkspaceService } from './../../../modules/workspace/services/workspace.service';
+import { OpenWorkspaceFolderEditor, OpenWorkspaceHomeEditor, OpenWorkspaceMetadataEditor, WorkspaceEditActions, WorkspaceEditActionTypes, WorkspaceEditResolverLoad, WorkspaceEditResolverLoadFailure, WorkspaceEditResolverLoadSuccess } from './workspace-edit.actions';
+import { selectWorkspaceId } from './workspace-edit.selectors';
 
 @Injectable()
 export class WorkspaceEditEffects extends DamWidgetEffect {
@@ -37,11 +39,10 @@ export class WorkspaceEditEffects extends DamWidgetEffect {
 
       return this.workspaceService.getWorkspaceInfo(action.id).pipe(
         take(1),
-        flatMap((workspaceInfo: IWorkspaceDisplayInfo) => {
+        flatMap((workspaceInfo: IWorkspaceInfo) => {
           return [
             new fromDAM.TurnOffLoader(),
-            new fromDAM.LoadPayloadData(workspaceInfo.workspace),
-            this.workspaceService.loadRepositoryFromWorkspaceDisplayInfo(workspaceInfo),
+            ...this.workspaceService.getWorkspaceInfoUpdateAction(workspaceInfo),
             new WorkspaceEditResolverLoadSuccess(workspaceInfo),
           ];
         }),
@@ -57,10 +58,101 @@ export class WorkspaceEditEffects extends DamWidgetEffect {
   );
 
   @Effect()
+  workspaceSave$ = this.actions$.pipe(
+    ofType(fromDAM.DamActionTypes.GlobalSave),
+    map((action: fromDAM.GlobalSave) => {
+      return new EditorSave();
+    }),
+  );
+
+  @Effect()
   workspaceEditResolverLoadFailure$ = this.actions$.pipe(
     ofType(WorkspaceEditActionTypes.WorkspaceEditResolverLoadFailure),
     map((action: WorkspaceEditResolverLoadFailure) => {
       return this.message.actionFromError(action.error);
     }),
   );
+
+  @Effect()
+  openWorkspaceHomeEditor$ = this.actions$.pipe(
+    ofType(WorkspaceEditActionTypes.OpenWorkspaceHomeEditor),
+    switchMap((action: OpenWorkspaceHomeEditor) => {
+      return this.workspaceService.getWorkspaceInfo(action.payload.id).pipe(
+        flatMap((wsInfo) => {
+          return [
+            ...this.workspaceService.getWorkspaceInfoUpdateAction(wsInfo),
+            new fromDAM.OpenEditor({
+              id: action.payload.id,
+              display: {
+                id: action.payload.id,
+              },
+              editor: action.payload.editor,
+              initial: {
+                value: wsInfo.homePageContent,
+              },
+            }),
+          ];
+        }),
+      );
+    }),
+  );
+
+  @Effect()
+  OpenWorkspaceMetadataEditor$ = this.actions$.pipe(
+    ofType(WorkspaceEditActionTypes.OpenWorkspaceMetadataEditor),
+    switchMap((action: OpenWorkspaceMetadataEditor) => {
+      return this.workspaceService.getWorkspaceInfo(action.payload.id).pipe(
+        flatMap((wsInfo) => {
+          return [
+            ...this.workspaceService.getWorkspaceInfoUpdateAction(wsInfo),
+            new fromDAM.OpenEditor({
+              id: action.payload.id,
+              display: {
+                id: action.payload.id,
+              },
+              editor: action.payload.editor,
+              initial: {
+                ...wsInfo.metadata,
+              },
+            }),
+          ];
+        }),
+      );
+    }),
+  );
+
+  @Effect()
+  OpenFolderEditor$ = this.actions$.pipe(
+    ofType(WorkspaceEditActionTypes.OpenWorkspaceFolderEditor),
+    switchMap((action: OpenWorkspaceFolderEditor) => {
+      return this.store.select(selectWorkspaceId).pipe(
+        take(1),
+        flatMap((wsId) => {
+          return this.workspaceService.getWorkspaceInfo(wsId).pipe(
+            flatMap((wsInfo) => {
+              const folder = (wsInfo.folders || []).find((f) => f.id === action.payload.id);
+              const editorAction = folder ?
+                new fromDAM.OpenEditor({
+                  id: action.payload.id,
+                  display: {
+                    id: action.payload.id,
+                    name: folder.metadata.title,
+                  },
+                  editor: action.payload.editor,
+                  initial: {
+                    ...folder,
+                  },
+                }) :
+                new fromDAM.OpenEditorFailure(action.payload);
+              return [
+                ...this.workspaceService.getWorkspaceInfoUpdateAction(wsInfo),
+                editorAction,
+              ];
+            }),
+          );
+        }),
+      );
+    }),
+  );
+
 }

@@ -1,6 +1,8 @@
-import {  DiscoverableListItem } from './../../document/models/document/ig-list-item.class';
-export class IWorkspaceListItem  extends DiscoverableListItem {
+import { DiscoverableListItem } from './../../document/models/document/ig-list-item.class';
+
+export class IWorkspaceListItem extends DiscoverableListItem {
   position: number;
+  description: string;
   coverPicture?: any;
   subtitle: string;
   dateUpdated: string;
@@ -9,7 +11,7 @@ export class IWorkspaceListItem  extends DiscoverableListItem {
   participants?: any;
   elements?: string[];
   status: any;
-  sharePermission?: string;x
+  sharePermission?: string;
   sharedUsers?: string[];
   currentAuthor?: string;
 }

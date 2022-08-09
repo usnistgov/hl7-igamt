@@ -1,0 +1,27 @@
+<ng-template #headerControls>
+  <ng-container *ngIf="isAdmin$ | async">
+    <button
+      *ngIf="viewMode"
+      class="btn btn-sm btn-primary"
+      (click)="toggleEdit()"
+    >
+      <i class="fa fa-pencil" style="margin-right: 5px;"></i>
+      Edit
+    </button>
+    <app-dam-reset-button *ngIf="!viewMode"></app-dam-reset-button>
+    <app-dam-save-button *ngIf="!viewMode"></app-dam-save-button>
+  </ng-container>
+</ng-template>
+<ng-template #headerTitle>
+  <h4 style="margin: 0;">
+    <i class="fa fa-home" style="margin-right: 5px;"></i>
+    Home
+  </h4>
+</ng-template>
+
+<form [formGroup]="text" style="display: flex; flex-direction: column; height: 100%;">
+  <div id="content" *ngIf="!viewMode" [froalaEditor]="froalaConfig$ | async"
+    formControlName="value"
+    style="flex-grow: 1; display: flex; flex-direction: column;"></div>
+  <div *ngIf="viewMode && text.controls['value'].value" [froalaView]="text.controls['value'].value" [froalaEditor]="froalaConfig$ | async"></div>
+</form>

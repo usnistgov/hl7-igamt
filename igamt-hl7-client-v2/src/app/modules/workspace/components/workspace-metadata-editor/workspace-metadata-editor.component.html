@@ -1,0 +1,18 @@
+<ng-template #headerControls>
+  <ng-container *ngIf="isAdmin$ | async">
+    <app-dam-reset-button></app-dam-reset-button>
+    <app-dam-save-button></app-dam-save-button>
+  </ng-container>
+</ng-template>
+<ng-template #headerTitle>
+  <h4 style="margin: 0;">
+    <i class="fa fa-file-text" style="margin-right: 5px;"></i>
+    Metadata
+  </h4>
+</ng-template>
+<form [formGroup]="metaDataForm" style="display: flex; flex-direction: column;">
+  <app-form-input formControlName="title" id="title" name="title"
+    placeholder="Workspace Title" label="Title"> </app-form-input>
+  <app-form-input formControlName="description" id="description" name="description"
+  placeholder="Description" label="Description"> </app-form-input>
+</form>

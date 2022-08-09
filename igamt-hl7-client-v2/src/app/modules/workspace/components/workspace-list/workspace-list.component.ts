@@ -1,26 +1,25 @@
-import { WorkspaceListItemControl } from './../workspace-list-card/workspace-list-card.component';
-import { ClearAll } from './../../../dam-framework/store/messages/messages.actions';
-import { ConfirmDialogComponent } from './../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
-import { WorkspaceLoadType, DeleteWorkspaceListItemRequest, SelectWorkspaceListViewType, LoadWorkspaceList, SelectWorkspaceListSortOption, ClearWorkspaceList } from './../../../../root-store/workspace/workspace-list/workspace-list.actions';
-import { IWorkspaceListItem } from './../../../shared/models/workspace-list-item.interface';
-import { combineLatest, Observable } from 'rxjs';
-import { WorkspaceService } from './../../services/workspace.service';
-import { MessageService } from './../../../dam-framework/services/message.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Component, OnInit } from '@angular/core';
+import { combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromRoot from 'src/app/root-store/index';
 import * as fromWorkspaceList from 'src/app/root-store/workspace/workspace-list/workspace-list.index';
-import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
-import { map, take } from 'rxjs/operators';
+import { ClearWorkspaceList, LoadWorkspaceList, SelectWorkspaceListSortOption, SelectWorkspaceListViewType, WorkspaceLoadType } from './../../../../root-store/workspace/workspace-list/workspace-list.actions';
+import { MessageService } from './../../../dam-framework/services/message.service';
+import { ClearAll } from './../../../dam-framework/store/messages/messages.actions';
+import { IWorkspaceListItem } from './../../../shared/models/workspace-list-item.interface';
+import { WorkspaceService } from './../../services/workspace.service';
+import { IWorkspaceListItemControl } from './../workspace-list-card/workspace-list-card.component';
 
 @Component({
   selector: 'app-workspace-list',
   templateUrl: './workspace-list.component.html',
-  styleUrls: ['./workspace-list.component.scss']
+  styleUrls: ['./workspace-list.component.scss'],
 })
-export class WorkspaceListComponent implements OnInit {
+export class WorkspaceListComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<fromRoot.IRouteState>,
@@ -40,7 +39,7 @@ export class WorkspaceListComponent implements OnInit {
   username: Observable<string>;
   filter: string;
   _shadowViewType: WorkspaceLoadType;
-  controls: Observable<WorkspaceListItemControl[]>;
+  controls: Observable<IWorkspaceListItemControl[]>;
   sortOptions: any;
   sortProperty: {
     property: string,
@@ -83,63 +82,16 @@ export class WorkspaceListComponent implements OnInit {
     ];
   }
 
-  // tslint:disable-next-line:cognitive-complexity
   workspaceListItemControls() {
     this.controls = combineLatest(this.isAdmin, this.username)
       .pipe(
         map(
           ([admin, username]) => {
-
             return [
               {
-                label: 'Share',
+                label: 'Open',
                 class: 'btn-primary',
-                icon: 'fa-share',
-                action: (item: IWorkspaceListItem) => {
-                },
-                disabled: (item: IWorkspaceListItem): boolean => {
-                  return username !== item.username || item.type === 'PUBLIC';
-                },
-                hide: (item: IWorkspaceListItem): boolean => {
-                  return item.type === 'PUBLIC' || item.type === 'SHARED';
-                },
-              },
-              {
-                label: 'Delete',
-                class: 'btn-danger',
-                icon: 'fa-trash',
-                action: (item: IWorkspaceListItem) => {
-                  const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-                    data: {
-                      question: 'Are you sure you want to delete Implementation Guide "' + item.title + '" ?',
-                      action: 'Delete Implementation Guide',
-                    },
-                  });
-
-                  dialogRef.afterClosed().subscribe(
-                    (answer) => {
-                      if (answer) {
-                        this.store.dispatch(new DeleteWorkspaceListItemRequest(item.id));
-                      }
-                    },
-                  );
-                },
-                disabled: (item: IWorkspaceListItem): boolean => {
-                  if (item.type === 'PUBLIC' || item.type === 'SHARED') {
-                    return true;
-                  } else {
-                    return false;
-                  }
-                },
-                hide: (item: IWorkspaceListItem): boolean => {
-                  return item.type === 'PUBLIC' || item.type === 'SHARED';
-                },
-              },
-              {
-                label: 'Edit',
-                class: 'btn-info',
-                icon: 'fa-pencil',
-                default: true,
+                icon: 'fa-arrow-right',
                 action: (item: IWorkspaceListItem) => {
                   this.router.navigate(['workspace', item.id]);
                 },
@@ -147,7 +99,7 @@ export class WorkspaceListComponent implements OnInit {
                   return false;
                 },
                 hide: (item: IWorkspaceListItem): boolean => {
-                    return false;
+                  return false;
                 },
               },
             ];

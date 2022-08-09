@@ -1,16 +1,15 @@
-import { IWorkspaceListItem } from './../../../shared/models/workspace-list-item.interface';
 import { Component, Input, OnInit } from '@angular/core';
+import { IWorkspaceListItem } from './../../../shared/models/workspace-list-item.interface';
 
 @Component({
   selector: 'app-workspace-list-card',
   templateUrl: './workspace-list-card.component.html',
-  styleUrls: ['./workspace-list-card.component.scss']
+  styleUrls: ['./workspace-list-card.component.scss'],
 })
 export class WorkspaceListCardComponent implements OnInit {
 
-
   @Input() item: IWorkspaceListItem;
-  @Input() controls: WorkspaceListItemControl[];
+  @Input() controls: IWorkspaceListItemControl[];
   moreInfo: boolean;
 
   constructor() {
@@ -28,12 +27,12 @@ export class WorkspaceListCardComponent implements OnInit {
   }
 }
 
-export interface WorkspaceListItemControl {
+export interface IWorkspaceListItemControl {
   label: string;
   class: string;
   icon: string;
   default?: boolean;
   action: (item: IWorkspaceListItem) => void;
   disabled: (item: IWorkspaceListItem) => boolean;
-  hide?: (item: IWorkspaceListItem ) => boolean;
+  hide?: (item: IWorkspaceListItem) => boolean;
 }

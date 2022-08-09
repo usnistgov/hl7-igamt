@@ -10,9 +10,9 @@ import { WorkspaceListService } from 'src/app/modules/workspace/services/workspa
 import {
   DeleteWorkspaceListItemRequest,
   DeleteWorkspaceListItemSuccess,
-  WorkspaceListActionTypes,
   LoadWorkspaceList,
   UpdateWorkspaceList,
+  WorkspaceListActionTypes,
 } from './workspace-list.actions';
 
 @Injectable()

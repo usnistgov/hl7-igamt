@@ -14,6 +14,9 @@ export class DamLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
   showStatusBar: boolean;
 
   @Input()
+  hideToolbar: boolean;
+
+  @Input()
   showBottomDrawerToggle: boolean;
 
   // --- Templates

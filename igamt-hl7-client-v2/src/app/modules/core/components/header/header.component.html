@@ -57,12 +57,7 @@
         </a>
       </li>
 
-      <!-- <li class="nav-item" [routerLink]="[ '/workspace']" routerLinkActive="active">
-        <a class="nav-link">
-          Workspaces
-        </a>
-      </li> -->
-      <li [ngClass]="{'active': isIG | async }" class="nav-item" ngbDropdown>
+      <li [ngClass]="{'active': isWorkspace | async }" class="nav-item" ngbDropdown>
         <span class="nav-link" ngbDropdownToggle>Workspaces</span>
         <div ngbDropdownMenu>
           <button [routerLink]="[ '/workspace/create']" ngbDropdownItem routerLinkActive="active-dropdown">

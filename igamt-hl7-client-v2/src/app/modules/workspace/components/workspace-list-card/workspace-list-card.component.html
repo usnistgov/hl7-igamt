@@ -5,15 +5,14 @@
 
     <!-- ITEM COVER IMAGE -->
     <div *ngIf="!item.coverPicture"
-         style="height: 60px; width: 60px; background-color: #feec9d; text-align: center; display: flex; flex-direction: column; justify-content: center;">
-      <strong style="color: #c9c9c9;">HL7</strong>
+         style="height: 60px; width: 60px; background-color: #eef5ff; text-align: center; display: flex; flex-direction: column; justify-content: center;">
+      <strong style="color: #c9c9c9;">WS</strong>
     </div>
     <img *ngIf="item.coverPicture" [src]="item.coverPicture" height="60px" >
-
     <!-- ITEM DETAILS -->
     <div style="display: flex; flex-direction: column;">
-      <h6 style="margin-left: 10px; margin-bottom: 0;" class="link" (click)="doDefault()"><strong>{{item.title}}</strong></h6>
-      <span style="margin-left: 10px; color: #818181;">{{item.subtitle}}</span>
+      <h6 [routerLink]="['/workspace', item.id]"  style="margin-left: 10px; margin-bottom: 0;" class="link" (click)="doDefault()"><strong>{{item.title}}</strong></h6>
+      <span style="margin-left: 10px; color: #818181;">{{item.description}}</span>
       <span *ngIf="item.username" style="margin-left: 10px; color: #818181;">
         <i class="fa fa-user"></i>
          {{item.username}}
@@ -39,12 +38,12 @@
       <div style="width: 100%; display: flex; flex-direction: row; justify-content: space-between;">
 
         <!-- ITEM MORE INFO BUTTON -->
-        <div style="width: 100%; display: flex; flex-direction: row; justify-content: flex-start;">
+        <!-- <div style="width: 100%; display: flex; flex-direction: row; justify-content: flex-start;">
           <button (click)="moreInfo = !moreInfo" class="btn btn-sm btn-light border-gray" style="margin-right: 5px;">
             <i [class]="'fa ' + (moreInfo ? 'fa-chevron-down' : 'fa-chevron-right')"></i>
             More Info
           </button>
-        </div>
+        </div> -->
 
         <!-- ITEM CONTROL BUTTONS -->
         <div style="width: 100%; display: flex; flex-direction: row; justify-content: flex-end;">

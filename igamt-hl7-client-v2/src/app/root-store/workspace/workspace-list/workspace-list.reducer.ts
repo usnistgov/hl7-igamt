@@ -1,6 +1,6 @@
-import { IWorkspaceListItem } from '../../../modules/shared/models/workspace-list-item.interface';
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { ISortOptions } from 'src/app/modules/shared/models/sort.class';
+import { IWorkspaceListItem } from '../../../modules/shared/models/workspace-list-item.interface';
 import { WorkspaceListActions, WorkspaceListActionTypes, WorkspaceLoadType } from './workspace-list.actions';
 
 export interface IState extends EntityState<IWorkspaceListItem> {

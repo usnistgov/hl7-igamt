@@ -8,7 +8,7 @@ describe('DocumentBrowserComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DocumentBrowserComponent ]
+      declarations: [ DocumentBrowserComponent ],
     })
     .compileComponents();
   }));

@@ -7,12 +7,12 @@
 
   <!-- TITLE BAR -->
   <div class="topbar">
-    <h5>Work Space List</h5>
+    <h3>Workspace List</h3>
     <div [(ngModel)]="_shadowViewType" class="btn-group btn-group-toggle border-gray" name="radioBasic" ngbRadioGroup
          style="border-radius: 5px;">
       <label class="btn-light no-focus" ngbButtonLabel>
         <input [queryParams]="{ type : 'PRIVATE' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="PRIVATE">
-        Owned
+        Member
       </label>
       <label class="btn-light no-focus" ngbButtonLabel>
         <input [queryParams]="{ type : 'PUBLIC' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="PUBLIC">
@@ -20,7 +20,7 @@
       </label>
       <label class="btn-light no-focus" ngbButtonLabel>
         <input [queryParams]="{ type : 'SHARED' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="SHARED">
-        Shared With Me
+        Invitations
       </label>
       <label *ngIf="isAdmin | async" class="btn-light no-focus" ngbButtonLabel>
         <input [queryParams]="{ type : 'ALL' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="ALL">

@@ -39,6 +39,12 @@
 			<artifactId>datatype-library</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>gov.nist.hit.hl7</groupId>
+            <artifactId>igamt-auth</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 </project>
  

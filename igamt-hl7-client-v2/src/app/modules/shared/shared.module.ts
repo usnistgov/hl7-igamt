@@ -64,10 +64,12 @@ import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component
 import { DeriveDialogComponent } from './components/derive-dialog/derive-dialog.component';
 import { DisplayRefComponent } from './components/display-ref/display-ref.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
+import { DocumentBrowserComponent } from './components/document-browser/document-browser.component';
 import { DtmStructureComponent } from './components/dtm-stucture/dtm-structure.component';
 import { AddMappingDialgComponent } from './components/dynamic-mapping/add-mapping-dialg/add-mapping-dialg.component';
 import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-mapping.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
+import { EntityBrowseDialogComponent } from './components/entity-browse-dialog/entity-browse-dialog.component';
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
 import { FieldAddDialogComponent } from './components/field-add-dialog/field-add-dialog.component';
@@ -133,7 +135,6 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { DocumentBrowserComponent } from './components/document-browser/document-browser.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -228,6 +229,7 @@ import { DocumentBrowserComponent } from './components/document-browser/document
     SlicingRowComponent,
     SlicingViewerComponent,
     DocumentBrowserComponent,
+    EntityBrowseDialogComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -438,7 +440,8 @@ import { DocumentBrowserComponent } from './components/document-browser/document
     ImportStructureComponent,
     ChangeReasonListDialogComponent,
     SelectSlicingContextComponent,
-    DocumentBrowserComponent
+    DocumentBrowserComponent,
+    EntityBrowseDialogComponent,
   ],
 })
 export class SharedModule {
