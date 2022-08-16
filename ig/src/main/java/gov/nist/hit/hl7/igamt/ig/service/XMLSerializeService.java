@@ -34,6 +34,8 @@ public interface XMLSerializeService {
   Element serializeCoConstraintXML(IgDataModel igModel) throws TableSerializationException, CoConstraintXMLSerializationException;
 
   Element serializeConstraintsXML(IgDataModel igModel);
+  
+  Element serializeSlicingXML(IgDataModel igModel);
 
   void generateIS(ZipOutputStream out, String xmlStr, String fileName) throws IOException;
 

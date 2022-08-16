@@ -131,6 +131,8 @@ public interface SegmentService extends ResourceService {
    * @return
    */
   String findObx2VsId(Segment s);
+  
+  String findXMLRefIdById(String segId, String defaultHL7Version);
 
 
 }

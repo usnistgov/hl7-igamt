@@ -1240,4 +1240,23 @@ public class DatatypeServiceImpl implements DatatypeService {
 		}
 		return ret;
 	}
+
+	@Override
+	public String findXMLRefIdById(String dtId, String defaultHL7Version) {
+		Datatype dt = this.findById(dtId);
+
+		if (defaultHL7Version != null && dt.getDomainInfo() != null && dt.getDomainInfo().getVersion() != null) {
+			if (defaultHL7Version.equals(dt.getDomainInfo().getVersion())) {
+				return dt.getLabel();
+			} else {
+				return this.str(dt.getLabel() + "_" + dt.getDomainInfo().getVersion().replaceAll("\\.", "-"));
+			}
+		} else {
+			return dt.getLabel();
+		}
+	}
+	
+	private String str(String value) {
+		return value != null ? value : "";
+	}
 }

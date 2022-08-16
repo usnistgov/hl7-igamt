@@ -373,4 +373,24 @@ public class ValuesetServiceImpl implements ValuesetService {
         return ret;
     }
 
+	@Override
+	public String findXMLRefIdById(String vsId, String defaultHL7Version) {
+		Valueset vs = this.findById(vsId);
+
+		if (defaultHL7Version != null && vs.getDomainInfo() != null && vs.getDomainInfo().getVersion() != null
+				&& !vs.getBindingIdentifier().equals("HL70396")) {
+			if (defaultHL7Version.equals(vs.getDomainInfo().getVersion())) {
+				return this.str(vs.getBindingIdentifier());
+			} else {
+				return this
+						.str(vs.getBindingIdentifier() + "_" + vs.getDomainInfo().getVersion().replaceAll("\\.", "-"));
+			}
+		} else {
+			return this.str(vs.getBindingIdentifier());
+		}
+	}
+
+	private String str(String value) {
+		return value != null ? value : "";
+	}
 }

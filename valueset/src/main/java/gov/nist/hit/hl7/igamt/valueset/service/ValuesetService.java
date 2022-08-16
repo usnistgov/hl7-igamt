@@ -87,5 +87,6 @@ public interface ValuesetService {
 	Set<DisplayElement> convertValueSets(Set<Valueset> valueSets);
 	Set<DisplayElement> convertValueSetRegistry(ValueSetRegistry registry);
 
+	public String findXMLRefIdById(String vsId, String defaultHL7Version);
 
 }

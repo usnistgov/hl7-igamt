@@ -127,6 +127,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItem;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 //import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.service.impl.exception.CoConstraintXMLSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
@@ -1228,7 +1229,7 @@ public class IgServiceImpl implements IgService {
   @Override
   public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds,
       String[] compositeProfileIds) throws CloneNotSupportedException, IOException,
-  ClassNotFoundException, ProfileSerializationException, TableSerializationException {
+  ClassNotFoundException, ProfileSerializationException, TableSerializationException, CoConstraintXMLSerializationException {
 
     this.xmlSerializeService.normalizeIgModel(igModel, conformanceProfileIds);
 
@@ -1238,21 +1239,22 @@ public class IgServiceImpl implements IgService {
     ZipOutputStream out = new ZipOutputStream(outputStream);
 
     String profileXMLStr = this.xmlSerializeService.serializeProfileToDoc(igModel).toXML();
-    
-    System.out.println(profileXMLStr);
+
     String constraintXMLStr = this.xmlSerializeService.serializeConstraintsXML(igModel).toXML();
 
     constraintXMLStr = this.addValuesetsFromConstraints(constraintXMLStr, igModel, 0);
 
     String valueSetXMLStr = this.xmlSerializeService.serializeValueSetXML(igModel).toXML();
-
-    //    String coConstraintsXMLStr = this.xmlSerializeService.serializeCoConstraintXML(igModel).toXML();
-
+    
+    String coConstraintsXMLStr = this.xmlSerializeService.serializeCoConstraintXML(igModel).toXML();
+    
+    String slicingXMLStr = this.xmlSerializeService.serializeSlicingXML(igModel).toXML();
 
     this.xmlSerializeService.generateIS(out, profileXMLStr, "Profile.xml");
     this.xmlSerializeService.generateIS(out, valueSetXMLStr, "ValueSets.xml");
     this.xmlSerializeService.generateIS(out, constraintXMLStr, "Constraints.xml");
-    //    this.xmlSerializeService.generateIS(out, coConstraintsXMLStr, "CoConstraints.xml");
+    this.xmlSerializeService.generateIS(out, coConstraintsXMLStr, "CoConstraints.xml");
+    this.xmlSerializeService.generateIS(out, slicingXMLStr, "Slicing.xml");
 
     out.close();
     bytes = outputStream.toByteArray();
@@ -1770,6 +1772,23 @@ public class IgServiceImpl implements IgService {
     return ret;
   }
 
+	@Override
+	public String findDefaultHL7VersionById(String id) {
+		Ig ig = this.findById(id);
 
+		if (ig.getMetadata() != null && ig.getMetadata().getHl7Versions() != null
+				&& ig.getMetadata().getHl7Versions().size() > 0) {
+			return ig.getMetadata().getHl7Versions().get(0);
+		}
+
+		if (ig.getConformanceProfileRegistry() != null && ig.getConformanceProfileRegistry().getChildren() != null
+				&& ig.getConformanceProfileRegistry().getChildren().size() > 0) {
+			for (Link l : ig.getConformanceProfileRegistry().getChildren()) {
+				if (l.getDomainInfo() != null && l.getDomainInfo().getVersion() != null)
+					return l.getDomainInfo().getVersion();
+			}
+		}
+		return "NOTFOUND";
+	}
 
 }
