@@ -66,6 +66,7 @@ export interface IBrowseDialogData {
   scope: IBrowseScope;
   types: Type[];
   multi: boolean;
+  exclude?: Array<{ id: string; type: Type; }>;
   options?: IOption[];
 }
 
@@ -120,13 +121,34 @@ export class EntityBrowseDialogComponent implements OnInit {
     ).subscribe();
   }
 
+  cancel() {
+    this.dialogRef.close();
+  }
+
+  done() {
+    this.dialogRef.close(this.selected);
+  }
+
+  clear() {
+    this.selected = null;
+  }
+
   nodeUpdate(e, select) {
     this.setOptionsForm(select ? e.node : null);
+  }
+
+  isExcluded(node: IBrowserTreeNode) {
+    if (!this.browser.exclude) {
+      return false;
+    }
+    return !!this.browser.exclude.find((n) => node.data.id === n.id && node.data.type === n.type);
   }
 
   processNodes(nodes: IBrowserTreeNode[]) {
     for (const node of nodes) {
       if (!(this.browser.types || []).includes(node.data.type)) {
+        node.selectable = false;
+      } else if (this.isExcluded(node)) {
         node.selectable = false;
       } else {
         node.selectable = true;

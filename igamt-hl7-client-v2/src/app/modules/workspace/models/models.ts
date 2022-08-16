@@ -1,4 +1,5 @@
 import { Type } from '../../shared/constants/type.enum';
+import { IgListItem } from '../../document/models/document/ig-list-item.class';
 
 export enum WorkspaceAccessType {
   PUBLIC = 'PUBLIC',
@@ -33,12 +34,17 @@ export interface IDocumentLinks {
 }
 export interface IFolderInfo {
   id: string;
+  workspaceId: string;
   type: 'FOLDER';
   metadata: IFolderMetadata;
   children: IDocumentLinks[];
   position: number;
   permissionType: WorkspacePermissionType;
   editors: string[];
+}
+
+export interface IFolderContent extends IFolderInfo {
+  documents: IgListItem[];
 }
 
 export interface IFolderMetadata {

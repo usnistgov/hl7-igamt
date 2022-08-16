@@ -60,7 +60,7 @@
                         <td style="white-space: normal;">
                           <app-entity-bagde [type]="rowData.type"></app-entity-bagde>
                           <app-scope-badge *ngIf="rowData.domainInfo" [scope]="rowData.domainInfo.scope" [version]="rowData.domainInfo.version"></app-scope-badge>
-                          <strong style="margin-left: 10px">{{rowData.label}}</strong>
+                          <strong [ngStyle]="{ 'color': rowNode.node.selectable ? 'black' : '#b1b1b1'}" style="margin-left: 10px">{{rowData.label}}</strong>
                         </td>
                       </tr>
                     </tbody>
@@ -84,7 +84,7 @@
           <strong style="margin-left: 10px">{{selected.data.label}}</strong>
         </div>
         <div>
-          <button class="btn btn-sm btn-danger">
+          <button (click)="clear()" class="btn btn-sm btn-danger">
             <i class="fa fa-trash"></i>
           </button>
         </div>
@@ -95,6 +95,6 @@
 
 </div>
 <mat-dialog-actions style="justify-content: flex-end; margin-top: 10px;">
-  <button class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
-  <button class="btn btn-sm btn-success">Done</button>
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="done()" [disabled]="!selected" class="btn btn-sm btn-success">Done</button>
 </mat-dialog-actions>

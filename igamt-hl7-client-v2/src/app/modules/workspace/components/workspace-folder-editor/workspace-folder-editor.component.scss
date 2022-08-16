@@ -1,5 +1,9 @@
 @import '../../../../../assets/variables';
 
+:host {
+  display: contents;
+}
+
 .ig-list-layout {
   display: grid;
   grid-template-areas: 'search-bar' 'ig-list';
@@ -18,8 +22,12 @@
 
 .ig-list {
   grid-area: ig-list;
-  max-height: 100%;
+  margin-top: 15px;
+  padding-top: 10px;
+  height: 100%;
   overflow: scroll;
+  border-top: 1px solid #c4cbd4;
+  padding-bottom: 55px;
 }
 
 .spacer {

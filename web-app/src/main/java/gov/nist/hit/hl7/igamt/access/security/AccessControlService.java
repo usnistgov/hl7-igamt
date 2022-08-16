@@ -4,7 +4,6 @@ import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
 import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
 import gov.nist.hit.hl7.igamt.access.model.ExportConfigurationInfo;
 import gov.nist.hit.hl7.igamt.access.model.ResourceInfo;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
@@ -13,11 +12,12 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
-import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissionType;
+import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -35,6 +35,8 @@ public class AccessControlService {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+    @Autowired
+    private WorkspaceUserService workspaceUserService;
 
     private final Set<String> resourceInfoFields = Arrays.stream(ResourceInfo.class.getDeclaredFields())
             .map(Field::getName)
@@ -79,7 +81,61 @@ public class AccessControlService {
             return level.equals(AccessLevel.READ);
         }
 
+        if(document.getAudience() != null) {
+            return this.checkAudience(document.getAudience(), user, level);
+        }
+
         return false;
+    }
+
+    public boolean checkAudience(Audience audience, UsernamePasswordAuthenticationToken user, AccessLevel level) {
+        switch (audience.getType()) {
+            case PUBLIC:
+                return this.checkPublicAudience((PublicAudience) audience, user, level);
+            case PRIVATE:
+                return this.checkPrivateAudience((PrivateAudience) audience, user, level);
+            case WORKSPACE:
+                return this.checkWorkspaceAudience((WorkspaceAudience) audience, user, level);
+        }
+        return false;
+    }
+
+    public boolean checkPrivateAudience(PrivateAudience audience, UsernamePasswordAuthenticationToken user, AccessLevel level) {
+        // If user is editor
+        if(user.getName().equals(audience.getEditor())) {
+            // Grant all access
+            return true;
+        }
+
+        // If user is viewer
+        if(audience.getViewers().contains(user.getName())) {
+            // Grant user access
+            return level.equals(AccessLevel.READ);
+        }
+
+        return false;
+    }
+
+    public boolean checkPublicAudience(PublicAudience audience, UsernamePasswordAuthenticationToken user, AccessLevel level) {
+        return level.equals(AccessLevel.READ);
+    }
+
+    public boolean checkWorkspaceAudience(WorkspaceAudience audience, UsernamePasswordAuthenticationToken user, AccessLevel level) {
+        try {
+            WorkspacePermissionType permissionType = this.workspaceUserService.getUserPermissionByFolder(audience.getWorkspaceId(), audience.getFolderId(), user.getName());
+            if (permissionType != null) {
+                switch (permissionType) {
+                    case EDIT:
+                        return true;
+                    case VIEW:
+                        return level.equals(AccessLevel.READ);
+                }
+            }
+            return false;
+        } catch (ResourceNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public boolean checkResourceAccessPermission(ResourceInfo resourceInfo, UsernamePasswordAuthenticationToken user, AccessLevel level) throws ResourceNotFoundException {

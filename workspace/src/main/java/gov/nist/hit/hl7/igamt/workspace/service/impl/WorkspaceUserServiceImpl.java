@@ -1,19 +1,23 @@
 package gov.nist.hit.hl7.igamt.workspace.service.impl;
 
 import gov.nist.hit.hl7.igamt.auth.service.AuthenticationService;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.workspace.domain.*;
 import gov.nist.hit.hl7.igamt.workspace.exception.UsernameNotFound;
 import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceForbidden;
 import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceNotFound;
+import gov.nist.hit.hl7.igamt.workspace.model.WorkspaceAccessInfo;
 import gov.nist.hit.hl7.igamt.workspace.repository.WorkspaceRepo;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +26,11 @@ public class WorkspaceUserServiceImpl implements WorkspaceUserService {
     WorkspaceRepo workspaceRepo;
     @Autowired
     AuthenticationService authService;
+    @Autowired
+    MongoTemplate mongoTemplate;
+    private final Set<String> workspaceAccessInfoFields  = Arrays.stream(WorkspaceAccessInfo.class.getDeclaredFields())
+            .map(Field::getName)
+            .collect(Collectors.toSet());
 
     void checkUsernameExists(String username) throws UsernameNotFound {
         // TODO
@@ -37,6 +46,16 @@ public class WorkspaceUserServiceImpl implements WorkspaceUserService {
     }
 
     WorkspaceUser findUser(Workspace workspace, String username) {
+        if(workspace.getUserAccessInfo() != null && workspace.getUserAccessInfo().getUsers() != null) {
+            return workspace.getUserAccessInfo().getUsers().stream()
+                    .filter((user) -> user.getUsername().equals(username))
+                    .findFirst()
+                    .orElse(null);
+        }
+        return null;
+    }
+
+    WorkspaceUser findUser(WorkspaceAccessInfo workspace, String username) {
         if(workspace.getUserAccessInfo() != null && workspace.getUserAccessInfo().getUsers() != null) {
             return workspace.getUserAccessInfo().getUsers().stream()
                     .filter((user) -> user.getUsername().equals(username))
@@ -177,6 +196,40 @@ public class WorkspaceUserServiceImpl implements WorkspaceUserService {
     @Override
     public boolean hasAccessTo(String username, Workspace workspace) {
         return this.userExists(workspace, username);
+    }
+
+    @Override
+    public WorkspaceAccessInfo getUserAccessInfo(String workspaceId) throws ResourceNotFoundException {
+        Query query = Query.query(Criteria.where("_id").is(workspaceId));
+        this.workspaceAccessInfoFields.forEach((field) -> {
+            query.fields().include(field);
+        });
+        WorkspaceAccessInfo resource = this.mongoTemplate.findOne(query, WorkspaceAccessInfo.class, "workspace");
+
+        if(resource != null) {
+            return resource;
+        } else {
+            throw new ResourceNotFoundException(workspaceId, Type.WORKSPACE);
+        }
+    }
+
+    @Override
+    public WorkspacePermissionType getUserPermissionByFolder(String workspaceId, String folderId, String username) throws ResourceNotFoundException {
+        WorkspaceAccessInfo workspaceAccessInfo = this.getUserAccessInfo(workspaceId);
+        if(workspaceAccessInfo.getUsername().equals(username)) return WorkspacePermissionType.EDIT;
+        WorkspaceUser user = findUser(workspaceAccessInfo, username);
+        if (user != null) {
+            if (user.getPermissions().isAdmin()) {
+                return WorkspacePermissionType.EDIT;
+            }
+            if (user.getPermissions().getGlobal() != null) {
+                return user.getPermissions().getGlobal();
+            }
+            if (user.getPermissions().getByFolder() != null) {
+                return user.getPermissions().getByFolder().get(folderId);
+            }
+        }
+        return null;
     }
 
 }

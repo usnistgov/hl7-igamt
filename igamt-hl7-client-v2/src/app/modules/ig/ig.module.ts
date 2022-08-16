@@ -28,7 +28,6 @@ import { IgEditStatusBarComponent } from './components/ig-edit-status-bar/ig-edi
 import { IgEditTitlebarComponent } from './components/ig-edit-titlebar/ig-edit-titlebar.component';
 import { IgEditToolbarComponent } from './components/ig-edit-toolbar/ig-edit-toolbar.component';
 import { IgListContainerComponent } from './components/ig-list-container/ig-list-container.component';
-import { IgListItemCardComponent } from './components/ig-list-item-card/ig-list-item-card.component';
 import { IgMetadataEditorComponent } from './components/ig-metadata-editor/ig-metadata-editor.component';
 import { IgSectionEditorComponent } from './components/ig-section-editor/ig-section-editor.component';
 import { IgTocFilterComponent } from './components/ig-toc-filter/ig-toc-filter.component';
@@ -41,7 +40,6 @@ import { IgService } from './services/ig.service';
 @NgModule({
   declarations: [
     IgListContainerComponent,
-    IgListItemCardComponent,
     IgEditContainerComponent,
     IgEditSidebarComponent,
     IgEditToolbarComponent,
@@ -86,7 +84,6 @@ import { IgService } from './services/ig.service';
   ],
   exports: [
     IgListContainerComponent,
-    IgListItemCardComponent,
     IgEditContainerComponent,
     IgEditSidebarComponent,
     IgEditToolbarComponent,

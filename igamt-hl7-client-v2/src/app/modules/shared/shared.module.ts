@@ -135,6 +135,7 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { IgListItemCardComponent } from '../ig/components/ig-list-item-card/ig-list-item-card.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -230,6 +231,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     SlicingViewerComponent,
     DocumentBrowserComponent,
     EntityBrowseDialogComponent,
+    IgListItemCardComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -411,6 +413,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     SelectSlicingContextComponent,
     SlicingRowComponent,
     DocumentBrowserComponent,
+    IgListItemCardComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,

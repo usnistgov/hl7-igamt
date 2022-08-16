@@ -1,7 +1,7 @@
 package gov.nist.hit.hl7.igamt.web.app.utility;
 
-import gov.nist.hit.hl7.igamt.web.app.service.impl.BrowserScope;
-import gov.nist.hit.hl7.igamt.web.app.service.impl.BrowserTreeNode;
+import gov.nist.hit.hl7.igamt.web.app.model.BrowserScope;
+import gov.nist.hit.hl7.igamt.web.app.model.BrowserTreeNode;
 import gov.nist.hit.hl7.igamt.web.app.service.impl.EntityBrowserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

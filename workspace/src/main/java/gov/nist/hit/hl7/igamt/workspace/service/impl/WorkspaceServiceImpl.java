@@ -4,7 +4,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
-import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.workspace.domain.*;
 import gov.nist.hit.hl7.igamt.workspace.exception.CreateRequestException;
@@ -165,6 +166,32 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 		return workspace;
 	}
 
+	@Override
+	public WorkspaceInfo addToWorkspace(String workspaceId, String folderId, String username, DocumentStructure document, Type type) throws Exception {
+		Workspace workspace = this.workspaceRepo.findById(workspaceId)
+				.orElseThrow(() -> new WorkspaceNotFound(workspaceId));
+		WorkspacePermissionType permission = workspaceUserService.getWorkspacePermissionTypeByFolder(workspace, username, folderId);
+		if(permission != null && permission.equals(WorkspacePermissionType.EDIT)) {
+			Folder folder = workspace.getFolders().stream()
+					.filter((f) -> f.getId().equals(folderId))
+					.findFirst()
+					.orElseThrow(() -> new Exception("Folder not found"));
+			int position = workspace.getFolders().stream()
+					.mapToInt(Folder::getPosition)
+					.max()
+					.orElseThrow(() -> new Exception("Folder not found"));
+
+			DocumentLink link = new DocumentLink();
+			link.setId(document.getId());
+			link.setType(type);
+			link.setPosition(position + 1);
+			folder.getChildren().add(link);
+			return this.toWorkspaceInfo(this.workspaceRepo.save(workspace), username);
+		} else {
+			throw new WorkspaceForbidden();
+		}
+	}
+
 //	public String uploadLogo(MultipartFile logo, String username) throws IOException {
 //		InputStream in = logo.getInputStream();
 //		String filename = logo.getOriginalFilename();
@@ -281,11 +308,6 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 	}
 
 	@Override
-	public List<Workspace> findByAccessTypeAndUsername(WorkspaceAccessType type, String username) {
-		return this.workspaceRepo.findByUsernameAndAccessType(username, type);
-	}
-
-	@Override
 	public List<Workspace> findByAll() {
 		return workspaceRepo.findAll();
 	}
@@ -312,6 +334,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 					folderInfo.setChildren(folder.getChildren());
 					folderInfo.setPermissionType(wpt);
 					folderInfo.setPosition(folder.getPosition());
+					folderInfo.setWorkspaceId(workspace.getId());
 					folderInfo.setEditors(this.workspaceUserService.getFolderEditors(workspace, folder.getId()));
 					workspaceInfo.getFolders().add(folderInfo);
 				}
@@ -336,12 +359,6 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 			return this.toWorkspaceInfo(workspace, username);
 		}
 		throw new WorkspaceForbidden();
-	}
-
-
-	@Override
-	public UserAccessInfo getUserAccessInfo(String id) {
-		return null;
 	}
 
 	@Override
@@ -378,6 +395,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 		content.setEditors(folderInfo.getEditors());
 		content.setPosition(folderInfo.getPosition());
 		content.setChildren(folderInfo.getChildren());
+		content.setWorkspaceId(workspaceId);
 		content.setDocuments(this.igService.convertListToDisplayList(igs));
 		return content;
 	}

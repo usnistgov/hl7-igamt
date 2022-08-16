@@ -4,7 +4,7 @@ import { Action, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { LoadPayloadData, LoadResourcesInRepostory } from '../../dam-framework/store';
-import { IFolderInfo, IWorkspaceInfo, IWorkspaceMetadata, WorkspaceAccessType } from '../models/models';
+import { IFolderInfo, IWorkspaceInfo, IWorkspaceMetadata, WorkspaceAccessType, IFolderContent } from '../models/models';
 
 export interface IWorkspaceCreateRequest {
   accessType: WorkspaceAccessType;
@@ -39,6 +39,10 @@ export class WorkspaceService {
 
   getWorkspaceInfo(id: string): Observable<IWorkspaceInfo> {
     return this.http.get<IWorkspaceInfo>(this.WORKSPACE_END_POINT + id + '/state');
+  }
+
+  getWorkspaceFolderContent(workspaceId: string, folderId: string): Observable<IFolderContent> {
+    return this.http.get<IFolderContent>(this.WORKSPACE_END_POINT + workspaceId + '/folder/' + folderId);
   }
 
   addFolder(id: string, folder: IFolderInfo): Observable<Message<string>> {

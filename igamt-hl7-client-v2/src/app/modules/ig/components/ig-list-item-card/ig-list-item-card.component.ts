@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import {IgListItem} from '../../../document/models/document/ig-list-item.class';
+import { IgListItem } from '../../../document/models/document/ig-list-item.class';
 
 @Component({
   selector: 'app-ig-list-item-card',
@@ -35,5 +35,5 @@ export interface IgListItemControl {
   default?: boolean;
   action: (item: IgListItem) => void;
   disabled: (item: IgListItem) => boolean;
-  hide?: (item: IgListItem ) => boolean;
+  hide?: (item: IgListItem) => boolean;
 }

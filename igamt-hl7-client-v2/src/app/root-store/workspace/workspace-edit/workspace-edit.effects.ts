@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { of } from 'rxjs';
+import { of, combineLatest } from 'rxjs';
 import { catchError, concatMap, flatMap, map, switchMap, take } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
@@ -128,10 +128,13 @@ export class WorkspaceEditEffects extends DamWidgetEffect {
       return this.store.select(selectWorkspaceId).pipe(
         take(1),
         flatMap((wsId) => {
-          return this.workspaceService.getWorkspaceInfo(wsId).pipe(
-            flatMap((wsInfo) => {
-              const folder = (wsInfo.folders || []).find((f) => f.id === action.payload.id);
-              const editorAction = folder ?
+          return combineLatest(
+            this.workspaceService.getWorkspaceInfo(wsId),
+            this.workspaceService.getWorkspaceFolderContent(wsId, action.payload.id),
+          ).pipe(
+            flatMap(([wsInfo, folder]) => {
+              return [
+                ...this.workspaceService.getWorkspaceInfoUpdateAction(wsInfo),
                 new fromDAM.OpenEditor({
                   id: action.payload.id,
                   display: {
@@ -142,11 +145,7 @@ export class WorkspaceEditEffects extends DamWidgetEffect {
                   initial: {
                     ...folder,
                   },
-                }) :
-                new fromDAM.OpenEditorFailure(action.payload);
-              return [
-                ...this.workspaceService.getWorkspaceInfoUpdateAction(wsInfo),
-                editorAction,
+                }),
               ];
             }),
           );

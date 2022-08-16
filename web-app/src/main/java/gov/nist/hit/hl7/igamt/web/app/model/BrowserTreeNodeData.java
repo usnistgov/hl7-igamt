@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.web.app.service.impl;
+package gov.nist.hit.hl7.igamt.web.app.model;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;

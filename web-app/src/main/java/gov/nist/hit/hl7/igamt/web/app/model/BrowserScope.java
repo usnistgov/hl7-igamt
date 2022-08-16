@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.web.app.service.impl;
+package gov.nist.hit.hl7.igamt.web.app.model;
 
 public enum BrowserScope {
     PRIVATE_IG_LIST,

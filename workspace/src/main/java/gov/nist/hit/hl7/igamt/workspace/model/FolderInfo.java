@@ -6,6 +6,7 @@ import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissionType;
 import java.util.Set;
 
 public class FolderInfo extends Folder {
+    private String workspaceId;
     private WorkspacePermissionType permissionType;
     private Set<String> editors;
 
@@ -23,5 +24,13 @@ public class FolderInfo extends Folder {
 
     public void setEditors(Set<String> editors) {
         this.editors = editors;
+    }
+
+    public String getWorkspaceId() {
+        return workspaceId;
+    }
+
+    public void setWorkspaceId(String workspaceId) {
+        this.workspaceId = workspaceId;
     }
 }

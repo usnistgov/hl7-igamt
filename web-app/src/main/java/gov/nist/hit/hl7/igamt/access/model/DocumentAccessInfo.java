@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.access.model;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Audience;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 
 import java.util.List;
@@ -8,6 +9,7 @@ public class DocumentAccessInfo {
     private String username;
     private List<String> sharedUsers;
     private Status status;
+    private Audience audience;
 
     public String getUsername() {
         return username;
@@ -31,5 +33,13 @@ public class DocumentAccessInfo {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Audience getAudience() {
+        return audience;
+    }
+
+    public void setAudience(Audience audience) {
+        this.audience = audience;
     }
 }
