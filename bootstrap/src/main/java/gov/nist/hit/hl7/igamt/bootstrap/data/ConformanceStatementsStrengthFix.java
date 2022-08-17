@@ -1,6 +1,8 @@
 package gov.nist.hit.hl7.igamt.bootstrap.data;
 
 import com.google.common.base.Strings;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
@@ -55,7 +57,7 @@ public class ConformanceStatementsStrengthFix {
 
     public void fixDatatypes() {
         int i = 0;
-        List<Datatype> dts = this.datatypeRepo.findAll();
+        List<Datatype> dts = this.datatypeRepo.findByDomainInfoScope(Scope.USER.toString());
         for(Datatype dt: dts) {
             ResourceBinding binding = dt.getBinding();
             if(binding != null && binding.getConformanceStatements() != null) {
@@ -68,15 +70,17 @@ public class ConformanceStatementsStrengthFix {
                         System.out.println("[ERR_CS_STRENGTH] In Datatype " + dt.getId() + " " + e.getMessage());
                     }
                 }
+                this.datatypeRepo.save(dt);
+                System.out.println("[ERR_CS_STRENGTH] In Datatype Changed " + i);
+
             }
-            this.datatypeRepo.save(dt);
+
         }
-        System.out.println("[ERR_CS_STRENGTH] In Datatype Changed " + i);
     }
 
     public void fixSegments() {
         int i = 0;
-        List<Segment> sgs = this.segmentRepo.findAll();
+        List<Segment> sgs = this.segmentRepo.findByDomainInfoScope(Scope.USER.toString());
         for(Segment s: sgs) {
             ResourceBinding binding = s.getBinding();
             if(binding != null && binding.getConformanceStatements() != null) {
@@ -89,10 +93,12 @@ public class ConformanceStatementsStrengthFix {
                         System.out.println("[ERR_CS_STRENGTH] In Segment " + s.getId() + " " + e.getMessage());
                     }
                 }
+                this.segmentRepo.save(s);
+                System.out.println("[ERR_CS_STRENGTH] In Segment Changed " + i);
+
             }
-            this.segmentRepo.save(s);
+
         }
-        System.out.println("[ERR_CS_STRENGTH] In Segment Changed " + i);
     }
 
     public void fixConfP() {
@@ -110,10 +116,11 @@ public class ConformanceStatementsStrengthFix {
                         System.out.println("[ERR_CS_STRENGTH] In Conformance Profile " + cp.getId() + " " + e.getMessage());
                     }
                 }
+                this.conformanceProfileRepo.save(cp);
+                System.out.println("[ERR_CS_STRENGTH] In Conformance Profile Changed " + i);
+
             }
-            this.conformanceProfileRepo.save(cp);
         }
-        System.out.println("[ERR_CS_STRENGTH] In Conformance Profile Changed " + i);
     }
 
     public void fixProfileComp() {

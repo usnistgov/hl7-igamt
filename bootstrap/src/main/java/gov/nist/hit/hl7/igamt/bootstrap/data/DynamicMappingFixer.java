@@ -133,10 +133,8 @@ public class DynamicMappingFixer {
       if(!ids.isEmpty()) {
         crudService.addDatatypes(ids, ig);
         igService.save(ig);
-      }
-      
-    }
-    
+      }      
+    }   
   }
 
   

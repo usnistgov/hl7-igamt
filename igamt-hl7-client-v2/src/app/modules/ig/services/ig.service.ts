@@ -179,8 +179,9 @@ export class IgService {
     return this.http.post<Message<string>>(this.IG_END_POINT + id + '/clone', data).pipe();
   }
 
-  publish(id: string): Observable<Message<string>> {
-    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/publish', {}).pipe();
+  publish(id: string, publicationInfo: any): Observable<Message<string>> {
+    console.log(publicationInfo);
+    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/publish', publicationInfo).pipe();
   }
 
   updateSharedUsers(sharedUsers: any, id: string): Observable<Message<string>> {

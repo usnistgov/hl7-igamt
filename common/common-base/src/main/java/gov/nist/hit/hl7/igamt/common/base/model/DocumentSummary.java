@@ -8,136 +8,145 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 
 public class DocumentSummary {
 
-  private String title;
-  private int position;
-  private String coverpage;
-  private String subtitle;
-  private Date dateUpdated;
-  private String id;
-  private String username;
-  private boolean derived; 
-  private List<String> participants;
-  private Status status;
-  private List<String> elements;
-  private SharePermission sharePermission;
-  private List<String> sharedUsers;
-  private String currentAuthor;
+	private String title;
+	private int position;
+	private String coverpage;
+	private String subtitle;
+	private Date dateUpdated;
+	private String id;
+	private String username;
+	private boolean derived; 
+	private List<String> participants;
+	private Status status;
+	private List<String> elements;
+	private SharePermission sharePermission;
+	private List<String> sharedUsers;
+	private String currentAuthor;
+	private Boolean draft;
 
-  public String getTitle() {
-    return title;
-  }
+	public Boolean getDraft() {
+		return draft;
+	}
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
+	public void setDraft(Boolean draft) {
+		this.draft = draft;
+	}
 
-  public String getCoverpage() {
-    return coverpage;
-  }
+	public String getTitle() {
+		return title;
+	}
 
-  public void setCoverpage(String coverpage) {
-    this.coverpage = coverpage;
-  }
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-  public String getSubtitle() {
-    return subtitle;
-  }
+	public String getCoverpage() {
+		return coverpage;
+	}
 
-  public void setSubtitle(String subtitle) {
-    this.subtitle = subtitle;
-  }
+	public void setCoverpage(String coverpage) {
+		this.coverpage = coverpage;
+	}
 
-  public Date getDateUpdated() {
-    return dateUpdated;
-  }
+	public String getSubtitle() {
+		return subtitle;
+	}
 
-  public void setDateUpdated(java.util.Date date) {
-    this.dateUpdated = date;
-  }
+	public void setSubtitle(String subtitle) {
+		this.subtitle = subtitle;
+	}
 
-  public List<String> getElements() {
-    return elements;
-  }
+	public Date getDateUpdated() {
+		return dateUpdated;
+	}
 
-  public void setElements(List<String> confrmanceProfiles) {
-    this.elements = confrmanceProfiles;
-  }
+	public void setDateUpdated(java.util.Date date) {
+		this.dateUpdated = date;
+	}
 
-  public String getUsername() {
-    return username;
-  }
+	public List<String> getElements() {
+		return elements;
+	}
 
-  public void setUsername(String username) {
-    this.username = username;
-  }
+	public void setElements(List<String> confrmanceProfiles) {
+		this.elements = confrmanceProfiles;
+	}
 
-  public DocumentSummary() {
-    // TODO Auto-generated constructor stub
-  }
+	public String getUsername() {
+		return username;
+	}
 
-  public int getPosition() {
-    return position;
-  }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-  public Status getStatus() {
-    return status;
-  }
+	public DocumentSummary() {
+		// TODO Auto-generated constructor stub
+	}
 
-  public void setStatus(Status status) {
-    this.status = status;
-  }
+	public int getPosition() {
+		return position;
+	}
 
-  public void setPosition(int position) {
-    this.position = position;
-  }
+	public Status getStatus() {
+		return status;
+	}
 
-  public String getId() {
-    return id;
-  }
+	public void setStatus(Status status) {
+		this.status = status;
+	}
 
-  public void setId(String id) {
-    this.id = id;
-  }
+	public void setPosition(int position) {
+		this.position = position;
+	}
 
-  public List<String> getParticipants() {
-    return participants;
-  }
+	public String getId() {
+		return id;
+	}
 
-  public void setParticipants(List<String> participants) {
-    this.participants = participants;
-  }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-  public boolean isDerived() {
-    return derived;
-  }
+	public List<String> getParticipants() {
+		return participants;
+	}
 
-  public void setDerived(boolean derived) {
-    this.derived = derived;
-  }
+	public void setParticipants(List<String> participants) {
+		this.participants = participants;
+	}
 
-public SharePermission getSharePermission() {
-	return sharePermission;
-}
+	public boolean isDerived() {
+		return derived;
+	}
 
-public void setSharePermission(SharePermission sharePermission) {
-	this.sharePermission = sharePermission;
-}
+	public void setDerived(boolean derived) {
+		this.derived = derived;
+	}
 
-public List<String> getSharedUsers() {
-	return sharedUsers;
-}
+	public SharePermission getSharePermission() {
+		return sharePermission;
+	}
 
-public void setSharedUsers(List<String> sharedUsers) {
-	this.sharedUsers = sharedUsers;
-}
+	public void setSharePermission(SharePermission sharePermission) {
+		this.sharePermission = sharePermission;
+	}
 
-public String getCurrentAuthor() {
-	return currentAuthor;
-}
+	public List<String> getSharedUsers() {
+		return sharedUsers;
+	}
 
-public void setCurrentAuthor(String currentAuthor) {
-	this.currentAuthor = currentAuthor;
-}
+	public void setSharedUsers(List<String> sharedUsers) {
+		this.sharedUsers = sharedUsers;
+	}
+
+	public String getCurrentAuthor() {
+		return currentAuthor;
+	}
+
+	public void setCurrentAuthor(String currentAuthor) {
+		this.currentAuthor = currentAuthor;
+	}
 
 
 

@@ -33,14 +33,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.uhn.fhir.context.FhirContext;
 import gov.nist.hit.hl7.igamt.bootstrap.data.CodeFixer;
+import gov.nist.hit.hl7.igamt.bootstrap.data.ConfigCreator;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConfigUpdater;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConformanceStatementFixer;
+import gov.nist.hit.hl7.igamt.bootstrap.data.ConformanceStatementsStrengthFix;
 import gov.nist.hit.hl7.igamt.bootstrap.data.DataFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.DocumentInfoService;
 import gov.nist.hit.hl7.igamt.bootstrap.data.DynamicMappingFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.FixIGAttribute;
 import gov.nist.hit.hl7.igamt.bootstrap.data.IgFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.SanityChecker;
+import gov.nist.hit.hl7.igamt.bootstrap.data.SingleCodeDataFix;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
@@ -197,6 +200,14 @@ public class BootstrapApplication implements CommandLineRunner {
 	
 	@Autowired
 	SanityChecker sanityChecker;
+	
+	@Autowired
+	SingleCodeDataFix singleCodeDataFix;
+	
+	@Autowired
+	ConformanceStatementsStrengthFix conformanceStatementsStrengthFix;
+	@Autowired
+	ConfigCreator configCreator;
 
 
 	@Bean
@@ -561,9 +572,25 @@ public class BootstrapApplication implements CommandLineRunner {
 		this.sanityChecker.checkCustomStructures();
 	}
 	
+	//@PostConstruct
+	void fixConformanceStatement() {
+		conformanceStatementsStrengthFix.fix();
+	}
+	//@PostConstruct
+	void fixSingleCode() throws Exception {
+		singleCodeDataFix.check();
+	}
+
 	
 	
-	
+	//@PostConstruct
+	void ConfigCreateAndUpdate() {
+		System.out.println("UPDATE CONFIG");
+		configCreator.createSharedConstant();
+		Config config = this.sharedConstantService.findOne();
+		this.configUpdater.updateValueSetLoctaionException(config, "ST","CQ_NIST", Type.DATATYPE, 2, config.getHl7Versions());
+		this.sharedConstantService.save(config);
+	}
 	
 	
 	

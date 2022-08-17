@@ -150,7 +150,7 @@ public class StructureEditorController {
 
     @RequestMapping(value = "/api/structure-editor/valueSets/{type}/{id}", method = RequestMethod.GET, produces = {
             "application/json" })
-    @PreAuthorize("AccessResource(type.toString(), #id, READ)")
+    @PreAuthorize("AccessResource(#type.toString(), #id, READ)")
     public List<DisplayElement> getResourceValueSets(@PathVariable("type") Type type, @PathVariable("id") String id, Authentication authentication) {
         return this.structureService.getResourceValueSets(type, id);
     }

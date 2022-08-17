@@ -334,7 +334,7 @@ public class ExportController {
 
 
   @RequestMapping(value = "/api/export/{document}/{id}/configuration/{configId}/getFilteredDocument", method = RequestMethod.GET)
-  @PreAuthorize("AccessResource(document.equals('ig') ? 'IGDOCUMENT' : 'DATATYPELIBRARY', #id, READ)")
+  @PreAuthorize("AccessResource(#document.equals('ig') ? 'IGDOCUMENT' : 'DATATYPELIBRARY', #id, READ)")
   public @ResponseBody ExportConfigurationGlobal getFilteredDocument(
       @PathVariable("id") String id,
       @PathVariable("configId") String configId,

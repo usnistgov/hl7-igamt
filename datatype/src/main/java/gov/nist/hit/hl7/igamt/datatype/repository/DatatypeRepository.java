@@ -57,5 +57,7 @@ public interface DatatypeRepository extends MongoRepository<Datatype, String> {
   List<Datatype> findByDerived(boolean derived);
   public Datatype findOneById(String key);
   public boolean existsByNameAndDomainInfoScopeAndDomainInfoVersion(String name, Scope scope, String version);
+  public void deleteByDomainInfoScopeAndDomainInfoVersionIn(Scope scope, List<String> versions);
+
 
 }

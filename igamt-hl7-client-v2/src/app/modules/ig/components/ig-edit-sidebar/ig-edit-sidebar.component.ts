@@ -9,6 +9,7 @@ import { SelectItem } from 'primeng/api';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import { concatMap, filter, flatMap, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { Hl7Config } from 'src/app/modules/shared/models/config.class';
+import { IContent } from 'src/app/modules/shared/models/content.interface';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { selectAllMessages } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
@@ -68,6 +69,8 @@ import { CrossReferencesService } from '../../../shared/services/cross-reference
 import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.class';
 import { IgTocFilterService, IIgTocFilterConfiguration, selectIgTocFilter } from '../../services/ig-toc-filter.service';
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
+import { ITypedSection } from './../ig-toc/ig-toc.component';
+import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -599,6 +602,24 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
                 parent: $event.parent,
               }));
             }
+          },
+        );
+      })).subscribe();
+  }
+
+  manageProfileStructure(event: IContent[]) {
+    console.log(event);
+    this.documentRef$.pipe(
+      take(1),
+      tap((documentRef) => {
+
+        const dialogRef = this.dialog.open(ManageProfileStructureComponent, {
+          data: event,
+        });
+        dialogRef.afterClosed().subscribe(
+          (answer) => {
+            event = [];
+
           },
         );
       })).subscribe();

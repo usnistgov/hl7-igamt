@@ -233,6 +233,7 @@ public class CloneServiceImpl implements  CloneService {
 
   public Ig updateIGAttributes(Ig ig, String username, CopyInfo info) {
     applyClone.updateAbstractDomainAttributes(ig, this.generateAbstractDomainId(), username);
+    ig.setDraft(false);
     ig.setDomainInfo(ig.getDomainInfo());
     ig.getDomainInfo().setScope(Scope.USER);
     ig.setStatus(null);

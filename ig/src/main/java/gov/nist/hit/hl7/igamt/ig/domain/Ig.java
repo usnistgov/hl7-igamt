@@ -41,6 +41,7 @@ public class Ig extends DocumentStructure {
 //  private DocumentExportConfiguration lastUserConfiguration;
   private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
   
+  
 //  public DocumentExportConfiguration getLastUserConfiguration() {
 //    return lastUserConfiguration;
 //  }
