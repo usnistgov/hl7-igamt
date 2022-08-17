@@ -31,6 +31,8 @@ public interface VerificationEntryService {
 
     // Co-Constraints
     IgamtObjectError CoConstraintTargetIsNotSegment(String pathId, String locationName, String id, Type type, String path, String pathQualifier);
+    IgamtObjectError CoConstraintOBX3MappingIsDuplicate(String pathId, String id, Type type, String code);
+
     IgamtObjectError CoConstraintInvalidHeaderType(String pathId, String name, PropertyType propertyType, String id, Type type, LocationInfo info, ColumnType column, String reason);
     IgamtObjectError CoConstraintInvalidGroupRef(String pathId, String locationName, String id, Type type);
     IgamtObjectError CoConstraintGroupNameIsMissing(String pathId, String locationName, String id, Type type);

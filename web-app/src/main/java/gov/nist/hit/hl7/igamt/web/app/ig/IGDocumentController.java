@@ -304,16 +304,15 @@ public class IGDocumentController extends BaseController {
     return igService.conformanceStatementsSummary(igdoument);
   }
 
-  @RequestMapping(value = "/api/igdocuments/{id}/conformancestatement/assertion", method = RequestMethod.POST, produces = {"application/text" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
-  public @ResponseBody String getAssertionCS(@PathVariable("id") String id, @RequestBody ConformanceStatement cs, Authentication authentication) throws IGNotFoundException, IGUpdateException {
+  @RequestMapping(value = "/api/igdocuments/{type}/{id}/conformancestatement/assertion", method = RequestMethod.POST, produces = {"application/text" })
+  @PreAuthorize("AccessResource(#type, #id, READ)")
+  public @ResponseBody String getAssertionCS(@PathVariable("id") String id, @PathVariable("type") Type type, @RequestBody ConformanceStatement cs, Authentication authentication) throws IGNotFoundException, IGUpdateException {
     return this.serializeService.generateAssertionScript(cs, id);
   }
 
-  @RequestMapping(value = "/api/igdocuments/{id}/predicate/assertion", method = RequestMethod.POST, produces = {
-  "application/text" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
-  public @ResponseBody String getAssertionPD(@PathVariable("id") String id, @RequestBody Predicate p, Authentication authentication)
+  @RequestMapping(value = "/api/igdocuments/{type}/{id}/predicate/assertion", method = RequestMethod.POST, produces = {"application/text" })
+  @PreAuthorize("AccessResource(#type, #id, READ)")
+  public @ResponseBody String getAssertionPD(@PathVariable("id") String id, @PathVariable("type") Type type, @RequestBody Predicate p, Authentication authentication)
       throws IGNotFoundException, IGUpdateException {
     return this.serializeService.generateConditionScript(p, id);
   }

@@ -7,6 +7,7 @@ import { combineLatest, Observable, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { IConformanceStatementEditorData, IDependantConformanceStatements, IEditableConformanceStatementGroup, IEditableListNode } from '../../core/components/conformance-statement-editor/conformance-statement-editor.component';
 import { Assertion, BinaryOperator, IfThenOperator, LeafStatementType, NaryOperator, Operator, OperatorType, Pattern, Position, Statement, SubContextOperator, UnaryOperator } from '../components/pattern-dialog/cs-pattern.domain';
+import { Type } from '../constants/type.enum';
 import { Usage } from '../constants/usage.enum';
 import { ConformanceStatementStrength } from '../models/conformance-statements.domain';
 import { IConformanceStatementList, IConformanceStatementsContainerMap, ICPConformanceStatementList } from '../models/cs-list.interface';
@@ -119,12 +120,12 @@ export class ConformanceStatementService {
     });
   }
 
-  generateXMLfromPredicate(predicate: IPredicate, id: string): Observable<string> {
-    return this.http.post('api/igdocuments/' + id + '/predicate/assertion', predicate, { responseType: 'text' });
+  generateXMLfromPredicate(predicate: IPredicate, id: string, type: Type): Observable<string> {
+    return this.http.post('api/igdocuments/' + type + '/' + id + '/predicate/assertion', predicate, { responseType: 'text' });
   }
 
-  generateXMLfromCs(cs: IConformanceStatement, id: string): Observable<string> {
-    return this.http.post('api/igdocuments/' + id + '/conformancestatement/assertion', cs, { responseType: 'text' });
+  generateXMLfromCs(cs: IConformanceStatement, id: string, type: Type): Observable<string> {
+    return this.http.post('api/igdocuments/' + type + '/' + id + '/conformancestatement/assertion', cs, { responseType: 'text' });
   }
 
   getFreeConformanceStatement(): IFreeTextConformanceStatement {

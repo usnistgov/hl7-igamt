@@ -13,14 +13,20 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingInfo;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingLocationOption;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.Location;
+import gov.nist.hit.hl7.igamt.ig.model.CoConstraintMappingLocation;
+import gov.nist.hit.hl7.igamt.ig.model.CoConstraintOBX3MappingValue;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
+import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
 import gov.nist.hit.hl7.igamt.service.impl.ResourceSkeletonService;
+import gov.nist.hit.hl7.igamt.service.impl.exception.AmbiguousOBX3MappingException;
+import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +51,30 @@ public class CoConstraintVerificationService extends VerificationUtils {
 
     @Autowired
     DatatypeService datatypeService;
+
+    @Autowired
+    CoConstraintSerializationHelper coConstraintSerializationHelper;
+
+    public List<IgamtObjectError> checkCoConstraintBindingsOBX3Mapping(ConformanceProfile profile) {
+        List<IgamtObjectError> errors = new ArrayList<>();
+        try {
+            coConstraintSerializationHelper.getOBX3ToFlavorMap(profile);
+        } catch (AmbiguousOBX3MappingException e) {
+            for(CoConstraintMappingLocation location: e.getMappings().keySet()) {
+                e.getMappings().get(location).forEach((ambigious) -> {
+                    errors.add(this.entry.CoConstraintOBX3MappingIsDuplicate(
+                            location.getLocationId(),
+                            location.getResource().getId(),
+                            location.getResource().getType(),
+                            ambigious.getCode()
+                    ));
+                });
+            }
+        } catch (ResourceNotFoundException | PathNotFoundException e) {
+            e.printStackTrace();
+        }
+        return errors;
+    }
 
     public List<IgamtObjectError> checkCoConstraintBinding(ResourceSkeleton resource, CoConstraintBinding coConstraintBinding) {
         return this.getTargetAndVerify(
@@ -111,6 +141,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
                                 for (CoConstraintTableConditionalBinding tableConditionalBinding : coConstraintBindingSegment.getTables()) {
                                     errors.addAll(checkCoConstraintTableConditionalBinding(
                                             target,
+                                            context,
                                             TargetLocation.makeTableLocation(
                                                     segmentLocation,
                                                     tableConditionalBinding.getId(),
@@ -140,7 +171,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
     }
 
 
-    List<IgamtObjectError> checkCoConstraintTableConditionalBinding(ResourceSkeletonBone segmentRef, TargetLocation tableLocation, CoConstraintTableConditionalBinding binding) {
+    List<IgamtObjectError> checkCoConstraintTableConditionalBinding(ResourceSkeletonBone segmentRef, ResourceSkeleton context, TargetLocation tableLocation, CoConstraintTableConditionalBinding binding) {
         ResourceSkeleton segment = new ResourceSkeleton(
                 segmentRef.getResourceRef(),
                 this.resourceSkeletonService
@@ -152,7 +183,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
             if(binding.getCondition() != null) {
                 errors.addAll(
                         this.assertionVerificationService.checkAssertion(
-                                segment,
+                                context,
                                 new Location(conditionLocation.pathId, conditionLocation.name, PropertyType.COCONSTRAINTBINDING_CONDITION),
                                 binding.getCondition()
                         )

@@ -139,6 +139,17 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
+    public IgamtObjectError CoConstraintOBX3MappingIsDuplicate(String pathId, String id, Type type, String code) {
+        return new IgamtVerificationEntryBuilder("COCONSTRAINT_OBX3_TO_FLAVOR_MAPPING")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(pathId, PropertyType.COCONSTRAINTBINDING_ROW)
+                .message("OBX-3 Code : " + code + " is duplicated and associated with different flavors for OBX-5")
+                .entry();
+    }
+
+    @Override
     public IgamtObjectError CoConstraintInvalidHeaderType(String pathId, String name, PropertyType propertyType, String id, Type type, LocationInfo info, ColumnType column, String reason) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_INVALID_HEADER_TYPE")
                 .error()
