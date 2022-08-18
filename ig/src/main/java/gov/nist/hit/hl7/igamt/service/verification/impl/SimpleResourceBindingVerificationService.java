@@ -4,7 +4,6 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.coconstraints.service.TriFunction;
 import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.SingleCodeBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
@@ -73,6 +72,9 @@ public class SimpleResourceBindingVerificationService extends VerificationUtils 
                 errors.addAll(this.verifyCoConstraintBinding(resourceSkeleton, coConstraintBinding));
             }
         }
+        errors.addAll(
+                this.coConstraintVerificationService.checkCoConstraintBindingsOBX3Mapping(conformanceProfile)
+        );
         return errors;
     }
 

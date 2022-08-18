@@ -368,11 +368,11 @@ export class CsDialogComponent implements OnDestroy {
 
     if (this.statementsValid()) {
       if (this.predicateMode) {
-        return this.csService.generateXMLfromPredicate(this.cs as IPredicate, this.resource.id).pipe(
+        return this.csService.generateXMLfromPredicate(this.cs as IPredicate, this.resource.id, this.resourceType).pipe(
           tap(processValue),
         ).subscribe();
       } else {
-        return this.csService.generateXMLfromCs(this.cs, this.resource.id).pipe(
+        return this.csService.generateXMLfromCs(this.cs, this.resource.id, this.resourceType).pipe(
           tap(processValue),
         ).subscribe();
       }
