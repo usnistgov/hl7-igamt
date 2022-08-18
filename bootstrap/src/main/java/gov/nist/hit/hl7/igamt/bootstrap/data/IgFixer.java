@@ -11,17 +11,21 @@
  */
 package gov.nist.hit.hl7.igamt.bootstrap.data;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -64,7 +68,7 @@ public class IgFixer {
   @Autowired
   private CoConstraintService coConstraintService;
 
-  public void fixIgComponents() throws CoConstraintGroupNotFoundException {
+  public void fixIgComponents() throws EntityNotFound, ForbiddenOperationException {
     List<Ig> igs=  igService.findAll();
     for(Ig ig: igs) {
       if(ig.getDomainInfo().getScope() != Scope.ARCHIVED) {
@@ -110,9 +114,9 @@ public class IgFixer {
   /**
    * @param id
    * @param username
-   * @throws CoConstraintGroupNotFoundException 
+   * @throws EntityNotFound 
    */
-  private void fixCoConstraintGroup(String id, String username) throws CoConstraintGroupNotFoundException {
+  private void fixCoConstraintGroup(String id, String username) throws EntityNotFound {
     // TODO Auto-generated method stub
     CoConstraintGroup c= coConstraintService.findById(id);
     if(c != null) {
@@ -125,8 +129,9 @@ public class IgFixer {
   /**
    * @param id
    * @param username
+ * @throws ForbiddenOperationException 
    */
-  private void fixValueset(String id, String username) {
+  private void fixValueset(String id, String username) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     Valueset vs = this.valuesetService.findById(id);
     if(vs !=null) {
@@ -140,8 +145,9 @@ public class IgFixer {
   /**
    * @param id
    * @param username
+ * @throws ForbiddenOperationException 
    */
-  private void fixDatatype(String id, String username) {
+  private void fixDatatype(String id, String username) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     Datatype dt = this.datatypeService.findById(id);
     if(dt !=null) {
@@ -155,8 +161,9 @@ public class IgFixer {
   /**
    * @param id
    * @param username
+ * @throws ForbiddenOperationException 
    */
-  private void fixSegment(String id, String username) {
+  private void fixSegment(String id, String username) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     Segment segment = this.segmentService.findById(id);
     if(segment !=null) {
@@ -185,36 +192,111 @@ public class IgFixer {
       for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
         if(l.isComparable()) {
           l.setDerived(true);
-           this.igService.updateAttribute(l.getId(), "derived", true, ConformanceProfile.class);
+           this.igService.updateAttribute(l.getId(), "derived", true, ConformanceProfile.class, false);
         }
       }
       for ( Link l: ig.getSegmentRegistry().getChildren()) {
         if(l.isComparable()) {
           l.setDerived(true);
-          this.igService.updateAttribute(l.getId(), "derived", true, Segment.class);
+          this.igService.updateAttribute(l.getId(), "derived", true, Segment.class, false);
         }
       }
 
       for ( Link l: ig.getDatatypeRegistry().getChildren()) {
         if(l.isComparable()) {
           l.setDerived(true);
-          this.igService.updateAttribute(l.getId(), "derived", true, Datatype.class);
+          this.igService.updateAttribute(l.getId(), "derived", true, Datatype.class, false);
         }
       }
       for ( Link l: ig.getValueSetRegistry().getChildren()) {
         if(l.isComparable()) {
           l.setDerived(true);
-          this.igService.updateAttribute(l.getId(), "derived", true, Valueset.class);
+          this.igService.updateAttribute(l.getId(), "derived", true, Valueset.class, false);
         }
       }
 
       for ( Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
         if(l.isComparable()) {
           l.setDerived(true);
-          this.igService.updateAttribute(l.getId(), "derived", true, Valueset.class);     
+          this.igService.updateAttribute(l.getId(), "derived", true, Valueset.class, false);     
         }
       }
       igRepo.save(ig);
     }
   }
+  
+  public void fixBrokenLinks(Ig ig, String id, Type type){
+	  
+	      for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
+	    	  if(l.getId() == null) {
+	    		  System.out.println("BROKEN  CP LINK"+ ig.getId());
+	    	  }
+	      }
+	      for ( Link l: ig.getSegmentRegistry().getChildren()) {
+	    	  if(l.getId() == null) {
+	    		  System.out.println("BROKEN  SEG LINK"+ ig.getId());
+	    	  }
+	      }
+
+	      for ( Link l: ig.getDatatypeRegistry().getChildren()) {
+	    	  if(l.getId() == null) {
+	    		  System.out.println("BROKEN  DT LINK"+ ig.getId());
+	    	  }
+	      }
+	      for ( Link l: ig.getValueSetRegistry().getChildren()) {
+	      	  if(l.getId() == null) {
+	    		  System.out.println("BROKEN  VS LINK"+ ig.getId());
+	    	  }  
+	      }
+	      for ( Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
+	      	  if(l.getId() == null) {
+	    		  System.out.println("BROKEN  CCG LINK"+ ig.getId());
+	    	  }
+	      }
+	      for ( Link l: ig.getProfileComponentRegistry().getChildren()) {
+	      	  if(l.getId() == null) {
+	    		  System.out.println("BROKEN  PC LINK"+ ig.getId());
+	    	  }
+	      }	
+	      for ( Link l: ig.getCompositeProfileRegistry().getChildren()) {
+	      	  if(l.getId() == null) {
+	    		  System.out.println("BROKEN  CP LINK"+ ig.getId());
+	    	  }
+	      }	
+	    }
+
+
+	public void fixDatatypeLinksDomainInfo(String igId) {
+		Ig ig = this.igService.findById(igId);
+		
+	     for ( Link l: ig.getDatatypeRegistry().getChildren()) {
+	    	l.setDomainInfo(this.datatypeService.findById(l.getId()).getDomainInfo());
+	      }
+	     this.igRepo.save(ig);
+	}
+	
+	public void fixValuesetLinksDomainInfo(String igId) {
+		Ig ig = this.igService.findById(igId);
+		
+	     for ( Link l: ig.getValueSetRegistry().getChildren()) {
+	    	l.setDomainInfo(this.valuesetService.findById(l.getId()).getDomainInfo());
+	      }
+	     this.igRepo.save(ig);
+	}
+	
+	public void fixCoConstraintEmptyLink(String igId) {
+		Ig ig = this.igService.findById(igId);
+		Set<Link> newlinks = new HashSet<Link>();
+		for(Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
+			if(l.getId() != null) {
+				newlinks.add(l);
+			}
+		}
+		ig.getCoConstraintGroupRegistry().setChildren(newlinks);
+	
+	    this.igRepo.save(ig);
+	}
+	
 }
+
+

@@ -6,15 +6,23 @@ import { OccurrenceType } from '../../models/conformance-statements.domain';
 import { IPath } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
-import { IHL7v2TreeFilter, RestrictionType } from '../../services/tree-filter.service';
+import { StatementTarget } from '../../services/statement.service';
+import { IHL7v2TreeFilter, ITreeRestriction, RestrictionType } from '../../services/tree-filter.service';
 import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 import { IToken, Statement } from '../pattern-dialog/cs-pattern.domain';
+import { IOption, NB_OCCURRENCES, TARGET_OCCURRENCES } from './cs-statement.constants';
 
 export interface IStatementTokenPayload {
   effectiveTree: IHL7v2TreeNode[];
   effectiveContext: IPath;
   active?: IHL7v2TreeNode;
   activeNodeRootPath?: IPath;
+}
+
+export interface ISubjectTreeRestrictions {
+  excludedPaths?: ITreeRestriction<any>;
+  primitive?: ITreeRestriction<any>;
+  types?: ITreeRestriction<any>;
 }
 
 export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
@@ -48,8 +56,8 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
   }
   @Input()
   set excludePaths(paths: string[]) {
-    this.treeFilter.restrictions.push(
-      {
+    this.updateSubjectTreeFilter({
+      excludedPaths: {
         criterion: RestrictionType.PATH,
         allow: false,
         value: paths.map((path) => {
@@ -59,7 +67,7 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
           };
         }),
       },
-    );
+    });
   }
 
   @Output()
@@ -72,10 +80,30 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
   _token: IToken<Statement, IStatementTokenPayload>;
   value: T;
   payloadSubscription: Subscription;
+  subjectTreeRestrictions: ISubjectTreeRestrictions;
+  treeFilter: IHL7v2TreeFilter;
 
-  constructor(public treeFilter: IHL7v2TreeFilter, private blank: T) {
+  constructor(public baseTreeFilter: IHL7v2TreeFilter, private blank: T) {
     this.valueChange = new EventEmitter<T>();
     this.value = Object.assign({}, this.blank);
+    this.updateSubjectTreeFilter({});
+  }
+
+  updateSubjectTreeFilter(restrictions: ISubjectTreeRestrictions) {
+    this.subjectTreeRestrictions = {
+      ...this.subjectTreeRestrictions,
+      ...restrictions,
+    };
+
+    this.treeFilter = {
+      ...this.baseTreeFilter,
+      restrictions: [
+        ...(this.baseTreeFilter.restrictions || []),
+        ...(this.subjectTreeRestrictions.excludedPaths ? [this.subjectTreeRestrictions.excludedPaths] : []),
+        ...(this.subjectTreeRestrictions.primitive ? [this.subjectTreeRestrictions.primitive] : []),
+        ...(this.subjectTreeRestrictions.types ? [this.subjectTreeRestrictions.types] : []),
+      ],
+    };
   }
 
   public min(a: number, b: number) {
@@ -93,6 +121,18 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
     if (!payload.active) {
       this.clearStatementTargetElements();
       this.change();
+    }
+  }
+
+  getAllowedOccurrenceList(subject: StatementTarget): IOption[] {
+    if (subject && subject.repeatMax > 0) {
+      if (subject.hierarchicalRepeat) {
+        return [...NB_OCCURRENCES];
+      } else {
+        return [...NB_OCCURRENCES, ...TARGET_OCCURRENCES];
+      }
+    } else {
+      return [];
     }
   }
 

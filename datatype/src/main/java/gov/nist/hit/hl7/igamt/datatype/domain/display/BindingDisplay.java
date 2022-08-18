@@ -11,12 +11,14 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.SingleCodeBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
@@ -50,9 +52,8 @@ public class BindingDisplay {
 
 	@DeltaField
 	private Integer valuesetBindingsPriority;
-	
-	@DeltaField
-	private InternalSingleCode internalSingleCode;
+
+	private List<SingleCodeBinding> singleCodeBindings;
 	
 	@DeltaField
 	private BindingType bindingType;
@@ -123,14 +124,6 @@ public class BindingDisplay {
 		this.valuesetBindings = valuesetBindings;
 	}
 
-	public InternalSingleCode getInternalSingleCode() {
-		return internalSingleCode;
-	}
-
-	public void setInternalSingleCode(InternalSingleCode internalSingleCode) {
-		this.internalSingleCode = internalSingleCode;
-	}
-
 	public BindingType getBindingType() {
 		return bindingType;
 	}
@@ -145,5 +138,13 @@ public class BindingDisplay {
 
 	public void setChangeLog(Map<PropertyType, ChangeReason> changeLog) {
 		this.changeLog = changeLog;
+	}
+
+	public List<SingleCodeBinding> getSingleCodeBindings() {
+		return singleCodeBindings;
+	}
+
+	public void setSingleCodeBindings(List<SingleCodeBinding> singleCodeBindings) {
+		this.singleCodeBindings = singleCodeBindings;
 	}
 }

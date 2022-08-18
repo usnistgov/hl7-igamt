@@ -75,6 +75,7 @@
                           [location]="rowData.pathId"
                           [position]="rowData.position"
                           [level]="rowData.level"
+                          [node]="rowNode.node"
                           (valueChange)="registerChange($event)"
                           [type]="nodeType(rowNode.node)"
                           [value]="{
@@ -100,6 +101,7 @@
                     [location]="rowData.pathId"
                     [repository]="repository"
                     [position]="rowData.position"
+                    [node]="rowNode.node"
                     [value]="rowData.usage"
                     [usages]="{
                       original : rowData.oldUsage,
@@ -126,6 +128,7 @@
                     [usage]="rowData.usage.value"
                     [type]="rowData.type"
                     [position]="rowData.position"
+                    [node]="rowNode.node"
                     [level]="rowData.level"
                     [value]="rowData.cardinality"
                     [context]="type"
@@ -135,7 +138,6 @@
                 <ng-container *ngSwitchCase="columnTypes.LENGTH">
                   <app-length
                     [changeEvent]="changes$"
-                    *ngIf="rowNode.node.leaf"
                     [viewOnly]="viewOnly || !rowData.changeable"
                     [globalViewOnly]="viewOnly"
                     [enforceChangeReason]="derived"
@@ -144,11 +146,10 @@
                     [location]="rowData.pathId"
                     [level]="rowData.level"
                     [position]="rowData.position"
-                    [value]="{
-                      length: rowData.length,
-                      confLength: rowData.confLength,
-                      lengthType: rowData.lengthType
-                    }"
+                    [node]="rowNode.node"
+                    [lengthType]="rowData.lengthType"
+                    [leaf]="rowNode.node.leaf"
+                    [value]="rowData.length"
                     [context]="type"
                     (updateLengthType)="updateLength($event, rowNode)"
                     (valueChange)="registerChange($event)"
@@ -157,7 +158,6 @@
                 <ng-container *ngSwitchCase="columnTypes.CONFLENGTH">
                   <app-conformance-length
                     [changeEvent]="changes$"
-                    *ngIf="rowNode.node.leaf"
                     [globalViewOnly]="viewOnly"
                     [viewOnly]="viewOnly || !rowData.changeable"
                     [enforceChangeReason]="derived"
@@ -165,11 +165,12 @@
                     [location]="rowData.pathId"
                     [type]="rowData.type"
                     [position]="rowData.position"
+                    [node]="rowNode.node"
                     [level]="rowData.level"
+                    [lengthType]="rowData.lengthType"
+                    [leaf]="rowNode.node.leaf"
                     [value]="{
-                      length: rowData.length,
-                      confLength: rowData.confLength,
-                      lengthType: rowData.lengthType
+                      value: rowData.confLength
                     }"
                     [context]="type"
                     (updateLengthType)="updateLength($event, rowNode)"
@@ -188,12 +189,14 @@
                       [changeLog]="rowData.changeLog"
                       [location]="rowData.pathId"
                       [position]="rowData.position"
+                      [node]="rowNode.node"
                       [value]="reference"
                       [documentRef]="documentRef"
                       [documentType]=""
                       [level]="rowData.level"
                       [options]="datatypes"
                       [anchor]="anchor"
+                      [resource]="_resource"
                       [context]="type"
                       [slicing]="rowData.slicing"
                       (valueChange)="datatypeChange($event, rowNode)"
@@ -212,11 +215,13 @@
                         [changeLog]="rowData.changeLog"
                         [location]="rowData.pathId"
                         [position]="rowData.position"
+                        [node]="rowNode.node"
                         [value]="reference"
                         [documentRef]="documentRef"
                         [level]="rowData.level"
                         [anchor]="anchor"
                         [options]="segments"
+                        [resource]="_resource"
                         [context]="type"
                         [slicing]="rowData.slicing"
                         (valueChange)="segmentChange($event, rowNode)"
@@ -231,6 +236,7 @@
                     [type]="rowData.type"
                     [location]="rowData.pathId"
                     [position]="rowData.position"
+                    [node]="rowNode.node"
                     [level]="rowData.level"
                     [value]="rowData.text"
                     [context]="type"
@@ -249,6 +255,7 @@
                     [type]="rowData.type"
                     [location]="rowData.pathId"
                     [position]="rowData.position"
+                    [node]="rowNode.node"
                     [repository]="repository"
                     [resource] ="_resource"
                     [valueSets]= "valueSets"
@@ -257,7 +264,7 @@
                     [bindingInfo]= "rowData.valueSetBindingsInfo | async"
                     [value]="{
                       valueSetBindings: rowData.bindings?.values?.valuesetBindings,
-                      singleCodeBindings: rowData.bindings?.values?.internalSingleCode
+                      singleCodeBindings: rowData.bindings?.values?.singleCodeBindings
                     }"
                     (valueChange)="registerChange($event)"
                   >
@@ -271,6 +278,7 @@
                     [type]="rowData.type"
                     [location]="rowData.pathId"
                     [position]="rowData.position"
+                    [node]="rowNode.node"
                     [username]="username"
                     [level]="rowData.level"
                     [value]="rowData.comments"
@@ -289,10 +297,11 @@
                     [type]="rowData.type"
                     [location]="rowData.pathId"
                     [position]="rowData.position"
+                    [node]="rowNode.node"
                     [level]="rowData.level"
                     [value]="rowData.constantValue"
+                    [leaf]="rowNode.node.leaf"
                     [context]="type"
-                    *ngIf="rowNode.node.leaf"
                     (valueChange)="registerChange($event)"
                   >
                   </app-constant-value>

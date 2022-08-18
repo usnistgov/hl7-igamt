@@ -22,6 +22,7 @@ public class ConditionalSlicing extends Slicing {
 	
 	private int min;
 	private String max;
+	
 	private List<ConditionalSlice> slices;
 
 

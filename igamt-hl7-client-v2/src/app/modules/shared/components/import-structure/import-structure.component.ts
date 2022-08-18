@@ -1,20 +1,20 @@
-import {Component, Inject, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {NgForm} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {Store} from '@ngrx/store';
-import {Guid} from 'guid-typescript';
-import _ from 'lodash';
-import {Observable, of} from 'rxjs';
-import {map, take} from 'rxjs/operators';
-import {selectAllSegments} from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
-import {Scope} from '../../constants/scope.enum';
-import {Type} from '../../constants/type.enum';
-import {IAddingInfo, ISubstitution} from '../../models/adding-info';
-import {IDisplayElement} from '../../models/display-element.interface';
-import {IResourcePickerData} from '../../models/resource-picker-data.interface';
-import {IResource} from '../../models/resource.interface';
-import {DisplayService} from '../../services/display.service';
-import {ResourceService} from '../../services/resource.service';
+import { Component, Inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Store } from '@ngrx/store';
+import { Guid } from 'guid-typescript';
+import * as _ from 'lodash';
+import { Observable, of } from 'rxjs';
+import { map, take } from 'rxjs/operators';
+import { selectAllSegments } from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
+import { Scope } from '../../constants/scope.enum';
+import { Type } from '../../constants/type.enum';
+import { IAddingInfo, ISubstitution } from '../../models/adding-info';
+import { IDisplayElement } from '../../models/display-element.interface';
+import { IResourcePickerData } from '../../models/resource-picker-data.interface';
+import { IResource } from '../../models/resource.interface';
+import { DisplayService } from '../../services/display.service';
+import { ResourceService } from '../../services/resource.service';
 
 @Component({
   selector: 'app-import-structure',
@@ -46,19 +46,19 @@ export class ImportStructureComponent implements OnInit {
   duplicatedList = [];
   duplicated: NamingMap = {};
   constructor(public dialogRef: MatDialogRef<ImportStructureComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: IResourcePickerData, private resourceService: ResourceService, private store: Store<any>, private display: DisplayService ) {
+              @Inject(MAT_DIALOG_DATA) public data: IResourcePickerData, private resourceService: ResourceService, private store: Store<any>, private display: DisplayService) {
     this.step = 1;
-    this.resourceService.importResource({ type: data.type, scope: data.scope, version: data.version}).pipe(map((x) =>  x.data)).subscribe(
-      (x) =>  {this.table_ = x; });
-    this.store.select(selectAllSegments).pipe( take(1),
+    this.resourceService.importResource({ type: data.type, scope: data.scope, version: data.version }).pipe(map((x) => x.data)).subscribe(
+      (x) => { this.table_ = x; });
+    this.store.select(selectAllSegments).pipe(take(1),
       map((all) => all.filter((x) => x.domainInfo.scope === Scope.USER)), map((table) => _.groupBy(table, (elm) => elm.fixedName))).subscribe((x) => this.availables = x);
   }
   ngOnInit() {
   }
 
   select($event: string) {
-    this.resourceService.importResource({ type: this.data.type, scope: this.data.scope, version: $event}).pipe(map((x) =>  x.data)).subscribe(
-      (x) =>  {this.table_ = x; });
+    this.resourceService.importResource({ type: this.data.type, scope: this.data.scope, version: $event }).pipe(map((x) => x.data)).subscribe(
+      (x) => { this.table_ = x; });
   }
 
   selected($event: any[]) {
@@ -66,11 +66,11 @@ export class ImportStructureComponent implements OnInit {
   }
 
   submit() {
-    this.structure = {...this.structure};
+    this.structure = { ...this.structure };
     if (this.data.type === Type.EVENTS) {
       this.structure.substitutes = this.process();
     }
-    this.dialogRef.close([ this.structure]);
+    this.dialogRef.close([this.structure]);
   }
   cancel() {
     this.dialogRef.close();
@@ -103,7 +103,7 @@ export class ImportStructureComponent implements OnInit {
       this.duplicatedList = [];
       this.duplicated = {};
       this.children = x;
-      if ( x ) {
+      if (x) {
         this.children.forEach((child) => {
           if (this.availables[child.fixedName]) {
             this.findDuplicated(this.availables[child.fixedName], child);
@@ -151,7 +151,7 @@ export class ImportStructureComponent implements OnInit {
   private findDuplicated(availables: IDisplayElement[], child: IDisplayElement) {
     availables.forEach((elm) => {
       // tslint:disable-next-line:align
-      if ( elm.structureIdentifier !== child.structureIdentifier) {
+      if (elm.structureIdentifier !== child.structureIdentifier) {
         // tslint:disable-next-line:no-collapsible-if
         if (this.duplicated[elm.fixedName]) {
           this.duplicated[elm.fixedName].push(elm);
@@ -171,18 +171,18 @@ export class ImportStructureComponent implements OnInit {
     this.duplicatedList = [];
     this.duplicated = {};
     if (this.availables[display.fixedName]) {
-      this.findDuplicated( this.availables[display.fixedName], display);
+      this.findDuplicated(this.availables[display.fixedName], display);
     }
     this.structure = {
-        originalId: rowData.id,
-        id: Guid.create().toString(),
-        type: Type.SEGMENT,
-        name: rowData.name,
-        fixedExt: rowData.fixedExtension,
-        ext: '',
-        description: rowData.description,
-        domainInfo: { ...rowData.domainInfo, scope: Scope.USER },
-        flavor: true,
+      originalId: rowData.id,
+      id: Guid.create().toString(),
+      type: Type.SEGMENT,
+      name: rowData.name,
+      fixedExt: rowData.fixedExtension,
+      ext: '',
+      description: rowData.description,
+      domainInfo: { ...rowData.domainInfo, scope: Scope.USER },
+      flavor: true,
     };
     this.step = 2;
   }

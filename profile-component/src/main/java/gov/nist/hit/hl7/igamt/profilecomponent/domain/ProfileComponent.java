@@ -20,6 +20,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageProfileIdentifier;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 
 /**
  * @author Abdelghani El Ouakili
@@ -65,13 +66,16 @@ public class ProfileComponent extends Resource {
   
   @Override
   public ProfileComponent clone() {
-
     ProfileComponent clone = new ProfileComponent();
     complete(clone);
-    clone.setChildren(children);
     return clone;
   }
 
+  public void complete(ProfileComponent elm) {
+    super.complete(elm);
+    elm.setChildren(children);
+    elm.preCoordinatedMessageIdentifier = preCoordinatedMessageIdentifier;
+}
   public MessageProfileIdentifier getPreCoordinatedMessageIdentifier() {
     return preCoordinatedMessageIdentifier;
   }

@@ -14,9 +14,11 @@ public class DocumentStructure extends AbstractDomain{
 	protected DocumentMetadata metadata;
 	protected Set<TextSection> content = new HashSet<TextSection>();
 
-	
+	protected Boolean draft;
 	  
 	
+
+
 	public DocumentStructure(String id, String version, String name, PublicationInfo publicationInfo,
 		      DomainInfo domainInfo, String username, String comment, String description) {
 		    super(id, version, name, publicationInfo, domainInfo, username, comment, description);
@@ -50,13 +52,19 @@ public class DocumentStructure extends AbstractDomain{
 
 	@Override
 	public String getLabel() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public Registry getDatatypeRegistry() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public Boolean getDraft() {
+		return draft;
+	}
+
+	public void setDraft(Boolean draft) {
+		this.draft = draft;
 	}
 
 }

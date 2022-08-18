@@ -15,7 +15,7 @@ package gov.nist.hit.hl7.igamt.common.slicing.domain;
  * @author Abdelghani El Ouakili
  *
  */
-public class OrderedSlice extends Slice{
+public class OrderedSlice extends Slice {
 	private int position;
 
 	public int getPosition() {

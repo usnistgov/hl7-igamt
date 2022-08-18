@@ -13,10 +13,12 @@ package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.SingleCodeBinding;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 
@@ -29,7 +31,7 @@ public class FieldDataModel implements Serializable{
 
   private DatatypeBindingDataModel datatype;
   private Predicate predicate;
-  private InternalSingleCode singleCode;
+  private List<SingleCodeBinding> singleCodes;
   private Set<ValuesetBindingDataModel> valuesets = new HashSet<ValuesetBindingDataModel>();
 
   public FieldDataModel() {
@@ -37,12 +39,12 @@ public class FieldDataModel implements Serializable{
   }
 
   public FieldDataModel(Field f, Predicate predicate,
-		  InternalSingleCode singleCode, Set<ValuesetBindingDataModel> valuesets,
+		  List<SingleCodeBinding> singleCodes, Set<ValuesetBindingDataModel> valuesets,
       DatatypeBindingDataModel datatype) {
     super();
     this.model = f;
     this.predicate = predicate;
-    this.singleCode = singleCode;
+    this.setSingleCodes(singleCodes);
     this.valuesets = valuesets;
     this.datatype = datatype;
   }
@@ -70,14 +72,6 @@ public class FieldDataModel implements Serializable{
   public void setPredicate(Predicate predicate) {
     this.predicate = predicate;
   }
-  
-  public InternalSingleCode getSingleCode() {
-    return singleCode;
-  }
-
-  public void setSingleCode(InternalSingleCode singleCode) {
-    this.singleCode = singleCode;
-  }
 
   public Set<ValuesetBindingDataModel> getValuesets() {
     return valuesets;
@@ -86,6 +80,14 @@ public class FieldDataModel implements Serializable{
   public void setValuesets(Set<ValuesetBindingDataModel> valuesets) {
     this.valuesets = valuesets;
   }
+
+public List<SingleCodeBinding> getSingleCodes() {
+	return singleCodes;
+}
+
+public void setSingleCodes(List<SingleCodeBinding> singleCodes) {
+	this.singleCodes = singleCodes;
+}
 
 
 

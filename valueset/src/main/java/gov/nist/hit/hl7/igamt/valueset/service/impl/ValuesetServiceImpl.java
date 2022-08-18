@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
@@ -48,6 +47,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 import gov.nist.hit.hl7.igamt.valueset.repository.ValuesetRepository;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import gov.nist.hit.hl7.resource.change.service.OperationService;
 
 /**
  * @author Jungyub Woo on Mar 1, 2018.
@@ -64,6 +64,9 @@ public class ValuesetServiceImpl implements ValuesetService {
     
     @Autowired
     private FhirHandlerService fhirHandlerService;
+    
+    @Autowired
+    private OperationService operationService;
 
 
 
@@ -87,8 +90,8 @@ public class ValuesetServiceImpl implements ValuesetService {
     }
 
     @Override
-    public Valueset save(Valueset valueset) {
-        // valueset.setId(StringUtil.updateVersion(valueset.getId()));
+    public Valueset save(Valueset valueset) throws ForbiddenOperationException{
+    	operationService.verifySave(valueset);
         valueset = valuesetRepository.save(valueset);
         return valueset;
     }
@@ -99,41 +102,28 @@ public class ValuesetServiceImpl implements ValuesetService {
     }
 
     @Override
-    public void delete(Valueset valueset) {
+    public void delete(Valueset valueset) throws ForbiddenOperationException {
+    	operationService.verifyDelete(valueset);
         valuesetRepository.delete(valueset);
     }
 
     @Override
-    public void delete(String id) {
-        valuesetRepository.deleteById(id);
-    }
-
-    @Override
-    public void removeCollection() {
-        valuesetRepository.deleteAll();
-    }
-
-    @Override
     public List<Valueset> findByDomainInfoVersion(String version) {
-        // TODO Auto-generated method stub
         return valuesetRepository.findByDomainInfoVersion(version);
     }
 
     @Override
     public List<Valueset> findByDomainInfoScope(String scope) {
-        // TODO Auto-generated method stub
         return valuesetRepository.findByDomainInfoScope(scope);
     }
 
     @Override
     public List<Valueset> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion) {
-        // TODO Auto-generated method stub
         return valuesetRepository.findByDomainInfoScopeAndDomainInfoVersion(scope, verion);
     }
 
     @Override
     public List<Valueset> findByBindingIdentifier(String bindingIdentifier) {
-        // TODO Auto-generated method stub
         return valuesetRepository.findByBindingIdentifier(bindingIdentifier);
     }
 
@@ -221,29 +211,14 @@ public class ValuesetServiceImpl implements ValuesetService {
     }
 
     @Override
-    public Link cloneValueSet(String newkey, Link l, String username, Scope scope, CloneMode cloneMode) {
-        Valueset old = this.findById(l.getId());
-        Valueset elm = old.clone();
-        elm.setId(newkey);
-        elm.getDomainInfo().setScope(scope);
-        elm.setOrigin(l.getId());
-        elm.setFrom(l.getId());
-        elm.setUsername(username);
-        elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
-        Link newLink = new Link(elm);
-        this.save(elm);
-        return newLink;
-    }
-
-    @Override
     public List<Valueset> findByIdIn(Set<String> ids) {
         // TODO Auto-generated method stub
         return valuesetRepository.findByIdIn(ids);
     }
 
     @Override
-    public void applyChanges(Valueset s, List<ChangeItemDomain> cItems, String documentId)
-            throws JsonProcessingException, IOException {
+    public void applyChanges(Valueset s, List<ChangeItemDomain> cItems)
+            throws JsonProcessingException, IOException, ForbiddenOperationException {
         Collections.sort(cItems);
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -361,6 +336,8 @@ public class ValuesetServiceImpl implements ValuesetService {
         displayElement.setParentId(valueset.getParentId());
         displayElement.setParentType(valueset.getParentType());
         displayElement.setResourceName(valueset.getName());
+        displayElement.setResourceOrigin(valueset.getResourceOrigin());
+        displayElement.setDerived(valueset.isDerived());
         return displayElement;
     }
 
@@ -372,6 +349,14 @@ public class ValuesetServiceImpl implements ValuesetService {
         }
         return ret;
     }
+    
+    
+    @Override
+    public List<Valueset> saveAll(Set<Valueset> valueSets) throws ForbiddenOperationException {
+    	this.operationService.verifySave(valueSets);
+    	return this.valuesetRepository.saveAll(valueSets);
+    }
+    
 
 	@Override
 	public String findXMLRefIdById(String vsId, String defaultHL7Version) {

@@ -13,6 +13,7 @@ export class IgListItem {
   sharePermission?: string;
   sharedUsers?: string[];
   currentAuthor?: string;
+  draft?: boolean;
 }
 
 export type IgListItemType = 'USER' | 'PUBLISHED' | 'SHARED';

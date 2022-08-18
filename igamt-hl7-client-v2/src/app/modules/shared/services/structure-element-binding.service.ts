@@ -122,6 +122,7 @@ export class StructureElementBindingService {
       valuesetBindings: binding.valuesetBindings,
       predicate: binding.predicate,
       internalSingleCode: binding.internalSingleCode,
+      singleCodeBindings: binding.singleCodeBindings,
       changeLog: binding.changeLog,
     };
   }
@@ -143,7 +144,7 @@ export class StructureElementBindingService {
     };
 
     pick('valuesetBindings', (property) => property.valuesetBindings.length > 0);
-    pick('internalSingleCode', (property) => true);
+    pick('singleCodeBindings', (property) => property.singleCodeBindings && property.singleCodeBindings.length > 0);
     pick('predicate', (property) => true);
     pick('changeLog', (property) => property.changeLog && Object.keys(property.changeLog).length > 0);
     return values;

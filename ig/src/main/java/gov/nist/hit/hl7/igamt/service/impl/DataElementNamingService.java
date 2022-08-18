@@ -161,6 +161,7 @@ public class DataElementNamingService {
 
     public LocationInfo computeLocationInfo(ConformanceProfile conformanceProfile, String path) {
         LocationInfo locationInfo = new LocationInfo();
+        locationInfo.setPathId(path);
         Stack<String> route = this.getStackFromPath(path);
         String step = route.pop();
         for(SegmentRefOrGroup segmentRefOrGroup: conformanceProfile.getChildren()) {
@@ -174,12 +175,14 @@ public class DataElementNamingService {
 
     public LocationInfo computeLocationInfo(Segment segment, String path) {
         LocationInfo locationInfo = new LocationInfo();
+        locationInfo.setPathId(path);
         Stack<String> route = this.getStackFromPath(path);
         return this.processSegment(segment, route, locationInfo);
     }
 
     public LocationInfo computeLocationInfo(Datatype datatype, String path) {
         LocationInfo locationInfo = new LocationInfo();
+        locationInfo.setPathId(path);
         Stack<String> route = this.getStackFromPath(path);
         return this.processDatatype(datatype, route, locationInfo, true, false);
     }

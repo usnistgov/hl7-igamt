@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,21 +36,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtensionService;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
-import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
-import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
-import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
@@ -81,6 +75,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentStructureTreeModel;
+import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -88,6 +83,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 import gov.nist.hit.hl7.resource.change.service.ApplyChange;
+import gov.nist.hit.hl7.resource.change.service.OperationService;
 
 /**
  *
@@ -113,9 +109,12 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 	@Autowired
 	BindingService bindingService;
-	
+
 	@Autowired
 	ApplyChange applyChange;
+
+	@Autowired
+	private OperationService operationService;
 
 	@Override
 	public Datatype findById(String key) {
@@ -131,11 +130,13 @@ public class DatatypeServiceImpl implements DatatypeService {
 	}
 
 	@Override
-	public Datatype save(Datatype datatype) {
-		// datatype.setId(StringUtil.updateVersion(datatype.getId()));
+	public Datatype save(Datatype datatype) throws ForbiddenOperationException {
+		this.operationService.verifySave(datatype);
 		datatype = datatypeRepository.save(datatype);
 		return datatype;
 	}
+
+
 
 	@Override
 	public List<Datatype> findAll() {
@@ -144,18 +145,9 @@ public class DatatypeServiceImpl implements DatatypeService {
 	}
 
 	@Override
-	public void delete(Datatype datatype) {
+	public void delete(Datatype datatype) throws ForbiddenOperationException {
+		this.operationService.verifyDelete(datatype);
 		datatypeRepository.delete(datatype);
-	}
-
-	@Override
-	public void delete(String key) {
-		datatypeRepository.deleteById(key);
-	}
-
-	@Override
-	public void removeCollection() {
-		datatypeRepository.deleteAll();
 	}
 
 	@Override
@@ -290,48 +282,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 		ValidationUtil.validateLength(f.getMinLength(), f.getMaxLength());
 		ValidationUtil.validateConfLength(f.getConfLength());
 	}
-
-	@Override
-	public Link cloneDatatype( String newId, HashMap<RealKey, String> newKey, Link l,
-			String username, Scope scope, CloneMode cloneMode) {
-		// TODO Auto-generated method stub
-
-		Datatype old = this.findById(l.getId());
-		Datatype elm = old.clone();
-	    elm.setId(newId);
-		elm.getDomainInfo().setScope(scope);
-		elm.setUsername(username);
-	    elm.setOrigin(l.getId());
-	    elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
-		Link newLink = new Link(elm);
-		updateDependencies(elm, newKey, cloneMode);
-		this.save(elm);
-		return newLink;
-
-	}
-
-	private void updateDependencies(Datatype elm, HashMap<RealKey, String> newKeys, CloneMode cloneMode) {
-		// TODO Auto-generated method stub
-
-		if (elm instanceof ComplexDatatype) {
-			for (Component c : ((ComplexDatatype) elm).getComponents()) {
-				if (c.getRef() != null) {
-					if (c.getRef().getId() != null) {
-					  RealKey key = new RealKey(c.getRef().getId(), Type.DATATYPE);
-						if (newKeys.containsKey(key)) {
-							c.getRef().setId(newKeys.get(key));
-						}
-					}
-				}
-			}
-		}
-		if (elm.getBinding() != null) {
-			this.bindingService.substitute(elm.getBinding(), newKeys);
-			 if(cloneMode.equals(CloneMode.DERIVE)) {
-		          this.bindingService.lockConformanceStatements(elm.getBinding());
-		        }
-		}
-	}
 	@Override
 	public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope) {
 		HashMap<String, Valueset> valueSetsMap = new HashMap<String, Valueset>();
@@ -384,9 +334,9 @@ public class DatatypeServiceImpl implements DatatypeService {
 											scModel.setIdPath(idPath + "-" + c.getId() + "-" + sc.getId());
 											scModel.setPath(path + "-" + c.getPosition() + "-" + sc.getPosition());
 											scModel.setDatatypeLabel(this.createDatatypeLabel(childChildChildDt));
-											
+
 											BindingDisplay bindingDisplayForSubComponent = null;
-											
+
 											StructureElementBinding childCSeb = this
 													.findStructureElementBindingByComponentIdFromStructureElementBinding(
 															cSeb, sc.getId());
@@ -401,8 +351,8 @@ public class DatatypeServiceImpl implements DatatypeService {
 												bindingDisplayForSubComponent = this.createBindingDisplay(scSeb,
 														childChildDt.getId(), ViewScope.DATATYPE, 3, valueSetsMap, bindingDisplayForSubComponent);
 											}
-											
-											
+
+
 											if (bindingDisplayForSubComponent != null && bindingDisplayForSubComponent.getPredicate() != null) {
 												Predicate p = bindingDisplayForSubComponent.getPredicate();
 												if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
@@ -414,7 +364,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 												}
 											}
 											scModel.setBinding(bindingDisplayForSubComponent);
-											
+
 											subComponentStructureTreeModel.setData(scModel);
 											componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
 										} else {
@@ -489,7 +439,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 		}
 		result.setName(datatype.getName());
 		if(datatype.getBinding() !=null) {
-	        result.setConformanceStatements( datatype.getBinding().getConformanceStatements());
+			result.setConformanceStatements( datatype.getBinding().getConformanceStatements());
 		}
 
 		if (datatype instanceof ComplexDatatype) {
@@ -539,7 +489,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 										scModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
 
 										BindingDisplay bindingDisplayForSubComponent = null;
-										
+
 										StructureElementBinding childCSeb = this
 												.findStructureElementBindingByComponentIdFromStructureElementBinding(
 														cSeb, sc.getId());
@@ -554,8 +504,8 @@ public class DatatypeServiceImpl implements DatatypeService {
 											bindingDisplayForSubComponent = this.createBindingDisplay(scSeb,
 													childChildDt.getId(), ViewScope.DATATYPE, 3, valueSetsMap, bindingDisplayForSubComponent);
 										}
-										
-										
+
+
 										if (bindingDisplayForSubComponent != null && bindingDisplayForSubComponent.getPredicate() != null) {
 											Predicate p = bindingDisplayForSubComponent.getPredicate();
 											if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
@@ -567,9 +517,9 @@ public class DatatypeServiceImpl implements DatatypeService {
 											}
 										}
 										scModel.setBinding(bindingDisplayForSubComponent);
-										
+
 										subComponentStructureTreeModel.setData(scModel);
-										
+
 										componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
 									} else {
 										// TODO need to handle exception
@@ -608,19 +558,15 @@ public class DatatypeServiceImpl implements DatatypeService {
 		if (existingBindingDisplay == null || (existingBindingDisplay.getValuesetBindingsPriority() != null
 				&& existingBindingDisplay.getValuesetBindingsPriority() > priority)) {
 			bindingDisplay.setBindingType(BindingType.NA);
-			if (seb.getInternalSingleCode() != null && seb.getInternalSingleCode().getValueSetId() != null
-					&& seb.getInternalSingleCode().getCode() != null) {
-				bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
-				bindingDisplay.setValuesetBindingsPriority(priority);
-				bindingDisplay.setValuesetBindingsSourceId(sourceId);
-				bindingDisplay.setValuesetBindingsSourceType(sourceType);
-				bindingDisplay.setBindingType(BindingType.SC);
+			
+			if (seb.getSingleCodeBindings() != null && !seb.getSingleCodeBindings().isEmpty()) {
+				bindingDisplay.setSingleCodeBindings(seb.getSingleCodeBindings());
 			} else {
 				Set<DisplayValuesetBinding> displayValuesetBindings = this
 						.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap);
 				if (displayValuesetBindings != null) {
 					bindingDisplay
-							.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
+					.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
 					bindingDisplay.setValuesetBindingsPriority(priority);
 					bindingDisplay.setValuesetBindingsSourceId(sourceId);
 					bindingDisplay.setValuesetBindingsSourceType(sourceType);
@@ -649,18 +595,18 @@ public class DatatypeServiceImpl implements DatatypeService {
 			for (ValuesetBinding vb : valuesetBindings) {
 
 				DisplayValuesetBinding dvb = new DisplayValuesetBinding();
-		         List<DisplayElement> vsDisplay = vb.getValueSets().stream().map(id -> {
-		             Valueset vs = this.valueSetService.findById(id);
-		             if(vs !=null) {
-		               DisplayElement obj = new DisplayElement();
-	                     obj.setVariableName(vs.getBindingIdentifier());
-	                     obj.setDomainInfo(vs.getDomainInfo());
-	                     return obj;
-		             }else {
-		               return null;
-		             }
-                }).collect(Collectors.toList());
-                dvb.setValueSetsDisplay(vsDisplay);
+				List<DisplayElement> vsDisplay = vb.getValueSets().stream().map(id -> {
+					Valueset vs = this.valueSetService.findById(id);
+					if(vs !=null) {
+						DisplayElement obj = new DisplayElement();
+						obj.setVariableName(vs.getBindingIdentifier());
+						obj.setDomainInfo(vs.getDomainInfo());
+						return obj;
+					}else {
+						return null;
+					}
+				}).collect(Collectors.toList());
+				dvb.setValueSetsDisplay(vsDisplay);
 				dvb.setStrength(vb.getStrength());
 				dvb.setValueSets(vb.getValueSets());
 				dvb.setValuesetLocations(vb.getValuesetLocations());
@@ -815,72 +761,71 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 		return label;
 	}
-	
+
 	@Override
-	public void applyChanges(Datatype d, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException {
+	public void applyChanges(Datatype d, List<ChangeItemDomain> cItems) throws ApplyChangeException, ForbiddenOperationException {
 		Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
-		applyChange.applyResourceChanges(d, singlePropertyMap , documentId);
+		applyChange.applyResourceChanges(d, singlePropertyMap);
 
 		if (singlePropertyMap.containsKey(PropertyType.EXT)) {
-		  d.setExt((String) singlePropertyMap.get(PropertyType.EXT).getPropertyValue());
-	   }
+			d.setExt((String) singlePropertyMap.get(PropertyType.EXT).getPropertyValue());
+		}
 
 		Map<PropertyType, List<ChangeItemDomain>> map = applyChange.convertToMultiplePropertyChangeMap(cItems);
 		if(d instanceof ComplexDatatype) {
-		  this.applyChildrenChange(map, ((ComplexDatatype)d).getComponents(), documentId);
+			this.applyChildrenChange(map, ((ComplexDatatype)d).getComponents());
 		} else if(d instanceof DateTimeDatatype) {
-		  this.applyDTMChange(map, ((DateTimeDatatype)d), documentId);
+			this.applyDTMChange(map, ((DateTimeDatatype)d));
 		}
-		applyChange.applyBindingChanges(map, d.getBinding(), documentId, Level.DATATYPE);
+		applyChange.applyBindingChanges(map, d.getBinding(), Level.DATATYPE);
 		d.setBinding(this.makeLocationInfo(d));
 		this.save(d);
 	}
-	
+
 
 	/**
-   * @param map
-   * @param dateTimeDatatype
-   * @param documentId
+	 * @param map
+	 * @param dateTimeDatatype
+	 * @param documentId
 	 * @throws ApplyChangeException 
-   */
-  private void applyDTMChange(Map<PropertyType, List<ChangeItemDomain>> map,
-      DateTimeDatatype dateTimeDatatype, String documentId) throws ApplyChangeException {
+	 */
+	private void applyDTMChange(Map<PropertyType, List<ChangeItemDomain>> map,
+			DateTimeDatatype dateTimeDatatype) throws ApplyChangeException {
 
-    if (map.containsKey(PropertyType.DTMSTRUC)) {
-      for(ChangeItemDomain change: map.get(PropertyType.DTMSTRUC)) {
-        
-        change.setOldPropertyValue(dateTimeDatatype.getDateTimeConstraints());
-        change.setOldPropertyValue(dateTimeDatatype.getDateTimeConstraints());
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonInString;
-        try {
-          jsonInString = mapper.writeValueAsString(change.getPropertyValue());
-          mapper.readValue(jsonInString, DateTimeConstraints.class);
-          dateTimeDatatype.setDateTimeConstraints(mapper.readValue(jsonInString, DateTimeConstraints.class));
-        } catch (IOException e) {
-          // TODO Auto-generated catch block
-         throw new ApplyChangeException(change);
-        }
+		if (map.containsKey(PropertyType.DTMSTRUC)) {
+			for(ChangeItemDomain change: map.get(PropertyType.DTMSTRUC)) {
 
-      }
-    }
-  }
+				change.setOldPropertyValue(dateTimeDatatype.getDateTimeConstraints());
+				change.setOldPropertyValue(dateTimeDatatype.getDateTimeConstraints());
+				ObjectMapper mapper = new ObjectMapper();
+				String jsonInString;
+				try {
+					jsonInString = mapper.writeValueAsString(change.getPropertyValue());
+					mapper.readValue(jsonInString, DateTimeConstraints.class);
+					dateTimeDatatype.setDateTimeConstraints(mapper.readValue(jsonInString, DateTimeConstraints.class));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					throw new ApplyChangeException(change);
+				}
 
-  /**
-   * @param map
-   * @param components
-   * @param documentId
-   */
-  private void applyChildrenChange(
-  		Map<PropertyType, List<ChangeItemDomain>> map,
-		Set<Component> components,
-		String documentId
-  ) throws ApplyChangeException {
-    applyChange.applySubstructureElementChanges(map, components, documentId, applyChange::findStructElementById);
-  }
+			}
+		}
+	}
+
+	/**
+	 * @param map
+	 * @param components
+	 * @param documentId
+	 */
+	private void applyChildrenChange(
+			Map<PropertyType, List<ChangeItemDomain>> map,
+			Set<Component> components
+			) throws ApplyChangeException {
+		applyChange.applySubstructureElementChanges(map, components, applyChange::findStructElementById);
+	}
 
 
-  //@Override
+	//@Override
 	private void deleteConformanceStatementById(Datatype d, String location) {
 		ConformanceStatement toBeDeleted = null;
 		for (ConformanceStatement cs : d.getBinding().getConformanceStatements()) {
@@ -1017,35 +962,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 	}
 
 	@Override
-	public Set<RelationShip> collectDependencies(Datatype elm) {
-
-		Set<RelationShip> used = new HashSet<RelationShip>();
-		HashMap<String, Usage> usageMap = new HashMap<String, Usage>();
-
-		if (elm instanceof ComplexDatatype) {
-			ComplexDatatype complex = (ComplexDatatype) elm;
-			for (Component c : complex.getComponents()) {
-				if (c.getRef() != null && c.getRef().getId() != null) {
-					RelationShip rel = new RelationShip(new ReferenceIndentifier(c.getRef().getId(), Type.DATATYPE),
-							new ReferenceIndentifier(elm.getId(), Type.DATATYPE),
-							new ReferenceLocation(Type.COMPONENT, c.getPosition()+ "" , c.getName())
-							);
-					rel.setUsage(c.getUsage());
-					usageMap.put(elm.getId()+"-"+c.getId(), c.getUsage());
-					used.add(rel);
-				}
-			}
-
-		}
-		if (elm.getBinding() != null) {
-			Set<RelationShip> bindingDependencies = bindingService
-					.collectDependencies(new ReferenceIndentifier(elm.getId(), Type.DATATYPE), elm.getBinding(),usageMap);
-			used.addAll(bindingDependencies);
-		}
-		return used;
-	}
-
-	@Override
 	public void collectAssoicatedConformanceStatements(Datatype datatype,
 			HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {
 		if (datatype.getDomainInfo().getScope().equals(Scope.USER)) {
@@ -1161,7 +1077,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 	}
 
 	private Set<String> getDatatypeResourceDependenciesIds(ComplexDatatype datatype, HashMap<String, Resource> used) {
-		// TODO Auto-generated method stub
 		Set<String> datatypeIds = new HashSet<String>();
 		for (Component c : datatype.getComponents()) {
 			if (c.getRef() != null) {
@@ -1184,15 +1099,15 @@ public class DatatypeServiceImpl implements DatatypeService {
 		return ret;
 	}
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#findByParentId()
-   */
-  @Override
-  public List<Datatype> findByParentId(String id) {
-    // TODO Auto-generated method stub
-    return datatypeRepository.findByParentId(id);
-    
-  }
+	/* (non-Javadoc)
+	 * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#findByParentId()
+	 */
+	@Override
+	public List<Datatype> findByParentId(String id) {
+		// TODO Auto-generated method stub
+		return datatypeRepository.findByParentId(id);
+
+	}
 
 	@Override
 	public Set<DisplayElement> convertDatatypes(Set<Datatype> datatypes) {
@@ -1227,6 +1142,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 		displayElement.setParentId(datatype.getParentId());
 		displayElement.setParentType(datatype.getParentType());
 		displayElement.setResourceName(datatype.getName());
+		displayElement.setDerived(datatype.isDerived());
 		return displayElement;
 	}
 
@@ -1258,5 +1174,10 @@ public class DatatypeServiceImpl implements DatatypeService {
 	
 	private String str(String value) {
 		return value != null ? value : "";
+	}
+
+	public List<Datatype> saveAll(Set<Datatype> datatypes) throws ForbiddenOperationException {
+		this.operationService.verifySave(datatypes);
+		return this.datatypeRepository.saveAll(datatypes);
 	}
 }

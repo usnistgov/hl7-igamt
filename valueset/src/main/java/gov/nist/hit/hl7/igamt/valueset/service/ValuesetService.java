@@ -16,14 +16,11 @@ package gov.nist.hit.hl7.igamt.valueset.service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
-import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -41,15 +38,11 @@ public interface ValuesetService {
 
 	public Valueset createFromLegacy(Valueset valueset, String legacyId);
 
-	public Valueset save(Valueset valueset);
+	public Valueset save(Valueset valueset) throws ForbiddenOperationException;
 
 	public List<Valueset> findAll();
 
-	public void delete(Valueset valueset);
-
-	public void delete(String id);
-
-	public void removeCollection();
+	public void delete(Valueset valueset) throws ForbiddenOperationException;
 
 	public List<Valueset> findByDomainInfoVersion(String version);
 
@@ -70,14 +63,12 @@ public interface ValuesetService {
 
 	public List<Valueset> findDisplayFormatByScopeAndVersion(String string, String version);
 
-	Link cloneValueSet(String newkey, Link l, String username, Scope scope, CloneMode cloneMode);
-
 	public List<Valueset> findByIdIn(Set<String> linksAsIds);
 
 	public List<Valueset> findDisplayFormatByScope(String scope);
 
-	public void applyChanges(Valueset s, List<ChangeItemDomain> cItems, String documentId)
-			throws JsonProcessingException, IOException;
+	public void applyChanges(Valueset s, List<ChangeItemDomain> cItems)
+			throws JsonProcessingException, IOException, ForbiddenOperationException;
 	
 	public Set<String> extractCodeSystemsFromCodes(Set<Code> codes);
 
@@ -86,7 +77,6 @@ public interface ValuesetService {
 	DisplayElement convertValueSet(Valueset valueset);
 	Set<DisplayElement> convertValueSets(Set<Valueset> valueSets);
 	Set<DisplayElement> convertValueSetRegistry(ValueSetRegistry registry);
-
 	public String findXMLRefIdById(String vsId, String defaultHL7Version);
-
+	List<Valueset> saveAll(Set<Valueset> valueSets) throws ForbiddenOperationException;
 }

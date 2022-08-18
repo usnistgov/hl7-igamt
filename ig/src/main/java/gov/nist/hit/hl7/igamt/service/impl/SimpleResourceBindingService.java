@@ -112,10 +112,10 @@ public class SimpleResourceBindingService implements ResourceBindingService {
                 );
             }
 
-            if(binding.getInternalSingleCode() != null) {
+            if(binding.getSingleCodeBindings() != null) {
                 flatResourceBinding.setSingleCodeBindingContainers(
                         Collections.singleton(
-                                new SingleCodeBindingContainer(pathId, binding.getInternalSingleCode())
+                                new SingleCodeBindingContainer(pathId, binding.getSingleCodeBindings())
                         )
                 );
             }

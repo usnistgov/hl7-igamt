@@ -24,6 +24,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructureDataModel;
 import gov.nist.hit.hl7.igamt.common.base.domain.GenerationDirective;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
@@ -148,7 +149,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
         .addAttribute(new Attribute("datatypeName", datatype.getDescription() != null ? datatype.getDescription(): ""));}
       if(datatypeExportConfiguration.getMetadataConfig().isShortDescription()) {
         datatypeElement
-        .addAttribute(new Attribute("shortDescription", datatype.getShortDescription() != null ? datatype.getShortDescription(): ""));}
+        .addAttribute(new Attribute("shortDescription", datatype.getDomainInfo() != null ? datatype.getShortDescription(): ""));}
       if(datatype.getDomainInfo() != null && datatypeExportConfiguration.getMetadataConfig().isHl7version()) {
         datatypeElement
         .addAttribute(new Attribute("hl7versions", datatype.getDomainInfo().getCompatibilityVersion()!= null ? datatype.getDomainInfo().getCompatibilityVersion().toString(): ""));
@@ -270,8 +271,17 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
             //	              //throw new DatatypeNotFoundException(component.getRef().getId());
             //	            }
           }
-          componentElement.addAttribute(new Attribute("usage",
-              component.getUsage() != null ? component.getUsage().toString() : ""));
+          if(component.getUsage() != null && !component.getUsage().equals(Usage.CAB)) {
+        	  componentElement.addAttribute(
+                  new Attribute("usage", component.getUsage() != null ? component.getUsage().toString() : ""));}
+              else if(component.getUsage() != null && component.getUsage().equals(Usage.CAB)) {
+              	
+            	  componentElement.addAttribute(
+                          new Attribute("usage", component.getUsage() != null ? serializationTools.extractPredicateUsages(datatypeDataModel.getPredicateMap(), component.getId()) : ""));
+                  componentElement.addAttribute(
+                    new Attribute("predicate", component.getUsage() != null ? serializationTools.extractPredicateDescription(datatypeDataModel.getPredicateMap(), component.getId()) : ""));
+             }
+        
           datatypeElement.appendChild(componentElement);
         } catch (Exception exception) {
           throw new SubStructElementSerializationException(exception, component);
@@ -284,7 +294,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
       if (complexDatatype.getBinding() != null) {
         Element bindingElement;
         try {
-          bindingElement = bindingSerializationService.serializeBinding(complexDatatype.getBinding(), datatypeDataModel.getValuesetMap(), datatypeDataModel.getModel().getName(), bindedPaths);
+          bindingElement = bindingSerializationService.serializeBinding(complexDatatype.getBinding(), datatypeDataModel.getValuesetMap(), datatypeDataModel.getSingleCodeMap(), datatypeDataModel.getModel().getName(), bindedPaths);
           if(bindingElement !=null) {
             datatypeElement.appendChild(bindingElement);
           }

@@ -5,10 +5,10 @@
     [viewOnly]="viewOnly"
     (editChange)="updateReasonForChange($event)"
   ></app-change-log-info>
-  <ng-container [ngSwitch]="viewOnly">
-    <ng-container *ngSwitchCase="false" [ngSwitch]="active()">
+  <ng-container *ngIf="val" [ngSwitch]="viewOnly">
+    <ng-container *ngSwitchCase="false" [ngSwitch]="lengthType === lengthTypes.ConfLength">
       <ng-container *ngSwitchCase="true">
-        <input style="width: 100%;" class="range-input" type="text" [name]="location + 'conf-length'" [id]="location + 'conf-length'" placeholder="Conf Length" [ngModelOptions]="{updateOn: 'blur'}" [(ngModel)]="val.confLength" (ngModelChange)="confLengthChange($event)">
+        <input style="width: 100%;" class="range-input" type="text" [name]="location + 'conf-length'" [id]="location + 'conf-length'" placeholder="Conf Length" [ngModelOptions]="{updateOn: 'blur'}" [(ngModel)]="val.value" (ngModelChange)="confLengthChange($event)">
         <button class="btn btn-sm btn-danger" (click)="clear()" style="margin-left: 5px;">
           <i class="fa fa-times"></i>
         </button>
@@ -16,13 +16,17 @@
       <div *ngSwitchCase="false">
         <ng-container *ngTemplateOutlet="display; context : { $implicit : val, active: false }"></ng-container>
       </div>
+      <button *ngIf="val && lengthType && lengthType === lengthTypes.UNSET && leaf" class="btn btn-sm btn-primary" (click)="set()">
+        <i class="fa fa-pencil"></i>
+      </button>
     </ng-container>
     <ng-container *ngSwitchCase="true">
-      <ng-container *ngTemplateOutlet="display; context : { $implicit : val, active: active() }"></ng-container>
+      <ng-container *ngTemplateOutlet="display; context : { $implicit : val, active: lengthType === lengthTypes.ConfLength }"></ng-container>
     </ng-container>
   </ng-container>
+
   <ng-template #display let-val let-active="active">
-    <strong [ngClass]="{ 'treetable-light': !active }" >{{val.confLength ? val.confLength : 'NA'}}</strong>
+    <strong [ngClass]="{ 'treetable-light': !active }" >{{val.value ? val.value : 'NA'}}</strong>
   </ng-template>
 
 </div>

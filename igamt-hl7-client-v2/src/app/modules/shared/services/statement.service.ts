@@ -1,9 +1,11 @@
+import { EventEmitter } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { flatMap, map, take } from 'rxjs/operators';
 import { ICardinalityRange, IHL7v2TreeNode } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
 import { OccurrenceType } from '../models/conformance-statements.domain';
 import { IPath, ISubject } from '../models/cs.interface';
+import { IDisplayElement } from '../models/display-element.interface';
 import { IResource } from '../models/resource.interface';
 import { ElementNamingService, IPathInfo } from './element-naming.service';
 import { PathService } from './path.service';
@@ -18,7 +20,9 @@ export class StatementTarget {
   public node: IHL7v2TreeNode;
   public valid: boolean;
   public complex: boolean;
+  public resourceName: string;
   public repeatMax: number;
+  public hierarchicalRepeat: boolean;
   public value: ISubject;
   public context: IPath;
   public occurrenceValuesMap = {};
@@ -27,12 +31,20 @@ export class StatementTarget {
     return this.value;
   }
 
+  isPrimitive(): boolean {
+    return !this.isComplex();
+  }
+
   isComplex(): boolean {
     return this.complex;
   }
 
   getRepeatMax(): number {
     return this.repeatMax;
+  }
+
+  getHierarchicalRepeat(): boolean {
+    return this.hierarchicalRepeat;
   }
 
   getName(): string {
@@ -67,7 +79,9 @@ export class StatementTarget {
     this.name = '';
     this.valid = false;
     this.node = undefined;
+    this.resourceName = undefined;
     this.repeatMax = undefined;
+    this.hierarchicalRepeat = false;
     this.context = undefined;
 
     if (subject.path) {
@@ -87,7 +101,7 @@ export class StatementTarget {
     }
   }
 
-  clear() {
+  clear(treeClearEvent?: EventEmitter<boolean>) {
     this.name = '';
     this.valid = false;
     this.node = undefined;
@@ -99,7 +113,12 @@ export class StatementTarget {
       occurenceLocationStr: undefined,
     };
     this.repeatMax = undefined;
+    this.hierarchicalRepeat = false;
+    this.resourceName = undefined;
     this.context = undefined;
+    if (treeClearEvent) {
+      treeClearEvent.emit(true);
+    }
   }
 
   clearOccurrenceValue() {
@@ -129,39 +148,59 @@ export class StatementTarget {
     }
   }
 
-  setAttibutes({ name, nodeInfo }: { name: string, nodeInfo: IPathInfo }, context: IPath, tree?: IHL7v2TreeNode[], node?: IHL7v2TreeNode) {
+  setAttibutes({ name, nodeInfo, resourceDisplay }: { name: string, nodeInfo: IPathInfo, resourceDisplay: IDisplayElement }, context: IPath, tree?: IHL7v2TreeNode[], node?: IHL7v2TreeNode) {
     this.name = name;
     this.valid = true;
     if (nodeInfo) {
       this.complex = !nodeInfo.leaf;
+      this.resourceName = resourceDisplay ? resourceDisplay.resourceName : '';
     }
     if (tree && node) {
       this.repeatMax = this.getNodeRepeatMax(node, tree[0]);
+      this.hierarchicalRepeat = this.getNodeHierarchyRepeat(node, tree[0]);
+    }
+    if (node) {
+      this.resourceName = node.data.ref ? node.data.ref.getValue().name : '';
     }
     this.node = node;
     this.context = context;
   }
 
   getNodeRepeatMax(node: IHL7v2TreeNode, root: IHL7v2TreeNode) {
-    const nodeRepeat = this.getMax(node.data.cardinality);
-    if (nodeRepeat > 0) {
-      return nodeRepeat;
-    }
-
-    if (node.data.type === Type.COMPONENT || node.data.type === Type.SUBCOMPONENT) {
-      const field = this.getFieldFrom(node);
-      if (field && field.data !== root.data) {
-        return this.getMax(field.data.cardinality);
+    const loop = (n: IHL7v2TreeNode) => {
+      if (n && n.data !== root.data) {
+        const r = this.getMax(n.data.cardinality);
+        return (r === 0 ? 1 : r) * loop(n.parent);
       }
-    }
-    return 0;
+      return 1;
+    };
+    const repeat = loop(node);
+    return repeat === 1 ? 0 : repeat;
+  }
+
+  getNodeHierarchyRepeat(node: IHL7v2TreeNode, root: IHL7v2TreeNode) {
+    const field = this.getFieldFrom(node);
+
+    const findRepeat = (n: IHL7v2TreeNode) => {
+      if (n && n.data !== root.data) {
+        if (this.getMax(n.data.cardinality) > 0) {
+          return true;
+        } else {
+          return findRepeat(n.parent);
+        }
+      } else {
+        return false;
+      }
+    };
+
+    return findRepeat(field ? field.parent : node.parent);
   }
 
   getMax(cardinality: ICardinalityRange) {
     if (!cardinality) {
       return 0;
     } else if (cardinality.max === '*') {
-      return Number.MAX_VALUE;
+      return 999;
     } else if (+cardinality.max === 1) {
       return 0;
     } else {
@@ -184,24 +223,37 @@ export class StatementTarget {
   getNameFullPath(pre: IPath, post: IPath, resource: IResource, repository: AResourceRepositoryService, relativeName: boolean = false): Observable<{
     name: string;
     nodeInfo: IPathInfo;
+    resourceDisplay: IDisplayElement;
   }> {
     return this.getPathName(this.pathService.straightConcatPath(pre, post), resource, repository, relativeName ? post ? post.elementId : undefined : undefined);
   }
 
-  getPathName(path: IPath, resource: IResource, repository: AResourceRepositoryService, startFrom?: string): Observable<{ name: string, nodeInfo: IPathInfo }> {
+  getPathName(path: IPath, resource: IResource, repository: AResourceRepositoryService, startFrom?: string): Observable<{ name: string, nodeInfo: IPathInfo, resourceDisplay: IDisplayElement }> {
     if (!path) {
-      return of({ name: '', nodeInfo: undefined });
+      return of({ name: '', nodeInfo: undefined, resourceDisplay: undefined });
     }
 
     return this.elementNamingService.getPathInfoFromPath(resource, repository, path).pipe(
       take(1),
-      map((pathInfo) => {
+      flatMap((pathInfo) => {
         const name = this.elementNamingService.getStringNameFromPathInfo(startFrom ? this.elementNamingService.getStartPathInfo(pathInfo, startFrom) : pathInfo);
         const nodeInfo = this.elementNamingService.getLeaf(pathInfo);
-        return {
-          name,
-          nodeInfo,
-        };
+        if (nodeInfo.type === Type.GROUP) {
+          return of({
+            name,
+            nodeInfo,
+            resourceDisplay: undefined,
+          });
+        }
+        return repository.getResourceDisplay(nodeInfo.ref.type, nodeInfo.ref.id).pipe(
+          map((resourceDisplay) => {
+            return {
+              name,
+              nodeInfo,
+              resourceDisplay,
+            };
+          }),
+        );
       }),
     );
   }
@@ -236,6 +288,7 @@ export class StatementTarget {
       case 2: return 'second';
       case 3: return 'third';
       case 4: return 'fourth';
+      case 5: return 'fifth';
       case 6: return 'sixth';
       case 7: return 'seventh';
       case 8: return 'eight';
@@ -261,7 +314,7 @@ export class StatementTarget {
         case OccurrenceType.COUNT:
           return +this.value.occurenceValue <= this.repeatMax && +this.value.occurenceValue >= 1;
         case OccurrenceType.INSTANCE:
-          return +this.value.occurenceValue <= Math.min(8, this.repeatMax) && +this.value.occurenceValue >= 1;
+          return this.hierarchicalRepeat ? false : +this.value.occurenceValue <= Math.min(8, this.repeatMax) && +this.value.occurenceValue >= 1;
       }
     }
     return true;

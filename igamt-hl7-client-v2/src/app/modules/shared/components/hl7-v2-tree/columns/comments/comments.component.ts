@@ -22,15 +22,14 @@ export class CommentsComponent extends HL7v2TreeColumnComponent<IComment[]> impl
     this.value$.subscribe(
       (value) => {
         if (value) {
-          this.comments = [
-            ...value,
-          ];
+          this.comments = value;
         }
       },
     );
   }
 
   removeComment(i: number, list: IComment[]) {
+    console.log(i, list);
     list.splice(i, 1);
     this.registerChange();
   }

@@ -98,12 +98,13 @@ public class ProfileComponentBindingSerializationServiceImpl implements ProfileC
 				internalSingleCode.addAttribute(
     				new Attribute("internalSingleCodeLocation", profileComponentItemDataModel.getLocationInfo() != null ? profileComponentItemDataModel.getLocationInfo().getHl7Path() : "")
 			);
-				internalSingleCode.addAttribute(
-    				new Attribute("internalSingleCodeId", ((PropertySingleCode) itemProperty).getInternalSingleCode() != null ? ((PropertySingleCode) itemProperty).getInternalSingleCode().getCode() : "")
-			);
-				internalSingleCode.addAttribute(
-    				new Attribute("internalSingleCodeSystem", ((PropertySingleCode) itemProperty).getInternalSingleCode() != null ?((PropertySingleCode) itemProperty).getInternalSingleCode().getCodeSystem() : "")
-			);
+				//TODO Fix SingleCode
+//				internalSingleCode.addAttribute(
+//    				new Attribute("internalSingleCodeId", ((PropertySingleCode) itemProperty).getInternalSingleCode() != null ? ((PropertySingleCode) itemProperty).getInternalSingleCode().getCode() : "")
+//			);
+//				internalSingleCode.addAttribute(
+//    				new Attribute("internalSingleCodeSystem", ((PropertySingleCode) itemProperty).getInternalSingleCode() != null ?((PropertySingleCode) itemProperty).getInternalSingleCode().getCodeSystem() : "")
+//			);
 		}
 	}
 		return internalSingleCode;

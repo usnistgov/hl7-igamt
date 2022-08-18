@@ -2,9 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
+import * as _ from 'lodash';
 import { SelectItem } from 'primeng/api';
-import { combineLatest, concat, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
+import { catchError, concatMap, filter, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { getHl7ConfigState } from '../../../../root-store/config/config.reducer';
@@ -45,8 +46,10 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
   username: Observable<string>;
   resource$: Observable<IValueSet>;
   workspace_s: Subscription;
+  resource_s: Subscription;
   resourceType: Type;
   derived$: Observable<boolean>;
+  changeReason$: BehaviorSubject<IChangeReason[]>;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -62,10 +65,14 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
     }, actions$, store);
     this.resourceType = Type.VALUESET;
     this.hasOrigin$ = this.store.select(fromIgamtSelectedSelectors.selectedResourceHasOrigin);
-    this.config = this.store.select(getHl7ConfigState);
+    this.config = this.store.select(getHl7ConfigState).pipe(
+      filter((config) => !!config),
+    );
     this.username = this.store.select(fromAuth.selectUsername);
     this.resourceSubject = new ReplaySubject<IValueSet>(1);
     this.changes = new ReplaySubject<IRootChanges>(1);
+    this.changeReason$ = new BehaviorSubject(undefined);
+
     this.derived$ = combineLatest(this.store.select(selectDerived), this.hasOrigin$).pipe(
       map(([derivedIg, elmHadOrigin]) => {
         return derivedIg && elmHadOrigin;
@@ -73,13 +80,14 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
     );
     this.workspace_s = this.currentSynchronized$.pipe(
       map((current) => {
-        this.resourceSubject.next({ ...current.resource });
+        this.resourceSubject.next(_.cloneDeep(current.resource));
+        this.changeReason$.next(_.cloneDeep(current.resource.changeLogs));
         this.changes.next({ ...current.changes });
       }),
     ).subscribe();
     this.resource$ = this.resourceSubject.asObservable();
     this.hasOrigin$ = this.store.select(fromIgamtSelectedSelectors.selectedResourceHasOrigin);
-    this.resource$.subscribe((resource: IValueSet) => {
+    this.resource_s = this.resource$.subscribe((resource: IValueSet) => {
       this.cols = [];
       this.cols.push({ field: 'value', header: 'Value' });
       this.cols.push({ field: 'pattern', header: 'Pattern' });
@@ -92,8 +100,6 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
       this.selectedColumns = this.cols;
       this.codeSystemOptions = this.getCodeSystemOptions(resource);
     });
-
-    this.changes.asObservable().subscribe((x) => console.log(x));
   }
 
   getCodeSystemOptions(resource: IValueSet): SelectItem[] {
@@ -133,6 +139,12 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
   }
 
   ngOnDestroy(): void {
+    if (this.workspace_s) {
+      this.workspace_s.unsubscribe();
+    }
+    if (this.resource_s) {
+      this.resource_s.unsubscribe();
+    }
   }
 
   ngOnInit(): void {
@@ -149,43 +161,23 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
     );
   }
 
-  change(change: IChange, skipReason: boolean = false) {
-    this.getChange(change, skipReason).pipe(
-      mergeMap((ch) => {
-        return combineLatest(this.changes, this.resource$).pipe(
-          take(1),
-          tap(([changes, resource]) => {
-            const newchanges = { ...changes };
-            newchanges[ch.propertyType] = ch;
-            this.resourceSubject.next(resource);
-            this.changes.next(newchanges);
-            this.editorChange({ changes: newchanges, resource }, true);
-          }),
-        );
-      },
-      )).subscribe();
+  contentChange(change: IChange) {
+    this.change(change);
+    this.toggleChangeReason();
   }
 
-  getChange(change: IChange, skipReason: boolean = false): Observable<IChange> {
-    return this.derived$.pipe(
+  change(change: IChange) {
+    this.changes.pipe(
       take(1),
-      mergeMap((x) => {
-        if (x && !skipReason) {
-          return concat(of(change), this.getChangeReasonForPropertyChange(change, skipReason));
-        } else {
-          return of(change);
-        }
+      tap((changes) => {
+        const updates = { ...changes } || {};
+        updates[change.propertyType] = change;
+        this.changes.next(updates);
+        this.editorChange({ changes: updates }, true);
       }),
-    );
+    ).subscribe();
   }
 
-  getChangeReasonForPropertyChange(change: IChange, skipReason: boolean = false): Observable<IChange> {
-    if (this.enforceChangeReason && !skipReason && this.isActualChange(change)) {
-      return this.openReasonsDialog();
-    } else {
-      return of();
-    }
-  }
   createReasonForChange(reasons: IChangeReason[]): IChange {
     return {
       location: '0',
@@ -217,34 +209,32 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
     );
   }
 
-  private isActualChange(change: IChange) {
-    return change.propertyType !== PropertyType.CHANGEREASON;
-  }
-
-  openReasonsDialog(): Observable<IChange> {
-    return this.resource$.pipe(
+  toggleChangeReason() {
+    this.derived$.pipe(
       take(1),
-      mergeMap((vs) => {
+      filter((derived) => derived),
+      flatMap(() => {
         return this.dialog.open(ChangeReasonListDialogComponent, {
           maxWidth: '95vw',
           maxHeight: '90vh',
           data: {
-            changeReason: vs.changeLogs,
+            changeReason: this.changeReason$.getValue(),
             edit: false,
           },
         }).afterClosed().pipe(
           take(1),
           map((changeReason) => {
-            vs.changeLogs = changeReason;
-            this.resourceSubject.next(vs);
-            return this.createReasonForChange(changeReason);
+            if (changeReason) {
+              this.updateChangeReason(changeReason);
+            }
           }));
       }),
-    );
+    ).subscribe();
   }
 
   updateChangeReason(changeReason: IChangeReason[]) {
-    this.change(this.createReasonForChange(changeReason), true);
+    this.changeReason$.next(changeReason);
+    this.change(this.createReasonForChange(changeReason));
   }
 }
 

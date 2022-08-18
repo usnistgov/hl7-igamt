@@ -9,10 +9,14 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { TREE_ACTIONS, TreeComponent, TreeModel, TreeNode } from 'angular-tree-component';
 import { ContextMenuComponent } from 'ngx-contextmenu';
 import { SelectItem } from 'primeng/api';
+import { filter, map, take } from 'rxjs/operators';
+import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
 import { IClickInfo } from '../../../document/models/toc/click-info.interface';
 import { Scope } from '../../../shared/constants/scope.enum';
@@ -21,6 +25,11 @@ import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { NodeHelperService } from '../../../shared/services/node-helper.service';
 import { ValueSetService } from '../../../value-set/service/value-set.service';
+import { IgDocument } from '../../models/ig/ig-document.class';
+import { IgService } from '../../services/ig.service';
+import { IContent } from './../../../shared/models/content.interface';
+import { ISectionTemplate } from './../derive-dialog/derive-dialog.component';
+import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
 
 @Component({
   selector: 'app-ig-toc',
@@ -28,6 +37,7 @@ import { ValueSetService } from '../../../value-set/service/value-set.service';
   styleUrls: ['./ig-toc.component.scss'],
 })
 export class IgTocComponent implements OnInit, AfterViewInit {
+
   optionsToDisplay: any;
   deltaOptions: SelectItem[] = [{ label: 'CHANGED', value: 'UPDATED' }, { label: 'DELETED', value: 'DELETED' }, { label: 'ADDED', value: 'ADDED' }];
 
@@ -40,6 +50,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @ViewChild('top') top: ElementRef;
   @ViewChild('pcLib') pcLib: ElementRef;
   @ViewChild('cmppLib') cmppLib: ElementRef;
+  @ViewChild('profile') profile: ElementRef;
 
   // TODO set type
   options;
@@ -50,6 +61,10 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   delta: boolean;
   @Input()
   viewOnly: boolean;
+  @Input()
+  ig: IgDocument;
+
+  elementNumbers: ElmentNumbers;
 
   @Output()
   nodeState = new EventEmitter<IDisplayElement[]>();
@@ -72,32 +87,46 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @Output()
   addPcChildren = new EventEmitter<IDisplayElement>();
 
+  @Output()
+  manageProfileStructure = new EventEmitter<IContent[]>();
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
   // tslint:disable-next-line:cognitive-complexity
-  constructor(private nodeHelperService: NodeHelperService, private valueSetService: ValueSetService, private cd: ChangeDetectorRef, private router: Router, private activatedRoute: ActivatedRoute) {
+  constructor(
+    private nodeHelperService: NodeHelperService,
+    private valueSetService: ValueSetService,
+    private cd: ChangeDetectorRef,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private igService: IgService,
+    private store: Store<any>,
+    private dialog: MatDialog,
+  ) {
     this.options = {
       allowDrag: (node: TreeNode) => {
-        return !(this.viewOnly || this.delta) && (node.data.type === Type.TEXT ||
+        return !(this.viewOnly) && (node.data.type === Type.TEXT ||
           node.data.type === Type.CONFORMANCEPROFILE ||
           node.data.type === Type.PROFILE || node.data.type === Type.PROFILECOMPONENT || Type.COMPOSITEPROFILE);
       },
       actionMapping: {
         mouse: {
           drop: (tree: TreeModel, node: TreeNode, $event: any, { from, to }) => {
+
+            console.log(from);
+
+            console.log(to);
             if (from.data.type === Type.TEXT && (!this.isOrphan(to) && to.parent.data.type === Type.TEXT || this.isOrphan(to))) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
-            }
-            if (from.data.type === Type.CONFORMANCEPROFILE && to.parent.data.type === Type.CONFORMANCEPROFILEREGISTRY) {
+            } else if (from.data.type === Type.CONFORMANCEPROFILE && to.parent.data.type === Type.CONFORMANCEPROFILEREGISTRY) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
-            }
-            if (from.data.type === Type.PROFILECOMPONENT && to.parent.data.type === Type.PROFILECOMPONENTREGISTRY) {
+              // tslint:disable-next-line:no-duplicated-branches
+            } else if (from.data.type === Type.PROFILECOMPONENT && to.parent.data.type === Type.PROFILECOMPONENTREGISTRY) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
-            }
-            if (from.data.type === Type.COMPOSITEPROFILE && to.parent.data.type === Type.COMPOSITEPROFILEREGISTRY) {
+              // tslint:disable-next-line:no-duplicated-branches
+            } else if (from.data.type === Type.COMPOSITEPROFILE && to.parent.data.type === Type.COMPOSITEPROFILEREGISTRY) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
             }
@@ -118,7 +147,31 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   print(elm) {
     console.log(elm);
   }
+  updateNumbers(): any {
+    const profileNodes = this.tree.treeModel.nodes.find((x) => x.type === Type.PROFILE);
+    this.elementNumbers = {};
+    const datatypeNodes = profileNodes.children.find((x) => x.type === Type.DATATYPEREGISTRY).children;
+    this.elementNumbers.datatypes = datatypeNodes.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
 
+    const segments = profileNodes.children.find((x) => x.type === Type.SEGMENTREGISTRY).children;
+    this.elementNumbers.segments = segments.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
+
+    const valueSets = profileNodes.children.find((x) => x.type === Type.VALUESETREGISTRY).children;
+    this.elementNumbers.valueSets = valueSets.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
+
+    const coConstraintGroup = profileNodes.children.find((x) => x.type === Type.COCONSTRAINTGROUPREGISTRY).children;
+    this.elementNumbers.coConstraintGroup = coConstraintGroup.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
+
+    const conformanceProfiles = profileNodes.children.find((x) => x.type === Type.CONFORMANCEPROFILEREGISTRY).children;
+    this.elementNumbers.conformanceProfiles = conformanceProfiles.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
+
+    const profileComponents = profileNodes.children.find((x) => x.type === Type.PROFILECOMPONENTREGISTRY).children;
+    this.elementNumbers.profileComponents = profileComponents.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
+
+    const compositeProfiles = profileNodes.children.find((x) => x.type === Type.COMPOSITEPROFILEREGISTRY).children;
+    this.elementNumbers.compositeProfiles = compositeProfiles.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
+
+  }
   addSectionToNode(node) {
     this.nodeHelperService.addNode(node);
     this.update();
@@ -153,6 +206,14 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   copyResource(node: TreeNode) {
     this.copy.emit({ element: { ...node.data }, existing: node.parent.data.children });
+  }
+
+  exportDiffProfileXML(node: TreeNode) {
+    this.store.select(fromIgDocumentEdit.selectIgId).pipe(
+      take(1),
+      map((id) => this.igService.exportProfileDiffXML(id, node.data.id)),
+    )
+      .subscribe();
   }
 
   exportCSVFileForVS(node: TreeNode) {
@@ -202,11 +263,18 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     this.tree.treeModel.filterNodes((node) => {
       return this.nodeHelperService
         .getFilteringLabel(node.data.fixedName, node.data.variableName).toLowerCase()
-        .startsWith(value.toLowerCase());
+        .startsWith(value ? value.toLowerCase() : '');
+    });
+  }
+
+  filterNode(fn: (data: IDisplayElement) => boolean) {
+    this.tree.treeModel.filterNodes((node) => {
+      return !fn(node.data);
     });
   }
 
   update() {
+    console.log(this.tree.treeModel.nodes);
     this.nodeState.emit(this.tree.treeModel.nodes);
   }
 
@@ -257,4 +325,34 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   deleteOneChild(child: IDisplayElement, parent: IDisplayElement) {
     this.deleteContext.emit({ child, parent });
   }
+
+  manageStructure(node: TreeNode) {
+
+        const dialogRef = this.dialog.open(ManageProfileStructureComponent, {
+          data: node.data.children,
+        });
+        dialogRef.afterClosed().subscribe(
+          (answer) => {
+
+            if (answer) {
+              this.nodeHelperService.updateProfileStructure(node, answer);
+              this.update();
+           }
+          },
+        );
+  }
+}
+export class ElmentNumbers {
+  conformanceProfiles?: number;
+  profileComponents?: number;
+  compositeProfiles?: number;
+  segments?: number;
+  datatypes?: number;
+  valueSets?: number;
+  coConstraintGroup?: number;
+
+}
+
+export interface ITypedSection {
+  [key: string]: IContent;
 }
