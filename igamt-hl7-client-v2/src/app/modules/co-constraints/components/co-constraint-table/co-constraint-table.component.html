@@ -75,6 +75,17 @@
         </th>
         <ng-container *ngTemplateOutlet="value.headers.narratives.length > 0 ? columns : emptyColumn; context: { $implicit: value.headers.narratives, type: 'narratives', template: narrativeHeader }"></ng-container>
       </tr>
+      <tr *ngIf="value.coConstraints && value.coConstraints.length > 0">
+        <td [attr.colspan]="numberOfColumns() + (numberOfCardinalityColumns(value.headers) | async) + 4"
+            style="text-align: center;
+                  font-weight: bold;
+                  background-color: grey;
+                  color: white;
+                  border-right: 2px solid black;"
+        >
+          Individual Co-Constraints
+        </td>
+      </tr>
     </thead>
     <ng-container *ngTemplateOutlet="ccList; context: { $implicit: value.coConstraints, group : mode === 'GROUP', fieldId : 'ind', viewOnly: vOnly }"></ng-container>
     <ng-container *ngFor="let group of value.groups; let i = index">
@@ -299,16 +310,19 @@
         <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: group.requirement, usageDelta: group.requirement.usageDelta, fieldId : 'g-' + index, viewOnly: viewOnly  }"></ng-container></td>
         <td class="requirement-cell column-border"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: group.requirement, cardinalityDelta: group.requirement.cardinalityDelta, fieldId : 'g-' + index, viewOnly: viewOnly  }"></ng-container></td>
         <td [attr.colspan]="numberOfColumns() + cardCells" style="vertical-align: middle;">
-          <input style="background-color: #f4f4f4;" *ngIf="!delta || !group.nameDelta"  [disabled]="viewOnly" class="form-control" type="text" [name]="'g-' + index + '-name'" [(ngModel)]="group.name" (ngModelChange)="emitChange()" placeholder="Group Name">
-          <app-delta-column
-            *ngIf="delta && !!group.nameDelta"
-            [currentValue]="group.nameDelta.current"
-            [previousValue]="group.nameDelta.previous"
-            [action]="group.nameDelta.delta">
-            <ng-template #default let-value>
-              {{value}}
-            </ng-template>
-          </app-delta-column>
+          <div style="display: flex; justify-content: center; align-items: center;">
+            <strong style="color: white; text-align: center; min-width: 200px; margin-right: 10px;"> Co-Constraint Group </strong>
+            <input style="background-color: #f4f4f4;" *ngIf="!delta || !group.nameDelta"  [disabled]="viewOnly" class="form-control" type="text" [name]="'g-' + index + '-name'" [(ngModel)]="group.name" (ngModelChange)="emitChange()" placeholder="Group Name">
+            <app-delta-column
+              *ngIf="delta && !!group.nameDelta"
+              [currentValue]="group.nameDelta.current"
+              [previousValue]="group.nameDelta.previous"
+              [action]="group.nameDelta.delta">
+              <ng-template #default let-value>
+                {{value}}
+              </ng-template>
+            </app-delta-column>
+          </div>
         </td>
       </tr>
     </tbody>

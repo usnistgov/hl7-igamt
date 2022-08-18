@@ -62,7 +62,7 @@ public class ResourceSkeletonService {
                     new ResourceRef(Type.DATATYPE, component.getRef().getId()),
                     component.getId(),
                     component.getPosition(),
-                    makeLocationInfo(parentLocationInfo, resource, component.getType(), component.getName(), component.getPosition()),
+                    makeLocationInfo(parentLocationInfo, resource, component.getType(), component.getName(), component.getPosition(), component.getId()),
                     resource,
                     component.getUsage(),
                     null,
@@ -86,7 +86,7 @@ public class ResourceSkeletonService {
                 new ResourceRef(Type.DATATYPE, field.getRef().getId()),
                 field.getId(),
                 field.getPosition(),
-                makeLocationInfo(parentLocationInfo, resource, field.getType(), field.getName(), field.getPosition()),
+                makeLocationInfo(parentLocationInfo, resource, field.getType(), field.getName(), field.getPosition(), field.getId()),
                 resource,
                 field.getUsage(),
                 new ResourceSkeletonBoneCardinality(field.getMin(), field.getMax()),
@@ -110,7 +110,7 @@ public class ResourceSkeletonService {
         List<ResourceSkeletonBone> children = new ArrayList<>();
         for(SegmentRefOrGroup element: segmentRefOrGroups) {
             if(element instanceof Group) {
-                LocationInfo groupLocationInfo = makeLocationInfo(parentLocationInfo, null, element.getType(), element.getName(), element.getPosition());
+                LocationInfo groupLocationInfo = makeLocationInfo(parentLocationInfo, null, element.getType(), element.getName(), element.getPosition(), element.getId());
                 List<ResourceSkeletonBone> groupChildren = getGroupChildren(parent, ((Group) element).getChildren(), groupLocationInfo, null);
                 ResourceSkeletonBone group = new ResourceSkeletonBone(
                         groupChildren,
@@ -130,7 +130,7 @@ public class ResourceSkeletonService {
                         new ResourceRef(Type.SEGMENT, ((SegmentRef) element).getRef().getId()),
                         element.getId(),
                         element.getPosition(),
-                        makeLocationInfo(parentLocationInfo, null, element.getType(), element.getName(), element.getPosition()),
+                        makeLocationInfo(parentLocationInfo, null, element.getType(), element.getName(), element.getPosition(), element.getId()),
                         parent,
                         element.getUsage(),
                         new ResourceSkeletonBoneCardinality(element.getMin(), element.getMax()),
@@ -142,12 +142,13 @@ public class ResourceSkeletonService {
         return children;
     }
 
-    public LocationInfo makeLocationInfo(LocationInfo parent, DisplayElement resource, Type location, String name, int position) {
+    public LocationInfo makeLocationInfo(LocationInfo parent, DisplayElement resource, Type location, String name, int position, String elementId) {
         LocationInfo locationInfo = new LocationInfo();
         if(parent == null) {
             locationInfo.setName(name);
             locationInfo.setType(location);
             locationInfo.setPositionalPath(position + "");
+            locationInfo.setPathId(elementId);
             if(resource != null) {
                 locationInfo.setHl7Path(append(resource.getFixedName(), "-", position + ""));
             } else {
@@ -164,6 +165,7 @@ public class ResourceSkeletonService {
             else {
                 locationInfo.setHl7Path(append(parent.getHl7Path(), ".", position + ""));
             }
+            locationInfo.setPathId(append(parent.getPathId(), "-", elementId));
             return locationInfo;
         }
     }
