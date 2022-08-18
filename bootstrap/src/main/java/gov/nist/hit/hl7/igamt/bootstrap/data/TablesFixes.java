@@ -33,11 +33,13 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -57,6 +59,12 @@ public class TablesFixes {
   ValuesetRepository repo;
   @Autowired
   SegmentService segmentService;
+  @Autowired
+  SegmentRepository segmentRepo;
+  
+  @Autowired
+  DatatypeRepository datatypeRepo;
+  
   @Autowired
   DatatypeService datatypeService;
   @Autowired
@@ -88,6 +96,19 @@ public class TablesFixes {
    replaceInIg(ids);
    
   }
+  
+  public void fix0396ByVersion(String version) throws ValidationException, ForbiddenOperationException {
+	   HashMap<String, String>  ids  = new HashMap<String, String>();
+	   List<Valueset> dynamicTables= valueSetService.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(Scope.HL7STANDARD.toString(),version, "HL70396" );
+	  
+	   for(Valueset s: dynamicTables) {
+		   ids.put(s.getId(), HL70396Id);
+		}
+	//   replaceAllSegmentbinding(ids);
+	   replaceAllDataTypebinding(ids);
+	//   replaceInIg(ids);
+	   
+	}
 
   public void replaceAllSegmentbinding(HashMap<String, String> newKeys) throws ValidationException, ForbiddenOperationException{
     List<Segment> segments= segmentService.findAll();
@@ -97,10 +118,12 @@ public class TablesFixes {
         if(s.getBinding().getChildren() !=null) {
           for(StructureElementBinding binding: s.getBinding().getChildren()) {
             processAndSubstitute(binding, newKeys);
+
           }
+          segmentRepo.save(s);
+
         }
       }
-      segmentService.save(s);
     }
     
   }
@@ -110,13 +133,13 @@ public class TablesFixes {
     for(Datatype dt : datatypes) {
       if(dt.getBinding()!=null) {
 
-        if(dt.getBinding().getChildren() !=null) {
+        if(dt.getBinding().getChildren() !=null && !dt.getBinding().getChildren().isEmpty() ) {
           for(StructureElementBinding binding: dt.getBinding().getChildren()) {
             processAndSubstitute(binding, newKeys);
           }
+          datatypeRepo.save(dt);
         }
       }
-      datatypeService.save(dt);
     }
   }
 
@@ -131,7 +154,6 @@ public class TablesFixes {
         }
         igService.save(ig);
       }
-
     }
   }
   public void replaceAllDataTypeBinding(HashMap<String, String> newKeys){
