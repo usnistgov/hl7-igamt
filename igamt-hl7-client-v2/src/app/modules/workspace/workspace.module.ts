@@ -10,6 +10,7 @@ import { DamFrameworkModule } from './../dam-framework/dam-framework.module';
 import { SharedModule } from './../shared/shared.module';
 import { CreateWorkspaceComponent } from './components/create-workspace/create-workspace.component';
 import { FolderAddDialogComponent } from './components/folder-add-dialog/folder-add-dialog.component';
+import { RoleSelectorComponent } from './components/role-selector/role-selector.component';
 import { WorkspaceActiveTitlebarComponent } from './components/workspace-active-titlebar/workspace-active-titlebar.component';
 import { WorkspaceEditComponent } from './components/workspace-edit/workspace-edit.component';
 import { WorkspaceFolderEditorComponent } from './components/workspace-folder-editor/workspace-folder-editor.component';
@@ -18,10 +19,11 @@ import { WorkspaceListCardComponent } from './components/workspace-list-card/wor
 import { WorkspaceListComponent } from './components/workspace-list/workspace-list.component';
 import { WorkspaceMetadataEditorComponent } from './components/workspace-metadata-editor/workspace-metadata-editor.component';
 import { WorkspaceSideBarComponent } from './components/workspace-side-bar/workspace-side-bar.component';
+import { WorkspaceUserManagementComponent } from './components/workspace-user-management/workspace-user-management.component';
 import { WorkspaceRoutingModule } from './workspace-routing.module';
 
 @NgModule({
-  declarations: [CreateWorkspaceComponent, WorkspaceListComponent, WorkspaceEditComponent, WorkspaceListCardComponent, WorkspaceSideBarComponent, WorkspaceHomeEditorComponent, WorkspaceActiveTitlebarComponent, FolderAddDialogComponent, WorkspaceMetadataEditorComponent, WorkspaceFolderEditorComponent],
+  declarations: [CreateWorkspaceComponent, WorkspaceListComponent, WorkspaceEditComponent, WorkspaceListCardComponent, WorkspaceSideBarComponent, WorkspaceHomeEditorComponent, WorkspaceActiveTitlebarComponent, FolderAddDialogComponent, WorkspaceMetadataEditorComponent, WorkspaceFolderEditorComponent, WorkspaceUserManagementComponent, RoleSelectorComponent],
   imports: [
     CommonModule,
     DamFrameworkModule.forRoot(),

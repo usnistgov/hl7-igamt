@@ -1,0 +1,14 @@
+<p-dropdown
+  [options]="roles"
+  [(ngModel)]="role"
+  (ngModelChange)="roleChange($event)"
+  placeholder="Role"
+  [autoDisplayFirst]="false"
+></p-dropdown>
+<p-dropdown
+  [options]="scopes"
+  [(ngModel)]="scope"
+  placeholder="Scope"
+  [disabled]="role && role === 'ADMIN'"
+  [autoDisplayFirst]="false"
+></p-dropdown>

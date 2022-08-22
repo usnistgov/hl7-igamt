@@ -12,7 +12,7 @@ import { EditorSave } from '../../../modules/dam-framework/store/data/dam.action
 import { IWorkspaceInfo } from '../../../modules/workspace/models/models';
 import { DamWidgetEffect } from './../../../modules/dam-framework/store/dam-widget-effect.class';
 import { WorkspaceService } from './../../../modules/workspace/services/workspace.service';
-import { OpenWorkspaceFolderEditor, OpenWorkspaceHomeEditor, OpenWorkspaceMetadataEditor, WorkspaceEditActions, WorkspaceEditActionTypes, WorkspaceEditResolverLoad, WorkspaceEditResolverLoadFailure, WorkspaceEditResolverLoadSuccess } from './workspace-edit.actions';
+import { OpenWorkspaceFolderEditor, OpenWorkspaceHomeEditor, OpenWorkspaceMetadataEditor, WorkspaceEditActions, WorkspaceEditActionTypes, WorkspaceEditResolverLoad, WorkspaceEditResolverLoadFailure, WorkspaceEditResolverLoadSuccess, OpenWorkspaceAccessManagementEditor } from './workspace-edit.actions';
 import { selectWorkspaceId } from './workspace-edit.selectors';
 
 @Injectable()
@@ -118,6 +118,21 @@ export class WorkspaceEditEffects extends DamWidgetEffect {
           ];
         }),
       );
+    }),
+  );
+
+  @Effect()
+  OpenWorkspaceAccessManagementEditor$ = this.actions$.pipe(
+    ofType(WorkspaceEditActionTypes.OpenWorkspaceAccessManagementEditor),
+    map((action: OpenWorkspaceAccessManagementEditor) => {
+      return new fromDAM.OpenEditor({
+        id: action.payload.id,
+        display: {
+          id: action.payload.id,
+        },
+        editor: action.payload.editor,
+        initial: {},
+      });
     }),
   );
 

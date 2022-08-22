@@ -1,0 +1,16 @@
+<ng-template #headerControls>
+  <ng-container *ngIf="isAdmin$ | async">
+    <button class="btn btn-sm btn-primary">
+      <i class="fa fa-envelope" style="margin-right: 5px;"></i>
+      Invite Users
+    </button>
+  </ng-container>
+</ng-template>
+<ng-template #headerTitle>
+  <h4 style="margin: 0;">
+    <i class="fa fa-users" style="margin-right: 5px;"></i>
+    Manage Access
+  </h4>
+</ng-template>
+
+<app-role-selector [folders]="folders$ | async" ></app-role-selector>

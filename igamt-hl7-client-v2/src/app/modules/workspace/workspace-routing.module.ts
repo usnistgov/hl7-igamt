@@ -19,6 +19,7 @@ import { WorkspaceFolderEditorComponent } from './components/workspace-folder-ed
 import { WorkspaceHomeEditorComponent } from './components/workspace-home-editor/workspace-home-editor.component';
 import { WorkspaceListComponent } from './components/workspace-list/workspace-list.component';
 import { WorkspaceMetadataEditorComponent } from './components/workspace-metadata-editor/workspace-metadata-editor.component';
+import { WorkspaceUserManagementComponent } from './components/workspace-user-management/workspace-user-management.component';
 
 const routes: Routes = [
   {
@@ -87,6 +88,25 @@ const routes: Routes = [
           editorMetadata: {
             id: EditorID.WORKSPACE_METADTATA,
             title: 'Metadata',
+            resourceType: Type.WORKSPACE,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenWorkspaceMetadataEditor,
+          idKey: 'workspaceId',
+        },
+        canDeactivate: [EditorDeactivateGuard],
+      },
+      {
+        path: 'users',
+        component: WorkspaceUserManagementComponent,
+        canActivate: [EditorActivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.WORKSPACE_USERS,
+            title: 'Manage Access',
             resourceType: Type.WORKSPACE,
           },
           onLeave: {

@@ -10,6 +10,7 @@ export enum WorkspaceEditActionTypes {
   OpenWorkspaceMetadataEditor = '[Workspace Edit] Open Workspace Metadata Editor',
   OpenWorkspaceHomeEditor = '[Workspace Edit] Open Workspace Home Editor',
   OpenWorkspaceFolderEditor = '[Workspace Edit] Open Workspace Folder Editor',
+  OpenWorkspaceAccessManagementEditor = '[Workspace Edit] Open Workspace Access Management Editor',
 }
 
 export class WorkspaceEditResolverLoad implements Action {
@@ -52,6 +53,17 @@ export class OpenWorkspaceFolderEditor extends OpenEditorBase {
   }
 }
 
+export class OpenWorkspaceAccessManagementEditor extends OpenEditorBase {
+  readonly type = WorkspaceEditActionTypes.OpenWorkspaceAccessManagementEditor;
+
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) {
+    super();
+  }
+}
+
 export class OpenWorkspaceHomeEditor extends OpenEditorBase {
   readonly type = WorkspaceEditActionTypes.OpenWorkspaceHomeEditor;
 
@@ -62,4 +74,4 @@ export class OpenWorkspaceHomeEditor extends OpenEditorBase {
     super();
   }
 }
-export type WorkspaceEditActions = WorkspaceEditResolverLoad | WorkspaceEditResolverLoadSuccess | WorkspaceEditResolverLoadFailure | OpenWorkspaceMetadataEditor | OpenWorkspaceHomeEditor | OpenWorkspaceFolderEditor;
+export type WorkspaceEditActions = WorkspaceEditResolverLoad | WorkspaceEditResolverLoadSuccess | WorkspaceEditResolverLoadFailure | OpenWorkspaceMetadataEditor | OpenWorkspaceHomeEditor | OpenWorkspaceFolderEditor | OpenWorkspaceAccessManagementEditor;

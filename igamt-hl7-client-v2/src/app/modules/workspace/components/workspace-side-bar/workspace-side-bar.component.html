@@ -12,7 +12,7 @@
       <i class="fa fa-file-text" style="font-size: larger; margin-right: 5px;"></i>
       Metadata
     </li>
-    <li class="list-group-item cursor-pointer" *ngIf="isAdmin$ | async" >
+    <li class="list-group-item cursor-pointer" routerLink="users" routerLinkActive="nav-active-link" *ngIf="isAdmin$ | async" >
       <i class="fa fa-users" style="font-size: larger; margin-right: 5px;"></i>
       Manage Access
     </li>
