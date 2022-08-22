@@ -569,7 +569,7 @@ public class BootstrapApplication implements CommandLineRunner {
 		}
 	}
 	
-	@PostConstruct
+	//@PostConstruct
 	void checkCustomStructures() {
 		this.sanityChecker.checkCustomStructures();
 	}
@@ -595,7 +595,7 @@ public class BootstrapApplication implements CommandLineRunner {
 	}
 	
 	//@PostConstruct
-	void addVersionFixes() throws ForbiddenOperationException, ValidationException{
+	void addVersionFixes() throws ForbiddenOperationException, ValidationException {
 		codeFixer.fixTableHL70125("2.9"); 
 		this.dynamicMappingFixer.processSegmentByVersion("2.9");
 		tableFixes.fix0396ByVersion("2.9");

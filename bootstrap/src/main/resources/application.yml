@@ -33,7 +33,7 @@ auth:
   url: http://localhost:8090
   
 vocabulary:
-    url: http://129.6.24.81:8095/vocabulary-service/
+    url: http://hit-dev-admin.nist.gov:8095/vocabulary-service/
    
 email:
    port: 25
