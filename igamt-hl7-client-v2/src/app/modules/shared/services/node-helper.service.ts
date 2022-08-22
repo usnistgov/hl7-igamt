@@ -75,8 +75,6 @@ export class NodeHelperService {
   constructor() {
   }
 
-
-
   cloneNode(treeNode: TreeNode): string {
 
     const newData: IDisplayElement = _.cloneDeep(treeNode.data);

@@ -123,7 +123,7 @@
 </ng-template>
 
 <ng-template #displayScBinding let-data>
-  <ng-container *ngIf="data.value">
-    <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: data.value, context : data.context }"></ng-container>
+  <ng-container *ngFor="let item of data.value">
+    <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: item, context : data.context }"></ng-container>
   </ng-container>
 </ng-template>
