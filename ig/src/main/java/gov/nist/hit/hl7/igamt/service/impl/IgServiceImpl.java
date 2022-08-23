@@ -330,7 +330,6 @@ public class IgServiceImpl implements IgService {
 
 
   private TextSection createSectionContent(SectionTemplate template) {
-    // TODO Auto-generated method stub
     TextSection section = new TextSection();
     section.setId(new ObjectId().toString());
     section.setType(Type.fromString(template.getType()));

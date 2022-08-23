@@ -80,5 +80,4 @@ public interface MessageStructureRepository  extends MongoRepository<MessageStru
     public void deleteByDomainInfoScopeAndDomainInfoVersionIn(Scope scope, List<String> versions);
 
 
-
 }

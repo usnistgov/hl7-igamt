@@ -46,7 +46,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
     this.initializeProperties();
     this.igListItemControls();
   }
-  draftWarning: string = 'Warning: This is a DRAFT publication for trial use only. It will be updated and replaced. It is not advised to create permanent derived profiles form this DRAFT implementation Guide.'
+  draftWarning = 'Warning: This is a DRAFT publication for trial use only. It will be updated and replaced. It is not advised to create permanent derived profiles form this DRAFT implementation Guide.';
 
   listItems: Observable<IgListItem[]>;
   viewType: Observable<IgListLoad>;
