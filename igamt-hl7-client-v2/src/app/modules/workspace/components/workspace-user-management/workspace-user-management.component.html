@@ -1,6 +1,6 @@
 <ng-template #headerControls>
   <ng-container *ngIf="isAdmin$ | async">
-    <button class="btn btn-sm btn-primary">
+    <button (click)="inviteUser()" class="btn btn-sm btn-primary">
       <i class="fa fa-envelope" style="margin-right: 5px;"></i>
       Invite Users
     </button>
@@ -12,5 +12,100 @@
     Manage Access
   </h4>
 </ng-template>
+<div style="margin-bottom: 10px; display: flex;
+flex-direction: row;
+align-items: flex-start;">
+  <div style="height: 100%;" ngbDropdown #dd="ngbDropdown" [autoClose]="false" container="body" (openChange)="onOpenChange($event)">
+    <button class="btn no-focus" style="
+      color: gray;
+      border: 2px solid lightgray;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      border-radius: 0;"
+      [ngClass]="{'active': active, 'inactive': !active}"
+      ngbDropdownToggle>
+      <div style="width: 15px; height: 15px; border-radius: 15px;" [ngClass]="{'active-ind': active, 'inactive-ind': !active}"></div>
+      <span style="margin-left: 10px;">FILTER</span>
+    </button>
+    <div style="max-height: 55vh; overflow: scroll; -webkit-box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
+                -moz-box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
+                box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75); padding: 20px;" ngbDropdownMenu>
+      <p-checkbox
+      [(ngModel)]="filter.pending"
+      [binary]="true"
+      label="Is pending invitation approval"
+      ></p-checkbox>
+      <hr style="margin-top: 3px;">
+    </div>
+  </div>
+  <div class="input-group" style="margin-left: 10px;">
+    <div class="input-group-prepend" style="height: 35px;">
+      <span class="input-group-text" id="inputGroupPrepend3"><i [ngStyle]="{'color': username && username !== '' ? '#00c31b' : ''}"
+                                                                class="fa fa-search"></i></span>
+    </div>
+    <input (ngModelChange)="filterTextChanged($event)" [(ngModel)]="username" class="form-control"
+           id="username" placeholder="Search" required
+           style="background-color: #fbfbfb; height: 35px;" type="text">
+  </div>
+</div>
+<p-table [columns]="[]" [value]="[{}]">
 
-<app-role-selector [folders]="folders$ | async" ></app-role-selector>
+  <ng-template pTemplate="header" let-yourColumnArrayVaraible>
+    <tr>
+      <th>
+        Username
+      </th>
+      <th>
+        Status
+      </th>
+      <th>
+        Added
+      </th>
+      <th>
+        Joined
+      </th>
+      <th>
+        Added By
+      </th>
+      <th>
+        Permissions
+      </th>
+      <th>
+        Actions
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-row>
+    <tr>
+      <td>
+        {{row.username}}
+      </td>
+      <td>
+        <span *ngIf="row.pending" style="font-weight: bold; color: gold;" >PENDING</span>
+        <span *ngIf="!row.pending" style="font-weight: bold; color: green;">MEMBER</span>
+      </td>
+      <td>
+        {{row.added | date}}
+      </td>
+      <td>
+        {{row.joined ? 'N/A' : row.joined | date}}
+      </td>
+      <td>
+        {{row.addedBy}}
+      </td>
+      <td>
+
+      </td>
+      <td>
+        <button (click)="editUser(row)" class="btn btn-sm btn-primary">
+          Edit
+        </button>
+        <button (click)="removeUser(row)" style="margin-left: 5px" class="btn btn-sm btn-danger">
+          Remove
+        </button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

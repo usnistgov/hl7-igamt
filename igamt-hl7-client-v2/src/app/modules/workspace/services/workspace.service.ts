@@ -4,7 +4,7 @@ import { Action, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { LoadPayloadData, LoadResourcesInRepostory } from '../../dam-framework/store';
-import { IFolderInfo, IWorkspaceInfo, IWorkspaceMetadata, WorkspaceAccessType, IFolderContent } from '../models/models';
+import { IFolderContent, IFolderInfo, IWorkspaceInfo, IWorkspaceMetadata, WorkspaceAccessType } from '../models/models';
 
 export interface IWorkspaceCreateRequest {
   accessType: WorkspaceAccessType;

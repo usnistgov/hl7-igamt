@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>Add User to Workspace</h2>
+<div class="input-group">
+  <div class="input-group-prepend" style="height: 35px;">
+    <span class="input-group-text" id="inputGroupPrepend3">
+      <i class="fa fa-user"></i>
+    </span>
+  </div>
+  <input
+         [(ngModel)]="username"
+         class="form-control"
+         id="username"
+         placeholder="Username"
+         required
+         style="background-color: #fbfbfb; height: 35px;"
+         type="text">
+</div>
+<div style="display: flex; flex-direction: column; margin-top: 10px;"  #anchor>
+  <app-permission-selector
+    [folders]="data.folders"
+    [(workspacePermissions)]="permissions"
+  >
+  </app-permission-selector>
+</div>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
+  <button (click)="create()" [disabled]="!username || !permissions" class="btn btn-sm btn-success">Invite</button>
+</mat-dialog-actions>

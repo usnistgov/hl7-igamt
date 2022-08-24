@@ -4,6 +4,7 @@ import gov.nist.hit.hl7.igamt.auth.service.AuthenticationService;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.workspace.domain.*;
+import gov.nist.hit.hl7.igamt.workspace.exception.InvalidPermissionsException;
 import gov.nist.hit.hl7.igamt.workspace.exception.UsernameNotFound;
 import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceForbidden;
 import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceNotFound;
@@ -125,6 +126,7 @@ public class WorkspaceUserServiceImpl implements WorkspaceUserService {
                 .orElseThrow(() -> new WorkspaceNotFound(workspaceId));
         checkUserHasAdminPrivilege(workspace, performedBy);
         checkUsernameExists(invitee);
+        checkPermissions(permissions);
         if(userExists(workspace, invitee)) {
             throw new Exception("User "+ invitee+" already exists in workspace");
         }
@@ -210,6 +212,28 @@ public class WorkspaceUserServiceImpl implements WorkspaceUserService {
             return resource;
         } else {
             throw new ResourceNotFoundException(workspaceId, Type.WORKSPACE);
+        }
+    }
+
+    public void checkPermissions(WorkspacePermissions permissions) throws InvalidPermissionsException {
+        List<String> errors = new ArrayList<>();
+        if(permissions.isAdmin()) {
+            if(permissions.getGlobal() != null) {
+                errors.add("Global permissions can't be set for admin");
+            }
+
+            if(permissions.getByFolder() != null && !permissions.getByFolder().isEmpty()) {
+                errors.add("Permissions by folder can't be set for admin");
+            }
+        } else if(permissions.getGlobal() != null) {
+            if(permissions.getGlobal().equals(WorkspacePermissionType.EDIT)) {
+                if(permissions.getByFolder() != null && !permissions.getByFolder().isEmpty()) {
+                    errors.add("Permissions by folder can't be set for a user with global EDIT permission");
+                }
+            }
+        }
+        if(!errors.isEmpty()) {
+            throw new InvalidPermissionsException(String.join(", ", errors));
         }
     }
 

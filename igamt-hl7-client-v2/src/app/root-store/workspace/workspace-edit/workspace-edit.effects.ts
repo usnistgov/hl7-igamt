@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { of, combineLatest } from 'rxjs';
+import { combineLatest, of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, switchMap, take } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
@@ -12,7 +12,7 @@ import { EditorSave } from '../../../modules/dam-framework/store/data/dam.action
 import { IWorkspaceInfo } from '../../../modules/workspace/models/models';
 import { DamWidgetEffect } from './../../../modules/dam-framework/store/dam-widget-effect.class';
 import { WorkspaceService } from './../../../modules/workspace/services/workspace.service';
-import { OpenWorkspaceFolderEditor, OpenWorkspaceHomeEditor, OpenWorkspaceMetadataEditor, WorkspaceEditActions, WorkspaceEditActionTypes, WorkspaceEditResolverLoad, WorkspaceEditResolverLoadFailure, WorkspaceEditResolverLoadSuccess, OpenWorkspaceAccessManagementEditor } from './workspace-edit.actions';
+import { OpenWorkspaceAccessManagementEditor, OpenWorkspaceFolderEditor, OpenWorkspaceHomeEditor, OpenWorkspaceMetadataEditor, WorkspaceEditActions, WorkspaceEditActionTypes, WorkspaceEditResolverLoad, WorkspaceEditResolverLoadFailure, WorkspaceEditResolverLoadSuccess } from './workspace-edit.actions';
 import { selectWorkspaceId } from './workspace-edit.selectors';
 
 @Injectable()

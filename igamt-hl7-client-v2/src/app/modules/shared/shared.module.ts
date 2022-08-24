@@ -41,6 +41,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
 import { DamComponentsModule, DamLoaderModule, DamMessagesModule } from '../dam-framework/dam-framework.module';
+import { IgListItemCardComponent } from '../ig/components/ig-list-item-card/ig-list-item-card.component';
 import { AddCoConstraintGroupComponent } from './components/add-co-constraint-group/add-co-constraint-group.component';
 import { AddCompositeComponent } from './components/add-composite/add-composite.component';
 import { AddProfileComponentContextComponent } from './components/add-profile-component-context/add-profile-component-context.component';
@@ -135,7 +136,6 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { IgListItemCardComponent } from '../ig/components/ig-list-item-card/ig-list-item-card.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,

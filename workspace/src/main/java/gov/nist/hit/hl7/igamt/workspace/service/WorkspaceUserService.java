@@ -1,10 +1,7 @@
 package gov.nist.hit.hl7.igamt.workspace.service;
 
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
-import gov.nist.hit.hl7.igamt.workspace.domain.Workspace;
-import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissionType;
-import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissions;
-import gov.nist.hit.hl7.igamt.workspace.domain.WorkspaceUser;
+import gov.nist.hit.hl7.igamt.workspace.domain.*;
 import gov.nist.hit.hl7.igamt.workspace.exception.UsernameNotFound;
 import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceForbidden;
 import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceNotFound;

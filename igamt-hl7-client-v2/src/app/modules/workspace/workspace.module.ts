@@ -8,9 +8,10 @@ import { WorkspaceEditEffects } from './../../root-store/workspace/workspace-edi
 import { CoreModule } from './../core/core.module';
 import { DamFrameworkModule } from './../dam-framework/dam-framework.module';
 import { SharedModule } from './../shared/shared.module';
+import { AddUserDialogComponent } from './components/add-user-dialog/add-user-dialog.component';
 import { CreateWorkspaceComponent } from './components/create-workspace/create-workspace.component';
 import { FolderAddDialogComponent } from './components/folder-add-dialog/folder-add-dialog.component';
-import { RoleSelectorComponent } from './components/role-selector/role-selector.component';
+import { PermissionSelectorComponent } from './components/permission-selector/permission-selector.component';
 import { WorkspaceActiveTitlebarComponent } from './components/workspace-active-titlebar/workspace-active-titlebar.component';
 import { WorkspaceEditComponent } from './components/workspace-edit/workspace-edit.component';
 import { WorkspaceFolderEditorComponent } from './components/workspace-folder-editor/workspace-folder-editor.component';
@@ -23,7 +24,7 @@ import { WorkspaceUserManagementComponent } from './components/workspace-user-ma
 import { WorkspaceRoutingModule } from './workspace-routing.module';
 
 @NgModule({
-  declarations: [CreateWorkspaceComponent, WorkspaceListComponent, WorkspaceEditComponent, WorkspaceListCardComponent, WorkspaceSideBarComponent, WorkspaceHomeEditorComponent, WorkspaceActiveTitlebarComponent, FolderAddDialogComponent, WorkspaceMetadataEditorComponent, WorkspaceFolderEditorComponent, WorkspaceUserManagementComponent, RoleSelectorComponent],
+  declarations: [CreateWorkspaceComponent, WorkspaceListComponent, WorkspaceEditComponent, WorkspaceListCardComponent, WorkspaceSideBarComponent, WorkspaceHomeEditorComponent, WorkspaceActiveTitlebarComponent, FolderAddDialogComponent, WorkspaceMetadataEditorComponent, WorkspaceFolderEditorComponent, WorkspaceUserManagementComponent, AddUserDialogComponent, PermissionSelectorComponent],
   imports: [
     CommonModule,
     DamFrameworkModule.forRoot(),
@@ -37,7 +38,9 @@ import { WorkspaceRoutingModule } from './workspace-routing.module';
 
   ],
   entryComponents: [
-    FolderAddDialogComponent],
+    FolderAddDialogComponent,
+    AddUserDialogComponent,
+  ],
   providers: [],
 })
 export class WorkspaceModule { }

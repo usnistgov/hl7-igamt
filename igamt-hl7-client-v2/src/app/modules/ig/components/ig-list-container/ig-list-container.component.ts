@@ -25,8 +25,8 @@ import { IgListItem } from '../../../document/models/document/ig-list-item.class
 import { CloneModeEnum } from '../../../shared/constants/clone-mode.enum';
 import { IgService } from '../../services/ig.service';
 import { DeriveDialogComponent, IDeriveDialogData, IgTemplate } from '../derive-dialog/derive-dialog.component';
-import { SharingDialogComponent } from './../../../shared/components/sharing-dialog/sharing-dialog.component';
 import { IgListItemControl } from '../ig-list-item-card/ig-list-item-card.component';
+import { SharingDialogComponent } from './../../../shared/components/sharing-dialog/sharing-dialog.component';
 
 @Component({
   selector: 'app-ig-list-container',

@@ -1,5 +1,5 @@
-import { Type } from '../../shared/constants/type.enum';
 import { IgListItem } from '../../document/models/document/ig-list-item.class';
+import { Type } from '../../shared/constants/type.enum';
 
 export enum WorkspaceAccessType {
   PUBLIC = 'PUBLIC',
@@ -50,4 +50,19 @@ export interface IFolderContent extends IFolderInfo {
 export interface IFolderMetadata {
   title: string;
   description?: string;
+}
+
+export interface IWorkspaceUser {
+  username: string;
+  addedBy: string;
+  joined: Date;
+  added: Date;
+  pending: boolean;
+  permissions: IWorkspacePermissions;
+}
+
+export interface IWorkspacePermissions {
+  admin: boolean;
+  global?: WorkspacePermissionType;
+  byFolder?: Record<string, WorkspacePermissionType>;
 }

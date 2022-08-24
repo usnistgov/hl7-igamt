@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { BehaviorSubject, Observable, of, Subscription, combineLatest } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, Subscription } from 'rxjs';
 import { flatMap, map, take, tap } from 'rxjs/operators';
 import { UserMessage } from 'src/app/modules/dam-framework/models/messages/message.class';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
@@ -58,6 +58,7 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
   }>;
   documents$: Observable<IgListItem[]>;
 
+  // tslint:disable-next-line: cognitive-complexity
   constructor(
     actions$: Actions,
     store: Store<any>,
