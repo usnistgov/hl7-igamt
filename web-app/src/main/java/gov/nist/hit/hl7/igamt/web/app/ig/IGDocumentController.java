@@ -962,8 +962,15 @@ public class IGDocumentController extends BaseController {
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     String username = authentication.getPrincipal().toString();
-   
+    
+
     Valueset clone =  resourceManagementService.createFlavor(ig.getValueSetRegistry(), username, new DocumentInfo(id, DocumentType.IGDOCUMENT), Type.VALUESET, wrapper.getSelected());
+
+    if(ig.getValueSetRegistry().getCodesPresence() != null) {
+    	if(ig.getValueSetRegistry().getCodesPresence().containsKey(valuesetId)) {
+    		ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), ig.getValueSetRegistry().getCodesPresence().get(valuesetId));
+    	}
+    }
     ig = igService.save(ig);
     AddResourceResponse response = new AddResourceResponse();
     response.setId(clone.getId());
@@ -1440,6 +1447,7 @@ public class IGDocumentController extends BaseController {
         newVS.setSharedUsers(ig.getSharedUsers());
         newVS.setSharePermission(ig.getSharePermission());
         newVS.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
+        newVS.setId(new ObjectId().toString());
         newVS = this.valuesetService.save(newVS);
         
 

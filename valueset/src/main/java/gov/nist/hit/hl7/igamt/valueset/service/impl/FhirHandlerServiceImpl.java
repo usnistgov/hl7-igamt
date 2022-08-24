@@ -44,6 +44,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 @Service("fhirHandlerService")
 public class FhirHandlerServiceImpl implements FhirHandlerService {
@@ -52,6 +53,9 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 	
 	@Autowired
 	Environment env;
+	
+	@Autowired
+	ValuesetService valueSetService;
 
 	private static final String VOCABULARY_URL = "vocabulary.url";
 	
@@ -179,7 +183,9 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 				}
 			}
 		} catch(Exception e) {
-			codes = new HashSet<Code>(); // Temporary fix 
+	
+				codes = new HashSet<Code>(); // Temporary fix 
+
 
 		}
 
