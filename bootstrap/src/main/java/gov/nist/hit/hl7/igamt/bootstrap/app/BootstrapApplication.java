@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.bootstrap.app;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -89,6 +90,7 @@ import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.IgServiceImpl;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
@@ -645,6 +647,28 @@ public class BootstrapApplication implements CommandLineRunner {
 	
 		
 	}
+	
+	//@PostConstruct
+//	void includeCode() {
+//		List<Ig> igs = this.igService.findAll();
+//		
+//		for (Ig ig: igs) {
+//		    if(ig.getValueSetRegistry().getCodesPresence() != null ) {
+//		    	
+//		    	
+//		    	
+//		        if (ig.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
+//		          if (ig.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
+//		            vs.setIncludeCodes(true);
+//		          } else {
+//		            vs.setIncludeCodes(false);
+//		          }
+//		        } else {
+//		          vs.setIncludeCodes(true);
+//		        }
+//		     }
+//		}
+//	}
 	
 	
 }
