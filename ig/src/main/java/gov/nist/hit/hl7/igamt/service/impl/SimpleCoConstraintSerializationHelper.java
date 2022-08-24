@@ -205,6 +205,15 @@ public class SimpleCoConstraintSerializationHelper implements CoConstraintSerial
         }
     }
 
+    @Override
+    public Set<String> getCoConstraintReferencedValueSetIds(ConformanceProfile conformanceProfile) {
+        if(conformanceProfile.getCoConstraintsBindings() != null) {
+            return this.coConstraintService.getValueSetIds(conformanceProfile.getCoConstraintsBindings());
+        } else {
+            return new HashSet<>();
+        }
+    }
+
     Set<CoConstraintOBX3MappingValue> getOBX3ToFlavorMapFromTable(CoConstraintTable table) {
         Set<CoConstraintOBX3MappingValue> codes = new HashSet<>();
         CoConstraintTable merged = this.coConstraintService.resolveRefAndMerge(table);
