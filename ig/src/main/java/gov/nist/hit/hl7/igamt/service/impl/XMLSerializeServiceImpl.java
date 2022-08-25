@@ -684,6 +684,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         	if(n != null) {
                 Element elm_Constraint = new Element("Constraint");
                 elm_Constraint.addAttribute(new Attribute("ID", cs.getIdentifier()));
+                if(cs.getStrength() != null) {
+                	elm_Constraint.addAttribute(new Attribute("Strength", cs.getStrength().toString()));                	
+                }
                 Element elm_Description = new Element("Description");
                 elm_Description.appendChild(cs.generateDescription());
                 elm_Constraint.appendChild(elm_Description);
@@ -777,6 +780,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         	if(n != null) {
             		Element elm_Constraint = new Element("Constraint");
                     elm_Constraint.addAttribute(new Attribute("ID", cs.getIdentifier()));
+                    if(cs.getStrength() != null) {
+                    	elm_Constraint.addAttribute(new Attribute("Strength", cs.getStrength().toString()));                	
+                    }
                     Element elm_Description = new Element("Description");
                     elm_Description.appendChild(cs.generateDescription());
                     elm_Constraint.appendChild(elm_Description);
@@ -807,6 +813,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             if (n != null) {
             	Element elm_Constraint = new Element("Constraint");
                 elm_Constraint.addAttribute(new Attribute("ID", cs.getIdentifier()));
+                if(cs.getStrength() != null) {
+                	elm_Constraint.addAttribute(new Attribute("Strength", cs.getStrength().toString()));                	
+                }
                 Element elm_Description = new Element("Description");
                 elm_Description.appendChild(cs.generateDescription());
                 elm_Constraint.appendChild(elm_Description);
@@ -835,6 +844,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         	  if(n != null) {
         		  Element elm_Constraint = new Element("Constraint");
                   elm_Constraint.addAttribute(new Attribute("ID", cs.getIdentifier()));
+                  if(cs.getStrength() != null) {
+                  	elm_Constraint.addAttribute(new Attribute("Strength", cs.getStrength().toString()));                	
+                  }
                   Element elm_Description = new Element("Description");
                   elm_Description.appendChild(cs.generateDescription());
                   elm_Constraint.appendChild(elm_Description);
