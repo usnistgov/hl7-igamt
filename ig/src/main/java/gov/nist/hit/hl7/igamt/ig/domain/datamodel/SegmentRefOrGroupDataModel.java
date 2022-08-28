@@ -12,7 +12,9 @@
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -129,5 +131,23 @@ public class SegmentRefOrGroupDataModel implements Serializable{
     }
     return null;
   }
+
+	public SegmentRefOrGroupDataModel findSegmentRefOrGroupDataModelById(String[] path) {
+		if (path.length > 1) {
+			for (SegmentRefOrGroupDataModel sgModel : this.children) {
+				if (sgModel.getModel().getId().equals(path[0])) {
+					return sgModel.findSegmentRefOrGroupDataModelById(Arrays.copyOfRange(path, 1, path.length));
+				}
+			}
+		} else {
+			for (SegmentRefOrGroupDataModel sgModel : this.children) {
+				if (sgModel.getModel().getId().equals(path[0])) {
+					return sgModel;
+				}
+			}
+
+		}
+		return null;
+	}
 
 }

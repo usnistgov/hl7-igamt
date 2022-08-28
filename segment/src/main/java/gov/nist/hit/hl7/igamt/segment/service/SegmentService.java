@@ -108,6 +108,8 @@ public interface SegmentService extends ResourceService {
   DisplayElement convertSegment(Segment segment);
   Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry);
   String findXMLRefIdById(String segId, String defaultHL7Version);
+  String findXMLRefIdById(Segment s, String defaultHL7Version);
   String findObx2VsId(Segment s);  
   List<Segment> saveAll(Set<Segment> segments) throws ForbiddenOperationException;
+
 }

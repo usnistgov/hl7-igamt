@@ -1238,6 +1238,19 @@ public class SegmentServiceImpl implements SegmentService {
 	private String str(String value) {
 		return value != null ? value : "";
 	}
+	
+	@Override
+	public String findXMLRefIdById(Segment s, String defaultHL7Version) {
+		if (defaultHL7Version != null && s.getDomainInfo() != null && s.getDomainInfo().getVersion() != null) {
+			if (defaultHL7Version.equals(s.getDomainInfo().getVersion())) {
+				return s.getLabel();
+			} else {
+				return this.str(s.getLabel() + "_" + s.getDomainInfo().getVersion().replaceAll("\\.", "-"));
+			}
+		} else {
+			return s.getLabel();
+		}
+	}
 
   @Override
   public List<Segment> saveAll(Set<Segment> segments) throws ForbiddenOperationException {

@@ -37,6 +37,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.ConditionalSlicing;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.OrderedSlicing;
@@ -69,17 +70,22 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentRefOrGroupDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
+import gov.nist.hit.hl7.igamt.ig.model.CoConstraintMappingLocation;
+import gov.nist.hit.hl7.igamt.ig.model.CoConstraintOBX3MappingValue;
+import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.XMLSerializeService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.service.impl.exception.AmbiguousOBX3MappingException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.CoConstraintXMLSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.DatatypeComponentSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.DatatypeSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.FieldSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.GroupSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.MessageSerializationException;
+import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.SegmentSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
@@ -133,6 +139,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
   @Autowired
   AssertionXMLSerialization assertionXMLSerialization;
+  
+  @Autowired
+  CoConstraintSerializationHelper coConstraintSerializationHelper;
   
   private static final int limitSizeOfVS = 1000;
   
@@ -562,7 +571,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     for (SegmentDataModel segModel : igModel.getSegments()) {
 
       Element elm_ByID = new Element("ByID");
-      elm_ByID.addAttribute(new Attribute("ID", this.segmentService.findXMLRefIdById(segModel.getModel().getId(), defaultHL7Version)));
+      elm_ByID.addAttribute(new Attribute("ID", this.segmentService.findXMLRefIdById(segModel.getModel(), defaultHL7Version)));
 
       if (segModel.getPredicateMap() != null && segModel.getPredicateMap().size() > 0) {
         for (String key : segModel.getPredicateMap().keySet()) {
@@ -768,7 +777,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     for (SegmentDataModel segModel : igModel.getSegments()) {
 
       Element elm_ByID = new Element("ByID");
-      elm_ByID.addAttribute(new Attribute("ID", this.segmentService.findXMLRefIdById(segModel.getModel().getId(), defaultHL7Version)));
+      elm_ByID.addAttribute(new Attribute("ID", this.segmentService.findXMLRefIdById(segModel.getModel(), defaultHL7Version)));
 
       if (segModel.getConformanceStatements() != null
           && segModel.getConformanceStatements().size() > 0) {
@@ -1102,8 +1111,8 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
       // TODO DynamicMapping Need
       Element elmSegment = new Element("Segment");
       
-      elmSegment.addAttribute(new Attribute("Label", this.segmentService.findXMLRefIdById(sModel.getModel().getId(), defaultHL7Version)));
-      elmSegment.addAttribute(new Attribute("ID", this.segmentService.findXMLRefIdById(sModel.getModel().getId(), defaultHL7Version)));
+      elmSegment.addAttribute(new Attribute("Label", this.segmentService.findXMLRefIdById(sModel.getModel(), defaultHL7Version)));
+      elmSegment.addAttribute(new Attribute("ID", this.segmentService.findXMLRefIdById(sModel.getModel(), defaultHL7Version)));
 
       elmSegment.addAttribute(new Attribute("Name", this.str(sModel.getModel().getName())));
       elmSegment.addAttribute(new Attribute("Version", this.str(sModel.getModel().getDomainInfo().getVersion())));
@@ -1144,44 +1153,26 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
           }
         }
 
-        // #2 CoConstraint's Defined Dynamic Mapping
-        // if (sModel.getCoConstraintTable() != null) {
-        // CoConstraintTable coConstraintTable = sModel.getCoConstraintTable();
-        // Set<String[]> dynamicMappingItems = coConstraintTable.generateDynamicMappingItems();
-        //
-        // if (dynamicMappingItems != null) {
-        // dynamicMappingItems.forEach(item -> {
-        // if (item[0] != null && !item[0].isEmpty() && item[1] != null && !item[1].isEmpty()) {
-        // DatatypeDataModel itemDTModel = igModel.findDatatype(item[1]);
-        // if (itemDTModel != null) {
-        // Element elmCase = new Element("Case");
-        // elmCase.addAttribute(new Attribute("Value", itemDTModel.getModel().getName()));
-        // elmCase.addAttribute(new Attribute("SecondValue", item[0]));
-        // if (
-        // && defaultHL7Version != null
-        // && itemDTModel.getModel().getDomainInfo() != null
-        // && itemDTModel.getModel().getDomainInfo().getVersion() != null) {
-        // if (defaultHL7Version
-        // .equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
-        // elmCase.addAttribute(new Attribute("Datatype",
-        // this.str(itemDTModel.getModel().getLabel())));
-        // } else {
-        // elmCase.addAttribute(new Attribute("Datatype",
-        // this.str(itemDTModel.getModel().getLabel() + "_"
-        // + itemDTModel.getModel().getDomainInfo().getVersion()
-        // .replaceAll("\\.", "-"))));
-        // }
-        // } else {
-        // elmCase.addAttribute(
-        // new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
-        // }
-        //
-        // elmMapping.appendChild(elmCase);
-        // }
-        // }
-        // });
-        // }
-        // }
+//         #2 CoConstraint's Defined Dynamic Mapping
+        if(sModel.getModel().getId().indexOf("COCON") > 0 ) {
+        	for(ConformanceProfileDataModel cpdm : igModel.getConformanceProfiles()) {
+        		if(sModel.getModel().getId().indexOf(cpdm.getModel().getId()) > 0) {
+        			Map<CoConstraintMappingLocation, Set<CoConstraintOBX3MappingValue>> map = this.coConstraintSerializationHelper.getOBX3ToFlavorMap(cpdm.getModel());
+        			
+        			for (CoConstraintMappingLocation key : map.keySet()) {
+        				if(sModel.getModel().getId().indexOf(key.getLocationId().replaceAll("\\.", "_")) > 0) {
+        					for(CoConstraintOBX3MappingValue item : map.get(key)) {
+        				        Element elmCase = new Element("Case");
+        				        elmCase.addAttribute(new Attribute("Value", igModel.findDatatype(item.getFlavorId()).getModel().getName()));
+        				        elmCase.addAttribute(new Attribute("SecondValue", item.getCode()));
+        						elmCase.addAttribute(new Attribute("Datatype", "" + this.datatypeService.findXMLRefIdById(item.getFlavorId(), defaultHL7Version)));
+        						elmMapping.appendChild(elmCase);
+        					}
+        				}
+        			}
+        		}
+        	}
+        }
 
         // #3 OBX-2 Dynamic Mapping
         
@@ -1518,7 +1509,7 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
     try {
       SegmentBindingDataModel segModel = segmentRefOrGroupDataModel.getSegment();
       Element elmSegment = new Element("Segment");
-      elmSegment.addAttribute(new Attribute("Ref", this.segmentService.findXMLRefIdById(segModel.getId(), defaultHL7Version)));
+      elmSegment.addAttribute(new Attribute("Ref", this.segmentService.findXMLRefIdById(igModel.findSegment(segModel.getId()).getModel(), defaultHL7Version)));
 
       elmSegment.addAttribute(new Attribute("Usage",
           this.str(this.changeCABtoC(segmentRefOrGroupDataModel.getModel().getUsage()).toString())));
@@ -1607,6 +1598,7 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
       throws CloneNotSupportedException, ClassNotFoundException, IOException {
     Map<String, DatatypeDataModel> toBeAddedDTs = new HashMap<String, DatatypeDataModel>();
     Map<String, SegmentDataModel> toBeAddedSegs = new HashMap<String, SegmentDataModel>();
+    Map<String, ValuesetDataModel> toBeAddedVSs = new HashMap<String, ValuesetDataModel>(); 
 
     for (DatatypeDataModel dtModel : igModel.getDatatypes()) {
       for (String key : dtModel.getValuesetMap().keySet()) {
@@ -1664,12 +1656,52 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
     for (ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
       for (String key : cpModel.getValuesetMap().keySet()) {
         List<String> pathList = new LinkedList<String>(Arrays.asList(key.split("\\.")));
-        SegmentRefOrGroupDataModel childModel =
-            cpModel.findChildByPosition(Integer.parseInt(pathList.remove(0)));
-        updateGroupOrSegmentRefModel(pathList, childModel, igModel,
-            cpModel.getValuesetMap().get(key), toBeAddedDTs, toBeAddedSegs);
+        SegmentRefOrGroupDataModel childModel = cpModel.findChildByPosition(Integer.parseInt(pathList.remove(0)));
+        updateGroupOrSegmentRefModel(pathList, childModel, igModel, cpModel.getValuesetMap().get(key), toBeAddedDTs, toBeAddedSegs);
       }
     }
+    
+	for (ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
+		Set<String> vsIds = this.coConstraintSerializationHelper
+				.getCoConstraintReferencedValueSetIds(cpModel.getModel());
+		if (vsIds != null) {
+			for (String id : vsIds) {
+				Valueset vs = this.valuesetService.findById(id);
+				ValuesetDataModel vsdm = new ValuesetDataModel();
+				vsdm.setModel(vs);
+				toBeAddedVSs.put(vs.getBindingIdentifier(), vsdm);
+
+			}
+		}
+
+		try {
+			Map<CoConstraintMappingLocation, Set<CoConstraintOBX3MappingValue>> maps = this.coConstraintSerializationHelper
+					.getOBX3ToFlavorMap(cpModel.getModel());
+
+			for (CoConstraintMappingLocation coconLocation : maps.keySet()) {
+				SegmentDataModel sdm = igModel.findSegment(coconLocation.getFlavorId());
+				SegmentDataModel copySegModel = XMLSerializeServiceImpl.cloneThroughJson(sdm);
+				copySegModel.getModel().setId(copySegModel.getModel().getId() + "_COCON" + coconLocation.getLocationId().replaceAll("\\.", "_") + "_" + cpModel.getModel().getId());
+				String ext = copySegModel.getModel().getExt();
+				if (ext == null) ext = "";
+				copySegModel.getModel().setExt(ext + "_COCON" + coconLocation.getLocationId().replaceAll("\\.", "_") + "_" + cpModel.getModel().getId());
+				toBeAddedSegs.put(copySegModel.getModel().getId(), copySegModel);
+				SegmentRefOrGroupDataModel srogdm = cpModel.findSegmentRefOrGroupDataModelById(coconLocation.getLocationId().split("\\-"));
+				srogdm.getSegment().setId(srogdm.getSegment().getId() + "_COCON" + coconLocation.getLocationId().replaceAll("\\.", "_") + "_" + cpModel.getModel().getId());
+			}
+
+		} catch (AmbiguousOBX3MappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ResourceNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (PathNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+    
 
     for (String key : toBeAddedDTs.keySet()) {
       igModel.getDatatypes().add(toBeAddedDTs.get(key));
@@ -1677,6 +1709,10 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
 
     for (String key : toBeAddedSegs.keySet()) {
       igModel.getSegments().add(toBeAddedSegs.get(key));
+    }
+    
+    for (String key : toBeAddedVSs.keySet()) {
+        igModel.getValuesets().add(toBeAddedVSs.get(key));
     }
   }
 

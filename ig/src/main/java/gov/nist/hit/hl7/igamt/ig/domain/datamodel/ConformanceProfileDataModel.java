@@ -12,6 +12,7 @@
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,8 +21,6 @@ import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
-import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
-import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.SingleCodeBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -202,5 +201,23 @@ public class ConformanceProfileDataModel implements Serializable, Comparable<Con
 		      return 0;
 		    }
 		    return getModel().getLabel().compareTo(((ConformanceProfileDataModel) u).getModel().getLabel());
+	}
+
+	public SegmentRefOrGroupDataModel findSegmentRefOrGroupDataModelById(String[] path) {
+		if(path.length > 1) {
+			for(SegmentRefOrGroupDataModel sgModel : this.segmentRefOrGroupDataModels) {
+				if (sgModel.getModel().getId().equals(path[0])) {
+					return sgModel.findSegmentRefOrGroupDataModelById(Arrays.copyOfRange(path, 1, path.length));
+				}
+			}
+		} else {
+			for(SegmentRefOrGroupDataModel sgModel : this.segmentRefOrGroupDataModels) {
+				if (sgModel.getModel().getId().equals(path[0])) {
+					return sgModel;
+				}
+			}
+			
+		}
+		return null;
 	}
 }
