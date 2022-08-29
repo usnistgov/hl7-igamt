@@ -196,80 +196,91 @@ public class AssertionXMLSerialization {
                         + " NotPresentBehavior=\"" + notPresentBehaviorStr
                         + "\"/>";
                 break;
+            //be earlier than     
             case cEarlier:
                 result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "LT" + "\" Path2=\""
                         + cPathStr
-                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr + "\" "
+                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr + "\" Truncated=\"false\" "
                         + strPath1Mode + " " + strPath2Mode
                         + "/>";
                 break;
+            //be earlier than or equivalent to 
             case cEarlierEquivalent:
                 result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "LE" + "\" Path2=\""
                         + cPathStr
-                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr + "\" "
+                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr + "\" Truncated=\"false\" IdenticalEquality=\"false\" "
                         + strPath1Mode + " " + strPath2Mode
                         + "/>";
                 break;
+            //be equivalent to 
             case cEquivalent:
                 result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "EQ" + "\" Path2=\""
                         + cPathStr
-                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr+ "\" "
+                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr + "\" Truncated=\"false\" IdenticalEquality=\"false\" "
                         + strPath1Mode + " " + strPath2Mode
                         + "/>";
                 break;
+            //be equivalent to or later than 
             case cEquivalentLater:
                 result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GE" + "\" Path2=\""
                         + cPathStr
-                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr+ "\" "
+                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr + "\" Truncated=\"false\" IdenticalEquality=\"true\" "
                         + strPath1Mode + " " + strPath2Mode
                         + "/>";
                 break;
+            //Be identical to 
             case cIdentical:
                 result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "EQ" + "\" Path2=\""
                         + cPathStr
-                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr+ "\" "
+                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr + "\" Truncated=\"false\" IdenticalEquality=\"true\" "
                         + strPath1Mode + " " + strPath2Mode
                         + "/>";
                 break;
+            //be later than 
             case cLater:
                 result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GT" + "\" Path2=\""
                         + cPathStr
-                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr+ "\" "
+                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr + "\" Truncated=\"false\" "
                         + strPath1Mode + " " + strPath2Mode
                         + "/>";
                 break;
+            //be truncated earlier than 
             case cTruncatedEarlier:
                 result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "LT" + "\" Path2=\""
                         + cPathStr
-                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr+ "\" "
+                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr + "\" Truncated=\"true\" "
                         + strPath1Mode + " " + strPath2Mode
                         + "/>";
                 break;
+            //be truncated earlier than or truncated equivalent to 
             case cTruncatedEarlierEquivalent:
                 result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "LE" + "\" Path2=\""
                         + cPathStr
-                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr+ "\" "
+                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr + "\" Truncated=\"true\" IdenticalEquality=\"false\" "
                         + strPath1Mode + " " + strPath2Mode
                         + "/>";
                 break;
+            //be truncated equivalent to 
             case cTruncatedEquivalent:
                 result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "EQ" + "\" Path2=\""
                         + cPathStr
-                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr+ "\" "
+                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr + "\" Truncated=\"true\" IdenticalEquality=\"false\" "
                         + strPath1Mode + " " + strPath2Mode
                         + "/>";
                 break;
+            //be truncated equivalent to or truncated later than 
             case cTruncatedEquivalentLater:
                 result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GE" + "\" Path2=\""
                         + cPathStr
-                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr+ "\" "
+                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr + "\" Truncated=\"true\" IdenticalEquality=\"false\" "
                         + strPath1Mode + " " + strPath2Mode
                         + "/>";
                 break;
+            //be truncated later than 
             case cTruncatedLater:
                 result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GT" + "\" Path2=\""
                         + cPathStr
-                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr+ "\" "
+                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr + "\" Truncated=\"true\" "
                         + strPath1Mode + " " + strPath2Mode
                         + "/>";
                 break;
