@@ -36,8 +36,6 @@ public class AssertionXMLSerialization {
 
 
         if (assertion.getSubject().getOccurenceType() != null) {
-        	System.out.println(assertion.getSubject().getOccurenceType());
-        	
             if (assertion.getSubject().getOccurenceType().equals("atLeast")) {
             	occurenceStr = "AtLeastOnce=\"true\"";
             	strPath1Mode = "Path1Mode=\"AtLeastOne\"";
@@ -338,10 +336,34 @@ public class AssertionXMLSerialization {
                 }
             }
 
+        } else if (assertion instanceof SubContextAssertion) {
+        	SubContextAssertion sAssertion = (SubContextAssertion) assertion;
+        	String occurenceStr = "";
+        	String sPathStr = this.generatePathService.generatePath(sAssertion.getContext().getPath(), targetId, level, context);
+        	
+        	if (sAssertion.getContext().getOccurenceType() != null) {
+                if (sAssertion.getContext().getOccurenceType().equals("atLeast")) {
+                	occurenceStr = "AtLeastOnce=\"true\"";
+                } else if (sAssertion.getContext().getOccurenceType().equals("noOccurrence")) {
+                	occurenceStr = "Min=\"0\" Max\"0\"";
+                } else if (sAssertion.getContext().getOccurenceType().equals("exactlyOne")) {
+                	occurenceStr = "MinOccurrence=\"1\" MaxOccurrence\"1\"";
+                } else if (sAssertion.getContext().getOccurenceType().equals("count")) {
+                	occurenceStr = "MinOccurrence=\"" + sAssertion.getContext().getOccurenceValue() + "\" MaxOccurrence\"" + sAssertion.getContext().getOccurenceValue()+ "\"";
+                } else if (sAssertion.getContext().getOccurenceType().equals("all")) {
+                	occurenceStr = "AtLeastOnce=\"false\"";
+                } else if (sAssertion.getContext().getOccurenceType().equals("instance")) {
+                    sPathStr = this.generatePathService.replaceLast(sPathStr, "[*]", "" + sAssertion.getContext().getOccurenceValue());
+                }
+            }
+        	
+            return "<SubContext Path=\"" + sPathStr + "\" " + occurenceStr + ">"
+            		+ this.generateAssertionScript(sAssertion.getChild(), level, targetId, context, presenceCheckOn)
+            		+ "</SubContext>";
         } else if (assertion instanceof SingleAssertion) {
             return this.generateSingleAssertionScript((SingleAssertion) assertion, level, targetId,
                     context, presenceCheckOn);
-        }
+        } 
 
         return null;
     }
