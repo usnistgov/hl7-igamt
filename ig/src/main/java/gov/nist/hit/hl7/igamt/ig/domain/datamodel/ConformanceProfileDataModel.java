@@ -220,4 +220,11 @@ public class ConformanceProfileDataModel implements Serializable, Comparable<Con
 		}
 		return null;
 	}
+
+	public SegmentRefOrGroupDataModel findChildById(String id) {
+		for(SegmentRefOrGroupDataModel sgModel : this.segmentRefOrGroupDataModels) {
+		      if (sgModel.getModel().getId().equals(id)) return sgModel;
+		    }
+		return null;
+	}
 }

@@ -1156,11 +1156,18 @@ public class DatatypeServiceImpl implements DatatypeService {
 		}
 		return ret;
 	}
+	
+	private String str(String value) {
+		return value != null ? value : "";
+	}
+
+	public List<Datatype> saveAll(Set<Datatype> datatypes) throws ForbiddenOperationException {
+		this.operationService.verifySave(datatypes);
+		return this.datatypeRepository.saveAll(datatypes);
+	}
 
 	@Override
-	public String findXMLRefIdById(String dtId, String defaultHL7Version) {
-		Datatype dt = this.findById(dtId);
-
+	public String findXMLRefIdById(Datatype dt, String defaultHL7Version) {
 		if (defaultHL7Version != null && dt.getDomainInfo() != null && dt.getDomainInfo().getVersion() != null) {
 			if (defaultHL7Version.equals(dt.getDomainInfo().getVersion())) {
 				return dt.getLabel();
@@ -1170,14 +1177,5 @@ public class DatatypeServiceImpl implements DatatypeService {
 		} else {
 			return dt.getLabel();
 		}
-	}
-	
-	private String str(String value) {
-		return value != null ? value : "";
-	}
-
-	public List<Datatype> saveAll(Set<Datatype> datatypes) throws ForbiddenOperationException {
-		this.operationService.verifySave(datatypes);
-		return this.datatypeRepository.saveAll(datatypes);
 	}
 }

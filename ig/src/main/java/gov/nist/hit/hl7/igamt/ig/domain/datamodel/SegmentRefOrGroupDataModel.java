@@ -150,4 +150,11 @@ public class SegmentRefOrGroupDataModel implements Serializable{
 		return null;
 	}
 
+	public SegmentRefOrGroupDataModel findChildById(String id) {
+		for(SegmentRefOrGroupDataModel sgModel : this.children) {
+		      if (sgModel.getModel().getId().equals(id)) return sgModel;
+		    }
+		return null;
+	}
+
 }

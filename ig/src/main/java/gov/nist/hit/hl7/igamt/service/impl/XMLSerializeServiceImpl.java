@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,8 +36,14 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
+import gov.nist.hit.hl7.igamt.common.binding.domain.SingleCodeBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.config.domain.BindingInfo;
+import gov.nist.hit.hl7.igamt.common.config.domain.Config;
+import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.ConditionalSlicing;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.OrderedSlicing;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.SlicingMethod;
@@ -111,6 +116,8 @@ import nu.xom.ValidityException;
  */
 @Service("xMLSerializeService")
 public class XMLSerializeServiceImpl implements XMLSerializeService {
+  @Autowired
+  ConfigService configService;
 
   @Autowired
   DatatypeService datatypeService;
@@ -216,8 +223,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     try {
       Element elmDatatype = new Element("Datatype");
       
-      elmDatatype.addAttribute(new Attribute("Label", "" + this.datatypeService.findXMLRefIdById(dt.getId(), defaultHL7Version)));
-      elmDatatype.addAttribute(new Attribute("ID", "" + this.datatypeService.findXMLRefIdById(dt.getId(), defaultHL7Version)));
+      elmDatatype.addAttribute(new Attribute("Label", "" + this.datatypeService.findXMLRefIdById(dt, defaultHL7Version)));
+      elmDatatype.addAttribute(new Attribute("ID", "" + this.datatypeService.findXMLRefIdById(dt, defaultHL7Version)));
 
       elmDatatype.addAttribute(new Attribute("Name", this.str(dt.getName())));
       elmDatatype.addAttribute(new Attribute("Label", this.str(dt.getLabel())));
@@ -246,7 +253,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
               String childDTId = c.getRef().getId();
               Datatype childDT = this.datatypeService.findById(childDTId);
               
-              elmComponent.addAttribute(new Attribute("Datatype", "" + this.datatypeService.findXMLRefIdById(childDT.getId(), defaultHL7Version)));
+              elmComponent.addAttribute(new Attribute("Datatype", "" + this.datatypeService.findXMLRefIdById(childDT, defaultHL7Version)));
               
               if(c.getLengthType().equals(LengthType.Length)) {
             	  elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
@@ -388,12 +395,12 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             // || (codePresenceMap.containsKey(t.getId()) &&
             // !(codePresenceMap.get(t.getId())))) {
             Element elmBindingIdentifier = new Element("BindingIdentifier");
-            elmBindingIdentifier.appendChild(this.valuesetService.findXMLRefIdById(t.getId(), defaultHL7Version));
+            elmBindingIdentifier.appendChild(this.valuesetService.findXMLRefIdById(t, defaultHL7Version));
             elmNoValidation.appendChild(elmBindingIdentifier);
           }
 
           Element elmValueSetDefinition = new Element("ValueSetDefinition");
-          elmValueSetDefinition.addAttribute(new Attribute("BindingIdentifier", this.valuesetService.findXMLRefIdById(t.getId(), defaultHL7Version)));
+          elmValueSetDefinition.addAttribute(new Attribute("BindingIdentifier", this.valuesetService.findXMLRefIdById(t, defaultHL7Version)));
 
           elmValueSetDefinition.addAttribute(new Attribute("Name", this.str(t.getName())));
           if (t.getName() != null && !t.getName().equals(""))
@@ -537,7 +544,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
       Element elm_ByID = new Element("ByID");
       
-      elm_ByID.addAttribute(new Attribute("ID", "" + this.datatypeService.findXMLRefIdById(dtModel.getModel().getId(), defaultHL7Version)));
+      elm_ByID.addAttribute(new Attribute("ID", "" + this.datatypeService.findXMLRefIdById(dtModel.getModel(), defaultHL7Version)));
 
       if (dtModel.getPredicateMap() != null && dtModel.getPredicateMap().size() > 0) {
         for (String key : dtModel.getPredicateMap().keySet()) {
@@ -683,7 +690,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     for (DatatypeDataModel dtModel : igModel.getDatatypes()) {
 
       Element elm_ByID = new Element("ByID");
-      elm_ByID.addAttribute(new Attribute("ID", "" + this.datatypeService.findXMLRefIdById(dtModel.getModel().getId(), defaultHL7Version)));
+      elm_ByID.addAttribute(new Attribute("ID", "" + this.datatypeService.findXMLRefIdById(dtModel.getModel(), defaultHL7Version)));
 
       if (dtModel.getConformanceStatements() != null && dtModel.getConformanceStatements().size() > 0) {
         for (ConformanceStatement cs : dtModel.getConformanceStatements()) {
@@ -954,8 +961,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     try {
       Element elmDatatype = new Element("Datatype");
       
-      elmDatatype.addAttribute(new Attribute("Label", "" + this.datatypeService.findXMLRefIdById(dModel.getModel().getId(), defaultHL7Version)));
-      elmDatatype.addAttribute(new Attribute("ID", "" + this.datatypeService.findXMLRefIdById(dModel.getModel().getId(), defaultHL7Version)));
+      elmDatatype.addAttribute(new Attribute("Label", "" + this.datatypeService.findXMLRefIdById(dModel.getModel(), defaultHL7Version)));
+      elmDatatype.addAttribute(new Attribute("ID", "" + this.datatypeService.findXMLRefIdById(dModel.getModel(), defaultHL7Version)));
 
       elmDatatype.addAttribute(new Attribute("Name", this.str(dModel.getModel().getName())));
       elmDatatype.addAttribute(new Attribute("Label", this.str(dModel.getModel().getLabel())));
@@ -976,14 +983,14 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         }
 
         for (int i = 1; i < components.size() + 1; i++) {
-          try {
+//          try {
             ComponentDataModel c = components.get(i);
             Element elmComponent = new Element("Component");
 
             elmComponent.addAttribute(new Attribute("Name", this.str(c.getModel().getName())));
             elmComponent.addAttribute(new Attribute("Usage", this.str(this.changeCABtoC(c.getModel().getUsage()).toString())));
             
-            elmComponent.addAttribute(new Attribute("Datatype", "" + this.datatypeService.findXMLRefIdById(c.getDatatype().getId(), defaultHL7Version)));
+            elmComponent.addAttribute(new Attribute("Datatype", "" + this.datatypeService.findXMLRefIdById(igModel.findDatatype(c.getDatatype().getId()).getModel(), defaultHL7Version)));
             
             if(c.getModel().getLengthType().equals(LengthType.Length)) {
           	  elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
@@ -1089,14 +1096,15 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             }
 
             elmDatatype.appendChild(elmComponent);
-          } catch (Exception e) {
-            throw new DatatypeComponentSerializationException(e, i);
-          }
+//          } catch (Exception e) {
+//            throw new DatatypeComponentSerializationException(e, i);
+//          }
 
         }
       }
       return elmDatatype;
     } catch (Exception e) {
+    	e.printStackTrace();
       throw new DatatypeSerializationException(e, dModel.getModel().getLabel());
     }
   }
@@ -1144,7 +1152,7 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
 
             DatatypeDataModel itemDTModel = igModel.findDatatype(item.getDatatypeId());
             if (itemDTModel != null) {
-              elmCase.addAttribute(new Attribute("Datatype", "" + this.datatypeService.findXMLRefIdById(itemDTModel.getModel().getId(), defaultHL7Version)));
+              elmCase.addAttribute(new Attribute("Datatype", "" + this.datatypeService.findXMLRefIdById(itemDTModel.getModel(), defaultHL7Version)));
 
               elmMapping.appendChild(elmCase);
             } else {
@@ -1165,7 +1173,7 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
         				        Element elmCase = new Element("Case");
         				        elmCase.addAttribute(new Attribute("Value", igModel.findDatatype(item.getFlavorId()).getModel().getName()));
         				        elmCase.addAttribute(new Attribute("SecondValue", item.getCode()));
-        						elmCase.addAttribute(new Attribute("Datatype", "" + this.datatypeService.findXMLRefIdById(item.getFlavorId(), defaultHL7Version)));
+        						elmCase.addAttribute(new Attribute("Datatype", "" + this.datatypeService.findXMLRefIdById(igModel.findDatatype(item.getFlavorId()).getModel(), defaultHL7Version)));
         						elmMapping.appendChild(elmCase);
         					}
         				}
@@ -1295,7 +1303,7 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
             Element elmField = new Element("Field");
             elmField.addAttribute(new Attribute("Name", this.str(f.getModel().getName())));
             elmField.addAttribute(new Attribute("Usage", this.str(this.changeCABtoC(f.getModel().getUsage()).toString())));
-            elmField.addAttribute(new Attribute("Datatype", "" + this.datatypeService.findXMLRefIdById(dBindingModel.getId(), defaultHL7Version)));
+            elmField.addAttribute(new Attribute("Datatype", "" + this.datatypeService.findXMLRefIdById(igModel.findDatatype(dBindingModel.getId()).getModel()  , defaultHL7Version)));
             
             if(f.getModel().getLengthType().equals(LengthType.Length)) {
             	elmField.addAttribute(new Attribute("ConfLength", "NA"));
@@ -1600,6 +1608,7 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
     Map<String, SegmentDataModel> toBeAddedSegs = new HashMap<String, SegmentDataModel>();
     Map<String, ValuesetDataModel> toBeAddedVSs = new HashMap<String, ValuesetDataModel>(); 
 
+    /*
     for (DatatypeDataModel dtModel : igModel.getDatatypes()) {
       for (String key : dtModel.getValuesetMap().keySet()) {
         List<String> pathList = new LinkedList<String>(Arrays.asList(key.split("\\.")));
@@ -1660,6 +1669,7 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
         updateGroupOrSegmentRefModel(pathList, childModel, igModel, cpModel.getValuesetMap().get(key), toBeAddedDTs, toBeAddedSegs);
       }
     }
+    */
     
 	for (ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
 		Set<String> vsIds = this.coConstraintSerializationHelper
@@ -1907,7 +1917,7 @@ public
 
 								if (slice.getFlavorId() != null) {
 									elmSlice.addAttribute(new Attribute("Ref", "" + this.segmentService
-											.findXMLRefIdById(slice.getFlavorId(), defaultHL7Version)));
+											.findXMLRefIdById(igModel.findSegment(slice.getFlavorId()).getModel(), defaultHL7Version)));
 								}
 								elmOccurrenceSlicing.appendChild(elmSlice);
 							});
@@ -1925,7 +1935,7 @@ public
 							Element elmSlice = new Element("Slice");
 							if (slice.getFlavorId() != null) {
 								elmSlice.addAttribute(new Attribute("Ref", "" + this.segmentService
-										.findXMLRefIdById(slice.getFlavorId(), defaultHL7Version)));
+										.findXMLRefIdById(igModel.findSegment(slice.getFlavorId()).getModel(), defaultHL7Version)));
 							}
 							
 							Element elmDescription = new Element("Description");
@@ -1972,8 +1982,7 @@ public
 								elmSlice.addAttribute(new Attribute("Occurrence", "" + slice.getPosition()));
 
 								if (slice.getFlavorId() != null) {
-									elmSlice.addAttribute(new Attribute("Ref", "" + this.datatypeService
-											.findXMLRefIdById(slice.getFlavorId(), defaultHL7Version)));
+									elmSlice.addAttribute(new Attribute("Ref", "" + this.datatypeService.findXMLRefIdById(igModel.findDatatype(slice.getFlavorId()).getModel(), defaultHL7Version)));
 								}
 								elmOccurrenceSlicing.appendChild(elmSlice);
 							});
@@ -1989,8 +1998,7 @@ public
 						conditionalSlicing.getSlices().forEach(slice -> {
 							Element elmSlice = new Element("Slice");
 							if (slice.getFlavorId() != null) {
-								elmSlice.addAttribute(new Attribute("Ref", "" + this.datatypeService
-										.findXMLRefIdById(slice.getFlavorId(), defaultHL7Version)));
+								elmSlice.addAttribute(new Attribute("Ref", "" + this.datatypeService.findXMLRefIdById(igModel.findDatatype(slice.getFlavorId()).getModel(), defaultHL7Version)));
 							}
 							
 							Element elmDescription = new Element("Description");
@@ -2026,4 +2034,601 @@ public
 		return e;
 	}
 
+	@Override
+	public Element serializeBindingsXML(IgDataModel igModel) {
+		Element e = new Element("ValueSetBindingsContext");
+		
+		String defaultHL7Version = this.igService.findDefaultHL7VersionById(igModel.getModel().getId());
+		
+		Element elmValueSetBindings = new Element("ValueSetBindings");
+		
+		Element elmDatatypeV = new Element("Datatype");
+		
+		for(DatatypeDataModel dtdm : igModel.getDatatypes()) {
+			Element elmByID = new Element("ByID");
+			elmByID.addAttribute(new Attribute("ID", this.datatypeService.findXMLRefIdById(dtdm.getModel(), defaultHL7Version)));
+			
+			if(dtdm.getModel().getBinding() != null && dtdm.getModel().getBinding().getChildren() != null) {
+				this.generateElmValueSetBinding(elmByID, dtdm.getModel().getBinding().getChildren(), "", defaultHL7Version, igModel, dtdm);
+			}
+			
+			
+			if (elmByID.getChildElements().size() > 0) {
+				elmDatatypeV.appendChild(elmByID);
+			}
+			
+		}
+		
+		
+		if (elmDatatypeV.getChildElements().size() > 0) {
+			elmValueSetBindings.appendChild(elmDatatypeV);
+		}
+		
+		
+		Element elmSegmentV = new Element("Segment");
+		
+		for(SegmentDataModel segdm : igModel.getSegments()) {
+			Element elmByID = new Element("ByID");
+			elmByID.addAttribute(new Attribute("ID", this.segmentService.findXMLRefIdById(segdm.getModel(), defaultHL7Version)));
+			
+			if(segdm.getModel().getBinding() != null && segdm.getModel().getBinding().getChildren() != null) {
+				this.generateElmValueSetBinding(elmByID, segdm.getModel().getBinding().getChildren(), "", defaultHL7Version, igModel, segdm);
+			}
+			
+			
+			if (elmByID.getChildElements().size() > 0) {
+				elmSegmentV.appendChild(elmByID);
+			}
+			
+		}
+		
+		
+		if (elmSegmentV.getChildElements().size() > 0) {
+			elmValueSetBindings.appendChild(elmSegmentV);
+		}
+		
+		
+		Element elmMessageV = new Element("Message");
+		
+		for(ConformanceProfileDataModel cpdm : igModel.getConformanceProfiles()) {
+			Element elmByID = new Element("ByID");
+			elmByID.addAttribute(new Attribute("ID", cpdm.getModel().getId()));
+			
+			if(cpdm.getModel().getBinding() != null && cpdm.getModel().getBinding().getChildren() != null) {
+				this.generateElmValueSetBinding(elmByID, cpdm.getModel().getBinding().getChildren(), "", defaultHL7Version, igModel, cpdm);
+			}
+			
+			
+			if (elmByID.getChildElements().size() > 0) {
+				elmMessageV.appendChild(elmByID);
+			}
+			
+		}
+
+		if (elmMessageV.getChildElements().size() > 0) {
+			elmValueSetBindings.appendChild(elmMessageV);
+		}
+		
+		
+		if (elmValueSetBindings.getChildElements().size() > 0) {
+			e.appendChild(elmValueSetBindings);
+		}
+
+		Element elmSingleCodeBindings = new Element("SingleCodeBindings");
+		
+		Element elmDatatypeS = new Element("Datatype");
+		
+		for(DatatypeDataModel dtdm : igModel.getDatatypes()) {
+			Element elmByID = new Element("ByID");
+			elmByID.addAttribute(new Attribute("ID", this.datatypeService.findXMLRefIdById(dtdm.getModel(), defaultHL7Version)));
+			
+			if(dtdm.getModel().getBinding() != null && dtdm.getModel().getBinding().getChildren() != null) {
+				this.generateElmSingleCodeBinding(elmByID, dtdm.getModel().getBinding().getChildren(), "", defaultHL7Version, igModel, dtdm);
+			}
+			
+			
+			if (elmByID.getChildElements().size() > 0) {
+				elmDatatypeS.appendChild(elmByID);
+			}
+			
+		}
+		
+		if (elmDatatypeS.getChildElements().size() > 0) {
+			elmSingleCodeBindings.appendChild(elmDatatypeS);
+		}
+		
+		Element elmSegmentS = new Element("Segment");
+		
+		for(SegmentDataModel segdm : igModel.getSegments()) {
+			Element elmByID = new Element("ByID");
+			elmByID.addAttribute(new Attribute("ID", this.segmentService.findXMLRefIdById(segdm.getModel(), defaultHL7Version)));
+			
+			if(segdm.getModel().getBinding() != null && segdm.getModel().getBinding().getChildren() != null) {
+				this.generateElmSingleCodeBinding(elmByID, segdm.getModel().getBinding().getChildren(), "", defaultHL7Version, igModel, segdm);
+			}
+			
+			
+			if (elmByID.getChildElements().size() > 0) {
+				elmSegmentS.appendChild(elmByID);
+			}
+			
+		}
+		
+		if (elmSegmentS.getChildElements().size() > 0) {
+			elmSingleCodeBindings.appendChild(elmSegmentS);
+		}
+		
+		Element elmMessageS = new Element("Message");
+		
+		for(ConformanceProfileDataModel cpdm : igModel.getConformanceProfiles()) {
+			Element elmByID = new Element("ByID");
+			elmByID.addAttribute(new Attribute("ID", cpdm.getModel().getId()));
+			
+			if(cpdm.getModel().getBinding() != null && cpdm.getModel().getBinding().getChildren() != null) {
+				this.generateElmSingleCodeBinding(elmByID, cpdm.getModel().getBinding().getChildren(), "", defaultHL7Version, igModel, cpdm);
+			}
+			
+			
+			if (elmByID.getChildElements().size() > 0) {
+				elmMessageS.appendChild(elmByID);
+			}
+			
+		}
+		
+		if (elmMessageS.getChildElements().size() > 0) {
+			elmSingleCodeBindings.appendChild(elmMessageS);
+		}
+		
+		
+		
+		
+		if (elmSingleCodeBindings.getChildElements().size() > 0) {
+			e.appendChild(elmSingleCodeBindings);
+		}
+		
+		return e;
+	}
+
+	private void generateElmSingleCodeBinding(Element parentElm, Set<StructureElementBinding> children, String path, String defaultHL7Version, IgDataModel igModel, DatatypeDataModel dtdm) {
+		for(StructureElementBinding seb : children) {
+			if(seb.getSingleCodeBindings() != null) {
+				for(SingleCodeBinding sb : seb.getSingleCodeBindings()) {
+					Element elmSingleCodeBinding = new Element("SingleCodeBinding");
+					elmSingleCodeBinding.addAttribute(new Attribute("Target", (path + "-" + seb.getElementId()).substring(1)));
+					elmSingleCodeBinding.addAttribute(new Attribute("Code", sb.getCode()));
+					elmSingleCodeBinding.addAttribute(new Attribute("CodeSystem", sb.getCodeSystem()));
+					
+					DatatypeDataModel dt = this.findDatatype(igModel, (path + "-" + seb.getElementId()).substring(1).split("\\-"), dtdm);
+					
+					if(dt.getComponentDataModels() == null || dt.getComponentDataModels().size() == 0) {
+						Element elmBindingLocations = new Element("BindingLocations");
+						Element elmSimpleBindingLocation = new Element("SimpleBindingLocation");
+						elmSimpleBindingLocation.addAttribute(new Attribute("CodeLocation", "."));
+						elmBindingLocations.appendChild(elmSimpleBindingLocation);
+						elmSingleCodeBinding.appendChild(elmBindingLocations);
+					} else {
+						Config config = this.configService.findOne();
+						BindingInfo bindingInfo = config.getValueSetBindingConfig().get(dt.getModel().getName());
+						
+						if(bindingInfo != null) {
+							if(bindingInfo.isCoded()) {
+								Element elmBindingLocations = new Element("BindingLocations");
+								for(Integer location : sb.getLocations()) {
+									Element elmComplexBindingLocation = new Element("ComplexBindingLocation");
+									elmComplexBindingLocation.addAttribute(new Attribute("CodeLocation", location + "[1]"));
+									elmComplexBindingLocation.addAttribute(new Attribute("CodeSystemLocation", this.findCodeSystemLocation(location)));
+									
+									elmBindingLocations.appendChild(elmComplexBindingLocation);	
+								}
+								elmSingleCodeBinding.appendChild(elmBindingLocations);
+								
+							} else {
+								Element elmBindingLocations = new Element("BindingLocations");
+								for(Integer location : sb.getLocations()) {
+									Element elmSimpleBindingLocation = new Element("SimpleBindingLocation");
+									elmSimpleBindingLocation.addAttribute(new Attribute("CodeLocation", location + "[1]"));
+									
+									elmBindingLocations.appendChild(elmSimpleBindingLocation);	
+								}
+								elmSingleCodeBinding.appendChild(elmBindingLocations);
+							}
+						}
+					}
+			
+					if (elmSingleCodeBinding.getChildElements().size() > 0) {
+						parentElm.appendChild(elmSingleCodeBinding);
+					}
+				}	
+			}
+			if(seb.getChildren() != null) this.generateElmSingleCodeBinding(parentElm, seb.getChildren(), path + "-" + seb.getElementId(), defaultHL7Version, igModel, dtdm);
+		}
+	}
+	
+	private void generateElmSingleCodeBinding(Element parentElm, Set<StructureElementBinding> children, String path, String defaultHL7Version, IgDataModel igModel, SegmentDataModel segdm) {
+		for(StructureElementBinding seb : children) {
+			if(seb.getSingleCodeBindings() != null) {
+				for(SingleCodeBinding sb : seb.getSingleCodeBindings()) {
+					Element elmSingleCodeBinding = new Element("SingleCodeBinding");
+					elmSingleCodeBinding.addAttribute(new Attribute("Target", (path + "-" + seb.getElementId()).substring(1)));
+					elmSingleCodeBinding.addAttribute(new Attribute("Code", sb.getCode()));
+					elmSingleCodeBinding.addAttribute(new Attribute("CodeSystem", sb.getCodeSystem()));
+					
+					DatatypeDataModel dt = this.findDatatype(igModel, (path + "-" + seb.getElementId()).substring(1).split("\\-"), segdm);
+					
+					if(dt.getComponentDataModels() == null || dt.getComponentDataModels().size() == 0) {
+						Element elmBindingLocations = new Element("BindingLocations");
+						Element elmSimpleBindingLocation = new Element("SimpleBindingLocation");
+						elmSimpleBindingLocation.addAttribute(new Attribute("CodeLocation", "."));
+						elmBindingLocations.appendChild(elmSimpleBindingLocation);
+						elmSingleCodeBinding.appendChild(elmBindingLocations);
+					} else {
+						Config config = this.configService.findOne();
+						BindingInfo bindingInfo = config.getValueSetBindingConfig().get(dt.getModel().getName());
+						
+						if(bindingInfo != null) {
+							if(bindingInfo.isCoded()) {
+								Element elmBindingLocations = new Element("BindingLocations");
+								for(Integer location : sb.getLocations()) {
+									Element elmComplexBindingLocation = new Element("ComplexBindingLocation");
+									elmComplexBindingLocation.addAttribute(new Attribute("CodeLocation", location + "[1]"));
+									elmComplexBindingLocation.addAttribute(new Attribute("CodeSystemLocation", this.findCodeSystemLocation(location)));
+									
+									elmBindingLocations.appendChild(elmComplexBindingLocation);	
+								}
+								elmSingleCodeBinding.appendChild(elmBindingLocations);
+								
+							} else {
+								Element elmBindingLocations = new Element("BindingLocations");
+								for(Integer location : sb.getLocations()) {
+									Element elmSimpleBindingLocation = new Element("SimpleBindingLocation");
+									elmSimpleBindingLocation.addAttribute(new Attribute("CodeLocation", location + "[1]"));
+									
+									elmBindingLocations.appendChild(elmSimpleBindingLocation);	
+								}
+								elmSingleCodeBinding.appendChild(elmBindingLocations);
+							}
+						}
+					}
+			
+					if (elmSingleCodeBinding.getChildElements().size() > 0) {
+						parentElm.appendChild(elmSingleCodeBinding);
+					}
+				}	
+			}
+			if(seb.getChildren() != null) this.generateElmSingleCodeBinding(parentElm, seb.getChildren(), path + "-" + seb.getElementId(), defaultHL7Version, igModel, segdm);
+		}
+	}
+	
+	private void generateElmSingleCodeBinding(Element parentElm, Set<StructureElementBinding> children, String path, String defaultHL7Version, IgDataModel igModel, ConformanceProfileDataModel cpdm) {
+		for(StructureElementBinding seb : children) {
+			if(seb.getSingleCodeBindings() != null) {
+				for(SingleCodeBinding sb : seb.getSingleCodeBindings()) {
+					Element elmSingleCodeBinding = new Element("SingleCodeBinding");
+					elmSingleCodeBinding.addAttribute(new Attribute("Target", (path + "-" + seb.getElementId()).substring(1)));
+					elmSingleCodeBinding.addAttribute(new Attribute("Code", sb.getCode()));
+					elmSingleCodeBinding.addAttribute(new Attribute("CodeSystem", sb.getCodeSystem()));
+					
+					DatatypeDataModel dt = this.findDatatype(igModel, (path + "-" + seb.getElementId()).substring(1).split("\\-"), cpdm);
+					
+					if(dt.getComponentDataModels() == null || dt.getComponentDataModels().size() == 0) {
+						Element elmBindingLocations = new Element("BindingLocations");
+						Element elmSimpleBindingLocation = new Element("SimpleBindingLocation");
+						elmSimpleBindingLocation.addAttribute(new Attribute("CodeLocation", "."));
+						elmBindingLocations.appendChild(elmSimpleBindingLocation);
+						elmSingleCodeBinding.appendChild(elmBindingLocations);
+					} else {
+						Config config = this.configService.findOne();
+						BindingInfo bindingInfo = config.getValueSetBindingConfig().get(dt.getModel().getName());
+						
+						if(bindingInfo != null) {
+							if(bindingInfo.isCoded()) {
+								Element elmBindingLocations = new Element("BindingLocations");
+								for(Integer location : sb.getLocations()) {
+									Element elmComplexBindingLocation = new Element("ComplexBindingLocation");
+									elmComplexBindingLocation.addAttribute(new Attribute("CodeLocation", location + "[1]"));
+									elmComplexBindingLocation.addAttribute(new Attribute("CodeSystemLocation", this.findCodeSystemLocation(location)));
+									
+									elmBindingLocations.appendChild(elmComplexBindingLocation);	
+								}
+								elmSingleCodeBinding.appendChild(elmBindingLocations);
+								
+							} else {
+								Element elmBindingLocations = new Element("BindingLocations");
+								for(Integer location : sb.getLocations()) {
+									Element elmSimpleBindingLocation = new Element("SimpleBindingLocation");
+									elmSimpleBindingLocation.addAttribute(new Attribute("CodeLocation", location + "[1]"));
+									
+									elmBindingLocations.appendChild(elmSimpleBindingLocation);	
+								}
+								elmSingleCodeBinding.appendChild(elmBindingLocations);
+							}
+						}
+					}
+			
+					if (elmSingleCodeBinding.getChildElements().size() > 0) {
+						parentElm.appendChild(elmSingleCodeBinding);
+					}
+				}	
+			}
+			if(seb.getChildren() != null) this.generateElmSingleCodeBinding(parentElm, seb.getChildren(), path + "-" + seb.getElementId(), defaultHL7Version, igModel, cpdm);
+		}
+	}
+
+	private void generateElmValueSetBinding(Element parentElm, Set<StructureElementBinding> children, String path, String defaultHL7Version, IgDataModel igModel, DatatypeDataModel dtdm) {
+		for(StructureElementBinding seb : children) {
+			if(seb.getValuesetBindings() != null) {
+				for(ValuesetBinding vsb : seb.getValuesetBindings()) {
+					Element elmValueSetBinding = new Element("ValueSetBinding");
+					elmValueSetBinding.addAttribute(new Attribute("BindingStrength", vsb.getStrength().toString()));
+					elmValueSetBinding.addAttribute(new Attribute("Target", (path + "-" + seb.getElementId()).substring(1)));
+					
+					DatatypeDataModel dt = this.findDatatype(igModel, (path + "-" + seb.getElementId()).substring(1).split("\\-"), dtdm);
+					
+					if(dt.getComponentDataModels() == null || dt.getComponentDataModels().size() == 0) {
+						Element elmBindingLocations = new Element("BindingLocations");
+						Element elmSimpleBindingLocation = new Element("SimpleBindingLocation");
+						elmSimpleBindingLocation.addAttribute(new Attribute("CodeLocation", "."));
+						elmBindingLocations.appendChild(elmSimpleBindingLocation);
+						elmValueSetBinding.appendChild(elmBindingLocations);
+					} else {
+						Config config = this.configService.findOne();
+						BindingInfo bindingInfo = config.getValueSetBindingConfig().get(dt.getModel().getName());
+						
+						if(bindingInfo != null) {
+							if(bindingInfo.isCoded()) {
+								Element elmBindingLocations = new Element("BindingLocations");
+								for(Integer location : vsb.getValuesetLocations()) {
+									Element elmComplexBindingLocation = new Element("ComplexBindingLocation");
+									elmComplexBindingLocation.addAttribute(new Attribute("CodeLocation", location + "[1]"));
+									elmComplexBindingLocation.addAttribute(new Attribute("CodeSystemLocation", this.findCodeSystemLocation(location)));
+									
+									elmBindingLocations.appendChild(elmComplexBindingLocation);	
+								}
+								elmValueSetBinding.appendChild(elmBindingLocations);
+								
+							} else {
+								Element elmBindingLocations = new Element("BindingLocations");
+								for(Integer location : vsb.getValuesetLocations()) {
+									Element elmSimpleBindingLocation = new Element("SimpleBindingLocation");
+									elmSimpleBindingLocation.addAttribute(new Attribute("CodeLocation", location + "[1]"));
+									
+									elmBindingLocations.appendChild(elmSimpleBindingLocation);	
+								}
+								elmValueSetBinding.appendChild(elmBindingLocations);
+							}
+						}
+					}
+					
+					Element elmBindings = new Element("Bindings");
+					
+					if(vsb.getValueSets() != null) {
+						for(String vs : vsb.getValueSets()) {
+							Element elmBinding = new Element("Binding");
+							if(igModel.findValueset(vs)  != null) {
+								elmBinding.addAttribute(new Attribute("BindingIdentifier", this.valuesetService.findXMLRefIdById(igModel.findValueset(vs).getModel(), defaultHL7Version)));
+								elmBindings.appendChild(elmBinding);	
+							}
+							
+						}
+					}
+					
+					if (elmBindings.getChildElements().size() > 0) {
+						elmValueSetBinding.appendChild(elmBindings);
+						if (elmValueSetBinding.getChildElements().size() > 0) {
+							parentElm.appendChild(elmValueSetBinding);
+						}
+					}
+				}	
+			}
+			if(seb.getChildren() != null) this.generateElmValueSetBinding(parentElm, seb.getChildren(), path + "-" + seb.getElementId(), defaultHL7Version, igModel, dtdm);
+		}
+	}
+	
+	private void generateElmValueSetBinding(Element parentElm, Set<StructureElementBinding> children, String path, String defaultHL7Version, IgDataModel igModel, SegmentDataModel segdm) {
+		for(StructureElementBinding seb : children) {
+			if(seb.getValuesetBindings() != null) {
+				for(ValuesetBinding vsb : seb.getValuesetBindings()) {
+					Element elmValueSetBinding = new Element("ValueSetBinding");
+					elmValueSetBinding.addAttribute(new Attribute("BindingStrength", vsb.getStrength().toString()));
+					elmValueSetBinding.addAttribute(new Attribute("Target", (path + "-" + seb.getElementId()).substring(1)));
+					
+					DatatypeDataModel dt = this.findDatatype(igModel, (path + "-" + seb.getElementId()).substring(1).split("\\-"), segdm);
+					
+					if(dt.getComponentDataModels() == null || dt.getComponentDataModels().size() == 0) {
+						Element elmBindingLocations = new Element("BindingLocations");
+						Element elmSimpleBindingLocation = new Element("SimpleBindingLocation");
+						elmSimpleBindingLocation.addAttribute(new Attribute("CodeLocation", "."));
+						elmBindingLocations.appendChild(elmSimpleBindingLocation);
+						elmValueSetBinding.appendChild(elmBindingLocations);
+					} else {
+						Config config = this.configService.findOne();
+						BindingInfo bindingInfo = config.getValueSetBindingConfig().get(dt.getModel().getName());
+						
+						if(bindingInfo != null) {
+							if(bindingInfo.isCoded()) {
+								Element elmBindingLocations = new Element("BindingLocations");
+								for(Integer location : vsb.getValuesetLocations()) {
+									Element elmComplexBindingLocation = new Element("ComplexBindingLocation");
+									elmComplexBindingLocation.addAttribute(new Attribute("CodeLocation", location + "[1]"));
+									elmComplexBindingLocation.addAttribute(new Attribute("CodeSystemLocation", this.findCodeSystemLocation(location)));
+									
+									elmBindingLocations.appendChild(elmComplexBindingLocation);	
+								}
+								elmValueSetBinding.appendChild(elmBindingLocations);
+								
+							} else {
+								Element elmBindingLocations = new Element("BindingLocations");
+								for(Integer location : vsb.getValuesetLocations()) {
+									Element elmSimpleBindingLocation = new Element("SimpleBindingLocation");
+									elmSimpleBindingLocation.addAttribute(new Attribute("CodeLocation", location + "[1]"));
+									
+									elmBindingLocations.appendChild(elmSimpleBindingLocation);	
+								}
+								elmValueSetBinding.appendChild(elmBindingLocations);
+							}
+						}
+					}
+					
+					Element elmBindings = new Element("Bindings");
+					
+					if(vsb.getValueSets() != null) {
+						for(String vs : vsb.getValueSets()) {
+							Element elmBinding = new Element("Binding");
+							
+							if(igModel.findValueset(vs)  != null) {
+								elmBinding.addAttribute(new Attribute("BindingIdentifier", this.valuesetService.findXMLRefIdById(igModel.findValueset(vs).getModel(), defaultHL7Version)));
+								elmBindings.appendChild(elmBinding);	
+							}
+						}
+					}
+					
+					if (elmBindings.getChildElements().size() > 0) {
+						elmValueSetBinding.appendChild(elmBindings);
+					
+						if (elmValueSetBinding.getChildElements().size() > 0) {
+							parentElm.appendChild(elmValueSetBinding);
+						}
+					}
+					
+					
+					
+				}	
+			}
+			if(seb.getChildren() != null) this.generateElmValueSetBinding(parentElm, seb.getChildren(), path + "-" + seb.getElementId(), defaultHL7Version, igModel, segdm);
+		}
+	}
+	
+	private void generateElmValueSetBinding(Element parentElm, Set<StructureElementBinding> children, String path, String defaultHL7Version, IgDataModel igModel, ConformanceProfileDataModel cpdm) {
+		for(StructureElementBinding seb : children) {
+			if(seb.getValuesetBindings() != null) {
+				for(ValuesetBinding vsb : seb.getValuesetBindings()) {
+					Element elmValueSetBinding = new Element("ValueSetBinding");
+					elmValueSetBinding.addAttribute(new Attribute("BindingStrength", vsb.getStrength().toString()));
+					elmValueSetBinding.addAttribute(new Attribute("Target", (path + "-" + seb.getElementId()).substring(1)));
+					
+					DatatypeDataModel dt = this.findDatatype(igModel, (path + "-" + seb.getElementId()).substring(1).split("\\-"), cpdm);
+					
+					if(dt.getComponentDataModels() == null || dt.getComponentDataModels().size() == 0) {
+						Element elmBindingLocations = new Element("BindingLocations");
+						Element elmSimpleBindingLocation = new Element("SimpleBindingLocation");
+						elmSimpleBindingLocation.addAttribute(new Attribute("CodeLocation", "."));
+						elmBindingLocations.appendChild(elmSimpleBindingLocation);
+						elmValueSetBinding.appendChild(elmBindingLocations);
+					} else {
+						Config config = this.configService.findOne();
+						BindingInfo bindingInfo = config.getValueSetBindingConfig().get(dt.getModel().getName());
+						
+						if(bindingInfo != null) {
+							if(bindingInfo.isCoded()) {
+								Element elmBindingLocations = new Element("BindingLocations");
+								for(Integer location : vsb.getValuesetLocations()) {
+									Element elmComplexBindingLocation = new Element("ComplexBindingLocation");
+									elmComplexBindingLocation.addAttribute(new Attribute("CodeLocation", location + "[1]"));
+									elmComplexBindingLocation.addAttribute(new Attribute("CodeSystemLocation", this.findCodeSystemLocation(location)));
+									
+									elmBindingLocations.appendChild(elmComplexBindingLocation);	
+								}
+								elmValueSetBinding.appendChild(elmBindingLocations);
+								
+							} else {
+								Element elmBindingLocations = new Element("BindingLocations");
+								for(Integer location : vsb.getValuesetLocations()) {
+									Element elmSimpleBindingLocation = new Element("SimpleBindingLocation");
+									elmSimpleBindingLocation.addAttribute(new Attribute("CodeLocation", location + "[1]"));
+									
+									elmBindingLocations.appendChild(elmSimpleBindingLocation);	
+								}
+								elmValueSetBinding.appendChild(elmBindingLocations);
+							}
+						}
+					}
+					
+					Element elmBindings = new Element("Bindings");
+					
+					if(vsb.getValueSets() != null) {
+						for(String vs : vsb.getValueSets()) {
+							Element elmBinding = new Element("Binding");
+							
+							if(igModel.findValueset(vs)  != null) {
+								elmBinding.addAttribute(new Attribute("BindingIdentifier", this.valuesetService.findXMLRefIdById(igModel.findValueset(vs).getModel(), defaultHL7Version)));
+								elmBindings.appendChild(elmBinding);	
+							}
+						}
+					}
+					
+					if (elmBindings.getChildElements().size() > 0) {
+						elmValueSetBinding.appendChild(elmBindings);
+					
+						if (elmValueSetBinding.getChildElements().size() > 0) {
+							parentElm.appendChild(elmValueSetBinding);
+						}
+					}
+					
+					
+					
+				}	
+			}
+			if(seb.getChildren() != null) this.generateElmValueSetBinding(parentElm, seb.getChildren(), path + "-" + seb.getElementId(), defaultHL7Version, igModel, cpdm);
+		}
+	}
+
+	private String findCodeSystemLocation(Integer location) {
+		if(location == 1) {
+			return "3[1]";
+			
+		} else if (location == 4) {
+			return "6[1]";
+		} else if (location == 10) {
+			return "12[1]";
+		} else if (location == 2) {
+			return "4[1]";
+		} else if (location == 5) {
+			return "7[1]";
+		}
+		return null;
+	}
+
+	private DatatypeDataModel findDatatype(IgDataModel igModel, String[] paths, DatatypeDataModel dtdm) {
+		ComponentDataModel cdm = dtdm.findComponentDataModelByPosition(Integer.parseInt(paths[0]));
+		
+		if (paths.length > 1) {
+			return this.findDatatype(igModel, Arrays.copyOfRange(paths, 1, paths.length), igModel.findDatatype(cdm.getDatatype().getId()));
+		} else if (paths.length == 1) {
+			return igModel.findDatatype(cdm.getDatatype().getId());
+		}
+		return null;
+	}
+	
+	private DatatypeDataModel findDatatype(IgDataModel igModel, String[] paths, SegmentDataModel segdm) {
+		FieldDataModel fdm = segdm.findFieldDataModelByPosition(Integer.parseInt(paths[0]));
+		
+		if (paths.length > 1) {
+			return this.findDatatype(igModel, Arrays.copyOfRange(paths, 1, paths.length), igModel.findDatatype(fdm.getDatatype().getId()));
+		} else if (paths.length == 1) {
+			return igModel.findDatatype(fdm.getDatatype().getId());
+		}
+		return null;
+	}
+	
+	private DatatypeDataModel findDatatype(IgDataModel igModel, String[] paths, ConformanceProfileDataModel cpdm) {
+		SegmentRefOrGroupDataModel srogdm = cpdm.findChildById(paths[0]);
+		
+		if(srogdm.getChildren() == null || srogdm.getChildren().size() == 0) {
+			return this.findDatatype(igModel, Arrays.copyOfRange(paths, 1, paths.length), igModel.findSegment(srogdm.getSegment().getId()));	
+		} else {
+			return this.findDatatype(igModel, Arrays.copyOfRange(paths, 1, paths.length), srogdm);	
+		}
+		
+		
+	}
+
+	private DatatypeDataModel findDatatype(IgDataModel igModel, String[] paths, SegmentRefOrGroupDataModel parent) {
+		SegmentRefOrGroupDataModel srogdm = parent.findChildById(paths[0]);
+		
+		if(srogdm.getChildren() == null || srogdm.getChildren().size() == 0) {
+			return this.findDatatype(igModel, Arrays.copyOfRange(paths, 1, paths.length), igModel.findSegment(srogdm.getSegment().getId()));	
+		} else {
+			return this.findDatatype(igModel, Arrays.copyOfRange(paths, 1, paths.length), srogdm);	
+		}
+	}
 }

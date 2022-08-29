@@ -1220,20 +1220,6 @@ public class SegmentServiceImpl implements SegmentService {
     return null;
   }
   
-	@Override
-	public String findXMLRefIdById(String segId, String defaultHL7Version) {
-		Segment s = this.findById(segId);
-
-		if (defaultHL7Version != null && s.getDomainInfo() != null && s.getDomainInfo().getVersion() != null) {
-			if (defaultHL7Version.equals(s.getDomainInfo().getVersion())) {
-				return s.getLabel();
-			} else {
-				return this.str(s.getLabel() + "_" + s.getDomainInfo().getVersion().replaceAll("\\.", "-"));
-			}
-		} else {
-			return s.getLabel();
-		}
-	}
 
 	private String str(String value) {
 		return value != null ? value : "";

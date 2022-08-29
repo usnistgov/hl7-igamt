@@ -356,12 +356,9 @@ public class ValuesetServiceImpl implements ValuesetService {
     	this.operationService.verifySave(valueSets);
     	return this.valuesetRepository.saveAll(valueSets);
     }
-    
-
+	
 	@Override
-	public String findXMLRefIdById(String vsId, String defaultHL7Version) {
-		Valueset vs = this.findById(vsId);
-
+	public String findXMLRefIdById(Valueset vs, String defaultHL7Version) {
 		if (defaultHL7Version != null && vs.getDomainInfo() != null && vs.getDomainInfo().getVersion() != null
 				&& !vs.getBindingIdentifier().equals("HL70396")) {
 			if (defaultHL7Version.equals(vs.getDomainInfo().getVersion())) {
