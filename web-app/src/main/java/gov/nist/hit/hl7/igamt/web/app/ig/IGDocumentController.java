@@ -132,6 +132,8 @@ import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
+import gov.nist.hit.hl7.igamt.ig.model.CoConstraintMappingLocation;
+import gov.nist.hit.hl7.igamt.ig.model.CoConstraintOBX3MappingValue;
 import gov.nist.hit.hl7.igamt.ig.model.FilterIGInput;
 import gov.nist.hit.hl7.igamt.ig.model.FilterResponse;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
@@ -139,6 +141,7 @@ import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
 import gov.nist.hit.hl7.igamt.ig.repository.IgTemplateRepository;
 import gov.nist.hit.hl7.igamt.ig.service.AddService;
 import gov.nist.hit.hl7.igamt.ig.service.CloneService;
+import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
@@ -155,6 +158,8 @@ import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.XMLSerializeServiceImpl;
+import gov.nist.hit.hl7.igamt.service.impl.exception.AmbiguousOBX3MappingException;
+import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -244,6 +249,9 @@ public class IGDocumentController extends BaseController {
   
   @Autowired
   ResourceManagementService resourceManagementService;
+  
+  @Autowired
+  CoConstraintSerializationHelper coConstraintSerializationHelper;
   
   @Autowired
   CloneService cloneService;
@@ -1555,7 +1563,7 @@ public class IGDocumentController extends BaseController {
     return null;
   }
 
-  private Ig makeSelectedIg(Ig ig, ReqId reqIds, CompositeProfileState cps) throws IOException {
+  private Ig makeSelectedIg(Ig ig, ReqId reqIds, CompositeProfileState cps) throws IOException, AmbiguousOBX3MappingException, ResourceNotFoundException, PathNotFoundException {
     Ig selectedIg = new Ig();
     selectedIg.setId(ig.getId());
     selectedIg.setDomainInfo(ig.getDomainInfo());
@@ -1565,15 +1573,37 @@ public class IGDocumentController extends BaseController {
     selectedIg.setDatatypeRegistry(new DatatypeRegistry());
     selectedIg.setValueSetRegistry(new ValueSetRegistry());
 
-    for(String id : reqIds.getConformanceProfilesId()) {
-      Link l = ig.getConformanceProfileRegistry().getLinkById(id);
+	for (String id : reqIds.getConformanceProfilesId()) {
+		Link l = ig.getConformanceProfileRegistry().getLinkById(id);
 
-      if(l != null) {
-        selectedIg.getConformanceProfileRegistry().getChildren().add(l);
+		if (l != null) {
+			selectedIg.getConformanceProfileRegistry().getChildren().add(l);
 
-        this.visitSegmentRefOrGroup(this.conformanceProfileService.findById(l.getId()).getChildren(), selectedIg, ig);
-      }
-    }
+			this.visitSegmentRefOrGroup(this.conformanceProfileService.findById(l.getId()).getChildren(), selectedIg, ig);
+
+			// For CoConstraint
+			Map<CoConstraintMappingLocation, Set<CoConstraintOBX3MappingValue>> maps = this.coConstraintSerializationHelper.getOBX3ToFlavorMap(this.conformanceProfileService.findById(l.getId()));
+			for (CoConstraintMappingLocation key : maps.keySet()) {
+				for (CoConstraintOBX3MappingValue item : maps.get(key)) {
+					Link link = ig.getDatatypeRegistry().getLinkById(item.getFlavorId());
+					if (link != null) {
+						selectedIg.getDatatypeRegistry().getChildren().add(link);
+						Datatype dt = this.datatypeService.findById(link.getId());
+						if (dt != null && dt instanceof ComplexDatatype) {
+							ComplexDatatype cdt = (ComplexDatatype) dt;
+							if (cdt.getComponents() != null) {
+								this.visitDatatype(cdt.getComponents(), selectedIg, ig);
+								if (cdt.getBinding() != null && cdt.getBinding().getChildren() != null)
+									this.collectVS(cdt.getBinding().getChildren(), selectedIg, ig);
+							}
+						}
+					}
+
+				}
+
+			}
+		}
+	}
     
     for(String id : reqIds.getCompositeProfilesId()) {
     	Link l = ig.getCompositeProfileRegistry().getLinkById(id);

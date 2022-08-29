@@ -983,7 +983,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         }
 
         for (int i = 1; i < components.size() + 1; i++) {
-//          try {
             ComponentDataModel c = components.get(i);
             Element elmComponent = new Element("Component");
 
@@ -1042,64 +1041,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                     elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
                   }	  
             }
-            
-            Set<ValuesetBindingDataModel> valueSetBindings = c.getValuesets();
-            if (valueSetBindings != null && valueSetBindings.size() > 0) {
-              String bindingString = "";
-              String bindingStrength = null;
-              Set<Integer> bindingLocation = null;
-
-              
-              for (ValuesetBindingDataModel binding : valueSetBindings) {
-                try {
-                  if (binding.getValuesetBinding().getStrength() != null)
-                    bindingStrength = binding.getValuesetBinding().getStrength().toString();
-                  if (binding.getValuesetBinding().getValuesetLocations() != null
-                      && binding.getValuesetBinding().getValuesetLocations().size() > 0)
-                    bindingLocation = binding.getValuesetBinding().getValuesetLocations();
-                  if (binding != null && binding.getBindingIdentifier() != null
-                      && !binding.getBindingIdentifier().equals("")) {
-                    if (defaultHL7Version != null
-                        && binding.getDomainInfo() != null
-                        && binding.getDomainInfo().getVersion() != null) {
-                      if (defaultHL7Version.equals(binding.getDomainInfo().getVersion()) || binding.getBindingIdentifier().equals("HL70396")) {
-                        bindingString = bindingString + binding.getBindingIdentifier() + ":";
-                      } else {
-                        bindingString = bindingString + binding.getBindingIdentifier() + "_" + binding.getDomainInfo().getVersion().replaceAll("\\.", "-") + ":";
-                      }
-                    } else {
-                      bindingString = bindingString + binding.getBindingIdentifier() + ":";
-                    }
-                  }
-                } catch (Exception e) {
-                  e.printStackTrace();
-                  throw new TableSerializationException(e, "" + c.getModel().getPosition());
-                }
-
-              }
-              
-              if (!bindingString.equals(""))
-                elmComponent.addAttribute(new Attribute("Binding",
-                    bindingString.substring(0, bindingString.length() - 1)));
-              if (bindingStrength != null)
-                elmComponent.addAttribute(new Attribute("BindingStrength", bindingStrength));
-              if (!this.isPrimitiveDatatype(c.getDatatype().getName()) && bindingLocation != null && bindingLocation.size() > 0) {
-                String bindingLocationStr = "";
-                for (Integer index : bindingLocation) {
-                  bindingLocationStr = bindingLocationStr + index + ":";
-                }
-
-                elmComponent.addAttribute(new Attribute("BindingLocation",
-                    bindingLocationStr.substring(0, bindingLocationStr.length() - 1)));
-              } else {
-              }
-            }
-
             elmDatatype.appendChild(elmComponent);
-//          } catch (Exception e) {
-//            throw new DatatypeComponentSerializationException(e, i);
-//          }
-
         }
       }
       return elmDatatype;
@@ -1305,115 +1247,59 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
             elmField.addAttribute(new Attribute("Usage", this.str(this.changeCABtoC(f.getModel().getUsage()).toString())));
             elmField.addAttribute(new Attribute("Datatype", "" + this.datatypeService.findXMLRefIdById(igModel.findDatatype(dBindingModel.getId()).getModel()  , defaultHL7Version)));
             
-            if(f.getModel().getLengthType().equals(LengthType.Length)) {
-            	elmField.addAttribute(new Attribute("ConfLength", "NA"));
-            	  
-            	  if (f.getModel().getMinLength() != null && !f.getModel().getMinLength().isEmpty()) {
-            		  elmField.addAttribute(new Attribute("MinLength", this.str(f.getModel().getMinLength())));
+			if (f.getModel().getLengthType().equals(LengthType.Length)) {
+				elmField.addAttribute(new Attribute("ConfLength", "NA"));
 
-                    } else {
-                    	elmField.addAttribute(new Attribute("MinLength", "NA"));
-                    }
+				if (f.getModel().getMinLength() != null && !f.getModel().getMinLength().isEmpty()) {
+					elmField.addAttribute(new Attribute("MinLength", this.str(f.getModel().getMinLength())));
 
-                    if (f.getModel().getMaxLength() != null && !f.getModel().getMaxLength().isEmpty()) {
-                    	elmField.addAttribute(new Attribute("MaxLength", this.str(f.getModel().getMaxLength())));
+				} else {
+					elmField.addAttribute(new Attribute("MinLength", "NA"));
+				}
 
-                    } else {
-                    	elmField.addAttribute(new Attribute("MaxLength", "NA"));
+				if (f.getModel().getMaxLength() != null && !f.getModel().getMaxLength().isEmpty()) {
+					elmField.addAttribute(new Attribute("MaxLength", this.str(f.getModel().getMaxLength())));
 
-                    }
-            	  
-            	  
-              } else if(f.getModel().getLengthType().equals(LengthType.ConfLength)) {
-            	  elmField.addAttribute(new Attribute("MinLength", "NA"));
-            	  elmField.addAttribute(new Attribute("MaxLength", "NA"));
-            	  
-                    if (f.getModel().getConfLength() != null && !f.getModel().getConfLength().equals("")) {
-                    	elmField.addAttribute(new Attribute("ConfLength", this.str(f.getModel().getConfLength())));
-                    } else {
-                    	elmField.addAttribute(new Attribute("ConfLength", "NA"));
-                    }
-            	  
-              } else {
-            	  if (f.getModel().getMinLength() != null && !f.getModel().getMinLength().isEmpty()) {
-            		  elmField.addAttribute(new Attribute("MinLength", this.str(f.getModel().getMinLength())));
+				} else {
+					elmField.addAttribute(new Attribute("MaxLength", "NA"));
 
-                    } else {
-                    	elmField.addAttribute(new Attribute("MinLength", "NA"));
-                    }
+				}
 
-                    if (f.getModel().getMaxLength() != null && !f.getModel().getMaxLength().isEmpty()) {
-                    	elmField.addAttribute(new Attribute("MaxLength", this.str(f.getModel().getMaxLength())));
+			} else if (f.getModel().getLengthType().equals(LengthType.ConfLength)) {
+				elmField.addAttribute(new Attribute("MinLength", "NA"));
+				elmField.addAttribute(new Attribute("MaxLength", "NA"));
 
-                    } else {
-                    	elmField.addAttribute(new Attribute("MaxLength", "NA"));
+				if (f.getModel().getConfLength() != null && !f.getModel().getConfLength().equals("")) {
+					elmField.addAttribute(new Attribute("ConfLength", this.str(f.getModel().getConfLength())));
+				} else {
+					elmField.addAttribute(new Attribute("ConfLength", "NA"));
+				}
 
-                    }
-                    if (f.getModel().getConfLength() != null && !f.getModel().getConfLength().equals("")) {
-                    	elmField.addAttribute(new Attribute("ConfLength", this.str(f.getModel().getConfLength())));
-                    } else {
-                    	elmField.addAttribute(new Attribute("ConfLength", "NA"));
-                    }	  
-              }
-            
-            
-            
-            Set<ValuesetBindingDataModel> valueSetBindings = f.getValuesets();
-            if (valueSetBindings != null && valueSetBindings.size() > 0) {
-              String bindingString = "";
-              String bindingStrength = null;
-              Set<Integer> bindingLocation = null;
+			} else {
+				if (f.getModel().getMinLength() != null && !f.getModel().getMinLength().isEmpty()) {
+					elmField.addAttribute(new Attribute("MinLength", this.str(f.getModel().getMinLength())));
 
-              for (ValuesetBindingDataModel binding : valueSetBindings) {
-                try {
-                  if (binding.getValuesetBinding().getStrength() != null)
-                    bindingStrength = binding.getValuesetBinding().getStrength().toString();
+				} else {
+					elmField.addAttribute(new Attribute("MinLength", "NA"));
+				}
 
-                  if (binding.getValuesetBinding().getValuesetLocations() != null
-                      && binding.getValuesetBinding().getValuesetLocations().size() > 0)
-                    bindingLocation = binding.getValuesetBinding().getValuesetLocations();
-                  
-                  if (binding != null && binding.getBindingIdentifier() != null
-                      && !binding.getBindingIdentifier().equals("")) {
-                    if (defaultHL7Version != null
-                        && binding.getDomainInfo() != null
-                        && binding.getDomainInfo().getVersion() != null) {
-                      if (defaultHL7Version.equals(binding.getDomainInfo().getVersion()) || binding.getBindingIdentifier().equals("HL70396")) {
-                        bindingString = bindingString + binding.getBindingIdentifier() + ":";
-                      } else {
-                        bindingString = bindingString + binding.getBindingIdentifier() + "_"
-                            + binding.getDomainInfo().getVersion().replaceAll("\\.", "-") + ":";
-                      }
-                    } else {
-                      bindingString = bindingString + binding.getBindingIdentifier() + ":";
-                    }
-                  }
-                } catch (Exception e) {
-                  e.printStackTrace();
-                  throw new TableSerializationException(e, "" + f.getModel().getPosition());
-                }
+				if (f.getModel().getMaxLength() != null && !f.getModel().getMaxLength().isEmpty()) {
+					elmField.addAttribute(new Attribute("MaxLength", this.str(f.getModel().getMaxLength())));
 
-              }
+				} else {
+					elmField.addAttribute(new Attribute("MaxLength", "NA"));
 
-              if (!bindingString.equals(""))
-                elmField.addAttribute(new Attribute("Binding",
-                    bindingString.substring(0, bindingString.length() - 1)));
-              if (bindingStrength != null)
-                elmField.addAttribute(new Attribute("BindingStrength", bindingStrength));
-              if (!this.isPrimitiveDatatype(f.getDatatype().getName()) && bindingLocation != null && bindingLocation.size() > 0) {
-                String bindingLocationStr = "";
-                for (Integer index : bindingLocation) {
-                  bindingLocationStr = bindingLocationStr + index + ":";
-                }
+				}
+				if (f.getModel().getConfLength() != null && !f.getModel().getConfLength().equals("")) {
+					elmField.addAttribute(new Attribute("ConfLength", this.str(f.getModel().getConfLength())));
+				} else {
+					elmField.addAttribute(new Attribute("ConfLength", "NA"));
+				}
+			}
 
-                elmField.addAttribute(new Attribute("BindingLocation",
-                    bindingLocationStr.substring(0, bindingLocationStr.length() - 1)));
-              } else {
-              }
-            }
-            elmField.addAttribute(new Attribute("Min", "" + f.getModel().getMin()));
-            elmField.addAttribute(new Attribute("Max", "" + f.getModel().getMax()));
-            elmSegment.appendChild(elmField);
+			elmField.addAttribute(new Attribute("Min", "" + f.getModel().getMin()));
+			elmField.addAttribute(new Attribute("Max", "" + f.getModel().getMax()));
+			elmSegment.appendChild(elmField);
           }
         } catch (Exception e) {
           e.printStackTrace();
@@ -1685,8 +1571,7 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
 		}
 
 		try {
-			Map<CoConstraintMappingLocation, Set<CoConstraintOBX3MappingValue>> maps = this.coConstraintSerializationHelper
-					.getOBX3ToFlavorMap(cpModel.getModel());
+			Map<CoConstraintMappingLocation, Set<CoConstraintOBX3MappingValue>> maps = this.coConstraintSerializationHelper.getOBX3ToFlavorMap(cpModel.getModel());
 
 			for (CoConstraintMappingLocation coconLocation : maps.keySet()) {
 				SegmentDataModel sdm = igModel.findSegment(coconLocation.getFlavorId());
