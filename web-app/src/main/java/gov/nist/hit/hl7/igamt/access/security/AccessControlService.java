@@ -56,7 +56,7 @@ public class AccessControlService {
 
     public boolean checkDocumentAccessPermission(DocumentAccessInfo document, UsernamePasswordAuthenticationToken user, AccessLevel level) {
         // If document is published
-        if(document.getStatus() != null && document.getStatus().equals(Status.PUBLISHED)) {
+        if(document.getStatus() != null && document.getStatus().equals(Status.PUBLISHED )) {
             // Grant READ access
             return level.equals(AccessLevel.READ);
         }
@@ -77,6 +77,12 @@ public class AccessControlService {
         if(document.getSharedUsers() != null && document.getSharedUsers().contains(user.getName())) {
             // Grant READ access
             return level.equals(AccessLevel.READ);
+        }
+        
+        if(isAdmin(user)) {
+          
+        	return level.equals(AccessLevel.READ);
+
         }
 
         return false;
@@ -253,6 +259,9 @@ public class AccessControlService {
             default:
                 return false;
         }
+    }
+    public boolean isAdmin(UsernamePasswordAuthenticationToken user) {
+        return user.getAuthorities() != null && user.getAuthorities().stream().anyMatch((a) -> a.getAuthority().equals("ADMIN"));
     }
 
 }

@@ -2,6 +2,22 @@
 <mat-dialog-content>
 
   <p-checkbox [(ngModel)]="publicationInfo.draft" [binary]="true" label="Designate as a DRAFT implementation Guide"></p-checkbox>
+  <div *ngIf="publicationInfo.draft">
+
+    <p-checkbox *ngIf="publicationInfo.draft" [(ngModel)]="customMessage" [binary]="true" label="Provide a Custom Message Warning"></p-checkbox>
+
+
+    <div *ngIf="customMessage">
+      <label> <strong>
+        Warning Message
+      </strong></label>
+      <div style ="width: 100%;  display: flex; justify-content: space-between;">
+        <textarea style="width: 100%" pInputTextarea [(ngModel)]="publicationInfo.info.warning"></textarea>
+      </div>
+    </div>
+
+
+  </div>
 
 </mat-dialog-content>
 <mat-dialog-actions style="justify-content: flex-end;">

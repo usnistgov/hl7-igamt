@@ -379,6 +379,7 @@ public class IGDocumentController extends BaseController {
         igdouments = igService.findByUsername(username, Scope.USER);
 
       }
+      igdouments.removeIf((ig) -> ig.getDeprecated());
       return igService.convertListToDisplayList(igdouments);
     } else {
       igdouments = igService.findByUsername(username, Scope.USER);
@@ -1295,7 +1296,7 @@ public class IGDocumentController extends BaseController {
     
     return this.igService.getFilterResponse( id, filter);
   }
-
+  
   /**
    * 
    * @param links
@@ -1734,6 +1735,26 @@ public class IGDocumentController extends BaseController {
   public @ResponseBody  List<IgTemplate> igTemplates( Authentication authentication) throws Exception {
     List<IgTemplate> templates = this.igTemplateRepository.findAll();
     return templates;
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{igId}/{type}/unused", method = RequestMethod.GET, produces = {
+  "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #igId, READ)")
+  public @ResponseBody Set<String> findUnsed(@PathVariable("igId") String igId, @PathVariable("type") Type registryType,
+    Authentication authentication) throws IGNotFoundException {
+    Ig ig = findIgById(igId);
+
+    return igService.findUnused(ig, registryType);
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{igId}/{type}/deleteResources", method = RequestMethod.POST, produces = {
+  "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #igId, WRITE)")
+  public @ResponseBody List<String> deleteUnused(@PathVariable("igId") String igId, @PathVariable("type") Type registryType, @RequestBody List<String> ids,
+    Authentication authentication) throws IGNotFoundException, EntityNotFound, ForbiddenOperationException {
+    Ig ig = findIgById(igId);
+
+    return igService.deleteUnused(ig, registryType, ids);
   }
 
 }

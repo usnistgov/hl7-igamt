@@ -108,7 +108,9 @@ public class SegmentDependencyServiceImpl implements SegmentDependencyService {
   @Override
   public void process(Segment segment, SegmentDependencies used, DependencyFilter filter,
       ResourceBindingProcessor rb, String path) throws EntityNotFound {
+		System.out.println("test");
 
+	System.out.println(rb.get().keySet());
     Map<String, Slicing> slicingMap =  segment.getSlicings() != null ?  segment.getSlicings().stream().collect(
         Collectors.toMap(x -> x.getPath(), x -> x)) : new HashMap<String, Slicing>();
 
@@ -168,13 +170,6 @@ public class SegmentDependencyServiceImpl implements SegmentDependencyService {
 
 
 
-  /**
-   * @return
-   */
-  private boolean isFiltered(DependencyFilter filter, Field f ) {
-    return false;
-  }
-
   private <T extends Slice> void processSlices(List<T> slices, SegmentDependencies used, DependencyFilter filter, String path) throws EntityNotFound {
     if(slices != null) {
       for ( T slice: slices) {
@@ -191,11 +186,15 @@ public class SegmentDependencyServiceImpl implements SegmentDependencyService {
 
     if(!existing.containsKey(id)) {
       Segment s = segmentService.findById(id);
+      if(s.getName().equals("PV1")) {
+    	  System.out.println(s.getName().equals("PV1"));
+      }
+      
       if(s != null) {
         existing.put(s.getId(), s);
         rb.addChild(s.getBinding(), path);
         this.process(s, used , filter, rb,  path);
-      }else throw new EntityNotFound(id);
+      } else throw new EntityNotFound(id);
     }
   }
   private void updateDynamicMapping(Segment segment, HashMap<RealKey, String> newKeys) {

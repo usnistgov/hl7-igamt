@@ -20,7 +20,11 @@ export interface IDeleteNode {
   element: IDisplayElement;
   parent?: IDisplayElement;
 }
-
+export interface IDeleteNodes {
+  documentId: string;
+  ids: string[]
+  type: Type;
+}
 export interface ICopyResourceResponse {
   documentId?: string;
   id: string;

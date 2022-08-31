@@ -18,6 +18,8 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.mongodb.client.result.UpdateResult;
+
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
@@ -295,6 +297,12 @@ public class IgFixer {
 		ig.getCoConstraintGroupRegistry().setChildren(newlinks);
 	
 	    this.igRepo.save(ig);
+	}
+	
+	public void deprecateIG(String id, Object value) {
+		
+		this.igService.updateAttribute(id, "deprecated", value, Ig.class, false);
+		
 	}
 	
 }

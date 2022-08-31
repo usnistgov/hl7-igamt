@@ -141,6 +141,8 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
     if(resource.getCoConstraintsBindings() != null) {      
       this.processCoConstraintsBinding(resource.getCoConstraintsBindings(),conformanceProfileDependencies, filter);
     }
+    
+    System.out.println(rb.get().keySet());
 
     return conformanceProfileDependencies;
   }
