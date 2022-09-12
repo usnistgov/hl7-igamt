@@ -2094,7 +2094,7 @@ public
 			if(seb.getSingleCodeBindings() != null) {
 				for(SingleCodeBinding sb : seb.getSingleCodeBindings()) {
 					Element elmSingleCodeBinding = new Element("SingleCodeBinding");
-					elmSingleCodeBinding.addAttribute(new Attribute("Target", (path + "-" + seb.getElementId()).substring(1)));
+					elmSingleCodeBinding.addAttribute(new Attribute("Target", this.makeInstancePath((path + "-" + seb.getElementId()).substring(1))));
 					elmSingleCodeBinding.addAttribute(new Attribute("Code", sb.getCode()));
 					elmSingleCodeBinding.addAttribute(new Attribute("CodeSystem", sb.getCodeSystem()));
 					
@@ -2149,7 +2149,7 @@ public
 			if(seb.getSingleCodeBindings() != null) {
 				for(SingleCodeBinding sb : seb.getSingleCodeBindings()) {
 					Element elmSingleCodeBinding = new Element("SingleCodeBinding");
-					elmSingleCodeBinding.addAttribute(new Attribute("Target", (path + "-" + seb.getElementId()).substring(1)));
+					elmSingleCodeBinding.addAttribute(new Attribute("Target", this.makeInstancePath((path + "-" + seb.getElementId()).substring(1))));
 					elmSingleCodeBinding.addAttribute(new Attribute("Code", sb.getCode()));
 					elmSingleCodeBinding.addAttribute(new Attribute("CodeSystem", sb.getCodeSystem()));
 					
@@ -2204,7 +2204,7 @@ public
 			if(seb.getSingleCodeBindings() != null) {
 				for(SingleCodeBinding sb : seb.getSingleCodeBindings()) {
 					Element elmSingleCodeBinding = new Element("SingleCodeBinding");
-					elmSingleCodeBinding.addAttribute(new Attribute("Target", (path + "-" + seb.getElementId()).substring(1)));
+					elmSingleCodeBinding.addAttribute(new Attribute("Target", this.makeInstancePath((path + "-" + seb.getElementId()).substring(1))));
 					elmSingleCodeBinding.addAttribute(new Attribute("Code", sb.getCode()));
 					elmSingleCodeBinding.addAttribute(new Attribute("CodeSystem", sb.getCodeSystem()));
 					
@@ -2254,6 +2254,14 @@ public
 		}
 	}
 
+	private String makeInstancePath(String path) {
+		String paths[] = path.split("\\-");
+		for(int i=0; i < paths.length; i++) {
+			paths[i] = paths[i] + "[*]";
+		}
+		return String.join("-", paths);
+	}
+
 	private void generateElmValueSetBinding(Element parentElm, Set<StructureElementBinding> children, String path, String defaultHL7Version, IgDataModel igModel, DatatypeDataModel dtdm) {
 		for(StructureElementBinding seb : children) {
 			if(seb.getValuesetBindings() != null) {
@@ -2264,7 +2272,7 @@ public
 					} else {
 						elmValueSetBinding.addAttribute(new Attribute("BindingStrength", vsb.getStrength().toString()));						
 					}
-					elmValueSetBinding.addAttribute(new Attribute("Target", (path + "-" + seb.getElementId()).substring(1)));
+					elmValueSetBinding.addAttribute(new Attribute("Target", this.makeInstancePath((path + "-" + seb.getElementId()).substring(1))));
 					
 					DatatypeDataModel dt = this.findDatatype(igModel, (path + "-" + seb.getElementId()).substring(1).split("\\-"), dtdm);
 					
@@ -2338,7 +2346,7 @@ public
 					} else {
 						elmValueSetBinding.addAttribute(new Attribute("BindingStrength", vsb.getStrength().toString()));						
 					}
-					elmValueSetBinding.addAttribute(new Attribute("Target", (path + "-" + seb.getElementId()).substring(1)));
+					elmValueSetBinding.addAttribute(new Attribute("Target", this.makeInstancePath((path + "-" + seb.getElementId()).substring(1))));
 					
 					DatatypeDataModel dt = this.findDatatype(igModel, (path + "-" + seb.getElementId()).substring(1).split("\\-"), segdm);
 					
@@ -2416,7 +2424,7 @@ public
 					} else {
 						elmValueSetBinding.addAttribute(new Attribute("BindingStrength", vsb.getStrength().toString()));						
 					}
-					elmValueSetBinding.addAttribute(new Attribute("Target", (path + "-" + seb.getElementId()).substring(1)));
+					elmValueSetBinding.addAttribute(new Attribute("Target", this.makeInstancePath((path + "-" + seb.getElementId()).substring(1))));
 					
 					DatatypeDataModel dt = this.findDatatype(igModel, (path + "-" + seb.getElementId()).substring(1).split("\\-"), cpdm);
 					
