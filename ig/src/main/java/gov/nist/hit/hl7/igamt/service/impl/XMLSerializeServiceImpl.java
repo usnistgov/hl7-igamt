@@ -37,6 +37,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetStrength;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.binding.domain.SingleCodeBinding;
@@ -2244,7 +2245,11 @@ public
 			if(seb.getValuesetBindings() != null) {
 				for(ValuesetBinding vsb : seb.getValuesetBindings()) {
 					Element elmValueSetBinding = new Element("ValueSetBinding");
-					elmValueSetBinding.addAttribute(new Attribute("BindingStrength", vsb.getStrength().toString()));
+					if(vsb.getStrength() == null) {
+						elmValueSetBinding.addAttribute(new Attribute("BindingStrength", ValuesetStrength.U.toString()));
+					} else {
+						elmValueSetBinding.addAttribute(new Attribute("BindingStrength", vsb.getStrength().toString()));						
+					}
 					elmValueSetBinding.addAttribute(new Attribute("Target", (path + "-" + seb.getElementId()).substring(1)));
 					
 					DatatypeDataModel dt = this.findDatatype(igModel, (path + "-" + seb.getElementId()).substring(1).split("\\-"), dtdm);
@@ -2314,7 +2319,11 @@ public
 			if(seb.getValuesetBindings() != null) {
 				for(ValuesetBinding vsb : seb.getValuesetBindings()) {
 					Element elmValueSetBinding = new Element("ValueSetBinding");
-					elmValueSetBinding.addAttribute(new Attribute("BindingStrength", vsb.getStrength().toString()));
+					if(vsb.getStrength() == null) {
+						elmValueSetBinding.addAttribute(new Attribute("BindingStrength", ValuesetStrength.U.toString()));
+					} else {
+						elmValueSetBinding.addAttribute(new Attribute("BindingStrength", vsb.getStrength().toString()));						
+					}
 					elmValueSetBinding.addAttribute(new Attribute("Target", (path + "-" + seb.getElementId()).substring(1)));
 					
 					DatatypeDataModel dt = this.findDatatype(igModel, (path + "-" + seb.getElementId()).substring(1).split("\\-"), segdm);
@@ -2388,7 +2397,11 @@ public
 			if(seb.getValuesetBindings() != null) {
 				for(ValuesetBinding vsb : seb.getValuesetBindings()) {
 					Element elmValueSetBinding = new Element("ValueSetBinding");
-					elmValueSetBinding.addAttribute(new Attribute("BindingStrength", vsb.getStrength().toString()));
+					if(vsb.getStrength() == null) {
+						elmValueSetBinding.addAttribute(new Attribute("BindingStrength", ValuesetStrength.U.toString()));
+					} else {
+						elmValueSetBinding.addAttribute(new Attribute("BindingStrength", vsb.getStrength().toString()));						
+					}
 					elmValueSetBinding.addAttribute(new Attribute("Target", (path + "-" + seb.getElementId()).substring(1)));
 					
 					DatatypeDataModel dt = this.findDatatype(igModel, (path + "-" + seb.getElementId()).substring(1).split("\\-"), cpdm);
