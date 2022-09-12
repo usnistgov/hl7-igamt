@@ -1045,7 +1045,7 @@ public class IgServiceImpl implements IgService {
 
     String valueSetXMLStr = this.xmlSerializeService.serializeValueSetXML(igModel).toXML();
     
-//    String coConstraintsXMLStr = this.xmlSerializeService.serializeCoConstraintXML(igModel).toXML();
+    String coConstraintsXMLStr = this.xmlSerializeService.serializeCoConstraintXML(igModel).toXML();
     
     String slicingXMLStr = this.xmlSerializeService.serializeSlicingXML(igModel).toXML();
     
@@ -1054,7 +1054,7 @@ public class IgServiceImpl implements IgService {
     this.xmlSerializeService.generateIS(out, profileXMLStr, "Profile.xml");
     this.xmlSerializeService.generateIS(out, valueSetXMLStr, "ValueSets.xml");
     this.xmlSerializeService.generateIS(out, constraintXMLStr, "Constraints.xml");
-//    this.xmlSerializeService.generateIS(out, coConstraintsXMLStr, "CoConstraints.xml");
+    this.xmlSerializeService.generateIS(out, coConstraintsXMLStr, "CoConstraints.xml");
     this.xmlSerializeService.generateIS(out, bindingsXMLStr, "Bindings.xml");
     this.xmlSerializeService.generateIS(out, slicingXMLStr, "Slicing.xml");
 

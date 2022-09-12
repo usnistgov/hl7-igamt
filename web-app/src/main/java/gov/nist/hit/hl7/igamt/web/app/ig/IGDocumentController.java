@@ -65,7 +65,6 @@ import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddResourceResponse;
-import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
@@ -73,6 +72,10 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.ConditionalSlicing;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.OrderedSlicing;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.SlicingMethod;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileState;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.ProfileComponentsEvaluationResult;
@@ -113,10 +116,7 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ComponentDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.ComplianceReport;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationReport;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
@@ -128,9 +128,7 @@ import gov.nist.hit.hl7.igamt.ig.exceptions.ImportValueSetException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.PredicateNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.SectionNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.XReferenceFoundException;
-import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
-import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.CoConstraintMappingLocation;
 import gov.nist.hit.hl7.igamt.ig.model.CoConstraintOBX3MappingValue;
@@ -1578,11 +1576,13 @@ public class IGDocumentController extends BaseController {
 
 		if (l != null) {
 			selectedIg.getConformanceProfileRegistry().getChildren().add(l);
+			
+			ConformanceProfile cp = this.conformanceProfileService.findById(l.getId());
 
-			this.visitSegmentRefOrGroup(this.conformanceProfileService.findById(l.getId()).getChildren(), selectedIg, ig);
+			this.visitSegmentRefOrGroup(cp.getChildren(), selectedIg, ig);
 
 			// For CoConstraint
-			Map<CoConstraintMappingLocation, Set<CoConstraintOBX3MappingValue>> maps = this.coConstraintSerializationHelper.getOBX3ToFlavorMap(this.conformanceProfileService.findById(l.getId()));
+			Map<CoConstraintMappingLocation, Set<CoConstraintOBX3MappingValue>> maps = this.coConstraintSerializationHelper.getOBX3ToFlavorMap(cp);
 			for (CoConstraintMappingLocation key : maps.keySet()) {
 				for (CoConstraintOBX3MappingValue item : maps.get(key)) {
 					Link link = ig.getDatatypeRegistry().getLinkById(item.getFlavorId());
@@ -1598,9 +1598,44 @@ public class IGDocumentController extends BaseController {
 							}
 						}
 					}
-
 				}
-
+			}
+			
+			// For CP slicing
+			if(cp.getSlicings() != null) {
+				for(Slicing s : cp.getSlicings()) {
+					if (s.getType().equals(SlicingMethod.OCCURRENCE)) {
+						OrderedSlicing orderedSlicing = (OrderedSlicing) s;
+						if (orderedSlicing.getSlices() != null) {
+							orderedSlicing.getSlices().forEach(slice -> {
+								Link link = ig.getSegmentRegistry().getLinkById(slice.getFlavorId());
+								if (link != null) {
+									selectedIg.getSegmentRegistry().getChildren().add(link);
+									Segment seg = this.segmentService.findById(link.getId());
+									
+									this.visitSegment(seg.getChildren(), selectedIg, ig);
+						            if(seg.getBinding() != null && seg.getBinding().getChildren() != null) this.collectVS(seg.getBinding().getChildren(), selectedIg, ig);
+								}
+							});
+							
+						}
+					}else if(s.getType().equals(SlicingMethod.ASSERTION)) {
+						ConditionalSlicing conditionalSlicing = (ConditionalSlicing) s;
+						if (conditionalSlicing.getSlices() != null) {
+							conditionalSlicing.getSlices().forEach(slice -> {
+								Link link = ig.getSegmentRegistry().getLinkById(slice.getFlavorId());
+								if (link != null) {
+									selectedIg.getSegmentRegistry().getChildren().add(link);
+									Segment seg = this.segmentService.findById(link.getId());
+									
+									this.visitSegment(seg.getChildren(), selectedIg, ig);
+						            if(seg.getBinding() != null && seg.getBinding().getChildren() != null) this.collectVS(seg.getBinding().getChildren(), selectedIg, ig);
+								}
+								
+							});
+						}
+					}
+				}
 			}
 		}
 	}
@@ -1677,6 +1712,58 @@ public class IGDocumentController extends BaseController {
                 }           		
               });
             }
+            
+            
+					// For Segment slicing
+					if (s.getSlicings() != null) {
+						for (Slicing slicing : s.getSlicings()) {
+							if (slicing.getType().equals(SlicingMethod.OCCURRENCE)) {
+								OrderedSlicing orderedSlicing = (OrderedSlicing) slicing;
+								if (orderedSlicing.getSlices() != null) {
+									orderedSlicing.getSlices().forEach(slice -> {
+										Link link = all.getDatatypeRegistry().getLinkById(slice.getFlavorId());
+										if (link != null) {
+											selectedIg.getDatatypeRegistry().getChildren().add(link);
+											Datatype dt = this.datatypeService.findById(link.getId());
+
+											if (dt != null && dt instanceof ComplexDatatype) {
+												ComplexDatatype cdt = (ComplexDatatype) dt;
+												if (cdt.getComponents() != null) {
+													this.visitDatatype(cdt.getComponents(), selectedIg, all);
+													if (cdt.getBinding() != null
+															&& cdt.getBinding().getChildren() != null)
+														this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+												}
+											}
+										}
+									});
+
+								}
+							} else if (slicing.getType().equals(SlicingMethod.ASSERTION)) {
+								ConditionalSlicing conditionalSlicing = (ConditionalSlicing) slicing;
+								if (conditionalSlicing.getSlices() != null) {
+									conditionalSlicing.getSlices().forEach(slice -> {
+										Link link = all.getDatatypeRegistry().getLinkById(slice.getFlavorId());
+										if (link != null) {
+											selectedIg.getDatatypeRegistry().getChildren().add(link);
+											Datatype dt = this.datatypeService.findById(link.getId());
+
+											if (dt != null && dt instanceof ComplexDatatype) {
+												ComplexDatatype cdt = (ComplexDatatype) dt;
+												if (cdt.getComponents() != null) {
+													this.visitDatatype(cdt.getComponents(), selectedIg, all);
+													if (cdt.getBinding() != null
+															&& cdt.getBinding().getChildren() != null)
+														this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+												}
+											}
+										}
+									});
+
+								}
+							}
+						}
+					}
           }
         }
       }

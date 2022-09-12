@@ -785,6 +785,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     for (SegmentDataModel segModel : igModel.getSegments()) {
 
       Element elm_ByID = new Element("ByID");
+      System.out.println(segModel.getModel().getLabel());
       elm_ByID.addAttribute(new Attribute("ID", this.segmentService.findXMLRefIdById(segModel.getModel(), defaultHL7Version)));
 
       if (segModel.getConformanceStatements() != null
@@ -792,7 +793,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         for (ConformanceStatement cs : segModel.getConformanceStatements()) {
         	
         	String script = this.generateAssertionScript(cs, segModel.getModel().getId());
-
+        	System.out.println(script);
         	Node n = this.innerXMLHandler(script);
         	if(n != null) {
             		Element elm_Constraint = new Element("Constraint");
@@ -1561,9 +1562,13 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
 	for (ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
 		Set<String> vsIds = this.coConstraintSerializationHelper
 				.getCoConstraintReferencedValueSetIds(cpModel.getModel());
+		System.out.println("?????");
 		if (vsIds != null) {
 			for (String id : vsIds) {
+				System.out.println("______________");
+				System.out.println(id);
 				Valueset vs = this.valuesetService.findById(id);
+				System.out.println(vs.getBindingIdentifier());
 				ValuesetDataModel vsdm = new ValuesetDataModel();
 				vsdm.setModel(vs);
 				toBeAddedVSs.put(vs.getBindingIdentifier(), vsdm);
@@ -1576,11 +1581,20 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
 
 			for (CoConstraintMappingLocation coconLocation : maps.keySet()) {
 				SegmentDataModel sdm = igModel.findSegment(coconLocation.getFlavorId());
-				SegmentDataModel copySegModel = XMLSerializeServiceImpl.cloneThroughJson(sdm);
+				SegmentDataModel copySegModel = new SegmentDataModel();
+				copySegModel.setModel(sdm.getModel().clone());
+				copySegModel.setPredicateMap(sdm.getPredicateMap());
+				copySegModel.setConformanceStatements(sdm.getConformanceStatements());
+				copySegModel.setSingleCodeMap(sdm.getSingleCodeMap());
+				copySegModel.setValuesetMap(sdm.getValuesetMap());
+				copySegModel.setFieldDataModels(sdm.getFieldDataModels());
 				copySegModel.getModel().setId(copySegModel.getModel().getId() + "_COCON" + coconLocation.getLocationId().replaceAll("\\.", "_") + "_" + cpModel.getModel().getId());
 				String ext = copySegModel.getModel().getExt();
 				if (ext == null) ext = "";
 				copySegModel.getModel().setExt(ext + "_COCON" + coconLocation.getLocationId().replaceAll("\\.", "_") + "_" + cpModel.getModel().getId());
+				
+				this.inMemoryDomainExtensionService.put(copySegModel.getModel().getId(), copySegModel.getModel());
+				
 				toBeAddedSegs.put(copySegModel.getModel().getId(), copySegModel);
 				SegmentRefOrGroupDataModel srogdm = cpModel.findSegmentRefOrGroupDataModelById(coconLocation.getLocationId().split("\\-"));
 				srogdm.getSegment().setId(srogdm.getSegment().getId() + "_COCON" + coconLocation.getLocationId().replaceAll("\\.", "_") + "_" + cpModel.getModel().getId());
