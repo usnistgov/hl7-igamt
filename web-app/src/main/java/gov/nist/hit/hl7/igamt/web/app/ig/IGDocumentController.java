@@ -1212,6 +1212,7 @@ public class IGDocumentController extends BaseController {
       throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+    
     this.igService.publishIG(ig, info);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig published Successfully", id, false,
         new Date(), id);

@@ -51,6 +51,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
@@ -287,6 +288,7 @@ public class IgServiceImpl implements IgService {
 			element.setSharePermission(ig.getSharePermission());
 			element.setSharedUsers(ig.getSharedUsers());
 			element.setCurrentAuthor(ig.getCurrentAuthor());
+			element.setPublicationInfo(ig.getPublicationInfo());
 			List<String> conformanceProfileNames = new ArrayList<String>();
 			ConformanceProfileRegistry conformanceProfileRegistry = ig.getConformanceProfileRegistry();
 			if (conformanceProfileRegistry != null) {
@@ -375,6 +377,8 @@ public class IgServiceImpl implements IgService {
 		qry.fields().include("currentAuthor");
 		qry.fields().include("draft");
 		qry.fields().include("deprecated");
+		qry.fields().include("publicationInfo");
+
 
 
 
@@ -398,6 +402,7 @@ public class IgServiceImpl implements IgService {
 		qry.fields().include("currentAuthor");
 		qry.fields().include("draft");
 		qry.fields().include("deprecated");
+		qry.fields().include("publicationInfo");
 
 
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
@@ -420,6 +425,8 @@ public class IgServiceImpl implements IgService {
 		qry.fields().include("currentAuthor");
 		qry.fields().include("draft");
 		qry.fields().include("deprecated");
+		qry.fields().include("publicationInfo");
+
 
 
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
@@ -441,6 +448,8 @@ public class IgServiceImpl implements IgService {
 		qry.fields().include("sharedUsers");
 		qry.fields().include("currentAuthor");
 		qry.fields().include("draft");
+		qry.fields().include("publicationInfo");
+
 
 
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
@@ -1343,11 +1352,15 @@ public class IgServiceImpl implements IgService {
 		}
 		ig.setStatus(Status.PUBLISHED);
 		ig.setDraft(info.getDraft());
+		PublicationInfo pubInfo = new PublicationInfo();
+		if(info.getInfo() != null && info.getInfo().getWarning() != null) {
+			pubInfo.setWarning(info.getInfo().getWarning());
+			pubInfo.setPublicationDate(new Date());
+		}
+		ig.setPublicationInfo(pubInfo);
+		
 		this.save(ig);
-		//    UpdateResult updateResult = this.updateAttribute(ig.getId(), "status", Status.PUBLISHED, Ig.class, true);
-		//    if(! updateResult.wasAcknowledged()) {
-		//      throw new IGUpdateException("Could not publish Ig:" +ig.getId());
-		//    }
+
 	}
 
 	@Override

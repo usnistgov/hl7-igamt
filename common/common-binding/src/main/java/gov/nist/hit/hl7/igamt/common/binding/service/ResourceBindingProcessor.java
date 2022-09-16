@@ -67,15 +67,10 @@ public class ResourceBindingProcessor {
   }
   
   public void addChild(ResourceBinding resourceBinding, String parent) {
-	  System.out.println(parent);
     if(resourceBinding.getChildren()!= null) {
       for(StructureElementBinding child : resourceBinding.getChildren()) {
         String path_id = (parent != null? parent +'-'+ child.getElementId(): child.getElementId());
-        if(path_id.equals("10-7-1")) {
-        	System.out.println(path_id);
-        }
         this.binding.put(path_id, child);
-        System.out.println(path_id);
         if(child.getChildren() != null) {
           for(StructureElementBinding sub : child.getChildren()) {
             if(child.getChildren() != null) {
@@ -91,7 +86,5 @@ public class ResourceBindingProcessor {
 	return binding;
 	  
   }
-  
-  
- 
+
 }

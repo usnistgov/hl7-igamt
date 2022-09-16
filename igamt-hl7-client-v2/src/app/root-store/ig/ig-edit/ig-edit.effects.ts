@@ -844,4 +844,15 @@ export class IgEditEffects extends DamWidgetEffect {
     }),
   );
 
+  @Effect()
+  deleteResourcesSuccess$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.DeleteResourcesSuccess),
+    map((action: DeleteResourceSuccess) => {
+          if (action.redirect) {
+            this.router.navigate([action.url] );
+          }
+          return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Delete Success', null));
+        }),
+  );
+
 }

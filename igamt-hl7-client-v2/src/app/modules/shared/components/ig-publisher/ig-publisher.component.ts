@@ -12,9 +12,9 @@ export class IgPublisherComponent  implements OnInit {
   customMessage = false;
   defaultWarning = 'Warning: This is a DRAFT publication for trial use only. It will be updated and replaced. It is not advised to create permanent derived profiles form this DRAFT implementation Guide.';
 
-  publicationInfo: {draft: boolean, info: any}  = { draft: false, info: {warning: this.defaultWarning}};
+  publicationInfo: {draft: boolean, info: any}  = { draft: false, info: { warning: this.defaultWarning }};
 
-  constructor(  public dialogRef: MatDialogRef<IgPublisherComponent>,
+  constructor(public dialogRef: MatDialogRef<IgPublisherComponent>,
                 @Inject(MAT_DIALOG_DATA) public data: any ) { }
 
 

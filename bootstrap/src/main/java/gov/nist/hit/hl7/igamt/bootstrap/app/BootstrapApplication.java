@@ -609,8 +609,18 @@ public class BootstrapApplication implements CommandLineRunner {
 	void fixIg() throws ForbiddenOperationException, ValidationException {
 		igFixer.deprecateIG("", Boolean.TRUE);
 		
-
 	}
 	
+	//@PostConstruct
+	void checkMissing() throws ForbiddenOperationException, ValidationException {
+		List<Ig> igs = this.igService.findAll();
+		for( Ig ig: igs) {
+			igFixer.checkMessing(ig);
+
+		}
+		
+	}
+	
+
 	
 }
