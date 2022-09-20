@@ -202,10 +202,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
   @Override
   public Element serializeCoConstraintXML(IgDataModel igModel) throws CoConstraintXMLSerializationException {
-
+      String defaultHL7Version = this.igService.findDefaultHL7VersionById(igModel.getModel().getId());
       Element ccc = new Element("CoConstraintContext");
       for(ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
-        Element message = this.simpleCoConstraintXMLSerialization.serialize(cpModel.getModel());
+        Element message = this.simpleCoConstraintXMLSerialization.serialize(cpModel.getModel(), defaultHL7Version);
         if(message != null) {
           ccc.appendChild(message);
         }

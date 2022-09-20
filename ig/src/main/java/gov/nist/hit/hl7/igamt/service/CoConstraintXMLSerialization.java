@@ -14,37 +14,37 @@ import java.util.List;
 
 public interface CoConstraintXMLSerialization {
 
-    Element serialize(ConformanceProfile conformanceProfile) throws CoConstraintXMLSerializationException;
+    Element serialize(ConformanceProfile conformanceProfile, String defaultHL7Version) throws CoConstraintXMLSerializationException;
 
-    Element serializeBinding(ResourceSkeleton conformanceProfile, CoConstraintBinding coConstraintBinding, String cpId) throws CoConstraintXMLSerializationException;
+    Element serializeBinding(ResourceSkeleton conformanceProfile, CoConstraintBinding coConstraintBinding, String cpId, String defaultHL7Version) throws CoConstraintXMLSerializationException;
 
     Element serializeGrouper(ResourceSkeleton segment, CoConstraintGrouper ccGrouper) throws CoConstraintXMLSerializationException;
 
-    Element serializeCoConstraintForSegment(ResourceSkeleton context, StructureElementRef contextRef, CoConstraintBindingSegment bindingSegment, String cpId) throws CoConstraintXMLSerializationException;
+    Element serializeCoConstraintForSegment(ResourceSkeleton context, StructureElementRef contextRef, CoConstraintBindingSegment bindingSegment, String cpId, String defaultHL7Version) throws CoConstraintXMLSerializationException;
 
-    Element serializeConditionalTable(ResourceSkeleton segment, StructureElementRef context, String cpId, CoConstraintTableConditionalBinding table) throws CoConstraintXMLSerializationException;
+    Element serializeConditionalTable(ResourceSkeleton segment, StructureElementRef context, String cpId, CoConstraintTableConditionalBinding table, String defaultHL7Version) throws CoConstraintXMLSerializationException;
 
     Element serializeCondition(StructureElementRef context, String cpId, Assertion assertion);
 
-    Element serializeSimpleTable(ResourceSkeleton segment, CoConstraintTableConditionalBinding table) throws CoConstraintXMLSerializationException;
+    Element serializeSimpleTable(ResourceSkeleton segment, CoConstraintTableConditionalBinding table, String defaultHL7Version) throws CoConstraintXMLSerializationException;
 
-    List<Element> serializeTable(ResourceSkeleton segment, CoConstraintTable table) throws CoConstraintXMLSerializationException;
+    List<Element> serializeTable(ResourceSkeleton segment, CoConstraintTable table, String defaultHL7Version) throws CoConstraintXMLSerializationException;
 
-    Element serializeCoConstraint(ResourceSkeleton segment, CoConstraintTable table, CoConstraint cc, boolean primary) throws CoConstraintXMLSerializationException;
+    Element serializeCoConstraint(ResourceSkeleton segment, CoConstraintTable table, CoConstraint cc, boolean primary, String defaultHL7Version) throws CoConstraintXMLSerializationException;
 
-    List<Element> serializeHeaders(ResourceSkeleton segment, List<CoConstraintHeader> headers, CoConstraint cc, boolean selector) throws CoConstraintXMLSerializationException;
+    List<Element> serializeHeaders(ResourceSkeleton segment, List<CoConstraintHeader> headers, CoConstraint cc, boolean selector, String defaultHL7Version) throws CoConstraintXMLSerializationException;
 
-    Element serializeCell(ResourceSkeleton segment, ColumnType type, CoConstraintCell cell, DataElementHeader header) throws CoConstraintXMLSerializationException;
+    Element serializeCell(ResourceSkeleton segment, ColumnType type, CoConstraintCell cell, DataElementHeader header, String defaultHL7Version) throws CoConstraintXMLSerializationException;
 
     Element serializeCodeCell(ResourceSkeleton segment, DataElementHeader header, CodeCell cell) throws CoConstraintXMLSerializationException;
 
-    Element serializeValueSetCell(ResourceSkeleton segment, DataElementHeader header, ValueSetCell cell) throws CoConstraintXMLSerializationException;
+    Element serializeValueSetCell(ResourceSkeleton segment, DataElementHeader header, ValueSetCell cell, String defaultHL7Version) throws CoConstraintXMLSerializationException;
 
     Element serializeDatatypeCell(ResourceSkeleton segment, DataElementHeader header, DatatypeCell cell) throws CoConstraintXMLSerializationException;
 
     Element serializeValueCell(ResourceSkeleton segment, DataElementHeader header, ValueCell cell) throws CoConstraintXMLSerializationException;
 
-    Element serializeVariesCell(ResourceSkeleton segment, DataElementHeader header, VariesCell cell) throws CoConstraintXMLSerializationException;
+    Element serializeVariesCell(ResourceSkeleton segment, DataElementHeader header, VariesCell cell, String defaultHL7Version) throws CoConstraintXMLSerializationException;
 
-    Element serializeCoConstraintGroup(ResourceSkeleton segment, CoConstraintTable table, CoConstraintGroupBindingContained group) throws CoConstraintXMLSerializationException;
+    Element serializeCoConstraintGroup(ResourceSkeleton segment, CoConstraintTable table, CoConstraintGroupBindingContained group, String defaultHL7Version) throws CoConstraintXMLSerializationException;
 }
