@@ -102,6 +102,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeDependencyService;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
+import gov.nist.hit.hl7.igamt.display.model.PublishingInfo;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CompositeProfileCreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileLabel;
@@ -268,6 +269,7 @@ public class IgServiceImpl implements IgService {
       DocumentSummary element = new DocumentSummary();
 
       element.setCoverpage(ig.getMetadata().getCoverPicture());
+      element.setDraft(ig.getDraft());
       element.setDateUpdated(ig.getUpdateDate());
       element.setTitle(ig.getMetadata().getTitle());
       element.setSubtitle(ig.getMetadata().getSubTitle());
@@ -328,7 +330,6 @@ public class IgServiceImpl implements IgService {
 
 
   private TextSection createSectionContent(SectionTemplate template) {
-    // TODO Auto-generated method stub
     TextSection section = new TextSection();
     section.setId(new ObjectId().toString());
     section.setType(Type.fromString(template.getType()));
@@ -368,6 +369,8 @@ public class IgServiceImpl implements IgService {
     qry.fields().include("updateDate");
     qry.fields().include("sharedUsers");
     qry.fields().include("currentAuthor");
+    qry.fields().include("draft");
+
 
     List<Ig> igs = mongoTemplate.find(qry, Ig.class);
     return igs;
@@ -387,6 +390,8 @@ public class IgServiceImpl implements IgService {
     qry.fields().include("updateDate");
     qry.fields().include("sharedUsers");
     qry.fields().include("currentAuthor");
+    qry.fields().include("draft");
+
     List<Ig> igs = mongoTemplate.find(qry, Ig.class);
     return igs;
   }
@@ -405,6 +410,8 @@ public class IgServiceImpl implements IgService {
     qry.fields().include("updateDate");
     qry.fields().include("sharedUsers");
     qry.fields().include("currentAuthor");
+    qry.fields().include("draft");
+
     List<Ig> igs = mongoTemplate.find(qry, Ig.class);
     return igs;
   }
@@ -423,6 +430,8 @@ public class IgServiceImpl implements IgService {
     qry.fields().include("updateDate");
     qry.fields().include("sharedUsers");
     qry.fields().include("currentAuthor");
+    qry.fields().include("draft");
+
 
     List<Ig> igs = mongoTemplate.find(qry, Ig.class);
     igs.forEach(ig -> {
@@ -816,13 +825,14 @@ public class IgServiceImpl implements IgService {
       throw new ValuesetNotFoundException(vsId);
     }
     if(vs.getBindingIdentifier().equals("HL70396") && vs.getSourceType().equals(SourceType.EXTERNAL)) {
-      vs.setCodes(fhirHandlerService.getValusetCodeForDynamicTable());
+    	vs.setCodes(fhirHandlerService.getValusetCodeForDynamicTable());
+
     }
     if(vs.getDomainInfo() !=null && vs.getDomainInfo().getScope() != null) {
       if(vs.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
         Config conf = this.configService.findOne();
         if(conf !=null) {
-          vs.setUrl(conf.getPhinvadsUrl()+vs.getOid());
+          vs.setUrl(conf.getPhinvadsUrl() + vs.getOid());
         }
       }
     }
@@ -834,7 +844,7 @@ public class IgServiceImpl implements IgService {
           vs.setIncludeCodes(false);
           vs.setCodes(new HashSet<Code>());
         }
-      }else {
+      } else {
         vs.setIncludeCodes(true);
       }
     }
@@ -1265,7 +1275,7 @@ public class IgServiceImpl implements IgService {
    * @see gov.nist.hit.hl7.igamt.ig.service.IgService#publishIG()
    */
   @Override
-  public void publishIG(Ig ig)  throws IGNotFoundException, IGUpdateException{
+  public void publishIG(Ig ig, PublishingInfo info)  throws IGNotFoundException, IGUpdateException{
 
     for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
       if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
@@ -1322,11 +1332,13 @@ public class IgServiceImpl implements IgService {
         throw new IGUpdateException("Could not publish Composite Profile:" +l.getId());
       }
     }
-
-    UpdateResult updateResult = this.updateAttribute(ig.getId(), "status", Status.PUBLISHED, Ig.class, true);
-    if(! updateResult.wasAcknowledged()) {
-      throw new IGUpdateException("Could not publish Ig:" +ig.getId());
-    }
+    ig.setStatus(Status.PUBLISHED);
+	ig.setDraft(info.getDraft());
+    this.save(ig);
+//    UpdateResult updateResult = this.updateAttribute(ig.getId(), "status", Status.PUBLISHED, Ig.class, true);
+//    if(! updateResult.wasAcknowledged()) {
+//      throw new IGUpdateException("Could not publish Ig:" +ig.getId());
+//    }
   }
 
   @Override
@@ -1668,9 +1680,9 @@ public class IgServiceImpl implements IgService {
     return response;
   }
 
-@Override
-public List<Ig> findByIdIn(List<String> ids) {
-	return this.igRepository.findByIdIn(ids);
-}
+  @Override
+  public List<Ig> findByIdIn(List<String> ids) {
+    return this.igRepository.findByIdIn(ids);
+  }
 
 }

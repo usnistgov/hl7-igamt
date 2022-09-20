@@ -558,13 +558,9 @@ public class DatatypeServiceImpl implements DatatypeService {
 		if (existingBindingDisplay == null || (existingBindingDisplay.getValuesetBindingsPriority() != null
 				&& existingBindingDisplay.getValuesetBindingsPriority() > priority)) {
 			bindingDisplay.setBindingType(BindingType.NA);
-			if (seb.getInternalSingleCode() != null && seb.getInternalSingleCode().getValueSetId() != null
-					&& seb.getInternalSingleCode().getCode() != null) {
-				bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
-				bindingDisplay.setValuesetBindingsPriority(priority);
-				bindingDisplay.setValuesetBindingsSourceId(sourceId);
-				bindingDisplay.setValuesetBindingsSourceType(sourceType);
-				bindingDisplay.setBindingType(BindingType.SC);
+			
+			if (seb.getSingleCodeBindings() != null && !seb.getSingleCodeBindings().isEmpty()) {
+				bindingDisplay.setSingleCodeBindings(seb.getSingleCodeBindings());
 			} else {
 				Set<DisplayValuesetBinding> displayValuesetBindings = this
 						.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap);

@@ -9,12 +9,13 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { TREE_ACTIONS, TreeComponent, TreeModel, TreeNode } from 'angular-tree-component';
 import { ContextMenuComponent } from 'ngx-contextmenu';
 import { SelectItem } from 'primeng/api';
-import { map, take } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
 import { IClickInfo } from '../../../document/models/toc/click-info.interface';
@@ -26,6 +27,9 @@ import { NodeHelperService } from '../../../shared/services/node-helper.service'
 import { ValueSetService } from '../../../value-set/service/value-set.service';
 import { IgDocument } from '../../models/ig/ig-document.class';
 import { IgService } from '../../services/ig.service';
+import { IContent } from './../../../shared/models/content.interface';
+import { ISectionTemplate } from './../derive-dialog/derive-dialog.component';
+import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
 
 @Component({
   selector: 'app-ig-toc',
@@ -46,6 +50,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @ViewChild('top') top: ElementRef;
   @ViewChild('pcLib') pcLib: ElementRef;
   @ViewChild('cmppLib') cmppLib: ElementRef;
+  @ViewChild('profile') profile: ElementRef;
 
   // TODO set type
   options;
@@ -82,6 +87,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @Output()
   addPcChildren = new EventEmitter<IDisplayElement>();
 
+  @Output()
+  manageProfileStructure = new EventEmitter<IContent[]>();
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
   // tslint:disable-next-line:cognitive-complexity
@@ -93,6 +100,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     private activatedRoute: ActivatedRoute,
     private igService: IgService,
     private store: Store<any>,
+    private dialog: MatDialog,
   ) {
     this.options = {
       allowDrag: (node: TreeNode) => {
@@ -266,6 +274,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
 
   update() {
+    console.log(this.tree.treeModel.nodes);
     this.nodeState.emit(this.tree.treeModel.nodes);
   }
 
@@ -316,6 +325,22 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   deleteOneChild(child: IDisplayElement, parent: IDisplayElement) {
     this.deleteContext.emit({ child, parent });
   }
+
+  manageStructure(node: TreeNode) {
+
+        const dialogRef = this.dialog.open(ManageProfileStructureComponent, {
+          data: node.data.children,
+        });
+        dialogRef.afterClosed().subscribe(
+          (answer) => {
+
+            if (answer) {
+              this.nodeHelperService.updateProfileStructure(node, answer);
+              this.update();
+           }
+          },
+        );
+  }
 }
 export class ElmentNumbers {
   conformanceProfiles?: number;
@@ -326,4 +351,8 @@ export class ElmentNumbers {
   valueSets?: number;
   coConstraintGroup?: number;
 
+}
+
+export interface ITypedSection {
+  [key: string]: IContent;
 }

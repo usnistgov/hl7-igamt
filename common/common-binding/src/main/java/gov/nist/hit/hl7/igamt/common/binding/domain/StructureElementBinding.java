@@ -12,6 +12,7 @@
 package gov.nist.hit.hl7.igamt.common.binding.domain;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,8 +28,12 @@ import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
  */
 public class StructureElementBinding extends Binding {
   private Set<ValuesetBinding> valuesetBindings;
+  //TODO Remove SingleCode
+  @Deprecated
   private InternalSingleCode internalSingleCode;
+  @Deprecated
   private ExternalSingleCode externalSingleCode;
+  private List<SingleCodeBinding> singleCodeBindings;
   private Predicate predicate;
   @Deprecated
   private String predicateId;
@@ -93,15 +98,11 @@ public class StructureElementBinding extends Binding {
 	this.predicateId = predicateId;
   }
 
-@Override
-public String toString() {
-	return "StructureElementBinding [valuesetBindings=" + valuesetBindings + ", internalSingleCode="
-			+ internalSingleCode + ", externalSingleCode=" + externalSingleCode + ", predicate=" + predicate
-			+ ", predicateId=" + predicateId + ", elementId=" + elementId + ", locationInfo=" + locationInfo
-			+ ", children=" + children + "]";
-}
+  public List<SingleCodeBinding> getSingleCodeBindings() {
+    return singleCodeBindings;
+  }
 
-
-  
-  
+  public void setSingleCodeBindings(List<SingleCodeBinding> singleCodeBindings) {
+    this.singleCodeBindings = singleCodeBindings;
+  }
 }

@@ -23,16 +23,16 @@ public interface VerificationEntryService {
     IgamtObjectError SingleCodeNotAllowed(String pathId, LocationInfo info, String id, Type type);
     IgamtObjectError SingleCodeMissingCode(String pathId, LocationInfo info, String id, Type type);
     IgamtObjectError SingleCodeMissingCodeSystem(String pathId, LocationInfo info, String id, Type type);
-    IgamtObjectError SingleCodeMissingValueSet(String pathId, LocationInfo info, String id, Type type);
-    IgamtObjectError SingleCodeNotInValueSet(String pathId, LocationInfo info, String id, Type type, String code, String codeSystem, String bindingIdentifier);
 
     // Value Set Binding
     IgamtObjectError ValueSetBindingNotAllowed(String pathId, LocationInfo info, String id, Type type);
     IgamtObjectError MultipleValueSetNotAllowed(String pathId, LocationInfo info, String id, Type type);
-    IgamtObjectError InvalidBindingLocation(String pathId, String locationName, LocationInfo target, String id, Type type, Set<Integer> bindingLocations, String reason);
+    IgamtObjectError InvalidBindingLocation(String pathId, String locationName, LocationInfo target, PropertyType prop, String id, Type type, Set<Integer> bindingLocations, String reason);
 
     // Co-Constraints
     IgamtObjectError CoConstraintTargetIsNotSegment(String pathId, String locationName, String id, Type type, String path, String pathQualifier);
+    IgamtObjectError CoConstraintOBX3MappingIsDuplicate(String pathId, String id, Type type, String code);
+
     IgamtObjectError CoConstraintInvalidHeaderType(String pathId, String name, PropertyType propertyType, String id, Type type, LocationInfo info, ColumnType column, String reason);
     IgamtObjectError CoConstraintInvalidGroupRef(String pathId, String locationName, String id, Type type);
     IgamtObjectError CoConstraintGroupNameIsMissing(String pathId, String locationName, String id, Type type);
@@ -53,4 +53,9 @@ public interface VerificationEntryService {
     IgamtObjectError CoConstraintMultiDatatypeCells(String pathId, String locationName, String id, Type type);
     IgamtObjectError CoConstraintMultiVariesCells(String pathId, String locationName, String id, Type type);
     IgamtObjectError CoConstraintNoDatatypeCell(String pathId, String locationName, String id, Type type);
+
+    // Conformance Statements
+    IgamtObjectError AssertionOccurrenceTypeOnNotRepeatable(Location location, String id, Type type, LocationInfo path, String occurrenceType, String pathQualifier);
+    IgamtObjectError AssertionOccurrenceTypeInstanceOnNotMultiLevelRepeatable(Location location, String id, Type type, LocationInfo path, String pathQualifier);
+    IgamtObjectError AssertionOccurrenceValueOverMax(Location location, String id, Type type, LocationInfo path, String occurrenceType, int max, int value, String pathQualifier);
 }

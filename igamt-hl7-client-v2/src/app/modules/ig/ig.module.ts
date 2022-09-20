@@ -32,6 +32,7 @@ import { IgMetadataEditorComponent } from './components/ig-metadata-editor/ig-me
 import { IgSectionEditorComponent } from './components/ig-section-editor/ig-section-editor.component';
 import { IgTocFilterComponent } from './components/ig-toc-filter/ig-toc-filter.component';
 import { IgTocComponent } from './components/ig-toc/ig-toc.component';
+import { ManageProfileStructureComponent } from './components/manage-profile-structure/manage-profile-structure.component';
 import { NarrativeSectionFormComponent } from './components/narrative-section-form/narrative-section-form.component';
 import { IgRoutingModule } from './ig-routing.module';
 import { IgListService } from './services/ig-list.service';
@@ -56,6 +57,7 @@ import { IgService } from './services/ig.service';
     IgEditStatusBarComponent,
     IgEditDrawerComponent,
     IgTocFilterComponent,
+    ManageProfileStructureComponent,
   ],
   imports: [
     DamFrameworkModule.forRoot(),
@@ -76,7 +78,7 @@ import { IgService } from './services/ig.service';
     MatProgressSpinnerModule,
   ],
   entryComponents: [
-    IgEditContainerComponent, DeriveDialogComponent,
+    IgEditContainerComponent, DeriveDialogComponent, ManageProfileStructureComponent,
   ],
   providers: [
     IgListService,
@@ -91,6 +93,7 @@ import { IgService } from './services/ig.service';
     IgEditActiveTitlebarComponent,
     IgSectionEditorComponent,
     IgMetadataEditorComponent,
+    ManageProfileStructureComponent,
   ],
 })
 export class IgModule {

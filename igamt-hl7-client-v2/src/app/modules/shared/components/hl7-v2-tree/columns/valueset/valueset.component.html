@@ -10,14 +10,21 @@
           ></app-change-log-info>
           <ng-container [ngSwitch]="edit.type">
             <ng-container *ngSwitchCase="'VALUESET'">
+              <div style="display: flex; flex-direction: column;">
+                <ng-container *ngFor="let item of edit.value">
+                  <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit: item, context : { resource : context} }"></ng-container>
+                </ng-container>
+              </div>
 
-              <ng-container *ngFor="let item of edit.value">
-                <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit: item, context : { resource : context} }"></ng-container>
-              </ng-container>
 
             </ng-container>
             <ng-container *ngSwitchCase="'SINGLECODE'">
-                <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: edit.value, context : { resource : context } }"></ng-container>
+              <div style="display: flex; flex-direction: column;">
+                <ng-container *ngFor="let item of edit.value">
+                  <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: item, context : { resource : context} }"></ng-container>
+                </ng-container>
+              </div>
+
             </ng-container>
           </ng-container>
 
@@ -32,14 +39,19 @@
         <ng-container *ngIf="freeze$ | async as freeze">
           <ng-container [ngSwitch]="freeze.binding.type">
             <ng-container *ngSwitchCase="'VALUESET'">
-
-              <ng-container *ngFor="let item of freeze.binding.value">
-                <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit: item, context : freeze.context }"></ng-container>
-              </ng-container>
+              <div style="display: flex; flex-direction: column;">
+                <ng-container *ngFor="let item of freeze.binding.value">
+                  <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit: item, context : freeze.context }"></ng-container>
+                </ng-container>
+              </div>
 
             </ng-container>
             <ng-container *ngSwitchCase="'SINGLECODE'">
-              <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: freeze.binding.value, context : freeze.context }"></ng-container>
+              <div style="display: flex; flex-direction: column;">
+                <ng-container *ngFor="let item of freeze.binding.value">
+                  <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: item, context : freeze.context }"></ng-container>
+                </ng-container>
+              </div>
             </ng-container>
           </ng-container>
         </ng-container>
@@ -94,10 +106,8 @@
       </td>
     </tr>
     <tr>
-      <td colspan="3">
-        <div [pTooltip]="singleCode.valueSet?.description" tooltipPosition="top">
-          <app-display-ref [documentId]="documentRef.documentId" [documentType]="documentRef.type" [element]="singleCode.valueSet" [hideDescription]="true"></app-display-ref>
-        </div>
+      <td pTooltip="Binding Locations" tooltipPosition="top" colspan="3">
+        <strong>{{singleCode.locations.length > 0 ? (singleCode.locations | json) : '.'}}</strong>
       </td>
     </tr>
   </table>
@@ -113,7 +123,7 @@
 </ng-template>
 
 <ng-template #displayScBinding let-data>
-  <ng-container *ngIf="data.value">
-    <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: data.value, context : data.context }"></ng-container>
+  <ng-container *ngFor="let item of data.value">
+    <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: item, context : data.context }"></ng-container>
   </ng-container>
 </ng-template>

@@ -35,6 +35,7 @@ import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -49,6 +50,8 @@ public class DynamicMappingFixer {
 
   @Autowired
   SegmentService segmentsService;
+  @Autowired
+  SegmentRepository segmentRepository;
 
   @Autowired
   ValuesetService valueSetService;
@@ -71,6 +74,15 @@ public class DynamicMappingFixer {
 		e.printStackTrace();
 	}});
   }
+  
+  public void processSegmentByVersion(String v) {
+	    List<Segment> obxs = segmentsService.findByDomainInfoVersionAndName(v,"OBX");
+	    obxs.forEach((x) -> {try {
+			processSegment(x);
+		} catch (ForbiddenOperationException e) {
+			e.printStackTrace();
+		}});
+	  }
   /**
    * @param x
  * @throws ForbiddenOperationException 
@@ -91,7 +103,7 @@ public class DynamicMappingFixer {
         }
       }
     }
-    segmentsService.save(s);  
+    segmentRepository.save(s);  
   }
 
 
@@ -133,10 +145,8 @@ public class DynamicMappingFixer {
       if(!ids.isEmpty()) {
         crudService.addDatatypes(ids, ig);
         igService.save(ig);
-      }
-      
-    }
-    
+      }      
+    }   
   }
 
   

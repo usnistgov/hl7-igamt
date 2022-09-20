@@ -30,7 +30,7 @@ public class DeltaController {
 
   @RequestMapping(value = "/api/delta/{type}/{ig}/{id}", method = RequestMethod.GET,
       produces = {"application/json"})
-  @PreAuthorize("AccessResource(type.toString(), #id, READ)")
+  @PreAuthorize("AccessResource(#type.toString(), #id, READ)")
   public Delta deltaConformanceProfile(@PathVariable("type") Type type,
                                        @PathVariable("ig") String ig, @PathVariable("id") String id, Authentication authentication)
       throws Exception {

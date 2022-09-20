@@ -39,17 +39,17 @@ public class ResourceSkeletonService {
     public ResourceSkeletonInfo loadSkeleton(ResourceRef resourceRef, ResourceSkeleton parent) throws ResourceNotFoundException {
         switch (resourceRef.getType()) {
             case DATATYPE:
-                return loadDatatypeSkeleton(resourceRef.getId(), getParentLocationInfo(parent));
+                return loadDatatypeSkeleton(resourceRef.getId(), getParentLocationInfo(parent), parent);
             case SEGMENT:
-                return loadSegmentSkeleton(resourceRef.getId(), getParentLocationInfo(parent));
+                return loadSegmentSkeleton(resourceRef.getId(), getParentLocationInfo(parent), parent);
             case CONFORMANCEPROFILE:
-                return loadConformanceProfileSkeleton(resourceRef.getId());
+                return loadConformanceProfileSkeleton(resourceRef.getId(), parent);
             default:
                 return null;
         }
     }
 
-    public ResourceSkeletonInfo loadDatatypeSkeleton(String id, LocationInfo parentLocationInfo) throws ResourceNotFoundException {
+    public ResourceSkeletonInfo loadDatatypeSkeleton(String id, LocationInfo parentLocationInfo, ResourceSkeleton parent) throws ResourceNotFoundException {
         Datatype datatype = this.datatypeService.findById(id);
         if(datatype == null) {
             throw new ResourceNotFoundException(id, Type.DATATYPE);
@@ -62,18 +62,19 @@ public class ResourceSkeletonService {
                     new ResourceRef(Type.DATATYPE, component.getRef().getId()),
                     component.getId(),
                     component.getPosition(),
-                    makeLocationInfo(parentLocationInfo, resource, component.getType(), component.getName(), component.getPosition()),
-                   resource,
-                   component.getUsage(),
-                   null,
-                   this
+                    makeLocationInfo(parentLocationInfo, resource, component.getType(), component.getName(), component.getPosition(), component.getId()),
+                    resource,
+                    component.getUsage(),
+                    null,
+                    parent,
+                    this
             )).collect(Collectors.toList());
             return new ResourceSkeletonInfo(children, resource);
         } else {
             return new ResourceSkeletonInfo(Collections.emptyList(), resource);
         }
     }
-    public ResourceSkeletonInfo loadSegmentSkeleton(String id, LocationInfo parentLocationInfo) throws ResourceNotFoundException {
+    public ResourceSkeletonInfo loadSegmentSkeleton(String id, LocationInfo parentLocationInfo, ResourceSkeleton parent) throws ResourceNotFoundException {
         Segment segment = this.segmentService.findById(id);
         if(segment == null) {
             throw new ResourceNotFoundException(id, Type.SEGMENT);
@@ -85,51 +86,55 @@ public class ResourceSkeletonService {
                 new ResourceRef(Type.DATATYPE, field.getRef().getId()),
                 field.getId(),
                 field.getPosition(),
-                makeLocationInfo(parentLocationInfo, resource, field.getType(), field.getName(), field.getPosition()),
+                makeLocationInfo(parentLocationInfo, resource, field.getType(), field.getName(), field.getPosition(), field.getId()),
                 resource,
                 field.getUsage(),
                 new ResourceSkeletonBoneCardinality(field.getMin(), field.getMax()),
+                parent,
                 this
         )).collect(Collectors.toList());
         return new ResourceSkeletonInfo(children, resource);
     }
 
-    public ResourceSkeletonInfo loadConformanceProfileSkeleton(String id) throws ResourceNotFoundException {
+    public ResourceSkeletonInfo loadConformanceProfileSkeleton(String id, ResourceSkeleton parent) throws ResourceNotFoundException {
         ConformanceProfile conformanceProfile = this.conformanceProfileService.findById(id);
         if(conformanceProfile == null) {
             throw new ResourceNotFoundException(id, Type.CONFORMANCEPROFILE);
         }
 
         DisplayElement resource = this.conformanceProfileService.convertConformanceProfile(conformanceProfile, 0);
-        return new ResourceSkeletonInfo(getGroupChildren(resource, conformanceProfile.getChildren(), null), resource);
+        return new ResourceSkeletonInfo(getGroupChildren(resource, conformanceProfile.getChildren(), null, parent), resource);
     }
 
-    public List<ResourceSkeletonBone> getGroupChildren(DisplayElement parent, Set<SegmentRefOrGroup> segmentRefOrGroups, LocationInfo parentLocationInfo) {
+    public List<ResourceSkeletonBone> getGroupChildren(DisplayElement parent, Set<SegmentRefOrGroup> segmentRefOrGroups, LocationInfo parentLocationInfo, ResourceSkeleton parentSkeleton) {
         List<ResourceSkeletonBone> children = new ArrayList<>();
         for(SegmentRefOrGroup element: segmentRefOrGroups) {
             if(element instanceof Group) {
-                LocationInfo groupLocationInfo = makeLocationInfo(parentLocationInfo, null, element.getType(), element.getName(), element.getPosition());
-                children.add(
-                        new ResourceSkeletonBone(
-                            getGroupChildren(parent, ((Group) element).getChildren(), groupLocationInfo),
-                            element.getId(),
-                            element.getPosition(),
-                            groupLocationInfo,
-                            parent,
-                            element.getUsage(),
-                            new ResourceSkeletonBoneCardinality(element.getMin(), element.getMax()),
-                            this
-                        )
+                LocationInfo groupLocationInfo = makeLocationInfo(parentLocationInfo, null, element.getType(), element.getName(), element.getPosition(), element.getId());
+                List<ResourceSkeletonBone> groupChildren = getGroupChildren(parent, ((Group) element).getChildren(), groupLocationInfo, null);
+                ResourceSkeletonBone group = new ResourceSkeletonBone(
+                        groupChildren,
+                        element.getId(),
+                        element.getPosition(),
+                        groupLocationInfo,
+                        parent,
+                        element.getUsage(),
+                        new ResourceSkeletonBoneCardinality(element.getMin(), element.getMax()),
+                        parentSkeleton,
+                        this
                 );
+                groupChildren.forEach(gc -> gc.setParentSkeleton(group));
+                children.add(group);
             } else if(element instanceof SegmentRef) {
                 children.add(new ResourceSkeletonBone(
                         new ResourceRef(Type.SEGMENT, ((SegmentRef) element).getRef().getId()),
                         element.getId(),
                         element.getPosition(),
-                        makeLocationInfo(parentLocationInfo, null, element.getType(), element.getName(), element.getPosition()),
+                        makeLocationInfo(parentLocationInfo, null, element.getType(), element.getName(), element.getPosition(), element.getId()),
                         parent,
                         element.getUsage(),
                         new ResourceSkeletonBoneCardinality(element.getMin(), element.getMax()),
+                        parentSkeleton,
                         this
                 ));
             }
@@ -137,12 +142,13 @@ public class ResourceSkeletonService {
         return children;
     }
 
-    public LocationInfo makeLocationInfo(LocationInfo parent, DisplayElement resource, Type location, String name, int position) {
+    public LocationInfo makeLocationInfo(LocationInfo parent, DisplayElement resource, Type location, String name, int position, String elementId) {
         LocationInfo locationInfo = new LocationInfo();
         if(parent == null) {
             locationInfo.setName(name);
             locationInfo.setType(location);
             locationInfo.setPositionalPath(position + "");
+            locationInfo.setPathId(elementId);
             if(resource != null) {
                 locationInfo.setHl7Path(append(resource.getFixedName(), "-", position + ""));
             } else {
@@ -159,6 +165,7 @@ public class ResourceSkeletonService {
             else {
                 locationInfo.setHl7Path(append(parent.getHl7Path(), ".", position + ""));
             }
+            locationInfo.setPathId(append(parent.getPathId(), "-", elementId));
             return locationInfo;
         }
     }

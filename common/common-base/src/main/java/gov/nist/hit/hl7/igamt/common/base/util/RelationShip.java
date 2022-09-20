@@ -11,6 +11,7 @@ public class RelationShip {
 
 	@Id
 	private String id;
+	
 	private Usage usage; 
 	@Indexed
 	private ReferenceIndentifier child;

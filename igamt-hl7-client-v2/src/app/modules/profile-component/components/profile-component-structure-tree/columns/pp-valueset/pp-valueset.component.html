@@ -6,10 +6,11 @@
           <ng-container *ngFor="let item of edit.value">
             <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit: item, context : edit.context }"></ng-container>
           </ng-container>
-
         </ng-container>
         <ng-container *ngSwitchCase="'SINGLECODE'">
-            <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: edit.value, context : edit.context }"></ng-container>
+          <ng-container *ngFor="let item of edit.value">
+            <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: item, context : edit.context }"></ng-container>
+          </ng-container>
         </ng-container>
       </ng-container>
     </div>
@@ -69,10 +70,8 @@
       </td>
     </tr>
     <tr>
-      <td colspan="3">
-        <div [pTooltip]="singleCode.valueSet?.description" tooltipPosition="top">
-          <app-display-ref [element]="singleCode.valueSet" [hideDescription]="true"></app-display-ref>
-        </div>
+      <td pTooltip="Binding Locations" tooltipPosition="top" colspan="3">
+        <strong>{{singleCode.locations.length > 0 ? (singleCode.locations | json) : '.'}}</strong>
       </td>
     </tr>
   </table>

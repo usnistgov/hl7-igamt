@@ -5,6 +5,8 @@
         
     
         	<xsl:import href="/templates/profile/valueset/valueSetBindingList.xsl" />
+        			<xsl:import href="/templates/profile/singleCode/singleCodeBinding.xsl" />
+        	
         		<xsl:import href="/templates/profile/singleCode/internalSingleCode.xsl" />
         			<xsl:import href="/templates/profile/constraint.xsl" />
         		
@@ -363,7 +365,9 @@
         </xsl:element>
                 <xsl:element name="br"/>
                 
-                		<xsl:call-template name="ValueSetBindingList"/>	
+                		<xsl:call-template name="ValueSetBindingList"/>
+                						<xsl:call-template name="SingleCodeBinding" />
+                			
 					<xsl:call-template name="InternalSingleCode"/>	
 		<xsl:apply-templates select="./Slicings"/>
 					

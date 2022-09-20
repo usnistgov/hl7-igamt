@@ -30,6 +30,7 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
+import gov.nist.hit.hl7.igamt.display.model.PublishingInfo;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CompositeProfileCreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
@@ -98,9 +99,7 @@ public interface IgService {
   public Set<RelationShip> buildRelationShip(Ig ig, Type type);
   
   public Set<RelationShip> builAllRelations(Ig ig) ;
-  
-  public void publishIG(Ig ig) throws IGNotFoundException, IGUpdateException;
-  
+    
   UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass, boolean updateDate);
   
   public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo);
@@ -121,6 +120,8 @@ public interface IgService {
       throws IGUpdateException;
 
   public FilterResponse getFilterResponse(String id, FilterIGInput filter) throws EntityNotFound;
+
+  public void publishIG(Ig ig, PublishingInfo info) throws IGNotFoundException, IGUpdateException;
 
 
   List<Ig> findByIdIn(List<String> ids);

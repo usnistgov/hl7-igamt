@@ -139,14 +139,14 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
   // TODDOO review requirment
   private void applyValueSetFlavorInfo(Valueset valueset, AddingInfo addingInfo) {
-    valueset.setBindingIdentifier(addingInfo.getExt());
     if(valueset.getBindingIdentifier().equals("HL70396") && valueset.getSourceType().equals(SourceType.EXTERNAL)) {
       valueset.setSourceType(SourceType.INTERNAL);
       valueset.setOrigin(valueset.getId());
       Set<Code> vsCodes = fhirHandlerService.getValusetCodeForDynamicTable();
       valueset.setCodes(vsCodes);
-
     }
+    valueset.setBindingIdentifier(addingInfo.getExt());
+
 
   }
 
@@ -184,6 +184,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     if(mode.equals(CloneMode.DERIVE)) {
       this.lockConformanceStatements(resource);
       resource.setDerived(true);
+      resource.setOrigin(resource.getFrom());
     }
     this.updateReasonForChange(resource);
   }

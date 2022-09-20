@@ -60,12 +60,14 @@ export class SelectValueSetsComponent implements OnInit {
     this.emitData();
   }
   addAsFlavor(obj: IValueSet) {
+    console.log("HERE");
     const element: IAddingInfo = {
       originalId: obj.id,
       id: Guid.create().toString(),
       oid: obj.oid,
       type: Type.VALUESET,
       name: obj.bindingIdentifier,
+      ext: obj.bindingIdentifier,
       description: obj.name,
       flavor: true,
       sourceType: obj.sourceType,

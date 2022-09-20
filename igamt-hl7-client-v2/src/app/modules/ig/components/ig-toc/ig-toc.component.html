@@ -20,7 +20,15 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'PROFILE'">
-          <span> {{node.data.path}} {{node.data.variableName}}</span>
+          <div #profile>
+            <span [contextMenu]="profileContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
+            <context-menu #profileContextMenu [disabled]="viewOnly||delta">
+              <ng-template (execute)="manageStructure(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
+                <i class="fa fa-plus"></i> Manage Structure
+              </ng-template>
+            </context-menu>
+          </div>
+
         </ng-container>
 
         <ng-container *ngSwitchCase="'PROFILECOMPONENTREGISTRY'">
@@ -29,6 +37,9 @@
             <context-menu #ProfileComponentContextMenu [disabled]="viewOnly||delta">
               <ng-template (execute)="createNew(node.data, 'PROFILECOMPONENT')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Create Profile Component
+              </ng-template>
+              <ng-template (execute)="deleteSection(node)" contextMenuItem contextMenuItem [enabled]="!viewOnly&&!delta&&!node.children.length">
+                <i class="fa fa-remove"></i> Delete Section
               </ng-template>
             </context-menu>
           </div>
@@ -59,6 +70,9 @@
             <ng-template (execute)="createNew(node.data, 'COMPOSITEPROFILE')" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-plus"></i> Create Composite Profile
             </ng-template>
+            <ng-template (execute)="deleteSection(node)" contextMenuItem contextMenuItem [enabled]="!viewOnly&&!delta&&!node.children.length">
+              <i class="fa fa-remove"></i> Delete Section
+            </ng-template>
           </context-menu>
         </ng-container>
 
@@ -82,6 +96,9 @@
             <context-menu #coConstraintGroupContextMenu [disabled]="viewOnly||delta">
               <ng-template (execute)="createNew(node.data, 'COCONSTRAINTGROUP')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Create Co-Constraints Group
+              </ng-template>
+              <ng-template (execute)="deleteSection(node)" contextMenuItem contextMenuItem [enabled]="!viewOnly&&!delta&&!node.children.length">
+                <i class="fa fa-remove"></i> Delete Section
               </ng-template>
             </context-menu>
           </div>

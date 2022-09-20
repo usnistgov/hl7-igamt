@@ -6,6 +6,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.SingleCodeBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingInfo;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingLocationOption;
@@ -18,10 +19,7 @@ import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class VocabularyBindingVerificationService extends VerificationUtils {
@@ -42,7 +40,7 @@ public class VocabularyBindingVerificationService extends VerificationUtils {
                                     bindingInfo,
                                     target.getParent().getDomainInfo().getVersion(),
                                     target.getPosition(),
-                                    target.getLocationInfo().getType(),
+                                    target.getParent().getType(),
                                     target.getParent().getFixedName())
                     ) {
                         if(!bindingInfo.isMultiple() && valuesetBindings.size() > 1) {
@@ -59,13 +57,18 @@ public class VocabularyBindingVerificationService extends VerificationUtils {
                         for(ValuesetBinding vsBinding: valuesetBindings) {
                             errors.addAll(
                                     this.verifyBindingLocations(
-                                            resourceSkeleton,
-                                            pathId,
-                                            target.getLocationInfo().getHl7Path(),
-                                            target,
                                             validLocation,
                                             vsBinding.getValuesetLocations(),
-                                            this.entry::InvalidBindingLocation
+                                            (reason) -> this.entry.InvalidBindingLocation(
+                                                    pathId,
+                                                    target.getLocationInfo().getHl7Path(),
+                                                    target.getLocationInfo(),
+                                                    PropertyType.VALUESET,
+                                                    resourceSkeleton.getResource().getId(),
+                                                    resourceSkeleton.getResource().getType(),
+                                                    vsBinding.getValuesetLocations(),
+                                                    reason
+                                            )
                                     )
                             );
                             for(String vsId: vsBinding.getValueSets()) {
@@ -101,53 +104,29 @@ public class VocabularyBindingVerificationService extends VerificationUtils {
         return bindingInfo.getAllowedBindingLocations() != null ? bindingInfo.getAllowedBindingLocations().get(versionKey) : Collections.emptyList();
     }
 
-    public List<IgamtObjectError> verifyBindingLocations(ResourceSkeleton resourceSkeleton, String pathId, String name, ResourceSkeletonBone target,  List<BindingLocationOption> validLocation, Set<Integer> bindingLocations, BindingLocationEntryBuilder entryBuilder) {
+    public List<IgamtObjectError> verifyBindingLocations(List<BindingLocationOption> validLocation, Set<Integer> bindingLocations, BindingLocationEntryBuilder entryBuilder) {
         List<IgamtObjectError> errors = new ArrayList<>();
         if(validLocation != null) {
             if(bindingLocations == null || bindingLocations.size() == 0) {
                 errors.add(
-                        entryBuilder.apply(
-                                pathId,
-                                name,
-                                target.getLocationInfo(),
-                                resourceSkeleton.getResource().getId(),
-                                resourceSkeleton.getResource().getType(),
-                                bindingLocations,
-                                "Element is complex"
-                        )
+                        entryBuilder.apply("Element is complex")
                 );
             } else if(!isValidBindingLocations(validLocation, bindingLocations)) {
                 errors.add(
-                        entryBuilder.apply(
-                                pathId,
-                                name,
-                                target.getLocationInfo(),
-                                resourceSkeleton.getResource().getId(),
-                                resourceSkeleton.getResource().getType(),
-                                bindingLocations,
-                                "Element does not exist"
-                        )
+                        entryBuilder.apply("Element does not exist")
                 );
             }
         } else {
             if(bindingLocations != null && bindingLocations.size() > 0) {
                 errors.add(
-                        entryBuilder.apply(
-                                pathId,
-                                name,
-                                target.getLocationInfo(),
-                                resourceSkeleton.getResource().getId(),
-                                resourceSkeleton.getResource().getType(),
-                                bindingLocations,
-                                "Element is primitive"
-                        )
+                        entryBuilder.apply("Element is primitive")
                 );
             }
         }
         return errors;
     }
 
-    public List<IgamtObjectError> verifySingleCodeBinding(ResourceSkeleton resourceSkeleton, String pathId, InternalSingleCode internalSingleCode) {
+    public List<IgamtObjectError> verifySingleCodeBinding(ResourceSkeleton resourceSkeleton, String pathId, List<SingleCodeBinding> singleCodeBindings) {
         return this.process(
                 resourceSkeleton,
                 PropertyType.SINGLECODE,
@@ -159,65 +138,49 @@ public class VocabularyBindingVerificationService extends VerificationUtils {
                                     bindingInfo,
                                     target.getParent().getDomainInfo().getVersion(),
                                     target.getPosition(),
-                                    target.getLocationInfo().getType(),
+                                    target.getParent().getType(),
                                     target.getParent().getFixedName()) &&
                             bindingInfo.isAllowSingleCode()
                     ) {
                         List<IgamtObjectError> errors = new ArrayList<>();
-                        if(Strings.isNullOrEmpty(internalSingleCode.getCode())) {
-                            errors.add(
-                                    this.entry.SingleCodeMissingCode(
-                                            pathId,
-                                            target.getLocationInfo(),
-                                            resourceSkeleton.getResource().getId(),
-                                            resourceSkeleton.getResource().getType()
-                                    )
-                            );
-                        }
-                        if(Strings.isNullOrEmpty(internalSingleCode.getCodeSystem())) {
-                            errors.add(
-                                    this.entry.SingleCodeMissingCodeSystem(
-                                            pathId,
-                                            target.getLocationInfo(),
-                                            resourceSkeleton.getResource().getId(),
-                                            resourceSkeleton.getResource().getType()
-                                    )
-                            );
-                        }
-                        if(Strings.isNullOrEmpty(internalSingleCode.getValueSetId())) {
-                            errors.add(
-                                    this.entry.SingleCodeMissingValueSet(
-                                            pathId,
-                                            target.getLocationInfo(),
-                                            resourceSkeleton.getResource().getId(),
-                                            resourceSkeleton.getResource().getType()
-                                    )
-                            );
-                        } else {
-                            Valueset vs = this.valuesetService.findById(internalSingleCode.getValueSetId());
-                            if(vs != null) {
-                                if(!existsCodeInValueSet(internalSingleCode.getValueSetId(), internalSingleCode.getCode(), internalSingleCode.getCodeSystem())) {
-                                    errors.add(
-                                            this.entry.SingleCodeNotInValueSet(
-                                                    pathId,
-                                                    target.getLocationInfo(),
-                                                    resourceSkeleton.getResource().getId(),
-                                                    resourceSkeleton.getResource().getType(),
-                                                    internalSingleCode.getCode(),
-                                                    internalSingleCode.getCodeSystem(),
-                                                    vs.getBindingIdentifier()
-                                            )
-                                    );
-                                }
-                            } else {
+                        List<BindingLocationOption> validLocation = this.getValidBindingLocations(target.getResource().getDomainInfo(), bindingInfo);
+                        for(SingleCodeBinding binding: singleCodeBindings) {
+                            if(Strings.isNullOrEmpty(binding.getCode())) {
                                 errors.add(
-                                        this.entry.ResourceNotFound(
-                                                new Location(pathId, target.getLocationInfo(), PropertyType.SINGLECODE),
-                                                internalSingleCode.getValueSetId(),
-                                                Type.VALUESET
+                                        this.entry.SingleCodeMissingCode(
+                                                pathId,
+                                                target.getLocationInfo(),
+                                                resourceSkeleton.getResource().getId(),
+                                                resourceSkeleton.getResource().getType()
                                         )
                                 );
                             }
+                            if(Strings.isNullOrEmpty(binding.getCodeSystem())) {
+                                errors.add(
+                                        this.entry.SingleCodeMissingCodeSystem(
+                                                pathId,
+                                                target.getLocationInfo(),
+                                                resourceSkeleton.getResource().getId(),
+                                                resourceSkeleton.getResource().getType()
+                                        )
+                                );
+                            }
+                            errors.addAll(
+                                    this.verifyBindingLocations(
+                                            validLocation,
+                                            new HashSet<>(binding.getLocations()),
+                                            (reason) -> this.entry.InvalidBindingLocation(
+                                                    pathId,
+                                                    target.getLocationInfo().getHl7Path(),
+                                                    target.getLocationInfo(),
+                                                    PropertyType.SINGLECODE,
+                                                    resourceSkeleton.getResource().getId(),
+                                                    resourceSkeleton.getResource().getType(),
+                                                    new HashSet<>(binding.getLocations()),
+                                                    reason
+                                            )
+                                    )
+                            );
                         }
                         return errors;
                     } else {
@@ -238,27 +201,9 @@ public class VocabularyBindingVerificationService extends VerificationUtils {
         return this.valuesetService.findById(vsId) != null;
     }
 
-    public boolean existsCodeInValueSet(String vsId, String codeValue, String codeSystem) {
-        Valueset vs = this.valuesetService.findById(vsId);
-        if(vs != null) {
-            if(vs.isIncludeCodes()) {
-                if(vs.getCodes() != null) {
-                    return vs.getCodes().stream()
-                            .anyMatch((code) -> code.getValue().equals(codeValue) && code.getCodeSystem().equals(codeSystem));
-                } else {
-                    return false;
-                }
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
-
     @FunctionalInterface()
     public interface BindingLocationEntryBuilder {
-        IgamtObjectError apply(String pathId, String name, LocationInfo info, String id, Type type, Set<Integer> locations, String reason);
+        IgamtObjectError apply(String reason);
     }
 
 }

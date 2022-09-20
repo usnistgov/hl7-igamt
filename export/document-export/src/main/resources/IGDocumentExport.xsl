@@ -28,8 +28,10 @@
 	<xsl:variable name="appVersion" select="$appCurrentVersion" />
 	<!-- Parameters for the column filter -->
 	<!-- Messages -->
-	<xsl:param name="messageColumnName" select="'true'" />
-	<xsl:variable name="columnDisplay.message.name" select="$messageColumnName" />
+	<xsl:param name="messageColumnPath" select="'true'" />
+	<xsl:variable name="columnDisplay.message.path" select="$messageColumnPath" />
+	<xsl:param name="messageColumnElementName" select="'true'" />
+	<xsl:variable name="columnDisplay.message.name" select="$messageColumnElementName" />
 	<xsl:param name="messageColumnUsage" select="'true'" />
 	<xsl:variable name="columnDisplay.message.usage" select="$messageColumnUsage" />
 	<xsl:param name="messageColumnCardinality" select="'true'" />

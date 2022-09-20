@@ -92,27 +92,6 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .entry();
     }
 
-    @Override
-    public IgamtObjectError SingleCodeMissingValueSet(String pathId, LocationInfo info, String id, Type type) {
-        return new IgamtVerificationEntryBuilder("SINGLE_CODE_MISSING_VALUESET")
-                .error()
-                .handleInternally()
-                .target(id, type)
-                .locationInfo(pathId, info, PropertyType.SINGLECODE)
-                .message("Single Code binding is missing value set")
-                .entry();
-    }
-
-    @Override
-    public IgamtObjectError SingleCodeNotInValueSet(String pathId, LocationInfo info, String id, Type type, String code, String codeSystem, String bindingIdentifier) {
-        return new IgamtVerificationEntryBuilder("SINGLE_CODE_NOT_IN_VS")
-                .error()
-                .handleByUser()
-                .target(id, type)
-                .locationInfo(pathId, info, PropertyType.SINGLECODE)
-                .message("Code " + code + " in code system " + codeSystem + " not found in ValueSet " + bindingIdentifier)
-                .entry();
-    }
 
     @Override
     public IgamtObjectError ValueSetBindingNotAllowed(String pathId, LocationInfo info, String id, Type type) {
@@ -137,13 +116,13 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
-    public IgamtObjectError InvalidBindingLocation(String pathId, String name, LocationInfo target, String id, Type type, Set<Integer> bindingLocations, String reason) {
+    public IgamtObjectError InvalidBindingLocation(String pathId, String name, LocationInfo target, PropertyType prop, String id, Type type, Set<Integer> bindingLocations, String reason) {
         boolean blIsSet = bindingLocations != null && bindingLocations.size() > 0;
         return new IgamtVerificationEntryBuilder("INVALID_BINDING_LOCATION")
                 .error()
                 .handleInternally()
                 .target(id, type)
-                .locationInfo(pathId, name, PropertyType.VALUESET)
+                .locationInfo(pathId, name, prop)
                 .message("Invalid binding location : " + (blIsSet ? bindingLocations : '.') + " at " + target.getHl7Path() + (!Strings.isNullOrEmpty(reason) ? " ("+ reason +")" : ""))
                 .entry();
     }
@@ -156,6 +135,17 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_SEGMENT)
                 .message("Path " + path + " target is not a segment reference "+ (Strings.isNullOrEmpty(pathQualifier) ? "" : "("+ pathQualifier +")"))
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError CoConstraintOBX3MappingIsDuplicate(String pathId, String id, Type type, String code) {
+        return new IgamtVerificationEntryBuilder("COCONSTRAINT_OBX3_TO_FLAVOR_MAPPING")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(pathId, PropertyType.COCONSTRAINTBINDING_ROW)
+                .message("OBX-3 Code : " + code + " is duplicated and associated with different flavors for OBX-5")
                 .entry();
     }
 
@@ -379,6 +369,39 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
                 .message("Co-Constraint Table has multiple a column of VARIES type but no DATATYPE column")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError AssertionOccurrenceTypeOnNotRepeatable(Location location, String id, Type type, LocationInfo path, String occurrenceType, String pathQualifier) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_OCCTYPE_NOT_REPEATABLE")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Path : " + path.getHl7Path() + " is not a repeatable element, but has an occurrence selection of type '"+ occurrenceType + "'. " + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError AssertionOccurrenceTypeInstanceOnNotMultiLevelRepeatable(Location location, String id, Type type, LocationInfo path, String pathQualifier) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_OCCTYPE_INSTANCE_MULTI")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Path : " + path.getHl7Path() + " is repeating at multiple levels, selecting a specific instance of the element is not possible." + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError AssertionOccurrenceValueOverMax(Location location, String id, Type type, LocationInfo path, String occurrenceType, int max, int value, String pathQualifier) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_OCC_OVER_MAX")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Path : " + path.getHl7Path() + " is allowed a maximum repetition of " + max + ". An occurrence selector defined with type '" + occurrenceType + "' was given the value of " + value + " which is higher than the allowed"  + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
                 .entry();
     }
 

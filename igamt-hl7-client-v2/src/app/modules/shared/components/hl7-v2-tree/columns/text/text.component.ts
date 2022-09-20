@@ -32,7 +32,7 @@ export class TextComponent extends HL7v2TreeColumnComponent<IStringValue> implem
 
     dialogRef.afterClosed().subscribe((result) => {
       this.definition.value = result;
-      this.onChange(this.getInputValue().value, this.definition.value, PropertyType.DEFINITIONTEXT, ChangeType.UPDATE);
+      this.onChange(this.oldValue ? this.oldValue.value : '', this.definition.value, PropertyType.DEFINITIONTEXT, ChangeType.UPDATE);
     });
   }
 

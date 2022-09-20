@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.export.service.impl;
 
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -55,10 +56,12 @@ import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.export.service.ExportService;
 import gov.nist.hit.hl7.igamt.export.service.IgNewExportService;
+import gov.nist.hit.hl7.igamt.export.util.FileWritter;
 import gov.nist.hit.hl7.igamt.export.util.WordUtil;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
@@ -112,6 +115,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	public ExportedFile exportIgDocumentToHtml(String username,IgDataModel igDataModel, ExportFilterDecision decision, String configId)
 			throws Exception {
 		Ig igDocument = igDataModel.getModel();
+		System.out.println("in html export");
 		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 		if (igDocument != null) {
 			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDataModel, ExportFormat.HTML, decision, exportConfiguration);
@@ -178,22 +182,14 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			ExportFilterDecision decision, ExportConfiguration exportConfiguration) throws Exception {
 		Ig igDocument = igDataModel.getModel();
 		try {
-//			ExportConfiguration exportConfiguration =
-//					exportConfigurationService.getExportConfiguration(username);
-			
-//			DeltaConfiguration deltaConfig = new DeltaConfiguration();
-//			deltaConfig.setColors(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getColors());
-//			deltaConfig.setMode(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getMode());
-//			Boolean deltaMode = exportConfiguration.getSegmentExportConfiguration().isDeltaMode();
-//			exportConfiguration.getSegmentExportConfiguration().setDeltaConfig(deltaConfig);
-//			exportConfiguration.getSegmentExportConfiguration().setDeltaMode(deltaMode);
 			ExportFontConfiguration exportFontConfiguration =
 					exportFontConfigurationService.getExportFontConfiguration(username);
 			DocumentStructureDataModel documentStructureDataModel = new DocumentStructureDataModel();
 			String xmlContent =
 					igDataModelSerializationService.serializeDocument(igDataModel, exportConfiguration,decision).toXML();
-					      System.out.println("XML_EXPORT : " + xmlContent);
-//					      System.out.println("XmlContent in IgExportService is : " + xmlContent);
+//					      FileWritter fw = new FileWritter();
+//					      fw.createAndWriteToFile(xmlContent);
+
 			// TODO add app infoservice to get app version
 			ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
 					igDocument.getName(), igDocument.getMetadata().getCoverPicture(), exportConfiguration,
@@ -373,6 +369,17 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			          }
 					decision.getDatatypesFilterMap().put(child.getRef().getId(), true);
 					bindedPaths.put(child.getId(), true);
+				}
+			}
+		}
+		if(s.getDynamicMappingInfo() != null) {
+			if(s.getDynamicMappingInfo().getItems() != null) {
+				for (DynamicMappingItem item: s.getDynamicMappingInfo().getItems()) {
+					if(item.getDatatypeId()!= null) {
+						decision.getDatatypesFilterMap().put(item.getDatatypeId(), true);
+
+						datatypesIds.add(item.getDatatypeId());
+					}
 				}
 			}
 		}

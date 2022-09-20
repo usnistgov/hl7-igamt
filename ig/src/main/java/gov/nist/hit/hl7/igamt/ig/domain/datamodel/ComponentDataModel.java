@@ -13,11 +13,13 @@ package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.SingleCodeBinding;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.service.impl.XMLSerializeServiceImpl;
@@ -32,7 +34,7 @@ public class ComponentDataModel implements Serializable{
 
   private DatatypeBindingDataModel datatype;
   private Predicate predicate;
-  private InternalSingleCode singleCode;
+  private List<SingleCodeBinding> singleCodes;
   private Set<ValuesetBindingDataModel> valuesets = new HashSet<ValuesetBindingDataModel>();
   
   public ComponentDataModel(){
@@ -40,10 +42,10 @@ public class ComponentDataModel implements Serializable{
   }
 
   public ComponentDataModel(Component c, Predicate predicate,
-		  InternalSingleCode singleCode, Set<ValuesetBindingDataModel> valuesets, DatatypeBindingDataModel datatype) {
+		  List<SingleCodeBinding> singleCodes, Set<ValuesetBindingDataModel> valuesets, DatatypeBindingDataModel datatype) {
     this.model = c;
     this.predicate = predicate;
-    this.singleCode = singleCode;
+    this.setSingleCodes(singleCodes);
     
     
     Set<ValuesetBindingDataModel> newValuesets = new HashSet<ValuesetBindingDataModel>();
@@ -83,14 +85,6 @@ public Component getModel() {
   public void setPredicate(Predicate predicate) {
     this.predicate = predicate;
   }
-  
-  public InternalSingleCode getSingleCode() {
-    return singleCode;
-  }
-
-  public void setSingleCode(InternalSingleCode singleCode) {
-    this.singleCode = singleCode;
-  }
 
   public Set<ValuesetBindingDataModel> getValuesets() {
     return valuesets;
@@ -107,6 +101,14 @@ public Component getModel() {
   public void setDatatype(DatatypeBindingDataModel datatype) {
     this.datatype = datatype;
   }
+
+public List<SingleCodeBinding> getSingleCodes() {
+	return singleCodes;
+}
+
+public void setSingleCodes(List<SingleCodeBinding> singleCodes) {
+	this.singleCodes = singleCodes;
+}
 
 
 }

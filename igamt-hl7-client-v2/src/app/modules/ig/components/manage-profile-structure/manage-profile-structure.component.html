@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>Message Infrastructure</h2>
+<mat-dialog-content>
+
+  <div class="ui-g" style="width:400px;margin-bottom:10px">
+
+    <ng-container *ngFor="let option of defaultOptions">
+
+
+      <div class="ui-g-12">
+
+         <p-checkbox [binary]="true" [label]="option.label" [disabled]="option.disabled|| hasChildren[option.registryType]" [(ngModel)]="checked[option.registryType]"></p-checkbox>
+      </div>
+
+
+    </ng-container>
+
+</div>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button [mat-dialog-close]="false" class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()" class="btn btn-sm btn-danger">Yes</button>
+</mat-dialog-actions>

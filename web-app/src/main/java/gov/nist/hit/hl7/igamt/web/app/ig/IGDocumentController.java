@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -101,6 +102,7 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.display.model.IGMetaDataDisplay;
+import gov.nist.hit.hl7.igamt.display.model.PublishingInfo;
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CoConstraintGroupCreateWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CompositeProfileCreationWrapper;
@@ -304,16 +306,15 @@ public class IGDocumentController extends BaseController {
     return igService.conformanceStatementsSummary(igdoument);
   }
 
-  @RequestMapping(value = "/api/igdocuments/{id}/conformancestatement/assertion", method = RequestMethod.POST, produces = {"application/text" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
-  public @ResponseBody String getAssertionCS(@PathVariable("id") String id, @RequestBody ConformanceStatement cs, Authentication authentication) throws IGNotFoundException, IGUpdateException {
+  @RequestMapping(value = "/api/igdocuments/{type}/{id}/conformancestatement/assertion", method = RequestMethod.POST, produces = {"application/text" })
+  @PreAuthorize("AccessResource(#type, #id, READ)")
+  public @ResponseBody String getAssertionCS(@PathVariable("id") String id, @PathVariable("type") Type type, @RequestBody ConformanceStatement cs, Authentication authentication) throws IGNotFoundException, IGUpdateException {
     return this.serializeService.generateAssertionScript(cs, id);
   }
 
-  @RequestMapping(value = "/api/igdocuments/{id}/predicate/assertion", method = RequestMethod.POST, produces = {
-  "application/text" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
-  public @ResponseBody String getAssertionPD(@PathVariable("id") String id, @RequestBody Predicate p, Authentication authentication)
+  @RequestMapping(value = "/api/igdocuments/{type}/{id}/predicate/assertion", method = RequestMethod.POST, produces = {"application/text" })
+  @PreAuthorize("AccessResource(#type, #id, READ)")
+  public @ResponseBody String getAssertionPD(@PathVariable("id") String id, @PathVariable("type") Type type, @RequestBody Predicate p, Authentication authentication)
       throws IGNotFoundException, IGUpdateException {
     return this.serializeService.generateConditionScript(p, id);
   }
@@ -513,7 +514,7 @@ public class IGDocumentController extends BaseController {
     }
     TextSection profile  = findRegistryByType(Type.PROFILE, content);
     if( profile !=null  && !profile.getChildren().isEmpty()) {
-      for(TextSection profileChild : profile.getChildren() ) {
+      for(TextSection profileChild : profile.getChildren() ){
         profileChild.setChildren(new HashSet<TextSection>()); 
       }
     }
@@ -612,6 +613,7 @@ public class IGDocumentController extends BaseController {
       empty.setDomainInfo(info);
       empty.setMetadata(wrapper.getMetadata());
       empty.setCreationDate(new Date());
+      empty.setId(new ObjectId().toString());
       this.addService.addConformanceProfiles(empty, wrapper.getSelected(), username);
       Ig ret = igService.save(empty);
       return new ResponseMessage<String>(Status.SUCCESS, "", "IG created Successfuly", ret.getId(), false,
@@ -960,8 +962,15 @@ public class IGDocumentController extends BaseController {
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     String username = authentication.getPrincipal().toString();
-   
+    
+
     Valueset clone =  resourceManagementService.createFlavor(ig.getValueSetRegistry(), username, new DocumentInfo(id, DocumentType.IGDOCUMENT), Type.VALUESET, wrapper.getSelected());
+
+    if(ig.getValueSetRegistry().getCodesPresence() != null) {
+    	if(ig.getValueSetRegistry().getCodesPresence().containsKey(valuesetId)) {
+    		ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), ig.getValueSetRegistry().getCodesPresence().get(valuesetId));
+    	}
+    }
     ig = igService.save(ig);
     AddResourceResponse response = new AddResourceResponse();
     response.setId(clone.getId());
@@ -1198,11 +1207,11 @@ public class IGDocumentController extends BaseController {
   @RequestMapping(value = "/api/igdocuments/{id}/publish", method = RequestMethod.POST, produces = {
   "application/json" })
   // TODO
-  public @ResponseBody ResponseMessage<String> publish(@PathVariable("id") String id, Authentication authentication)
+  public @ResponseBody ResponseMessage<String> publish(@PathVariable("id") String id, @RequestBody PublishingInfo info,  Authentication authentication)
       throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
-    this.igService.publishIG(ig);
+    this.igService.publishIG(ig, info);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig published Successfully", id, false,
         new Date(), id);
   }
@@ -1438,6 +1447,7 @@ public class IGDocumentController extends BaseController {
         newVS.setSharedUsers(ig.getSharedUsers());
         newVS.setSharePermission(ig.getSharePermission());
         newVS.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
+        newVS.setId(new ObjectId().toString());
         newVS = this.valuesetService.save(newVS);
         
 

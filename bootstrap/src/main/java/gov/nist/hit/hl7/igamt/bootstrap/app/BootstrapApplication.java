@@ -3,9 +3,11 @@ package gov.nist.hit.hl7.igamt.bootstrap.app;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -33,14 +35,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.uhn.fhir.context.FhirContext;
 import gov.nist.hit.hl7.igamt.bootstrap.data.CodeFixer;
+import gov.nist.hit.hl7.igamt.bootstrap.data.ConfigCreator;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConfigUpdater;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConformanceStatementFixer;
+import gov.nist.hit.hl7.igamt.bootstrap.data.ConformanceStatementsStrengthFix;
 import gov.nist.hit.hl7.igamt.bootstrap.data.DataFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.DocumentInfoService;
 import gov.nist.hit.hl7.igamt.bootstrap.data.DynamicMappingFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.FixIGAttribute;
 import gov.nist.hit.hl7.igamt.bootstrap.data.IgFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.SanityChecker;
+import gov.nist.hit.hl7.igamt.bootstrap.data.SingleCodeDataFix;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
@@ -59,6 +64,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -84,6 +90,7 @@ import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.IgServiceImpl;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
@@ -197,6 +204,14 @@ public class BootstrapApplication implements CommandLineRunner {
 	
 	@Autowired
 	SanityChecker sanityChecker;
+	
+	@Autowired
+	SingleCodeDataFix singleCodeDataFix;
+	
+	@Autowired
+	ConformanceStatementsStrengthFix conformanceStatementsStrengthFix;
+	@Autowired
+	ConfigCreator configCreator;
 
 
 	@Bean
@@ -488,7 +503,7 @@ public class BootstrapApplication implements CommandLineRunner {
 		this.dataFixer.addFixedExt();
 	}
 
-	// @PostConstruct
+	//@PostConstruct
 	void addVsLocationException() {
 		Config config = this.sharedConstantService.findOne();
 		this.configUpdater.updateValueSetLoctaionException(config, "ST","CQ_NIST", Type.DATATYPE, 2, config.getHl7Versions());
@@ -530,10 +545,10 @@ public class BootstrapApplication implements CommandLineRunner {
 	//@PostConstruct
 	void fixDomainInfoForLinks() {
 
-		//this.igFixer.fixDatatypeLinksDomainInfo("62961b5c8b87bc0006692096");
-		//this.igFixer.fixValuesetLinksDomainInfo("5f7cc40f9194be0006377914");
-		//this.igFixer.fixCoConstraintEmptyLink("5ef0e7dc2af19b00069cfb2b");
-		//this.igFixer.fixCoConstraintEmptyLink("5ef0e80c2af19b00069d2185");
+		this.igFixer.fixDatatypeLinksDomainInfo("62961b5c8b87bc0006692096");
+//		this.igFixer.fixValuesetLinksDomainInfo("5f7cc40f9194be0006377914");
+//		this.igFixer.fixCoConstraintEmptyLink("5ef0e7dc2af19b00069cfb2b");
+//		this.igFixer.fixCoConstraintEmptyLink("5ef0e80c2af19b00069d2185");
 
 	}
 	
@@ -542,7 +557,7 @@ public class BootstrapApplication implements CommandLineRunner {
 	void checkDocumentInfo() throws IGUpdateException {
 		List<Ig> igs = this.igService.findAll();
 		for( Ig ig: igs ) {
-			//sanityChecker.checkBrokenLinks(ig); 
+			sanityChecker.checkBrokenLinks(ig); 
 			//BROKEN  CCG LINK5ef0e80c2af19b00069d2185
 			//BROKEN  CCG LINK5ef0e7dc2af19b00069cfb2b
 
@@ -551,7 +566,9 @@ public class BootstrapApplication implements CommandLineRunner {
 			//sanityChecker.checkWrongDomainInfo(ig);
 			//sanityChecker.checkNullDocumentInfo(ig);
 			//sanityChecker.checkWrongDocumentInfo(ig);
-					}
+			//sanityChecker.checkMissingOrigin(ig);
+					
+		}
 	}
 	
 	//@PostConstruct
@@ -559,10 +576,99 @@ public class BootstrapApplication implements CommandLineRunner {
 		this.sanityChecker.checkCustomStructures();
 	}
 	
+	//@PostConstruct
+	void fixConformanceStatement() {
+		conformanceStatementsStrengthFix.fix();
+	}
+	//@PostConstruct
+	void fixSingleCode() throws Exception {
+		singleCodeDataFix.check();
+	}
+
 	
 	
+	//@PostConstruct
+	void ConfigCreateAndUpdate() {
+		System.out.println("UPDATE CONFIG");
+		configCreator.createSharedConstant();
+		Config config = this.sharedConstantService.findOne();
+		this.configUpdater.updateValueSetLoctaionException(config, "ST","CQ_NIST", Type.DATATYPE, 2, config.getHl7Versions());
+		this.sharedConstantService.save(config);
+	}
 	
+	//@PostConstruct
+	void addVersionFixes() throws ForbiddenOperationException, ValidationException {
+		codeFixer.fixTableHL70125("2.9"); 
+		this.dynamicMappingFixer.processSegmentByVersion("2.9");
+		tableFixes.fix0396ByVersion("2.9");
+		
+//	List<Datatype> dts =	this.dataypeService.findByDomainInfoVersion("2.9");
+//	HashMap<String, Datatype>  dtMap = new HashMap<String, Datatype>();
+//	for(Datatype dt: dts) {
+//		dtMap.put(dt.getId(), dt);
+//	}
+//	
+//	for(Datatype dt: dts ) {
+//		if(dt instanceof ComplexDatatype ) {
+//			ComplexDatatype level1 = (ComplexDatatype)dt;
+//			
+//			
+//			for ( Component c1 : level1.getComponents()) {
+//				
+//				Datatype sub1 = dtMap.get(c1.getRef().getId());
+//				
+//				
+//				if(sub1 instanceof ComplexDatatype) {
+//					
+//					
+//					ComplexDatatype sub1Cmp  = (ComplexDatatype)sub1;
+//					
+//					
+//					for ( Component c2 : sub1Cmp.getComponents()) {
+//						
+//					
+//						Datatype sub2 = dtMap.get(c2.getRef().getId());
+//						
+//				
+//						
+//						if(sub2 instanceof ComplexDatatype) {
+//							
+//							System.out.println(dt.getName() +"--"+ sub1.getName() + "---"+ sub2.getName());
+//						}
+//
+//					}
+//
+//				}
+//				
+//				
+//			}
+//		}
+//	}
 	
+		
+	}
+	
+	//@PostConstruct
+//	void includeCode() {
+//		List<Ig> igs = this.igService.findAll();
+//		
+//		for (Ig ig: igs) {
+//		    if(ig.getValueSetRegistry().getCodesPresence() != null ) {
+//		    	
+//		    	
+//		    	
+//		        if (ig.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
+//		          if (ig.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
+//		            vs.setIncludeCodes(true);
+//		          } else {
+//		            vs.setIncludeCodes(false);
+//		          }
+//		        } else {
+//		          vs.setIncludeCodes(true);
+//		        }
+//		     }
+//		}
+//	}
 	
 	
 }

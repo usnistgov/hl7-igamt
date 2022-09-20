@@ -18,6 +18,7 @@ export class IgListItem extends DiscoverableListItem {
   sharePermission?: string;
   sharedUsers?: string[];
   currentAuthor?: string;
+  draft?: boolean;
 }
 
 export type IgListItemType = 'USER' | 'PUBLISHED' | 'SHARED';

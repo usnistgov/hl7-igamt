@@ -264,9 +264,9 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
         coConstraint.addAttribute(attr("Usage", cc.getRequirement().getUsage().name()));
 
         Element selectors = new Element("Selectors");
-        this.serializeHeaders(segment, table.getHeaders().getSelectors(), cc).forEach(selectors::appendChild);
+        this.serializeHeaders(segment, table.getHeaders().getSelectors(), cc, true).forEach(selectors::appendChild);
         Element constraints = new Element("Constraints");
-        this.serializeHeaders(segment, table.getHeaders().getConstraints(), cc).forEach(constraints::appendChild);
+        this.serializeHeaders(segment, table.getHeaders().getConstraints(), cc, false).forEach(constraints::appendChild);
 
         coConstraint.appendChild(selectors);
         coConstraint.appendChild(constraints);
@@ -275,7 +275,7 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
     }
 
     @Override
-    public List<Element> serializeHeaders(ResourceSkeleton segment, List<CoConstraintHeader> headers, CoConstraint cc) throws CoConstraintXMLSerializationException {
+    public List<Element> serializeHeaders(ResourceSkeleton segment, List<CoConstraintHeader> headers, CoConstraint cc, boolean selector) throws CoConstraintXMLSerializationException {
         List<Element> cells = new ArrayList<>();
         Set<DataElementHeader> dataElementHeaders = headers
                 .stream()
@@ -284,9 +284,11 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
                 .collect(Collectors.toSet());
         for(DataElementHeader header: dataElementHeaders) {
             CoConstraintCell cell = cc.getCells().get(header.getKey());
-            Element element = this.serializeCell(segment, header.getColumnType(), cell, header);
-            if(element != null) {
-                cells.add(element);
+            if(selector || !this.coConstraintService.cellIsEmpty(cell)) {
+                Element element = this.serializeCell(segment, header.getColumnType(), cell, header);
+                if(element != null) {
+                    cells.add(element);
+                }
             }
         }
         return cells;

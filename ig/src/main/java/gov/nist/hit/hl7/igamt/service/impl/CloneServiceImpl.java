@@ -70,6 +70,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentDependencyService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
@@ -233,6 +234,7 @@ public class CloneServiceImpl implements  CloneService {
 
   public Ig updateIGAttributes(Ig ig, String username, CopyInfo info) {
     applyClone.updateAbstractDomainAttributes(ig, this.generateAbstractDomainId(), username);
+    ig.setDraft(false);
     ig.setDomainInfo(ig.getDomainInfo());
     ig.getDomainInfo().setScope(Scope.USER);
     ig.setStatus(null);
@@ -243,6 +245,7 @@ public class CloneServiceImpl implements  CloneService {
     } else if(info.getMode().equals(CloneMode.DERIVE)) {
       ig.getMetadata().setTitle(ig.getMetadata().getTitle() + "[derived]");
       ig.setDerived(true); 
+      ig.setOrigin(ig.getFrom());
       if(!info.isInherit()) {
 
         Set<TextSection> content = new HashSet<TextSection>();
@@ -276,6 +279,10 @@ public class CloneServiceImpl implements  CloneService {
     RegistryUpdateReturn<T> ret = new RegistryUpdateReturn<T>();
     Set<Link> links  = new HashSet<Link>();
     ret.setSavedResources(new HashSet<T>());
+    if(reg instanceof ValueSetRegistry) {
+    	updateCodePresence((ValueSetRegistry)reg, newKeys);
+    	
+    }
     if(reg.getChildren() != null) {
       for(Link l: reg.getChildren()) {
         if(this.shouldClone(l)) {
@@ -289,12 +296,34 @@ public class CloneServiceImpl implements  CloneService {
         links.add(l);
       }
     }
+
     ret.setLinks(links);
     return ret;
 
   }
 
-  /**
+  private void updateCodePresence(ValueSetRegistry reg, HashMap<RealKey, String> newKeys) {
+	  HashMap<String, Boolean> newCodesPresence = new HashMap<String, Boolean>();
+	  
+	  
+	  
+	  if(reg.getCodesPresence() != null) {
+		  for(String s: reg.getCodesPresence().keySet() ) {
+			  if(s != null ) {
+				  RealKey key = new RealKey(s, Type.VALUESET);
+				  if(newKeys.containsKey(key)) {  
+					newCodesPresence.put(newKeys.get(key),reg.getCodesPresence().get(s));
+				  }else {
+					newCodesPresence.put(s,reg.getCodesPresence().get(s));
+
+				  }
+			  }
+		  }
+	  }
+	  reg.setCodesPresence(newCodesPresence);
+ }
+
+/**
    * @param res
    * @param newKeys
    */

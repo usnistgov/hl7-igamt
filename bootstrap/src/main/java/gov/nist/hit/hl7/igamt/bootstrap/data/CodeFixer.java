@@ -31,7 +31,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
+import gov.nist.hit.hl7.igamt.valueset.repository.ValuesetRepository;
 
 /**
  * @author Abdelghani El Ouakili
@@ -44,18 +45,31 @@ public class CodeFixer {
   private DatatypeRepository datatypeRepository;
   
   @Autowired
-  private ValuesetService valueSetService;
+  private ValuesetRepository vsRepo;
+  
+  
   
   public void fixTableHL70125() throws ForbiddenOperationException {
-   List<Valueset> vss = valueSetService.findByDomainInfoScopeAndBindingIdentifier(Scope.HL7STANDARD.toString(), "HL70125");
+   List<Valueset> vss = vsRepo.findByDomainInfoScopeAndBindingIdentifier(Scope.HL7STANDARD.toString(), "HL70125");
    
    for(Valueset vs: vss) {
      vs.getCodes().removeIf((x) -> !datatypeRepository.existsByNameAndDomainInfoScopeAndDomainInfoVersion(x.getValue(), Scope.HL7STANDARD, vs.getDomainInfo().getVersion()));
      vs.setNumberOfCodes(vs.getCodes().size());
-     valueSetService.save(vs);
+     vsRepo.save(vs);
 
    }
   }
+  
+  public void fixTableHL70125(String version) throws ForbiddenOperationException {
+	   List<Valueset> vss = vsRepo.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(Scope.HL7STANDARD.toString(), version, "HL70125");
+	   
+	   for(Valueset vs: vss) {
+	     vs.getCodes().removeIf((x) -> !datatypeRepository.existsByNameAndDomainInfoScopeAndDomainInfoVersion(x.getValue(), Scope.HL7STANDARD, vs.getDomainInfo().getVersion()));
+	     vs.setNumberOfCodes(vs.getCodes().size());
+	     vsRepo.save(vs);
+
+	   }
+	  }
   
   public void fixFromCSV() throws FileNotFoundException {
    
@@ -92,7 +106,7 @@ public class CodeFixer {
    */
   private void fix(Map<String, Set<String>> map) {
     // TODO Auto-generated method stub
-   List<Valueset> valuesets= valueSetService.findByIdIn(map.keySet());
+   List<Valueset> valuesets= vsRepo.findByIdIn(map.keySet());
   
    valuesets.forEach(x -> {     
      x.getCodes().forEach((c) -> {
@@ -100,12 +114,7 @@ public class CodeFixer {
          c.setDeprecated(true);
        }     
      });      
-     try {
-		valueSetService.save(x);
-	} catch (ForbiddenOperationException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+     vsRepo.save(x);
    });
   }
   

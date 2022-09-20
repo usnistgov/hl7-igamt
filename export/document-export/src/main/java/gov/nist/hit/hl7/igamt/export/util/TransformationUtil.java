@@ -53,7 +53,8 @@ public class TransformationUtil {
     // Apply XSL transformation on xml file to generate html
     transformer = factoryTf.newTransformer(xslt);
     // Set the parameters
-    for (Map.Entry<String, String> param : exportParameters.toMap().entrySet()) {
+    Map<String, String> exportPararMap = exportParameters.toMap();
+    for (Map.Entry<String, String> param : exportPararMap.entrySet()) {
       if (param != null && param.getKey() != null && param.getValue() != null) {
         transformer.setParameter(param.getKey(), param.getValue());
       }
