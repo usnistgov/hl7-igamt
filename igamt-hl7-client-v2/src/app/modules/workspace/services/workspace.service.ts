@@ -4,7 +4,7 @@ import { Action, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { LoadPayloadData, LoadResourcesInRepostory } from '../../dam-framework/store';
-import { IFolderContent, IFolderInfo, IWorkspaceInfo, IWorkspaceMetadata, WorkspaceAccessType } from '../models/models';
+import { IFolderContent, IFolderInfo, IWorkspaceInfo, IWorkspaceMetadata, IWorkspacePermissions, IWorkspaceUser, WorkspaceAccessType } from '../models/models';
 
 export interface IWorkspaceCreateRequest {
   accessType: WorkspaceAccessType;
@@ -51,6 +51,39 @@ export class WorkspaceService {
 
   updateFolder(id: string, folderId: string, folder: IFolderInfo): Observable<Message<string>> {
     return this.http.post<Message<string>>(this.WORKSPACE_END_POINT + id + '/update-folder/' + folderId, folder);
+  }
+
+  getWorkspaceUsers(id: string): Observable<IWorkspaceUser[]> {
+    return this.http.get<IWorkspaceUser[]>(this.WORKSPACE_END_POINT + id + '/users');
+  }
+
+  addWorkspaceUser(id: string, isEmail: boolean, user: string, permissions: IWorkspacePermissions): Observable<Message<IWorkspaceUser>> {
+    return this.http.post<Message<IWorkspaceUser>>(this.WORKSPACE_END_POINT + id + '/users/add', {
+      email: isEmail,
+      value: user,
+      permissions,
+    });
+  }
+
+  acceptWorkspaceInvitation(id: string): Observable<Message<IWorkspaceUser>> {
+    return this.http.post<Message<IWorkspaceUser>>(this.WORKSPACE_END_POINT + id + '/users/accept', {});
+  }
+
+  declineWorkspaceInvitation(id: string): Observable<Message<IWorkspaceUser>> {
+    return this.http.post<Message<IWorkspaceUser>>(this.WORKSPACE_END_POINT + id + '/users/decline', {});
+  }
+
+  updateUser(id: string, username: string, permissions: IWorkspacePermissions): Observable<Message<IWorkspaceUser>> {
+    return this.http.post<Message<IWorkspaceUser>>(this.WORKSPACE_END_POINT + id + '/users/update', {
+      username,
+      permissions,
+    });
+  }
+
+  removeUser(id: string, username: string): Observable<Message<IWorkspaceUser>> {
+    return this.http.post<Message<IWorkspaceUser>>(this.WORKSPACE_END_POINT + id + '/users/delete', {
+      username,
+    });
   }
 
   getWorkspaceInfoUpdateAction(workspaceInfo: IWorkspaceInfo): Action[] {

@@ -20,11 +20,11 @@ import { WorkspaceListCardComponent } from './components/workspace-list-card/wor
 import { WorkspaceListComponent } from './components/workspace-list/workspace-list.component';
 import { WorkspaceMetadataEditorComponent } from './components/workspace-metadata-editor/workspace-metadata-editor.component';
 import { WorkspaceSideBarComponent } from './components/workspace-side-bar/workspace-side-bar.component';
-import { WorkspaceUserManagementComponent } from './components/workspace-user-management/workspace-user-management.component';
+import { WorkspaceUserManagementComponent, PermsPipe } from './components/workspace-user-management/workspace-user-management.component';
 import { WorkspaceRoutingModule } from './workspace-routing.module';
 
 @NgModule({
-  declarations: [CreateWorkspaceComponent, WorkspaceListComponent, WorkspaceEditComponent, WorkspaceListCardComponent, WorkspaceSideBarComponent, WorkspaceHomeEditorComponent, WorkspaceActiveTitlebarComponent, FolderAddDialogComponent, WorkspaceMetadataEditorComponent, WorkspaceFolderEditorComponent, WorkspaceUserManagementComponent, AddUserDialogComponent, PermissionSelectorComponent],
+  declarations: [CreateWorkspaceComponent, WorkspaceListComponent, WorkspaceEditComponent, WorkspaceListCardComponent, WorkspaceSideBarComponent, WorkspaceHomeEditorComponent, WorkspaceActiveTitlebarComponent, FolderAddDialogComponent, WorkspaceMetadataEditorComponent, WorkspaceFolderEditorComponent, WorkspaceUserManagementComponent, AddUserDialogComponent, PermissionSelectorComponent, PermsPipe],
   imports: [
     CommonModule,
     DamFrameworkModule.forRoot(),

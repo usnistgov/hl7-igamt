@@ -5,14 +5,13 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.workspace.domain.*;
 import gov.nist.hit.hl7.igamt.workspace.exception.CreateRequestException;
 import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceForbidden;
 import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceNotFound;
 import gov.nist.hit.hl7.igamt.workspace.model.*;
-import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceUserService;
+import gov.nist.hit.hl7.igamt.workspace.service.WorkspacePermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -28,37 +27,29 @@ import gov.nist.hit.hl7.resource.change.service.OperationService;
 
 @Service
 public class WorkspaceServiceImpl implements WorkspaceService {
-
-	
 	@Autowired
 	WorkspaceRepo workspaceRepo;
-	
 	@Autowired
 	OperationService operationService;
-	
 	@Autowired 
 	IgService igService;
-
 	@Autowired
     MongoTemplate mongoTemplate;
-
 	@Autowired
-	WorkspaceUserService workspaceUserService;
+	WorkspacePermissionService workspacePermissionService;
 	
 	@Override
-	public Workspace findById(String id) {
-		return workspaceRepo.findById(id).orElse(null);
+	public Workspace findById(String id) throws WorkspaceNotFound {
+		return workspaceRepo.findById(id).orElseThrow(() -> new WorkspaceNotFound(id));
 	}
 
 	@Override
-	public Workspace create(WorkspaceCreateRequest createInfo, String username) throws CreateRequestException {
+	public Workspace createWorkspace(WorkspaceCreateRequest createInfo, String username) throws CreateRequestException {
 		checkWorkspaceCreateRequest(createInfo);
-//		String logoImageId = logo != null && !logo.isEmpty() ? uploadLogo(logo, username) : null;
 		Workspace workspace = new Workspace();
 		WorkspaceMetadata workspaceMetadata = new WorkspaceMetadata();
 		workspaceMetadata.setDescription(createInfo.getDescription());
 		workspaceMetadata.setTitle(createInfo.getTitle());
-//		workspaceMetadata.setLogoImageId(logoImageId);
 		workspace.setAccessType(createInfo.getAccessType());
 		workspace.setMetadata(workspaceMetadata);
 		workspace.setUsername(username);
@@ -71,7 +62,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 	public Workspace createFolder(String workspaceId, AddFolderRequest addFolderRequest, String username) throws Exception {
 		Workspace workspace = this.workspaceRepo.findById(workspaceId)
 				.orElseThrow(() -> new WorkspaceNotFound(workspaceId));
-		if(!this.workspaceUserService.isAdmin(workspace, username)) {
+		if(!this.workspacePermissionService.isAdmin(workspace, username)) {
 			throw new WorkspaceForbidden();
 		}
 
@@ -104,7 +95,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 	public Workspace updateFolder(String workspaceId, String folderId, AddFolderRequest addFolderRequest, String username) throws Exception {
 		Workspace workspace = this.workspaceRepo.findById(workspaceId)
 				.orElseThrow(() -> new WorkspaceNotFound(workspaceId));
-		if(!this.workspaceUserService.isAdmin(workspace, username)) {
+		if(!this.workspacePermissionService.isAdmin(workspace, username)) {
 			throw new WorkspaceForbidden();
 		}
 
@@ -134,7 +125,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 	public Workspace saveHomeContent(String workspaceId, HomeContentWrapper home, String username) throws Exception {
 		Workspace workspace = this.workspaceRepo.findById(workspaceId)
 				.orElseThrow(() -> new WorkspaceNotFound(workspaceId));
-		if(!this.workspaceUserService.isAdmin(workspace, username)) {
+		if(!this.workspacePermissionService.isAdmin(workspace, username)) {
 			throw new WorkspaceForbidden();
 		}
 
@@ -148,7 +139,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 	public Workspace saveMetadata(String workspaceId, WorkspaceMetadataWrapper metadataWrapper, String username) throws Exception {
 		Workspace workspace = this.workspaceRepo.findById(workspaceId)
 				.orElseThrow(() -> new WorkspaceNotFound(workspaceId));
-		if(!this.workspaceUserService.isAdmin(workspace, username)) {
+		if(!this.workspacePermissionService.isAdmin(workspace, username)) {
 			throw new WorkspaceForbidden();
 		}
 
@@ -170,7 +161,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 	public WorkspaceInfo addToWorkspace(String workspaceId, String folderId, String username, DocumentStructure document, Type type) throws Exception {
 		Workspace workspace = this.workspaceRepo.findById(workspaceId)
 				.orElseThrow(() -> new WorkspaceNotFound(workspaceId));
-		WorkspacePermissionType permission = workspaceUserService.getWorkspacePermissionTypeByFolder(workspace, username, folderId);
+		WorkspacePermissionType permission = workspacePermissionService.getWorkspacePermissionTypeByFolder(workspace, username, folderId);
 		if(permission != null && permission.equals(WorkspacePermissionType.EDIT)) {
 			Folder folder = workspace.getFolders().stream()
 					.filter((f) -> f.getId().equals(folderId))
@@ -192,46 +183,10 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 		}
 	}
 
-//	public String uploadLogo(MultipartFile logo, String username) throws IOException {
-//		InputStream in = logo.getInputStream();
-//		String filename = logo.getOriginalFilename();
-//		String extension = FilenameUtils.getExtension(filename);
-//		Document metaData = new Document();
-//		metaData.put("accountId", username);
-//		Set<String> igs= new HashSet<String>();
-//		igs.add(ig);
-//		metaData.put("igs", igs);
-//		Set<String> ids= new HashSet<String>();
-//		ids.add(id);
-//		metaData.put("type", type);
-//		metaData.put("id", ids);
-//		String generatedName = UUID.randomUUID().toString() + "." + extension;
-//		ObjectId fsFile = storageService.store(in, generatedName, part.getContentType(), metaData);
-//		GridFSFile dbFile = storageService.findOne(fsFile.toString());
-//		UploadFileResponse response= new UploadFileResponse("/api/storage/file?name="+ dbFile.getFilename());
-//		return response;
-//	}
-
 	public void checkWorkspaceCreateRequest(
 			WorkspaceCreateRequest createInfo
-//			MultipartFile logo
 	) throws CreateRequestException {
 		List<String> errors = new ArrayList<>();
-//		// Check Image
-//		if(logo != null && !logo.isEmpty()) {
-//			String mime = logo.getContentType();
-//			String filename = logo.getOriginalFilename();
-//			String extension = FilenameUtils.getExtension(filename);
-//			if (mime == null || (!mime.equals("image/jpeg") && !mime.equals("image/png"))) {
-//				errors.add("File MIME type is not supported : " + mime);
-//			}
-//			if (extension == null || (!extension.equals("jpg") && !extension.equals("png"))) {
-//				errors.add("File extension is not supported : " + extension);
-//			}
-//			if (logo.getSize() >= 1024 * 1024 * 10) {
-//				errors.add("File size is too big");
-//			}
-//		}
 
 		// Check Fields
 		if(createInfo == null) {
@@ -252,8 +207,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 
 	@Override
 	public Workspace save(Workspace workspace) throws ForbiddenOperationException {
-		Workspace ret =this.workspaceRepo.save(workspace);
-		return ret;
+		return this.workspaceRepo.save(workspace);
 	}
 
 	@Override
@@ -268,49 +222,17 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 
     @Override
     public List<Workspace> findByMember(String username) {
-		Criteria criteria = new Criteria();
-		criteria.orOperator(
+		Query query = new Query(new Criteria().orOperator(
 				Criteria.where("userAccessInfo.users").elemMatch(
-						criteria.andOperator(
+						new Criteria().andOperator(
 								Criteria.where("username").is(username),
-								Criteria.where("pending").is(false)
+								Criteria.where("status").is(InvitationStatus.ACCEPTED.toString())
 						)
 				),
 				Criteria.where("username").is(username)
-		);
-		Query query = new Query();
+		));
         return this.mongoTemplate.find(query, Workspace.class);
     }
-
-    @Override
-    public List<Workspace> findByMemberPending(String username) {
-		Criteria criteria = new Criteria();
-        Query query = new Query().addCriteria(
-				criteria.andOperator(
-						Criteria.where("username").is(username),
-						Criteria.where("pending").is(false)
-				)
-        );
-
-        return this.mongoTemplate.find(query, Workspace.class);
-    }
-
-
-    @Override
-	public List<Workspace> findShared(String username) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Workspace> findByAccessType(WorkspaceAccessType type) {
-		return this.workspaceRepo.findByAccessType(type);
-	}
-
-	@Override
-	public List<Workspace> findByAll() {
-		return workspaceRepo.findAll();
-	}
 
 	private WorkspaceInfo toWorkspaceInfo(Workspace workspace, String username) {
 		WorkspaceInfo workspaceInfo = new WorkspaceInfo();
@@ -321,11 +243,11 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 		workspaceInfo.setOwner(workspace.getUsername());
 		workspaceInfo.setCreated(workspace.getCreationDate());
 		workspaceInfo.setUpdated(workspace.getUpdateDate());
-		workspaceInfo.setAdmin(this.workspaceUserService.isAdmin(workspace, username));
+		workspaceInfo.setAdmin(this.workspacePermissionService.isAdmin(workspace, username));
 		workspaceInfo.setFolders(new HashSet<>());
 		if(workspace.getFolders() != null) {
 			for(Folder folder: workspace.getFolders()) {
-				WorkspacePermissionType wpt = this.workspaceUserService
+				WorkspacePermissionType wpt = this.workspacePermissionService
 						.getWorkspacePermissionTypeByFolder(workspace, username, folder.getId());
 				if(wpt != null) {
 					FolderInfo folderInfo = new FolderInfo();
@@ -335,7 +257,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 					folderInfo.setPermissionType(wpt);
 					folderInfo.setPosition(folder.getPosition());
 					folderInfo.setWorkspaceId(workspace.getId());
-					folderInfo.setEditors(this.workspaceUserService.getFolderEditors(workspace, folder.getId()));
+					folderInfo.setEditors(this.workspacePermissionService.getFolderEditors(workspace, folder.getId()));
 					workspaceInfo.getFolders().add(folderInfo);
 				}
 			}
@@ -347,7 +269,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 	public WorkspaceInfo getWorkspaceInfo(String id, String username) throws WorkspaceNotFound, WorkspaceForbidden {
 		Workspace workspace = this.workspaceRepo.findById(id)
 				.orElseThrow(() -> new WorkspaceNotFound(id));
-		if(this.workspaceUserService.hasAccessTo(username, workspace)) {
+		if(this.workspacePermissionService.hasAccessTo(workspace, username)) {
 			return this.toWorkspaceInfo(workspace, username);
 		}
 		throw new WorkspaceForbidden();
@@ -355,14 +277,14 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 
 	@Override
 	public WorkspaceInfo getWorkspaceInfo(Workspace workspace, String username) throws WorkspaceNotFound, WorkspaceForbidden {
-		if(this.workspaceUserService.hasAccessTo(username, workspace)) {
+		if(this.workspacePermissionService.hasAccessTo(workspace, username)) {
 			return this.toWorkspaceInfo(workspace, username);
 		}
 		throw new WorkspaceForbidden();
 	}
 
 	@Override
-	public List<WorkspaceListItem> convertToDisplayList(List<Workspace> workspaces) {
+	public List<WorkspaceListItem> convertToDisplayList(List<Workspace> workspaces, boolean invitation) {
 		List<WorkspaceListItem> ret = new ArrayList<WorkspaceListItem>();
 		for(Workspace workspace: workspaces) {
 			WorkspaceListItem item = new WorkspaceListItem();
@@ -372,6 +294,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 			item.setUsername(workspace.getUsername());
 			item.setCoverPicture(workspace.getMetadata().getLogoImageId());
 			item.setDateUpdated(workspace.getUpdateDate() != null? workspace.getUpdateDate().toString(): "");
+			item.setInvitation(invitation);
 			ret.add(item);
 		}
 		return ret;

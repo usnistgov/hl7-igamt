@@ -6,10 +6,14 @@ import java.util.Objects;
 public class WorkspaceUser {
     private String username;
     private String invitedBy;
-    private Date joined;
     private Date added;
+    private Date joined;
     private WorkspacePermissions permissions;
-    private boolean pending;
+    private InvitationStatus status;
+
+    public boolean hasAccess() {
+        return status.equals(InvitationStatus.ACCEPTED);
+    }
 
     public String getUsername() {
         return username;
@@ -27,14 +31,6 @@ public class WorkspaceUser {
         this.joined = joined;
     }
 
-    public Date getAdded() {
-        return added;
-    }
-
-    public void setAdded(Date added) {
-        this.added = added;
-    }
-
     public WorkspacePermissions getPermissions() {
         return permissions;
     }
@@ -43,12 +39,20 @@ public class WorkspaceUser {
         this.permissions = permissions;
     }
 
-    public boolean isPending() {
-        return pending;
+    public Date getAdded() {
+        return added;
     }
 
-    public void setPending(boolean pending) {
-        this.pending = pending;
+    public void setAdded(Date added) {
+        this.added = added;
+    }
+
+    public InvitationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(InvitationStatus status) {
+        this.status = status;
     }
 
     public String getInvitedBy() {

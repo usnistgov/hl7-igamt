@@ -12,6 +12,7 @@ public class WorkspaceListItem {
 	String dateUpdated;
 	String username;
 	Type resourceType;
+	boolean invitation;
 
 
 	public WorkspaceListItem() {
@@ -72,4 +73,11 @@ public class WorkspaceListItem {
 		this.username = username;
 	}
 
+	public boolean isInvitation() {
+		return invitation;
+	}
+
+	public void setInvitation(boolean invitation) {
+		this.invitation = invitation;
+	}
 }

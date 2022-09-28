@@ -14,6 +14,7 @@ export class IWorkspaceListItem extends DiscoverableListItem {
   sharePermission?: string;
   sharedUsers?: string[];
   currentAuthor?: string;
+  invitation: boolean;
 }
 
 export type IWorkspaceListItemType = 'PUBLIC' | 'PRIVATE' | 'DISCOVERABLE' | 'SHARED';

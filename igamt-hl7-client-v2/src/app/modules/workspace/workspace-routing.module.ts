@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { WORKSPACE_EDIT_WIDGET_ID } from 'src/app/modules/workspace/components/workspace-edit/workspace-edit.component';
 import { OpenWorkspaceFolderEditor, OpenWorkspaceHomeEditor } from '../../root-store/workspace/workspace-edit/workspace-edit.actions';
 import { ErrorPageComponent } from '../core/components/error-page/error-page.component';
-import { OpenWorkspaceMetadataEditor, WorkspaceEditActionTypes, WorkspaceEditResolverLoad } from './../../root-store/workspace/workspace-edit/workspace-edit.actions';
+import { OpenWorkspaceMetadataEditor, WorkspaceEditActionTypes, WorkspaceEditResolverLoad, OpenWorkspaceAccessManagementEditor } from './../../root-store/workspace/workspace-edit/workspace-edit.actions';
 import { DamWidgetContainerComponent } from './../dam-framework/components/data-widget/dam-widget-container/dam-widget-container.component';
 import { AuthenticatedGuard } from './../dam-framework/guards/auth-guard.guard';
 import { DataLoaderGuard } from './../dam-framework/guards/data-loader.guard';
@@ -113,7 +113,7 @@ const routes: Routes = [
             saveEditor: true,
             saveTableOfContent: true,
           },
-          action: OpenWorkspaceMetadataEditor,
+          action: OpenWorkspaceAccessManagementEditor,
           idKey: 'workspaceId',
         },
         canDeactivate: [EditorDeactivateGuard],

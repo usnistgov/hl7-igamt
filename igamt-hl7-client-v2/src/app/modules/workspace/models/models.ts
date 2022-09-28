@@ -57,8 +57,14 @@ export interface IWorkspaceUser {
   addedBy: string;
   joined: Date;
   added: Date;
-  pending: boolean;
+  status: InvitationStatus;
   permissions: IWorkspacePermissions;
+}
+
+export enum InvitationStatus {
+  PENDING = 'PENDING',
+  DECLINED = 'DECLINED',
+  ACCEPTED = 'ACCEPTED',
 }
 
 export interface IWorkspacePermissions {

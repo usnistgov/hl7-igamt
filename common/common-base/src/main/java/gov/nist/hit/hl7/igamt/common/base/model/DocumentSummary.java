@@ -24,6 +24,7 @@ public class DocumentSummary {
 	private List<String> sharedUsers;
 	private String currentAuthor;
 	private Boolean draft;
+	private Type resourceType;
 
 	public Boolean getDraft() {
 		return draft;
@@ -149,13 +150,13 @@ public class DocumentSummary {
 		this.currentAuthor = currentAuthor;
 	}
 
-public Type getResourceType() {
-	return resourceType;
-}
+	public Type getResourceType() {
+		return resourceType;
+	}
 
-public void setResourceType(Type resourceType) {
-	this.resourceType = resourceType;
-}
+	public void setResourceType(Type resourceType) {
+		this.resourceType = resourceType;
+	}
 
 
 

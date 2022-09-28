@@ -7,6 +7,7 @@
   </div>
   <input
          [(ngModel)]="username"
+         [disabled]="edit"
          class="form-control"
          id="username"
          placeholder="Username"
@@ -23,5 +24,7 @@
 </div>
 <mat-dialog-actions style="justify-content: flex-end;">
   <button (click)="cancel()" class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
-  <button (click)="create()" [disabled]="!username || !permissions" class="btn btn-sm btn-success">Invite</button>
+  <button (click)="create()" [disabled]="!username || !permissions" class="btn btn-sm btn-success">
+    {{edit ? 'Edit' : 'Invite'}}
+  </button>
 </mat-dialog-actions>

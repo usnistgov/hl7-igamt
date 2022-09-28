@@ -13,33 +13,15 @@
   </h4>
 </ng-template>
 <div style="margin-bottom: 10px; display: flex;
-flex-direction: row;
-align-items: flex-start;">
-  <div style="height: 100%;" ngbDropdown #dd="ngbDropdown" [autoClose]="false" container="body" (openChange)="onOpenChange($event)">
-    <button class="btn no-focus" style="
-      color: gray;
-      border: 2px solid lightgray;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0;
-      border-radius: 0;"
-      [ngClass]="{'active': active, 'inactive': !active}"
-      ngbDropdownToggle>
-      <div style="width: 15px; height: 15px; border-radius: 15px;" [ngClass]="{'active-ind': active, 'inactive-ind': !active}"></div>
-      <span style="margin-left: 10px;">FILTER</span>
-    </button>
-    <div style="max-height: 55vh; overflow: scroll; -webkit-box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
-                -moz-box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
-                box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75); padding: 20px;" ngbDropdownMenu>
-      <p-checkbox
-      [(ngModel)]="filter.pending"
-      [binary]="true"
-      label="Is pending invitation approval"
-      ></p-checkbox>
-      <hr style="margin-top: 3px;">
-    </div>
-  </div>
+      flex-direction: row;
+      align-items: flex-start;">
+  <p-dropdown  
+    [options]="statusOptions" 
+    [(ngModel)]="statusFilter" 
+    (ngModelChange)="statusChanged($event)" 
+    [autoDisplayFirst]="false" 
+    [showClear]="true">
+  </p-dropdown>
   <div class="input-group" style="margin-left: 10px;">
     <div class="input-group-prepend" style="height: 35px;">
       <span class="input-group-text" id="inputGroupPrepend3"><i [ngStyle]="{'color': username && username !== '' ? '#00c31b' : ''}"
@@ -50,24 +32,29 @@ align-items: flex-start;">
            style="background-color: #fbfbfb; height: 35px;" type="text">
   </div>
 </div>
-<p-table [columns]="[]" [value]="[{}]">
+<p-table [value]="filteredUserList$ | async" [columns]="columns" [paginator]="true" [rows]="10">
 
-  <ng-template pTemplate="header" let-yourColumnArrayVaraible>
+  <ng-template pTemplate="header">
     <tr>
-      <th>
+      <th [pSortableColumn]="'USERNAME'">
         Username
+        <p-sortIcon [field]="'username'"></p-sortIcon>
       </th>
-      <th>
+      <th [pSortableColumn]="'STATUS'">
         Status
+        <p-sortIcon [field]="'status'"></p-sortIcon>
       </th>
-      <th>
+      <th [pSortableColumn]="'ADDED'">
         Added
+        <p-sortIcon [field]="'added'"></p-sortIcon>
       </th>
-      <th>
+      <th [pSortableColumn]="'JOINED'">
         Joined
+        <p-sortIcon [field]="'joined'"></p-sortIcon>
       </th>
-      <th>
+      <th [pSortableColumn]="'ADDEDBY'">
         Added By
+        <p-sortIcon [field]="'invitedBy'"></p-sortIcon>
       </th>
       <th>
         Permissions
@@ -83,8 +70,11 @@ align-items: flex-start;">
         {{row.username}}
       </td>
       <td>
-        <span *ngIf="row.pending" style="font-weight: bold; color: gold;" >PENDING</span>
-        <span *ngIf="!row.pending" style="font-weight: bold; color: green;">MEMBER</span>
+        <ng-container  [ngSwitch]="row.status">
+          <span *ngSwitchCase="'PENDING'" style="font-weight: bold; color: orange;">{{row.status}}</span>
+          <span *ngSwitchCase="'ACCEPTED'" style="font-weight: bold; color: green;">{{row.status}}</span>
+          <span *ngSwitchCase="'DECLINED'" style="font-weight: bold; color: red;">{{row.status}}</span>
+        </ng-container>
       </td>
       <td>
         {{row.added | date}}
@@ -93,14 +83,17 @@ align-items: flex-start;">
         {{row.joined ? 'N/A' : row.joined | date}}
       </td>
       <td>
-        {{row.addedBy}}
+        {{row.invitedBy}}
       </td>
       <td>
-
+        <ng-container *ngTemplateOutlet="pemissions; context : { $implicit: row.permissions | perms | async }" ></ng-container>
       </td>
       <td>
-        <button (click)="editUser(row)" class="btn btn-sm btn-primary">
+        <button *ngIf="status !== 'DECLINED'" (click)="editUser(row)" class="btn btn-sm btn-primary">
           Edit
+        </button>
+        <button *ngIf="status === 'DECLINED'" (click)="reInvite(row)" class="btn btn-sm btn-primary">
+          Resend
         </button>
         <button (click)="removeUser(row)" style="margin-left: 5px" class="btn btn-sm btn-danger">
           Remove
@@ -109,3 +102,22 @@ align-items: flex-start;">
     </tr>
   </ng-template>
 </p-table>
+
+<ng-template #pemissions let-permissions>
+  <ng-container *ngFor="let item of permissions">
+    <ng-container [ngSwitch]="item.type">
+      <span *ngSwitchCase="'ADMIN'" class="badge badge-success" style="margin-right: 3px;">
+        <i class="fa fa-star"></i>
+        {{item.label}}
+      </span>
+      <span *ngSwitchCase="'GLOBAL'" class="badge badge-primary" style="margin-right: 3px;">
+        <i class="fa fa-globe"></i>
+        {{item.label}} - {{item.perm}}
+      </span>
+      <span *ngSwitchCase="'FOLDER'" class="badge badge-secondary" style="margin-right: 3px;">
+        <i class="fa fa-folder"></i>
+        {{item.label}} - {{item.perm}}
+      </span>
+    </ng-container>
+  </ng-container>
+</ng-template>

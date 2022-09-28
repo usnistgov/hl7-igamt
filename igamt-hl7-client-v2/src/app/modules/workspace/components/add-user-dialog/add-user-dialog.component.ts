@@ -13,6 +13,7 @@ export class AddUserDialogComponent implements OnInit {
   folders: IFolderInfo[];
   username: string;
   permissions: IWorkspacePermissions;
+  edit: boolean;
 
   constructor(
     public dialogRef: MatDialogRef<AddUserDialogComponent>,
@@ -20,6 +21,8 @@ export class AddUserDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     this.folders = data.folders;
+    this.username = data.username;
+    this.edit = data.edit;
     this.permissions = data.permissions || {};
   }
 

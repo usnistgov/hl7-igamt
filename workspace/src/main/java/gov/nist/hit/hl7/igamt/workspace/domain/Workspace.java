@@ -57,6 +57,9 @@ public class Workspace {
 		this.metadata = metadata;
 	}
 	public UserAccessInfo getUserAccessInfo() {
+		if(this.userAccessInfo == null) {
+			userAccessInfo = new UserAccessInfo();
+		}
 		return userAccessInfo;
 	}
 	public void setUserAccessInfo(UserAccessInfo userAccessInfo) {

@@ -17,7 +17,7 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissionType;
-import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceUserService;
+import gov.nist.hit.hl7.igamt.workspace.service.WorkspacePermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -36,7 +36,7 @@ public class AccessControlService {
     @Autowired
     private MongoTemplate mongoTemplate;
     @Autowired
-    private WorkspaceUserService workspaceUserService;
+    private WorkspacePermissionService workspacePermissionService;
 
     private final Set<String> resourceInfoFields = Arrays.stream(ResourceInfo.class.getDeclaredFields())
             .map(Field::getName)
@@ -127,21 +127,16 @@ public class AccessControlService {
     }
 
     public boolean checkWorkspaceAudience(WorkspaceAudience audience, UsernamePasswordAuthenticationToken user, AccessLevel level) {
-        try {
-            WorkspacePermissionType permissionType = this.workspaceUserService.getUserPermissionByFolder(audience.getWorkspaceId(), audience.getFolderId(), user.getName());
-            if (permissionType != null) {
-                switch (permissionType) {
-                    case EDIT:
-                        return true;
-                    case VIEW:
-                        return level.equals(AccessLevel.READ);
-                }
+        WorkspacePermissionType permissionType = this.workspacePermissionService.getWorkspacePermissionTypeByFolder(audience.getWorkspaceId(), audience.getFolderId(), user.getName());
+        if (permissionType != null) {
+            switch (permissionType) {
+                case EDIT:
+                    return true;
+                case VIEW:
+                    return level.equals(AccessLevel.READ);
             }
-            return false;
-        } catch (ResourceNotFoundException e) {
-            e.printStackTrace();
-            return false;
         }
+        return false;
     }
 
     public boolean checkResourceAccessPermission(ResourceInfo resourceInfo, UsernamePasswordAuthenticationToken user, AccessLevel level) throws ResourceNotFoundException {

@@ -124,15 +124,32 @@ export class WorkspaceEditEffects extends DamWidgetEffect {
   @Effect()
   OpenWorkspaceAccessManagementEditor$ = this.actions$.pipe(
     ofType(WorkspaceEditActionTypes.OpenWorkspaceAccessManagementEditor),
-    map((action: OpenWorkspaceAccessManagementEditor) => {
-      return new fromDAM.OpenEditor({
-        id: action.payload.id,
-        display: {
-          id: action.payload.id,
-        },
-        editor: action.payload.editor,
-        initial: {},
-      });
+    switchMap((action: OpenWorkspaceFolderEditor) => {
+      return this.store.select(selectWorkspaceId).pipe(
+        take(1),
+        flatMap((wsId) => {
+          return combineLatest(
+            this.workspaceService.getWorkspaceInfo(action.payload.id),
+            this.workspaceService.getWorkspaceUsers(action.payload.id),
+          ).pipe(
+            flatMap(([wsInfo, users]) => {
+              return [
+                ...this.workspaceService.getWorkspaceInfoUpdateAction(wsInfo),
+                new fromDAM.OpenEditor({
+                  id: action.payload.id,
+                  display: {
+                    id: action.payload.id,
+                  },
+                  editor: action.payload.editor,
+                  initial: {
+                    users: [...users],
+                  },
+                }),
+              ];
+            }),
+          );
+        }),
+      );
     }),
   );
 

@@ -7,8 +7,8 @@ import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissionType;
 import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceForbidden;
+import gov.nist.hit.hl7.igamt.workspace.service.WorkspacePermissionService;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceService;
-import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ import java.util.HashSet;
 public class MovingServiceImpl implements MovingService {
 
 	@Autowired
-	WorkspaceUserService workspaceUserService;
+	private WorkspacePermissionService workspacePermissionService;
 	@Autowired
 	WorkspaceService workspaceService;
 	@Autowired
@@ -31,7 +31,7 @@ public class MovingServiceImpl implements MovingService {
 
 	@Override
 	public DocumentStructure moveDocumentToWorkspace(String documentId, DocumentType type, String workspaceId, String folderId, String username) throws Exception {
-		WorkspacePermissionType permission = this.workspaceUserService.getUserPermissionByFolder(workspaceId, folderId, username);
+		WorkspacePermissionType permission = this.workspacePermissionService.getWorkspacePermissionTypeByFolder(workspaceId, folderId, username);
 		if(permission != null && permission.equals(WorkspacePermissionType.EDIT)) {
 			WorkspaceAudience audience = new WorkspaceAudience();
 			audience.setWorkspaceId(workspaceId);

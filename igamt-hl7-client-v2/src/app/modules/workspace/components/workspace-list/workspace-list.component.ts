@@ -2,12 +2,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { combineLatest, Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromRoot from 'src/app/root-store/index';
 import * as fromWorkspaceList from 'src/app/root-store/workspace/workspace-list/workspace-list.index';
-import { ClearWorkspaceList, LoadWorkspaceList, SelectWorkspaceListSortOption, SelectWorkspaceListViewType, WorkspaceLoadType } from './../../../../root-store/workspace/workspace-list/workspace-list.actions';
+import { ClearWorkspaceList, LoadWorkspaceList, SelectWorkspaceListSortOption, SelectWorkspaceListViewType, WorkspaceLoadType, DeleteWorkspaceListItemSuccess } from './../../../../root-store/workspace/workspace-list/workspace-list.actions';
 import { MessageService } from './../../../dam-framework/services/message.service';
 import { ClearAll } from './../../../dam-framework/store/messages/messages.actions';
 import { IWorkspaceListItem } from './../../../shared/models/workspace-list-item.interface';
@@ -26,7 +26,7 @@ export class WorkspaceListComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private dialog: MatDialog,
     private router: Router,
-    private message: MessageService,
+    private messageService: MessageService,
     private workspaceService: WorkspaceService) {
     this.storeSelectors();
     this.initializeProperties();
@@ -99,7 +99,53 @@ export class WorkspaceListComponent implements OnInit, OnDestroy {
                   return false;
                 },
                 hide: (item: IWorkspaceListItem): boolean => {
+                  return item.invitation;
+                },
+              },
+              {
+                label: 'Accept Invitation',
+                class: 'btn-success',
+                icon: 'fa-check',
+                action: (item: IWorkspaceListItem) => {
+                  this.workspaceService.acceptWorkspaceInvitation(item.id).pipe(
+                    map((response) => {
+                      this.store.dispatch(this.messageService.messageToAction(response));
+                      this.router.navigate(['workspace', item.id]);
+                    }),
+                    catchError((err) => {
+                      this.store.dispatch(this.messageService.actionFromError(err));
+                      return throwError(err);
+                    })
+                  ).subscribe();
+                },
+                disabled: (item: IWorkspaceListItem): boolean => {
                   return false;
+                },
+                hide: (item: IWorkspaceListItem): boolean => {
+                  return !item.invitation;
+                },
+              },
+              {
+                label: 'Decline Invitation',
+                class: 'btn-danger',
+                icon: 'fa-times',
+                action: (item: IWorkspaceListItem) => {
+                  this.workspaceService.declineWorkspaceInvitation(item.id).pipe(
+                    map((response) => {
+                      this.store.dispatch(this.messageService.messageToAction(response));
+                      this.store.dispatch(new DeleteWorkspaceListItemSuccess(item.id));
+                    }),
+                    catchError((err) => {
+                      this.store.dispatch(this.messageService.actionFromError(err));
+                      return throwError(err);
+                    })
+                  ).subscribe();
+                },
+                disabled: (item: IWorkspaceListItem): boolean => {
+                  return false;
+                },
+                hide: (item: IWorkspaceListItem): boolean => {
+                  return !item.invitation;
                 },
               },
             ];
@@ -149,7 +195,7 @@ export class WorkspaceListComponent implements OnInit, OnDestroy {
       } else {
         this.router.navigate(['.'], {
           queryParams: {
-            type: 'PRIVATE',
+            type: 'MEMBER',
           },
           relativeTo: this.route,
         });

@@ -17,6 +17,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import gov.nist.hit.hl7.auth.util.requests.*;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -43,15 +44,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.auth.util.crypto.SecurityConstants;
-import gov.nist.hit.hl7.auth.util.requests.AdminUserRequest;
-import gov.nist.hit.hl7.auth.util.requests.ChangePasswordConfirmRequest;
-import gov.nist.hit.hl7.auth.util.requests.ChangePasswordRequest;
-import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage;
-import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
-import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
-import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
-import gov.nist.hit.hl7.auth.util.requests.UserListResponse;
-import gov.nist.hit.hl7.auth.util.requests.UserResponse;
 import gov.nist.hit.hl7.igamt.auth.exception.AuthenticationException;
 import gov.nist.hit.hl7.igamt.auth.service.AuthenticationService;
 
@@ -127,6 +119,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public FindUserResponse findUser(HttpServletRequest req, FindUserRequest user) throws AuthenticationException {
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-type", "application/json");
+			RestTemplate restTemplate = new RestTemplate();
+			HttpEntity<FindUserRequest> request = new HttpEntity<>(user);
+
+
+			ResponseEntity<FindUserResponse> response =
+					restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/find", HttpMethod.POST, request,
+							new ParameterizedTypeReference<FindUserResponse>() {});
+
+
+
+			return response.getBody();
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
+			String message = e.getResponseBodyAsString();
+
+			throw new AuthenticationException(getMessageString(message));
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new AuthenticationException(e.getMessage());
 		}
 	}
 
@@ -328,6 +346,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			return obj.getText();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
 			throw new AuthenticationException("Could not parse the error response");
 		}
 	}
