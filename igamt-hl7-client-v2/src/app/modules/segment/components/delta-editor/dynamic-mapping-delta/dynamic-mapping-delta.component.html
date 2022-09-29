@@ -29,19 +29,26 @@
         {{dyn.datatypeName}}
       </td>
       <td>
-        <app-delta-column [action]="dyn.action" [currentValue]="dyn.display.current" [previousValue]="dyn.display.previous" styleClassCurrent="delta-current" styleClassPrevious="delta-previous">
-          <ng-template #default let-value>
-           <app-display-section [element]="value"></app-display-section>
-          </ng-template>
+        <ng-container *ngIf="dyn.action != 'UPDATED'">
+          <app-delta-column [action]="dyn.action" [currentValue]="dyn.display.current" [previousValue]="dyn.display.previous" styleClassCurrent="delta-current" styleClassPrevious="delta-previous">
+            <ng-template #default let-value>
+             <app-display-section [element]="value"></app-display-section>
+            </ng-template>
 
-          <ng-template #current let-current>
-              <app-display-section [element]="current"></app-display-section>
-          </ng-template>
+            <ng-template #current let-current>
+                <app-display-section [element]="current"></app-display-section>
+            </ng-template>
 
-          <ng-template #previous let-previous>
-            <app-display-section [element]="previous"></app-display-section>
-          </ng-template>
-        </app-delta-column>
+            <ng-template #previous let-previous>
+              <app-display-section [element]="previous"></app-display-section>
+            </ng-template>
+          </app-delta-column>
+
+        </ng-container>
+        <ng-container *ngIf="dyn.action == 'UPDATED'">
+          <app-display-section [element]="dyn.display.current" ></app-display-section>
+        </ng-container>
+
       </td>
     </tr>
   </ng-template>

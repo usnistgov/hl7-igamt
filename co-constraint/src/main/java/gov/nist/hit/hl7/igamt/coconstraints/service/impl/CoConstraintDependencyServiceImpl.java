@@ -160,8 +160,8 @@ public class CoConstraintDependencyServiceImpl implements CoConstraintDependency
     if(cell instanceof ValueSetCell) {
       ValueSetCell vsCell= (ValueSetCell)cell;
       if(vsCell.getBindings() !=null) {
-        bindingService.processValueSetBinding(vsCell.getBindings().stream().collect(Collectors.toSet()), used.getValuesets(), filter.getExcluded());  
-
+        bindingService.processValueSetBinding(vsCell.getBindings().stream().collect(Collectors.toSet()), used.getValuesets(), filter.getExcluded()); 
+      }
       }else if(cell instanceof DatatypeCell ) {
         DatatypeCell dtCell= (DatatypeCell)cell; 
         if(dtCell.getDatatypeId() != null && !used.getDatatypes().containsKey(dtCell.getDatatypeId())) {
@@ -175,8 +175,7 @@ public class CoConstraintDependencyServiceImpl implements CoConstraintDependency
         VariesCell vrCell= (VariesCell)cell;
         if(vrCell.getCellValue() !=null) {
           process(vrCell.getCellValue(), used, filter);
-        }
-      }
+        }   
     }
   }
   
