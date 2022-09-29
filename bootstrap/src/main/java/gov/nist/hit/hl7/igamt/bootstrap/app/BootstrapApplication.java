@@ -611,8 +611,8 @@ public class BootstrapApplication implements CommandLineRunner {
 		
 	}
 	
-	//@PostConstruct
-	void checkMissing() throws ForbiddenOperationException, ValidationException {
+	@PostConstruct
+	void addMissing() throws ForbiddenOperationException, ValidationException {
 		List<Ig> igs = this.igService.findAll();
 		for( Ig ig: igs) {
 			igFixer.checkMessing(ig);
