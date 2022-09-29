@@ -1,7 +1,6 @@
-import { UnusedElementsComponent } from './../../../shared/components/unused-elements/unused-elements.component';
-import { AfterViewInit, Component, Input, OnDestroy, OnInit, SystemJsNgModuleLoader, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { ActivatedRoute, ChildrenOutletContexts, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
@@ -39,7 +38,6 @@ import { getHl7ConfigState } from '../../../../root-store/config/config.reducer'
 import {
   CreateCoConstraintGroup,
   CreateCoConstraintGroupSuccess,
-  DeleteResources,
 } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
 import { ClearResource } from '../../../../root-store/resource-loader/resource-loader.actions';
@@ -685,56 +683,6 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
             if (tocFilter && tocFilter.usedInConformanceProfiles.active) {
               this.igTocFilterService.setFilter(tocFilter);
               this.triggerTocFilterWarning();
-            }
-          }),
-        );
-      }),
-    ).subscribe();
-  }
-  cleanUnused($event: {children: IDisplayElement[], type : Type}){
-    this.documentRef$.pipe(
-      take(1),
-      concatMap((documentRef: IDocumentRef) => {
-        return this.crossReferencesService.getUnused(documentRef.documentId, $event.type).pipe(
-          take(1),
-          map((unused: string[]) => {
-            if (unused.length === 0) {
-              const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-                data: {
-                  question: 'No Unused Elements',
-                  action: '',
-                },
-              });
-              dialogRef.afterClosed().subscribe(
-                (answer) => {
-                  if (answer) {
-                    //this.store.dispatch(new DeleteResource({ documentId: documentRef.documentId, element: $event }));
-                  }
-                },
-              );
-            } else {
-              let unusedMap ={};
-              unused.forEach(element => {
-                unusedMap[element] = true;
-              });
-              let unusedDisplay: IDisplayElement[]= [];
-
-              unusedDisplay = $event.children.filter(x => unusedMap[x.id]);
-              const dialogRef = this.dialog.open(UnusedElementsComponent, {
-
-                data: {
-                  ids: unused,
-                  resources: unusedDisplay,
-                },
-              });
-              dialogRef.afterClosed().subscribe(
-                (answer) => {
-                  if (answer) {
-                    console.log(answer);
-                    this.store.dispatch(new DeleteResources({ documentId: documentRef.documentId, ids: answer, type: $event.type }));
-                  }
-                },
-              );
             }
           }),
         );

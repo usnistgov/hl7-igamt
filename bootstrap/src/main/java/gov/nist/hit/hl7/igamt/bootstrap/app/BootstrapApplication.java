@@ -601,26 +601,74 @@ public class BootstrapApplication implements CommandLineRunner {
 		codeFixer.fixTableHL70125("2.9"); 
 		this.dynamicMappingFixer.processSegmentByVersion("2.9");
 		tableFixes.fix0396ByVersion("2.9");
+		
+//	List<Datatype> dts =	this.dataypeService.findByDomainInfoVersion("2.9");
+//	HashMap<String, Datatype>  dtMap = new HashMap<String, Datatype>();
+//	for(Datatype dt: dts) {
+//		dtMap.put(dt.getId(), dt);
+//	}
+//	
+//	for(Datatype dt: dts ) {
+//		if(dt instanceof ComplexDatatype ) {
+//			ComplexDatatype level1 = (ComplexDatatype)dt;
+//			
+//			
+//			for ( Component c1 : level1.getComponents()) {
+//				
+//				Datatype sub1 = dtMap.get(c1.getRef().getId());
+//				
+//				
+//				if(sub1 instanceof ComplexDatatype) {
+//					
+//					
+//					ComplexDatatype sub1Cmp  = (ComplexDatatype)sub1;
+//					
+//					
+//					for ( Component c2 : sub1Cmp.getComponents()) {
+//						
+//					
+//						Datatype sub2 = dtMap.get(c2.getRef().getId());
+//						
+//				
+//						
+//						if(sub2 instanceof ComplexDatatype) {
+//							
+//							System.out.println(dt.getName() +"--"+ sub1.getName() + "---"+ sub2.getName());
+//						}
+//
+//					}
+//
+//				}
+//				
+//				
+//			}
+//		}
+//	}
 	
 		
 	}
 	
 	//@PostConstruct
-	void fixIg() throws ForbiddenOperationException, ValidationException {
-		igFixer.deprecateIG("", Boolean.TRUE);
-		
-	}
+//	void includeCode() {
+//		List<Ig> igs = this.igService.findAll();
+//		
+//		for (Ig ig: igs) {
+//		    if(ig.getValueSetRegistry().getCodesPresence() != null ) {
+//		    	
+//		    	
+//		    	
+//		        if (ig.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
+//		          if (ig.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
+//		            vs.setIncludeCodes(true);
+//		          } else {
+//		            vs.setIncludeCodes(false);
+//		          }
+//		        } else {
+//		          vs.setIncludeCodes(true);
+//		        }
+//		     }
+//		}
+//	}
 	
-	@PostConstruct
-	void addMissing() throws ForbiddenOperationException, ValidationException {
-		List<Ig> igs = this.igService.findAll();
-		for( Ig ig: igs) {
-			igFixer.checkMessing(ig);
-
-		}
-		
-	}
-	
-
 	
 }

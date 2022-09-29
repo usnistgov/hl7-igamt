@@ -139,7 +139,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
   // TODDOO review requirment
   private void applyValueSetFlavorInfo(Valueset valueset, AddingInfo addingInfo) {
-
     if(valueset.getBindingIdentifier().equals("HL70396") && valueset.getSourceType().equals(SourceType.EXTERNAL)) {
       valueset.setSourceType(SourceType.INTERNAL);
       valueset.setOrigin(valueset.getId());

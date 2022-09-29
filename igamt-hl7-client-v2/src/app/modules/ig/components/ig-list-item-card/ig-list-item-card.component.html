@@ -17,9 +17,8 @@
         <strong>
 
         <span class="badge badge-danger" *ngIf="igListItem.draft" style="margin-right: 3px;"
-        [ngbPopover]="igListItem?.publicationInfo?.warning? igListItem.publicationInfo.warning :'Warning: This is a DRAFT publication for trial use only. It will be updated and replaced. It is not advised to create permanent derived profiles form this DRAFT implementation Guide'"
+        ngbPopover="Warning: This is a DRAFT publication for trial use only. It will be updated and replaced. It is not advised to create permanent derived profiles form this DRAFT implementation Guide"
         popoverClass="dialog-danger"
-        placement="right"
         triggers="mouseenter:mouseleave">
           Draft
         </span>

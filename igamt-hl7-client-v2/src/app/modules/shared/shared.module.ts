@@ -135,7 +135,6 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { UnusedElementsComponent } from './components/unused-elements/unused-elements.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -231,7 +230,6 @@ import { UnusedElementsComponent } from './components/unused-elements/unused-ele
     SlicingViewerComponent,
     VsCodePickerComponent,
     IgPublisherComponent,
-    UnusedElementsComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -413,7 +411,6 @@ import { UnusedElementsComponent } from './components/unused-elements/unused-ele
     SlicingRowComponent,
     VsCodePickerComponent,
     IgPublisherComponent,
-    UnusedElementsComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -445,8 +442,6 @@ import { UnusedElementsComponent } from './components/unused-elements/unused-ele
     SelectSlicingContextComponent,
     VsCodePickerComponent,
     IgPublisherComponent,
-    UnusedElementsComponent,
-
   ],
 })
 export class SharedModule {

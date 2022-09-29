@@ -18,7 +18,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
-import gov.nist.hit.hl7.igamt.common.base.domain.ResourceOrigin;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -501,7 +500,6 @@ public class CrudServiceImpl implements CrudService {
       newValueset.setStability(Stability.Dynamic);
       newValueset.setContentDefinition(ContentDefinition.Extensional);
       newValueset.setId(new ObjectId().toString());
-      newValueset.setResourceOrigin(ResourceOrigin.PHINVADS);
       Valueset saved = valuesetService.save(newValueset);
       ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
       savedIds.add(saved.getId());
@@ -522,6 +520,7 @@ public class CrudServiceImpl implements CrudService {
    */
   private void addValueSetAsFlavor(AddingInfo elm, Set<String> savedIds, Ig ig, String username) throws EntityNotFound, ForbiddenOperationException {
     if (elm.getOriginalId() != null) {
+     // Valueset valueset = valuesetService.findById(elm.getOriginalId());
         
         Valueset clone =  resourceManagementService.getElmentFormAddingInfo( username, new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT), Type.VALUESET, elm);
 
@@ -556,7 +555,7 @@ public class CrudServiceImpl implements CrudService {
 
     Valueset valueset = new Valueset();
     DomainInfo info = new DomainInfo();
-    info.setScope(Scope.USER);
+    info.setScope(Scope.PHINVADS);
     info.setVersion(elm.getDomainInfo().getVersion());
     valueset.setDomainInfo(info);
     if (!elm.isIncludeChildren()) {
@@ -585,7 +584,7 @@ public class CrudServiceImpl implements CrudService {
     valueset.setOid(elm.getOid());
     valueset.setFlavor(true);
     valueset.setId(new ObjectId().toString());
-    valueset.setResourceOrigin(ResourceOrigin.PHINVADS);
+
     Valueset saved = valuesetService.save(valueset);
     ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
     savedIds.add(saved.getId());

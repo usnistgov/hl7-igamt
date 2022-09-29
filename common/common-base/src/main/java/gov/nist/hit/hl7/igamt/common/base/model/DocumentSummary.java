@@ -3,7 +3,6 @@ package gov.nist.hit.hl7.igamt.common.base.model;
 import java.util.Date;
 import java.util.List;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 
@@ -24,7 +23,6 @@ public class DocumentSummary {
 	private List<String> sharedUsers;
 	private String currentAuthor;
 	private Boolean draft;
-	private PublicationInfo publicationInfo;
 
 	public Boolean getDraft() {
 		return draft;
@@ -148,14 +146,6 @@ public class DocumentSummary {
 
 	public void setCurrentAuthor(String currentAuthor) {
 		this.currentAuthor = currentAuthor;
-	}
-
-	public PublicationInfo getPublicationInfo() {
-		return publicationInfo;
-	}
-
-	public void setPublicationInfo(PublicationInfo publicationInfo) {
-		this.publicationInfo = publicationInfo;
 	}
 
 

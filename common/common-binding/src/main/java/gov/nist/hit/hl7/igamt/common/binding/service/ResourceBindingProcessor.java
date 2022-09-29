@@ -38,7 +38,7 @@ public class ResourceBindingProcessor {
   public ResourceBindingProcessor(ResourceBinding resourceBinding) {
     binding = new HashMap<String, StructureElementBinding>();
 
-    if(resourceBinding.getChildren()!= null) {
+    if(resourceBinding.getChildren()!= null && !resourceBinding.getChildren().isEmpty()) {
       for(StructureElementBinding child : resourceBinding.getChildren()) {
         if(child.getChildren() != null) {
           this.processsStructureElementBinding(null, child);
@@ -54,7 +54,7 @@ public class ResourceBindingProcessor {
     binding = new HashMap<String, StructureElementBinding>();
   }
   private void processsStructureElementBinding(String path, StructureElementBinding elm) {
-    String newKey = path != null? path + '-' + elm.getElementId() : elm.getElementId();
+    String newKey = path !=null? path + '-' + elm.getElementId() : elm.getElementId();
     binding.put(newKey, elm);
 
     if(elm.getChildren() != null) {
@@ -82,9 +82,8 @@ public class ResourceBindingProcessor {
     }
   }
   
-  public HashMap<String, StructureElementBinding> get(){
-	return binding;
-	  
-  }
-
+  
+  
+  
+ 
 }

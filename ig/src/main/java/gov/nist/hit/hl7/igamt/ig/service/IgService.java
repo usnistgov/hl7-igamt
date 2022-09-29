@@ -123,12 +123,5 @@ public interface IgService {
 
   public void publishIG(Ig ig, PublishingInfo info) throws IGNotFoundException, IGUpdateException;
 
-  public FilterResponse getUnused(String id) throws EntityNotFound;
-
-  public Set<String> findUnused(Ig ig, Type registryType);
-
-  public List<String> deleteUnused(Ig ig, Type registryType, List<String> ids) throws EntityNotFound, ForbiddenOperationException;
-
-
 
 }

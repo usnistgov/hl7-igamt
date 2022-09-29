@@ -161,7 +161,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
                       panelClass: 'dialog-danger',
                       data: {
-                        question: this.getWarning(item),
+                        question: this.draftWarning,
                         action: 'Clone implementation guide',
                       },
                     });
@@ -207,7 +207,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
                       panelClass: 'dialog-danger',
                       data: {
-                        question: this.getWarning(item),
+                        question: this.draftWarning,
                         action: 'Derive implementation guide',
                       },
                     });
@@ -360,9 +360,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
       (answer) => {
         if (answer) {
           console.log(answer);
-          console.log(answer);
-
-          this.ig.publish(item.id, {draft: answer.draft, info: answer.info}).subscribe(
+          this.ig.publish(item.id, {draft: answer.draft}).subscribe(
             (response: Message<string>) => {
               this.store.dispatch(this.message.messageToAction(response));
               this.router.navigateByUrl('/ig/list?type=PUBLISHED');
@@ -376,17 +374,6 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
     );
   }
 
-  getWarning(item: IgListItem){
-
-    if(item.publicationInfo){
-      if(item.publicationInfo.warning){
-        if(item.publicationInfo.warning.length>0){
-          return item.publicationInfo.warning;
-        }
-      }
-    }
-    return this.draftWarning;
-  }
   hideForShared(label: string, type: string, permission: string) {
     if (label === 'Edit') {
       if (type === 'SHARED' && permission === 'WRITE') {

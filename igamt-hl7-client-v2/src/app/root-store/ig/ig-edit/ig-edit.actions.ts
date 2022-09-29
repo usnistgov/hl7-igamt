@@ -1,4 +1,3 @@
-import { IDeleteNodes } from './../../../modules/document/models/toc/toc-operation.class';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
@@ -36,10 +35,6 @@ export enum IgEditActionTypes {
   DeleteResource = '[Ig Edit TOC] Delete Resource',
   DeleteResourceSuccess = '[Ig Edit TOC] Delete Resource Success',
   DeleteResourceFailure = '[Ig Edit TOC] Delete Resource Failure',
-
-  DeleteResources = '[Ig Edit TOC] Delete Resources',
-  DeleteResourcesSuccess = '[Ig Edit TOC] Delete Resources Success',
-  DeleteResourcesFailure = '[Ig Edit TOC] Delete Resources Failure',
 
   OpenNarrativeEditorNode = '[Ig Edit TOC Narrative] Open Narrative Editor Node',
   OpenIgMetadataEditorNode = '[Ig Edit TOC Ig Metadata] Open Ig Metadata Editor Node',
@@ -360,21 +355,6 @@ export class CreateCompositeProfileFailure implements Action {
   constructor(readonly payload: HttpErrorResponse) {
   }
 }
-export class DeleteResources implements Action {
-  readonly type = IgEditActionTypes.DeleteResources;
-  constructor(readonly payload: IDeleteNodes) {
-  }
-}
-export class DeleteResourcesSuccess implements Action {
-  readonly type = IgEditActionTypes.DeleteResourcesSuccess;
-  constructor(readonly ids: string [], readonly redirect: boolean, readonly url) {
-  }
-}
-export class DeleteResourcesFailure implements Action {
-  readonly type = IgEditActionTypes.DeleteResourcesFailure;
-  constructor(readonly error: HttpErrorResponse) {
-  }
-}
 
 export type IgEditActions =
   IgEditResolverLoad
@@ -413,7 +393,4 @@ export type IgEditActions =
   | ToggleDeltaFailure
   | CreateCompositeProfile
   | CreateCompositeProfileSuccess
-  | CreateCompositeProfileFailure
-  | DeleteResources
-  | DeleteResourcesSuccess
-  | DeleteResourcesFailure;
+  | CreateCompositeProfileFailure;

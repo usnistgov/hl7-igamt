@@ -9,20 +9,18 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IgPublisherComponent  implements OnInit {
-  customMessage = false;
-  defaultWarning = 'Warning: This is a DRAFT publication for trial use only. It will be updated and replaced. It is not advised to create permanent derived profiles form this DRAFT implementation Guide.';
+  customizeNarratives = false;
+  publicationInfo: {draft: boolean, info: any}  = { draft: false, info: {}};
 
-  publicationInfo: {draft: boolean, info: any}  = { draft: false, info: { warning: this.defaultWarning }};
-
-  constructor(public dialogRef: MatDialogRef<IgPublisherComponent>,
+  constructor(  public dialogRef: MatDialogRef<IgPublisherComponent>,
                 @Inject(MAT_DIALOG_DATA) public data: any ) { }
-
 
   ngOnInit() {
 
   }
 
   submit() {
+    console.log(this.publicationInfo);
     this.dialogRef.close(this.publicationInfo);
   }
 
