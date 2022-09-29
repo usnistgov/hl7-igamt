@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -498,6 +499,7 @@ public class CrudServiceImpl implements CrudService {
       newValueset.setExtensibility(Extensibility.Closed);
       newValueset.setStability(Stability.Dynamic);
       newValueset.setContentDefinition(ContentDefinition.Extensional);
+      newValueset.setId(new ObjectId().toString());
       Valueset saved = valuesetService.save(newValueset);
       ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
       savedIds.add(saved.getId());
@@ -514,7 +516,7 @@ public class CrudServiceImpl implements CrudService {
    * @param ig
    * @param username
    * @throws EntityNotFound 
- * @throws ForbiddenOperationException 
+   * @throws ForbiddenOperationException 
    */
   private void addValueSetAsFlavor(AddingInfo elm, Set<String> savedIds, Ig ig, String username) throws EntityNotFound, ForbiddenOperationException {
     if (elm.getOriginalId() != null) {
@@ -526,7 +528,6 @@ public class CrudServiceImpl implements CrudService {
         clone.getDomainInfo().setScope(Scope.USER);
 
         clone.setUsername(username);
-        clone.setBindingIdentifier(elm.getName());
         clone.setSourceType(elm.getSourceType());
         clone = valuesetService.save(clone);
         ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), elm.isIncludeChildren());
@@ -576,11 +577,13 @@ public class CrudServiceImpl implements CrudService {
       }
     }
     valueset.setUsername(username);
+    valueset.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
     valueset.setBindingIdentifier(elm.getName());
     valueset.setName(elm.getDescription());
     valueset.setUrl(elm.getUrl());
     valueset.setOid(elm.getOid());
     valueset.setFlavor(true);
+    valueset.setId(new ObjectId().toString());
 
     Valueset saved = valuesetService.save(valueset);
     ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
@@ -611,6 +614,8 @@ public class CrudServiceImpl implements CrudService {
     valueset.setUsername(username);
     valueset.setBindingIdentifier(elm.getName());
     valueset.setUrl(elm.getUrl());
+    valueset.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
+    valueset.setId(new ObjectId().toString());
     Valueset saved = valuesetService.save(valueset);
     ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
     savedIds.add(saved.getId());

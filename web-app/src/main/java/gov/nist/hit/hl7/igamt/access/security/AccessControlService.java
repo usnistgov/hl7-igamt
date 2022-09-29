@@ -78,6 +78,12 @@ public class AccessControlService {
             // Grant READ access
             return level.equals(AccessLevel.READ);
         }
+        
+        if(isAdmin(user)) {
+            
+        	return level.equals(AccessLevel.READ);
+
+        }
 
         return false;
     }
@@ -253,6 +259,10 @@ public class AccessControlService {
             default:
                 return false;
         }
+    }
+    
+    public boolean isAdmin(UsernamePasswordAuthenticationToken user) {
+        return user.getAuthorities() != null && user.getAuthorities().stream().anyMatch((a) -> a.getAuthority().equals("ADMIN"));
     }
 
 }

@@ -832,7 +832,7 @@ public class IgServiceImpl implements IgService {
       if(vs.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
         Config conf = this.configService.findOne();
         if(conf !=null) {
-          vs.setUrl(conf.getPhinvadsUrl()+vs.getOid());
+          vs.setUrl(conf.getPhinvadsUrl() + vs.getOid());
         }
       }
     }
@@ -844,7 +844,7 @@ public class IgServiceImpl implements IgService {
           vs.setIncludeCodes(false);
           vs.setCodes(new HashSet<Code>());
         }
-      }else {
+      } else {
         vs.setIncludeCodes(true);
       }
     }
