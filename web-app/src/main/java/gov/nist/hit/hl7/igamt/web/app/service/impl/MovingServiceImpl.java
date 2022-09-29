@@ -31,7 +31,7 @@ public class MovingServiceImpl implements MovingService {
 
 	@Override
 	public DocumentStructure moveDocumentToWorkspace(String documentId, DocumentType type, String workspaceId, String folderId, String username) throws Exception {
-		WorkspacePermissionType permission = this.workspacePermissionService.getWorkspacePermissionTypeByFolder(workspaceId, folderId, username);
+		WorkspacePermissionType permission = this.workspacePermissionService.getWorkspacePermissionTypeByFolder(workspaceId, username, folderId);
 		if(permission != null && permission.equals(WorkspacePermissionType.EDIT)) {
 			WorkspaceAudience audience = new WorkspaceAudience();
 			audience.setWorkspaceId(workspaceId);

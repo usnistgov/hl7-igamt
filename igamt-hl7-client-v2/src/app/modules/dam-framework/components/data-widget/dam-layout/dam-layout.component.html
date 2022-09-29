@@ -1,9 +1,16 @@
 <div class="page-container-nopad">
   <div class="wrapper">
 
+
+
     <div class="alerts">
       <!-- ALERTS -->
       <ng-container *ngTemplateOutlet="alertsTemplate; context: { }" ></ng-container>
+    </div>
+
+    <div class="bc">
+      <!-- Bread Crumbs -->
+      <ng-container *ngTemplateOutlet="bcTemplate; context: { }" ></ng-container>
     </div>
 
     <div class="titlebar">

@@ -48,6 +48,51 @@ public class AccessControlService {
             .map(Field::getName)
             .collect(Collectors.toSet());
 
+    public AccessLevel getDocumentUserAccessLevel(DocumentAccessInfo document, UsernamePasswordAuthenticationToken user) {
+        // If document is published
+        if(document.getStatus() != null && document.getStatus().equals(Status.PUBLISHED)) {
+            // Grant READ access
+            return AccessLevel.READ;
+        }
+
+        // If document is archived
+        if(document.getStatus() != null && document.getStatus().equals(Status.ARCHIVED)) {
+            // Grant No access
+            return null;
+        }
+
+        // If the user is the OWNER of the document
+        if(document.getUsername().equals(user.getName())) {
+            // Grant ALL access
+            return AccessLevel.WRITE;
+        }
+
+        // If the document is shared with the user
+        if(document.getSharedUsers() != null && document.getSharedUsers().contains(user.getName())) {
+            // Grant READ access
+            return AccessLevel.READ;
+        }
+
+        if(document.getAudience() != null) {
+            return this.checkAudience(document.getAudience(), user);
+        }
+
+        if(isAdmin(user)) {
+            return AccessLevel.READ;
+        }
+
+        return null;
+    }
+
+    public boolean evaluateAccessLevel(AccessLevel granted, AccessLevel requested) {
+        if(granted == null)
+            return false;
+        if(granted.equals(requested) || granted.equals(AccessLevel.WRITE)) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean checkResourceAccessPermission(Type type, String id, UsernamePasswordAuthenticationToken user, AccessLevel level) throws ResourceNotFoundException {
         if(isDocument(type)) {
             return this.checkDocumentAccessPermission(getDocument(type, id), user, level);
@@ -57,86 +102,53 @@ public class AccessControlService {
     }
 
     public boolean checkDocumentAccessPermission(DocumentAccessInfo document, UsernamePasswordAuthenticationToken user, AccessLevel level) {
-        // If document is published
-        if(document.getStatus() != null && document.getStatus().equals(Status.PUBLISHED)) {
-            // Grant READ access
-            return level.equals(AccessLevel.READ);
-        }
-
-        // If document is archived
-        if(document.getStatus() != null && document.getStatus().equals(Status.ARCHIVED)) {
-            // Grant No access
-            return false;
-        }
-
-        // If the user is the OWNER of the document
-        if(document.getUsername().equals(user.getName())) {
-            // Grant ALL access
-            return true;
-        }
-
-        // If the document is shared with the user
-        if(document.getSharedUsers() != null && document.getSharedUsers().contains(user.getName())) {
-            // Grant READ access
-            return level.equals(AccessLevel.READ);
-        }
-        
-        if(isAdmin(user)) {
-            
-        	return level.equals(AccessLevel.READ);
-
-        }
-
-        if(document.getAudience() != null) {
-            return this.checkAudience(document.getAudience(), user, level);
-        }
-
-        return false;
+        AccessLevel userAccess = getDocumentUserAccessLevel(document, user);
+        return evaluateAccessLevel(userAccess, level);
     }
 
-    public boolean checkAudience(Audience audience, UsernamePasswordAuthenticationToken user, AccessLevel level) {
+    public AccessLevel checkAudience(Audience audience, UsernamePasswordAuthenticationToken user) {
         switch (audience.getType()) {
             case PUBLIC:
-                return this.checkPublicAudience((PublicAudience) audience, user, level);
+                return this.checkPublicAudience((PublicAudience) audience, user);
             case PRIVATE:
-                return this.checkPrivateAudience((PrivateAudience) audience, user, level);
+                return this.checkPrivateAudience((PrivateAudience) audience, user);
             case WORKSPACE:
-                return this.checkWorkspaceAudience((WorkspaceAudience) audience, user, level);
+                return this.checkWorkspaceAudience((WorkspaceAudience) audience, user);
         }
-        return false;
+        return null;
     }
 
-    public boolean checkPrivateAudience(PrivateAudience audience, UsernamePasswordAuthenticationToken user, AccessLevel level) {
+    public AccessLevel checkPrivateAudience(PrivateAudience audience, UsernamePasswordAuthenticationToken user) {
         // If user is editor
         if(user.getName().equals(audience.getEditor())) {
             // Grant all access
-            return true;
+            return AccessLevel.WRITE;
         }
 
         // If user is viewer
         if(audience.getViewers().contains(user.getName())) {
             // Grant user access
-            return level.equals(AccessLevel.READ);
+            return AccessLevel.READ;
         }
 
-        return false;
+        return null;
     }
 
-    public boolean checkPublicAudience(PublicAudience audience, UsernamePasswordAuthenticationToken user, AccessLevel level) {
-        return level.equals(AccessLevel.READ);
+    public AccessLevel checkPublicAudience(PublicAudience audience, UsernamePasswordAuthenticationToken user) {
+        return AccessLevel.READ;
     }
 
-    public boolean checkWorkspaceAudience(WorkspaceAudience audience, UsernamePasswordAuthenticationToken user, AccessLevel level) {
-        WorkspacePermissionType permissionType = this.workspacePermissionService.getWorkspacePermissionTypeByFolder(audience.getWorkspaceId(), audience.getFolderId(), user.getName());
+    public AccessLevel checkWorkspaceAudience(WorkspaceAudience audience, UsernamePasswordAuthenticationToken user) {
+        WorkspacePermissionType permissionType = this.workspacePermissionService.getWorkspacePermissionTypeByFolder(audience.getWorkspaceId(), user.getName(), audience.getFolderId());
         if (permissionType != null) {
             switch (permissionType) {
                 case EDIT:
-                    return true;
+                    return AccessLevel.WRITE;
                 case VIEW:
-                    return level.equals(AccessLevel.READ);
+                    return AccessLevel.READ;
             }
         }
-        return false;
+        return null;
     }
 
     public boolean checkResourceAccessPermission(ResourceInfo resourceInfo, UsernamePasswordAuthenticationToken user, AccessLevel level) throws ResourceNotFoundException {

@@ -1,9 +1,5 @@
-import {IDocument} from '../../../document/models/document/IDocument.interface';
-import { IAbstractDomain } from '../../../shared/models/abstract-domain.interface';
-import { IContent } from '../../../shared/models/content.interface';
+import { IDocument } from '../../../document/models/document/IDocument.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IDomainInfo } from '../../../shared/models/domain-info.interface';
-import { IMetadata } from '../../../shared/models/metadata.interface';
 import { IRegistry } from '../../../shared/models/registry.interface';
 
 export interface IgDocument extends IDocument {
@@ -16,6 +12,33 @@ export interface IgDocument extends IDocument {
   valueSetRegistry: IRegistry;
   label?: any;
   derived: boolean;
+  audience: IAudience;
+}
+
+export enum AudienceType {
+  PRIVATE = 'PRIVATE',
+  PUBLIC = 'PUBLIC',
+  WORKSPACE = 'WORKSPACE'
+}
+
+export interface IAudience {
+  type: AudienceType;
+}
+
+export interface IPrivateAudience extends IAudience {
+  type: AudienceType.PRIVATE;
+  editor: string;
+  viewers: string[];
+}
+
+export interface IPublicAudience {
+  type: AudienceType.PUBLIC;
+}
+
+export interface IWorkspaceAudience {
+  type: AudienceType.WORKSPACE;
+  workspaceId: string;
+  folderId: string;
 }
 
 export interface IDocumentDisplayInfo<T extends IDocument> {
@@ -28,4 +51,23 @@ export interface IDocumentDisplayInfo<T extends IDocument> {
   compositeProfiles?: IDisplayElement[];
   coConstraintGroups?: IDisplayElement[];
   targetResourceId?: string;
+  documentLocation?: IDocumentLocation[];
+}
+
+export interface IDocumentLocation {
+  position: number;
+  type: DocumentLocationType;
+  id: string;
+  label: string;
+}
+
+export enum DocumentLocationType {
+  SCOPE = 'SCOPE',
+  WORKSPACE = 'WORKSPACE',
+  FOLDER = 'FOLDER'
+}
+
+export interface IIgLocationValue {
+  id: string;
+  location?: IDocumentLocation[];
 }

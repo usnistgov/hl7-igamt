@@ -1,6 +1,8 @@
+import { IIgLocationValue } from './../../../modules/ig/models/ig/ig-document.class';
 import { Dictionary } from '@ngrx/entity';
 import { createSelector } from '@ngrx/store';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { selectValue } from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { IgTOCNodeHelper } from '../../../modules/document/services/ig-toc-node-helper.service';
 import { IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
@@ -22,6 +24,8 @@ export const selectIgId = createSelector(
     return state.id;
   },
 );
+
+export const selectIgDocumentLocation = selectValue<IIgLocationValue>('igLocation');
 
 export const selectDerived = createSelector(
   selectIgDocument,
@@ -205,7 +209,7 @@ export const selectToc = createSelector(
     compositeProfilesNodes: IDisplayElement[],
   ) => {
     return IgTOCNodeHelper.buildTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, profileComponentsNodes, compositeProfilesNodes);
-},
+  },
 );
 
 export const selectProfileTree = createSelector(
@@ -225,7 +229,7 @@ export const selectProfileTree = createSelector(
     coConstraintGroupNodes: IDisplayElement[],
     profileComponentsNodes: IDisplayElement[],
     compositeProfilesNodes: IDisplayElement[],
-) => {
+  ) => {
   return IgTOCNodeHelper.buildProfileTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, profileComponentsNodes, compositeProfilesNodes);
 },
 );

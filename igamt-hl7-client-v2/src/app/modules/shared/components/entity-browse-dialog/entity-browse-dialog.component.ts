@@ -6,7 +6,6 @@ import { TreeNode } from 'primeng/primeng';
 import { map } from 'rxjs/operators';
 import { Type } from '../../constants/type.enum';
 import { IDomainInfo } from '../../models/domain-info.interface';
-import { IBrowserTreeNode } from './entity-browse-dialog.component';
 
 export enum BrowseType {
   LOCATION = 'LOCATION',

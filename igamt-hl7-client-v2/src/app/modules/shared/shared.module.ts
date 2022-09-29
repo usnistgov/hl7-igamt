@@ -65,6 +65,7 @@ import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component
 import { DeriveDialogComponent } from './components/derive-dialog/derive-dialog.component';
 import { DisplayRefComponent } from './components/display-ref/display-ref.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
+import { DocumentBreadcrumbsComponent } from './components/document-breadcrumbs/document-breadcrumbs.component';
 import { DocumentBrowserComponent } from './components/document-browser/document-browser.component';
 import { DtmStructureComponent } from './components/dtm-stucture/dtm-structure.component';
 import { AddMappingDialgComponent } from './components/dynamic-mapping/add-mapping-dialg/add-mapping-dialg.component';
@@ -236,6 +237,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     IgListItemCardComponent,
     VsCodePickerComponent,
     IgPublisherComponent,
+    DocumentBreadcrumbsComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -420,6 +422,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     IgListItemCardComponent,
     VsCodePickerComponent,
     IgPublisherComponent,
+    BreadcrumbModule,
+    DocumentBreadcrumbsComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,

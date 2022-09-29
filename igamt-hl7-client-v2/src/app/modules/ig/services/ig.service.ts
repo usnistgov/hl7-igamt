@@ -1,9 +1,8 @@
 import { LocationStrategy } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {el} from '@angular/platform-browser/testing/src/browser_util';
 import { Action } from '@ngrx/store';
-import {Observable, of, throwError} from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { TableOfContentSave } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import { Message } from '../../dam-framework/models/messages/message.class';
@@ -15,7 +14,7 @@ import {
   ICreateCoConstraintGroupResponse, ICreateCompositeProfile, ICreateProfileComponent, ICreateProfileComponentResponse,
 } from '../../document/models/toc/toc-operation.class';
 import { IgTOCNodeHelper } from '../../document/services/ig-toc-node-helper.service';
-import {ExportTypes} from '../../export-configuration/models/export-types';
+import { ExportTypes } from '../../export-configuration/models/export-types';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { CloneModeEnum } from '../../shared/constants/clone-mode.enum';
 import { Scope } from '../../shared/constants/scope.enum';
@@ -73,7 +72,7 @@ export class IgService {
   }
 
   loadOrInsertRepositoryFromIgDisplayInfo(igInfo: IDocumentDisplayInfo<IgDocument>, load: boolean, values?: string[]): fromDam.InsertResourcesInRepostory | fromDam.LoadResourcesInRepostory {
-    const _default = ['segments', 'datatypes', 'messages', 'valueSets', 'coConstraintGroups', 'profileComponents', 'compositeProfiles',  'sections'];
+    const _default = ['segments', 'datatypes', 'messages', 'valueSets', 'coConstraintGroups', 'profileComponents', 'compositeProfiles', 'sections'];
     console.log('loading');
     const collections = (values ? values : _default).map((key) => {
       return {
@@ -81,10 +80,10 @@ export class IgService {
         values: key === 'sections' ? IgTOCNodeHelper.getIDisplayFromSections(igInfo.ig.content, '') : igInfo[key],
       };
     });
-    if (igInfo.profileComponents !== null ) {
+    if (igInfo.profileComponents !== null) {
       let childrenArray = [];
       igInfo['profileComponents'].forEach((x) => childrenArray = childrenArray.concat(x.children));
-      collections.push({key: 'contexts', values: childrenArray});
+      collections.push({ key: 'contexts', values: childrenArray });
     }
     return !load ? new fromDam.InsertResourcesInRepostory({
       collections,
@@ -107,8 +106,8 @@ export class IgService {
       key: collection,
       values: [display],
     }];
-    if (display.type === Type.PROFILECOMPONENT && display.children ) {
-      collections.push({key: 'contexts' , values: display.children });
+    if (display.type === Type.PROFILECOMPONENT && display.children) {
+      collections.push({ key: 'contexts', values: display.children });
     }
     return [
       ...(registry ? [new fromDam.LoadPayloadData({
@@ -116,7 +115,7 @@ export class IgService {
         [registry]: registryList,
       })] : []),
       ...(collection ? [new fromDam.InsertResourcesInRepostory({
-         collections,
+        collections,
       })] : []),
     ];
   }
@@ -308,7 +307,7 @@ export class IgService {
     form.submit();
   }
 
-  export(igId, decision: any, format: string, configId: string , exportType: ExportTypes ) {
+  export(igId, decision: any, format: string, configId: string, exportType: ExportTypes) {
     const form = document.createElement('form');
     form.action = this.EXPORT_URL + igId + '/' + format + '?deltamode=TEST';
     form.method = 'POST';
@@ -337,7 +336,7 @@ export class IgService {
   }
 
   exportAsHtml(igId: string, decision: any, configurationId: string, exportType: ExportTypes) {
-    this.submitForm(decision, this.EXPORT_URL + igId + '/html', configurationId, exportType );
+    this.submitForm(decision, this.EXPORT_URL + igId + '/html', configurationId, exportType);
   }
 
   exportDiffXML(igId: string) {
@@ -347,11 +346,11 @@ export class IgService {
     this.submitForm(null, this.EXPORT_URL + igId + '/' + profileId + '/xml/diff', null, null);
   }
 
-  exportDocument(igId: string, decision: any,  configId: string , exportType: ExportTypes, format: string) {
+  exportDocument(igId: string, decision: any, configId: string, exportType: ExportTypes, format: string) {
     this.submitForm(decision, this.EXPORT_URL + igId + '/' + format, configId, exportType);
   }
 
-  submitForm(decision: any, end_point: string, configId: string , exportType: ExportTypes) {
+  submitForm(decision: any, end_point: string, configId: string, exportType: ExportTypes) {
     const form = document.createElement('form');
     const documentType = document.createElement('input');
     documentType.type = 'hidden';
@@ -439,7 +438,7 @@ export class IgService {
   }
 
   deleteContext(documentId: string, element: IDisplayElement, parent: IDisplayElement): Observable<IDisplayElement> {
-    return this.http.post<IDisplayElement>(this.IG_END_POINT + documentId + '/profile-component/' + parent.id + '/removeContext' , element.id);
+    return this.http.post<IDisplayElement>(this.IG_END_POINT + documentId + '/profile-component/' + parent.id + '/removeContext', element.id);
   }
 
   createCompositeProfile(request: ICreateCompositeProfile): Observable<Message<ICreateProfileComponentResponse>> {

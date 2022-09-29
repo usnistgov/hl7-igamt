@@ -1,12 +1,11 @@
 package gov.nist.hit.hl7.igamt.web.app.service.impl;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.common.base.model.EntityLocation;
+import gov.nist.hit.hl7.igamt.common.base.model.EntityLocationType;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
-import gov.nist.hit.hl7.igamt.web.app.model.BrowserScope;
-import gov.nist.hit.hl7.igamt.web.app.model.BrowserTreeNode;
-import gov.nist.hit.hl7.igamt.web.app.model.BrowserTreeNodeData;
+import gov.nist.hit.hl7.igamt.web.app.model.*;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissionType;
 import gov.nist.hit.hl7.igamt.workspace.model.FolderInfo;
 import gov.nist.hit.hl7.igamt.workspace.model.WorkspaceInfo;
@@ -14,9 +13,7 @@ import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +24,67 @@ public class EntityBrowserService {
 
     @Autowired
     WorkspaceService workspaceService;
+
+    public Set<EntityLocation> getDocumentLocationInformation(String id, DocumentType type, String username) throws Exception {
+        if(DocumentType.IGDOCUMENT.equals(type)) {
+            Ig ig = this.igService.findById(id);
+            return getDocumentLocationInformation(ig, username);
+        } else {
+            return null;
+        }
+    }
+
+
+    public Set<EntityLocation> getDocumentLocationInformation(Ig ig, String username) throws Exception {
+        Set<EntityLocation> locations = new HashSet<>();
+        if(ig.getAudience() != null) {
+            if(ig.getAudience().getType().equals(AudienceType.PRIVATE)) {
+                PrivateAudience privateAudience = (PrivateAudience) ig.getAudience();
+                if(privateAudience.getEditor().equals(username)) {
+                    EntityLocation location = new EntityLocation();
+                    location.setId(BrowserScope.PRIVATE_IG_LIST.toString());
+                    location.setLabel("Owned IG List");
+                    location.setType(EntityLocationType.SCOPE);
+                    location.setPosition(0);
+                    locations.add(location);
+                } else if(privateAudience.getViewers().contains(username)) {
+                    EntityLocation location = new EntityLocation();
+                    location.setId(BrowserScope.SHARED_IG_LIST.toString());
+                    location.setLabel("Shared With Me IG List");
+                    location.setType(EntityLocationType.SCOPE);
+                    location.setPosition(0);
+                    locations.add(location);
+                }
+            } else if(ig.getAudience().getType().equals(AudienceType.PUBLIC)) {
+                EntityLocation location = new EntityLocation();
+                location.setId(BrowserScope.PUBLIC_IG_LIST.toString());
+                location.setLabel("Public IG List");
+                location.setType(EntityLocationType.SCOPE);
+                location.setPosition(0);
+                locations.add(location);
+            } else if(ig.getAudience().getType().equals(AudienceType.WORKSPACE)) {
+                WorkspaceAudience workspaceAudience = (WorkspaceAudience) ig.getAudience();
+                WorkspaceInfo ws = this.workspaceService.getWorkspaceInfo(workspaceAudience.getWorkspaceId(), username);
+                FolderInfo folderInfo = ws.getFolders().stream().filter((f) -> f.getId().equals(workspaceAudience.getFolderId())).findFirst()
+                        .orElseThrow(() -> new Exception("Folder not found"));
+
+                EntityLocation wsLocation = new EntityLocation();
+                wsLocation.setId(ws.getId());
+                wsLocation.setLabel(ws.getMetadata().getTitle());
+                wsLocation.setType(EntityLocationType.WORKSPACE);
+                wsLocation.setPosition(0);
+                locations.add(wsLocation);
+
+                EntityLocation folderLocation = new EntityLocation();
+                folderLocation.setId(folderInfo.getId());
+                folderLocation.setLabel(folderInfo.getMetadata().getTitle());
+                folderLocation.setType(EntityLocationType.FOLDER);
+                folderLocation.setPosition(1);
+                locations.add(folderLocation);
+            }
+        }
+        return locations;
+    }
 
     public List<BrowserTreeNode> getBrowserTreeNodeByScope(BrowserScope scope, String username) {
         switch (scope) {

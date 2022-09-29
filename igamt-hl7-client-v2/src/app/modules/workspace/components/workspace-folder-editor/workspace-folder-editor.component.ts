@@ -148,7 +148,10 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
                   // HANDLE CLONE
                 },
                 disabled: (item: IgListItem): boolean => {
-                  return false;
+                  return !editor;;
+                },
+                hide: (item: IgListItem): boolean => {
+                  return !editor;
                 },
               },
               {
@@ -174,25 +177,10 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
                   this.router.navigate(['/ig', item.id]);
                 },
                 disabled: (item: IgListItem): boolean => {
-                  return !editor;
+                  return false;
                 },
                 hide: (item: IgListItem): boolean => {
-                  return !editor;
-                },
-              },
-              {
-                label: 'View',
-                class: 'btn-info',
-                icon: 'fa-eye',
-                default: true,
-                action: (item: IgListItem) => {
-                  this.router.navigate(['/ig', item.id]);
-                },
-                disabled: (item: IgListItem): boolean => {
-                  return editor;
-                },
-                hide: (item: IgListItem): boolean => {
-                  return editor;
+                  return false;
                 },
               },
             ];
@@ -296,7 +284,6 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
   }
 
   onDeactivate() {
-    this.ngOnDestroy();
   }
 
 }

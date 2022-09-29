@@ -18,9 +18,14 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
+import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
+import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
+import gov.nist.hit.hl7.igamt.web.app.service.impl.EntityBrowserService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -174,6 +179,9 @@ public class IGDocumentController extends BaseController {
   IgService igService;
 
   @Autowired
+  EntityBrowserService browserService;
+
+  @Autowired
   RelationShipService relationShipService;
 
   @Autowired
@@ -247,6 +255,9 @@ public class IGDocumentController extends BaseController {
   
   @Autowired
   CloneService cloneService;
+
+  @Autowired
+  AccessControlService accessControlService;
 
   private String token;
 
@@ -1245,28 +1256,15 @@ public class IGDocumentController extends BaseController {
   "application/json" })
   @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
   public @ResponseBody IGDisplayInfo getState(@PathVariable("id") String id, Authentication authentication)
-      throws IGNotFoundException, ForbiddenOperationException {
-
+          throws Exception {
     Ig ig = findIgById(id);
-    String cUser = authentication.getPrincipal().toString();
-    
-    if ( ig.getUsername() == null || ig.getStatus() !=null && ig.getStatus().equals(gov.nist.hit.hl7.igamt.common.base.domain.Status.PUBLISHED)) {
-      ig.setSharePermission(SharePermission.READ);  
-    } else {
-      if(!ig.getUsername().equals(cUser)) {
-        if(ig.getCurrentAuthor() != null && ig.getCurrentAuthor().equals(cUser)) {
-          ig.setSharePermission(SharePermission.WRITE);
-        } else {
-          if((ig.getSharedUsers() !=null && ig.getSharedUsers().contains(cUser)) || this.commonService.isAdmin(authentication)) {
-            ig.setSharePermission(SharePermission.READ);
-          }else {
-            throw new ForbiddenOperationException("Access denied");
-          }
-        }    	
-      }
-    } 
-    return displayInfoService.covertIgToDisplay(ig);
+    IGDisplayInfo igDisplayInfo = displayInfoService.covertIgToDisplay(ig);
+    AccessLevel accessLevel = this.accessControlService.getDocumentUserAccessLevel(new DocumentAccessInfo(ig), (UsernamePasswordAuthenticationToken) authentication);
+    ig.setSharePermission(accessLevel.equals(AccessLevel.READ) ? SharePermission.READ : SharePermission.WRITE);
+    igDisplayInfo.setDocumentLocation(this.browserService.getDocumentLocationInformation(ig, authentication.getName()));
+    return igDisplayInfo;
   }
+
   @RequestMapping(value = "/api/igdocuments/{id}/valueset/{vsId}", method = RequestMethod.GET, produces = {
   "application/json" })
   @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")

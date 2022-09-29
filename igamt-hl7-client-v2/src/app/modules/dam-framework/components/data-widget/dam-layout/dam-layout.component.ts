@@ -44,6 +44,9 @@ export class DamLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
   @ContentChild('bottomDrawer')
   bottomDrawerTemplate: TemplateRef<any>;
 
+  @ContentChild('breadCrumbs')
+  bcTemplate: TemplateRef<any>;
+
   // --- Resize Attributes
   @ViewChild('resize', { read: ElementRef })
   resize: ElementRef;

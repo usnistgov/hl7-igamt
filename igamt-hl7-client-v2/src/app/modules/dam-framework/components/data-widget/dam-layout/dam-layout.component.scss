@@ -12,11 +12,17 @@
   grid-gap: 2px;
   grid-template-columns: [page-content] 1fr;
   // grid-template-rows: [alerts] minmax(min-content,max-content) [row-titlebar] minmax(min-content, 40px) [row-utilities] minmax(min-content, 40px) [row-container] auto;
-  grid-template-rows: [alerts] minmax(min-content,max-content) [row-titlebar] minmax(min-content, 40px) [row-container] auto [row-bottom] minmax(min-content,max-content);
+  grid-template-rows:  [alerts] minmax(min-content,max-content) [bc] minmax(min-content,max-content) [row-titlebar] minmax(min-content, 40px) [row-container] auto [row-bottom] minmax(min-content,max-content);
   overflow: hidden;
   color: #444;
   height: 100%;
   background-color: #d6d6d6e3;
+}
+
+.bc {
+  grid-column: page-content;
+  grid-row: bc;
+  background-color: white;
 }
 
 .alerts {

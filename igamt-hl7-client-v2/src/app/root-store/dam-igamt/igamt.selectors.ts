@@ -1,3 +1,4 @@
+import { IAudience } from './../../modules/ig/models/ig/ig-document.class';
 import { createSelector } from '@ngrx/store';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IWorkspace } from '../../modules/dam-framework/models/data/workspace';
@@ -35,6 +36,13 @@ export const selectLoadedDocumentInfo = createSelector(
       type: state.type,
     };
   },
+);
+
+export const selectAudience = createSelector(
+  selectIgDocument,
+  (document: IgDocument): IAudience => {
+    return document.audience;
+  }
 );
 
 export const selectViewOnly = createSelector(

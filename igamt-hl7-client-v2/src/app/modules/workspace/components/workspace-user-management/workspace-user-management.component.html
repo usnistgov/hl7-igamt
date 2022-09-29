@@ -80,7 +80,7 @@
         {{row.added | date}}
       </td>
       <td>
-        {{row.joined ? 'N/A' : row.joined | date}}
+        {{row.joined ? (row.joined | date) : 'N/A' }}
       </td>
       <td>
         {{row.invitedBy}}

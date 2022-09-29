@@ -1,0 +1,33 @@
+<div *ngIf="location && location.length > 0" style="padding: 5px 5px 5px 20px; display: flex; justify-content: space-between;">
+  <div>
+    <ng-container *ngTemplateOutlet="locationBreadCrumbs; context: { $implicit: location }"></ng-container>
+  </div>
+  <div *ngIf="viewOnly" style="padding: 0px 10px 0px 10px;
+  border-radius: 5px;
+  color: #245224;
+  border: 2px solid #37b365;">
+    <i class="fa fa-eye"></i>
+    <span style="margin-left: 10px;">View Mode</span>
+  </div>
+  <div *ngIf="!viewOnly" style="padding: 0px 10px 0px 10px;
+  border-radius: 5px;
+  color: darkblue;
+  border: 2px solid #007bff;">
+    <i class="fa fa-pencil"></i>
+    <span style="margin-left: 10px;">Edit Mode</span>
+  </div>
+</div>
+<ng-template #locationBreadCrumbs let-locations>
+  <div *ngFor="let item of locations" style="display: inline-flex; align-items: center;" >
+    
+    <span style="font-size: 18px; cursor: pointer;" [routerLink]="links[item.position].path" [queryParams]="links[item.position].params"  >
+      <i *ngIf="item.type === 'SCOPE' && item.id === 'PRIVATE_IG_LIST'" class="fa fa-lock"></i>
+      <i *ngIf="item.type === 'SCOPE' && item.id === 'PUBLIC_IG_LIST'" class="fa fa-globe"></i>
+      <app-entity-bagde *ngIf="item.type === 'WORKSPACE'" [type]="'WORKSPACE'"></app-entity-bagde>
+      <app-entity-bagde *ngIf="item.type === 'FOLDER'" [type]="'FOLDER'"></app-entity-bagde>
+      {{item.label}}
+    </span>
+    <i class="fa fa-chevron-right" style="margin-right: 10px; margin-left: 10px;"></i>
+  </div>
+  
+</ng-template>

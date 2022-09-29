@@ -1,5 +1,9 @@
 <app-dam-layout [showStatusBar]="showStatusBar$ | async" [showBottomDrawerToggle]="showBottomDrawer$ | async">
 
+  <ng-template #breadCrumbs>
+    <app-document-breadcrumbs [locationInfo]="locationInfo$ | async" [viewOnly]="viewOnly$ | async" ></app-document-breadcrumbs>
+  </ng-template>
+
   <ng-template #alerts>
     <app-dam-alerts-container></app-dam-alerts-container>
   </ng-template>
