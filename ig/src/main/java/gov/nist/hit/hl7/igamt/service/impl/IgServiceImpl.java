@@ -220,9 +220,9 @@ public class IgServiceImpl implements  IgService {
 
 	@Autowired
 	ProfileComponentDependencyService profileComponentDependencyService;
+	
 	@Autowired
 	ResourceHelper resourceHelper;
-
 
 
 	@Override
@@ -344,13 +344,6 @@ public class IgServiceImpl implements  IgService {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * gov.nist.hit.hl7.igamt.ig.service.IgService#convertDomainToModel(gov.nist.hit.hl7.igamt.ig.
-	 * domain.Ig) >>>>>>> b6d5591cb74490526e1a1758d67d772b946cea99
-	 */
 	@Override
 	public List<Ig> findByUsername(String username, Scope scope) {
 		Criteria where = Criteria.where("username").is(username)
@@ -368,9 +361,6 @@ public class IgServiceImpl implements  IgService {
 		qry.fields().include("draft");
 		qry.fields().include("deprecated");
 		qry.fields().include("publicationInfo");
-
-
-
 
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		return igs;
@@ -394,11 +384,9 @@ public class IgServiceImpl implements  IgService {
 		qry.fields().include("deprecated");
 		qry.fields().include("publicationInfo");
 
-
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		return igs;
 	}
-
 
 	@Override
 	public List<Ig> findAllPreloadedIG() {
@@ -416,8 +404,6 @@ public class IgServiceImpl implements  IgService {
 		qry.fields().include("draft");
 		qry.fields().include("deprecated");
 		qry.fields().include("publicationInfo");
-
-
 
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		return igs;
@@ -440,8 +426,6 @@ public class IgServiceImpl implements  IgService {
 		qry.fields().include("draft");
 		qry.fields().include("publicationInfo");
 
-
-
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		igs.forEach(ig -> {
 			if(ig.getCurrentAuthor() != null && ig.getCurrentAuthor().equals(username)) ig.setSharePermission(SharePermission.WRITE);
@@ -450,7 +434,6 @@ public class IgServiceImpl implements  IgService {
 
 		return igs;
 	}
-
 
 	@Override
 	public UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass, boolean updateDate) {
@@ -482,7 +465,6 @@ public class IgServiceImpl implements  IgService {
 
 		Ig ig = mongoTemplate.findOne(query, Ig.class);
 		return ig;
-
 	}
 
 
@@ -560,7 +542,6 @@ public class IgServiceImpl implements  IgService {
 		archiveDatatypeRegistry(ig.getDatatypeRegistry());
 		archiveValueSetRegistry(ig.getValueSetRegistry());
 		this.save(ig);
-
 	}
 
 	private void archiveCompositePrfile(CompositeProfileRegistry compositeProfileRegistry) {
@@ -575,7 +556,6 @@ public class IgServiceImpl implements  IgService {
 				}
 			}
 		}
-
 	}
 
 	private void archiveValueSetRegistry(ValueSetRegistry valueSetRegistry) throws ForbiddenOperationException {
@@ -1021,8 +1001,6 @@ public class IgServiceImpl implements  IgService {
 				throw new Exception("Composite Profile is missing::::" + link.getId());
 			}
 
-
-
 		}
 		igDataModel.setDatatypes(datatypes);
 		igDataModel.setSegments(segments);
@@ -1207,7 +1185,6 @@ public class IgServiceImpl implements  IgService {
 			return ret;
 		}
 	}
-
 
 	/**
 	 * @param ig
@@ -1712,10 +1689,7 @@ public class IgServiceImpl implements  IgService {
 		Type childType = convertype(registryType);
 
 		Set<RelationShip> rel = this.buildRelationShip(ig, childType);
-
-
 		Registry reg = this.getRegistry(ig, registryType);
-
 		Set<String> unused = new HashSet<String>();
 		for(Link l : reg.getChildren()) {
 			if(l.getId() != null) {
