@@ -6,6 +6,7 @@ import java.util.Date;
 public class PublicationInfo implements Serializable{
   private String publicationVersion;
   private Date publicationDate;
+  private String warning; 
 
   public PublicationInfo() {
     super();
@@ -25,6 +26,14 @@ public class PublicationInfo implements Serializable{
 
   public void setPublicationDate(Date publicationDate) {
     this.publicationDate = publicationDate;
+  }
+
+  public String getWarning() {
+	return warning;
+  }
+
+  public void setWarning(String warning) {
+	this.warning = warning;
   }
 
 }

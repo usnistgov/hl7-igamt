@@ -18,6 +18,7 @@ public class ApplyCloneImpl implements ApplyClone {
 	@Override
   public void updateResourceAttributes(Resource resource, String id, String username, DocumentInfo info) {
 	this.updateAbstractDomainAttributes(resource, id, username);  
+	resource.setResourceOrigin(resource.getResourceOrigin());
     resource.setDocumentInfo(info);
     resource.setDerived(false);
   }

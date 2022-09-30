@@ -223,6 +223,7 @@ public class DeltaServiceImpl implements DeltaService {
           Datatype d = datatypeService.findById(elm.getFlavorId().getCurrent());
           if(d != null) {
              elm.getDisplay().setCurrent(displayInfoService.convertDatatype(d));
+             elm.getDisplay().getCurrent().setDelta(elm.getAction());
           }
         }
       }
@@ -385,7 +386,6 @@ public class DeltaServiceImpl implements DeltaService {
    */
   @Override
   public DeltaAction summarize(List<StructureDelta> deltaStructure, List<ConformanceStatementDelta> cfs, List<CoConstraintBinding> coConstraintBindings) {
-    // TODO Auto-generated method stub
     DeltaAction ret = DeltaAction.UNCHANGED;
     if(deltaStructure !=null)
       for(StructureDelta child: deltaStructure ) {

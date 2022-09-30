@@ -114,6 +114,41 @@ public class ResourceHelperImpl implements ResourceHelper {
     return null;
   }
   
+  
+  
+  @SuppressWarnings("unchecked")
+  @Override
+  public  <T extends Resource>  void deleteByType( T resource, Type type ) throws ForbiddenOperationException{
+
+  switch(type) {
+      case CONFORMANCEPROFILE:
+    	  conformanceProfileService.delete((ConformanceProfile)(resource));
+      case PROFILECOMPONENT:
+    	  profileComponentService.delete(resource.getId());
+          break;
+
+      case COMPOSITEPROFILE:
+    	  compositeProfileService.delete((CompositeProfileStructure)resource);
+          break;
+
+      case SEGMENT:
+         segmentService.delete((Segment)resource);
+         break;
+
+      case DATATYPE:
+         datatypeService.delete((Datatype)resource);
+         break;
+
+      case COCONSTRAINTGROUP:
+    	  coConstraintService.delete((CoConstraintGroup) resource);
+          break;
+      case VALUESET:
+        valueSetService.delete((Valueset)resource);
+        break;
+      default:
+        break;
+    }
+  }
   @Override
   public String generateAbstractDomainId() {
     return new ObjectId().toString();

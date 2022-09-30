@@ -291,6 +291,8 @@ public class CloneServiceImpl implements  CloneService {
           resourceManagementService.applyCloneResource(res, newKeys.get(rel), username, documentInfo, cloneMode); // resource with new Id
           updateDependencies(res, newKeys); // resource with updated dependencies     
           l.setId(newKeys.get(rel));
+          l.setDerived(res.isDerived());
+          l.setOrigin(res.getOrigin());
           ret.getSavedResources().add((T)res);
         }
         links.add(l);
