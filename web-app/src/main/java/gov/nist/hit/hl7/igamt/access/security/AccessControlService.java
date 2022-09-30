@@ -80,7 +80,7 @@ public class AccessControlService {
         }
         
         if(isAdmin(user)) {
-          
+            
         	return level.equals(AccessLevel.READ);
 
         }
@@ -260,6 +260,7 @@ public class AccessControlService {
                 return false;
         }
     }
+    
     public boolean isAdmin(UsernamePasswordAuthenticationToken user) {
         return user.getAuthorities() != null && user.getAuthorities().stream().anyMatch((a) -> a.getAuthority().equals("ADMIN"));
     }
