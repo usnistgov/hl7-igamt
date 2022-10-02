@@ -312,7 +312,7 @@ public class IgServiceImpl implements  IgService {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		List<SectionTemplate> igTemplates =
-				objectMapper.readValue(IGserviceBack.class.getResourceAsStream("/IgTemplate.json"),
+				objectMapper.readValue(IgService.class.getResourceAsStream("/IgTemplate.json"),
 						new TypeReference<List<SectionTemplate>>() {});
 		Ig emptyIg = new Ig();
 		emptyIg.setMetadata(new DocumentMetadata());
