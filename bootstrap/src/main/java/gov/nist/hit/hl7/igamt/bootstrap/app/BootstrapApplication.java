@@ -611,7 +611,7 @@ public class BootstrapApplication implements CommandLineRunner {
 		
 	}
 	
-	@PostConstruct
+	//@PostConstruct
 	void addMissing() throws ForbiddenOperationException, ValidationException {
 		List<Ig> igs = this.igService.findAll();
 		for( Ig ig: igs) {
