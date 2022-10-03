@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.bootstrap.app;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -89,6 +90,7 @@ import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.IgServiceImpl;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
@@ -599,52 +601,26 @@ public class BootstrapApplication implements CommandLineRunner {
 		codeFixer.fixTableHL70125("2.9"); 
 		this.dynamicMappingFixer.processSegmentByVersion("2.9");
 		tableFixes.fix0396ByVersion("2.9");
-		
-//	List<Datatype> dts =	this.dataypeService.findByDomainInfoVersion("2.9");
-//	HashMap<String, Datatype>  dtMap = new HashMap<String, Datatype>();
-//	for(Datatype dt: dts) {
-//		dtMap.put(dt.getId(), dt);
-//	}
-//	
-//	for(Datatype dt: dts ) {
-//		if(dt instanceof ComplexDatatype ) {
-//			ComplexDatatype level1 = (ComplexDatatype)dt;
-//			
-//			
-//			for ( Component c1 : level1.getComponents()) {
-//				
-//				Datatype sub1 = dtMap.get(c1.getRef().getId());
-//				
-//				
-//				if(sub1 instanceof ComplexDatatype) {
-//					
-//					
-//					ComplexDatatype sub1Cmp  = (ComplexDatatype)sub1;
-//					
-//					
-//					for ( Component c2 : sub1Cmp.getComponents()) {
-//						
-//					
-//						Datatype sub2 = dtMap.get(c2.getRef().getId());
-//						
-//				
-//						
-//						if(sub2 instanceof ComplexDatatype) {
-//							
-//							System.out.println(dt.getName() +"--"+ sub1.getName() + "---"+ sub2.getName());
-//						}
-//
-//					}
-//
-//				}
-//				
-//				
-//			}
-//		}
-//	}
 	
 		
 	}
 	
+	//@PostConstruct
+	void fixIg() throws ForbiddenOperationException, ValidationException {
+		igFixer.deprecateIG("", Boolean.TRUE);
+		
+	}
+	
+	//@PostConstruct
+	void addMissing() throws ForbiddenOperationException, ValidationException {
+		List<Ig> igs = this.igService.findAll();
+		for( Ig ig: igs) {
+			igFixer.checkMessing(ig);
+
+		}
+		
+	}
+	
+
 	
 }

@@ -61,6 +61,7 @@ import gov.nist.hit.hl7.igamt.export.util.WordUtil;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
@@ -368,6 +369,17 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			          }
 					decision.getDatatypesFilterMap().put(child.getRef().getId(), true);
 					bindedPaths.put(child.getId(), true);
+				}
+			}
+		}
+		if(s.getDynamicMappingInfo() != null) {
+			if(s.getDynamicMappingInfo().getItems() != null) {
+				for (DynamicMappingItem item: s.getDynamicMappingInfo().getItems()) {
+					if(item.getDatatypeId()!= null) {
+						decision.getDatatypesFilterMap().put(item.getDatatypeId(), true);
+
+						datatypesIds.add(item.getDatatypeId());
+					}
 				}
 			}
 		}

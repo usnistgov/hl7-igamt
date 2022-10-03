@@ -108,16 +108,17 @@ public class DatatypeDependencyServiceImpl implements DatatypeDependencyService 
   public void visit(String id, Map<String, Datatype> existing, DatatypeDependencies used,
       DependencyFilter filter, ResourceBindingProcessor rb, String parentPath) throws EntityNotFound {
 
-    if(id != null && !existing.containsKey(id)) {
-      Datatype d = datatypeService.findById(id);
-      if(d!= null) {
-        existing.put(d.getId(), d);
-        if(d instanceof ComplexDatatype) {
-          rb.addChild(d.getBinding(), parentPath);
-          this.process(d, used , filter, rb, parentPath);
-        }
-      }else throw new EntityNotFound(id);
-    }
+	    if(id != null) {
+	        Datatype d = existing.containsKey(id)? existing.get(id): datatypeService.findById(id);
+	      	
+	        if(d!= null) {
+	          existing.put(d.getId(), d);
+	          if(d instanceof ComplexDatatype) {
+	            rb.addChild(d.getBinding(), parentPath);
+	            this.process(d, used , filter, rb, parentPath);
+	          }
+	        }else throw new EntityNotFound(id);
+	      }
   }
 
 

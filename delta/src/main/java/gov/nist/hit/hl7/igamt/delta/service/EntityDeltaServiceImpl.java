@@ -17,9 +17,11 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.*;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.delta.domain.*;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
@@ -56,6 +58,8 @@ public class EntityDeltaServiceImpl {
   ConformanceProfileService conformaneProfileService;
   @Autowired
   ProfileComponentService profileComponentService;
+  @Autowired
+  DatatypeService datatypeService;
 
   public List<StructureDelta> compareDatatype(DatatypeStructureDisplay source, DatatypeStructureDisplay target) {
     return new ArrayList<>(this.compareComponents(source.getStructure(), target.getStructure()));
@@ -199,9 +203,9 @@ public class EntityDeltaServiceImpl {
   public List<CodeDelta> compareCodes(Set<Code> source, Set<Code> target) {
     List<CodeDelta> deltas = new ArrayList<>();
     Map<String, List<Code>> sourceChildren = (source != null ? source : new HashSet<Code>()).stream()
-        .collect(Collectors.groupingBy(Code::getValue));
+        .filter(x-> x.getValue()!= null).collect(Collectors.groupingBy(Code::getValue));
     Map<String, List<Code>> targetChildren = (target != null ? target : new HashSet<Code>()).stream()
-        .collect(Collectors.groupingBy(Code::getValue));
+    		.filter(x-> x.getValue()!= null).collect(Collectors.groupingBy(Code::getValue));
 
     for(Map.Entry<String, List<Code>> entry: sourceChildren.entrySet()) {
       CodeDelta codeDelta = new CodeDelta();
@@ -723,8 +727,39 @@ public class EntityDeltaServiceImpl {
        node.setCurrent(targetMap.get(s));
        if(sourceMap.get(s).equals(targetMap.get(s))) {
          node.setAction(DeltaAction.UNCHANGED);
-       }else {
-         node.setAction(DeltaAction.CHANGED);
+       } else {
+    	   	  
+    	      Datatype targetDT = this.datatypeService.findById(targetMap.get(s));
+    	      if(targetDT.getOrigin() != null && targetDT.getOrigin().equals(sourceMap.get(s))) {
+    	    	  
+        	      Datatype sourceDT = this.datatypeService.findById(sourceMap.get(s));
+        	      DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(sourceDT, true);
+        	      DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(targetDT, true);
+        	      List<StructureDelta> structure =  compareDatatype(sourceDisplay, targetDisplay);
+        	      List<ConformanceStatementDelta> conformanceStatements = compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+        	      ResourceDelta rd = new ResourceDelta();
+        	      rd.setStructureDelta(structure);
+        	      rd.setConformanceStatementDelta(conformanceStatements);
+        	      
+        	      DeltaAction act = DeltaAction.UNCHANGED;
+        	      if(structure !=null)
+        	        for(StructureDelta child: structure ) {
+        	          if(child.getData() !=null && child.getData().getAction() != DeltaAction.UNCHANGED) {
+        	            act =  DeltaAction.UPDATED;
+        	          }
+        	        }
+        	      for(ConformanceStatementDelta child: conformanceStatements ) {
+        	        if( child.getAction() != DeltaAction.UNCHANGED) {
+        	        	act = DeltaAction.UPDATED;
+        	        }
+        	      }
+        	      node.setAction(act);
+        	 
+    	      }else {
+    	          node.setAction(DeltaAction.CHANGED);
+
+    	      }
+    	   
        }
      }else {
        node.setCurrent(null);

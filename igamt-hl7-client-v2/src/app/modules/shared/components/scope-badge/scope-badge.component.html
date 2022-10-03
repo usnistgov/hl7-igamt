@@ -11,7 +11,7 @@
     USR
   </ng-container>
 </ng-container>
-    <span style="color: white; font-size: 0.9em; font-weight: 300;">{{version}}</span>
+  <span style="color: white; font-size: 0.9em; font-weight: 300;" *ngIf="resourceOrigin !=='PHINVADS'">{{version}}</span>
   </span>
   <span *ngSwitchCase="'HL7STANDARD'" class="badge" [ngClass]="{'scope-badge-hl7': version !=='2.x',  'scope-badge-dynamic': version ==='2.x' }">
     HL7 <span style="font-size: 0.9em; font-weight: 300;">{{version}}</span>

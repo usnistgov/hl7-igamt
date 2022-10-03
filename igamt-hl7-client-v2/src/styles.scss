@@ -478,4 +478,9 @@ block-ui-content {
   background: rgb(243, 105, 105) !important;
 }
 
-
+.popover{
+  max-width: 100%; /* Max Width of the popover (depending on the container!) */
+}
+.popover-body{
+  max-width: 500px;
+}

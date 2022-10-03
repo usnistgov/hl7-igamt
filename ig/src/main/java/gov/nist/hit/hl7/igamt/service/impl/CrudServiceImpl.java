@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
+import gov.nist.hit.hl7.igamt.common.base.domain.ResourceOrigin;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -498,6 +500,8 @@ public class CrudServiceImpl implements CrudService {
       newValueset.setExtensibility(Extensibility.Closed);
       newValueset.setStability(Stability.Dynamic);
       newValueset.setContentDefinition(ContentDefinition.Extensional);
+      newValueset.setId(new ObjectId().toString());
+      newValueset.setResourceOrigin(ResourceOrigin.PHINVADS);
       Valueset saved = valuesetService.save(newValueset);
       ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
       savedIds.add(saved.getId());
@@ -514,11 +518,10 @@ public class CrudServiceImpl implements CrudService {
    * @param ig
    * @param username
    * @throws EntityNotFound 
- * @throws ForbiddenOperationException 
+   * @throws ForbiddenOperationException 
    */
   private void addValueSetAsFlavor(AddingInfo elm, Set<String> savedIds, Ig ig, String username) throws EntityNotFound, ForbiddenOperationException {
     if (elm.getOriginalId() != null) {
-     // Valueset valueset = valuesetService.findById(elm.getOriginalId());
         
         Valueset clone =  resourceManagementService.getElmentFormAddingInfo( username, new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT), Type.VALUESET, elm);
 
@@ -526,7 +529,6 @@ public class CrudServiceImpl implements CrudService {
         clone.getDomainInfo().setScope(Scope.USER);
 
         clone.setUsername(username);
-        clone.setBindingIdentifier(elm.getName());
         clone.setSourceType(elm.getSourceType());
         clone = valuesetService.save(clone);
         ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), elm.isIncludeChildren());
@@ -554,7 +556,7 @@ public class CrudServiceImpl implements CrudService {
 
     Valueset valueset = new Valueset();
     DomainInfo info = new DomainInfo();
-    info.setScope(Scope.PHINVADS);
+    info.setScope(Scope.USER);
     info.setVersion(elm.getDomainInfo().getVersion());
     valueset.setDomainInfo(info);
     if (!elm.isIncludeChildren()) {
@@ -576,12 +578,14 @@ public class CrudServiceImpl implements CrudService {
       }
     }
     valueset.setUsername(username);
+    valueset.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
     valueset.setBindingIdentifier(elm.getName());
     valueset.setName(elm.getDescription());
     valueset.setUrl(elm.getUrl());
     valueset.setOid(elm.getOid());
     valueset.setFlavor(true);
-
+    valueset.setId(new ObjectId().toString());
+    valueset.setResourceOrigin(ResourceOrigin.PHINVADS);
     Valueset saved = valuesetService.save(valueset);
     ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
     savedIds.add(saved.getId());
@@ -611,6 +615,8 @@ public class CrudServiceImpl implements CrudService {
     valueset.setUsername(username);
     valueset.setBindingIdentifier(elm.getName());
     valueset.setUrl(elm.getUrl());
+    valueset.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
+    valueset.setId(new ObjectId().toString());
     Valueset saved = valuesetService.save(valueset);
     ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
     savedIds.add(saved.getId());
