@@ -29,6 +29,10 @@ public interface StructureService {
     MessageStructureState getMessageStructureState(MessageStructure structure);
     SegmentStructureState getSegmentStructureState(Segment structure);
 
+    boolean deleteMessageStructure(String id, String user);
+    boolean deleteSegmentStructure(String id, String user);
+    Set<CustomSegmentCrossRef> getSegmentStructureReferences(String id, String user);
+
 
     MessageStructureAndDisplay createMessageStructure(MessageStructureCreateWrapper request, String user);
     SegmentStructureAndDisplay createSegmentStructure(SegmentStructureCreateWrapper request, String user);

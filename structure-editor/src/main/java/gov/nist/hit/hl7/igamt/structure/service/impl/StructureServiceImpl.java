@@ -3,6 +3,9 @@ package gov.nist.hit.hl7.igamt.structure.service.impl;
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
@@ -286,6 +289,80 @@ public class StructureServiceImpl implements StructureService {
         state.setDatatypes(datatypeList.stream().map((datatype) -> this.displayInfoService.convertDatatype((Datatype) datatype)).collect(Collectors.toList()));
 
         return state;
+    }
+
+    @Override
+    public boolean deleteMessageStructure(String id, String user) {
+        MessageStructure messageStructure = this.messageStructureRepository.findByCustomTrueAndParticipantsContainingAndId(user, id);
+        if(messageStructure != null) {
+            this.messageStructureRepository.delete(messageStructure);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteSegmentStructure(String id, String user) {
+        Set<CustomSegmentCrossRef> refs = getSegmentStructureReferences(id, user);
+        if(refs == null || refs.isEmpty()) {
+            Segment segment = this.segmentRepository.findByCustomTrueAndUsernameAndIdAndDomainInfoScope(user,id,  Scope.USERCUSTOM);
+            if(segment != null) {
+                this.segmentRepository.delete(segment);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Set<CustomSegmentCrossRef> getSegmentStructureReferences(String id, String user) {
+        Set<CustomSegmentCrossRef> crossRefs = new HashSet<>();
+        List<MessageStructure> messageStructures  = getUserCustomMessageStructure(user);
+        for(MessageStructure messageStructure: messageStructures) {
+            DisplayElement displayElement = this.createDisplayElement(messageStructure);
+            Set<ReferenceLocation> locations = getSegmentLocations(id, "", messageStructure.getChildren());
+            for(ReferenceLocation referenceLocation: locations) {
+                CustomSegmentCrossRef customSegmentCrossRef = new CustomSegmentCrossRef(
+                        displayElement,
+                        referenceLocation
+                );
+                crossRefs.add(customSegmentCrossRef);
+            }
+        }
+        return crossRefs;
+    }
+
+    public Set<ReferenceLocation> getSegmentLocations(String id, String path, Set<SegmentRefOrGroup> children) {
+        Set<ReferenceLocation> locations = new HashSet<>();
+        if(children == null || children.isEmpty()) {
+            return null;
+        } else {
+            for(SegmentRefOrGroup child: children) {
+                if(child instanceof Group) {
+                    Group group = (Group) child;
+                    Set<ReferenceLocation> childs = getSegmentLocations(id, this.concat(path, group.getName()), group.getChildren());
+                    if(childs != null) {
+                        locations.addAll(childs);
+                    }
+                } else {
+                    SegmentRef segmentRef = (SegmentRef) child;
+                    if(segmentRef.getRef().getId().equals(id)) {
+                        locations.add(
+                                new ReferenceLocation(Type.SEGMENTREF, this.concat(path, segmentRef.getPosition() + ""), segmentRef.getName())
+                        );
+                    }
+                }
+            }
+            return locations;
+        }
+    }
+
+    public String concat(String a, String b) {
+        if(a != null && !a.isEmpty()) {
+            return a + "." + b;
+        } else {
+            return b;
+        }
     }
 
     public Set<String> collectSegmentIds(MessageStructure cp) {

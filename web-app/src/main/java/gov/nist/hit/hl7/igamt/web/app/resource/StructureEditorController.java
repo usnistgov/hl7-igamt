@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -112,6 +113,35 @@ public class StructureEditorController {
             throw new IllegalArgumentException("Not Found");
         }
         return segment;
+    }
+
+    @RequestMapping(value = "api/structure-editor/structure/{id}", method = RequestMethod.DELETE, produces = {"application/json" })
+    public @ResponseBody
+    ResponseMessage<String> structureDelete(@PathVariable("id") String id, Authentication authentication) throws Exception {
+        boolean deleted = this.structureService.deleteMessageStructure(id, authentication.getName());
+        if(deleted) {
+            return new ResponseMessage<String>(ResponseMessage.Status.SUCCESS, "MESSAGE STRUCTURE DELETED", id, null, new Date());
+        } else {
+            throw new Exception("Unable to delete message structure "+ id);
+        }
+    }
+
+    @RequestMapping(value = "api/structure-editor/segment/{id}", method = RequestMethod.DELETE, produces = {"application/json" })
+    public @ResponseBody
+    ResponseMessage<String> segmentDelete(@PathVariable("id") String id, Authentication authentication) throws Exception {
+        boolean deleted = this.structureService.deleteSegmentStructure(id, authentication.getName());
+        if(deleted) {
+            return new ResponseMessage<String>(ResponseMessage.Status.SUCCESS, "SEGMENT STRUCTURE DELETED", id, null, new Date());
+        } else {
+            throw new Exception("Unable to delete segment structure "+ id);
+        }
+    }
+
+    @RequestMapping(value = "api/structure-editor/segment/{id}/cross-references", method = RequestMethod.GET, produces = {"application/json" })
+    public @ResponseBody
+    Set<CustomSegmentCrossRef> segmentCrossRefs(@PathVariable("id") String id, Authentication authentication) throws Exception {
+        Set<CustomSegmentCrossRef> crossRefs = this.structureService.getSegmentStructureReferences(id, authentication.getName());
+        return crossRefs != null ? crossRefs : new HashSet<>();
     }
 
     @RequestMapping(value = "/api/structure-editor/structure/{id}/state", method = RequestMethod.GET, produces = {
