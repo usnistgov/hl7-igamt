@@ -332,6 +332,24 @@ public class StructureServiceImpl implements StructureService {
         return crossRefs;
     }
 
+    @Override
+    public Set<CustomSegmentCrossRef> getLockedSegmentStructure(String id, String user) {
+        Set<CustomSegmentCrossRef> crossRefs = new HashSet<>();
+        List<MessageStructure> messageStructures  = this.messageStructureRepository.findByCustomTrueAndParticipantsContainingAndStatus(user, Status.PUBLISHED);
+        for(MessageStructure messageStructure: messageStructures) {
+            DisplayElement displayElement = this.createDisplayElement(messageStructure);
+            Set<ReferenceLocation> locations = getSegmentLocations(id, "", messageStructure.getChildren());
+            for(ReferenceLocation referenceLocation: locations) {
+                CustomSegmentCrossRef customSegmentCrossRef = new CustomSegmentCrossRef(
+                        displayElement,
+                        referenceLocation
+                );
+                crossRefs.add(customSegmentCrossRef);
+            }
+        }
+        return crossRefs;
+    }
+    
     public Set<ReferenceLocation> getSegmentLocations(String id, String path, Set<SegmentRefOrGroup> children) {
         Set<ReferenceLocation> locations = new HashSet<>();
         if(children == null || children.isEmpty()) {
@@ -453,6 +471,47 @@ public class StructureServiceImpl implements StructureService {
         MessageStructure structure = this.getMessageStructureForUser(id, user);
         if(structure!= null && !Status.PUBLISHED.equals(structure.getStatus())) {
             structure.setStatus(Status.PUBLISHED);
+            structure.setStructureIdentifier(structure.getId());
+            this.messageStructureRepository.save(structure);
+            MessageStructureAndDisplay response = new MessageStructureAndDisplay();
+            response.setDisplayElement(this.createDisplayElement(structure));
+            response.setStructure(structure);
+            return response;
+        } else {
+            throw new IllegalArgumentException("Message Not Found");
+        }
+    }
+    
+    @Override
+    public SegmentStructureAndDisplay unpublishSegment(String id, String user) {
+        Segment segment = this.segmentRepository.findOneById(id);
+        if(segment!= null && Status.PUBLISHED.equals(segment.getStatus())) {
+        	Set<CustomSegmentCrossRef>  refs= this.getLockedSegmentStructure(id, user);
+        	if(refs == null || refs.size() ==0) {
+            segment.setExt(segment.getFixedExtension());
+            segment.setFixedExtension(null);
+            segment.setStatus(null);
+            segment.setStructureIdentifier(segment.getId());
+            this.segmentRepository.save(segment);
+            SegmentStructureAndDisplay response = new SegmentStructureAndDisplay();
+            response.setDisplayElement(this.displayInfoService.convertSegment(segment));
+            response.setStructure(segment);
+            
+            return response;
+        	} else {
+                throw new IllegalArgumentException("Segment Used in Published Structures");
+        	}
+        	
+        } else {
+            throw new IllegalArgumentException("Segment Not Found");
+        }
+    }
+
+    @Override
+    public MessageStructureAndDisplay unpublishMessageStructure(String id, String user) {
+        MessageStructure structure = this.getMessageStructureForUser(id, user);
+        if(structure!= null && Status.PUBLISHED.equals(structure.getStatus())) {
+            structure.setStatus(null);
             structure.setStructureIdentifier(structure.getId());
             this.messageStructureRepository.save(structure);
             MessageStructureAndDisplay response = new MessageStructureAndDisplay();

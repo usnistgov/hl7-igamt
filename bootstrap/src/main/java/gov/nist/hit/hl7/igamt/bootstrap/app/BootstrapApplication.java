@@ -616,9 +616,7 @@ public class BootstrapApplication implements CommandLineRunner {
 		List<Ig> igs = this.igService.findAll();
 		for( Ig ig: igs) {
 			igFixer.checkMessing(ig);
-
 		}
-		
 	}
 	
 

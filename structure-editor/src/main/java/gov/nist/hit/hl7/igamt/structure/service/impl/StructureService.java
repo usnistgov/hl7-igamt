@@ -39,6 +39,8 @@ public interface StructureService {
 
     SegmentStructureAndDisplay publishSegment(String id, String user);
     MessageStructureAndDisplay publishMessageStructure(String id, String user);
+    SegmentStructureAndDisplay unpublishSegment(String id, String user);
+    MessageStructureAndDisplay unpublishMessageStructure(String id, String user);
 
     CustomStructureRegistry getCustomStructureRegistry(String user);
     List<DisplayElement> getResources(Type type, Scope scope, String version, String user);
@@ -48,4 +50,5 @@ public interface StructureService {
 	 * @return
 	 */
 	Set<DisplayElement> getCustomSegments(MessageStructure structure);
+	Set<CustomSegmentCrossRef> getLockedSegmentStructure(String id, String user);
 }

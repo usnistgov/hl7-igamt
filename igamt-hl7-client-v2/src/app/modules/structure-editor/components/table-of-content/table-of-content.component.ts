@@ -26,6 +26,11 @@ export class TableOfContentComponent implements OnInit {
   @Output()
   deleteSegment: EventEmitter<string>;
   @Output()
+  unlockSegment = new EventEmitter<string>();
+  @Output()
+  unlockMessage = new EventEmitter<string>();
+
+  @Output()
   publish: EventEmitter<{
     id: string;
     type: Type;
@@ -89,6 +94,14 @@ export class TableOfContentComponent implements OnInit {
     this.deleteSegment.emit(id);
   }
 
+  unlockSegmentStructure(id: string) {
+    this.unlockSegment.emit(id);
+  }
+
+  unlockMessageStructure(id: string) {
+    this.unlockMessage.emit(id);
+  }
+
   deleteMessageStructure(id: string) {
     this.deleteMessage.emit(id);
   }
@@ -142,4 +155,6 @@ export class TableOfContentComponent implements OnInit {
   print(nodes: TreeNode[]) {
     console.log(nodes);
   }
+
+
 }

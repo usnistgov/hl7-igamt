@@ -33,6 +33,9 @@
               <ng-template (execute)="deleteMessageStructure(node.data.id)" contextMenuItem>
                 <i class="fa fa-trash"></i> Delete Structure
               </ng-template>
+              <ng-template (execute)="unlockMessageStructure(node.data.id)" contextMenuItem [visible]="node.data.status === 'PUBLISHED'">
+                <i class="fa fa-trash"></i> UnLock Structure
+              </ng-template>
             </context-menu>
 
           </div>
@@ -77,10 +80,13 @@
               <ng-template (execute)="deleteSegmentStructure(node.data.id)" contextMenuItem>
                 <i class="fa fa-trash"></i> Delete Structure
               </ng-template>
+              <ng-template (execute)="unlockSegmentStructure(node.data.id)" contextMenuItem [visible]="node.data.status === 'PUBLISHED'">
+                <i class="fa fa-trash"></i> UnLock Structure
+              </ng-template>
             </context-menu>
           </div>
 
-          <ng-container *ngIf="rla.isActive" >
+          <ng-container *ngIf="rla.isActive">
             <ng-container *ngTemplateOutlet="subMenu; context: { $implicit : node.data }"></ng-container>
           </ng-container>
 

@@ -101,6 +101,14 @@ export class StructureEditorService {
     return this.http.get<IMessage<IMessageStructureAndDisplay>>(`api/structure-editor/structure/${id}/publish`);
   }
 
+  unPublishSegment(id: string): Observable<IMessage<ISegmentStructureAndDisplay>> {
+    return this.http.get<IMessage<ISegmentStructureAndDisplay>>(`api/structure-editor/segment/${id}/unpublish`);
+  }
+
+  unPublishMessageStructure(id: string): Observable<IMessage<IMessageStructureAndDisplay>> {
+    return this.http.get<IMessage<IMessageStructureAndDisplay>>(`api/structure-editor/structure/${id}/unpublish`);
+  }
+
   deleteMessageStructure(id: string): Observable<IMessage<string>> {
     return this.http.delete<IMessage<string>>(`api/structure-editor/structure/${id}`);
   }
@@ -112,6 +120,11 @@ export class StructureEditorService {
   getSegmentCrossRefs(id: string): Observable<IUsages[]> {
     return this.http.get<IUsages[]>(`api/structure-editor/segment/${id}/cross-references`);
   }
+
+  getSegmentLockedCrossRefs(id: string): Observable<IUsages[]> {
+    return this.http.get<IUsages[]>(`api/structure-editor/segment/${id}/locked-cross-references`);
+  }
+
 
   getMessageMetadata(ms: IMessageStructure): IMessageStructureMetadata {
     return {

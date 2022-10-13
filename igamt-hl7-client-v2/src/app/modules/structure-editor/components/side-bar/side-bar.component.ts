@@ -99,6 +99,30 @@ export class SideBarComponent implements OnInit {
     ).subscribe();
   }
 
+  unpublish({ id, type }) {
+    const { repository, publish } = type === Type.SEGMENT ?
+      {
+        repository: this.SEGMENTS_REPO,
+        publish: this.structureEditorService.unPublishSegment(id) as Observable<IMessage<any>>,
+      } :
+      {
+        repository: this.MESSAGES_REPO,
+        publish: this.structureEditorService.unPublishMessageStructure(id) as Observable<IMessage<any>>,
+      };
+
+    publish.pipe(
+      map((response) => {
+        this.store.dispatch(this.messageService.messageToAction(response));
+        this.store.dispatch(new InsertResourcesInRepostory({
+          collections: [{
+            key: repository,
+            values: [response.data.displayElement],
+          }],
+        }));
+      }),
+    ).subscribe();
+  }
+
   deleteMessageStructure(id: string) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
@@ -216,4 +240,52 @@ export class SideBarComponent implements OnInit {
   ngOnInit() {
   }
 
+  unlockSegmentStructure(id: string) {
+    this.structureEditorService.getSegmentLockedCrossRefs(id).pipe(
+      take(1),
+      map((usages: IUsages[]) => {
+        if (usages.length === 0) {
+          const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            data: {
+              question: 'Are you sure you want to unlock this segment structure ?',
+              action: 'Unlock Segment Structure',
+            },
+          });
+          dialogRef.afterClosed().subscribe(
+            (answer) => {
+              if (answer) {
+                this.unpublish({id: id, type: Type.SEGMENT});
+
+              }
+            },
+          );
+        } else {
+          this.dialog.open(UsageDialogComponent, {
+            data: {
+              title: 'Cross References found',
+              usages,
+              element: {},
+            },
+          });
+        }
+      }),
+    ).subscribe();
+  }
+
+  unlockMessageStructure(id: string) {
+          const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            data: {
+              question: 'Are you sure you want to unlock this Message structure ?',
+              action: 'Unlock Message Structure',
+            },
+          });
+          dialogRef.afterClosed().subscribe(
+            (answer) => {
+              if (answer) {
+                this.unpublish({id: id, type: Type.MESSAGESTRUCT});
+
+              }
+            },
+          );
+  }
 }

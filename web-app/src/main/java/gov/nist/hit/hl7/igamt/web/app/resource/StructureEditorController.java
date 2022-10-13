@@ -92,7 +92,30 @@ public class StructureEditorController {
         MessageStructureAndDisplay ms = structureService.publishMessageStructure(id, authentication.getName());
         return new ResponseMessage<MessageStructureAndDisplay>(ResponseMessage.Status.SUCCESS, "MESSAGE STRUCTURE PUBLISHED", ms.getDisplayElement().getId(), ms, new Date());
     }
+    
+    @RequestMapping(value = "api/structure-editor/segment/{id}/unpublish", method = RequestMethod.GET, produces = {"application/json" })
+  //  @PreAuthorize("AccessResource('SEGMENT', #id, WRITE)")
+    public @ResponseBody
+    ResponseMessage<SegmentStructureAndDisplay> unpublishSegment(@PathVariable("id") String id, Authentication authentication) {
+        SegmentStructureAndDisplay ms = structureService.unpublishSegment(id, authentication.getName());
+        return new ResponseMessage<SegmentStructureAndDisplay>(ResponseMessage.Status.SUCCESS, "SEGMENT STRUCTURE PUBLISHED", ms.getDisplayElement().getId(), ms, new Date());
+    }
 
+    @RequestMapping(value = "api/structure-editor/structure/{id}/unpublish", method = RequestMethod.GET, produces = {"application/json" })
+   // @PreAuthorize("AccessResource('MESSAGESTRUCTURE', #id, WRITE)")
+    public @ResponseBody
+    ResponseMessage<MessageStructureAndDisplay> unpublishMessage(@PathVariable("id") String id, Authentication authentication) {
+        MessageStructureAndDisplay ms = structureService.unpublishMessageStructure(id, authentication.getName());
+        return new ResponseMessage<MessageStructureAndDisplay>(ResponseMessage.Status.SUCCESS, "MESSAGE STRUCTURE PUBLISHED", ms.getDisplayElement().getId(), ms, new Date());
+    }
+    
+    
+    
+    
+   // getLockedSegmentStructure
+    
+    
+    
     @RequestMapping(value = "api/structure-editor/structures/{id}", method = RequestMethod.GET, produces = {"application/json" })
     @PreAuthorize("AccessResource('MESSAGESTRUCTURE', #id, READ)")
     public @ResponseBody
@@ -143,6 +166,13 @@ public class StructureEditorController {
         Set<CustomSegmentCrossRef> crossRefs = this.structureService.getSegmentStructureReferences(id, authentication.getName());
         return crossRefs != null ? crossRefs : new HashSet<>();
     }
+    
+    @RequestMapping(value = "api/structure-editor/segment/{id}/locked-cross-references", method = RequestMethod.GET, produces = {"application/json" })
+    public @ResponseBody
+    Set<CustomSegmentCrossRef> lockedSegmentCrossRef(@PathVariable("id") String id, Authentication authentication) throws Exception {
+        Set<CustomSegmentCrossRef> crossRefs = this.structureService.getLockedSegmentStructure(id, authentication.getName());
+        return crossRefs != null ? crossRefs : new HashSet<>();
+    }
 
     @RequestMapping(value = "/api/structure-editor/structure/{id}/state", method = RequestMethod.GET, produces = {
             "application/json" })
@@ -190,4 +220,5 @@ public class StructureEditorController {
     public List<DisplayElement> getResources(@PathVariable("type") Type type, @PathVariable String version, @PathVariable Scope scope, Authentication authentication) {
         return this.structureService.getResources(type, scope, version, authentication.getName());
     }
+    
 }
