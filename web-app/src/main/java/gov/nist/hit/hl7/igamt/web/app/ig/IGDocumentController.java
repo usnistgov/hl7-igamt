@@ -1624,6 +1624,7 @@ public class IGDocumentController extends BaseController {
 									Segment seg = this.segmentService.findById(link.getId());
 									
 									this.visitSegment(seg.getChildren(), selectedIg, ig);
+									this.handleSegmentSlicing(seg, selectedIg, ig);
 						            if(seg.getBinding() != null && seg.getBinding().getChildren() != null) this.collectVS(seg.getBinding().getChildren(), selectedIg, ig);
 								}
 							});
@@ -1639,6 +1640,7 @@ public class IGDocumentController extends BaseController {
 									Segment seg = this.segmentService.findById(link.getId());
 									
 									this.visitSegment(seg.getChildren(), selectedIg, ig);
+									this.handleSegmentSlicing(seg, selectedIg, ig);
 						            if(seg.getBinding() != null && seg.getBinding().getChildren() != null) this.collectVS(seg.getBinding().getChildren(), selectedIg, ig);
 								}
 								
@@ -1723,57 +1725,7 @@ public class IGDocumentController extends BaseController {
               });
             }
             
-            
-					// For Segment slicing
-					if (s.getSlicings() != null) {
-						for (Slicing slicing : s.getSlicings()) {
-							if (slicing.getType().equals(SlicingMethod.OCCURRENCE)) {
-								OrderedSlicing orderedSlicing = (OrderedSlicing) slicing;
-								if (orderedSlicing.getSlices() != null) {
-									orderedSlicing.getSlices().forEach(slice -> {
-										Link link = all.getDatatypeRegistry().getLinkById(slice.getFlavorId());
-										if (link != null) {
-											selectedIg.getDatatypeRegistry().getChildren().add(link);
-											Datatype dt = this.datatypeService.findById(link.getId());
-
-											if (dt != null && dt instanceof ComplexDatatype) {
-												ComplexDatatype cdt = (ComplexDatatype) dt;
-												if (cdt.getComponents() != null) {
-													this.visitDatatype(cdt.getComponents(), selectedIg, all);
-													if (cdt.getBinding() != null
-															&& cdt.getBinding().getChildren() != null)
-														this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
-												}
-											}
-										}
-									});
-
-								}
-							} else if (slicing.getType().equals(SlicingMethod.ASSERTION)) {
-								ConditionalSlicing conditionalSlicing = (ConditionalSlicing) slicing;
-								if (conditionalSlicing.getSlices() != null) {
-									conditionalSlicing.getSlices().forEach(slice -> {
-										Link link = all.getDatatypeRegistry().getLinkById(slice.getFlavorId());
-										if (link != null) {
-											selectedIg.getDatatypeRegistry().getChildren().add(link);
-											Datatype dt = this.datatypeService.findById(link.getId());
-
-											if (dt != null && dt instanceof ComplexDatatype) {
-												ComplexDatatype cdt = (ComplexDatatype) dt;
-												if (cdt.getComponents() != null) {
-													this.visitDatatype(cdt.getComponents(), selectedIg, all);
-													if (cdt.getBinding() != null
-															&& cdt.getBinding().getChildren() != null)
-														this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
-												}
-											}
-										}
-									});
-
-								}
-							}
-						}
-					}
+            this.handleSegmentSlicing(s, selectedIg, all);
           }
         }
       }
@@ -1781,7 +1733,61 @@ public class IGDocumentController extends BaseController {
 
   }
 
-  private void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all) {
+  private void handleSegmentSlicing(Segment s, Ig selectedIg,Ig all) {
+	// For Segment slicing
+		if (s.getSlicings() != null) {
+			for (Slicing slicing : s.getSlicings()) {
+				if (slicing.getType().equals(SlicingMethod.OCCURRENCE)) {
+					OrderedSlicing orderedSlicing = (OrderedSlicing) slicing;
+					if (orderedSlicing.getSlices() != null) {
+						orderedSlicing.getSlices().forEach(slice -> {
+							Link link = all.getDatatypeRegistry().getLinkById(slice.getFlavorId());
+							if (link != null) {
+								selectedIg.getDatatypeRegistry().getChildren().add(link);
+								Datatype dt = this.datatypeService.findById(link.getId());
+
+								if (dt != null && dt instanceof ComplexDatatype) {
+									ComplexDatatype cdt = (ComplexDatatype) dt;
+									if (cdt.getComponents() != null) {
+										this.visitDatatype(cdt.getComponents(), selectedIg, all);
+										if (cdt.getBinding() != null
+												&& cdt.getBinding().getChildren() != null)
+											this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+									}
+								}
+							}
+						});
+
+					}
+				} else if (slicing.getType().equals(SlicingMethod.ASSERTION)) {
+					ConditionalSlicing conditionalSlicing = (ConditionalSlicing) slicing;
+					if (conditionalSlicing.getSlices() != null) {
+						conditionalSlicing.getSlices().forEach(slice -> {
+							Link link = all.getDatatypeRegistry().getLinkById(slice.getFlavorId());
+							if (link != null) {
+								selectedIg.getDatatypeRegistry().getChildren().add(link);
+								Datatype dt = this.datatypeService.findById(link.getId());
+
+								if (dt != null && dt instanceof ComplexDatatype) {
+									ComplexDatatype cdt = (ComplexDatatype) dt;
+									if (cdt.getComponents() != null) {
+										this.visitDatatype(cdt.getComponents(), selectedIg, all);
+										if (cdt.getBinding() != null
+												&& cdt.getBinding().getChildren() != null)
+											this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+									}
+								}
+							}
+						});
+
+					}
+				}
+			}
+		}
+	
+}
+
+private void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all) {
     sebs.forEach(seb -> {
       if(seb.getValuesetBindings() != null) {
         seb.getValuesetBindings().forEach(b -> {
