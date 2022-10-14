@@ -48,10 +48,17 @@
              id="validationServerUsername" placeholder="Filter" required
              style="background-color: #f0f0f0; height: 35px;" type="text">
     </div>
+
+
   </div>
+
+
 
   <!-- IG LIST -->
   <div class="ig-list">
+    <div style="margin-left: 5px;" *ngIf="_shadowViewType !== 'USER'">
+      <p-checkbox [(ngModel)]="showDeprecated" [binary]="true" label="Show Deprecated" (ngModelChange)="deprecatedChange($event)" ></p-checkbox>
+    </div>
     <div>
       <div *ngFor="let item of listItems | async" class="spacer">
         <app-ig-list-item-card [controls]="controls | async" [igListItem]="item"></app-ig-list-item-card>

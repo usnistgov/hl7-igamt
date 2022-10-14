@@ -379,7 +379,7 @@ public class IGDocumentController extends BaseController {
         igdouments = igService.findByUsername(username, Scope.USER);
 
       }
-      igdouments.removeIf((ig) -> ig.getDeprecated());
+//      igdouments.removeIf((ig) -> ig.getDeprecated());
       return igService.convertListToDisplayList(igdouments);
     } else {
       igdouments = igService.findByUsername(username, Scope.USER);

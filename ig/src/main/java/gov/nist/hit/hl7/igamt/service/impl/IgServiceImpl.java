@@ -266,6 +266,7 @@ public class IgServiceImpl implements  IgService {
 
 			element.setCoverpage(ig.getMetadata().getCoverPicture());
 			element.setDraft(ig.getDraft());
+			element.setDeprecated(ig.getDeprecated());
 			element.setDateUpdated(ig.getUpdateDate());
 			element.setTitle(ig.getMetadata().getTitle());
 			element.setSubtitle(ig.getMetadata().getSubTitle());

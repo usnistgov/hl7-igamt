@@ -3,11 +3,70 @@
   <div  style="margin-bottom: 10px;">
     The following elments will be deleted, do you want to continue?
   </div>
-    <div *ngFor="let elm of data.resources" class="form-inline">
+
+
+  <table class="table table-bordered table-stripped">
+
+    <thead  style="background: #fa9495;
+    text-align: center;">
+      <th colspan="2"> HL7 Defined
+        <button (click)= "checkAll(hl7_data)" class="btn btn-sm btn-primary"> <i class="fa fa-check"> </i></button>
+        <button (click)= "uncheckAll(hl7_data)" class="btn btn-sm btn-danger"><i class="fa fa-remove"> </i></button>
+      </th>
+    </thead>
+    <tbody>
+      <tr  *ngFor="let item of hl7_data_group | keyvalue">
+
+        <td>
+          {{item.key}}
+        </td>
+        <td>
+
+            <button (click)= "checkAll(item.value)" class="btn btn-sm btn-primary"> <i class="fa fa-check"> </i></button>
+
+
+            <button (click)= "uncheckAll(item.value)" class="btn btn-sm btn-danger"><i class="fa fa-remove"> </i></button>
+
+    <div *ngFor="let elm of item.value" class="form-inline">
+
+
+
       <p-checkbox [style]= "{'margin-right': '5px'}" [name]="elm.id" [value]="elm.id"  [(ngModel)]="data.ids" [inputId]="elm.id"></p-checkbox>
+
+
       <app-display-section  [element]="elm">
       </app-display-section>
+
     </div>
+        </td>
+      </tr>
+  </tbody>
+  <thead style="background: #0f9e2e;
+  text-align: center;">
+    <th colspan="2"> User Flavors</th>
+  </thead>
+
+  <tbody>
+    <tr  *ngFor="let item of user_data_group | keyvalue">
+      <td>
+        {{item.key}}
+      </td>
+      <td>
+  <div *ngFor="let elm of item.value" class="form-inline">
+
+
+    <p-checkbox [style]= "{'margin-right': '5px'}" [name]="elm.id" [value]="elm.id"  [(ngModel)]="data.ids" [inputId]="elm.id"></p-checkbox>
+
+
+    <app-display-section  [element]="elm">
+    </app-display-section>
+
+  </div>
+      </td>
+    </tr>
+</tbody>
+  </table>
+
 
 
 </mat-dialog-content>
