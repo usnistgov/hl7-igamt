@@ -58,6 +58,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
+import gov.nist.hit.hl7.igamt.common.config.domain.ConnectingInfo;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
@@ -620,6 +621,20 @@ public class BootstrapApplication implements CommandLineRunner {
 		}
 		
 	}
+	
+	@PostConstruct
+	void UpdateGVTLinks() {
+		System.out.println("UPDATE CONFIG");
+		List<ConnectingInfo> connection;
+		Config config = this.sharedConstantService.findOne();
+		for(ConnectingInfo info: config.getConnection()) {
+			if(info.getLabel().equals("GVT-DEV")) {
+				info.setUrl("http://129.6.24.81:8092/gvt/");
+			}
+		}
+		this.sharedConstantService.save(config);
+	}
+	
 	
 
 	
