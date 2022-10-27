@@ -94,7 +94,7 @@ public class StructureEditorController {
     }
     
     @RequestMapping(value = "api/structure-editor/segment/{id}/unpublish", method = RequestMethod.GET, produces = {"application/json" })
-  //  @PreAuthorize("AccessResource('SEGMENT', #id, WRITE)")
+    @PreAuthorize("AccessResource('SEGMENT', #id, WRITE)")
     public @ResponseBody
     ResponseMessage<SegmentStructureAndDisplay> unpublishSegment(@PathVariable("id") String id, Authentication authentication) {
         SegmentStructureAndDisplay ms = structureService.unpublishSegment(id, authentication.getName());
@@ -102,7 +102,7 @@ public class StructureEditorController {
     }
 
     @RequestMapping(value = "api/structure-editor/structure/{id}/unpublish", method = RequestMethod.GET, produces = {"application/json" })
-   // @PreAuthorize("AccessResource('MESSAGESTRUCTURE', #id, WRITE)")
+    @PreAuthorize("AccessResource('MESSAGESTRUCTURE', #id, WRITE)")
     public @ResponseBody
     ResponseMessage<MessageStructureAndDisplay> unpublishMessage(@PathVariable("id") String id, Authentication authentication) {
         MessageStructureAndDisplay ms = structureService.unpublishMessageStructure(id, authentication.getName());
