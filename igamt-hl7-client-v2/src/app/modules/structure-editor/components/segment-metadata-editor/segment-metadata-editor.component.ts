@@ -1,10 +1,10 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Actions} from '@ngrx/effects';
-import {Action, Store} from '@ngrx/store';
-import {combineLatest, Observable, Subscription, throwError} from 'rxjs';
-import {catchError, concatMap, flatMap, map, take, tap, withLatestFrom} from 'rxjs/operators';
-import {MessageService} from 'src/app/modules/dam-framework/services/message.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Actions } from '@ngrx/effects';
+import { Action, Store } from '@ngrx/store';
+import { combineLatest, Observable, Subscription, throwError } from 'rxjs';
+import { catchError, concatMap, flatMap, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { validateStructureConvention } from 'src/app/modules/shared/functions/convention-factory';
 import {
@@ -76,7 +76,7 @@ export class SegmentMetadataEditorComponent extends StructureEditorComponent imp
   }
 
   getOthers(): Observable<IDisplayElement[]> {
-    return  this.store.select(selectSegmentStructures).pipe(
+    return this.store.select(selectSegmentStructures).pipe(
       take(1),
       withLatestFrom(this.elementId$),
       map(([exiting, id]) => {
@@ -87,7 +87,7 @@ export class SegmentMetadataEditorComponent extends StructureEditorComponent imp
 
   editorDisplayNode(): Observable<IDisplayElement> {
     return this.elementId$.pipe(
-      flatMap((id) => {
+      switchMap((id) => {
         return this.store.select(selectSegmentStructureById, { id });
       }),
     );

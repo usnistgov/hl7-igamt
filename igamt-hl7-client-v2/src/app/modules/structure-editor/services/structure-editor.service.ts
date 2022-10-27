@@ -5,6 +5,7 @@ import { IMessage } from '../../dam-framework/models/messages/message.class';
 import { Scope } from '../../shared/constants/scope.enum';
 import { Type } from '../../shared/constants/type.enum';
 import { IMessageStructure, IMsgStructElement } from '../../shared/models/conformance-profile.interface';
+import { IUsages } from '../../shared/models/cross-reference';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IResource } from '../../shared/models/resource.interface';
 import { IField, ISegment } from '../../shared/models/segment.interface';
@@ -99,6 +100,31 @@ export class StructureEditorService {
   publishMessageStructure(id: string): Observable<IMessage<IMessageStructureAndDisplay>> {
     return this.http.get<IMessage<IMessageStructureAndDisplay>>(`api/structure-editor/structure/${id}/publish`);
   }
+
+  unPublishSegment(id: string): Observable<IMessage<ISegmentStructureAndDisplay>> {
+    return this.http.get<IMessage<ISegmentStructureAndDisplay>>(`api/structure-editor/segment/${id}/unpublish`);
+  }
+
+  unPublishMessageStructure(id: string): Observable<IMessage<IMessageStructureAndDisplay>> {
+    return this.http.get<IMessage<IMessageStructureAndDisplay>>(`api/structure-editor/structure/${id}/unpublish`);
+  }
+
+  deleteMessageStructure(id: string): Observable<IMessage<string>> {
+    return this.http.delete<IMessage<string>>(`api/structure-editor/structure/${id}`);
+  }
+
+  deleteSegmentStructure(id: string): Observable<IMessage<string>> {
+    return this.http.delete<IMessage<string>>(`api/structure-editor/segment/${id}`);
+  }
+
+  getSegmentCrossRefs(id: string): Observable<IUsages[]> {
+    return this.http.get<IUsages[]>(`api/structure-editor/segment/${id}/cross-references`);
+  }
+
+  getSegmentLockedCrossRefs(id: string): Observable<IUsages[]> {
+    return this.http.get<IUsages[]>(`api/structure-editor/segment/${id}/locked-cross-references`);
+  }
+
 
   getMessageMetadata(ms: IMessageStructure): IMessageStructureMetadata {
     return {

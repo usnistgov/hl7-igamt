@@ -3,7 +3,7 @@ import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import * as _ from 'lodash';
 import { combineLatest, Observable, of, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, take } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, switchMap, take } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
@@ -80,7 +80,7 @@ export class MessageStructureEditorComponent extends StructureEditorComponent im
 
   editorDisplayNode(): Observable<IDisplayElement> {
     return this.elementId$.pipe(
-      flatMap((id) => {
+      switchMap((id) => {
         return this.store.select(selectMessageStructureById, { id });
       }),
     );
