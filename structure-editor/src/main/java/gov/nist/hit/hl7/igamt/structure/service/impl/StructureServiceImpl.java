@@ -157,6 +157,7 @@ public class StructureServiceImpl implements StructureService {
         } else {
             /// TODO Extension Unique
             segment.setExt(metadata.getIdentifier());
+            segment.setName(metadata.getName());
             segment.setDescription(metadata.getDescription());
             return this.segmentRepository.save(segment);
         }
@@ -336,6 +337,17 @@ public class StructureServiceImpl implements StructureService {
     @Override
     public SegmentStructureAndDisplay createSegmentStructure(SegmentStructureCreateWrapper request, String user) {
         Segment structure = this.segmentRepository.findById(request.getFrom()).orElseThrow(() -> new IllegalArgumentException("Segment not found"));
+        if(!Strings.isNullOrEmpty(request.getZname())) {
+        	if(!request.getZname().matches("Z[A-Z0-9]{2}")) {
+        		throw new IllegalArgumentException("Name Does not match the pattern Z[A-Z0-9]{2}");
+        	}
+        	if(structure.getName().startsWith("Z")) {
+        		structure.setName(request.getZname());
+        	}else {
+        		throw new IllegalArgumentException("The resource is not a Z segment");
+        	}
+        	
+        }
         structure.setDescription(request.getDescription());
         structure.setExt(request.getIdentifier());
         structure.setOrigin(request.getFrom());

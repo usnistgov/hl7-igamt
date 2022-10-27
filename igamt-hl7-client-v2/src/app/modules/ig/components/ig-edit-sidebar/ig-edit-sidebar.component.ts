@@ -1,4 +1,3 @@
-import { UnusedElementsComponent } from './../../../shared/components/unused-elements/unused-elements.component';
 import { AfterViewInit, Component, Input, OnDestroy, OnInit, SystemJsNgModuleLoader, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, ChildrenOutletContexts, Router } from '@angular/router';
@@ -71,6 +70,7 @@ import { CrossReferencesService } from '../../../shared/services/cross-reference
 import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.class';
 import { IgTocFilterService, IIgTocFilterConfiguration, selectIgTocFilter } from '../../services/ig-toc-filter.service';
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
+import { UnusedElementsComponent } from './../../../shared/components/unused-elements/unused-elements.component';
 import { ITypedSection } from './../ig-toc/ig-toc.component';
 import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
 
@@ -691,7 +691,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
       }),
     ).subscribe();
   }
-  cleanUnused($event: {children: IDisplayElement[], type : Type}){
+  cleanUnused($event: {children: IDisplayElement[], type: Type}) {
     this.documentRef$.pipe(
       take(1),
       concatMap((documentRef: IDocumentRef) => {
@@ -705,21 +705,15 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
                   action: '',
                 },
               });
-              dialogRef.afterClosed().subscribe(
-                (answer) => {
-                  if (answer) {
-                    //this.store.dispatch(new DeleteResource({ documentId: documentRef.documentId, element: $event }));
-                  }
-                },
-              );
+              dialogRef.afterClosed().subscribe();
             } else {
-              let unusedMap ={};
-              unused.forEach(element => {
+              const unusedMap = {};
+              unused.forEach((element) => {
                 unusedMap[element] = true;
               });
-              let unusedDisplay: IDisplayElement[]= [];
+              let unusedDisplay: IDisplayElement[] = [];
 
-              unusedDisplay = $event.children.filter(x => unusedMap[x.id]);
+              unusedDisplay = $event.children.filter((x) => unusedMap[x.id]);
               const dialogRef = this.dialog.open(UnusedElementsComponent, {
 
                 data: {

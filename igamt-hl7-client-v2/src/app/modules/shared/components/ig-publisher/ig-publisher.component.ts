@@ -15,8 +15,7 @@ export class IgPublisherComponent  implements OnInit {
   publicationInfo: {draft: boolean, info: any}  = { draft: false, info: { warning: this.defaultWarning }};
 
   constructor(public dialogRef: MatDialogRef<IgPublisherComponent>,
-                @Inject(MAT_DIALOG_DATA) public data: any ) { }
-
+              @Inject(MAT_DIALOG_DATA) public data: any ) { }
 
   ngOnInit() {
 
@@ -28,6 +27,11 @@ export class IgPublisherComponent  implements OnInit {
 
   cancel() {
     this.dialogRef.close();
+  }
+  updateMessage($event) {
+    if (!this.customMessage) {
+      this.publicationInfo.info.warning = this.defaultWarning;
+    }
   }
 
 }

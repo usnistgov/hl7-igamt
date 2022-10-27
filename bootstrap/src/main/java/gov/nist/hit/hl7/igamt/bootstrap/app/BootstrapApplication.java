@@ -90,6 +90,7 @@ import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.IgServiceImpl;
+import gov.nist.hit.hl7.igamt.service.verification.impl.SimpleResourceBindingVerificationService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
@@ -132,6 +133,10 @@ public class BootstrapApplication implements CommandLineRunner {
 
 	@Autowired
 	FixIGAttribute fixAttributes;
+	
+	
+	@Autowired
+	SimpleResourceBindingVerificationService simpleResourceBindingVerificationService;
 
 
 	@Autowired
@@ -605,9 +610,27 @@ public class BootstrapApplication implements CommandLineRunner {
 		
 	}
 	
-	@PostConstruct
+	//@PostConstruct
 	void deprecate() throws ForbiddenOperationException, ValidationException {
-		igFixer.deprecateIG("63399ebd3a5b6a44f1116a78", Boolean.TRUE);
+		
+		
+		igFixer.deprecateIG("5e62985a08bb3a000648c146", Boolean.TRUE);
+		
+		igFixer.deprecateIG("5ef10cab2af19b00069efb1d", Boolean.TRUE);
+
+		igFixer.deprecateIG("5f1ef9552af19b00065f7dd4", Boolean.TRUE);
+
+		igFixer.deprecateIG("5f6dfb0a9194be0006d226f5", Boolean.TRUE);
+
+		igFixer.deprecateIG("5f71f7e19194be0006175399", Boolean.TRUE);
+
+		igFixer.deprecateIG("5f809aee9194be0006437932", Boolean.TRUE);
+
+		igFixer.deprecateIG("5fbbcf4d9194be0006abd025", Boolean.TRUE);
+
+		igFixer.deprecateIG("6065f77a8b87bc00073091aa", Boolean.TRUE);
+		
+		igFixer.deprecateIG("630644c88b87bc00075490f9", Boolean.TRUE);
 		
 	}
 	
@@ -616,9 +639,15 @@ public class BootstrapApplication implements CommandLineRunner {
 		List<Ig> igs = this.igService.findAll();
 		for( Ig ig: igs) {
 			igFixer.checkMessing(ig);
-
 		}
 	}
+	
+	//@PostConstruct
+	void checkBinding() throws ForbiddenOperationException, ValidationException {
+			igFixer.checkBindingLocation();
+		
+	}
+	
 	
 
 	

@@ -1,4 +1,3 @@
-import { IResourceFilter } from './../../ig/services/ig-toc-filter.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
@@ -9,6 +8,7 @@ import { Type } from '../constants/type.enum';
 import { IDocumentRef } from '../models/abstract-domain.interface';
 import { IRelationShip, IUsages } from '../models/cross-reference';
 import { IDisplayElement } from '../models/display-element.interface';
+import { IResourceFilter } from './../../ig/services/ig-toc-filter.service';
 import { StoreResourceRepositoryService } from './resource-repository.service';
 
 @Injectable({
@@ -67,9 +67,8 @@ export class CrossReferencesService {
     );
   }
 
-  getUnused(id: String, elementType: Type ): Observable<string[]> {
+  getUnused(id: string, elementType: Type ): Observable<string[]> {
       return this.http.get<string[]>('api/igdocuments/' + id + '/' + elementType  + '/unused');
   }
-
 
 }

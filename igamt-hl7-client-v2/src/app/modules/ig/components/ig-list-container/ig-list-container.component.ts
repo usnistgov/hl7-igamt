@@ -182,6 +182,9 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                 disabled: (item: IgListItem): boolean => {
                   return false;
                 },
+                hide: (item: IgListItem): boolean => {
+                  return false;
+                },
               },
               {
                 label: 'Publish',
@@ -377,14 +380,10 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
     );
   }
 
-  getWarning(item: IgListItem){
+  getWarning(item: IgListItem) {
 
-    if(item.publicationInfo){
-      if(item.publicationInfo.warning){
-        if(item.publicationInfo.warning.length>0){
+    if (item.publicationInfo && item.publicationInfo.warning && item.publicationInfo.warning.length > 0) {
           return item.publicationInfo.warning;
-        }
-      }
     }
     return this.draftWarning;
   }
@@ -416,7 +415,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
   filterTextChanged(text: string) {
     this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: text, deprecated: this.showDeprecated });
   }
-  deprecatedChange(value: boolean){
+  deprecatedChange(value: boolean) {
     this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: this.filter, deprecated: value });
   }
 

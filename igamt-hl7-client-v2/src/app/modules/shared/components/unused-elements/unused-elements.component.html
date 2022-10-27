@@ -1,17 +1,24 @@
 <h2 mat-dialog-title>Deleting Unused Elements</h2>
 <mat-dialog-content>
   <div  style="margin-bottom: 10px;">
-    The following elments will be deleted, do you want to continue?
+   Select elements to delete
   </div>
 
 
   <table class="table table-bordered table-stripped">
 
-    <thead  style="background: #fa9495;
+    <thead  *ngIf="hl7_data.length"  style="background: #fa9495;
     text-align: center;">
-      <th colspan="2"> HL7 Defined
-        <button (click)= "checkAll(hl7_data)" class="btn btn-sm btn-primary"> <i class="fa fa-check"> </i></button>
-        <button (click)= "uncheckAll(hl7_data)" class="btn btn-sm btn-danger"><i class="fa fa-remove"> </i></button>
+      <th colspan="2">
+        <div  style="display: flex; flex-direction: row; justify-content: space-between;">
+          <span>
+            HL7 Defined       <span class="badge badge-secondary"> {{getSelected(hl7_data)}}/ {{hl7_data.length}} To be deleted </span>
+          </span>
+          <div>
+            <button (click)= "checkAll(hl7_data)" class="btn btn-sm btn-primary top-button" pTooltip="Check all" tooltipPosition="top"> <i class="fa fa-check"> </i></button>
+            <button (click)= "uncheckAll(hl7_data)" class="btn btn-sm btn-danger top-button"><i class="fa fa-remove"> </i></button>
+          </div>
+        </div>
       </th>
     </thead>
     <tbody>
@@ -21,11 +28,10 @@
           {{item.key}}
         </td>
         <td>
-
-            <button (click)= "checkAll(item.value)" class="btn btn-sm btn-primary"> <i class="fa fa-check"> </i></button>
-
-
-            <button (click)= "uncheckAll(item.value)" class="btn btn-sm btn-danger"><i class="fa fa-remove"> </i></button>
+          <button (click)= "uncheckAll(item.value)" class="btn btn-sm btn-primary top-button-category" *ngIf="checkStatus(item.value) =='ALL'" > <i class="fa fa-check"> </i></button>
+          <button (click)= "checkAll(item.value)" class="btn btn-sm btn-empty top-button-category" *ngIf="checkStatus(item.value) =='NONE'"> </button>
+          <button (click)= "checkAll(item.value)" class="btn btn-sm btn-primary top-button-category" *ngIf="checkStatus(item.value) =='SOME'" > <i class="fa fa-minus"> </i></button>
+          <span class="badge badge-primary"> {{getSelected(item.value)}}/ {{item.value.length}} </span>
 
     <div *ngFor="let elm of item.value" class="form-inline">
 
@@ -40,37 +46,93 @@
     </div>
         </td>
       </tr>
-  </tbody>
-  <thead style="background: #0f9e2e;
-  text-align: center;">
-    <th colspan="2"> User Flavors</th>
-  </thead>
+    </tbody>
 
-  <tbody>
-    <tr  *ngFor="let item of user_data_group | keyvalue">
-      <td>
-        {{item.key}}
-      </td>
-      <td>
-  <div *ngFor="let elm of item.value" class="form-inline">
+    <thead style="background: #0f9e2e;
+    text-align: center;">
+      <th colspan="2" *ngIf="user_owned.length">
+        <div  style="display: flex; flex-direction: row; justify-content: space-between;">
+          <span>
+            User Defined       <span class="badge badge-secondary"> {{getSelected(user_owned)}}/ {{user_owned.length}} To be deleted </span>
+          </span>
+          <div>
+            <button (click)= "checkAll(user_owned)" class="btn btn-sm btn-primary top-button" pTooltip="Check all" tooltipPosition="top"> <i class="fa fa-check"> </i></button>
+            <button (click)= "uncheckAll(user_owned)" class="btn btn-sm btn-danger top-button"><i class="fa fa-remove"> </i></button>
+          </div>
+        </div>
+      </th>
+    </thead>
+    <tbody>
+      <tr  *ngFor="let item of user_data_group | keyvalue">
+
+        <td>
+          {{item.key}}
+        </td>
+        <td>
+          <button (click)= "uncheckAll(item.value)" class="btn btn-sm btn-primary top-button-category" *ngIf="checkStatus(item.value) =='ALL'" > <i class="fa fa-check"> </i></button>
+          <button (click)= "checkAll(item.value)" class="btn btn-sm btn-empty top-button-category" *ngIf="checkStatus(item.value) =='NONE'"> </button>
+          <button (click)= "checkAll(item.value)" class="btn btn-sm btn-primary top-button-category" *ngIf="checkStatus(item.value) =='SOME'" > <i class="fa fa-minus"> </i></button>
+          <span class="badge badge-primary"> {{getSelected(item.value)}}/ {{item.value.length}} </span>
+
+    <div *ngFor="let elm of item.value" class="form-inline">
 
 
-    <p-checkbox [style]= "{'margin-right': '5px'}" [name]="elm.id" [value]="elm.id"  [(ngModel)]="data.ids" [inputId]="elm.id"></p-checkbox>
+
+      <p-checkbox [style]= "{'margin-right': '5px'}" [name]="elm.id" [value]="elm.id"  [(ngModel)]="data.ids" [inputId]="elm.id"></p-checkbox>
 
 
-    <app-display-section  [element]="elm">
-    </app-display-section>
+      <app-display-section  [element]="elm">
+      </app-display-section>
 
-  </div>
-      </td>
-    </tr>
-</tbody>
+    </div>
+        </td>
+      </tr>
+    </tbody>
+
+    <thead style="background: gray;
+    text-align: center;">
+      <th colspan="2" *ngIf="phinvads_owned.length">
+        <div  style="display: flex; flex-direction: row; justify-content: space-between;">
+          <span>
+            Phinvads       <span class="badge badge-secondary"> {{getSelected(hl7_data)}}/ {{hl7_data.length}} To be deleted </span>
+          </span>
+          <div>
+            <button (click)= "checkAll(phinvads_owned)" class="btn btn-sm btn-primary top-button" pTooltip="Check all" tooltipPosition="top"> <i class="fa fa-check"> </i></button>
+            <button (click)= "uncheckAll(phinvads_owned)" class="btn btn-sm btn-danger top-button"><i class="fa fa-remove"> </i></button>
+          </div>
+        </div>
+      </th>
+    </thead>
+    <tbody>
+      <tr  *ngFor="let item of phinvads_owned_group | keyvalue">
+
+        <td>
+          {{item.key}}
+        </td>
+        <td>
+          <button (click)= "uncheckAll(item.value)" class="btn btn-sm btn-primary top-button-category" *ngIf="checkStatus(item.value) =='ALL'" > <i class="fa fa-check"> </i></button>
+          <button (click)= "checkAll(item.value)" class="btn btn-sm btn-empty top-button-category" *ngIf="checkStatus(item.value) =='NONE'"> </button>
+          <button (click)= "checkAll(item.value)" class="btn btn-sm btn-primary top-button-category" *ngIf="checkStatus(item.value) =='SOME'" > <i class="fa fa-minus"> </i></button>
+          <span class="badge badge-primary"> {{getSelected(item.value)}}/ {{item.value.length}} </span>
+
+    <div *ngFor="let elm of item.value" class="form-inline">
+
+
+
+      <p-checkbox [style]= "{'margin-right': '5px'}" [name]="elm.id" [value]="elm.id"  [(ngModel)]="data.ids" [inputId]="elm.id"></p-checkbox>
+
+
+      <app-display-section  [element]="elm">
+      </app-display-section>
+
+    </div>
+        </td>
+      </tr>
+    </tbody>
   </table>
-
-
 
 </mat-dialog-content>
 <mat-dialog-actions style="justify-content: flex-end;">
   <button (click)="close()"class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
-  <button (click)="submit()" class="btn btn-sm btn-danger">Yes</button>
+  <button (click)="submit()" [disabled]="!data.ids.length" class="btn btn-sm btn-danger">Delete Selected<span class="badge" style="background: gray;  font-size: inherit; margin: 1" >{{data.ids.length}}</span></button>
 </mat-dialog-actions>

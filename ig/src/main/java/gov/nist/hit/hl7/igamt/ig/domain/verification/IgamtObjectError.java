@@ -132,4 +132,11 @@ public class IgamtObjectError {
   public void setLocationInfo(Location locationInfo) {
     this.locationInfo = locationInfo;
   }
+
+@Override
+public String toString() {
+	return "IgamtObjectError [code=" + code + ", target=" + target + ", targetType=" + targetType + ", targetMeta="
+			+ targetMeta + ", description=" + description + ", location=" + location + ", handleBy=" + handleBy
+			+ ", severity=" + severity + ", locationInfo=" + locationInfo + "]";
+}
 }

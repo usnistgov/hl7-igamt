@@ -57,4 +57,10 @@ public class LocationInfo {
     public void setPathId(String pathId) {
         this.pathId = pathId;
     }
+
+	@Override
+	public String toString() {
+		return "LocationInfo [name=" + name + ", hl7Path=" + hl7Path + ", type=" + type + ", positionalPath="
+				+ positionalPath + ", pathId=" + pathId + "]";
+	}
 }
