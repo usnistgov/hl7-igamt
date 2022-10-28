@@ -156,5 +156,4 @@ export class TableOfContentComponent implements OnInit {
     console.log(nodes);
   }
 
-
 }

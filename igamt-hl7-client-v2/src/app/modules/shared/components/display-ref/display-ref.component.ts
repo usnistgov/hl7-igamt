@@ -37,7 +37,6 @@ export class DisplayRefComponent implements OnInit {
     return null;
   }
 
-
   redirect() {
     const documentUrl = this.getDocumentURL(this.documentType);
     if (documentUrl) {

@@ -125,7 +125,6 @@ export class StructureEditorService {
     return this.http.get<IUsages[]>(`api/structure-editor/segment/${id}/locked-cross-references`);
   }
 
-
   getMessageMetadata(ms: IMessageStructure): IMessageStructureMetadata {
     return {
       structId: ms.structID,

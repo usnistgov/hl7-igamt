@@ -88,13 +88,7 @@ export class SideBarComponent implements OnInit {
 
     publish.pipe(
       map((response) => {
-        this.store.dispatch(this.messageService.messageToAction(response));
-        this.store.dispatch(new InsertResourcesInRepostory({
-          collections: [{
-            key: repository,
-            values: [response.data.displayElement],
-          }],
-        }));
+        this.notifyAndUpdateRepository(response, repository);
       }),
     ).subscribe();
   }
@@ -112,15 +106,19 @@ export class SideBarComponent implements OnInit {
 
     publish.pipe(
       map((response) => {
-        this.store.dispatch(this.messageService.messageToAction(response));
-        this.store.dispatch(new InsertResourcesInRepostory({
-          collections: [{
-            key: repository,
-            values: [response.data.displayElement],
-          }],
-        }));
+        this.notifyAndUpdateRepository(response, repository);
       }),
     ).subscribe();
+  }
+
+  notifyAndUpdateRepository(response, repository) {
+    this.store.dispatch(this.messageService.messageToAction(response));
+    this.store.dispatch(new InsertResourcesInRepostory({
+      collections: [{
+        key: repository,
+        values: [response.data.displayElement],
+      }],
+    }));
   }
 
   deleteMessageStructure(id: string) {
@@ -254,7 +252,7 @@ export class SideBarComponent implements OnInit {
           dialogRef.afterClosed().subscribe(
             (answer) => {
               if (answer) {
-                this.unpublish({id: id, type: Type.SEGMENT});
+                this.unpublish({ id, type: Type.SEGMENT });
 
               }
             },
@@ -273,19 +271,19 @@ export class SideBarComponent implements OnInit {
   }
 
   unlockMessageStructure(id: string) {
-          const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-            data: {
-              question: 'Are you sure you want to unlock this Message structure ?',
-              action: 'Unlock Message Structure',
-            },
-          });
-          dialogRef.afterClosed().subscribe(
-            (answer) => {
-              if (answer) {
-                this.unpublish({id: id, type: Type.MESSAGESTRUCT});
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        question: 'Are you sure you want to unlock this Message structure ?',
+        action: 'Unlock Message Structure',
+      },
+    });
+    dialogRef.afterClosed().subscribe(
+      (answer) => {
+        if (answer) {
+          this.unpublish({ id, type: Type.MESSAGESTRUCT });
 
-              }
-            },
-          );
+        }
+      },
+    );
   }
 }
