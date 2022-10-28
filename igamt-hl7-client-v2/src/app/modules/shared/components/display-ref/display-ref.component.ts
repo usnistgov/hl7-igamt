@@ -17,17 +17,31 @@ export class DisplayRefComponent implements OnInit {
   documentType: Type;
   @Input()
   documentId: string;
+
   constructor(private router: Router, private activeRoute: ActivatedRoute) { }
 
   ngOnInit() {
   }
 
-  redirect() {
-    let documentUrl = '/ig/';
-    if (this.documentType != null && this.documentType === Type.DATATYPELIBRARY) {
-      documentUrl = '/datatype-library/';
+  getDocumentURL(documentType: Type) {
+    if (documentType) {
+      switch (this.documentType) {
+        case Type.DATATYPELIBRARY:
+          return '/datatype-library/';
+        case Type.IGDOCUMENT:
+          return '/ig/';
+        default:
+          return null;
+      }
     }
-    this.router.navigate([documentUrl + this.documentId + '/' + this.element.type.toLowerCase() + '/' + this.element.id]);
+    return null;
+  }
 
+
+  redirect() {
+    const documentUrl = this.getDocumentURL(this.documentType);
+    if (documentUrl) {
+      this.router.navigate([documentUrl + this.documentId + '/' + this.element.type.toLowerCase() + '/' + this.element.id]);
+    }
   }
 }

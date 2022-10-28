@@ -55,7 +55,11 @@ export class EditorDeactivateGuard implements CanDeactivate<AbstractEditorCompon
             );
           } else {
             return of(true).pipe(
-              tap(() => component.onDeactivate()),
+              tap(() => {
+                if (component && component.onDeactivate) {
+                  component.onDeactivate();
+                }
+              }),
             );
           }
         }

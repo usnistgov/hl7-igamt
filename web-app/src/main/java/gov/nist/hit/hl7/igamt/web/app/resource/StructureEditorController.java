@@ -94,27 +94,20 @@ public class StructureEditorController {
     }
     
     @RequestMapping(value = "api/structure-editor/segment/{id}/unpublish", method = RequestMethod.GET, produces = {"application/json" })
-    @PreAuthorize("AccessResource('SEGMENT', #id, WRITE)")
+    @PreAuthorize("AccessResource('SEGMENT', #id, UNLOCK)")
     public @ResponseBody
     ResponseMessage<SegmentStructureAndDisplay> unpublishSegment(@PathVariable("id") String id, Authentication authentication) {
         SegmentStructureAndDisplay ms = structureService.unpublishSegment(id, authentication.getName());
-        return new ResponseMessage<SegmentStructureAndDisplay>(ResponseMessage.Status.SUCCESS, "SEGMENT STRUCTURE PUBLISHED", ms.getDisplayElement().getId(), ms, new Date());
+        return new ResponseMessage<SegmentStructureAndDisplay>(ResponseMessage.Status.SUCCESS, "SEGMENT STRUCTURE UNLOCKED", ms.getDisplayElement().getId(), ms, new Date());
     }
 
     @RequestMapping(value = "api/structure-editor/structure/{id}/unpublish", method = RequestMethod.GET, produces = {"application/json" })
-    @PreAuthorize("AccessResource('MESSAGESTRUCTURE', #id, WRITE)")
+    @PreAuthorize("AccessResource('MESSAGESTRUCTURE', #id, UNLOCK)")
     public @ResponseBody
     ResponseMessage<MessageStructureAndDisplay> unpublishMessage(@PathVariable("id") String id, Authentication authentication) {
         MessageStructureAndDisplay ms = structureService.unpublishMessageStructure(id, authentication.getName());
-        return new ResponseMessage<MessageStructureAndDisplay>(ResponseMessage.Status.SUCCESS, "MESSAGE STRUCTURE PUBLISHED", ms.getDisplayElement().getId(), ms, new Date());
+        return new ResponseMessage<MessageStructureAndDisplay>(ResponseMessage.Status.SUCCESS, "MESSAGE STRUCTURE UNLOCKED", ms.getDisplayElement().getId(), ms, new Date());
     }
-    
-    
-    
-    
-   // getLockedSegmentStructure
-    
-    
     
     @RequestMapping(value = "api/structure-editor/structures/{id}", method = RequestMethod.GET, produces = {"application/json" })
     @PreAuthorize("AccessResource('MESSAGESTRUCTURE', #id, READ)")

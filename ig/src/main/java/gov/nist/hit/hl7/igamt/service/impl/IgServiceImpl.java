@@ -1543,8 +1543,10 @@ public class IgServiceImpl implements  IgService {
 	 * @see gov.nist.hit.hl7.igamt.ig.service.IgService#createCompositeProfileSercice(gov.nist.hit.hl7.igamt.ig.domain.Ig, gov.nist.hit.hl7.igamt.ig.controller.wrappers.CompositeProfileCreationWrapper)
 	 */
 	@Override
-	public CompositeProfileStructure createCompositeProfileSercice(Ig ig,
-			CompositeProfileCreationWrapper wrapper) {
+	public CompositeProfileStructure createCompositeProfile(Ig ig, CompositeProfileCreationWrapper wrapper) {
+		DocumentInfo documentInfo = new DocumentInfo();
+		documentInfo.setDocumentId(ig.getId());
+		documentInfo.setType(DocumentType.IGDOCUMENT);
 
 		CompositeProfileStructure ret = new CompositeProfileStructure();
 		ret.setUsername(ig.getUsername());
@@ -1554,6 +1556,8 @@ public class IgServiceImpl implements  IgService {
 		ret.setName(wrapper.name);
 		ret.setConformanceProfileId(wrapper.conformanceProfileId);
 		ret.setOrderedProfileComponents(wrapper.orderedProfileComponents);
+		ret.setDocumentInfo(documentInfo);
+
 		String id = new ObjectId().toString();
 		ret.setId(id);
 		Link pcLink = new Link(ret);

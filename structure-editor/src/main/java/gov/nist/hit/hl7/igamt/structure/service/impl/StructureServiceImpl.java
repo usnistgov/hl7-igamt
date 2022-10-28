@@ -160,8 +160,18 @@ public class StructureServiceImpl implements StructureService {
         } else {
             /// TODO Extension Unique
             segment.setExt(metadata.getIdentifier());
-            segment.setName(metadata.getName());
             segment.setDescription(metadata.getDescription());
+            if(!Strings.isNullOrEmpty(metadata.getName()) && !segment.getName().equals(metadata.getName())) {
+                if(!metadata.getName().matches("Z[A-Z0-9]{2}")) {
+                    throw new IllegalArgumentException("Name Does not match the pattern Z[A-Z0-9]{2}");
+                }
+
+                if(segment.getName().startsWith("Z")) {
+                    segment.setName(metadata.getName());
+                } else {
+                    throw new IllegalArgumentException("The resource is not a Z segment");
+                }
+            }
             return this.segmentRepository.save(segment);
         }
     }
@@ -436,12 +446,12 @@ public class StructureServiceImpl implements StructureService {
         	if(!request.getZname().matches("Z[A-Z0-9]{2}")) {
         		throw new IllegalArgumentException("Name Does not match the pattern Z[A-Z0-9]{2}");
         	}
+
         	if(structure.getName().startsWith("Z")) {
         		structure.setName(request.getZname());
-        	}else {
+        	} else {
         		throw new IllegalArgumentException("The resource is not a Z segment");
         	}
-        	
         }
         structure.setDescription(request.getDescription());
         structure.setExt(request.getIdentifier());

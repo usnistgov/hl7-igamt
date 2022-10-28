@@ -4,7 +4,6 @@ import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
 import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
 import gov.nist.hit.hl7.igamt.access.model.ExportConfigurationInfo;
 import gov.nist.hit.hl7.igamt.access.model.ResourceInfo;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
@@ -13,7 +12,6 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
-import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -27,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,59 +45,66 @@ public class AccessControlService {
             .map(Field::getName)
             .collect(Collectors.toSet());
 
-    public boolean checkResourceAccessPermission(Type type, String id, UsernamePasswordAuthenticationToken user, AccessLevel level) throws ResourceNotFoundException {
+    public boolean evaluateAccessLevel(Set<AccessLevel> granted, AccessLevel requested) {
+        if(granted == null)
+            return false;
+        if(granted.contains(requested) || granted.contains(AccessLevel.ALL)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkResourceAccessPermission(Type type, String id, UsernamePasswordAuthenticationToken user, AccessLevel requested) throws ResourceNotFoundException {
         if(isDocument(type)) {
-            return this.checkDocumentAccessPermission(getDocument(type, id), user, level);
+            return this.evaluateAccessLevel(this.checkDocumentAccessPermission(getDocument(type, id), user), requested);
         } else {
-            return this.checkResourceAccessPermission(getResourceInfo(type, id), user, level);
+            return this.evaluateAccessLevel(this.checkResourceAccessPermission(getResourceInfo(type, id), user), requested);
         }
     }
 
-    public boolean checkDocumentAccessPermission(DocumentAccessInfo document, UsernamePasswordAuthenticationToken user, AccessLevel level) {
+    public Set<AccessLevel> checkDocumentAccessPermission(DocumentAccessInfo document, UsernamePasswordAuthenticationToken user) {
         // If document is published
-        if(document.getStatus() != null && document.getStatus().equals(Status.PUBLISHED )) {
+        if(document.getStatus() != null && document.getStatus().equals(Status.PUBLISHED)) {
             // Grant READ access
-            return level.equals(AccessLevel.READ);
+            return L(AccessLevel.READ);
         }
 
         // If document is archived
         if(document.getStatus() != null && document.getStatus().equals(Status.ARCHIVED)) {
             // Grant No access
-            return false;
+            return null;
         }
 
         // If the user is the OWNER of the document
         if(document.getUsername().equals(user.getName())) {
             // Grant ALL access
-            return true;
+            return L(AccessLevel.ALL);
         }
 
         // If the document is shared with the user
         if(document.getSharedUsers() != null && document.getSharedUsers().contains(user.getName())) {
             // Grant READ access
-            return level.equals(AccessLevel.READ);
+            return L(AccessLevel.READ);
         }
         
         if(isAdmin(user)) {
-            
-        	return level.equals(AccessLevel.READ);
-
+        	return L(AccessLevel.READ);
         }
 
-        return false;
+        return null;
     }
 
-    public boolean checkResourceAccessPermission(ResourceInfo resourceInfo, UsernamePasswordAuthenticationToken user, AccessLevel level) throws ResourceNotFoundException {
+    public Set<AccessLevel> checkResourceAccessPermission(ResourceInfo resourceInfo, UsernamePasswordAuthenticationToken user) throws ResourceNotFoundException {
         // If the resource is an HL7 resource, can READ only
         if(resourceInfo.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
             // Grant READ access
-            return level.equals(AccessLevel.READ);
+            return L(AccessLevel.READ);
         }
 
         // If the resource is archived
         if(resourceInfo.getDomainInfo().getScope().equals(Scope.ARCHIVED)) {
             // Grant NO access
-            return false;
+            return null;
         }
 
         // If the resource is a user custom element
@@ -112,30 +118,30 @@ public class AccessControlService {
                 // If it's published
                 if(resourceInfo.getStatus() != null && resourceInfo.getStatus().equals(Status.PUBLISHED)) {
                     // Grant READ access
-                    return level.equals(AccessLevel.READ);
+                    return L(AccessLevel.READ, AccessLevel.UNLOCK);
                 } else {
                     // Grant ALL access
-                    return true;
+                    return L(AccessLevel.ALL);
                 }
             } else {
-                // Reject WRITE, Grant READ if custom structure is in READ document
-                if(level.equals(AccessLevel.WRITE)) {
-                    return false;
-                }
+                return null;
             }
         }
 
         // If document Info is not available
         if(resourceInfo.getDocumentInfo() == null) {
             // Grant NO access
-            return false;
+            return null;
         }
 
         return this.checkDocumentAccessPermission(
                 getDocumentAccessInfo(resourceInfo.getDocumentInfo()),
-                user,
-                level
+                user
         );
+    }
+
+    private Set<AccessLevel> L(AccessLevel... levels) {
+        return new HashSet<>(Arrays.asList(levels));
     }
 
     public boolean checkExportConfigurationAccessPermission(String exportConfigurationId, UsernamePasswordAuthenticationToken user, AccessLevel level) throws ResourceNotFoundException {
