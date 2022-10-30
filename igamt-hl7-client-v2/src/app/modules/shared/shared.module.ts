@@ -20,7 +20,7 @@ import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
-import { ListboxModule, OverlayPanelModule } from 'primeng/primeng';
+import { ConfirmationService, ConfirmDialogModule, ListboxModule, OverlayPanelModule } from 'primeng/primeng';
 import {
   AccordionModule,
   AutoCompleteModule,
@@ -59,6 +59,7 @@ import { CsListComponent } from './components/cs-list/cs-list.component';
 import { CsPropositionComponent } from './components/cs-proposition/cs-proposition.component';
 import { CsSubcontextComponent } from './components/cs-subcontext/cs-subcontext.component';
 import { DeactivatingDialogComponent } from './components/deactivating-dialog/deactivating-dialog.component';
+import { DeleteListConfirmationComponent } from './components/delete-list-confirmation/delete-list-confirmation.component';
 import { DeltaColumnComponent } from './components/delta-column/delta-column.component';
 import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component';
 import { DeriveDialogComponent } from './components/derive-dialog/derive-dialog.component';
@@ -119,6 +120,7 @@ import { SlicingViewerComponent } from './components/slicing-viewer/slicing-view
 import { StructureTreeComponent } from './components/structure-tree/structure-tree.component';
 import { TextEditorDialogComponent } from './components/text-editor-dialog/text-editor-dialog.component';
 import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.component';
+import { UnusedElementsComponent } from './components/unused-elements/unused-elements.component';
 import { UsageDialogComponent } from './components/usage-dialog/usage-dialog.component';
 import { UsageViewerComponent } from './components/usage-viewer/usage-viewer.component';
 import { UserProfileFormComponent } from './components/user-profile-form/user-profile-form.component';
@@ -127,6 +129,7 @@ import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-del
 import { VerificationEntryTableComponent } from './components/verification-entry-table/verification-entry-table.component';
 import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
 import { VsCodePickerComponent } from './components/vs-code-picker/vs-code-picker.component';
+import { AddingDuplicationDirective } from './directives/adding-duplication.directive';
 import { GeneratedNamingDuplicationDirective } from './directives/generated-naming-duplication.directive';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
@@ -135,7 +138,6 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { UnusedElementsComponent } from './components/unused-elements/unused-elements.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -157,6 +159,7 @@ import { UnusedElementsComponent } from './components/unused-elements/unused-ele
     SelectValueSetsComponent,
     FileSelectInputComponent,
     NamingDuplicationDirective,
+    AddingDuplicationDirective,
     NamingConventionDirective,
     CopyResourceComponent,
     SelectNameComponent,
@@ -232,9 +235,11 @@ import { UnusedElementsComponent } from './components/unused-elements/unused-ele
     VsCodePickerComponent,
     IgPublisherComponent,
     UnusedElementsComponent,
+    DeleteListConfirmationComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
+    ConfirmationService,
   ],
   imports: [
     CommonModule,
@@ -292,6 +297,7 @@ import { UnusedElementsComponent } from './components/unused-elements/unused-ele
     PickListModule,
     MatExpansionModule,
     MatTooltipModule,
+    ConfirmDialogModule,
   ],
   exports: [
     MatExpansionModule,
@@ -348,6 +354,7 @@ import { UnusedElementsComponent } from './components/unused-elements/unused-ele
     CopyResourceComponent,
     NamingDuplicationDirective,
     NamingConventionDirective,
+    AddingDuplicationDirective,
     Hl7V2TreeComponent,
     DtmStructureComponent,
     UsageComponent,
@@ -414,6 +421,7 @@ import { UnusedElementsComponent } from './components/unused-elements/unused-ele
     VsCodePickerComponent,
     IgPublisherComponent,
     UnusedElementsComponent,
+    DeleteListConfirmationComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -446,7 +454,7 @@ import { UnusedElementsComponent } from './components/unused-elements/unused-ele
     VsCodePickerComponent,
     IgPublisherComponent,
     UnusedElementsComponent,
-
+    DeleteListConfirmationComponent,
   ],
 })
 export class SharedModule {

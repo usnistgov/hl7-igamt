@@ -1,4 +1,3 @@
-import { IDeleteNodes } from './../../../modules/document/models/toc/toc-operation.class';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
@@ -17,6 +16,7 @@ import { Type } from '../../../modules/shared/constants/type.enum';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
 import { IHL7EditorMetadata } from '../../../modules/shared/models/editor.enum';
+import { IDeleteNodes } from './../../../modules/document/models/toc/toc-operation.class';
 
 export enum IgEditActionTypes {
   IgEditResolverLoad = '[Ig Edit Resolver] Load Ig',

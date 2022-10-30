@@ -12,6 +12,7 @@ public abstract class CustomSecurityExpressionRoot extends SecurityExpressionRoo
     private final AccessControlService accessControlService;
     public final AccessLevel READ = AccessLevel.READ;
     public final AccessLevel WRITE = AccessLevel.WRITE;
+    public final AccessLevel UNLOCK = AccessLevel.UNLOCK;
 
     public CustomSecurityExpressionRoot(Authentication authentication, AccessControlService accessControlService) {
         super(authentication);

@@ -87,7 +87,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @Output()
   addPcChildren = new EventEmitter<IDisplayElement>();
   @Output()
-  checkUnused = new EventEmitter<{children: IDisplayElement[],type: Type} >();
+  checkUnused = new EventEmitter<{children: IDisplayElement[], type: Type} >();
 
   @Output()
   manageProfileStructure = new EventEmitter<IContent[]>();
@@ -343,7 +343,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
           },
         );
   }
-  deleteUnused(registryNode){
+  deleteUnused(registryNode) {
     this.checkUnused.emit({children: registryNode.children, type: registryNode.type});
   }
 

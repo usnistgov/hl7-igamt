@@ -93,6 +93,13 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
         errors.push('Please enter a valid e-mail');
         break;
 
+      } else if (property === 'pattern') {
+        let error = 'Invalid ' + this.label + ' format';
+        if (this.control.errors['pattern'].requiredPattern === '^Z[A-Z0-9]{2}$') {
+          error += ' name must follow the pattern ZXX where X is an alphanumerical character';
+        }
+        errors.push(error);
+        break;
       } else if (this.control.errors[property]) {
         errors.push(this.control.errors[property]);
         break;

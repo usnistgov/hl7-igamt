@@ -45,7 +45,7 @@ export const selectIgListViewFiltered = createSelector(
   selectIgListView,
   (igList: IgListItem[], props: any) => {
     return igList.filter((item) => {
-      return props.filter && item.title.includes(props.filter) || !props.filter;
+      return props.filter && item.title.includes(props.filter) || !props.filter && (!item.deprecated || props.deprecated);
     });
   },
 );

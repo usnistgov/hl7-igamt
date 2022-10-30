@@ -52,6 +52,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
   viewType: Observable<IgListLoad>;
   isAdmin: Observable<boolean>;
   username: Observable<string>;
+  showDeprecated: boolean;
   filter: string;
   _shadowViewType: IgListLoad;
   controls: Observable<IgListItemControl[]>;
@@ -64,7 +65,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
   };
 
   storeSelectors() {
-    this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: this.filter });
+    this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: this.filter, deprecated: this.showDeprecated });
     this.viewType = this.store.select(fromIgList.selectViewType);
     this.isAdmin = this.store.select(fromAuth.selectIsAdmin);
     this.username = this.store.select(fromAuth.selectUsername);
@@ -179,6 +180,9 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   }
                 },
                 disabled: (item: IgListItem): boolean => {
+                  return false;
+                },
+                hide: (item: IgListItem): boolean => {
                   return false;
                 },
               },
@@ -376,14 +380,10 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
     );
   }
 
-  getWarning(item: IgListItem){
+  getWarning(item: IgListItem) {
 
-    if(item.publicationInfo){
-      if(item.publicationInfo.warning){
-        if(item.publicationInfo.warning.length>0){
+    if (item.publicationInfo && item.publicationInfo.warning && item.publicationInfo.warning.length > 0) {
           return item.publicationInfo.warning;
-        }
-      }
     }
     return this.draftWarning;
   }
@@ -413,7 +413,10 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
 
   // On Filter Text Changed
   filterTextChanged(text: string) {
-    this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: text });
+    this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: text, deprecated: this.showDeprecated });
+  }
+  deprecatedChange(value: boolean) {
+    this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: this.filter, deprecated: value });
   }
 
   // On Sort Property Changed

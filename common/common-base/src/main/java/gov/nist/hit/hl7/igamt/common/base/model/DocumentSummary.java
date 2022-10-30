@@ -25,6 +25,7 @@ public class DocumentSummary {
 	private String currentAuthor;
 	private Boolean draft;
 	private PublicationInfo publicationInfo;
+	private Boolean deprecated;
 
 	public Boolean getDraft() {
 		return draft;
@@ -32,6 +33,15 @@ public class DocumentSummary {
 
 	public void setDraft(Boolean draft) {
 		this.draft = draft;
+	}
+	
+
+	public Boolean getDeprecated() {
+		return deprecated;
+	}
+
+	public void setDeprecated(Boolean deprecated) {
+		this.deprecated = deprecated;
 	}
 
 	public String getTitle() {
