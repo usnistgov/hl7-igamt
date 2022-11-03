@@ -16,7 +16,7 @@ public interface CoConstraintXMLSerialization {
 
     Element serialize(ConformanceProfile conformanceProfile, String defaultHL7Version) throws CoConstraintXMLSerializationException;
 
-    Element serializeBinding(ResourceSkeleton conformanceProfile, CoConstraintBinding coConstraintBinding, String cpId, String defaultHL7Version) throws CoConstraintXMLSerializationException;
+    Element serializeBinding(ResourceSkeleton conformanceProfile, CoConstraintBinding coConstraintBinding, String cpId, String structId, String defaultHL7Version) throws CoConstraintXMLSerializationException;
 
     Element serializeGrouper(ResourceSkeleton segment, CoConstraintGrouper ccGrouper) throws CoConstraintXMLSerializationException;
 
