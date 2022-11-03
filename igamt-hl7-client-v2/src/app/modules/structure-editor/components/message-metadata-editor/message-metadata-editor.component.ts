@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { combineLatest, Observable, of, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, switchMap, take, tap } from 'rxjs/operators';
+import { combineLatest, Observable, Subscription, throwError } from 'rxjs';
+import { catchError, concatMap, flatMap, switchMap, take, tap } from 'rxjs/operators';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
@@ -39,6 +39,9 @@ export class MessageMetadataEditorComponent extends StructureEditorComponent imp
     type: Type.EVENT,
     hl7Version: undefined,
   };
+  subFormGroup: FormGroup;
+  readonly AXX_PATTERN = '[A-Z][A-Z0-9]{2}';
+  readonly AXX_AXX_PATTERN = '[A-Z][A-Z0-9]{2}(_[A-Z][A-Z0-9]{2})?';
 
   constructor(
     actions$: Actions,
@@ -52,20 +55,24 @@ export class MessageMetadataEditorComponent extends StructureEditorComponent imp
       title: 'Metadata',
       resourceType: Type.CONFORMANCEPROFILE,
     }, actions$, store);
-
+    this.subFormGroup = this.formBuilder.group({
+      name: ['', [Validators.pattern(this.AXX_PATTERN), Validators.required]],
+      description: [''],
+    });
     this.s_workspace = this.currentSynchronized$.pipe(
       tap((metadata: IMessageStructureMetadata) => {
 
         this.initFormGroup();
         this.eventStub.parentStructId = metadata.structId;
         this.eventStub.hl7Version = metadata.hl7Version;
+        this.subFormGroup.patchValue(this.eventStub);
 
-        const eventsFormArray = this.getArray();
+        const eventsFormArray = this.events;
         if (metadata.events) {
           for (const event of metadata.events) {
             eventsFormArray.push(this.formBuilder.group({
               id: [event.id],
-              name: [event.name],
+              name: [event.name, [Validators.required, Validators.pattern(this.AXX_PATTERN)]],
               parentStructId: [event.parentStructId],
               description: [event.description],
               type: [event.type],
@@ -75,7 +82,7 @@ export class MessageMetadataEditorComponent extends StructureEditorComponent imp
         }
         this.formGroup.patchValue(metadata);
         this.formGroup.valueChanges.subscribe((changed) => {
-          this.editorChange(changed, this.formGroup.valid);
+          this.editorChange(changed, this.formGroup.valid && this.events.length > 0);
         });
 
       }),
@@ -83,34 +90,38 @@ export class MessageMetadataEditorComponent extends StructureEditorComponent imp
   }
 
   deleteEvent(i: number) {
-    const eventsFormArray = this.getArray();
+    const eventsFormArray = this.events;
     eventsFormArray.removeAt(i);
   }
 
-  addEvent(value: IEvent) {
-    const eventsFormArray = this.getArray();
-    eventsFormArray.push(this.formBuilder.group({
-      id: [value.id],
-      name: [value.name],
-      parentStructId: [value.parentStructId],
-      description: [value.description],
-      type: [value.type],
-      hl7Version: [value.hl7Version],
-    }));
-    this.eventStub.name = '';
-    this.eventStub.description = '';
+  addEvent() {
+    if (this.subFormGroup.valid) {
+      const value = this.subFormGroup.getRawValue();
+      const eventsFormArray = this.events;
+      eventsFormArray.push(
+        this.formBuilder.group({
+          id: [value.id],
+          name: [value.name, [Validators.required, Validators.pattern(this.AXX_PATTERN)]],
+          parentStructId: [value.parentStructId],
+          description: [value.description],
+          type: [value.type],
+          hl7Version: [value.hl7Version],
+        }),
+      );
+      this.subFormGroup.patchValue(this.eventStub);
+    }
   }
 
-  getArray(): FormArray {
+  get events(): FormArray {
     return this.formGroup.get('events') as FormArray;
   }
 
   initFormGroup() {
     this.formGroup = this.formBuilder.group({
-      structId: [''],
-      messageType: [''],
-      description: [''],
-      hl7Version: [''],
+      structId: ['', [Validators.pattern(this.AXX_AXX_PATTERN), Validators.required]],
+      messageType: ['', [Validators.pattern(this.AXX_PATTERN), Validators.required]],
+      description: ['', [Validators.required]],
+      hl7Version: ['', [Validators.required]],
       events: this.formBuilder.array([]),
     });
   }
