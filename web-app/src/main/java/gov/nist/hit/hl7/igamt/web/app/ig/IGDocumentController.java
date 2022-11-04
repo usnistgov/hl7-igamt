@@ -70,7 +70,6 @@ import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddResourceResponse;
-import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
@@ -118,10 +117,7 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ComponentDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.ComplianceReport;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationReport;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
@@ -133,9 +129,7 @@ import gov.nist.hit.hl7.igamt.ig.exceptions.ImportValueSetException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.PredicateNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.SectionNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.XReferenceFoundException;
-import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
-import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.FilterIGInput;
 import gov.nist.hit.hl7.igamt.ig.model.FilterResponse;
@@ -390,6 +384,7 @@ public class IGDocumentController extends BaseController {
         igdouments = igService.findByUsername(username, Scope.USER);
 
       }
+//      igdouments.removeIf((ig) -> ig.getDeprecated());
       return igService.convertListToDisplayList(igdouments);
     } else {
       igdouments = igService.findByUsername(username, Scope.USER);
@@ -1117,7 +1112,7 @@ public class IGDocumentController extends BaseController {
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
-    CompositeProfileStructure cp = this.igService.createCompositeProfileSercice(ig, wrapper);
+    CompositeProfileStructure cp = this.igService.createCompositeProfile(ig, wrapper);
     cp.setUsername(username);
     compositeProfileService.save(cp);
 
@@ -1222,6 +1217,7 @@ public class IGDocumentController extends BaseController {
       throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+    
     this.igService.publishIG(ig, info);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig published Successfully", id, false,
         new Date(), id);
@@ -1293,7 +1289,7 @@ public class IGDocumentController extends BaseController {
     
     return this.igService.getFilterResponse( id, filter);
   }
-
+  
   /**
    * 
    * @param links
@@ -1732,6 +1728,26 @@ public class IGDocumentController extends BaseController {
   public @ResponseBody  List<IgTemplate> igTemplates( Authentication authentication) throws Exception {
     List<IgTemplate> templates = this.igTemplateRepository.findAll();
     return templates;
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{igId}/{type}/unused", method = RequestMethod.GET, produces = {
+  "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #igId, READ)")
+  public @ResponseBody Set<String> findUnsed(@PathVariable("igId") String igId, @PathVariable("type") Type registryType,
+    Authentication authentication) throws IGNotFoundException {
+    Ig ig = findIgById(igId);
+
+    return igService.findUnused(ig, registryType);
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{igId}/{type}/deleteResources", method = RequestMethod.POST, produces = {
+  "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #igId, WRITE)")
+  public @ResponseBody List<String> deleteUnused(@PathVariable("igId") String igId, @PathVariable("type") Type registryType, @RequestBody List<String> ids,
+    Authentication authentication) throws IGNotFoundException, EntityNotFound, ForbiddenOperationException {
+    Ig ig = findIgById(igId);
+
+    return igService.deleteUnused(ig, registryType, ids);
   }
 
 }

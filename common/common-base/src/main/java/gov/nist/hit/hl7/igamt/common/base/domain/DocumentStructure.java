@@ -16,8 +16,17 @@ public class DocumentStructure extends StandaloneAbstractDomain {
 
 	protected Boolean draft;
 	  
+	protected Boolean deprecated = false;
 	
 
+
+	public Boolean getDeprecated() {
+		return deprecated;
+	}
+
+	public void setDeprecated(Boolean deprecated) {
+		this.deprecated = deprecated;
+	}
 
 	public DocumentStructure(String id, String version, String name, PublicationInfo publicationInfo,
 		      DomainInfo domainInfo, String username, String comment, String description) {

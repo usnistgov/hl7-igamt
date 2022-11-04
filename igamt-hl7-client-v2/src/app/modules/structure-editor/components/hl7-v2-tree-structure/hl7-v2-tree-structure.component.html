@@ -1,4 +1,4 @@
-<div *ngIf="nodes && nodes.length > 0">
+<div *ngIf="nodes">
     <p-treeTable [value]="nodes" [columns]="selectedColumns" (onNodeExpand)="onNodeExpand($event)" (onNodeCollapse)="onNodeCollapse($event)" [reorderableColumns]="true" [resizableColumns]="true" [rowTrackBy]="trackBy">
         <ng-template pTemplate="caption">
           <div style="display: flex; justify-content: flex-start; align-items: flex-start;">
@@ -233,6 +233,6 @@
         </ng-template>
       </p-treeTable>
 </div>
-<div *ngIf="nodes && nodes.length === 0" style="text-align: center;">
-  <strong style="color: lightgray;"> Primitive Datatype </strong>
+<div *ngIf="!nodes || nodes.length === 0" style="text-align: center;">
+  <strong style="color: lightgray;"> Empty Structure </strong>
 </div>

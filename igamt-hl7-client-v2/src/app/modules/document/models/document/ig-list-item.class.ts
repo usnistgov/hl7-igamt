@@ -1,4 +1,5 @@
 import { Type } from 'src/app/modules/shared/constants/type.enum';
+import { IPublicationInfo } from 'src/app/modules/shared/models/publication-info.interface';
 
 export class DiscoverableListItem {
   id: string;
@@ -19,6 +20,8 @@ export class IgListItem extends DiscoverableListItem {
   sharedUsers?: string[];
   currentAuthor?: string;
   draft?: boolean;
+  deprecated?: boolean;
+  publicationInfo?: IPublicationInfo;
 }
 
 export type IgListItemType = 'USER' | 'PUBLISHED' | 'SHARED';

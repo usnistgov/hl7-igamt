@@ -29,7 +29,6 @@ import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.display.model.PublishingInfo;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CompositeProfileCreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
@@ -111,8 +110,8 @@ public interface IgService {
 
   public ProfileComponent createProfileComponent(Ig ig, String name, List<DisplayElement> children);
 
-  public CompositeProfileStructure createCompositeProfileSercice(Ig ig,
-      CompositeProfileCreationWrapper wrapper);
+  public CompositeProfileStructure createCompositeProfile(Ig ig,
+                                                          CompositeProfileCreationWrapper wrapper);
 
   void removeChildren(String id);
 
@@ -122,6 +121,13 @@ public interface IgService {
   public FilterResponse getFilterResponse(String id, FilterIGInput filter) throws EntityNotFound;
 
   public void publishIG(Ig ig, PublishingInfo info) throws IGNotFoundException, IGUpdateException;
+
+  public FilterResponse getUnused(String id) throws EntityNotFound;
+
+  public Set<String> findUnused(Ig ig, Type registryType);
+
+  public List<String> deleteUnused(Ig ig, Type registryType, List<String> ids) throws EntityNotFound, ForbiddenOperationException;
+
 
 
   List<Ig> findByIdIn(List<String> ids);

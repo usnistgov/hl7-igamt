@@ -231,6 +231,7 @@ public class DatatypeLibraryController {
             clone.getDomainInfo().setCompatibilityVersion(datatypeClassificationService.findCompatibility(clone.getName(), clone.getDomainInfo().getVersion()));
             clone.setParentId(id);
             clone.setParentType(Type.DATATYPELIBRARY);
+            clone.setDocumentInfo(new DocumentInfo(id, DocumentType.DATATYPELIBRARY));
             clone = datatypeService.save(clone);
             savedIds.add(clone.getId());
           }else {

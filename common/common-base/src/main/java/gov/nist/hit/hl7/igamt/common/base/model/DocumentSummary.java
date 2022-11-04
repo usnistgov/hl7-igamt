@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.common.base.model;
 import java.util.Date;
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -25,6 +26,8 @@ public class DocumentSummary {
 	private String currentAuthor;
 	private Boolean draft;
 	private Type resourceType;
+	private PublicationInfo publicationInfo;
+	private Boolean deprecated;
 
 	public Boolean getDraft() {
 		return draft;
@@ -32,6 +35,15 @@ public class DocumentSummary {
 
 	public void setDraft(Boolean draft) {
 		this.draft = draft;
+	}
+	
+
+	public Boolean getDeprecated() {
+		return deprecated;
+	}
+
+	public void setDeprecated(Boolean deprecated) {
+		this.deprecated = deprecated;
 	}
 
 	public String getTitle() {
@@ -158,6 +170,12 @@ public class DocumentSummary {
 		this.resourceType = resourceType;
 	}
 
+	public PublicationInfo getPublicationInfo() {
+		return publicationInfo;
+	}
 
+	public void setPublicationInfo(PublicationInfo publicationInfo) {
+		this.publicationInfo = publicationInfo;
+	}
 
 }

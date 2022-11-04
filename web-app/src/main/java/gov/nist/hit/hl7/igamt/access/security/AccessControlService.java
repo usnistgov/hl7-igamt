@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,11 +49,28 @@ public class AccessControlService {
             .map(Field::getName)
             .collect(Collectors.toSet());
 
-    public AccessLevel getDocumentUserAccessLevel(DocumentAccessInfo document, UsernamePasswordAuthenticationToken user) {
+    public boolean evaluateAccessLevel(Set<AccessLevel> granted, AccessLevel requested) {
+        if(granted == null)
+            return false;
+        if(granted.contains(requested) || granted.contains(AccessLevel.ALL)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkResourceAccessPermission(Type type, String id, UsernamePasswordAuthenticationToken user, AccessLevel requested) throws ResourceNotFoundException {
+        if(isDocument(type)) {
+            return this.evaluateAccessLevel(this.checkDocumentAccessPermission(getDocument(type, id), user), requested);
+        } else {
+            return this.evaluateAccessLevel(this.checkResourceAccessPermission(getResourceInfo(type, id), user), requested);
+        }
+    }
+
+    public Set<AccessLevel> checkDocumentAccessPermission(DocumentAccessInfo document, UsernamePasswordAuthenticationToken user) {
         // If document is published
         if(document.getStatus() != null && document.getStatus().equals(Status.PUBLISHED)) {
             // Grant READ access
-            return AccessLevel.READ;
+            return L(AccessLevel.READ);
         }
 
         // If document is archived
@@ -64,13 +82,13 @@ public class AccessControlService {
         // If the user is the OWNER of the document
         if(document.getUsername().equals(user.getName())) {
             // Grant ALL access
-            return AccessLevel.WRITE;
+            return L(AccessLevel.ALL);
         }
 
         // If the document is shared with the user
         if(document.getSharedUsers() != null && document.getSharedUsers().contains(user.getName())) {
             // Grant READ access
-            return AccessLevel.READ;
+            return L(AccessLevel.READ);
         }
 
         if(document.getAudience() != null) {
@@ -78,35 +96,59 @@ public class AccessControlService {
         }
 
         if(isAdmin(user)) {
-            return AccessLevel.READ;
+            return L(AccessLevel.READ);
         }
 
         return null;
     }
 
-    public boolean evaluateAccessLevel(AccessLevel granted, AccessLevel requested) {
-        if(granted == null)
-            return false;
-        if(granted.equals(requested) || granted.equals(AccessLevel.WRITE)) {
-            return true;
+    public Set<AccessLevel> checkResourceAccessPermission(ResourceInfo resourceInfo, UsernamePasswordAuthenticationToken user) throws ResourceNotFoundException {
+        // If the resource is an HL7 resource, can READ only
+        if(resourceInfo.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
+            // Grant READ access
+            return L(AccessLevel.READ);
         }
-        return false;
-    }
 
-    public boolean checkResourceAccessPermission(Type type, String id, UsernamePasswordAuthenticationToken user, AccessLevel level) throws ResourceNotFoundException {
-        if(isDocument(type)) {
-            return this.checkDocumentAccessPermission(getDocument(type, id), user, level);
-        } else {
-            return this.checkResourceAccessPermission(getResourceInfo(type, id), user, level);
+        // If the resource is archived
+        if(resourceInfo.getDomainInfo().getScope().equals(Scope.ARCHIVED)) {
+            // Grant NO access
+            return null;
         }
+
+        // If the resource is a user custom element
+        if(resourceInfo.getDomainInfo().getScope().equals(Scope.USERCUSTOM)) {
+            // If user is the owner
+            if(
+                    (resourceInfo.getUsername() != null && resourceInfo.getUsername().equals(user.getName()))
+                            ||
+                            (resourceInfo.getParticipants() != null && resourceInfo.getParticipants().contains(user.getName()))
+            ) {
+                // If it's published
+                if(resourceInfo.getStatus() != null && resourceInfo.getStatus().equals(Status.PUBLISHED)) {
+                    // Grant READ access
+                    return L(AccessLevel.READ, AccessLevel.UNLOCK);
+                } else {
+                    // Grant ALL access
+                    return L(AccessLevel.ALL);
+                }
+            } else {
+                return null;
+            }
+        }
+
+        // If document Info is not available
+        if(resourceInfo.getDocumentInfo() == null) {
+            // Grant NO access
+            return null;
+        }
+
+        return this.checkDocumentAccessPermission(
+                getDocumentAccessInfo(resourceInfo.getDocumentInfo()),
+                user
+        );
     }
 
-    public boolean checkDocumentAccessPermission(DocumentAccessInfo document, UsernamePasswordAuthenticationToken user, AccessLevel level) {
-        AccessLevel userAccess = getDocumentUserAccessLevel(document, user);
-        return evaluateAccessLevel(userAccess, level);
-    }
-
-    public AccessLevel checkAudience(Audience audience, UsernamePasswordAuthenticationToken user) {
+    public Set<AccessLevel> checkAudience(Audience audience, UsernamePasswordAuthenticationToken user) {
         switch (audience.getType()) {
             case PUBLIC:
                 return this.checkPublicAudience((PublicAudience) audience, user);
@@ -118,87 +160,41 @@ public class AccessControlService {
         return null;
     }
 
-    public AccessLevel checkPrivateAudience(PrivateAudience audience, UsernamePasswordAuthenticationToken user) {
+    public Set<AccessLevel> checkPrivateAudience(PrivateAudience audience, UsernamePasswordAuthenticationToken user) {
         // If user is editor
         if(user.getName().equals(audience.getEditor())) {
             // Grant all access
-            return AccessLevel.WRITE;
+            return L(AccessLevel.WRITE);
         }
 
         // If user is viewer
         if(audience.getViewers().contains(user.getName())) {
             // Grant user access
-            return AccessLevel.READ;
+            return L(AccessLevel.READ);
         }
 
         return null;
     }
 
-    public AccessLevel checkPublicAudience(PublicAudience audience, UsernamePasswordAuthenticationToken user) {
-        return AccessLevel.READ;
+    public Set<AccessLevel> checkPublicAudience(PublicAudience audience, UsernamePasswordAuthenticationToken user) {
+        return L(AccessLevel.READ);
     }
 
-    public AccessLevel checkWorkspaceAudience(WorkspaceAudience audience, UsernamePasswordAuthenticationToken user) {
+    public Set<AccessLevel> checkWorkspaceAudience(WorkspaceAudience audience, UsernamePasswordAuthenticationToken user) {
         WorkspacePermissionType permissionType = this.workspacePermissionService.getWorkspacePermissionTypeByFolder(audience.getWorkspaceId(), user.getName(), audience.getFolderId());
         if (permissionType != null) {
             switch (permissionType) {
                 case EDIT:
-                    return AccessLevel.WRITE;
+                    return L(AccessLevel.WRITE);
                 case VIEW:
-                    return AccessLevel.READ;
+                    return L(AccessLevel.READ);
             }
         }
         return null;
     }
 
-    public boolean checkResourceAccessPermission(ResourceInfo resourceInfo, UsernamePasswordAuthenticationToken user, AccessLevel level) throws ResourceNotFoundException {
-        // If the resource is an HL7 resource, can READ only
-        if(resourceInfo.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
-            // Grant READ access
-            return level.equals(AccessLevel.READ);
-        }
-
-        // If the resource is archived
-        if(resourceInfo.getDomainInfo().getScope().equals(Scope.ARCHIVED)) {
-            // Grant NO access
-            return false;
-        }
-
-        // If the resource is a user custom element
-        if(resourceInfo.getDomainInfo().getScope().equals(Scope.USERCUSTOM)) {
-            // If user is the owner
-            if(
-                    (resourceInfo.getUsername() != null && resourceInfo.getUsername().equals(user.getName()))
-                    ||
-                    (resourceInfo.getParticipants() != null && resourceInfo.getParticipants().contains(user.getName()))
-            ) {
-                // If it's published
-                if(resourceInfo.getStatus() != null && resourceInfo.getStatus().equals(Status.PUBLISHED)) {
-                    // Grant READ access
-                    return level.equals(AccessLevel.READ);
-                } else {
-                    // Grant ALL access
-                    return true;
-                }
-            } else {
-                // Reject WRITE, Grant READ if custom structure is in READ document
-                if(level.equals(AccessLevel.WRITE)) {
-                    return false;
-                }
-            }
-        }
-
-        // If document Info is not available
-        if(resourceInfo.getDocumentInfo() == null) {
-            // Grant NO access
-            return false;
-        }
-
-        return this.checkDocumentAccessPermission(
-                getDocumentAccessInfo(resourceInfo.getDocumentInfo()),
-                user,
-                level
-        );
+    private Set<AccessLevel> L(AccessLevel... levels) {
+        return new HashSet<>(Arrays.asList(levels));
     }
 
     public boolean checkExportConfigurationAccessPermission(String exportConfigurationId, UsernamePasswordAuthenticationToken user, AccessLevel level) throws ResourceNotFoundException {
@@ -323,7 +319,7 @@ public class AccessControlService {
                 return false;
         }
     }
-    
+
     public boolean isAdmin(UsernamePasswordAuthenticationToken user) {
         return user.getAuthorities() != null && user.getAuthorities().stream().anyMatch((a) -> a.getAuthority().equals("ADMIN"));
     }

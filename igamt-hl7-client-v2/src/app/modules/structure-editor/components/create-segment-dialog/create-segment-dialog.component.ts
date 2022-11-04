@@ -24,6 +24,7 @@ export class CreateSegmentDialogComponent implements OnInit {
   segmentBase: ISegment;
   identifier: string;
   description: string;
+  zname: string;
   selectedScope = Scope.HL7STANDARD;
   domainInfo: any;
   existing: IDisplayElement[] = [];
@@ -59,7 +60,12 @@ export class CreateSegmentDialogComponent implements OnInit {
       from: this.segmentBase.id,
       identifier: this.identifier,
       description: this.description,
+      zname: this.zname,
     });
+  }
+
+  isZSegment(name: string) {
+    return name.startsWith('Z');
   }
 
   getSegments($event) {

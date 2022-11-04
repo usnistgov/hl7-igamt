@@ -43,6 +43,8 @@ public interface ResourceHelper {
    * @throws ForbiddenOperationException 
    */
   <T extends Resource> T saveByType(T resource, Type type) throws ForbiddenOperationException;
+
+  <T extends Resource> void deleteByType(T resource, Type type) throws ForbiddenOperationException;
   
   
   

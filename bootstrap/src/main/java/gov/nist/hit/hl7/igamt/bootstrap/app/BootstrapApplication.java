@@ -90,6 +90,7 @@ import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.IgServiceImpl;
+import gov.nist.hit.hl7.igamt.service.verification.impl.SimpleResourceBindingVerificationService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
@@ -132,6 +133,10 @@ public class BootstrapApplication implements CommandLineRunner {
 
 	@Autowired
 	FixIGAttribute fixAttributes;
+	
+	
+	@Autowired
+	SimpleResourceBindingVerificationService simpleResourceBindingVerificationService;
 
 
 	@Autowired
@@ -601,74 +606,49 @@ public class BootstrapApplication implements CommandLineRunner {
 		codeFixer.fixTableHL70125("2.9"); 
 		this.dynamicMappingFixer.processSegmentByVersion("2.9");
 		tableFixes.fix0396ByVersion("2.9");
-		
-//	List<Datatype> dts =	this.dataypeService.findByDomainInfoVersion("2.9");
-//	HashMap<String, Datatype>  dtMap = new HashMap<String, Datatype>();
-//	for(Datatype dt: dts) {
-//		dtMap.put(dt.getId(), dt);
-//	}
-//	
-//	for(Datatype dt: dts ) {
-//		if(dt instanceof ComplexDatatype ) {
-//			ComplexDatatype level1 = (ComplexDatatype)dt;
-//			
-//			
-//			for ( Component c1 : level1.getComponents()) {
-//				
-//				Datatype sub1 = dtMap.get(c1.getRef().getId());
-//				
-//				
-//				if(sub1 instanceof ComplexDatatype) {
-//					
-//					
-//					ComplexDatatype sub1Cmp  = (ComplexDatatype)sub1;
-//					
-//					
-//					for ( Component c2 : sub1Cmp.getComponents()) {
-//						
-//					
-//						Datatype sub2 = dtMap.get(c2.getRef().getId());
-//						
-//				
-//						
-//						if(sub2 instanceof ComplexDatatype) {
-//							
-//							System.out.println(dt.getName() +"--"+ sub1.getName() + "---"+ sub2.getName());
-//						}
-//
-//					}
-//
-//				}
-//				
-//				
-//			}
-//		}
-//	}
 	
 		
 	}
 	
 	//@PostConstruct
-//	void includeCode() {
-//		List<Ig> igs = this.igService.findAll();
-//		
-//		for (Ig ig: igs) {
-//		    if(ig.getValueSetRegistry().getCodesPresence() != null ) {
-//		    	
-//		    	
-//		    	
-//		        if (ig.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
-//		          if (ig.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
-//		            vs.setIncludeCodes(true);
-//		          } else {
-//		            vs.setIncludeCodes(false);
-//		          }
-//		        } else {
-//		          vs.setIncludeCodes(true);
-//		        }
-//		     }
-//		}
-//	}
+	void deprecate() throws ForbiddenOperationException, ValidationException {
+		
+		
+		igFixer.deprecateIG("5e62985a08bb3a000648c146", Boolean.TRUE);
+		
+		igFixer.deprecateIG("5ef10cab2af19b00069efb1d", Boolean.TRUE);
+
+		igFixer.deprecateIG("5f1ef9552af19b00065f7dd4", Boolean.TRUE);
+
+		igFixer.deprecateIG("5f6dfb0a9194be0006d226f5", Boolean.TRUE);
+
+		igFixer.deprecateIG("5f71f7e19194be0006175399", Boolean.TRUE);
+
+		igFixer.deprecateIG("5f809aee9194be0006437932", Boolean.TRUE);
+
+		igFixer.deprecateIG("5fbbcf4d9194be0006abd025", Boolean.TRUE);
+
+		igFixer.deprecateIG("6065f77a8b87bc00073091aa", Boolean.TRUE);
+		
+		igFixer.deprecateIG("630644c88b87bc00075490f9", Boolean.TRUE);
+		
+	}
 	
+	//@PostConstruct
+	void addMissing() throws ForbiddenOperationException, ValidationException {
+		List<Ig> igs = this.igService.findAll();
+		for( Ig ig: igs) {
+			igFixer.checkMessing(ig);
+		}
+	}
+	
+	//@PostConstruct
+	void checkBinding() throws ForbiddenOperationException, ValidationException {
+			igFixer.checkBindingLocation();
+		
+	}
+	
+	
+
 	
 }

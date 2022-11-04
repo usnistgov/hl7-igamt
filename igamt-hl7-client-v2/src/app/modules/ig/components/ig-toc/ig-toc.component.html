@@ -86,6 +86,9 @@
               <ng-template (execute)="import(node.data, 'DATATYPE', 'SDTF')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Add Standard Data Types Flavors
               </ng-template>
+              <ng-template (execute)="deleteUnused(node.data)" contextMenuItem [enabled]="!viewOnly&&!delta">
+                <i class="fa fa-remove"></i> Delete Unreferenced
+              </ng-template>
             </context-menu>
           </div>
         </ng-container>
@@ -99,6 +102,9 @@
               </ng-template>
               <ng-template (execute)="deleteSection(node)" contextMenuItem contextMenuItem [enabled]="!viewOnly&&!delta&&!node.children.length">
                 <i class="fa fa-remove"></i> Delete Section
+              </ng-template>
+              <ng-template (execute)="deleteUnused(node.data)" contextMenuItem [enabled]="!viewOnly&&!delta">
+                <i class="fa fa-remove"></i> Delete Unreferenced
               </ng-template>
             </context-menu>
           </div>
@@ -121,6 +127,9 @@
               <ng-template (execute)="importCSV(node.data, 'VALUESET', 'USER')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Add User Value Sets by CSV
               </ng-template>
+              <ng-template (execute)="deleteUnused(node.data)" contextMenuItem [enabled]="!viewOnly&&!delta">
+                <i class="fa fa-remove"></i> Delete Unreferenced
+              </ng-template>
             </context-menu>
           </div>
         </ng-container>
@@ -133,6 +142,9 @@
               </ng-template>
               <ng-template (execute)="importCustom(node.data, 'SEGMENT', 'USERCUSTOM')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Add Custom Segments
+              </ng-template>
+              <ng-template (execute)="deleteUnused(node.data)" contextMenuItem [enabled]="!viewOnly&&!delta">
+                <i class="fa fa-remove"></i> Delete Unreferenced
               </ng-template>
             </context-menu>
           </div>
