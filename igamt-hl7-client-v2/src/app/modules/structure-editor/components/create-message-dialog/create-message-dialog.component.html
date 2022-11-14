@@ -31,13 +31,13 @@
       </button>
 
       <br><br>
-      <app-form-input formControlName="name" id="structureId" name="Structure Id" placeholder="Structure Id" label="Structure Id" [viewOnly]="false"></app-form-input>
-      <app-form-input formControlName="messageType" id="messageType" name="Message Type" placeholder="Message Type" label="Message Type" [viewOnly]="false"></app-form-input>
+      <app-form-input formControlName="name" id="structureId" name="Structure Id" placeholder="Structure Id" label="Message Structure (MSH-9.3)" [viewOnly]="false"></app-form-input>
+      <app-form-input formControlName="messageType" id="messageType" name="Message Type" placeholder="Message Type" label="Message Code (MSH-9.1)" [viewOnly]="false"></app-form-input>
       <app-form-input formControlName="description" id="description" name="Description" placeholder="Description" label="Description" [viewOnly]="false"></app-form-input>
 
       <table class="table table-striped table-bordered table-sm" style="margin-top: 10px;" formArrayName="events">
         <tr>
-          <th> Event </th>
+          <th> Trigger Events (MSH-9.2) </th>
           <th> Description </th>
           <th> Action </th>
         </tr>
