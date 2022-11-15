@@ -74,7 +74,7 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
             cp.addAttribute(attr("ID", conformanceProfile.getId()));
             for(CoConstraintBinding binding: conformanceProfile.getCoConstraintsBindings()) {
                 cp.appendChild(
-                        this.serializeBinding(skeleton, binding, conformanceProfile.getId(), defaultHL7Version)
+                        this.serializeBinding(skeleton, binding, conformanceProfile.getId(), conformanceProfile.getStructID(), defaultHL7Version)
                 );
             }
             return cp;
@@ -84,27 +84,39 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
     }
 
     @Override
-    public Element serializeBinding(ResourceSkeleton conformanceProfile, CoConstraintBinding coConstraintBinding, String cpId, String defaultHL7Version) throws CoConstraintXMLSerializationException {
-        try {
-            ResourceSkeletonBone contextElement = conformanceProfile.get(coConstraintBinding.getContext().getPath());
-            if(contextElement != null) {
-                Element context = new Element("Context");
-                context.addAttribute(attr("Name", contextElement.getLocationInfo().getHl7Path()));
-                context.addAttribute(attr("Path", getXMLPathFromPositionalPath(contextElement.getLocationInfo().getPositionalPath())));
-
-                if(coConstraintBinding.getBindings() != null) {
-                    for(CoConstraintBindingSegment segment: coConstraintBinding.getBindings()) {
-                        context.appendChild(serializeCoConstraintForSegment(contextElement, coConstraintBinding.getContext(), segment, cpId, defaultHL7Version));
-                    }
+    public Element serializeBinding(ResourceSkeleton conformanceProfile, CoConstraintBinding coConstraintBinding, String cpId, String structId, String defaultHL7Version) throws CoConstraintXMLSerializationException {
+        if(coConstraintBinding.getContext().getPath() == null) {
+            String name = structId;
+            String path = ".";
+            return this.serializeBinding(conformanceProfile, name, path, coConstraintBinding, cpId, defaultHL7Version);
+        } else {
+            try {
+                ResourceSkeletonBone contextElement = conformanceProfile.get(coConstraintBinding.getContext().getPath());
+                if(contextElement != null) {
+                    String name = contextElement.getLocationInfo().getHl7Path();
+                    String path = getXMLPathFromPositionalPath(contextElement.getLocationInfo().getPositionalPath());
+                    return this.serializeBinding(contextElement, name, path, coConstraintBinding, cpId, defaultHL7Version);
+                } else {
+                    throw new CoConstraintXMLSerializationException("Context not found " + coConstraintBinding.getContext().getPath());
                 }
-
-                return context;
-            } else {
-                throw new CoConstraintXMLSerializationException("Context not found " + coConstraintBinding.getContext().getPath());
+            } catch (ResourceNotFoundException e) {
+                throw new CoConstraintXMLSerializationException(e.getMessage());
             }
-        } catch (ResourceNotFoundException e) {
-            throw new CoConstraintXMLSerializationException(e.getMessage());
         }
+    }
+
+    private Element serializeBinding(ResourceSkeleton contextElement, String name, String path, CoConstraintBinding coConstraintBinding, String cpId, String defaultHL7Version) throws CoConstraintXMLSerializationException {
+        Element context = new Element("Context");
+        context.addAttribute(attr("Name", name));
+        context.addAttribute(attr("Path", path));
+
+        if(coConstraintBinding.getBindings() != null) {
+            for(CoConstraintBindingSegment segment: coConstraintBinding.getBindings()) {
+                context.appendChild(serializeCoConstraintForSegment(contextElement, coConstraintBinding.getContext(), segment, cpId, defaultHL7Version));
+            }
+        }
+
+        return context;
     }
 
     @Override
