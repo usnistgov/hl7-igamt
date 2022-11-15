@@ -629,7 +629,7 @@ public class BootstrapApplication implements CommandLineRunner {
 		Config config = this.sharedConstantService.findOne();
 		for(ConnectingInfo info: config.getConnection()) {
 			if(info.getLabel().equals("GVT-DEV")) {
-				info.setUrl("http://129.6.24.81:8092/gvt/");
+				info.setUrl("https://gvt-dev.nist.gov/gvt/");
 			}
 		}
 		this.sharedConstantService.save(config);
