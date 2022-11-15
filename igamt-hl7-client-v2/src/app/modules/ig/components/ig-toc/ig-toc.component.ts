@@ -1,3 +1,5 @@
+import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
+import { Dictionary } from '@ngrx/entity';
 import {
   AfterViewInit,
   ChangeDetectorRef,
@@ -64,6 +66,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @Input()
   ig: IgDocument;
 
+  @Input()
+  verification: Dictionary<IVerificationEnty[]>;
   elementNumbers: ElmentNumbers;
 
   @Output()

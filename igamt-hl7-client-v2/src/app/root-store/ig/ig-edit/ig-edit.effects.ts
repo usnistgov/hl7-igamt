@@ -1,3 +1,4 @@
+import { selectVerificationResult } from './../../dam-igamt/igamt.selected-resource.selectors';
 import { HttpErrorResponse } from '@angular/common/http';
 import {parseSelectorToR3Selector} from '@angular/compiler/src/core';
 import { Injectable } from '@angular/core';
@@ -45,7 +46,9 @@ import {
   DeleteResourcesFailure,
   DeleteResourcesSuccess,
   OpenConformanceStatementSummaryEditorNode,
+  OpenIgVerificationEditor,
   UpdateSections,
+  VerifyIg,
 } from './ig-edit.actions';
 import {
   AddResourceFailure,
@@ -78,6 +81,7 @@ import {
   selectSectionFromIgById,
   selectTableOfContentChanged,
 } from './ig-edit.selectors';
+import { VerificationType } from 'src/app/modules/shared/models/verification.interface';
 
 @Injectable()
 export class IgEditEffects extends DamWidgetEffect {
@@ -121,6 +125,7 @@ export class IgEditEffects extends DamWidgetEffect {
             new fromDAM.LoadPayloadData(igInfo.ig),
             this.igService.loadRepositoryFromIgDisplayInfo(igInfo),
             new IgEditResolverLoadSuccess(igInfo),
+            new VerifyIg({id:action.id, resourceType: Type.IGDOCUMENT, verificationType: VerificationType.VERIFICATION  }),
           ];
         }),
         catchError((error: HttpErrorResponse) => {
@@ -855,5 +860,56 @@ export class IgEditEffects extends DamWidgetEffect {
       }),
     );
   }
+
+  @Effect()
+  verifyIg = this.actions$.pipe(
+    ofType(IgEditActionTypes.VerifiyIg),
+    switchMap((action: VerifyIg) => {
+      this.store.dispatch(new fromDAM.TurnOnLoader({
+        blockUI: true,
+      }));
+      this.store.dispatch(new fromDam.SetValue({'verificationStatus': {loading: true}}));
+
+       return  this.igService.verifiy(action.payload).pipe(
+
+        flatMap((response) => {
+          return [
+            new fromDam.SetValue({'verificationResult': response}),
+            new fromDam.SetValue({'verificationStatus': {loading: false }}),
+            new fromDAM.TurnOffLoader(),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new fromDAM.TurnOffLoader(),
+          );
+        }),
+      );
+  }));
+
+      @Effect()
+  openVerificationEditor$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.OpenIgVerificationEditor),
+      mergeMap((action: OpenIgVerificationEditor) => {
+          return combineLatest(
+            this.store.select(selectIgDocument),
+            this.store.select(selectVerificationResult))
+            .pipe(
+              map(([ig, result]) => {
+                console.log(result);
+                return new fromDAM.OpenEditor({
+                  id: action.payload.id,
+                  display: this.igService.igToIDisplayElement(ig),
+                  editor: action.payload.editor,
+                  initial: {
+                    verificationResult: result,
+                    changes: {},
+                  },
+                });
+              }),
+            );
+        }),
+    );
+
 
 }

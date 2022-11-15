@@ -138,6 +138,7 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { VerificationBadgeComponent } from './components/verification-badge/verification-badge.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -236,6 +237,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     IgPublisherComponent,
     UnusedElementsComponent,
     DeleteListConfirmationComponent,
+    VerificationBadgeComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -422,6 +424,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     IgPublisherComponent,
     UnusedElementsComponent,
     DeleteListConfirmationComponent,
+    VerificationBadgeComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,

@@ -346,11 +346,10 @@ public class IgFixer {
 		List<Segment> segs = this.segmentService.findByIdIn(ig.getSegmentRegistry().getLinksAsIds());	
 		for(Segment seg: segs) {
 			
-			List<IgamtObjectError> errors=simpleResourceBindingVerificationService.verifySegmentBindings(seg);
-				if(errors != null && errors.size()>0) {
-					
-					System.out.println(seg.getId() +"-"+ seg.getName() +"-"+ seg.getUsername());
-					System.out.println(errors);
+		 List<IgamtObjectError> errors=simpleResourceBindingVerificationService.verifySegmentBindings(seg);
+			if(errors != null && errors.size()>0) {	
+			System.out.println(seg.getId() +"-"+ seg.getName() +"-"+ seg.getUsername());
+			System.out.println(errors);
 			}
 			
 		}

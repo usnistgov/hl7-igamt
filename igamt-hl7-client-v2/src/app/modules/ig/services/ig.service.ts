@@ -26,6 +26,7 @@ import { IConformanceStatement } from '../../shared/models/cs.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
 import { IRegistry } from '../../shared/models/registry.interface';
+import { IVerificationReport, IVerificationRequest } from '../../shared/models/verification.interface';
 import { IgTemplate } from '../components/derive-dialog/derive-dialog.component';
 import { INarrative } from '../components/ig-section-editor/ig-section-editor.component';
 import { IDocumentDisplayInfo } from '../models/ig/ig-document.class';
@@ -36,6 +37,7 @@ import { IExportConfigurationGlobal } from './../../export-configuration/models/
   providedIn: 'root',
 })
 export class IgService {
+
 
   readonly EXPORT_URL = '/api/export/ig/';
   readonly IG_END_POINT = '/api/igdocuments/';
@@ -470,4 +472,7 @@ export class IgService {
     return this.http.post<Message<ICreateProfileComponentResponse>>(this.IG_END_POINT + request.documentId + '/composite-profile/create', request);
   }
 
+  verifiy(payload: IVerificationRequest): Observable<any>{
+    return this.http.get<any>(this.IG_END_POINT + payload.id + '/verification');
+  }
 }

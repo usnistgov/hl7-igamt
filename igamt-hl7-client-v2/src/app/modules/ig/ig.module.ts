@@ -38,6 +38,7 @@ import { NarrativeSectionFormComponent } from './components/narrative-section-fo
 import { IgRoutingModule } from './ig-routing.module';
 import { IgListService } from './services/ig-list.service';
 import { IgService } from './services/ig.service';
+import { IgVerificationComponent } from './components/ig-verification/ig-verification.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import { IgService } from './services/ig.service';
     IgEditDrawerComponent,
     IgTocFilterComponent,
     ManageProfileStructureComponent,
+    IgVerificationComponent,
   ],
   imports: [
     DamFrameworkModule.forRoot(),

@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
@@ -38,6 +39,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     private store: Store<IDocumentDisplayInfo<IgDocument>>,
     private exportConfigurationService: ExportConfigurationService,
     private igService: IgService,
+    private router: Router,
     private dialog: MatDialog) {
     this.subscription = this.store.select(selectViewOnly).subscribe(
       (value) => this.viewOnly = value,
@@ -86,15 +88,17 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   verifyIG(type: string) {
-    if (type || type === 'Verification' || type === 'Compliance') {
-      this.getIgId().subscribe((igId) => {
-        const dialogRef = this.dialog.open(VerifyIgDialogComponent, {
-          data: { igId, type },
-        });
-        dialogRef.afterClosed().pipe(take(1)).subscribe();
+      this.getIgId().pipe().subscribe((igId) => {
+       const url =  '/' + 'ig/' + igId+ '/verification?type='+type;
+        this.router.navigateByUrl(url);
+        // const dialogRef = this.dialog.open(VerifyIgDialogComponent, {
+        //   data: { igId, type },
+        // });
+        // dialogRef.afterClosed().pipe(take(1)).subscribe();
       });
-    }
+  }
 
+  verify(){
   }
 
   exportXML() {
