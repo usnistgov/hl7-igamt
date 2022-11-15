@@ -6,6 +6,7 @@ public class MessageEventTreeData {
   private String name;
   private String description;
   private String hl7Version;
+  private String messageType;
   private Type type = Type.EVENTS;
   private String id;
 
@@ -50,5 +51,11 @@ public class MessageEventTreeData {
     this.id = id;
   }
 
+  public String getMessageType() {
+    return messageType;
+  }
 
+  public void setMessageType(String messageType) {
+    this.messageType = messageType;
+  }
 }
