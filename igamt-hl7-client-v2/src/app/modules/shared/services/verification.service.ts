@@ -1,9 +1,11 @@
+import { Dictionary } from '@ngrx/entity';
+import { ITocVerification } from './../../ig/models/ig/ig-document.class';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import * as moment from 'moment';
 import { combineLatest, concat, EMPTY, interval, Observable, of } from 'rxjs';
-import { flatMap, map } from 'rxjs/operators';
+import { flatMap, map, tap } from 'rxjs/operators';
 import { IVerificationEnty } from '../../dam-framework';
 import { selectWorkspaceActive, selectWorkspaceVerification } from '../../dam-framework/store';
 import { IResourceKey } from '../components/hl7-v2-tree/hl7-v2-tree.component';
@@ -11,6 +13,7 @@ import { Type } from '../constants/type.enum';
 import { IDisplayElement } from '../models/display-element.interface';
 import { Severity } from '../models/verification.interface';
 import { AResourceRepositoryService } from './resource-repository.service';
+import * as _ from 'lodash';
 
 export enum VerificationTab {
   IG = 'IG',
@@ -218,7 +221,14 @@ export class VerificationService {
     }, {} as Record<string, IResourceKey>));
 
     return combineLatest(
-      resourceKeys.map((key) => repository.getResourceDisplay(key.type, key.id)),
+      resourceKeys.map(
+        (key) => repository.getResourceDisplay(key.type, key.id).pipe(tap((x) => {
+          if(!x){
+            console.log(key.type, key.id);
+          }
+        } ))
+        ),
+
     ).pipe(
       map((resources) => {
         const grouped = entries.reduce((acc, entry) => {
@@ -235,7 +245,7 @@ export class VerificationService {
             ],
           };
         }, {} as Record<string, IVerificationEnty[]>);
-
+        console.log(grouped);
         const resourceLists = Object.keys(grouped).map((key) => {
           return {
             target: resources.find((resource) => keyToStr(resource.id, resource.type) === key),
@@ -255,4 +265,55 @@ export class VerificationService {
       }),
     );
   }
+
+  convertValue(report: any, repository: AResourceRepositoryService) : Observable<IVerificationEntryTable>{
+    let errors = [];
+    for (const property in report) {
+      console.log(report[property]);
+      if(report[property].length){
+        report[property].forEach(element => {
+           errors = _.union(errors,element.errors);
+        });
+      }
+    }
+    return this.getVerificationEntryTable(this.convertErrorsToEntries(errors), repository );
+
+  }
+
+  convertErrorsToEntries(errors: any[]) : IVerificationEnty[] {
+   let ret: IVerificationEnty[] =[];
+     errors.forEach(element => {
+      ret.push( {
+        code: element.code,
+        pathId: element.location,
+        property: element.property,
+        location: element.location,
+        targetId: element.target,
+        targetType: element.targetType,
+        message: element.description,
+        severity: element.severity,
+      });
+    });
+
+    return ret;
+  }
+
+
+  convertValueToTocElements(report: any) : Dictionary<IVerificationEnty[]> {
+    let errors = [];
+    for (const property in report) {
+      console.log(report[property]);
+      if(report[property].length){
+        report[property].forEach(element => {
+           errors = _.union(errors,element.errors);
+        });
+      }
+    }
+    let temp: Dictionary<IVerificationEnty[]> = _.groupBy(errors, x=> x.target);
+    return temp;
+  }
+
+
+
+
 }

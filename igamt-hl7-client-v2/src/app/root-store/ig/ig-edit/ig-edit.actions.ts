@@ -1,3 +1,4 @@
+import { IVerificationRequest } from './../../../modules/shared/models/verification.interface';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
@@ -48,6 +49,7 @@ export enum IgEditActionTypes {
   OpenDatatypeEditorNode = '[Ig Edit TOC Datatype] Open Datatype Editor Node',
   OpenValueSetEditorNode = '[Ig Edit TOC Value Set] Open Value Set Editor Node',
   OpenConformanceStatementSummaryEditorNode = '[Ig Edit TOC] Open Conformance Statement Summary Editor Node',
+  OpenIgVerificationEditor = '[Ig verification] Open Ig Verification Editor',
 
   TableOfContentSave = '[Ig Edit TOC Save] Save Table Of Content',
   TableOfContentSaveSuccess = '[Ig Edit TOC Save] Save Table Of Content Success',
@@ -79,6 +81,10 @@ export enum IgEditActionTypes {
   CreateCompositeProfile = '[Ig Edit TOC] Create Composite Profile',
   CreateCompositeProfileSuccess = '[Ig Edit TOC] Create Create Composite Profile Success',
   CreateCompositeProfileFailure = '[Ig Edit TOC] Create Create Composite Profile Failure',
+
+  VerifiyIg = '[Ig Edit TOC] Verify IG',
+  VerifyIgSuccess = '[Ig Edit TOC] Verify Ig Success',
+  VerifyIgFailure = '[Ig Edit TOC] Verify Ig Failure',
 }
 
 export class ClearIgEdit implements Action {
@@ -254,6 +260,17 @@ export class OpenIgMetadataEditorNode extends OpenEditorBase {
   }
 }
 
+export class OpenIgVerificationEditor extends OpenEditorBase {
+  readonly type = IgEditActionTypes.OpenIgVerificationEditor;
+
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) {
+    super();
+  }
+}
+
 export class TableOfContentSave implements Action {
   readonly type = IgEditActionTypes.TableOfContentSave;
 
@@ -376,6 +393,23 @@ export class DeleteResourcesFailure implements Action {
   }
 }
 
+export class VerifyIgFailure implements Action {
+  readonly type = IgEditActionTypes.VerifyIgFailure;
+  constructor(readonly error: HttpErrorResponse) {
+  }
+}
+export class VerifyIgSuccess implements Action {
+  readonly type = IgEditActionTypes.VerifyIgSuccess;
+  constructor(readonly result: IVerificationRequest) {
+  }
+}
+
+export class VerifyIg implements Action {
+  readonly type = IgEditActionTypes.VerifiyIg;
+  constructor(readonly payload: IVerificationRequest ) {
+  }
+}
+
 export type IgEditActions =
   IgEditResolverLoad
   | IgEditResolverLoadSuccess
@@ -416,4 +450,7 @@ export type IgEditActions =
   | CreateCompositeProfileFailure
   | DeleteResources
   | DeleteResourcesSuccess
-  | DeleteResourcesFailure;
+  | DeleteResourcesFailure
+  | VerifyIg
+  | VerifyIgSuccess
+  | VerifyIgFailure;

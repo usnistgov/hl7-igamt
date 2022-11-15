@@ -1,3 +1,5 @@
+import { OpenIgVerificationEditor } from './../../root-store/ig/ig-edit/ig-edit.actions';
+import { IgVerificationComponent } from './components/ig-verification/ig-verification.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { IgEditActionTypes, IgEditResolverLoad, OpenConformanceStatementSummaryEditorNode, OpenIgMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
@@ -114,6 +116,27 @@ const routes: Routes = [
         },
         canDeactivate: [EditorDeactivateGuard],
       },
+
+      {
+        path: 'verification',
+        component: IgVerificationComponent,
+        canActivate: [EditorActivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.IG_VERIFICATION,
+            title: 'Verification',
+            resourceType: Type.IGDOCUMENT,
+          },
+          onLeave: {
+            saveEditor: false,
+            saveTableOfContent: false,
+          },
+          action: OpenIgVerificationEditor,
+          idKey: 'igId',
+        },
+        canDeactivate: [EditorDeactivateGuard],
+      },
+
       {
         path: 'conformanceprofile',
         loadChildren: 'src/app/modules/conformance-profile/conformance-profile.module#ConformanceProfileModule',

@@ -1,3 +1,5 @@
+import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
+import { IVerificationEntryList } from './../../../shared/services/verification.service';
 import {IDocument} from '../../../document/models/document/IDocument.interface';
 import { IAbstractDomain } from '../../../shared/models/abstract-domain.interface';
 import { IContent } from '../../../shared/models/content.interface';
@@ -29,3 +31,13 @@ export interface IDocumentDisplayInfo<T extends IDocument> {
   coConstraintGroups?: IDisplayElement[];
   targetResourceId?: string;
 }
+
+export interface ITocVerification {
+  [id: string]: ITocElement,
+}
+export interface ITocElement {
+  [serverity: string]: IVerificationEnty[];
+}
+
+
+

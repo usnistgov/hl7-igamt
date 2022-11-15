@@ -32,3 +32,22 @@ export interface ILocation {
   name: string;
   property: PropertyType;
 }
+
+export interface IVerificationRequest{
+  id: String,
+  resourceType: Type,
+  verificationType: VerificationType;
+
+}
+
+export interface IVerificationReport{
+
+
+}
+
+export enum VerificationType {
+
+  COMPLIANCE = 'COMPLIANCE',
+  VERIFICATION = 'VERIFICATION'
+
+}

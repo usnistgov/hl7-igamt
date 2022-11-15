@@ -1,0 +1,5 @@
+<div *ngIf="loading" style="width: 500px;">
+
+Loading
+</div>
+<app-verification-entry-table *ngIf="!loading" [value]="value$ | async"></app-verification-entry-table>

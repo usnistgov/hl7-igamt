@@ -1,5 +1,20 @@
-<div>
+<div style="display: flex; flex-direction: row;">
     <app-dam-fullscreen-button></app-dam-fullscreen-button>
+    <div>
+      <div ngbDropdown class="d-inline-block">
+        <button class="btn btn-sm toolbar-button btn-success" id="verifyDown" ngbDropdownToggle>
+
+         <span>Verify</span>
+        </button>
+        <div ngbDropdownMenu aria-labelledby="exportDropDown">
+          <button ngbDropdownItem (click)="verifyIG('Verification')"> Verification </button>
+          <button ngbDropdownItem (click)="verifyIG('Compliance')"> Compliance </button>
+        </div>
+
+      </div>
+      <!-- <mat-spinner class="verification-progress" diameter="20" ></mat-spinner> -->
+       ( 5 error) ( 6 warnings) (34544 fatal)
+    </div>
 </div>
 <div>
 
@@ -26,15 +41,13 @@
       <button ngbDropdownItem (click)="quickExport(exportTypes.DIFFERENTIAL, 'html')">HTML (Quick)</button>
     </div>
   </div>
-  <div ngbDropdown class="d-inline-block">
+  <!-- <div ngbDropdown class="d-inline-block">
     <button class="btn btn-info btn-sm toolbar-button" id="verifyDown" ngbDropdownToggle> Verify </button>
     <div ngbDropdownMenu aria-labelledby="exportDropDown">
       <button ngbDropdownItem (click)="verifyIG('Verification')"> Verification </button>
       <button ngbDropdownItem (click)="verifyIG('Compliance')"> Compliance </button>
     </div>
-  </div>
+  </div> -->
   <app-dam-reset-button *ngIf="!viewOnly"></app-dam-reset-button>
   <app-dam-save-button *ngIf="!viewOnly"></app-dam-save-button>
 </div>
-
-

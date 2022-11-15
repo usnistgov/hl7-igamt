@@ -1130,28 +1130,28 @@ public class VerificationServiceImpl implements VerificationService {
 		Extensibility extensibility = valueset.getExtensibility();
 
 		if (!this.isNotNullNotEmpty(value))
-			result.getErrors().add(new IgamtObjectError("Code_Value_Missing", c.getId(), Type.VALUESET,
+			result.getErrors().add(new IgamtObjectError("Code_Value_Missing", valueset.getId(), Type.VALUESET,
 					new VSMetadata(valueset), "The value is missing.", null, "ERROR", "User"));
 		
 		if (this.containWhiteSpace(value))
-			result.getErrors().add(new IgamtObjectError("Code_Value_Whitespace", c.getId(), Type.VALUESET,
+			result.getErrors().add(new IgamtObjectError("Code_Value_Whitespace", valueset.getId(), Type.VALUESET,
 					new VSMetadata(valueset), "In code: " + value + ", The code value has whitespace.", null, "WARNING", "User"));
 		
 		
 		
 		if (description == null)
 			result.getErrors()
-					.add(new IgamtObjectError("Code_Desc_Missing", c.getId(), Type.VALUESET, new VSMetadata(valueset),
+					.add(new IgamtObjectError("Code_Desc_Missing", valueset.getId(), Type.VALUESET, new VSMetadata(valueset),
 							"In code: " + value + " , the description is missing.", null, "ERROR", "User"));
 		if (!this.isNotNullNotEmpty(codeSystem))
 			result.getErrors()
-					.add(new IgamtObjectError("Code_Codesys_Missing", c.getId(), Type.VALUESET,
+					.add(new IgamtObjectError("Code_Codesys_Missing", valueset.getId(), Type.VALUESET,
 							new VSMetadata(valueset), "In code: " + value + ", the codesys is missing.", null, "ERROR",
 							"User"));
 		
 		if (codeSystem != null && this.containWhiteSpace(codeSystem))
 			result.getErrors()
-					.add(new IgamtObjectError("Code_Codesys_Whitespace", c.getId(), Type.VALUESET,
+					.add(new IgamtObjectError("Code_Codesys_Whitespace", valueset.getId(), Type.VALUESET,
 							new VSMetadata(valueset), "In code: " + value + ", the codesys has whitespace.", null, "WARNING",
 							"User"));
 		

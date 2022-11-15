@@ -13,6 +13,7 @@ export const resourceAdapterSelectors = resourceAdapter.getSelectors();
 // GET 'resources' collection from DAM repository
 export const selectLoadedResource = fromDAM.selectFromCollection<IResource>('resources');
 
+
 export const selectLoadedResourceEntities = createSelector(
   selectLoadedResource,
   resourceAdapterSelectors.selectEntities,
