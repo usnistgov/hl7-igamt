@@ -40,6 +40,11 @@ public class IgamtVerificationEntryBuilder {
         this.error.setSeverity("WARNING");
         return this;
     }
+    
+    public IgamtVerificationEntryBuilder informational() {
+        this.error.setSeverity("IMFORMATIONAL");
+        return this;
+    }
 
     public IgamtVerificationEntryBuilder target(DisplayElement displayElement) {
         this.error.setTargetType(displayElement.getType());
@@ -63,6 +68,11 @@ public class IgamtVerificationEntryBuilder {
         this.error.setDescription(message);
         return this;
     }
+    
+    public IgamtVerificationEntryBuilder locationInfo(Location locationInfo) {
+        this.error.setLocationInfo(locationInfo);
+        return this;
+    }
 
     public IgamtVerificationEntryBuilder locationInfo(String pathId, LocationInfo info, PropertyType propertyType) {
         this.error.setLocationInfo(new Location(pathId, info, propertyType));
@@ -84,19 +94,8 @@ public class IgamtVerificationEntryBuilder {
         return this;
     }
 
-    public IgamtVerificationEntryBuilder locationInfo(Location locationInfo) {
-        this.error.setLocationInfo(locationInfo);
-        return this;
-    }
-
     public IgamtVerificationEntryBuilder locationInfo(String pathId, PropertyType propertyType) {
         this.error.setLocationInfo(new Location(pathId, propertyType));
-        return this;
-    }
-
-    @Deprecated
-    public IgamtVerificationEntryBuilder location(String location) {
-        this.error.setLocation(location);
         return this;
     }
 

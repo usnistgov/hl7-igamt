@@ -47,4 +47,26 @@ public class LocationInfo {
     public void setPositionalPath(String positionalPath) {
         this.positionalPath = positionalPath;
     }
+<<<<<<< Updated upstream
+=======
+
+    public String getPathId() {
+        return pathId;
+    }
+
+    public void setPathId(String pathId) {
+        this.pathId = pathId;
+    }
+    
+    public LocationInfo clone() {
+    	LocationInfo info = new LocationInfo();
+    	info.setHl7Path(this.hl7Path);
+    	info.setName(this.getName());
+    	info.setPathId(this.pathId);
+    	info.setPositionalPath(this.getPositionalPath());
+    	info.setType(this.type);
+    	
+    	return info;
+    }
+>>>>>>> Stashed changes
 }

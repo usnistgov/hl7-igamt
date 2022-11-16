@@ -70,8 +70,10 @@
                     <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
                     <td><span class="badge error-code">{{error.code}}</span></td>
                     <td>
+                      <!--
                       <app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
                       <span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>
+                        -->
                     </td>
                     <td>{{error.description}}</td>
                   </tr>
@@ -111,8 +113,10 @@
                     <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
                     <td><span class="badge error-code">{{error.code}}</span></td>
                     <td>
+                      <!--
                       <app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
                       <span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>
+                        -->
                     </td>
                     <td>{{error.description}}</td>
                   </tr>
@@ -137,9 +141,8 @@
                     <th style="width: 15em" [pSortableColumn]="'code'" >Error Code
                       <p-sortIcon [field]="'code'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
                     </th>
-                    <th style="width: 30em" [pSortableColumn]="'targetMeta.name'">Location
-                      <p-sortIcon [field]="'targetMeta.name'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-                    </th>
+                    <th style="width: 10em">Location</th>
+                    <th style="width: 10em">Property</th>
                     <th>Description</th>
                   </tr>
                   <tr>
@@ -149,9 +152,8 @@
                     <th>
                       <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'code', 'contains')">
                     </th>
-                    <th>
-                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'targetMeta.name', 'contains')">
-                    </th>
+                    <th></th>
+                    <th></th>
                     <th></th>
                   </tr>
                 </ng-template>
@@ -160,8 +162,17 @@
                     <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
                     <td><span class="badge error-code">{{error.code}}</span></td>
                     <td>
-                      <app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
-                      <span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>
+                      <div *ngIf="error.locationInfo">
+                        {{error.locationInfo.name}}
+                      </div>
+                      <div *ngIf="!error.locationInfo">
+                        <span>{{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'_' + error.targetMeta.extension + '-' + error.location}}</ng-container></span>
+                      </div>
+                    </td>
+                    <td>
+                      <div *ngIf="error.locationInfo">
+                        {{error.locationInfo.property}}
+                      </div>
                     </td>
                     <td>{{error.description}}</td>
                   </tr>
@@ -178,9 +189,8 @@
                     <th style="width: 15em" [pSortableColumn]="'code'" >Error Code
                       <p-sortIcon [field]="'code'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
                     </th>
-                    <th style="width: 30em" [pSortableColumn]="'targetMeta.name'">Location
-                      <p-sortIcon [field]="'targetMeta.name'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-                    </th>
+                    <th style="width: 10em">Location</th>
+                    <th style="width: 10em">Property</th>
                     <th>Description</th>
                   </tr>
                   <tr>
@@ -190,9 +200,8 @@
                     <th>
                       <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'code', 'contains')">
                     </th>
-                    <th>
-                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'targetMeta.name', 'contains')">
-                    </th>
+                    <th></th>
+                    <th></th>
                     <th></th>
                   </tr>
                 </ng-template>
@@ -201,8 +210,14 @@
                     <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
                     <td><span class="badge error-code">{{error.code}}</span></td>
                     <td>
-                      <app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
-                      <span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>
+                      <div *ngIf="error.locationInfo">
+                        {{error.locationInfo.name}}
+                      </div>
+                    </td>
+                    <td>
+                      <div *ngIf="error.locationInfo">
+                        {{error.locationInfo.property}}
+                      </div>
                     </td>
                     <td>{{error.description}}</td>
                   </tr>
@@ -317,9 +332,8 @@
                     <th style="width: 15em" [pSortableColumn]="'code'" >Error Code
                       <p-sortIcon [field]="'code'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
                     </th>
-                    <th style="width: 30em" [pSortableColumn]="'targetMeta.name'">Location
-                      <p-sortIcon [field]="'targetMeta.name'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-                    </th>
+                    <th style="width: 15em">Location</th>
+                    <th style="width: 10em">Property</th>
                     <th>Description</th>
                   </tr>
                   <tr>
@@ -333,6 +347,8 @@
                       <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'targetMeta.name', 'contains')">
                     </th>
                     <th></th>
+                    <th></th>
+                    <th></th>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-error>
@@ -340,10 +356,10 @@
                     <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
                     <td><span class="badge error-code">{{error.code}}</span></td>
                     <td>
-                      <app-scope-badge *ngIf="error.targetMeta && error.targetMeta.domainInfo" [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
-                      <span> {{error.targetMeta.bindingIdentifier}}<ng-container *ngIf="error.targetMeta.name">{{'-' + error.targetMeta.name}}</ng-container></span>
-                      <!--<app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>-->
-                      <!--<span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>-->
+                      <span> {{error.locationInfo.info.name}}</span>
+                    </td>
+                    <td>
+                      <span> {{error.locationInfo.info.type}}</span>
                     </td>
                     <td>{{error.description}}</td>
                   </tr>
@@ -360,9 +376,8 @@
                     <th style="width: 15em" [pSortableColumn]="'code'" >Error Code
                       <p-sortIcon [field]="'code'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
                     </th>
-                    <th style="width: 30em" [pSortableColumn]="'targetMeta.name'">Location
-                      <p-sortIcon [field]="'targetMeta.name'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-                    </th>
+                    <th style="width: 15em">Location</th>
+                    <th style="width: 10em">Property</th>
                     <th>Description</th>
                   </tr>
                   <tr>
@@ -372,9 +387,8 @@
                     <th>
                       <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'code', 'contains')">
                     </th>
-                    <th>
-                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'targetMeta.name', 'contains')">
-                    </th>
+                    <th></th>
+                    <th></th>
                     <th></th>
                   </tr>
                 </ng-template>
@@ -383,10 +397,10 @@
                     <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
                     <td><span class="badge error-code">{{error.code}}</span></td>
                     <td>
-                      <app-scope-badge *ngIf="error.targetMeta && error.targetMeta.domainInfo" [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
-                      <span> {{error.targetMeta.bindingIdentifier}}<ng-container *ngIf="error.targetMeta.name">{{'-' + error.targetMeta.name}}</ng-container></span>
-                      <!--<app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>-->
-                      <!--<span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>-->
+                      <span> {{error.locationInfo.info.name}}</span>
+                    </td>
+                    <td>
+                      <span> {{error.locationInfo.info.type}}</span>
                     </td>
                     <td>{{error.description}}</td>
                   </tr>

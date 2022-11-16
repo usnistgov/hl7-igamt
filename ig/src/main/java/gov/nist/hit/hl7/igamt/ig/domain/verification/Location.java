@@ -84,4 +84,14 @@ public class Location {
     public void setName(String name) {
         this.name = name;
     }
+    
+    public Location clone() {
+    	Location l = new Location();
+    	l.setName(this.getName());
+    	l.setPathId(this.getPathId());
+    	l.setProperty(this.getProperty());
+    	l.setInfo(this.info.clone());
+    	
+    	return l;
+    }
 }
