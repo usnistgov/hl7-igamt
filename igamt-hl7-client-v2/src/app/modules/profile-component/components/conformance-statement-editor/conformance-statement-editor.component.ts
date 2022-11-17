@@ -2,6 +2,7 @@ import { OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
+import { Guid } from 'guid-typescript';
 import * as _ from 'lodash';
 import { BehaviorSubject, combineLatest, Observable, of, Subscription, throwError } from 'rxjs';
 import { catchError, concatMap, flatMap, map, pluck, take, tap, withLatestFrom } from 'rxjs/operators';
@@ -290,6 +291,37 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     this.registerChange([...rmList]);
   }
 
+  editItem(item: IPropertyConformanceStatement) {
+    if (item.change === ChangeType.ADD && item.payload) {
+      const dialogRef = this.dialog.open(CsDialogComponent, {
+        maxWidth: '95vw',
+        maxHeight: '90vh',
+        data: {
+          title: 'Edit Conformance Statement',
+          resource: this.selectedResource$,
+          payload: _.cloneDeep(item.payload),
+        },
+      });
+
+      dialogRef.afterClosed().subscribe(
+        (cs: IConformanceStatement) => {
+          if (cs) {
+            const itemList = this.items$.getValue();
+            const editList = itemList.map((i) => {
+              return i.payload.id !== cs.id ? i : {
+                ...item,
+                payload: cs,
+              };
+            });
+            this.items$.next([...editList]);
+            this.registerChange([...editList]);
+          }
+        },
+      );
+    }
+
+  }
+
   excludeCs(cs: IConformanceStatement) {
     this.addItem(cs, ChangeType.DELETE);
   }
@@ -307,6 +339,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     dialogRef.afterClosed().subscribe(
       (cs: IConformanceStatement) => {
         if (cs) {
+          cs.id = Guid.create().toString();
           this.addItem(cs, ChangeType.ADD);
         }
       },

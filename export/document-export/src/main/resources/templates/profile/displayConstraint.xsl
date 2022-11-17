@@ -224,6 +224,8 @@
                 </xsl:choose>
 
             </xsl:element>
+                                    <xsl:element name="br"/>
+            
         </xsl:element>
     </xsl:template>
 

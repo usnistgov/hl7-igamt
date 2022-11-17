@@ -31,6 +31,7 @@ export enum DamActionTypes {
   InsertResourcesInRepostory = '[DAMF Repository] Insert Resources In Repository',
   DeleteResourcesFromRepostory = '[DAMF Repository] Delete Resources From Repository',
   ClearRepository = '[DAMF Repository] Clear Repository',
+  RepositoryActionReduced = '[DAMF Repository] Repository Action Reduded',
   CollapseSideBar = '[DAMF Layout] Collapse Side Bar',
   ExpandSideBar = '[DAMF Layout] Expand Side Bar',
   CollapseBottomDrawer = '[DAMF Layout] Collapse Bottom Drawer',
@@ -216,6 +217,7 @@ export class LoadResourcesInRepostory implements Action {
       key: string,
       values: IDamResource[],
     }>,
+    tag?: string;
   }) { }
 }
 
@@ -227,6 +229,7 @@ export class InsertResourcesInRepostory implements Action {
       key: string,
       values: IDamResource[],
     }>,
+    tag?: string;
   }) { }
 }
 
@@ -238,6 +241,15 @@ export class DeleteResourcesFromRepostory implements Action {
       key: string,
       values: string[],
     }>,
+    tag?: string;
+  }) { }
+}
+
+export class RepositoryActionReduced implements Action {
+  readonly type = DamActionTypes.RepositoryActionReduced;
+
+  constructor(readonly payload: {
+    tag: string;
   }) { }
 }
 
@@ -247,6 +259,7 @@ export class ClearRepository implements Action {
   constructor(readonly payload: {
     all: boolean,
     collections?: string[],
+    tag?: string;
   }) { }
 }
 
@@ -322,6 +335,7 @@ export type DamActions =
   LoadResourcesInRepostory |
   InsertResourcesInRepostory |
   ClearRepository |
+  RepositoryActionReduced |
   LoadForRouteSuccess |
   GlobalSave |
   LoadForRouteFailure |

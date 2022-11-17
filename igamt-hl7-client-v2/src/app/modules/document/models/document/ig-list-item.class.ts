@@ -1,3 +1,4 @@
+import { IPublicationInfo } from './../../../shared/models/publication-info.interface';
 export class IgListItem {
   title: string;
   position: number;
@@ -13,6 +14,8 @@ export class IgListItem {
   sharePermission?: string;
   sharedUsers?: string[];
   currentAuthor?: string;
+  draft?: boolean;
+  publicationInfo?: IPublicationInfo;
 }
 
 export type IgListItemType = 'USER' | 'PUBLISHED' | 'SHARED';

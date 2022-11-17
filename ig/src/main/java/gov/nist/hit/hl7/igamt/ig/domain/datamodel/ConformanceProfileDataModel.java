@@ -12,15 +12,16 @@
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
-import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
-import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.SingleCodeBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
@@ -33,12 +34,12 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
  * @author jungyubw
  *
  */
-public class ConformanceProfileDataModel implements Serializable, Comparable{
+public class ConformanceProfileDataModel implements Serializable, Comparable<ConformanceProfileDataModel>{
 	private ConformanceProfile model;
 
 	private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
 	private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
-	private Map<String, InternalSingleCode> singleCodeMap = new HashMap<String, InternalSingleCode>();
+	private Map<String, List<SingleCodeBinding>> singleCodeMap = new HashMap<String, List<SingleCodeBinding>>();
 	private Map<String, Set<ValuesetBindingDataModel>> valuesetMap =
 			new HashMap<String, Set<ValuesetBindingDataModel>>();
 
@@ -61,11 +62,11 @@ public class ConformanceProfileDataModel implements Serializable, Comparable{
 		this.predicateMap = predicateMap;
 	}
 
-	public Map<String, InternalSingleCode> getSingleCodeMap() {
+	public Map<String, List<SingleCodeBinding>> getSingleCodeMap() {
 		return singleCodeMap;
 	}
 
-	public void setSingleCodeMap(Map<String, InternalSingleCode> singleCodeMap) {
+	public void setSingleCodeMap(Map<String, List<SingleCodeBinding>> singleCodeMap) {
 		this.singleCodeMap = singleCodeMap;
 	}
 
@@ -130,10 +131,12 @@ public class ConformanceProfileDataModel implements Serializable, Comparable{
 				this.predicateMap.put(key, p); 
 			}
 
-			if (seb.getInternalSingleCode() != null) {
-				this.singleCodeMap.put(key, seb.getInternalSingleCode());
+			//Fixed SingleCode_20220625
+			if(seb.getSingleCodeBindings() != null) {
+				this.singleCodeMap.put(key, seb.getSingleCodeBindings());
+				
 			}
-
+			
 			if (seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0) {
 
 
@@ -192,11 +195,36 @@ public class ConformanceProfileDataModel implements Serializable, Comparable{
 	}
 
 	@Override
-	public int compareTo(Object u) {
+	public int compareTo(ConformanceProfileDataModel u) {
 		// TODO Auto-generated method stub
 		if (getModel().getLabel() == null || ((ConformanceProfileDataModel) u).getModel().getLabel() == null) {
 		      return 0;
 		    }
 		    return getModel().getLabel().compareTo(((ConformanceProfileDataModel) u).getModel().getLabel());
+	}
+
+	public SegmentRefOrGroupDataModel findSegmentRefOrGroupDataModelById(String[] path) {
+		if(path.length > 1) {
+			for(SegmentRefOrGroupDataModel sgModel : this.segmentRefOrGroupDataModels) {
+				if (sgModel.getModel().getId().equals(path[0])) {
+					return sgModel.findSegmentRefOrGroupDataModelById(Arrays.copyOfRange(path, 1, path.length));
+				}
+			}
+		} else {
+			for(SegmentRefOrGroupDataModel sgModel : this.segmentRefOrGroupDataModels) {
+				if (sgModel.getModel().getId().equals(path[0])) {
+					return sgModel;
+				}
+			}
+			
+		}
+		return null;
+	}
+
+	public SegmentRefOrGroupDataModel findChildById(String id) {
+		for(SegmentRefOrGroupDataModel sgModel : this.segmentRefOrGroupDataModels) {
+		      if (sgModel.getModel().getId().equals(id)) return sgModel;
+		    }
+		return null;
 	}
 }

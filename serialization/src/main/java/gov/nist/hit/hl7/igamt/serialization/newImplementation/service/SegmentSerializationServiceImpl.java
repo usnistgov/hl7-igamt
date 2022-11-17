@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.GeneratedResourceMetadata;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.OrderedProfileComponentLink;
@@ -17,6 +18,8 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.delta.domain.ConformanceStatementDelta;
 import gov.nist.hit.hl7.igamt.delta.domain.ResourceDelta;
 import gov.nist.hit.hl7.igamt.serialization.util.SerializationTools;
+import gov.nist.hit.hl7.igamt.service.impl.ResourceSkeletonService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,7 @@ import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.GenerationDirective;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
@@ -40,6 +44,9 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.SegmentExportConfigu
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
@@ -83,7 +90,17 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
   private SerializationTools serializationTools;
   
   @Autowired
+  SlicingSerialization slicingSerialization;
+  
+  @Autowired
   private ReasonForChangeSerializationService reasonForChangeSerializationService;
+  
+  @Autowired
+  ResourceSkeletonService resourceSkeletonService;
+  
+
+  
+
 
   @Override
   public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, int position, SegmentExportConfiguration segmentExportConfiguration, ExportFilterDecision exportFilterDecision, Boolean deltaMode) throws SerializationException {
@@ -200,11 +217,28 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
       }
     }  
     if (segment.getBinding() != null) {
-      Element bindingElement = bindingSerializationService.serializeBinding((Binding) segment.getBinding(), segmentDataModel.getValuesetMap(), segmentDataModel.getModel().getName(), bindedPaths );
+      Element bindingElement = bindingSerializationService.serializeBinding((Binding) segment.getBinding(), segmentDataModel.getValuesetMap(),segmentDataModel.getSingleCodeMap() , segmentDataModel.getModel().getName(), bindedPaths );
       if (bindingElement != null) {
         segmentElement.appendChild(bindingElement);
       }
     }
+    if (segment.getSlicings()!= null) {
+    	ResourceSkeleton root = new ResourceSkeleton(
+                new ResourceRef(Type.SEGMENT, segment.getId()),
+                this.resourceSkeletonService
+        );
+        Element slicingElement = null;
+		try {
+			slicingElement = slicingSerialization.serializeSlicing(segment.getSlicings(), root, Type.SEGMENT,bindedPaths);
+		} catch (ResourceNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        if (slicingElement != null) {
+        	segmentElement.appendChild(slicingElement);
+        }
+    
+  }
     if(!segmentDataModel.getConformanceStatements().isEmpty()|| !segmentDataModel.getPredicateMap().isEmpty()) {
       Element constraints = constraintSerializationService.serializeConstraints(segmentDataModel.getConformanceStatements(), segmentDataModel.getPredicateMap(), segmentExportConfiguration.getConstraintExportConfiguration());
       if (constraints != null) {
@@ -257,8 +291,16 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
               }
 
             }
+            if(field.getUsage() != null && !field.getUsage().equals(Usage.CAB)) {
             fieldElement.addAttribute(
-                new Attribute("usage", field.getUsage() != null ? field.getUsage().toString() : ""));
+                new Attribute("usage", field.getUsage() != null ? field.getUsage().toString() : ""));}
+            else if(field.getUsage() != null && field.getUsage().equals(Usage.CAB)) {
+            	
+            	fieldElement.addAttribute(
+                        new Attribute("usage", field.getUsage() != null ? serializationTools.extractPredicateUsages(segmentDataModel.getPredicateMap(), field.getId()) : ""));
+                fieldElement.addAttribute(
+                      new Attribute("predicate", field.getUsage() != null ? serializationTools.extractPredicateDescription(segmentDataModel.getPredicateMap(), field.getId()) : ""));
+            }
             if (segmentDataModel != null && segmentDataModel.getValuesetMap() != null && segmentDataModel.getValuesetMap().containsKey(field.getPosition() + "")) {
               String vs = segmentDataModel.getValuesetMap().get(field.getPosition()+"").stream().map((element) -> {
                 return element.getBindingIdentifier();

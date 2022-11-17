@@ -7,7 +7,15 @@ public class Columns {
 	private PositionAndPresence elementName;
 	private PositionAndPresence usage;
 	private PositionAndPresence cardinality;
+	private PositionAndPresence path;
+
 	
+	public PositionAndPresence getPath() {
+		return path;
+	}
+	public void setPath(PositionAndPresence path) {
+		this.path = path;
+	}
 	public PositionAndPresence getSegment() {
 		return segment;
 	}

@@ -17,9 +17,11 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.*;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.delta.domain.*;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
@@ -56,6 +58,8 @@ public class EntityDeltaServiceImpl {
   ConformanceProfileService conformaneProfileService;
   @Autowired
   ProfileComponentService profileComponentService;
+  @Autowired
+  DatatypeService datatypeService;
 
   public List<StructureDelta> compareDatatype(DatatypeStructureDisplay source, DatatypeStructureDisplay target) {
     return new ArrayList<>(this.compareComponents(source.getStructure(), target.getStructure()));
@@ -199,9 +203,9 @@ public class EntityDeltaServiceImpl {
   public List<CodeDelta> compareCodes(Set<Code> source, Set<Code> target) {
     List<CodeDelta> deltas = new ArrayList<>();
     Map<String, List<Code>> sourceChildren = (source != null ? source : new HashSet<Code>()).stream()
-        .collect(Collectors.groupingBy(Code::getValue));
+        .filter(x-> x.getValue()!= null).collect(Collectors.groupingBy(Code::getValue));
     Map<String, List<Code>> targetChildren = (target != null ? target : new HashSet<Code>()).stream()
-        .collect(Collectors.groupingBy(Code::getValue));
+    		.filter(x-> x.getValue()!= null).collect(Collectors.groupingBy(Code::getValue));
 
     for(Map.Entry<String, List<Code>> entry: sourceChildren.entrySet()) {
       CodeDelta codeDelta = new CodeDelta();
@@ -411,7 +415,7 @@ public class EntityDeltaServiceImpl {
   }
 
   private void compareBindings(StructureDelta structure, BindingDisplay source, BindingDisplay target) {
-    compareValueSetBinding(structure,  source,  target);
+//    compareValueSetBinding(structure,  source,  target);
     if(source != null) {
       if(target != null) {
         if(source.getPredicate() == null ) {
@@ -447,50 +451,49 @@ public class EntityDeltaServiceImpl {
   }
 
 
-  private void compareValueSetBinding(StructureDelta structure, BindingDisplay source, BindingDisplay target) {
-    if(source !=null && target !=null) {
-
-      if(source.getBindingType().equals(target.getBindingType())) {
-
-        if(source.getBindingType().equals(BindingType.VS)) {
-          structure.setValueSetBinding(this.compareValueSetBinding(source.getValuesetBindings(), target.getValuesetBindings(), this.getChangeReason(target.getChangeLog(), PropertyType.VALUESET)));
-        }else if(source.getBindingType().equals(BindingType.SC)){
-          structure.setInternalSingleCode(this.compareInternalSingleCodes(source.getInternalSingleCode(), target.getInternalSingleCode(), this.getChangeReason(target.getChangeLog(), PropertyType.SINGLECODE)));
-        }
-      } else {
-        if(source.getBindingType().equals(BindingType.VS)) {
-          if(target.getBindingType().equals(BindingType.SC)) {
-
-            structure.setValueSetBinding(this.compareValueSetBinding(source.getValuesetBindings(), new HashSet<DisplayValuesetBinding>(), this.getChangeReason(target.getChangeLog(), PropertyType.VALUESET)));
-            structure.setInternalSingleCode(this.compareInternalSingleCodes(new InternalSingleCode(), target.getInternalSingleCode(), this.getChangeReason(target.getChangeLog(), PropertyType.SINGLECODE)));
-            structure.getValueSetBinding().setAction(DeltaAction.DELETED);
-            structure.getInternalSingleCode().setAction(DeltaAction.ADDED); 
-
-          }
-
-        }else if(source.getBindingType().equals(BindingType.SC)){
-
-          if(target.getBindingType().equals(BindingType.VS)) {
-
-            structure.setValueSetBinding(this.compareValueSetBinding(new HashSet<DisplayValuesetBinding>(), target.getValuesetBindings(), this.getChangeReason(target.getChangeLog(), PropertyType.VALUESET)));
-            structure.setInternalSingleCode(this.compareInternalSingleCodes(source.getInternalSingleCode() , target.getInternalSingleCode(), this.getChangeReason(target.getChangeLog(), PropertyType.SINGLECODE)));
-            structure.getValueSetBinding().setAction(DeltaAction.ADDED);
-            structure.getInternalSingleCode().setAction(DeltaAction.DELETED);
-          }
-        }
-      }
-    } else if(source == null && target != null){
-        if(target.getBindingType().equals(BindingType.VS)){
-            structure.setValueSetBinding(this.compareValueSetBinding(new HashSet<DisplayValuesetBinding>(), target.getValuesetBindings(), this.getChangeReason(target.getChangeLog(), PropertyType.VALUESET)));
-            structure.getValueSetBinding().setAction(DeltaAction.ADDED);
-
-        } else if(target.getBindingType().equals(BindingType.SC)){
-            structure.setInternalSingleCode(this.compareInternalSingleCodes(new InternalSingleCode() , target.getInternalSingleCode(), this.getChangeReason(target.getChangeLog(), PropertyType.SINGLECODE)));
-            structure.getInternalSingleCode().setAction(DeltaAction.ADDED);
-        }
-    }
-
-  }
+//  private void compareValueSetBinding(StructureDelta structure, BindingDisplay source, BindingDisplay target) {
+//    if(source !=null && target !=null) {
+//
+//      if(source.getBindingType().equals(target.getBindingType())) {
+//
+//        if(source.getBindingType().equals(BindingType.VS)) {
+//          structure.setValueSetBinding(this.compareValueSetBinding(source.getValuesetBindings(), target.getValuesetBindings(), this.getChangeReason(target.getChangeLog(), PropertyType.VALUESET)));
+//        }else if(source.getBindingType().equals(BindingType.SC)){
+//          structure.setInternalSingleCode(this.compareInternalSingleCodes(source.getInternalSingleCode(), target.getInternalSingleCode(), this.getChangeReason(target.getChangeLog(), PropertyType.SINGLECODE)));
+//        }
+//      } else {
+//        if(source.getBindingType().equals(BindingType.VS)) {
+//          if(target.getBindingType().equals(BindingType.SC)) {
+//
+//            structure.setValueSetBinding(this.compareValueSetBinding(source.getValuesetBindings(), new HashSet<DisplayValuesetBinding>(), this.getChangeReason(target.getChangeLog(), PropertyType.VALUESET)));
+//            structure.setInternalSingleCode(this.compareInternalSingleCodes(new InternalSingleCode(), target.getInternalSingleCode(), this.getChangeReason(target.getChangeLog(), PropertyType.SINGLECODE)));
+//            structure.getValueSetBinding().setAction(DeltaAction.DELETED);
+//            structure.getInternalSingleCode().setAction(DeltaAction.ADDED);
+//
+//          }
+//
+//        }else if(source.getBindingType().equals(BindingType.SC)){
+//
+//          if(target.getBindingType().equals(BindingType.VS)) {
+//
+//            structure.setValueSetBinding(this.compareValueSetBinding(new HashSet<DisplayValuesetBinding>(), target.getValuesetBindings(), this.getChangeReason(target.getChangeLog(), PropertyType.VALUESET)));
+//            structure.setInternalSingleCode(this.compareInternalSingleCodes(source.getInternalSingleCode() , target.getInternalSingleCode(), this.getChangeReason(target.getChangeLog(), PropertyType.SINGLECODE)));
+//            structure.getValueSetBinding().setAction(DeltaAction.ADDED);
+//            structure.getInternalSingleCode().setAction(DeltaAction.DELETED);
+//          }
+//        }
+//      }
+//    } else if(source == null && target != null){
+//        if(target.getBindingType().equals(BindingType.VS)){
+//            structure.setValueSetBinding(this.compareValueSetBinding(new HashSet<DisplayValuesetBinding>(), target.getValuesetBindings(), this.getChangeReason(target.getChangeLog(), PropertyType.VALUESET)));
+//            structure.getValueSetBinding().setAction(DeltaAction.ADDED);
+//
+//        } else if(target.getBindingType().equals(BindingType.SC)){
+//            structure.setInternalSingleCode(this.compareInternalSingleCodes(new InternalSingleCode() , target.getInternalSingleCode(), this.getChangeReason(target.getChangeLog(), PropertyType.SINGLECODE)));
+//            structure.getInternalSingleCode().setAction(DeltaAction.ADDED);
+//        }
+//    }
+//  }
 
   public PredicateDelta comparePredicates(Predicate source, Predicate target, ChangeReason changeReason) {
     PredicateDelta delta = new PredicateDelta();
@@ -519,111 +522,111 @@ public class EntityDeltaServiceImpl {
     return null;
   }
 
-  public DeltaInternalSingleCode compareInternalSingleCodes(InternalSingleCode source, InternalSingleCode target, ChangeReason changeReason) {
-    DeltaInternalSingleCode delta = new DeltaInternalSingleCode();
-    delta.setAction(DeltaAction.UNCHANGED);
-    delta.setChangeReason(changeReason);
-
-    if(source != null && target != null) {
-      DisplayElement vsSourceDisplay = this.makeDisplayElementForSingleCode(source);
-      DisplayElement vsTargetDisplay = this.makeDisplayElementForSingleCode(target);
-
-      DeltaNode<DisplayElement> valueSetDisplay = this.compare(vsSourceDisplay, vsTargetDisplay);
-      DeltaNode<String> codeSystem = this.compareNAString(source.getCodeSystem(), target.getCodeSystem(), null);
-      DeltaNode<String> code = this.compareNAString(source.getCode(), target.getCode(), null);
-
-      delta.setCode(code);
-      delta.setValueSetDisplay(valueSetDisplay);
-      delta.setCodeSystem(codeSystem);
-      return delta;
-    }
-
-    if(source != null) {
-      // Deleted
-      delta.setAction(DeltaAction.DELETED);
-      DisplayElement vsSourceDisplay = this.makeDisplayElementForSingleCode(source);
-
-      DeltaNode<DisplayElement> valueSetDisplay = this.compare(vsSourceDisplay, null);
-      DeltaNode<String> codeSystem = this.compareNAString(source.getCodeSystem(), null, null);
-      DeltaNode<String> code = this.compareNAString(source.getCode(), null, null);
-
-      delta.setCode(code);
-      delta.setValueSetDisplay(valueSetDisplay);
-      delta.setCodeSystem(codeSystem);
-      return delta;
-    }
-
-    if(target != null) {
-      // Added
-      delta.setAction(DeltaAction.ADDED);
-      DisplayElement vsTargetDisplay = this.makeDisplayElementForSingleCode(target);
-
-      DeltaNode<DisplayElement> valueSetDisplay = this.compare(null, vsTargetDisplay);
-      DeltaNode<String> codeSystem = this.compareNAString(null, target.getCodeSystem(), null);
-      DeltaNode<String> code = this.compareNAString(null, target.getCode(), null);
-
-      delta.setCode(code);
-      delta.setValueSetDisplay(valueSetDisplay);
-      delta.setCodeSystem(codeSystem);
-      return delta;
-    }
-
-    return  delta;
-  }
+//  public DeltaInternalSingleCode compareInternalSingleCodes(InternalSingleCode source, InternalSingleCode target, ChangeReason changeReason) {
+//    DeltaInternalSingleCode delta = new DeltaInternalSingleCode();
+//    delta.setAction(DeltaAction.UNCHANGED);
+//    delta.setChangeReason(changeReason);
+//
+//    if(source != null && target != null) {
+//      DisplayElement vsSourceDisplay = this.makeDisplayElementForSingleCode(source);
+//      DisplayElement vsTargetDisplay = this.makeDisplayElementForSingleCode(target);
+//
+//      DeltaNode<DisplayElement> valueSetDisplay = this.compare(vsSourceDisplay, vsTargetDisplay);
+//      DeltaNode<String> codeSystem = this.compareNAString(source.getCodeSystem(), target.getCodeSystem(), null);
+//      DeltaNode<String> code = this.compareNAString(source.getCode(), target.getCode(), null);
+//
+//      delta.setCode(code);
+//      delta.setValueSetDisplay(valueSetDisplay);
+//      delta.setCodeSystem(codeSystem);
+//      return delta;
+//    }
+//
+//    if(source != null) {
+//      // Deleted
+//      delta.setAction(DeltaAction.DELETED);
+//      DisplayElement vsSourceDisplay = this.makeDisplayElementForSingleCode(source);
+//
+//      DeltaNode<DisplayElement> valueSetDisplay = this.compare(vsSourceDisplay, null);
+//      DeltaNode<String> codeSystem = this.compareNAString(source.getCodeSystem(), null, null);
+//      DeltaNode<String> code = this.compareNAString(source.getCode(), null, null);
+//
+//      delta.setCode(code);
+//      delta.setValueSetDisplay(valueSetDisplay);
+//      delta.setCodeSystem(codeSystem);
+//      return delta;
+//    }
+//
+//    if(target != null) {
+//      // Added
+//      delta.setAction(DeltaAction.ADDED);
+//      DisplayElement vsTargetDisplay = this.makeDisplayElementForSingleCode(target);
+//
+//      DeltaNode<DisplayElement> valueSetDisplay = this.compare(null, vsTargetDisplay);
+//      DeltaNode<String> codeSystem = this.compareNAString(null, target.getCodeSystem(), null);
+//      DeltaNode<String> code = this.compareNAString(null, target.getCode(), null);
+//
+//      delta.setCode(code);
+//      delta.setValueSetDisplay(valueSetDisplay);
+//      delta.setCodeSystem(codeSystem);
+//      return delta;
+//    }
+//
+//    return  delta;
+//  }
 
 
   private DeltaNode<DisplayElement> compare(DisplayElement vsSourceDisplay, DisplayElement vsTargetDisplay) {
     return this.compare(vsSourceDisplay, vsTargetDisplay, (s, t) -> vsSourceDisplay.getVariableName().equals(vsTargetDisplay.getVariableName()), null);
   }
 
-  public DeltaValuesetBinding compareValueSetBinding(Set<DisplayValuesetBinding> source, Set<DisplayValuesetBinding> target, ChangeReason changeReason) {
-    DeltaValuesetBinding delta = new DeltaValuesetBinding();
-    delta.setAction(DeltaAction.UNCHANGED);
-    delta.setChangeReason(changeReason);
-    DisplayValuesetBinding sourceBindingDisplay = source != null ? source.stream().findFirst().orElse(null) : null;
-    DisplayValuesetBinding targetBindingDisplay = target != null ? target.stream().findFirst().orElse(null) : null;
-
-    if(sourceBindingDisplay != null && targetBindingDisplay != null) {
-      DeltaNode<List<DisplayElement>> valueSets = this.compareDisplay(sourceBindingDisplay.getValueSetsDisplay(), targetBindingDisplay.getValueSetsDisplay());
-      DeltaNode<ValuesetStrength> strength = this.compare(sourceBindingDisplay.getStrength(), targetBindingDisplay.getStrength());
-      DeltaNode<Set<Integer>> valuesetLocations = this.compare(sourceBindingDisplay.getValuesetLocations(), targetBindingDisplay.getValuesetLocations());
-      delta.setStrength(strength);
-      delta.setValuesetLocations(valuesetLocations);
-      delta.setValueSets(valueSets);
-      return delta;
-    }
-
-    if(sourceBindingDisplay != null) {
-      // Deleted
-      delta.setAction(DeltaAction.DELETED);
-      DeltaNode<List<DisplayElement>> valueSets = new DeltaNode<>();
-      valueSets.setPrevious(sourceBindingDisplay.getValueSetsDisplay());
-      valueSets.setAction(DeltaAction.DELETED);
-      DeltaNode<ValuesetStrength> strength = this.compare(sourceBindingDisplay.getStrength(), null);
-      DeltaNode<Set<Integer>> valuesetLocations = this.compare(sourceBindingDisplay.getValuesetLocations(), null);
-      delta.setStrength(strength);
-      delta.setValuesetLocations(valuesetLocations);
-      delta.setValueSets(valueSets);
-
-      return delta;
-    }
-
-    if(targetBindingDisplay != null) {
-      // Added
-      DeltaNode<List<DisplayElement>> valueSets = new DeltaNode<>();
-      valueSets.setCurrent(targetBindingDisplay.getValueSetsDisplay());
-      valueSets.setAction(DeltaAction.ADDED);
-      delta.setAction(DeltaAction.ADDED);
-      delta.setValueSets(valueSets);
-      DeltaNode<ValuesetStrength> strength = this.compare(null, targetBindingDisplay.getStrength());
-      delta.setStrength(strength);
-      DeltaNode<Set<Integer>> valuesetLocations = this.compare(null, targetBindingDisplay.getValuesetLocations());
-      delta.setValuesetLocations(valuesetLocations);
-      return delta;
-    }
-
-    return delta;
-  }
+//  public DeltaValuesetBinding compareValueSetBinding(Set<DisplayValuesetBinding> source, Set<DisplayValuesetBinding> target, ChangeReason changeReason) {
+//    DeltaValuesetBinding delta = new DeltaValuesetBinding();
+//    delta.setAction(DeltaAction.UNCHANGED);
+//    delta.setChangeReason(changeReason);
+//    DisplayValuesetBinding sourceBindingDisplay = source != null ? source.stream().findFirst().orElse(null) : null;
+//    DisplayValuesetBinding targetBindingDisplay = target != null ? target.stream().findFirst().orElse(null) : null;
+//
+//    if(sourceBindingDisplay != null && targetBindingDisplay != null) {
+//      DeltaNode<List<DisplayElement>> valueSets = this.compareDisplay(sourceBindingDisplay.getValueSetsDisplay(), targetBindingDisplay.getValueSetsDisplay());
+//      DeltaNode<ValuesetStrength> strength = this.compare(sourceBindingDisplay.getStrength(), targetBindingDisplay.getStrength());
+//      DeltaNode<Set<Integer>> valuesetLocations = this.compare(sourceBindingDisplay.getValuesetLocations(), targetBindingDisplay.getValuesetLocations());
+//      delta.setStrength(strength);
+//      delta.setValuesetLocations(valuesetLocations);
+//      delta.setValueSets(valueSets);
+//      return delta;
+//    }
+//
+//    if(sourceBindingDisplay != null) {
+//      // Deleted
+//      delta.setAction(DeltaAction.DELETED);
+//      DeltaNode<List<DisplayElement>> valueSets = new DeltaNode<>();
+//      valueSets.setPrevious(sourceBindingDisplay.getValueSetsDisplay());
+//      valueSets.setAction(DeltaAction.DELETED);
+//      DeltaNode<ValuesetStrength> strength = this.compare(sourceBindingDisplay.getStrength(), null);
+//      DeltaNode<Set<Integer>> valuesetLocations = this.compare(sourceBindingDisplay.getValuesetLocations(), null);
+//      delta.setStrength(strength);
+//      delta.setValuesetLocations(valuesetLocations);
+//      delta.setValueSets(valueSets);
+//
+//      return delta;
+//    }
+//
+//    if(targetBindingDisplay != null) {
+//      // Added
+//      DeltaNode<List<DisplayElement>> valueSets = new DeltaNode<>();
+//      valueSets.setCurrent(targetBindingDisplay.getValueSetsDisplay());
+//      valueSets.setAction(DeltaAction.ADDED);
+//      delta.setAction(DeltaAction.ADDED);
+//      delta.setValueSets(valueSets);
+//      DeltaNode<ValuesetStrength> strength = this.compare(null, targetBindingDisplay.getStrength());
+//      delta.setStrength(strength);
+//      DeltaNode<Set<Integer>> valuesetLocations = this.compare(null, targetBindingDisplay.getValuesetLocations());
+//      delta.setValuesetLocations(valuesetLocations);
+//      return delta;
+//    }
+//
+//    return delta;
+//  }
 
 
   private DeltaNode<List<DisplayElement>> compareDisplay(List<DisplayElement> source, List<DisplayElement> target) {
@@ -724,8 +727,39 @@ public class EntityDeltaServiceImpl {
        node.setCurrent(targetMap.get(s));
        if(sourceMap.get(s).equals(targetMap.get(s))) {
          node.setAction(DeltaAction.UNCHANGED);
-       }else {
-         node.setAction(DeltaAction.CHANGED);
+       } else {
+    	   	  
+    	      Datatype targetDT = this.datatypeService.findById(targetMap.get(s));
+    	      if(targetDT.getOrigin() != null && targetDT.getOrigin().equals(sourceMap.get(s))) {
+    	    	  
+        	      Datatype sourceDT = this.datatypeService.findById(sourceMap.get(s));
+        	      DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(sourceDT, true);
+        	      DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(targetDT, true);
+        	      List<StructureDelta> structure =  compareDatatype(sourceDisplay, targetDisplay);
+        	      List<ConformanceStatementDelta> conformanceStatements = compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+        	      ResourceDelta rd = new ResourceDelta();
+        	      rd.setStructureDelta(structure);
+        	      rd.setConformanceStatementDelta(conformanceStatements);
+        	      
+        	      DeltaAction act = DeltaAction.UNCHANGED;
+        	      if(structure !=null)
+        	        for(StructureDelta child: structure ) {
+        	          if(child.getData() !=null && child.getData().getAction() != DeltaAction.UNCHANGED) {
+        	            act =  DeltaAction.UPDATED;
+        	          }
+        	        }
+        	      for(ConformanceStatementDelta child: conformanceStatements ) {
+        	        if( child.getAction() != DeltaAction.UNCHANGED) {
+        	        	act = DeltaAction.UPDATED;
+        	        }
+        	      }
+        	      node.setAction(act);
+        	 
+    	      }else {
+    	          node.setAction(DeltaAction.CHANGED);
+
+    	      }
+    	   
        }
      }else {
        node.setCurrent(null);

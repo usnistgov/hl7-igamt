@@ -50,7 +50,6 @@ public class Valueset extends Resource {
 	private Set<String> codeSystems = new HashSet<String>();
 	private Set<Code> codes = new HashSet<Code>();
 	
-	
 	public boolean isIncludeCodes() {
 		return includeCodes;
 	}
@@ -166,7 +165,10 @@ public class Valueset extends Resource {
 		elm.sourceType = sourceType;
 		elm.numberOfCodes = numberOfCodes;
 		elm.codeSystems = codeSystems;
-		elm.codes=codes;
+		elm.hl7Type = hl7Type;
+		elm.includeCodes = includeCodes;
+		elm.isFlavor = isFlavor;
+		elm.changeLogs = changeLogs;
 	}
 
 	public Set<String> getCodeSystems() {

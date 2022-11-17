@@ -1,6 +1,7 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Action} from '@ngrx/store';
-import {IResource} from 'src/app/modules/shared/models/resource.interface';
+import { IDeleteNodes } from './../../../modules/document/models/toc/toc-operation.class';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Action } from '@ngrx/store';
+import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import {
   IAddNodes, IAddProfileComponentContext,
   IAddResourceFromFile,
@@ -10,16 +11,12 @@ import {
   ICreateCoConstraintGroupResponse, ICreateCompositeProfile, ICreateProfileComponent, ICreateProfileComponentResponse,
   IDeleteNode,
 } from '../../../modules/document/models/toc/toc-operation.class';
-import {IDocumentDisplayInfo, IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
-import {Type} from '../../../modules/shared/constants/type.enum';
-import {IContent} from '../../../modules/shared/models/content.interface';
-import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
-import {IHL7EditorMetadata} from '../../../modules/shared/models/editor.enum';
-import {
-  LoadResourceReferences,
-  LoadResourceReferencesFailure,
-  LoadResourceReferencesSuccess,
-} from '../../dam-igamt/igamt.loaded-resources.actions';
+import { IDocumentDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
+import { IIgTocFilter } from '../../../modules/ig/services/ig-toc-filter.service';
+import { Type } from '../../../modules/shared/constants/type.enum';
+import { IContent } from '../../../modules/shared/models/content.interface';
+import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
+import { IHL7EditorMetadata } from '../../../modules/shared/models/editor.enum';
 
 export enum IgEditActionTypes {
   IgEditResolverLoad = '[Ig Edit Resolver] Load Ig',
@@ -39,6 +36,10 @@ export enum IgEditActionTypes {
   DeleteResource = '[Ig Edit TOC] Delete Resource',
   DeleteResourceSuccess = '[Ig Edit TOC] Delete Resource Success',
   DeleteResourceFailure = '[Ig Edit TOC] Delete Resource Failure',
+
+  DeleteResources = '[Ig Edit TOC] Delete Resources',
+  DeleteResourcesSuccess = '[Ig Edit TOC] Delete Resources Success',
+  DeleteResourcesFailure = '[Ig Edit TOC] Delete Resources Failure',
 
   OpenNarrativeEditorNode = '[Ig Edit TOC Narrative] Open Narrative Editor Node',
   OpenIgMetadataEditorNode = '[Ig Edit TOC Ig Metadata] Open Ig Metadata Editor Node',
@@ -325,7 +326,7 @@ export class AddProfileComponentContextFailure implements Action {
   }
 }
 
-export class DeleteProfileComponentContextFailure  implements Action {
+export class DeleteProfileComponentContextFailure implements Action {
   readonly type = IgEditActionTypes.DeleteProfileComponentContextFailure;
   constructor(readonly error: HttpErrorResponse) {
   }
@@ -357,6 +358,21 @@ export class CreateCompositeProfileSuccess implements Action {
 export class CreateCompositeProfileFailure implements Action {
   readonly type = IgEditActionTypes.CreateCompositeProfileFailure;
   constructor(readonly payload: HttpErrorResponse) {
+  }
+}
+export class DeleteResources implements Action {
+  readonly type = IgEditActionTypes.DeleteResources;
+  constructor(readonly payload: IDeleteNodes) {
+  }
+}
+export class DeleteResourcesSuccess implements Action {
+  readonly type = IgEditActionTypes.DeleteResourcesSuccess;
+  constructor(readonly ids: string [], readonly redirect: boolean, readonly url) {
+  }
+}
+export class DeleteResourcesFailure implements Action {
+  readonly type = IgEditActionTypes.DeleteResourcesFailure;
+  constructor(readonly error: HttpErrorResponse) {
   }
 }
 
@@ -397,4 +413,7 @@ export type IgEditActions =
   | ToggleDeltaFailure
   | CreateCompositeProfile
   | CreateCompositeProfileSuccess
-  | CreateCompositeProfileFailure;
+  | CreateCompositeProfileFailure
+  | DeleteResources
+  | DeleteResourcesSuccess
+  | DeleteResourcesFailure;

@@ -10,6 +10,7 @@ import java.util.Set;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.SingleCodeBinding;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.UsageConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
@@ -28,7 +29,7 @@ public interface BindingSerializationService {
 //	public Element serializeBinding(Binding binding, Set<ValuesetBindingDataModel> valuesetBindingDataModels)
 //			throws SerializationException;
 
-public Element serializeBinding(Binding binding, Map<String, Set<ValuesetBindingDataModel>> valuesetMap, String name, Map<String, Boolean> bindedPaths) throws SerializationException;
+public Element serializeBinding(Binding binding, Map<String, Set<ValuesetBindingDataModel>> valuesetMap, Map<String, List<SingleCodeBinding>> map, String name, Map<String, Boolean> bindedPaths) throws SerializationException;
 
 //	public Element serializeBinding(Binding binding, DatatypeDataModel datatypeDataModel);
 }

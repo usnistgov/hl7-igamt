@@ -14,14 +14,15 @@ package gov.nist.hit.hl7.igamt.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -71,7 +72,7 @@ public class SharingServiceImpl implements SharingService {
    * @see gov.nist.hit.hl7.igamt.ig.service.SharingService#shareIg(java.lang.String, gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo)
    */
   @Override
-  public void shareIg(String id, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException {
+  public void shareIg(String id, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException, ForbiddenOperationException {
     // TODO Auto-generated method stub
     Ig ig= this.igService.findById(id);
     if(ig ==null) {
@@ -112,7 +113,7 @@ public class SharingServiceImpl implements SharingService {
    */
   @Override
   public void shareDatatype(String id, SharedUsersInfo sharedUsersInfo)
-      throws ResourceNotFoundException {
+      throws ResourceNotFoundException, ForbiddenOperationException {
     // TODO Auto-generated method stub
     Datatype elm= this.datatypeService.findById(id);
     if(elm !=null) {
@@ -129,7 +130,7 @@ public class SharingServiceImpl implements SharingService {
    */
   @Override
   public void shareSegment(String id, SharedUsersInfo sharedUsersInfo)
-      throws ResourceNotFoundException {
+      throws ResourceNotFoundException, ForbiddenOperationException {
     Segment elm= this.segmentService.findById(id);
     if(elm !=null) {
       updateSharingInfo(elm, sharedUsersInfo);
@@ -148,7 +149,7 @@ public class SharingServiceImpl implements SharingService {
    */
   @Override
   public void shareValueset(String id, SharedUsersInfo sharedUsersInfo)
-      throws ResourceNotFoundException {
+      throws ResourceNotFoundException, ForbiddenOperationException {
     // TODO Auto-generated method stub
     Valueset elm= this.valuesetService.findById(id);
     if(elm != null) {
@@ -190,7 +191,7 @@ public class SharingServiceImpl implements SharingService {
       elm = this.coConstraintService.findById(id);
       updateSharingInfo(elm, sharedUsersInfo);
       coConstraintService.saveCoConstraintGroup(elm);
-    } catch (CoConstraintGroupNotFoundException e) {
+    } catch (EntityNotFound e) {
       // TODO Auto-generated catch block
       throw new ResourceNotFoundException(id, Type.COCONSTRAINTGROUP);
     }

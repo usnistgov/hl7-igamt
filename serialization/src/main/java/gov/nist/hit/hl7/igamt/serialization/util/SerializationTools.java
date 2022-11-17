@@ -2,11 +2,13 @@ package gov.nist.hit.hl7.igamt.serialization.util;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +38,25 @@ public class SerializationTools {
                 if(i != array.length-1){
                     result += " ,";
                 }
+            }
+        }
+        return result;
+    }
+    
+    public String extractPredicateUsages(Map<String, Predicate> predicateMap , String keyId){
+    	String result ="C(A/B)";
+        for(String key : predicateMap.keySet()) {
+        	if(key.equals(keyId)) {
+        		return  "C("+ predicateMap.get(key).getTrueUsage().name() + "/" + predicateMap.get(key).getFalseUsage().name()+")"; 
+        	}
+        }
+        return result;
+    }
+    public String extractPredicateDescription(Map<String, Predicate> predicateMap , String keyId){
+        String result ="";
+        for(String key : predicateMap.keySet()) {
+            if(key.equals(keyId)) {
+                return  predicateMap.get(key).generateDescription();
             }
         }
         return result;

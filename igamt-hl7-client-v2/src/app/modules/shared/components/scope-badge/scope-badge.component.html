@@ -1,6 +1,17 @@
 <ng-container [ngSwitch]="scope">
   <span *ngSwitchCase="'USER'" class="badge scope-badge-user">
-    USER <span style="color: white; font-size: 0.9em; font-weight: 300;">{{version}}</span>
+    <ng-container [ngSwitch]="resourceOrigin">
+      <ng-container *ngSwitchCase="'PHINVADS'">
+    PHIN
+  </ng-container>
+  <ng-container *ngSwitchCase="'CSV'">
+    CSV
+  </ng-container>
+   <ng-container *ngSwitchDefault>
+    USR
+  </ng-container>
+</ng-container>
+  <span style="color: white; font-size: 0.9em; font-weight: 300;" *ngIf="resourceOrigin !=='PHINVADS'">{{version}}</span>
   </span>
   <span *ngSwitchCase="'HL7STANDARD'" class="badge" [ngClass]="{'scope-badge-hl7': version !=='2.x',  'scope-badge-dynamic': version ==='2.x' }">
     HL7 <span style="font-size: 0.9em; font-weight: 300;">{{version}}</span>
@@ -10,9 +21,7 @@
     CUSTOM <span style="font-size: 0.9em; font-weight: 300;">{{version}}</span>
   </span>
 
-  <span *ngSwitchCase="'PHINVADS'"
-    [ngClass]="{'scope-badge-phinvads': !flavor, 'scope-badge-user': flavor}"
-    class="badge">
+  <span *ngSwitchCase="'PHINVADS'" class="badge scope-badge-phinvads">
     PHIN <span style="font-size: 0.9em; font-weight: 300;"></span>
   </span>
   <span *ngSwitchCase="'SDTF'"

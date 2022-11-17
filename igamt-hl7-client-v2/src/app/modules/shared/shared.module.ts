@@ -86,6 +86,7 @@ import { TextComponent } from './components/hl7-v2-tree/columns/text/text.compon
 import { UsageComponent } from './components/hl7-v2-tree/columns/usage/usage.component';
 import { ValuesetComponent } from './components/hl7-v2-tree/columns/valueset/valueset.component';
 import { Hl7V2TreeComponent } from './components/hl7-v2-tree/hl7-v2-tree.component';
+import { IgPublisherComponent } from './components/ig-publisher/ig-publisher.component';
 import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
 import { ImportStructureComponent } from './components/import-structure/import-structure.component';
 import { IssueBadgeComponent } from './components/issue-badge/issue-badge.component';
@@ -125,6 +126,7 @@ import { ValueSetStructureComponent } from './components/value-set-structure/val
 import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-delta.component';
 import { VerificationEntryTableComponent } from './components/verification-entry-table/verification-entry-table.component';
 import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
+import { VsCodePickerComponent } from './components/vs-code-picker/vs-code-picker.component';
 import { GeneratedNamingDuplicationDirective } from './directives/generated-naming-duplication.directive';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
@@ -133,6 +135,7 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { UnusedElementsComponent } from './components/unused-elements/unused-elements.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -226,6 +229,9 @@ import { MinNumberDirective } from './validators/min-number.directive';
     SelectSlicingContextComponent,
     SlicingRowComponent,
     SlicingViewerComponent,
+    VsCodePickerComponent,
+    IgPublisherComponent,
+    UnusedElementsComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -405,6 +411,9 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ChangeReasonListDialogComponent,
     SelectSlicingContextComponent,
     SlicingRowComponent,
+    VsCodePickerComponent,
+    IgPublisherComponent,
+    UnusedElementsComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -434,6 +443,10 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ImportStructureComponent,
     ChangeReasonListDialogComponent,
     SelectSlicingContextComponent,
+    VsCodePickerComponent,
+    IgPublisherComponent,
+    UnusedElementsComponent,
+
   ],
 })
 export class SharedModule {

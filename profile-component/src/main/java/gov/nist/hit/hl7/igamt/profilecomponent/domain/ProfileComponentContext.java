@@ -18,12 +18,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyCoConstraintBindings;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyDynamicMapping;
 
-/**
- * A profile component is an objects that contains all the changes between the source (a message or
- * a segment) and the targeted composite profile.
- * 
- * Created by Maxence Lefort on Feb 20, 2018.
- */
+
 public class ProfileComponentContext {
 
  

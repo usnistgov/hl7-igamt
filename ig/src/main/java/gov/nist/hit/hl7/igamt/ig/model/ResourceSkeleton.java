@@ -39,7 +39,12 @@ public class ResourceSkeleton {
     }
 
     public DisplayElement getResource() {
-        return resource;
+        try {
+            this.lazyLoad();
+            return resource;
+        } catch (Exception e) {
+            return resource;
+        }
     }
 
     public void setResource(DisplayElement resource) {

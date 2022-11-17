@@ -13,31 +13,20 @@
  */
 package gov.nist.hit.hl7.igamt.segment.service;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
-import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.service.ResourceService;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
-import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
-import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
-import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
@@ -47,7 +36,6 @@ import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
-//import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 
 /**
  *
@@ -55,82 +43,72 @@ import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
  */
 public interface SegmentService extends ResourceService {
 
-	 Segment findById(String id);
+  Segment findById(String id);
 
-	 Segment create(Segment segment);
+  Segment create(Segment segment);
+  Segment save(Segment segment) throws ForbiddenOperationException;
 
-	 Segment save(Segment segment);
+  List<Segment> findAll();
+  
+  void delete(Segment segment) throws ForbiddenOperationException;
 
-	 List<Segment> findAll();
 
-	 void delete(Segment segment);
+  List<Segment> findByDomainInfoVersion(String version);
 
-	 void removeCollection();
+  List<Segment> findByDomainInfoScope(String scope);
 
-	 List<Segment> findByDomainInfoVersion(String version);
+  List<Segment> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
 
-	 List<Segment> findByDomainInfoScope(String scope);
+  List<Segment> findByName(String name);
 
-	 List<Segment> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+  List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
 
-	 List<Segment> findByName(String name);
+  List<Segment> findByDomainInfoVersionAndName(String version, String name);
 
-	 List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
+  List<Segment> findByDomainInfoScopeAndName(String scope, String name);
 
-	 List<Segment> findByDomainInfoVersionAndName(String version, String name);
+  List<Segment> findDisplayFormatByScopeAndVersion(Scope scope, String version, String username);
 
-	 List<Segment> findByDomainInfoScopeAndName(String scope, String name);
+  List<Valueset> getDependentValueSets(Set<Segment> resources);
 
-	 List<Segment> findDisplayFormatByScopeAndVersion(Scope scope, String version, String username);
+  Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
+      throws SegmentNotFoundException, SegmentValidationException, ForbiddenOperationException;
 
-	 Link cloneSegment(String id, HashMap<RealKey, String> newKeys, Link l, String username, Scope user, CloneMode cloneMode);
+  void validate(SegmentDynamicMapping dynamicMapping) throws SegmentValidationException;
 
-	List<Valueset> getDependentValueSets(Set<Segment> resources);
+  SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment, boolean readOnly);
 
-	 Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
-			throws SegmentNotFoundException, SegmentValidationException;
-	
-	void validate(SegmentDynamicMapping dynamicMapping) throws SegmentValidationException;
+  void applyChanges(Segment s, List<ChangeItemDomain> cItems)
+      throws ApplyChangeException, ForbiddenOperationException;
 
-	 SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment, boolean readOnly);
-	
-	 void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId)
-            throws ApplyChangeException;
-	
-	 Set<?> convertSegmentStructurForMessage(Segment segment, String idPath, String path);
+  Set<?> convertSegmentStructurForMessage(Segment segment, String idPath, String path);
 
-	 List<SegmentSelectItemGroup> getSegmentFlavorsOptions(Set<String> ids, Segment s, String scope);
+  List<SegmentSelectItemGroup> getSegmentFlavorsOptions(Set<String> ids, Segment s, String scope);
 
-	 List<Segment> findFlavors(Set<String> ids, String id, String name);
+  List<Segment> findFlavors(Set<String> ids, String id, String name);
 
-	 List<Segment> findNonFlavor(Set<String> ids, String id, String name);
+  List<Segment> findNonFlavor(Set<String> ids, String id, String name);
 
-	 Set<RelationShip> collectDependencies(Segment elm);
+  void collectAssoicatedConformanceStatements(Segment segment,
+      HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap);
 
-	 void collectAssoicatedConformanceStatements(Segment segment,
-			HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap);
+  Binding makeLocationInfo(Segment s);
 
-	 Binding makeLocationInfo(Segment s);
+  LocationInfo makeLocationInfoForField(Segment s, StructureElementBinding seb);
 
-	 LocationInfo makeLocationInfoForField(Segment s, StructureElementBinding seb);
+  List<Segment> findByIdIn(Set<String> linksAsIds);
 
-	 List<Segment> findByIdIn(Set<String> linksAsIds);
+  void collectResources(Segment seg, HashMap<String, Resource> used);
 
-	 void collectResources(Segment seg, HashMap<String, Resource> used);
+  Set<Resource> getDependencies(Segment segment);
 
-	 Set<Resource> getDependencies(Segment segment);
-	
-	 void restoreDefaultDynamicMapping(Segment segment);
+  void restoreDefaultDynamicMapping(Segment segment);
 
-	Set<DisplayElement> convertSegments(Set<Segment> segments);
-	DisplayElement convertSegment(Segment segment);
-	Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry);
-
-  /**
-   * @param s
-   * @return
-   */
-  String findObx2VsId(Segment s);
-
+  Set<DisplayElement> convertSegments(Set<Segment> segments);
+  DisplayElement convertSegment(Segment segment);
+  Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry);
+  String findXMLRefIdById(Segment s, String defaultHL7Version);
+  String findObx2VsId(Segment s);  
+  List<Segment> saveAll(Set<Segment> segments) throws ForbiddenOperationException;
 
 }

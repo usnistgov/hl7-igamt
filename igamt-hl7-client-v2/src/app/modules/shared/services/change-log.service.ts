@@ -16,6 +16,7 @@ export interface IChangeLogMap {
 export class ChangeLogService {
 
   private map: IChangeLogMap;
+  private locationChangeLog: ILocationChangeLog;
   private initial: IChangeLogMap;
   private changeDisplaySections: BehaviorSubject<IChangeReasonSection[]>;
   changeDisplaySections$: Observable<IChangeReasonSection[]>;
@@ -27,6 +28,7 @@ export class ChangeLogService {
   }
 
   init(log: ILocationChangeLog) {
+    this.locationChangeLog = log;
     const v = {};
     Object
       .keys(log)
@@ -71,7 +73,37 @@ export class ChangeLogService {
     } else {
       delete (this.map[change.property] || {})[ctx];
     }
+    this.updateLocationChangeLog(change);
     this.changeDisplaySections.next(this.getDisplayList());
+  }
+
+  updateLocationChangeLog({ context, property, reason, date }: IChangeReasonSection) {
+    const item = {
+      context,
+      log: {
+        date,
+        reason,
+      },
+    };
+    const propertyChangeList = this.locationChangeLog[property];
+    if (propertyChangeList) {
+      const index = propertyChangeList.findIndex((n) => n.context.resource === context.resource && n.context.element === context.element);
+      if (index !== -1) {
+        if (reason) {
+          propertyChangeList[index].log = item.log;
+        } else {
+          propertyChangeList.splice(index, 1);
+        }
+      } else {
+        if (reason) {
+          propertyChangeList.push(item);
+        }
+      }
+    } else {
+      if (reason) {
+        this.locationChangeLog[property] = [item];
+      }
+    }
   }
 
   get(property: PropertyType, context: IBindingContext): IChangeReasonSection {

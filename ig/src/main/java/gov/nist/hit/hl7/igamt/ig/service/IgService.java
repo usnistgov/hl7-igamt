@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
@@ -17,10 +18,12 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.client.result.UpdateResult;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
@@ -28,6 +31,7 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
+import gov.nist.hit.hl7.igamt.display.model.PublishingInfo;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CompositeProfileCreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
@@ -35,7 +39,10 @@ import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
+import gov.nist.hit.hl7.igamt.ig.model.FilterIGInput;
+import gov.nist.hit.hl7.igamt.ig.model.FilterResponse;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.service.impl.exception.CoConstraintXMLSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -50,8 +57,6 @@ public interface IgService {
   public void delete(String id);
 
   public Ig save(Ig ig);
-
-  public Ig clone(Ig ig, String username, CopyInfo info);
 
   public List<Ig> findByUsername(String username);
 
@@ -77,7 +82,7 @@ public interface IgService {
   
   public List<Ig> findAllSharedIG(String username, Scope scope);
 
-  public void delete(Ig ig);
+  public void delete(Ig ig) throws ForbiddenOperationException;
 
   Set<ConformanceStatement> conformanceStatementsSummary(Ig igdoument);
 
@@ -85,24 +90,19 @@ public interface IgService {
 
   public IGContentMap collectData(Ig igdoument);
 
-  void buildDependencies(IGContentMap contentMap);
-
-
   public Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException;
 
   public IgDataModel generateDataModel(Ig ig) throws Exception;
 
-  public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds, String[] compositeProfileIds) throws CloneNotSupportedException, IOException, ClassNotFoundException, ProfileSerializationException, TableSerializationException;
+  public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds, String[] compositeProfileIds) throws CloneNotSupportedException, IOException, ClassNotFoundException, ProfileSerializationException, TableSerializationException, CoConstraintXMLSerializationException;
   
   public Set<RelationShip> findUsage(Set<RelationShip> relations, Type type, String elementId);
   
   public Set<RelationShip> buildRelationShip(Ig ig, Type type);
   
   public Set<RelationShip> builAllRelations(Ig ig) ;
-  
-  public void publishIG(Ig ig) throws IGNotFoundException, IGUpdateException;
-  
-  UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass);
+    
+  UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass, boolean updateDate);
   
   public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo);
   public Ig makeSelectedIg(Ig ig, ReqId reqIds);
@@ -115,6 +115,25 @@ public interface IgService {
 
   public CompositeProfileStructure createCompositeProfileSercice(Ig ig,
       CompositeProfileCreationWrapper wrapper);
+  
+  
+  public String findDefaultHL7VersionById(String id);
+
+  void removeChildren(String id);
+
+  void updateChildrenAttribute(Ig ig, String attributeName, Object value, boolean updateDate)
+      throws IGUpdateException;
+
+  public FilterResponse getFilterResponse(String id, FilterIGInput filter) throws EntityNotFound;
+
+  public void publishIG(Ig ig, PublishingInfo info) throws IGNotFoundException, IGUpdateException;
+
+  public FilterResponse getUnused(String id) throws EntityNotFound;
+
+  public Set<String> findUnused(Ig ig, Type registryType);
+
+  public List<String> deleteUnused(Ig ig, Type registryType, List<String> ids) throws EntityNotFound, ForbiddenOperationException;
+
 
 
 }

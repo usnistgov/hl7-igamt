@@ -1,6 +1,5 @@
 package gov.nist.hit.hl7.igamt.delta.service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
@@ -25,8 +24,8 @@ import gov.nist.diff.domain.DeltaMode;
 import gov.nist.diff.domain.DeltaObject;
 import gov.nist.diff.service.DeltaProcessor;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
-import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
@@ -78,7 +77,7 @@ public class DeltaServiceImpl implements DeltaService {
   @Autowired
   CompositeProfileStructureService compositeProfileStructureService;
 
-  public Delta delta(Type type, String documentId, String entityId) throws CoConstraintGroupNotFoundException {
+  public Delta delta(Type type, String documentId, String entityId) throws EntityNotFound {
     Ig targetIg = this.igService.findById(documentId);
     Ig sourceIg = this.igService.findById(targetIg.getFrom());
 
@@ -224,6 +223,7 @@ public class DeltaServiceImpl implements DeltaService {
           Datatype d = datatypeService.findById(elm.getFlavorId().getCurrent());
           if(d != null) {
              elm.getDisplay().setCurrent(displayInfoService.convertDatatype(d));
+             elm.getDisplay().getCurrent().setDelta(elm.getAction());
           }
         }
       }
@@ -386,7 +386,6 @@ public class DeltaServiceImpl implements DeltaService {
    */
   @Override
   public DeltaAction summarize(List<StructureDelta> deltaStructure, List<ConformanceStatementDelta> cfs, List<CoConstraintBinding> coConstraintBindings) {
-    // TODO Auto-generated method stub
     DeltaAction ret = DeltaAction.UNCHANGED;
     if(deltaStructure !=null)
       for(StructureDelta child: deltaStructure ) {

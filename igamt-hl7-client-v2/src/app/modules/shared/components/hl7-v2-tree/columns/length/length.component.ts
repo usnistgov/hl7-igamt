@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ChangeType, IChange, PropertyType } from 'src/app/modules/shared/models/save-change';
 import { LengthType } from '../../../../constants/length-type.enum';
@@ -10,19 +10,20 @@ import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
   templateUrl: './length.component.html',
   styleUrls: ['./length.component.scss'],
 })
-export class LengthComponent extends HL7v2TreeColumnComponent<ILengthAndConfLength> implements OnInit {
+export class LengthComponent extends HL7v2TreeColumnComponent<ILengthRange> implements OnInit {
 
-  val: ILengthAndConfLength;
+  lengthTypes = LengthType;
+
+  val: ILengthRange;
   @Output()
   updateLengthType: EventEmitter<LengthType>;
+  @Input()
+  lengthType: LengthType;
+  @Input()
+  leaf: boolean;
 
-  onInitValue(value: ILengthAndConfLength): void {
-    this.val = {
-      ...value,
-      length: value && value.length ? {
-        ...value.length,
-      } : undefined,
-    };
+  onInitValue(value: ILengthRange): void {
+    this.val = value;
   }
 
   constructor(protected dialog: MatDialog) {
@@ -34,33 +35,28 @@ export class LengthComponent extends HL7v2TreeColumnComponent<ILengthAndConfLeng
   }
 
   minChange(value: string) {
-    this.onChange<string>(this.getInputValue().length.min + '', value + '', PropertyType.LENGTHMIN, ChangeType.UPDATE);
+    this.onChange<string>(this.oldValue.min + '', value + '', PropertyType.LENGTHMIN, ChangeType.UPDATE);
   }
 
   maxChange(value: string) {
-    this.onChange<string>(this.getInputValue().length.max + '', value + '', PropertyType.LENGTHMAX, ChangeType.UPDATE);
+    this.onChange<string>(this.oldValue.max + '', value + '', PropertyType.LENGTHMAX, ChangeType.UPDATE);
   }
 
   clear() {
-    this.onChange<string>(this.getInputValue().lengthType, LengthType.ConfLength, PropertyType.LENGTHTYPE, ChangeType.UPDATE);
-    this.updateLengthType.emit(LengthType.ConfLength);
+    this.onChange<string>(this.lengthType, LengthType.UNSET, PropertyType.LENGTHTYPE, ChangeType.UPDATE);
+    this.updateLengthType.emit(LengthType.UNSET);
+  }
+
+  set() {
+    this.onChange<string>(this.lengthType, LengthType.Length, PropertyType.LENGTHTYPE, ChangeType.UPDATE);
+    this.updateLengthType.emit(LengthType.Length);
   }
 
   isActualChange<X>(change: IChange<X>): boolean {
     return change.propertyValue !== change.oldPropertyValue;
   }
 
-  active() {
-    return this.val.lengthType === LengthType.Length;
-  }
-
   ngOnInit() {
   }
 
-}
-
-export interface ILengthAndConfLength {
-  length: ILengthRange;
-  confLength: string;
-  lengthType: LengthType;
 }

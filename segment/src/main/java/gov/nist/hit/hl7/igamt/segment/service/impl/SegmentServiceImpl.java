@@ -39,20 +39,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtensionService;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
-import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
-import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
-import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
@@ -63,7 +58,6 @@ import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
-import gov.nist.hit.hl7.igamt.common.slicing.domain.Slice;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
 import gov.nist.hit.hl7.igamt.common.slicing.service.SlicingService;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
@@ -80,7 +74,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -101,6 +94,8 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 import gov.nist.hit.hl7.resource.change.service.ApplyChange;
+import nu.xom.Attribute;
+import gov.nist.hit.hl7.resource.change.service.OperationService;
 
 /**
  *
@@ -127,11 +122,15 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Autowired
   ValuesetService valueSetService;
+  
   @Autowired
   ApplyChange applyChange;
+  
   @Autowired
   SlicingService slicingService;
 
+  @Autowired
+  private OperationService operationService;
 
   @Override
   public Segment findById(String key) {
@@ -146,9 +145,11 @@ public class SegmentServiceImpl implements SegmentService {
     return segment;
   }
 
+
   @Override
-  public Segment save(Segment segment) {
+  public Segment save(Segment segment) throws ForbiddenOperationException {
     segment.setUpdateDate(new Date());
+	this.operationService.verifySave(segment);
     segment = segmentRepository.save(segment);
     return segment;
   }
@@ -160,18 +161,14 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
   @Override
-  public void delete(Segment segment) {
+  public void delete(Segment segment) throws ForbiddenOperationException {
+	this.operationService.verifyDelete(segment);
     segmentRepository.delete(segment);
   }
 
   @Override
   public void delete(String key) {
     segmentRepository.deleteById(key);
-  }
-
-  @Override
-  public void removeCollection() {
-    segmentRepository.deleteAll();
   }
 
   @Override
@@ -496,30 +493,6 @@ public class SegmentServiceImpl implements SegmentService {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * gov.nist.hit.hl7.igamt.segment.service.SegmentService#cloneSegment(java.util.
-   * HashMap, java.util.HashMap, gov.nist.hit.hl7.igamt.common.base.domain.Link,
-   * java.lang.String)
-   */
-  @Override
-  public Link cloneSegment(String key, HashMap<RealKey, String> newKeys, Link l, String username, Scope scope, CloneMode cloneMode) {
-
-    Segment obj = this.findById(l.getId());
-    Segment elm = obj.clone();
-    elm.setOrigin(l.getId());
-    elm.getDomainInfo().setScope(scope);
-    elm.setId(key);
-    elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
-    elm.setUsername(username);
-    Link newLink = new Link(elm);
-    updateDependencies(elm, newKeys, username, cloneMode);
-    updateDynamicMapping(elm, newKeys);
-    this.save(elm);
-    return newLink;
-  }
 
   @Override
   public List<Valueset> getDependentValueSets(Set<Segment> resources) {
@@ -531,51 +504,9 @@ public class SegmentServiceImpl implements SegmentService {
     return valueSetService.findByIdIn(valueSetIds);
   }
 
-  private void updateDynamicMapping(Segment segment, HashMap<RealKey, String> newKeys) {
-    if (segment.getDynamicMappingInfo() != null) {
-      if (segment.getDynamicMappingInfo().getItems() != null) {
-        segment.getDynamicMappingInfo().getItems().forEach(item -> {
-          RealKey key = new RealKey(item.getDatatypeId(), Type.DATATYPE);
-          if (newKeys.containsKey(key)) {
-            item.setDatatypeId(newKeys.get(key));
-          }
-        });
-      }
-    }
-  }
-
-  /**
-   * @param elm
-   * @param cloneMode 
-   * @param datatypesMap
-   * @param valuesetsMap
-   * @throws CoConstraintSaveException
-   */
-  private void updateDependencies(Segment elm, HashMap<RealKey, String> newKeys, String username, CloneMode cloneMode) {
-    // TODO Auto-generated method stub
-
-    for (Field f : elm.getChildren()) {
-      if (f.getRef() != null) {
-        if (f.getRef().getId() != null) {
-          RealKey key = new RealKey(f.getRef().getId(), Type.DATATYPE);
-          if (newKeys.containsKey(key)) {
-            f.getRef().setId(newKeys.get(key));
-          }
-        }
-      }
-    }
-    this.bindingService.substitute(elm.getBinding(), newKeys);
-    if(cloneMode.equals(CloneMode.DERIVE)) {
-      this.bindingService.lockConformanceStatements(elm.getBinding());
-    }
-    if(elm.getSlicings() != null) {
-      this.slicingService.updateSlicing(elm.getSlicings(), newKeys, Type.DATATYPE);
-    }
-  }
-
   @Override
   public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
-      throws SegmentNotFoundException, SegmentValidationException {
+      throws SegmentNotFoundException, SegmentValidationException, ForbiddenOperationException {
     validate(dynamicMapping);
     Segment segment = findById(dynamicMapping.getId());
     if (segment == null) {
@@ -623,14 +554,8 @@ public class SegmentServiceImpl implements SegmentService {
     if (existingBindingDisplay == null || (existingBindingDisplay.getValuesetBindingsPriority() != null
         && existingBindingDisplay.getValuesetBindingsPriority() > priority)) {
       bindingDisplay.setBindingType(BindingType.NA);
-      if(seb.getInternalSingleCode() != null 
-          && seb.getInternalSingleCode().getValueSetId() != null
-          && seb.getInternalSingleCode().getCode() != null) {
-        bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
-        bindingDisplay.setValuesetBindingsPriority(priority);
-        bindingDisplay.setValuesetBindingsSourceId(sourceId);
-        bindingDisplay.setValuesetBindingsSourceType(sourceType);
-        bindingDisplay.setBindingType(BindingType.SC);
+      if (seb.getSingleCodeBindings() != null && !seb.getSingleCodeBindings().isEmpty()) {
+        bindingDisplay.setSingleCodeBindings(seb.getSingleCodeBindings());
       } else {
         Set<DisplayValuesetBinding> displayValuesetBindings = this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap);
         if (displayValuesetBindings != null) {
@@ -641,7 +566,7 @@ public class SegmentServiceImpl implements SegmentService {
           bindingDisplay.setValuesetBindingsSourceType(sourceType);
           bindingDisplay.setBindingType(BindingType.VS);
         }
-      }	
+      }
     }
 
     bindingDisplay.setChangeLog(seb.getChangeLog());
@@ -948,56 +873,6 @@ public class SegmentServiceImpl implements SegmentService {
     return segments;
   }
 
-  @Override
-  public Set<RelationShip> collectDependencies(Segment elm) {
-
-    Set<RelationShip> used = new HashSet<RelationShip>();
-    HashMap<String, Usage> usageMap = new HashMap<String, Usage>();
-
-    for (Field f : elm.getChildren()) {
-      if (f.getRef() != null && f.getRef().getId() != null) {
-
-        RelationShip rel = new RelationShip(new ReferenceIndentifier(f.getRef().getId(), Type.DATATYPE),
-            new ReferenceIndentifier(elm.getId(), Type.SEGMENT),
-
-            new ReferenceLocation(Type.FIELD, f.getPosition() + "", f.getName()));
-        rel.setUsage(f.getUsage());
-        usageMap.put(f.getId(), f.getUsage());
-        used.add(rel);
-      }
-    }
-    if (elm.getDynamicMappingInfo() != null) {
-      collectDynamicMappingDependencies(elm.getId(), elm.getDynamicMappingInfo(), used);
-    }
-    if (elm.getBinding() != null) {
-      Set<RelationShip> bindingDependencies = bindingService.collectDependencies(
-          new ReferenceIndentifier(elm.getId(), Type.SEGMENT), elm.getBinding(), usageMap);
-      used.addAll(bindingDependencies);
-
-    }
-    if(elm.getSlicings() != null ) {
-      Set<RelationShip> slicingDependencies = slicingService.collectDependencies(
-          new ReferenceIndentifier(elm.getId(), Type.SEGMENT), elm.getSlicings(), Type.DATATYPE);
-      used.addAll(slicingDependencies);  
-    }
-     return used;
-  }
-
-  private void collectDynamicMappingDependencies(String id, DynamicMappingInfo dynamicMappingInfo,
-      Set<RelationShip> used) {
-    // TODO Auto-generated method stub
-    if (dynamicMappingInfo.getItems() != null) {
-      for (DynamicMappingItem item : dynamicMappingInfo.getItems()) {
-        if (item.getDatatypeId() != null) {
-          RelationShip rel = new RelationShip(new ReferenceIndentifier(item.getDatatypeId(), Type.DATATYPE),
-              new ReferenceIndentifier(id, Type.SEGMENT),
-
-              new ReferenceLocation(Type.DYNAMICMAPPING, "Dynamic Mapping", null));
-          used.add(rel);
-        }
-      }
-    }
-  }
 
   @Override
   public void collectAssoicatedConformanceStatements(Segment segment,
@@ -1065,13 +940,11 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public List<Segment> findByIdIn(Set<String> ids) {
-    // TODO Auto-generated method stub
     return segmentRepository.findByIdIn(ids);
   }
 
   @Override
   public void collectResources(Segment seg, HashMap<String, Resource> used) {
-    // TODO Auto-generated method stub
     Set<String> usedDatatypesIds = this.getSegmentDatatypesDependenciesIds(seg, used);
     List<Datatype> usedDatatypes = this.datatypeService.findByIdIn(usedDatatypesIds);
     for (Datatype d : usedDatatypes) {
@@ -1081,7 +954,6 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
   private Set<String> getSegmentDatatypesDependenciesIds(Segment segment, HashMap<String, Resource> used) {
-    // TODO Auto-generated method stub
     Set<String> ids = new HashSet<String>();
     if (segment.getChildren() != null) {
 
@@ -1116,27 +988,27 @@ public class SegmentServiceImpl implements SegmentService {
    */
 
   @Override
-  public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException {
+  public void applyChanges(Segment s, List<ChangeItemDomain> cItems)  throws ApplyChangeException, ForbiddenOperationException {
     //Resource part
     Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
-    applyChange.applyResourceChanges(s, singlePropertyMap , documentId);
+    applyChange.applyResourceChanges(s, singlePropertyMap);
 
     if (singlePropertyMap.containsKey(PropertyType.EXT)) {
       s.setExt((String) singlePropertyMap.get(PropertyType.EXT).getPropertyValue());
     }
 
     Map<PropertyType, List<ChangeItemDomain>> map = applyChange.convertToMultiplePropertyChangeMap(cItems);
-    this.applyChildrenChange(map, s.getChildren(), documentId);
+    this.applyChildrenChange(map, s.getChildren());
 
-    applyChange.applyBindingChanges(map, s.getBinding(), documentId, Level.SEGMENT);
+    applyChange.applyBindingChanges(map, s.getBinding(), Level.SEGMENT);
     if(map.containsKey(PropertyType.SLICING)) {
     if(s.getSlicings() == null) {
       s.setSlicings(new HashSet<Slicing>());
     }
-    applyChange.applySlicingChanges(map, s.getSlicings(), documentId, Type.SEGMENT);
+    applyChange.applySlicingChanges(map, s.getSlicings(), Type.SEGMENT);
     }
     if(s.getName().equals("OBX")) {
-      this.applyDynamicMappingChanges(map, s, documentId);
+      this.applyDynamicMappingChanges(map, s);
     }
     s.setBinding(this.makeLocationInfo(s));
     this.save(s);
@@ -1149,20 +1021,20 @@ public class SegmentServiceImpl implements SegmentService {
    * @throws ApplyChangeException 
    */
   private void applyChildrenChange(Map<PropertyType, List<ChangeItemDomain>> map,
-      Set<Field> children, String documentId) throws ApplyChangeException {
+      Set<Field> children) throws ApplyChangeException {
 
-    applyChange.applySubstructureElementChanges(map, children, documentId, applyChange::findStructElementById);
+    applyChange.applySubstructureElementChanges(map, children, applyChange::findStructElementById);
 
     if (map.containsKey(PropertyType.CARDINALITYMIN)) {
-      applyChange.applyAll(map.get(PropertyType.CARDINALITYMIN), children, documentId, this::applyCardMin, applyChange::findStructElementById);
+      applyChange.applyAll(map.get(PropertyType.CARDINALITYMIN), children, this::applyCardMin, applyChange::findStructElementById);
     }
 
     if (map.containsKey(PropertyType.CARDINALITYMAX)) {
-      applyChange.applyAll(map.get(PropertyType.CARDINALITYMAX), children, documentId, this::applyCardMax, applyChange::findStructElementById);
+      applyChange.applyAll(map.get(PropertyType.CARDINALITYMAX), children, this::applyCardMax, applyChange::findStructElementById);
     } 
   }
 
-  public void applyCardMin( ChangeItemDomain change, Field f, String documentId) {
+  public void applyCardMin( ChangeItemDomain change, Field f) {
     change.setOldPropertyValue(f.getMin());
     if (change.getPropertyValue() == null) {
       f.setMin(0);
@@ -1171,7 +1043,7 @@ public class SegmentServiceImpl implements SegmentService {
     }
   }
 
-  public void applyCardMax( ChangeItemDomain change, Field f, String documentId) {
+  public void applyCardMax( ChangeItemDomain change, Field f) {
     change.setOldPropertyValue(f.getMax());
     if (change.getPropertyValue() == null) {
       f.setMax("NA");
@@ -1185,8 +1057,7 @@ public class SegmentServiceImpl implements SegmentService {
    * @param s
    * @param documentId
    */
-  private void applyDynamicMappingChanges(Map<PropertyType, List<ChangeItemDomain>> map, Segment s,
-      String documentId) {
+  private void applyDynamicMappingChanges(Map<PropertyType, List<ChangeItemDomain>> map, Segment s) {
     if(map.containsKey(PropertyType.DYNAMICMAPPINGITEM)) {
       for(ChangeItemDomain item: map.get(PropertyType.DYNAMICMAPPINGITEM)) {
         String value = (String)item.getPropertyValue();
@@ -1316,6 +1187,7 @@ public class SegmentServiceImpl implements SegmentService {
     displayElement.setParentId(segment.getParentId());
     displayElement.setParentType(segment.getParentType());
     displayElement.setStatus(segment.getStatus());
+    displayElement.setDerived(segment.isDerived());
     return displayElement;
   }
 
@@ -1347,5 +1219,30 @@ public class SegmentServiceImpl implements SegmentService {
     }
     return null;
   }
+  
+
+	private String str(String value) {
+		return value != null ? value : "";
+	}
+	
+	@Override
+	public String findXMLRefIdById(Segment s, String defaultHL7Version) {
+		if (defaultHL7Version != null && s.getDomainInfo() != null && s.getDomainInfo().getVersion() != null) {
+			if (defaultHL7Version.equals(s.getDomainInfo().getVersion())) {
+				return s.getLabel();
+			} else {
+				return this.str(s.getLabel() + "_" + s.getDomainInfo().getVersion().replaceAll("\\.", "-"));
+			}
+		} else {
+			return s.getLabel();
+		}
+	}
+
+  @Override
+  public List<Segment> saveAll(Set<Segment> segments) throws ForbiddenOperationException {
+  	this.operationService.verifySave(segments);
+    return this.segmentRepository.saveAll(segments);
+  }
+
 
 }

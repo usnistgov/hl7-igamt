@@ -1,12 +1,17 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:import href="/templates/profile/constraint.xsl"/>
         <xsl:import href="/templates/profile/dynamicMappingForProfileComponent.xsl"/>
+                <xsl:import href="/templates/profile/slicing.xsl"/>
+        
     
         	<xsl:import href="/templates/profile/valueset/valueSetBindingList.xsl" />
+        			<xsl:import href="/templates/profile/singleCode/singleCodeBinding.xsl" />
+        	
         		<xsl:import href="/templates/profile/singleCode/internalSingleCode.xsl" />
         			<xsl:import href="/templates/profile/constraint.xsl" />
         		
     <xsl:include href="/templates/profile/definitionText.xsl"/>
+    
     
 
     <xsl:template match="ProfileComponent" mode="toc">
@@ -360,9 +365,11 @@
         </xsl:element>
                 <xsl:element name="br"/>
                 
-                		<xsl:call-template name="ValueSetBindingList"/>	
+                		<xsl:call-template name="ValueSetBindingList"/>
+                						<xsl:call-template name="SingleCodeBinding" />
+                			
 					<xsl:call-template name="InternalSingleCode"/>	
-		<xsl:apply-templates select="./DynamicMappingForProfileComponent"/>
+		<xsl:apply-templates select="./Slicings"/>
 					
 <!-- 					<xsl:call-template name="Constraint"/>
  -->					

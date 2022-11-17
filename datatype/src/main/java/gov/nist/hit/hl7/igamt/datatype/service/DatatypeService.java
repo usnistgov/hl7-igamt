@@ -22,6 +22,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
@@ -48,17 +49,15 @@ public interface DatatypeService {
 
 	public Datatype create(Datatype datatype);
 
-	public Datatype save(Datatype datatype);
+	public Datatype save(Datatype datatype) throws ForbiddenOperationException;
 
 	public List<Datatype> findAll();
+	
+	public List<Datatype> saveAll(Set<Datatype> datatypes) throws ForbiddenOperationException;
 
 	public List<Datatype> findByScope(Scope scope);
 
-	public void delete(Datatype datatype);
-
-	public void delete(String id);
-
-	public void removeCollection();
+	public void delete(Datatype datatype) throws ForbiddenOperationException;
 
 	public List<Datatype> findByDomainInfoVersion(String version);
 
@@ -84,9 +83,6 @@ public interface DatatypeService {
 
 	Datatype findOneByNameAndVersionAndScope(String name, String version, String scope);
 
-	public Link cloneDatatype(String newId, HashMap<RealKey, String> newKeys,  Link l,
-			String username, Scope scope, CloneMode cloneMode);
-
 	public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope);
 
 	public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype, boolean readOnly);
@@ -99,10 +95,8 @@ public interface DatatypeService {
 
 	public List<DatatypeSelectItemGroup> getDatatypeFlavorsOptions(Set<String> ids, Datatype dt, String scope);
 
-	public void applyChanges(Datatype dt, List<ChangeItemDomain> cItems, String documentId)
-			throws ApplyChangeException;
-
-	public Set<RelationShip> collectDependencies(Datatype dt);
+	public void applyChanges(Datatype dt, List<ChangeItemDomain> cItems)
+			throws ApplyChangeException, ForbiddenOperationException ;
 
 	public void collectAssoicatedConformanceStatements(Datatype datatype,
 			HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap);
@@ -125,4 +119,6 @@ public interface DatatypeService {
 
 	Set<DisplayElement> convertDatatypeRegistry(DatatypeRegistry registry);
 
+//	public String findXMLRefIdById(String flavorId, String defaultHL7Version);
+	public String findXMLRefIdById(Datatype dt, String defaultHL7Version);
 }

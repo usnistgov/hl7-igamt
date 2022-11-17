@@ -14,6 +14,8 @@ import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
 import gov.nist.hit.hl7.igamt.service.CoConstraintXMLSerialization;
 import gov.nist.hit.hl7.igamt.service.impl.exception.CoConstraintXMLSerializationException;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import nu.xom.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,9 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
     @Autowired
     ResourceSkeletonService resourceSkeletonService;
 
+    @Autowired
+    ValuesetService valuesetService;
+
     public String getXMLPathFromPositionalPath(String positional) {
         if(!Strings.isNullOrEmpty(positional)) {
             return Arrays.stream(positional.split("\\."))
@@ -51,14 +56,14 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
     public String getRelativeXMLPathFromPositionalPath(String positional, String context) {
         if(!Strings.isNullOrEmpty(positional)) {
             if(positional.startsWith(context) && positional.length() > context.length()) {
-                return this.getXMLPathFromPositionalPath(positional.substring(context.length()));
+                return this.getXMLPathFromPositionalPath(positional.substring(context.length() + 1));
             }
         }
         return ".";
     }
 
     @Override
-    public Element serialize(ConformanceProfile conformanceProfile) throws CoConstraintXMLSerializationException {
+    public Element serialize(ConformanceProfile conformanceProfile, String defaultHL7Version) throws CoConstraintXMLSerializationException {
         ResourceSkeleton skeleton = new ResourceSkeleton(
                 new ResourceRef(Type.CONFORMANCEPROFILE, conformanceProfile.getId()),
                 this.resourceSkeletonService
@@ -69,7 +74,7 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
             cp.addAttribute(attr("ID", conformanceProfile.getId()));
             for(CoConstraintBinding binding: conformanceProfile.getCoConstraintsBindings()) {
                 cp.appendChild(
-                        this.serializeBinding(skeleton, binding, conformanceProfile.getId())
+                        this.serializeBinding(skeleton, binding, conformanceProfile.getId(), conformanceProfile.getStructID(), defaultHL7Version)
                 );
             }
             return cp;
@@ -79,27 +84,39 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
     }
 
     @Override
-    public Element serializeBinding(ResourceSkeleton conformanceProfile, CoConstraintBinding coConstraintBinding, String cpId) throws CoConstraintXMLSerializationException {
-        try {
-            ResourceSkeletonBone contextElement = conformanceProfile.get(coConstraintBinding.getContext().getPath());
-            if(contextElement != null) {
-                Element context = new Element("Context");
-                context.addAttribute(attr("Name", contextElement.getLocationInfo().getHl7Path()));
-                context.addAttribute(attr("Path", getXMLPathFromPositionalPath(contextElement.getLocationInfo().getPositionalPath())));
-
-                if(coConstraintBinding.getBindings() != null) {
-                    for(CoConstraintBindingSegment segment: coConstraintBinding.getBindings()) {
-                        context.appendChild(serializeCoConstraintForSegment(contextElement, coConstraintBinding.getContext(), segment, cpId));
-                    }
+    public Element serializeBinding(ResourceSkeleton conformanceProfile, CoConstraintBinding coConstraintBinding, String cpId, String structId, String defaultHL7Version) throws CoConstraintXMLSerializationException {
+        if(coConstraintBinding.getContext().getPath() == null) {
+            String name = structId;
+            String path = ".";
+            return this.serializeBinding(conformanceProfile, name, path, coConstraintBinding, cpId, defaultHL7Version);
+        } else {
+            try {
+                ResourceSkeletonBone contextElement = conformanceProfile.get(coConstraintBinding.getContext().getPath());
+                if(contextElement != null) {
+                    String name = contextElement.getLocationInfo().getHl7Path();
+                    String path = getXMLPathFromPositionalPath(contextElement.getLocationInfo().getPositionalPath());
+                    return this.serializeBinding(contextElement, name, path, coConstraintBinding, cpId, defaultHL7Version);
+                } else {
+                    throw new CoConstraintXMLSerializationException("Context not found " + coConstraintBinding.getContext().getPath());
                 }
-
-                return context;
-            } else {
-                throw new CoConstraintXMLSerializationException("Context not found " + coConstraintBinding.getContext().getPath());
+            } catch (ResourceNotFoundException e) {
+                throw new CoConstraintXMLSerializationException(e.getMessage());
             }
-        } catch (ResourceNotFoundException e) {
-            throw new CoConstraintXMLSerializationException(e.getMessage());
         }
+    }
+
+    private Element serializeBinding(ResourceSkeleton contextElement, String name, String path, CoConstraintBinding coConstraintBinding, String cpId, String defaultHL7Version) throws CoConstraintXMLSerializationException {
+        Element context = new Element("Context");
+        context.addAttribute(attr("Name", name));
+        context.addAttribute(attr("Path", path));
+
+        if(coConstraintBinding.getBindings() != null) {
+            for(CoConstraintBindingSegment segment: coConstraintBinding.getBindings()) {
+                context.appendChild(serializeCoConstraintForSegment(contextElement, coConstraintBinding.getContext(), segment, cpId, defaultHL7Version));
+            }
+        }
+
+        return context;
     }
 
     @Override
@@ -146,7 +163,7 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
     }
 
     @Override
-    public Element serializeCoConstraintForSegment(ResourceSkeleton context, StructureElementRef contextRef, CoConstraintBindingSegment bindingSegment, String cpId) throws CoConstraintXMLSerializationException {
+    public Element serializeCoConstraintForSegment(ResourceSkeleton context, StructureElementRef contextRef, CoConstraintBindingSegment bindingSegment, String cpId, String defaultHL7Version) throws CoConstraintXMLSerializationException {
         try {
             ResourceSkeletonBone segment = context.get(bindingSegment.getSegment().getPathId());
             if(segment != null) {
@@ -157,7 +174,7 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
                             this.getXMLPathFromPositionalPath(segment.getLocationInfo().getPositionalPath());
 
                     group.addAttribute(attr("Name", segment.getResource().getFixedName()));
-                    group.addAttribute(attr("Target", relativePositional));
+                    group.addAttribute(attr("Path", relativePositional));
 
                     ResourceSkeleton segmentSkeleton = new ResourceSkeleton(
                             new ResourceRef(Type.SEGMENT, segment.getResource().getId()),
@@ -169,11 +186,11 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
                             if(table != null) {
                                 if(table.getCondition() != null) {
                                     group.appendChild(
-                                            serializeConditionalTable(segmentSkeleton, contextRef, cpId, table)
+                                            serializeConditionalTable(segmentSkeleton, contextRef, cpId, table, defaultHL7Version)
                                     );
                                 } else {
                                     group.appendChild(
-                                            serializeSimpleTable(segmentSkeleton, table)
+                                            serializeSimpleTable(segmentSkeleton, table, defaultHL7Version)
                                     );
                                 }
                             }
@@ -192,14 +209,14 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
     }
 
     @Override
-    public Element serializeConditionalTable(ResourceSkeleton segment, StructureElementRef context, String cpId, CoConstraintTableConditionalBinding table) throws CoConstraintXMLSerializationException {
+    public Element serializeConditionalTable(ResourceSkeleton segment, StructureElementRef context, String cpId, CoConstraintTableConditionalBinding table, String defaultHL7Version) throws CoConstraintXMLSerializationException {
         Element conditional = new Element("ConditionalTable");
         if(table.getValue().getHeaders().getGrouper() != null) {
             conditional.appendChild(this.serializeGrouper(segment, table.getValue().getHeaders().getGrouper()));
         }
         Element condition = this.serializeCondition(context, cpId, table.getCondition());
         conditional.appendChild(condition);
-        serializeTable(segment, table.getValue()).forEach(conditional::appendChild);
+        serializeTable(segment, table.getValue(), defaultHL7Version).forEach(conditional::appendChild);
         return conditional;
     }
 
@@ -225,22 +242,22 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
     }
 
     @Override
-    public Element serializeSimpleTable(ResourceSkeleton segment, CoConstraintTableConditionalBinding table) throws CoConstraintXMLSerializationException {
+    public Element serializeSimpleTable(ResourceSkeleton segment, CoConstraintTableConditionalBinding table, String defaultHL7Version) throws CoConstraintXMLSerializationException {
         Element simple = new Element("SimpleTable");
         if(table.getValue().getHeaders().getGrouper() != null) {
             simple.appendChild(this.serializeGrouper(segment, table.getValue().getHeaders().getGrouper()));
         }
-        serializeTable(segment, table.getValue()).forEach(simple::appendChild);
+        serializeTable(segment, table.getValue(), defaultHL7Version).forEach(simple::appendChild);
         return simple;
     }
 
     @Override
-    public List<Element> serializeTable(ResourceSkeleton segment, CoConstraintTable table) throws CoConstraintXMLSerializationException {
+    public List<Element> serializeTable(ResourceSkeleton segment, CoConstraintTable table, String defaultHL7Version) throws CoConstraintXMLSerializationException {
         CoConstraintTable merged = this.coConstraintService.resolveRefAndMerge(table);
         List<Element> items = new ArrayList<>();
         if(merged.getCoConstraints() != null) {
             for(CoConstraint cc: merged.getCoConstraints()) {
-                items.add(serializeCoConstraint(segment, merged, cc, false));
+                items.add(serializeCoConstraint(segment, merged, cc, false, defaultHL7Version));
             }
         }
         if(merged.getGroups() != null) {
@@ -250,23 +267,23 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
                     ).map((group) -> (CoConstraintGroupBindingContained) group)
                     .collect(Collectors.toList());
             for(CoConstraintGroupBindingContained group: groups) {
-                items.add(serializeCoConstraintGroup(segment, merged, group));
+                items.add(serializeCoConstraintGroup(segment, merged, group, defaultHL7Version));
             }
         }
         return items;
     }
 
     @Override
-    public Element serializeCoConstraint(ResourceSkeleton segment, CoConstraintTable table, CoConstraint cc, boolean primary) throws CoConstraintXMLSerializationException {
+    public Element serializeCoConstraint(ResourceSkeleton segment, CoConstraintTable table, CoConstraint cc, boolean primary, String defaultHL7Version) throws CoConstraintXMLSerializationException {
         Element coConstraint = new Element(primary ? "Primary" : "CoConstraint");
         coConstraint.addAttribute(attr("Min", cc.getRequirement().getCardinality().getMin() + ""));
         coConstraint.addAttribute(attr("Max", cc.getRequirement().getCardinality().getMax()));
         coConstraint.addAttribute(attr("Usage", cc.getRequirement().getUsage().name()));
 
         Element selectors = new Element("Selectors");
-        this.serializeHeaders(segment, table.getHeaders().getSelectors(), cc).forEach(selectors::appendChild);
+        this.serializeHeaders(segment, table.getHeaders().getSelectors(), cc, true, defaultHL7Version).forEach(selectors::appendChild);
         Element constraints = new Element("Constraints");
-        this.serializeHeaders(segment, table.getHeaders().getConstraints(), cc).forEach(constraints::appendChild);
+        this.serializeHeaders(segment, table.getHeaders().getConstraints(), cc, false, defaultHL7Version).forEach(constraints::appendChild);
 
         coConstraint.appendChild(selectors);
         coConstraint.appendChild(constraints);
@@ -275,7 +292,7 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
     }
 
     @Override
-    public List<Element> serializeHeaders(ResourceSkeleton segment, List<CoConstraintHeader> headers, CoConstraint cc) throws CoConstraintXMLSerializationException {
+    public List<Element> serializeHeaders(ResourceSkeleton segment, List<CoConstraintHeader> headers, CoConstraint cc, boolean selector, String defaultHL7Version) throws CoConstraintXMLSerializationException {
         List<Element> cells = new ArrayList<>();
         Set<DataElementHeader> dataElementHeaders = headers
                 .stream()
@@ -284,16 +301,18 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
                 .collect(Collectors.toSet());
         for(DataElementHeader header: dataElementHeaders) {
             CoConstraintCell cell = cc.getCells().get(header.getKey());
-            Element element = this.serializeCell(segment, header.getColumnType(), cell, header);
-            if(element != null) {
-                cells.add(element);
+            if(selector || !this.coConstraintService.cellIsEmpty(cell)) {
+                Element element = this.serializeCell(segment, header.getColumnType(), cell, header, defaultHL7Version);
+                if(element != null) {
+                    cells.add(element);
+                }
             }
         }
         return cells;
     }
 
     @Override
-    public Element serializeCell(ResourceSkeleton segment, ColumnType type, CoConstraintCell cell, DataElementHeader header) throws CoConstraintXMLSerializationException {
+    public Element serializeCell(ResourceSkeleton segment, ColumnType type, CoConstraintCell cell, DataElementHeader header, String defaultHL7Version) throws CoConstraintXMLSerializationException {
         if(type == null || cell == null) {
             return null;
         }
@@ -304,13 +323,13 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
                 return this.serializeCodeCell(segment, header, (CodeCell) cell);
             case VALUESET:
                 if(!(cell instanceof  ValueSetCell)) return null;
-                return this.serializeValueSetCell(segment, header, (ValueSetCell) cell);
+                return this.serializeValueSetCell(segment, header, (ValueSetCell) cell, defaultHL7Version);
             case DATATYPE:
                 if(!(cell instanceof  DatatypeCell)) return null;
                 return this.serializeDatatypeCell(segment, header, (DatatypeCell) cell);
             case VARIES:
                 if(!(cell instanceof  VariesCell)) return null;
-                return this.serializeVariesCell(segment, header, (VariesCell) cell);
+                return this.serializeVariesCell(segment, header, (VariesCell) cell, defaultHL7Version);
             case VALUE:
                 if(!(cell instanceof  ValueCell)) return null;
                 return this.serializeValueCell(segment, header, (ValueCell) cell);
@@ -351,7 +370,7 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
     }
 
     @Override
-    public Element serializeValueSetCell(ResourceSkeleton segment, DataElementHeader header, ValueSetCell cell) throws CoConstraintXMLSerializationException {
+    public Element serializeValueSetCell(ResourceSkeleton segment, DataElementHeader header, ValueSetCell cell, String defaultHL7Version) throws CoConstraintXMLSerializationException {
         return this.processDataElementHeader(segment, header, (target) -> {
             Element valueSet = new Element("ValueSet");
             valueSet.addAttribute(attr("Name", target.getLocationInfo().getHl7Path()));
@@ -373,8 +392,9 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
                 Element vsBindings = new Element("Bindings");
                 binding.getValueSets().stream().map((vsId) -> {
                     Element vs = new Element("Binding");
-                    /// TODO vsId to BindingIdentifier
-                    vs.addAttribute(attr("BindingIdentifier", vsId));
+                    Valueset valueset = this.valuesetService.findById(vsId);
+                    String bindingIdentifier = this.valuesetService.findXMLRefIdById(valueset, defaultHL7Version);
+                    vs.addAttribute(attr("BindingIdentifier", bindingIdentifier));
                     return vs;
                 }).forEach(vsBindings::appendChild);
                 vsBinding.appendChild(vsBindings);
@@ -409,12 +429,12 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
     }
 
     @Override
-    public Element serializeVariesCell(ResourceSkeleton segment, DataElementHeader header, VariesCell cell) throws CoConstraintXMLSerializationException {
-        return this.serializeCell(segment, cell.getCellType(), cell.getCellValue(), header);
+    public Element serializeVariesCell(ResourceSkeleton segment, DataElementHeader header, VariesCell cell, String defaultHL7Version) throws CoConstraintXMLSerializationException {
+        return this.serializeCell(segment, cell.getCellType(), cell.getCellValue(), header, defaultHL7Version);
     }
 
     @Override
-    public Element serializeCoConstraintGroup(ResourceSkeleton segment, CoConstraintTable table, CoConstraintGroupBindingContained group) throws CoConstraintXMLSerializationException {
+    public Element serializeCoConstraintGroup(ResourceSkeleton segment, CoConstraintTable table, CoConstraintGroupBindingContained group, String defaultHL7Version) throws CoConstraintXMLSerializationException {
         Element coConstraintGroup = new Element("CoConstraintGroup");
         coConstraintGroup.addAttribute(attr("Min", group.getRequirement().getCardinality().getMin() + ""));
         coConstraintGroup.addAttribute(attr("Max", group.getRequirement().getCardinality().getMax()));
@@ -423,7 +443,7 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
         for(int i = 0; i < group.getCoConstraints().size(); i++) {
             CoConstraint cc = group.getCoConstraints().get(i);
             coConstraintGroup.appendChild(
-                    this.serializeCoConstraint(segment, table, cc, i == 0)
+                    this.serializeCoConstraint(segment, table, cc, i == 0, defaultHL7Version)
             );
         }
         return coConstraintGroup;

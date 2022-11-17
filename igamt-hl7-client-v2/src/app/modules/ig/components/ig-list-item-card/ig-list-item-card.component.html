@@ -12,7 +12,21 @@
 
     <!-- ITEM DETAILS -->
     <div style="display: flex; flex-direction: column;">
-      <h6 style="margin-left: 10px; margin-bottom: 0;" class="link" (click)="doDefault()"><strong>{{igListItem.title}}</strong></h6>
+
+      <h6 style="margin-left: 10px; margin-bottom: 0;" class="link" (click)="doDefault()">
+        <strong>
+
+        <span class="badge badge-danger" *ngIf="igListItem.draft" style="margin-right: 3px;"
+        [ngbPopover]="igListItem?.publicationInfo?.warning? igListItem.publicationInfo.warning :'Warning: This is a DRAFT publication for trial use only. It will be updated and replaced. It is not advised to create permanent derived profiles form this DRAFT implementation Guide'"
+        popoverClass="dialog-danger"
+        placement="right"
+        triggers="mouseenter:mouseleave">
+          Draft
+        </span>
+
+        {{igListItem.title}}</strong>
+      </h6>
+
       <span style="margin-left: 10px; color: #818181;">{{igListItem.subtitle}}</span>
       <span *ngIf="igListItem.username" style="margin-left: 10px; color: #818181;">
         <i class="fa fa-user"></i>

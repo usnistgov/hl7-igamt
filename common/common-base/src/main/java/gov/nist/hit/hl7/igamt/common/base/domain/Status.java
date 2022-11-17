@@ -16,5 +16,5 @@ package gov.nist.hit.hl7.igamt.common.base.domain;
  *
  */
 public enum Status {
-  DRAFT, PUBLISHED, SUPERSEDED, WITHDRAWN
+  DRAFT, PUBLISHED, SUPERSEDED, WITHDRAWN, LOCKED, ARCHIVED, DELETED
 }

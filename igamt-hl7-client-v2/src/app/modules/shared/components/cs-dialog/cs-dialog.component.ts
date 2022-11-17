@@ -20,6 +20,7 @@ import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from '../../
 import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 import { BinaryOperator, IfThenOperator, IToken, LeafStatementType, Pattern, Statement, StatementIdIndex, TokenType } from '../pattern-dialog/cs-pattern.domain';
 import { PatternDialogComponent } from '../pattern-dialog/pattern-dialog.component';
+import { ConformanceStatementStrength } from './../../models/conformance-statements.domain';
 import { IAssertion } from './../../models/cs.interface';
 import { IStatementTokenPayload } from './cs-statement.component';
 
@@ -166,6 +167,14 @@ export class CsDialogComponent implements OnDestroy {
   predicateElementId: string;
   excludePaths: string[];
   options = ConditionalUsageOptions;
+  strengthOptions = [{
+    label: 'SHALL',
+    value: ConformanceStatementStrength.SHALL,
+  }, {
+    label: 'SHOULD',
+    value: ConformanceStatementStrength.SHOULD,
+  }];
+
   contextFilter: IHL7v2TreeFilter = {
     hide: false,
     restrictions: [
@@ -359,11 +368,11 @@ export class CsDialogComponent implements OnDestroy {
 
     if (this.statementsValid()) {
       if (this.predicateMode) {
-        return this.csService.generateXMLfromPredicate(this.cs as IPredicate, this.resource.id).pipe(
+        return this.csService.generateXMLfromPredicate(this.cs as IPredicate, this.resource.id, this.resourceType).pipe(
           tap(processValue),
         ).subscribe();
       } else {
-        return this.csService.generateXMLfromCs(this.cs, this.resource.id).pipe(
+        return this.csService.generateXMLfromCs(this.cs, this.resource.id, this.resourceType).pipe(
           tap(processValue),
         ).subscribe();
       }

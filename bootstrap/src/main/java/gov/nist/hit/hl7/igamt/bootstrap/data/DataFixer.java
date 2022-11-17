@@ -33,6 +33,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetStrength;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
@@ -79,7 +80,7 @@ public class DataFixer {
 
 
 
-  public void readCsv() throws ValidationException {
+  public void readCsv() throws ValidationException, ForbiddenOperationException {
     String csvFile = "/Users/ena3/projects/hl7-igamt/bootstrap/src/main/resources/HL7tables-csv.csv";
     List<BindingInfo> locationIssues= new ArrayList<BindingInfo>();
     HashMap<String, Segment> segmentMap= new HashMap<String, Segment>();
@@ -108,8 +109,9 @@ public class DataFixer {
   /**
    * @param info
    * @throws ValidationException 
+ * @throws ForbiddenOperationException 
    */
-  private void fix(BindingInfo info) throws ValidationException {
+  private void fix(BindingInfo info) throws ValidationException, ForbiddenOperationException {
     // TODO Auto-generated method stub
     List<Segment>  segments= this.segmentsService.findByDomainInfoScopeAndDomainInfoVersionAndName(Scope.HL7STANDARD.toString(), info.version, info.name);
     for(Segment s: segments) {
@@ -122,8 +124,9 @@ public class DataFixer {
    * @param vs
    * @param position
    * @throws ValidationException 
+ * @throws ForbiddenOperationException 
    */
-  private void fixLocation(Segment s, String vs, String position) throws ValidationException {
+  private void fixLocation(Segment s, String vs, String position) throws ValidationException, ForbiddenOperationException {
     // TODO Auto-generated method stub
     String vsID= this.valueSetService.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(s.getDomainInfo().getScope().toString(), s.getDomainInfo().getVersion(), vs).get(0).getId();
 
@@ -158,7 +161,7 @@ public class DataFixer {
     }
   }
 
-  public void shiftBinding(List<String> versions, String segmentName, String fieldPosition, String newPosition, int defaultLocation) {
+  public void shiftBinding(List<String> versions, String segmentName, String fieldPosition, String newPosition, int defaultLocation) throws ForbiddenOperationException {
     for(String v: versions) {
       List<Segment> segments = this.segmentsService.findByDomainInfoScopeAndDomainInfoVersionAndName(Scope.HL7STANDARD.toString(), v, segmentName);
       if(segments  != null) {
@@ -244,7 +247,7 @@ public class DataFixer {
     return vsBindings;
   }
 
-  public void changeHL7SegmentDatatype(String segmentName, String location, String newDatatype, String version) {
+  public void changeHL7SegmentDatatype(String segmentName, String location, String newDatatype, String version) throws ForbiddenOperationException {
 
     List<Segment> segments = this.segmentsService.findByDomainInfoScopeAndDomainInfoVersionAndName(Scope.HL7STANDARD.toString(), version, segmentName);
     if(segments != null) {
@@ -277,9 +280,10 @@ public class DataFixer {
 
 
   /**
+ * @throws ForbiddenOperationException 
    * 
    */
-  public void fixDatatypeConstraintsLevel() {
+  public void fixDatatypeConstraintsLevel() throws ForbiddenOperationException {
     List<Datatype> dts = this.datatypeService.findByDomainInfoScope(Scope.USER.toString());
     Map<String, Boolean> map = new HashMap<String, Boolean>();
     for(Datatype dt: dts) {
@@ -341,9 +345,10 @@ public class DataFixer {
 
 
   /**
+ * @throws ForbiddenOperationException 
    * 
    */
-  public void addStructureIds() {
+  public void addStructureIds() throws ForbiddenOperationException {
     List<Segment>  segments = this.segmentsService.findAll();
     if(segments != null) {
       for(Segment s: segments) {
@@ -376,7 +381,7 @@ public class DataFixer {
     return null;
   }
 
-  public void shiftAllBinding() {
+  public void shiftAllBinding() throws ForbiddenOperationException {
     this.shiftBinding(new ArrayList<String>(Arrays.asList("2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "ADJ", "6", "2", 1);
     this.shiftBinding(new ArrayList<String>(Arrays.asList("2.8",  "2.8.1",  "2.8.2")), "CDO", "4", "2", 1);
     this.shiftBinding(new ArrayList<String>(Arrays.asList("2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "PSL", "12", "2", 1);
@@ -400,9 +405,10 @@ public class DataFixer {
 
 
   /**
+ * @throws ForbiddenOperationException 
    * 
    */
-  public void addFixedExt() {
+  public void addFixedExt() throws ForbiddenOperationException {
     List<Segment> segments =  this.segmentsService.findByDomainInfoScope("USERCUSTOM");
     
     for(Segment s: segments) {

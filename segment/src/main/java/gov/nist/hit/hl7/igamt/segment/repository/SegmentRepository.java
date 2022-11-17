@@ -58,4 +58,7 @@ public interface SegmentRepository extends MongoRepository<Segment, String> {
 
   public Segment findOneById(String key);
 
+  public void deleteByDomainInfoScopeAndDomainInfoVersionIn(Scope scope, List<String> versions);
+
+
 }

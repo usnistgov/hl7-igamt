@@ -1,12 +1,9 @@
 package gov.nist.hit.hl7.igamt.segment.domain;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -15,15 +12,13 @@ import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
 
 
 @Document(collection = "segment")
-
 public class Segment extends Resource {
-  private String ext;
+  private static final long serialVersionUID = -6670148730722042931L;
+private String ext;
   private DynamicMappingInfo dynamicMappingInfo;
   private ResourceBinding binding;
   private boolean custom;
-
   private Set<Field> children;
-  
   private Set<Slicing> slicings;
 
   public Segment() {
@@ -80,15 +75,6 @@ public class Segment extends Resource {
   public void setDynamicMappingInfo(DynamicMappingInfo dynamicMappingInfo) {
     this.dynamicMappingInfo = dynamicMappingInfo;
   }
-
-//  @Override
-//  public String getLabel() {
-//    if (this.ext != null && !this.ext.isEmpty()) {
-//      return this.getName() + "_" + this.ext;
-//    }
-//    return this.getName();
-//  }
-  
   
   @Override
   public String getLabel() {
@@ -125,6 +111,7 @@ public class Segment extends Resource {
 	 elm.binding = binding;
 	 elm.children = children;
 	 elm.custom = custom;
+	 elm.slicings = slicings;
  }
 
 public Set<Slicing> getSlicings() {

@@ -22,7 +22,7 @@ export class NameComponent extends HL7v2TreeColumnComponent<INodeName> implement
     super([PropertyType.NAME], dialog);
     this.value$.subscribe(
       (value) => {
-        this.nname = { ...value };
+        this.nname = value;
       },
     );
   }

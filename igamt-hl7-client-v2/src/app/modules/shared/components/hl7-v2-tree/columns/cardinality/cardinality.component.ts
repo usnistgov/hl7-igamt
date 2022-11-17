@@ -24,13 +24,9 @@ export class CardinalityComponent extends HL7v2TreeColumnComponent<ICardinalityR
     super([PropertyType.CARDINALITYMAX, PropertyType.CARDINALITYMIN], dialog);
     this.value$.subscribe(
       (value) => {
-        this.range = { ...value };
+        this.range = value;
       },
     );
-  }
-
-  onInitValue(value: ICardinalityRange): void {
-    this.range = { ...value };
   }
 
   hasValue(range) {
@@ -38,11 +34,11 @@ export class CardinalityComponent extends HL7v2TreeColumnComponent<ICardinalityR
   }
 
   minChange(value: number, skipReason: boolean = false) {
-    this.onChange<number>(this.getInputValue().min, value, PropertyType.CARDINALITYMIN, ChangeType.UPDATE, skipReason);
+    this.onChange<number>(this.oldValue.min, value, PropertyType.CARDINALITYMIN, ChangeType.UPDATE, skipReason);
   }
 
   maxChange(value: string, skipReason: boolean = false) {
-    this.onChange<string>(this.getInputValue().max, value, PropertyType.CARDINALITYMAX, ChangeType.UPDATE, skipReason);
+    this.onChange<string>(this.oldValue.max, value, PropertyType.CARDINALITYMAX, ChangeType.UPDATE, skipReason);
   }
 
   isActualChange<X>(change: IChange<X>): boolean {

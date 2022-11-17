@@ -6,8 +6,11 @@
 	<xsl:import href="/templates/profile/resource/versionDisplay.xsl" />
 	<xsl:import href="/templates/profile/resource/postDef.xsl" />
 	<xsl:import href="/templates/profile/constraint.xsl" />
+	                    <xsl:import href="/templates/profile/slicing.xsl"/>
 	<xsl:import href="/templates/profile/segment/segmentField.xsl" />
 	<xsl:import href="/templates/profile/valueset/valueSetBindingList.xsl" />
+			<xsl:import href="/templates/profile/singleCode/singleCodeBinding.xsl" />
+	
 	<xsl:import href="/templates/profile/singleCode/internalSingleCode.xsl" />
 	<xsl:import href="/templates/profile/commentList.xsl" />
 	<xsl:import href="/templates/profile/definitionText2.xsl" />
@@ -266,9 +269,13 @@
 		<xsl:apply-templates select="./coconstraints" />
 				
 		<xsl:call-template name="ValueSetBindingList"/>	
+						<xsl:call-template name="SingleCodeBinding" />
+		
 		<xsl:call-template name="InternalSingleCode"/>	
 		<xsl:apply-templates select="./DynamicMapping"/>
 		<xsl:call-template name="Reasons"/>
+						<xsl:call-template name="Slicings"/>
+		
 		<xsl:for-each select="Field">
 			<xsl:sort select="@Position" data-type="number"></xsl:sort>
 			<xsl:if test="count(./Text[@Type='Text']) &gt; 0">

@@ -1,6 +1,7 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {TreeNode} from 'primeng/api';
 import {Scope} from '../../constants/scope.enum';
 import {Type} from '../../constants/type.enum';
 import {IAddingInfo, SourceType} from '../../models/adding-info';
@@ -14,7 +15,6 @@ export class AddResourceComponent implements OnInit {
   model: IAddingInfo;
   @ViewChild(NgForm) child;
   redirect = true;
-
   constructor(public dialogRef: MatDialogRef<AddResourceComponent>,
               @Inject(MAT_DIALOG_DATA) public data: IAddResourceData) {
     this.model = {

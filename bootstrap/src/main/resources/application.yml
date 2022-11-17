@@ -31,6 +31,9 @@ key:
   public: /usr/local/etc/hit/auth/publicKey.txt
 auth:
   url: http://localhost:8090
+  
+vocabulary:
+    url: http://hit-dev-admin.nist.gov:8095/vocabulary-service/
    
 email:
    port: 25

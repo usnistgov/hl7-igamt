@@ -26,13 +26,13 @@ export class CardinalityComponent extends HL7v2TreeColumnComponent<ICardinalityR
     super([PropertyType.CARDINALITYMAX, PropertyType.CARDINALITYMIN], dialog);
     this.value$.subscribe(
       (value) => {
-        this.range = { ...value };
+        this.onInitValue(value);
       },
     );
   }
 
   onInitValue(value: ICardinalityRange): void {
-    this.range = { ...value };
+    this.range = value;
   }
 
   hasValue(range) {

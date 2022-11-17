@@ -24,7 +24,7 @@
   </ng-template>
 
   <ng-template #sideBar>
-    <app-ig-edit-sidebar [deltaMode]="deltaMode$ |async"></app-ig-edit-sidebar>
+    <app-ig-edit-sidebar *blockUI="'toc'" [deltaMode]="deltaMode$ |async"></app-ig-edit-sidebar>
   </ng-template>
 
   <ng-template #statusBar>
