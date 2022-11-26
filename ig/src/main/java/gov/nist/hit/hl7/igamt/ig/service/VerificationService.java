@@ -24,9 +24,9 @@ public interface VerificationService {
 
   DTSegVerificationResult verifySegment(Segment segment);
 
-  CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile, boolean needDeep);
+  CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile);
   
-  VerificationReport verifyIg(String documentId, boolean needDeep);
+  VerificationReport verifyIg(String documentId);
   
-  VerificationReport verifyIg(Ig ig, boolean needDeep);
+  VerificationReport verifyIg(Ig ig);
 }

@@ -1541,38 +1541,13 @@ public class IGDocumentController extends BaseController {
         	}
         }
         
-    	VerificationReport report =  this.verificationService.verifyIg(ig, true);	
+    	VerificationReport report =  this.verificationService.verifyIg(ig);	
         this.inMemoryDomainExtensionService.clear(this.token);
         return report;
     }
     return null;
   }
-
-<<<<<<< Updated upstream:ig/src/main/java/gov/nist/hit/hl7/igamt/ig/controller/IGDocumentController.java
-  @RequestMapping(value = "/api/igdocuments/{igid}/compliance", method = RequestMethod.GET, produces = {"application/json"})
-  @PreAuthorize("AccessResource('IGDOCUMENT', #igid, READ)")
-  public @ResponseBody ComplianceReport complianceIGById(@PathVariable("igid") String igid, Authentication authentication) {
-    Ig ig = this.igService.findById(igid);
-    if (ig != null) return this.verificationService.verifyIgForCompliance(igid);
-    return null;
-  }
-
-=======
->>>>>>> Stashed changes:web-app/src/main/java/gov/nist/hit/hl7/igamt/web/app/ig/IGDocumentController.java
-  @RequestMapping(value = "/api/igdocuments/{igid}/preverification", method = RequestMethod.POST, produces = { "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #igid, READ)")
-  public @ResponseBody VerificationReport preVerification(@PathVariable("igid") String igid, @RequestBody ReqId reqIds, Authentication authentication) throws Exception {
-    System.out.println(reqIds);  
-    Ig ig = this.igService.findById(igid);
-    if (ig != null)  {
-      CompositeProfileState cps = null;
-      Ig selectedIg = this.makeSelectedIg(ig, reqIds, cps);
-      VerificationReport report = this.verificationService.verifyIg(selectedIg, false);		  
-      this.inMemoryDomainExtensionService.clear(this.token);
-      return report;
-    }
-    return null;
-  }
+  
 
   private Ig makeSelectedIg(Ig ig, ReqId reqIds, CompositeProfileState cps) throws IOException, AmbiguousOBX3MappingException, ResourceNotFoundException, PathNotFoundException {
     Ig selectedIg = new Ig();
@@ -1881,6 +1856,21 @@ private void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all)
     Ig ig = findIgById(igId);
 
     return igService.deleteUnused(ig, registryType, ids);
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{igid}/preverification", method = RequestMethod.POST, produces = { "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #igid, READ)")
+  public @ResponseBody VerificationReport preVerification(@PathVariable("igid") String igid, @RequestBody ReqId reqIds, Authentication authentication) throws Exception {
+    System.out.println(reqIds);  
+    Ig ig = this.igService.findById(igid);
+    if (ig != null)  {
+      CompositeProfileState cps = null;
+      Ig selectedIg = this.makeSelectedIg(ig, reqIds, cps);
+      VerificationReport report = this.verificationService.verifyIg(selectedIg);		  
+      this.inMemoryDomainExtensionService.clear(this.token);
+      return report;
+    }
+    return null;
   }
 
 }

@@ -32,6 +32,8 @@ import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementDisplay;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.DTSegVerificationResult;
+import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
@@ -54,6 +56,9 @@ public class SegmentController extends BaseController {
 	
 	@Autowired
 	DateUpdateService dateUpdateService;
+	
+	@Autowired
+	VerificationService verificationService;
 
 	public SegmentController() {
 	}
@@ -147,6 +152,18 @@ public class SegmentController extends BaseController {
 			throw new SegmentException(e);
 		}
 	}
-
+	
+	@RequestMapping(value = "/api/segments/{id}/verification", method = RequestMethod.GET, produces = {
+			"application/json" })
+	@PreAuthorize("AccessResource('SEGMENT', #id, READ)")
+	public @ResponseBody DTSegVerificationResult verifyById(@PathVariable("id") String id,
+			Authentication authentication) {
+		Segment seg = this.segmentService.findById(id);
+		if (seg != null) {
+			DTSegVerificationResult report = this.verificationService.verifySegment(seg);
+			return report;
+		}
+		return null;
+	}
 
 }

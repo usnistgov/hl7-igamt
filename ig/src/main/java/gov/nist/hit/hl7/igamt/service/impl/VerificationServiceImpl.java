@@ -42,7 +42,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
@@ -306,8 +305,32 @@ public class VerificationServiceImpl implements VerificationService {
 
 		// 2. Structure Checking - Done
 		this.checkingStructureForValueset(valueset, result);
+		
+		this.countErrors(result);
 
 		return result;
+	}
+
+	private void countErrors(VerificationResult result) {
+		if(result.getErrors() != null) {
+			result.getErrors().forEach(error -> {
+				if(error.getSeverity() != null) {
+					if(error.getSeverity().equals("FATAL")) {
+						result.getStats().setFatal(result.getStats().getFatal() + 1);
+						result.getStats().setTotal(result.getStats().getTotal() + 1);
+					} else if(error.getSeverity().equals("ERROR")) {
+						result.getStats().setError(result.getStats().getError() + 1);
+						result.getStats().setTotal(result.getStats().getTotal() + 1);
+					} else if(error.getSeverity().equals("WARNING")) {
+						result.getStats().setWarning(result.getStats().getWarning() + 1);
+						result.getStats().setTotal(result.getStats().getTotal() + 1);
+					} else if(error.getSeverity().equals("IMFORMATIONAL")) {
+						result.getStats().setInformational(result.getStats().getInformational() + 1);
+						result.getStats().setTotal(result.getStats().getTotal() + 1);
+					}
+				}
+			});
+		}
 	}
 
 	@Override
@@ -323,6 +346,8 @@ public class VerificationServiceImpl implements VerificationService {
 		// 3. Binding Checking
 		this.checkingBindingeForDatatype(datatype, result);
 
+		this.countErrors(result);
+		
 		return result;
 	}
 
@@ -856,6 +881,8 @@ public class VerificationServiceImpl implements VerificationService {
 		// 4. Binding Checking
 		this.checkingBindingMapping(segment, result);
 		
+		this.countErrors(result);
+		
 
 		return result;
 	}
@@ -881,7 +908,7 @@ public class VerificationServiceImpl implements VerificationService {
 
 	
 	@Override
-	public CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile, boolean needDeep) {
+	public CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile) {
 		CPVerificationResult result = new CPVerificationResult(conformanceProfile);
 
 		// 1. Metadata checking
@@ -892,6 +919,8 @@ public class VerificationServiceImpl implements VerificationService {
 		
 		// 3. Binding Checking
 		this.checkingBindingForConformanceProfile(conformanceProfile, result);
+		
+		this.countErrors(result);
 
 		return result;
 	}
@@ -903,12 +932,12 @@ public class VerificationServiceImpl implements VerificationService {
 	}
 
 	@Override
-	public VerificationReport verifyIg(String igId, boolean needDeep) {
-		return verifyIg(this.igService.findById(igId), needDeep);
+	public VerificationReport verifyIg(String igId) {
+		return verifyIg(this.igService.findById(igId));
 	}
 
 	@Override
-	public VerificationReport verifyIg(Ig ig, boolean needDeep) {
+	public VerificationReport verifyIg(Ig ig) {
 		VerificationReport report = new VerificationReport();
 		IgVerificationResult result = new IgVerificationResult(ig);
 
@@ -920,7 +949,11 @@ public class VerificationServiceImpl implements VerificationService {
 				Valueset vs = this.valuesetService.findById(id);
 				if (vs == null) {}
 				else {
-					report.addValuesetVerificationResult(this.verifyValueset(vs));
+					VSVerificationResult vsVerificationResult = this.verifyValueset(vs);
+					if(vsVerificationResult.getStats().getTotal() > 0) {
+						report.addValuesetVerificationResult(vsVerificationResult);	
+						report.addStats(vsVerificationResult.getStats());
+					}
 				}
 			}
 		}
@@ -933,7 +966,11 @@ public class VerificationServiceImpl implements VerificationService {
 				if (dt == null) dt = inMemoryDomainExtensionService.findById(id, ComplexDatatype.class);
 				if (dt == null) {
 				} else {
-					report.addDatatypeVerificationResult(this.verifyDatatype(dt));
+					DTSegVerificationResult dtSegVerificationResult = this.verifyDatatype(dt);
+					if(dtSegVerificationResult.getStats().getTotal() > 0) {
+						report.addDatatypeVerificationResult(dtSegVerificationResult);	
+						report.addStats(dtSegVerificationResult.getStats());
+					}
 				}
 			}
 		}
@@ -946,7 +983,11 @@ public class VerificationServiceImpl implements VerificationService {
 				if (s == null) s = inMemoryDomainExtensionService.findById(id, Segment.class);
 				if (s == null) {
 				}else {
-					report.addSegmentVerificationResult(this.verifySegment(s));
+					DTSegVerificationResult dtSegVerificationResult = this.verifySegment(s);
+					if(dtSegVerificationResult.getStats().getTotal() > 0) {
+						report.addDatatypeVerificationResult(dtSegVerificationResult);		
+						report.addStats(dtSegVerificationResult.getStats());
+					}
 				}
 			}
 		}
@@ -959,7 +1000,11 @@ public class VerificationServiceImpl implements VerificationService {
 				if (cp == null) cp = inMemoryDomainExtensionService.findById(id, ConformanceProfile.class);
 				if (cp == null) {}
 				else {
-					report.addConformanceProfileVerificationResult(this.verifyConformanceProfile(cp, needDeep));
+					CPVerificationResult cpVerificationResult = this.verifyConformanceProfile(cp);
+					if(cpVerificationResult.getStats().getTotal() > 0) {
+						report.addConformanceProfileVerificationResult(cpVerificationResult);
+						report.addStats(cpVerificationResult.getStats());
+					}
 				}
 
 			}
