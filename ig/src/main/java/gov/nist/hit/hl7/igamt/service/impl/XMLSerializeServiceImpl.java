@@ -460,6 +460,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                 elmValueElement.addAttribute(new Attribute("Usage", this.str(c.getUsage().toString())));
               if (c.getComments() != null && !c.getComments().equals(""))
                 elmValueElement.addAttribute(new Attribute("Comments", this.str(c.getComments())));
+              if(c.isHasPattern() && c.getPattern() != null && !c.getPattern().equals("")) 
+            	  elmValueElement.addAttribute(new Attribute("CodePattern", this.str(c.getPattern())));
               elmValueSetDefinition.appendChild(elmValueElement);
             }
           }
