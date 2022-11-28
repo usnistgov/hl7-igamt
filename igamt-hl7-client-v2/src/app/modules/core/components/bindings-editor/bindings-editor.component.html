@@ -31,7 +31,7 @@
         <th>
           Value
         </th>
-        <th style="width: 110px;">
+        <th *ngIf="!(viewOnly$ | async)" style="width: 110px;">
           Action
         </th>
       </tr>
@@ -55,13 +55,15 @@
           <td>
             <ng-container *ngTemplateOutlet="template; context : { $implicit : item.binding.value }" ></ng-container>
           </td>
-          <td *ngIf="markedForDeletion(item.binding, property) | async as removed"  style="vertical-align: middle;">
-            <button *ngIf="!removed.flag" (click)="delete(item.binding, property)" class="btn btn-sm btn-danger" style="margin-right: 10px;">
-              <i class="fa fa-trash"></i> Delete
-            </button>
-            <button *ngIf="removed.flag" (click)="restore(item.binding, property)" class="btn btn-sm btn-success" style="margin-right: 10px;">
-              <i class="fa fa-refresh"></i> Restore
-            </button>
+          <td  *ngIf="!(viewOnly$ | async)" style="vertical-align: middle;">
+            <ng-container *ngIf="markedForDeletion(item.binding, property) | async as removed" >
+              <button *ngIf="!removed.flag" (click)="delete(item.binding, property)" class="btn btn-sm btn-danger" style="margin-right: 10px;">
+                <i class="fa fa-trash"></i> Delete
+              </button>
+              <button *ngIf="removed.flag" (click)="restore(item.binding, property)" class="btn btn-sm btn-success" style="margin-right: 10px;">
+                <i class="fa fa-refresh"></i> Restore
+              </button>
+            </ng-container>
           </td>
         </tr>
         <ng-container *ngIf="entries && entries[item.binding.pathId]">

@@ -14,7 +14,7 @@
       <ng-template #popTitle><strong>{{item.username}}</strong></ng-template>
       <div [ngbPopover]="popContent" [popoverTitle]="popTitle" triggers="mouseenter:mouseleave" placement="bottom"
            style="display: inline-flex; align-items: center; justify-content: center; margin-bottom: 3px;">
-        <div style="margin-right: 10px; margin-left: 10px;">
+        <div *ngIf="!viewOnly" style="margin-right: 10px; margin-left: 10px;">
           <button class="btn btn-sm btn-danger" (click)="removeComment(i, comments)">
             <i class="fa fa-times"></i>
           </button>
