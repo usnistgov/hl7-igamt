@@ -1,3 +1,4 @@
+import { DamActionTypes, EditorSaveSuccess } from './../../../modules/dam-framework/store/data/dam.actions';
 import { selectVerificationResult } from './../../dam-igamt/igamt.selected-resource.selectors';
 import { HttpErrorResponse } from '@angular/common/http';
 import {parseSelectorToR3Selector} from '@angular/compiler/src/core';
@@ -865,12 +866,9 @@ export class IgEditEffects extends DamWidgetEffect {
   verifyIg = this.actions$.pipe(
     ofType(IgEditActionTypes.VerifiyIg),
     switchMap((action: VerifyIg) => {
-      this.store.dispatch(new fromDAM.TurnOnLoader({
-        blockUI: true,
-      }));
       this.store.dispatch(new fromDam.SetValue({'verificationStatus': {loading: true}}));
 
-       return  this.igService.verifiy(action.payload).pipe(
+       return  this.igService.verify(action.payload).pipe(
 
         flatMap((response) => {
           return [
@@ -881,22 +879,23 @@ export class IgEditEffects extends DamWidgetEffect {
         }),
         catchError((error: HttpErrorResponse) => {
           return of(
-            new fromDAM.TurnOffLoader(),
+            new fromDam.SetValue({'verificationStatus': {loading: false }}),
           );
         }),
       );
   }));
 
-      @Effect()
+  @Effect()
   openVerificationEditor$ = this.actions$.pipe(
     ofType(IgEditActionTypes.OpenIgVerificationEditor),
       mergeMap((action: OpenIgVerificationEditor) => {
           return combineLatest(
             this.store.select(selectIgDocument),
-            this.store.select(selectVerificationResult))
+            // this.store.select(selectVerificationResult)
+            )
             .pipe(
+              take(1),
               map(([ig, result]) => {
-                console.log(result);
                 return new fromDAM.OpenEditor({
                   id: action.payload.id,
                   display: this.igService.igToIDisplayElement(ig),
@@ -911,5 +910,17 @@ export class IgEditEffects extends DamWidgetEffect {
         }),
     );
 
+    @Effect()
+    EditorSaveSuccess$ = this.actions$.pipe(
+      ofType(DamActionTypes.EditorSaveSuccess),
+        mergeMap((action: EditorSaveSuccess) => {
+         return  this.store.select(selectIgDocument).pipe(
+                take(1),
+                map((ig) => {
+                  return new VerifyIg({id: ig.id,  resourceType: Type.IGDOCUMENT, verificationType: VerificationType.VERIFICATION});
+                }),
+              );
+          }),
+      );
 
 }

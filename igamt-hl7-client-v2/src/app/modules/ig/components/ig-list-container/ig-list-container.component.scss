@@ -6,7 +6,7 @@
   display: grid;
   grid-template-areas: 'alerts' 'topbar' 'search-bar' 'filter' 'ig-list';
   grid-template-columns: 1fr;
-  grid-template-rows: minmax(min-content, max-content) 70px 60px 60px auto;
+  grid-template-rows: minmax(min-content, max-content) 70px 60px minmax(min-content, max-content) auto;
   height: 100%;
 }
 
@@ -43,4 +43,5 @@
 
 .filter {
   grid-area: filter;
+  margin-bottom: 20px;
 }

@@ -1,3 +1,5 @@
+import { VerificationType } from 'src/app/modules/shared/models/verification.interface';
+import { VerifyIg } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { OnDestroy, OnInit, Type as CoreType } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
@@ -155,7 +157,9 @@ export abstract class StructureEditorComponent<T extends IResource> extends Abst
               flatMap((resource) => {
                 this.changes.next({});
                 this.resourceSubject.next(resource as T);
-                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
+                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource }),
+                  new VerifyIg({id:documentRef.documentId, resourceType: documentRef.type, verificationType: VerificationType.VERIFICATION  }),
+                ];
               }),
             );
           }),

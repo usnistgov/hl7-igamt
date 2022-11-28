@@ -268,6 +268,9 @@ export class VerificationService {
 
   convertValue(report: any, repository: AResourceRepositoryService) : Observable<IVerificationEntryTable>{
     let errors = [];
+    console.log("report");
+    console.log(report);
+
     for (const property in report) {
       console.log(report[property]);
       if(report[property].length){
@@ -276,6 +279,38 @@ export class VerificationService {
         });
       }
     }
+    return this.getVerificationEntryTable(this.convertErrorsToEntries(errors), repository );
+
+  }
+
+  convertValueByType(report: any, type: Type, repository: AResourceRepositoryService) : Observable<IVerificationEntryTable>{
+    console.log("report");
+    console.log(report);
+    let errors = [];
+    let prop: string;
+    if(type ===Type.IGDOCUMENT){
+
+      prop= "igVerificationResult";
+    }else if (type === Type.SEGMENT){
+     prop= "segmentVerificationResults";
+
+
+    }else if ( type === Type.CONFORMANCEPROFILE){
+
+      prop ="conformanceProfileVerificationResults";
+    }else if (type === Type.DATATYPE){
+      prop ="datatypeVerificationResults";
+
+    }else if(type === Type.VALUESET){
+
+      prop ="valuesetVerificationResults";
+    }
+      if(report&&report[prop].length){
+        console.log(prop);
+        report[prop].forEach(element => {
+           errors = _.union(errors,element.errors);
+        });
+      }
     return this.getVerificationEntryTable(this.convertErrorsToEntries(errors), repository );
 
   }

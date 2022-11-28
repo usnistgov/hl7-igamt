@@ -1,6 +1,7 @@
+import { Type } from './../../constants/type.enum';
 import { Component, Input, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map, tap, filter } from 'rxjs/operators';
 import { Severity } from '../../models/verification.interface';
 import { IVerificationEntryList, IVerificationEntryTable } from '../../services/verification.service';
 
@@ -13,6 +14,7 @@ export interface IEntryFilter {
   };
   codes: string[];
   properties: string[];
+  type?: Type;
 }
 
 @Component({
@@ -36,6 +38,10 @@ export class VerificationEntryTableComponent implements OnInit {
     this.table.next(table);
   }
 
+  @Input()
+  set filterType(type: Type) {
+    this.filter.next({ ...this.filter.getValue(), type });
+  }
   verification$: Observable<IVerificationEntryTable>;
 
   constructor() {
@@ -43,11 +49,12 @@ export class VerificationEntryTableComponent implements OnInit {
       severity: {
         fatal: true,
         error: true,
-        warning: true,
-        informational: true,
+        warning: false,
+        informational: false,
       },
       codes: [],
       properties: [],
+      type: undefined,
     });
     this.table = new BehaviorSubject(undefined);
     this.verification$ = combineLatest(
@@ -77,7 +84,9 @@ export class VerificationEntryTableComponent implements OnInit {
         entry.severity === Severity.WARNING && filter.severity.warning ||
         entry.severity === Severity.INFORMATIONAL && filter.severity.informational;
       const keepCode = filter.codes.length === 0 || filter.codes.includes(entry.code);
-      return keepSeverity && keepCode;
+      const keepType = !filter.type || entry.targetType === filter.type;
+
+      return keepSeverity && keepCode && keepType;
     });
     return {
       ...verification,

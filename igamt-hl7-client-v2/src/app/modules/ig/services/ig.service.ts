@@ -472,7 +472,7 @@ export class IgService {
     return this.http.post<Message<ICreateProfileComponentResponse>>(this.IG_END_POINT + request.documentId + '/composite-profile/create', request);
   }
 
-  verifiy(payload: IVerificationRequest): Observable<any>{
+  verify(payload: IVerificationRequest): Observable<any>{
     return this.http.get<any>(this.IG_END_POINT + payload.id + '/verification');
   }
 }

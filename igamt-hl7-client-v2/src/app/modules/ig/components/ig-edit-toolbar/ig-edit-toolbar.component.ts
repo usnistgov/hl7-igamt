@@ -1,3 +1,6 @@
+import { VerificationType } from 'src/app/modules/shared/models/verification.interface';
+import { VerifyIg } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { selectVerificationStatus } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
 import { Router } from '@angular/router';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
@@ -27,6 +30,7 @@ import { IgService } from '../../services/ig.service';
 })
 export class IgEditToolbarComponent implements OnInit, OnDestroy {
   exportTypes = ExportTypes;
+  verifiying$ :Observable<boolean> = of(true);
   viewOnly: boolean;
   subscription: Subscription;
   toolConfig: Observable<IConnectingInfo[]>;
@@ -44,6 +48,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     this.subscription = this.store.select(selectViewOnly).subscribe(
       (value) => this.viewOnly = value,
     );
+    this.verifiying$= this.store.select(selectVerificationStatus).pipe(map((x) =>  x.loading));
     this.toolConfig = this.store.select(selectExternalTools);
     this.deltaMode$ = this.store.select(selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
@@ -98,7 +103,12 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       });
   }
 
-  verify(){
+  refreshVerify(){
+    this.getIgId().pipe().subscribe((igId) => {
+      this.store.dispatch(new VerifyIg({  id: igId,
+        resourceType: Type.IGDOCUMENT,
+        verificationType: VerificationType.VERIFICATION}))
+     });
   }
 
   exportXML() {

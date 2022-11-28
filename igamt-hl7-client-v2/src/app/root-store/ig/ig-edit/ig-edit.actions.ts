@@ -85,6 +85,7 @@ export enum IgEditActionTypes {
   VerifiyIg = '[Ig Edit TOC] Verify IG',
   VerifyIgSuccess = '[Ig Edit TOC] Verify Ig Success',
   VerifyIgFailure = '[Ig Edit TOC] Verify Ig Failure',
+
 }
 
 export class ClearIgEdit implements Action {

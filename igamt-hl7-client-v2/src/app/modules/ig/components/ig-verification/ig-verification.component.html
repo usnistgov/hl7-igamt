@@ -1,5 +1,69 @@
-<div *ngIf="loading" style="width: 500px;">
+<!-- <div *ngIf="loading" style="width: 500px;">
 
 Loading
-</div>
-<app-verification-entry-table *ngIf="!loading" [value]="value$ | async"></app-verification-entry-table>
+</div> -->
+
+<ng-container *ngIf="!loading">
+  <ng-container>
+    <ul class="nav nav-pills" style="margin-top: 10px;">
+      <li style="cursor: pointer;" class="nav-item"  (click)="selectType('IGDOCUMENT')">
+        <span  class="nav-link" [ngClass]="{ 'active': type === 'IGDOCUMENT' }">
+          IG Document
+        </span>
+      </li>
+      <li style="cursor: pointer;" class="nav-item" (click)="selectType('CONFORMANCEPROFILE')">
+        <span  class="nav-link" [ngClass]="{ 'active': type === 'CONFORMANCEPROFILE' }">
+          Conformance Profile
+        </span>
+      </li>
+
+      <li style="cursor: pointer;" class="nav-item" (click)="selectType('SEGMENT')">
+        <span  class="nav-link" [ngClass]="{ 'active': type === 'SEGMENT' }">
+          Segments
+        </span>
+      </li>
+
+      <li style="cursor: pointer;" class="nav-item"  (click)="selectType('DATATYPE')">
+        <span  class="nav-link " [ngClass]="{ 'active': type === 'DATATYPE'}">
+          Data types
+        </span>
+      </li>
+
+      <li style="cursor: pointer;" class="nav-item" (click)="selectType('VALUESET')">
+        <span  class="nav-link " [ngClass]="{ 'active': type === 'VALUESET' }">
+          Value Sets
+        </span>
+      </li>
+    </ul>
+
+    <div>
+    </div>
+  </ng-container>
+</ng-container>
+
+  <div *ngIf="!loading">
+    <!-- <app-verification-entry-table [value]="valuesetVerificationResults$| async" > </app-verification-entry-table> -->
+
+    <ng-container [ngSwitch]="type">
+      <ng-container *ngSwitchCase="'VALUESET'">
+        <app-verification-entry-table [value]="valuesetVerificationResults$| async" > </app-verification-entry-table>
+      </ng-container>
+      <ng-container *ngSwitchCase="'DATATYPE'">
+        <app-verification-entry-table [value]="datatypeVerificationResults$| async" > </app-verification-entry-table>
+      </ng-container>
+      <ng-container *ngSwitchCase="'SEGMENT'">
+        <app-verification-entry-table [value]="segmentVerificationResults$| async" > </app-verification-entry-table>
+      </ng-container>
+      <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
+        <app-verification-entry-table [value]="conformanceProfileVerificationResults$| async" > </app-verification-entry-table>
+      </ng-container>
+      <ng-container *ngSwitchCase="'IGDOCUMENT'">
+        <app-verification-entry-table [value]="igVerificationResult$| async"> </app-verification-entry-table>
+      </ng-container>
+
+    </ng-container>
+
+
+
+  </div>
+
