@@ -119,6 +119,6 @@ public interface DatatypeService {
 
 	Set<DisplayElement> convertDatatypeRegistry(DatatypeRegistry registry);
 
-    
-
+//	public String findXMLRefIdById(String flavorId, String defaultHL7Version);
+	public String findXMLRefIdById(Datatype dt, String defaultHL7Version);
 }

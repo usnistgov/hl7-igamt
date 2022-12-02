@@ -155,11 +155,11 @@
           <div style="display:flex; flex-direction: row;">
 
         <span style="width: 16px;">
-          <app-verification-badge *ngIf="verification" [verification]="verification[node.data.id]"> </app-verification-badge>
+          <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
         </span>
 
           <app-display-section [contextMenu]="datatypeContextMenu" #rla="routerLinkActive" [element]="node.data"
-                               [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" [verification]="verification[node.data.id]" ></app-display-section>
+                               [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" ></app-display-section>
             </div>
           <context-menu #datatypeContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
@@ -176,7 +176,7 @@
           <div style="display:flex; flex-direction: row;">
 
             <span style="width: 16px;">
-              <app-verification-badge *ngIf="verification" [verification]="verification[node.data.id]"> </app-verification-badge>
+              <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
             </span>
           <app-display-section [contextMenu]="conformanceProfileContextMenu" [element]="node.data" #rla="routerLinkActive"
                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" [hideDescription]="true" style="cursor: move !important;"></app-display-section>
@@ -218,7 +218,7 @@
           <div style="display:flex; flex-direction: row;">
 
             <span style="width: 16px;">
-              <app-verification-badge *ngIf="verification" [verification]="verification[node.data.id]"> </app-verification-badge>
+              <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
             </span>
           <app-display-section  [contextMenu]='segmentContextMenu' [element]="node.data" #rla="routerLinkActive"
                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true"></app-display-section>
@@ -238,7 +238,8 @@
           <div style="display:flex; flex-direction: row;">
 
             <span style="width: 16px;">
-              <app-verification-badge *ngIf="verification" [verification]="verification[node.data.id]"> </app-verification-badge>
+              <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]">
+              </app-verification-badge>
             </span>
           <app-display-section  [contextMenu]='valueSetContextMenu' [element]="node.data" #rla="routerLinkActive"
                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" ></app-display-section>

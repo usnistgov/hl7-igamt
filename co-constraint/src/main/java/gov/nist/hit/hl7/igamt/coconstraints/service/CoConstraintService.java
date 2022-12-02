@@ -24,6 +24,7 @@ public interface CoConstraintService {
     boolean variesCellIsEmpty(VariesCell variesCell);
     Link createIgLink(CoConstraintGroup group, int position, String username);
     List<CoConstraintGroup> findByIdIn(Set<String> ids);
-    List<CoConstraintGroup>  saveAll(Set<CoConstraintGroup> coConstraintGroups) ;
+    List<CoConstraintGroup>  saveAll(Set<CoConstraintGroup> coConstraintGroups);
+    Set<String> getValueSetIds(List<CoConstraintBinding> bindings);
     void updateCloneTag(CoConstraintTable value, boolean cloned);
 }

@@ -21,7 +21,7 @@ export class VerificationBadgeComponent implements OnInit {
   @Input()
   set verification(elments: IVerificationEnty[] ){
     this.elments = elments;
-    this.number = elments.length;
+    // this.number = elments.length;
     if(elments){
       let group = _.groupBy(elments, 'severity');
       if(group['FATAL']){
@@ -36,10 +36,11 @@ export class VerificationBadgeComponent implements OnInit {
        // this.number = group['WARNING'].length;
         this.style = 'fa fa-exclamation-triangle';
         this.color = '#bb990c';
-      }else {
-        this.style = 'fa fa-check';
-        this.color = 'green';
       }
+      // }else {
+      //   this.style = 'fa fa-check';
+      //   this.color = 'green';
+      // }
     }
 
   }

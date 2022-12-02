@@ -37,6 +37,8 @@ export class VerificationEntryTableComponent implements OnInit {
   set value(table: IVerificationEntryTable) {
     this.table.next(table);
   }
+  @Input()
+  documentId: string;
 
   @Input()
   set filterType(type: Type) {

@@ -31,12 +31,14 @@
   <mat-spinner class="verification-progress" diameter="20" ></mat-spinner>
 </div>
 <span style="margin-right: 20px;"> Verification </span>
-<!-- <ng-container *ngTemplateOutlet="stats; context : {$implicit: verification.stats}" >
-</ng-container> -->
-<span style="color: gray; margin-left: 20px;">
+<ng-container *ngIf="stats$ | async">
+<ng-container *ngTemplateOutlet="stats; context : {$implicit: stats$ | async}" >
+</ng-container>
+</ng-container>
+<!-- <span style="color: gray; margin-left: 20px;">
   <i class="fa fa-clock-o"></i>
   just now
-</span>
+</span> -->
 <button class="refresh-verify" (click)="refreshVerify()">
   <i class="fa fa-refresh"></i>
 </button>
@@ -98,21 +100,21 @@
 </ng-template>
 
 <ng-template #stats let-stats>
-  <!-- <div *ngIf="!stats.fatal && !stats.error && !stats.warning && !stats.informational">
+  <div *ngIf="!stats.fatal && !stats.error && !stats.warning && !stats.informational">
     <i style="color: #1d9f1d;" class="fa fa-check" ></i>
   </div>
   <div *ngIf="stats && !(!stats.fatal && !stats.error && !stats.warning && !stats.informational)" style="display: flex;">
     <div style="margin-right: 5px;">
-      <app-issue-badge *ngIf="stats.fatal" [type]="SEVERITY.FATAL" [number]="stats.fatal" ></app-issue-badge>
+      <app-issue-badge *ngIf="stats.fatal" type="FATAL" [number]="stats.fatal" ></app-issue-badge>
     </div>
     <div style="margin-right: 5px;">
-      <app-issue-badge *ngIf="stats.error" [type]="SEVERITY.ERROR" [number]="stats.error" ></app-issue-badge>
+      <app-issue-badge *ngIf="stats.error" type="ERROR" [number]="stats.error" ></app-issue-badge>
     </div>
     <div style="margin-right: 5px;">
-      <app-issue-badge *ngIf="stats.warning" [type]="SEVERITY.WARNING" [number]="stats.warning" ></app-issue-badge>
+      <app-issue-badge *ngIf="stats.warning" type="WARNING" [number]="stats.warning" ></app-issue-badge>
     </div>
-    <div style="margin-right: 5px;">
-      <app-issue-badge *ngIf="stats.informational" [type]="SEVERITY.INFORMATIONAL" [number]="stats.informational" ></app-issue-badge>
-    </div>
-  </div> -->
+    <!-- <div style="margin-right: 5px;">
+      <app-issue-badge *ngIf="stats.informational" type="INFORMATIONAL" [number]="stats.informational" ></app-issue-badge>
+    </div> -->
+  </div>
 </ng-template>

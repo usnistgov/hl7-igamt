@@ -2,22 +2,13 @@ package gov.nist.hit.hl7.igamt.web.app.utility;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
-
-import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
-import gov.nist.hit.hl7.igamt.export.domain.CoConstraintExcelExportFormData;
-import gov.nist.hit.hl7.igamt.export.domain.ExportFormat;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
-import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
-import gov.nist.hit.hl7.igamt.web.app.ig.FormData;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -42,6 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.service.DocumentStructureService;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.common.exception.IGNotFoundException;
@@ -52,15 +44,17 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfigurationGlobal;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportDocType;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportType;
-import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
-import gov.nist.hit.hl7.igamt.export.configuration.previous.ExportDecisionRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.previous.ExportDecision;
+import gov.nist.hit.hl7.igamt.export.configuration.previous.ExportDecisionRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
+import gov.nist.hit.hl7.igamt.export.domain.CoConstraintExcelExportFormData;
+import gov.nist.hit.hl7.igamt.export.domain.ExportFormat;
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.export.service.DlNewExportService;
 import gov.nist.hit.hl7.igamt.export.service.IgNewExportService;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
@@ -68,6 +62,8 @@ import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.serialization.newImplementation.service.ExcelImportService;
 import gov.nist.hit.hl7.igamt.serialization.newImplementation.service.SerializeCoconstraintTableToExcel;
 import gov.nist.hit.hl7.igamt.serialization.newImplementation.service.parser.ParserResults;
+import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
+import gov.nist.hit.hl7.igamt.web.app.ig.FormData;
 
 @RestController
 public class ExportController {
@@ -99,8 +95,12 @@ public class ExportController {
   @Autowired
   ExportDecisionRepository exportDecisionRepository;
 
-  List<String> files = new ArrayList<String>();
-  Path source = Paths.get(this.getClass().getResource("/").getPath());
+//  List<String> files = new ArrayList<String>();
+//  Path source = Paths.get(this.getClass().getResource("/").getPath());
+  
+  Path source = new File(getClass()
+		  .getResource("/")
+		  .getFile()).toPath();
 
   @RequestMapping(value = "/api/export/ig/{igId}/{format}", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
   @PreAuthorize("AccessResource('IGDOCUMENT', #igId, READ)")

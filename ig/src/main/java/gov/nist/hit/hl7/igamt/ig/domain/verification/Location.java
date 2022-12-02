@@ -89,5 +89,14 @@ public class Location {
 	public String toString() {
 		return "Location [pathId=" + pathId + ", name=" + name + ", info=" + info + ", property=" + property + "]";
 	}
-    
+        
+    public Location clone() {
+    	Location l = new Location();
+    	l.setName(this.getName());
+    	l.setPathId(this.getPathId());
+    	l.setProperty(this.getProperty());
+    	l.setInfo(this.info.clone());
+    	
+    	return l;
+    }
 }

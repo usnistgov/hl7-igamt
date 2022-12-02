@@ -1,6 +1,6 @@
 import { VerificationType } from 'src/app/modules/shared/models/verification.interface';
 import { VerifyIg } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectVerificationStatus } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
+import { selectVerificationStatus, selectVerificationResult } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
 import { Router } from '@angular/router';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
@@ -38,7 +38,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   delta: any;
   deltaMode$: Observable<boolean> = of(false);
   derived$: Observable<boolean>;
-
+  stats$: Observable<any>;
   constructor(
     private store: Store<IDocumentDisplayInfo<IgDocument>>,
     private exportConfigurationService: ExportConfigurationService,
@@ -49,6 +49,8 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       (value) => this.viewOnly = value,
     );
     this.verifiying$= this.store.select(selectVerificationStatus).pipe(map((x) =>  x.loading));
+    this.stats$= this.store.select(selectVerificationResult).pipe(filter(x => x),map((x) =>  x.stats));
+
     this.toolConfig = this.store.select(selectExternalTools);
     this.deltaMode$ = this.store.select(selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);

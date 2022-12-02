@@ -7,35 +7,55 @@ Loading
   <ng-container>
     <ul class="nav nav-pills" style="margin-top: 10px;">
       <li style="cursor: pointer;" class="nav-item"  (click)="selectType('IGDOCUMENT')">
-        <span  class="nav-link" [ngClass]="{ 'active': type === 'IGDOCUMENT' }">
+        <span  class="nav-link" style="display: flex" [ngClass]="{ 'active': type === 'IGDOCUMENT' }">
           IG Document
+          <ng-container *ngIf="igVerificationResult$| async">
+            <!-- {{stats$| async| json}} -->
+          <ng-container *ngTemplateOutlet="stats; context : {$implicit: (igVerificationResult$| async).stats}" >
+            </ng-container>
+          </ng-container>
         </span>
       </li>
       <li style="cursor: pointer;" class="nav-item" (click)="selectType('CONFORMANCEPROFILE')">
-        <span  class="nav-link" [ngClass]="{ 'active': type === 'CONFORMANCEPROFILE' }">
+        <span  class="nav-link"  style="display: flex" [ngClass]="{ 'active': type === 'CONFORMANCEPROFILE' }">
           Conformance Profile
+          <ng-container *ngIf="conformanceProfileVerificationResults$| async ">
+          <ng-container *ngTemplateOutlet="stats; context : {$implicit: (conformanceProfileVerificationResults$| async).stats}" >
+            </ng-container>
+          </ng-container>
         </span>
       </li>
 
       <li style="cursor: pointer;" class="nav-item" (click)="selectType('SEGMENT')">
-        <span  class="nav-link" [ngClass]="{ 'active': type === 'SEGMENT' }">
+        <span  class="nav-link"  style="display: flex" [ngClass]="{ 'active': type === 'SEGMENT' }">
           Segments
+        <ng-container *ngIf="segmentVerificationResults$| async ">
+        <ng-container *ngTemplateOutlet="stats; context : {$implicit: (segmentVerificationResults$| async).stats}" >
+          </ng-container>
+        </ng-container>
         </span>
       </li>
 
       <li style="cursor: pointer;" class="nav-item"  (click)="selectType('DATATYPE')">
-        <span  class="nav-link " [ngClass]="{ 'active': type === 'DATATYPE'}">
+        <span  class="nav-link " style="display: flex" [ngClass]="{ 'active': type === 'DATATYPE'}">
           Data types
+        <ng-container *ngIf="datatypeVerificationResults$| async ">
+          <ng-container *ngTemplateOutlet="stats; context : {$implicit: (datatypeVerificationResults$| async).stats}" >
+            </ng-container>
+          </ng-container>
         </span>
       </li>
 
       <li style="cursor: pointer;" class="nav-item" (click)="selectType('VALUESET')">
-        <span  class="nav-link " [ngClass]="{ 'active': type === 'VALUESET' }">
+        <span  class="nav-link " style="display: flex" [ngClass]="{ 'active': type === 'VALUESET' }">
           Value Sets
-        </span>
+        <ng-container *ngIf="valuesetVerificationResults$| async ">
+          <ng-container *ngTemplateOutlet="stats; context : {$implicit: (valuesetVerificationResults$| async).stats}" >
+            </ng-container>
+          </ng-container>
+          </span>
       </li>
     </ul>
-
     <div>
     </div>
   </ng-container>
@@ -46,19 +66,19 @@ Loading
 
     <ng-container [ngSwitch]="type">
       <ng-container *ngSwitchCase="'VALUESET'">
-        <app-verification-entry-table [value]="valuesetVerificationResults$| async" > </app-verification-entry-table>
+        <app-verification-entry-table [value]="valuesetVerificationResults$| async" [documentId]="documentId$ |async"> </app-verification-entry-table>
       </ng-container>
       <ng-container *ngSwitchCase="'DATATYPE'">
-        <app-verification-entry-table [value]="datatypeVerificationResults$| async" > </app-verification-entry-table>
+        <app-verification-entry-table [value]="datatypeVerificationResults$| async" [documentId]="documentId$ |async"> </app-verification-entry-table>
       </ng-container>
       <ng-container *ngSwitchCase="'SEGMENT'">
-        <app-verification-entry-table [value]="segmentVerificationResults$| async" > </app-verification-entry-table>
+        <app-verification-entry-table [value]="segmentVerificationResults$| async"  [documentId]="documentId$ |async"> </app-verification-entry-table>
       </ng-container>
       <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
-        <app-verification-entry-table [value]="conformanceProfileVerificationResults$| async" > </app-verification-entry-table>
+        <app-verification-entry-table [value]="conformanceProfileVerificationResults$| async" [documentId]="documentId$ |async"> </app-verification-entry-table>
       </ng-container>
       <ng-container *ngSwitchCase="'IGDOCUMENT'">
-        <app-verification-entry-table [value]="igVerificationResult$| async"> </app-verification-entry-table>
+        <app-verification-entry-table [value]="igVerificationResult$| async" [documentId]="documentId$ |async"> </app-verification-entry-table>
       </ng-container>
 
     </ng-container>
@@ -67,3 +87,23 @@ Loading
 
   </div>
 
+
+  <ng-template #stats let-stats>
+    <div *ngIf="!stats.fatal && !stats.error && !stats.warning && !stats.informational">
+      <i style="color: #1d9f1d;" class="fa fa-check" ></i>
+    </div>
+    <div *ngIf="stats && !(!stats.fatal && !stats.error && !stats.warning && !stats.informational)" style="display: flex;">
+      <div style="margin-right: 5px;">
+        <app-issue-badge *ngIf="stats.fatal" type="FATAL" [number]="stats.fatal" ></app-issue-badge>
+      </div>
+      <div style="margin-right: 5px;">
+        <app-issue-badge *ngIf="stats.error" type="ERROR" [number]="stats.error" ></app-issue-badge>
+      </div>
+      <div style="margin-right: 5px;">
+        <app-issue-badge *ngIf="stats.warning" type="WARNING" [number]="stats.warning" ></app-issue-badge>
+      </div>
+      <!-- <div style="margin-right: 5px;">
+        <app-issue-badge *ngIf="stats.informational" type="INFORMATIONAL" [number]="stats.informational" ></app-issue-badge>
+      </div> -->
+    </div>
+  </ng-template>

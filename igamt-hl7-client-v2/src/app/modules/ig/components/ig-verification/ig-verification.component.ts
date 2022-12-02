@@ -55,7 +55,7 @@ export class IgVerificationComponent extends AbstractEditorComponent implements 
       actions$,
       store,
     );
-
+      
     //getVerificationEntryTable(entries: IVerificationEnty[], repository: AResourceRepositoryService): Observable<IVerificationEntryTable> {
 
 
@@ -66,7 +66,7 @@ export class IgVerificationComponent extends AbstractEditorComponent implements 
     // );
 
 
-    this.valuesetVerificationResults$  =     this.store.select(selectVerificationResult).pipe(
+    this.valuesetVerificationResults$  = this.store.select(selectVerificationResult).pipe(
       concatMap((value) => {
         return this.verificationService.convertValueByType( value, Type.VALUESET, repository);
       }),

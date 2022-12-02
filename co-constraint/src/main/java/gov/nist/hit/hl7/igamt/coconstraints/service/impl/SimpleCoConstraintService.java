@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class SimpleCoConstraintService implements CoConstraintService {
@@ -388,6 +389,44 @@ public class SimpleCoConstraintService implements CoConstraintService {
   @Override
   public List<CoConstraintGroup> saveAll(Set<CoConstraintGroup> coConstraintGroups) {
     return this.coConstraintGroupRepository.saveAll(coConstraintGroups);
+  }
+
+  @Override
+  public Set<String> getValueSetIds(List<CoConstraintBinding> bindings) {
+    Set<String> valueSetIds = new HashSet<>();
+    for(CoConstraintBinding binding: bindings) {
+      for(CoConstraintBindingSegment bindingSegment: binding.getBindings()) {
+        for(CoConstraintTableConditionalBinding tableConditionalBinding: bindingSegment.getTables()) {
+          CoConstraintTable table = this.resolveRefAndMerge(tableConditionalBinding.getValue());
+          List<CoConstraint> coConstraintList = Stream.concat(
+                  table.getCoConstraints().stream(),
+                  table.getGroups().stream()
+                          .filter((group) ->
+                            group instanceof CoConstraintGroupBindingContained
+                          )
+                          .flatMap((group) ->
+                            ((CoConstraintGroupBindingContained) group).getCoConstraints().stream()
+                          )
+          ).collect(Collectors.toList());
+          for(CoConstraint cc: coConstraintList) {
+            for(CoConstraintCell cell : cc.getCells().values()) {
+              if(!this.cellIsEmpty(cell)) {
+                if(cell instanceof ValueSetCell) {
+                  ((ValueSetCell) cell).getBindings().forEach((vsBinding) -> {
+                    valueSetIds.addAll(vsBinding.getValueSets());
+                  });
+                } else if(cell instanceof VariesCell && ((VariesCell) cell).getCellValue() instanceof ValueSetCell) {
+                  ((ValueSetCell) ((VariesCell) cell).getCellValue()).getBindings().forEach((vsBinding) -> {
+                    valueSetIds.addAll(vsBinding.getValueSets());
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return valueSetIds;
   }
 
 }

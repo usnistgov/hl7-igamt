@@ -284,8 +284,6 @@ export class VerificationService {
   }
 
   convertValueByType(report: any, type: Type, repository: AResourceRepositoryService) : Observable<IVerificationEntryTable>{
-    console.log("report");
-    console.log(report);
     let errors = [];
     let prop: string;
     if(type ===Type.IGDOCUMENT){
@@ -294,25 +292,20 @@ export class VerificationService {
     }else if (type === Type.SEGMENT){
      prop= "segmentVerificationResults";
 
-
     }else if ( type === Type.CONFORMANCEPROFILE){
-
       prop ="conformanceProfileVerificationResults";
     }else if (type === Type.DATATYPE){
       prop ="datatypeVerificationResults";
-
     }else if(type === Type.VALUESET){
-
       prop ="valuesetVerificationResults";
     }
-      if(report&&report[prop].length){
+      if(report&&report[prop]&&report[prop].length){
         console.log(prop);
         report[prop].forEach(element => {
            errors = _.union(errors,element.errors);
         });
       }
     return this.getVerificationEntryTable(this.convertErrorsToEntries(errors), repository );
-
   }
 
   convertErrorsToEntries(errors: any[]) : IVerificationEnty[] {
@@ -321,34 +314,31 @@ export class VerificationService {
       ret.push( {
         code: element.code,
         pathId: element.location,
-        property: element.property,
-        location: element.location,
+        property: element.locationInfo &&element.locationInfo.property? element.locationInfo.property : null,
+        location: element.locationInfo &&element.locationInfo.name? element.locationInfo.name : null,
         targetId: element.target,
         targetType: element.targetType,
         message: element.description,
         severity: element.severity,
+
       });
     });
-
     return ret;
   }
 
 
   convertValueToTocElements(report: any) : Dictionary<IVerificationEnty[]> {
+    let temp:Dictionary<IVerificationEnty[]>  = {};
     let errors = [];
     for (const property in report) {
-      console.log(report[property]);
-      if(report[property].length){
+      if(report[property]&&report[property].length){
         report[property].forEach(element => {
            errors = _.union(errors,element.errors);
         });
       }
     }
-    let temp: Dictionary<IVerificationEnty[]> = _.groupBy(errors, x=> x.target);
+    temp = _.groupBy(errors, x=> x.target);
     return temp;
   }
-
-
-
 
 }

@@ -11,9 +11,10 @@
     <tbody *ngFor="let item of verification.entries">
       <tr style="background-color: white;" *ngIf="item.entries?.length">
         <th colspan="4">
-          <app-display-section [element]="item.target"></app-display-section>
+          <app-display-ref [element]="item.target" [documentId]="documentId" documentType="IGDOCUMENT"></app-display-ref>
         </th>
       </tr>
+
       <tr *ngIf="item.entries?.length">
         <th>Location</th>
         <th>Property</th>

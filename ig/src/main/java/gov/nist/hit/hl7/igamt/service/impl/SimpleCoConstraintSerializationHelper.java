@@ -152,25 +152,27 @@ public class SimpleCoConstraintSerializationHelper implements CoConstraintSerial
     Map<CoConstraintMappingLocation, Set<CoConstraintOBX3MappingValue>> getOBX3MappingFromProfile(ConformanceProfile conformanceProfile) throws ResourceNotFoundException, PathNotFoundException {
         ResourceSkeleton skeleton = this.getConformanceProfileSkeleton(conformanceProfile.getId());
         Map<CoConstraintMappingLocation, Set<CoConstraintOBX3MappingValue>> mapping = new HashMap<>();
+        
+        if(conformanceProfile.getCoConstraintsBindings() != null) {
+        	for(CoConstraintBinding bindingContext: conformanceProfile.getCoConstraintsBindings()) {
+                for(CoConstraintBindingSegment bindingSegment: bindingContext.getBindings()) {
 
-        for(CoConstraintBinding bindingContext: conformanceProfile.getCoConstraintsBindings()) {
-            for(CoConstraintBindingSegment bindingSegment: bindingContext.getBindings()) {
+                    ResourceSkeletonBone bone = this.getSegmentRef(skeleton, bindingContext.getContext(), bindingSegment.getSegment());
+                    CoConstraintMappingLocation location = new CoConstraintMappingLocation(bone.getLocationInfo().getPathId(), bone.getResource().getId(), bone.getResource());
+                    if(bone.getResource().getResourceName().equals("OBX")) {
+                        for(CoConstraintTableConditionalBinding bindingTable: bindingSegment.getTables()) {
 
-                ResourceSkeletonBone bone = this.getSegmentRef(skeleton, bindingContext.getContext(), bindingSegment.getSegment());
-                CoConstraintMappingLocation location = new CoConstraintMappingLocation(bone.getLocationInfo().getPathId(), bone.getResource().getId(), bone.getResource());
-                if(bone.getResource().getResourceName().equals("OBX")) {
-                    for(CoConstraintTableConditionalBinding bindingTable: bindingSegment.getTables()) {
-
-                        Set<CoConstraintOBX3MappingValue> codes = getOBX3ToFlavorMapFromTable(bindingTable.getValue());
-                        Set<CoConstraintOBX3MappingValue> mappingList = mapping.get(location);
-                        if(mappingList != null) {
-                            mappingList.addAll(codes);
-                        } else {
-                            mapping.put(location, codes);
+                            Set<CoConstraintOBX3MappingValue> codes = getOBX3ToFlavorMapFromTable(bindingTable.getValue());
+                            Set<CoConstraintOBX3MappingValue> mappingList = mapping.get(location);
+                            if(mappingList != null) {
+                                mappingList.addAll(codes);
+                            } else {
+                                mapping.put(location, codes);
+                            }
                         }
                     }
                 }
-            }
+            }	
         }
         return mapping;
     }
@@ -202,6 +204,15 @@ public class SimpleCoConstraintSerializationHelper implements CoConstraintSerial
             return mapping;
         } else {
             throw new AmbiguousOBX3MappingException(ambiguous);
+        }
+    }
+
+    @Override
+    public Set<String> getCoConstraintReferencedValueSetIds(ConformanceProfile conformanceProfile) {
+        if(conformanceProfile.getCoConstraintsBindings() != null) {
+            return this.coConstraintService.getValueSetIds(conformanceProfile.getCoConstraintsBindings());
+        } else {
+            return new HashSet<>();
         }
     }
 

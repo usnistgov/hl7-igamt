@@ -19,20 +19,27 @@ import java.util.List;
  *
  */
 public class VerificationResult {
-  private List<IgamtObjectError> errors;
-  
-  
+	private ErrorStats stats = new ErrorStats();
+	private List<IgamtObjectError> errors;
 
-  public VerificationResult() {
-    super();
-    this.errors = new ArrayList<IgamtObjectError>();
-  }
+	public VerificationResult() {
+		super();
+		this.errors = new ArrayList<IgamtObjectError>();
+	}
 
-  public List<IgamtObjectError> getErrors() {
-    return errors;
-  }
+	public List<IgamtObjectError> getErrors() {
+		return errors;
+	}
 
-  public void setErrors(List<IgamtObjectError> errors) {
-    this.errors = errors;
-  }
+	public void setErrors(List<IgamtObjectError> errors) {
+		this.errors = errors;
+	}
+
+	public ErrorStats getStats() {
+		return stats;
+	}
+
+	public void setStats(ErrorStats stats) {
+		this.stats = stats;
+	}
 }
