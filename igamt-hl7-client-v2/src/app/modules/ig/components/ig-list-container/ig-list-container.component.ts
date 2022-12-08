@@ -1,3 +1,4 @@
+import { LockIG } from './../../../../root-store/ig/ig-list/ig-list.actions';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -28,6 +29,7 @@ import { IgPublisherComponent } from './../../../shared/components/ig-publisher/
 import { SharingDialogComponent } from './../../../shared/components/sharing-dialog/sharing-dialog.component';
 import { CloneModeEnum } from './../../../shared/constants/clone-mode.enum';
 import { IgListItemControl } from './../ig-list-item-card/ig-list-item-card.component';
+import { Status } from 'src/app/modules/shared/models/abstract-domain.interface';
 
 @Component({
   selector: 'app-ig-list-container',
@@ -54,6 +56,10 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
   username: Observable<string>;
   showDeprecated: boolean;
   filter: string;
+  filterOptions =  [{label: "LOCKED", value: Status.LOCKED,
+  atrribute: 'status'}, {label: "UNLOCKED", value: null,
+  atrribute: 'status'}];
+  status = [Status.LOCKED,  null];
   _shadowViewType: IgListLoad;
   controls: Observable<IgListItemControl[]>;
   sortOptions: any;
@@ -187,6 +193,37 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                 },
               },
               {
+                label: 'Lock',
+                class: 'btn-secondary',
+                icon: 'fa-lock',
+                action: (item: IgListItem) => {
+                  const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+                    data: {
+                      question: 'Are you sure you want to lock Implementation Guide "' + item.title + '" ?',
+                      action: 'Lock Implementation Guide',
+                    },
+                  });
+
+                  dialogRef.afterClosed().subscribe(
+                    (answer) => {
+                      if (answer) {
+                        this.store.dispatch(new LockIG(item.id));
+                      }
+                    },
+                  );
+                },
+                disabled: (item: IgListItem): boolean => {
+                  if (item.type === 'PUBLISHED' || item.type === 'SHARED') {
+                    return true;
+                  } else {
+                    return false;
+                  }
+                },
+                hide: (item: IgListItem): boolean => {
+                  return item.type === 'PUBLISHED' || item.type === 'SHARED' || item.status == 'LOCKED';
+                },
+              },
+              {
                 label: 'Publish',
                 class: 'btn-secondary',
                 icon: 'fa fa-globe',
@@ -233,7 +270,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   return false;
                 },
                 hide: (item: IgListItem): boolean => {
-                  return item.type !== 'PUBLISHED';
+                  return item.type !== 'PUBLISHED' &&  item.status !== 'LOCKED';
                 },
               },
               {
@@ -430,6 +467,13 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
     this.store.dispatch(new SelectIgListSortOption(Object.assign(Object.assign({}, this.sortProperty), this.sortOrder)));
   }
 
+  generalFilter(values: any){
+    console.log(values);
+    this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: this.filter, deprecated: this.showDeprecated, status: values });
+
+    //this.listItems = this.store.select(fromIgList.selectIgListViewGeneralFilter, { attribute: "status", values: values});
+  }
+
   ngOnInit() {
     this.store.dispatch(new ClearAll());
     this.route.queryParams.subscribe((params) => {
@@ -450,4 +494,10 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
     this.store.dispatch(new ClearIgList());
   }
 
+}
+
+export interface IFilterOptions{
+  label: string;
+  value: any;
+  atrribute: string;
 }
