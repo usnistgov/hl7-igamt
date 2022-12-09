@@ -157,32 +157,6 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 		return workspace;
 	}
 
-	@Override
-	public WorkspaceInfo addToWorkspace(String workspaceId, String folderId, String username, DocumentStructure document, Type type) throws Exception {
-		Workspace workspace = this.workspaceRepo.findById(workspaceId)
-				.orElseThrow(() -> new WorkspaceNotFound(workspaceId));
-		WorkspacePermissionType permission = workspacePermissionService.getWorkspacePermissionTypeByFolder(workspace, username, folderId);
-		if(permission != null && permission.equals(WorkspacePermissionType.EDIT)) {
-			Folder folder = workspace.getFolders().stream()
-					.filter((f) -> f.getId().equals(folderId))
-					.findFirst()
-					.orElseThrow(() -> new Exception("Folder not found"));
-			int position = workspace.getFolders().stream()
-					.mapToInt(Folder::getPosition)
-					.max()
-					.orElseThrow(() -> new Exception("Folder not found"));
-
-			DocumentLink link = new DocumentLink();
-			link.setId(document.getId());
-			link.setType(type);
-			link.setPosition(position + 1);
-			folder.getChildren().add(link);
-			return this.toWorkspaceInfo(this.workspaceRepo.save(workspace), username);
-		} else {
-			throw new WorkspaceForbidden();
-		}
-	}
-
 	public void checkWorkspaceCreateRequest(
 			WorkspaceCreateRequest createInfo
 	) throws CreateRequestException {

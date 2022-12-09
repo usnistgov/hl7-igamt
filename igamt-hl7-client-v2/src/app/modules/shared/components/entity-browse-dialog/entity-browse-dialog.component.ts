@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { TreeNode } from 'primeng/primeng';
+import { TreeNode, TreeTable } from 'primeng/primeng';
 import { map } from 'rxjs/operators';
 import { Type } from '../../constants/type.enum';
 import { IDomainInfo } from '../../models/domain-info.interface';
@@ -53,6 +53,11 @@ export interface IBrowserTreeNode extends TreeNode {
   children?: IBrowserTreeNode[];
 }
 
+export interface IEntityBrowserResult {
+  node: IBrowserTreeNode;
+  name: string;
+}
+
 export interface IOption {
   label: string;
   key: string;
@@ -66,7 +71,6 @@ export interface IBrowseDialogData {
   types: Type[];
   multi: boolean;
   exclude?: Array<{ id: string; type: Type; }>;
-  options?: IOption[];
 }
 
 @Component({
@@ -87,26 +91,25 @@ export class EntityBrowseDialogComponent implements OnInit {
     BrowserColumn.DATE,
   ];
   options: FormGroup;
+  name: string;
+  @ViewChild('tt') treeTable: TreeTable;
+
   constructor(
     public dialogRef: MatDialogRef<EntityBrowseDialogComponent>,
     public http: HttpClient,
     @Inject(MAT_DIALOG_DATA) public data: IBrowseDialogData,
   ) {
     this.browser = data;
-    this.setOptionsForm();
+    if (this.browser.scope.privateIgList) {
+      this.getTreeByScope(BrowserScope.PRIVATE_IG_LIST);
+    } else if (this.browser.scope.publicIgList) {
+      this.getTreeByScope(BrowserScope.PUBLIC_IG_LIST)
+    } else if (this.browser.scope.workspaces) {
+      this.getTreeByScope(this.scope = BrowserScope.WORKSPACES);
+    }
   }
 
   track = (n) => n.key;
-
-  setOptionsForm(node?: IBrowserTreeNode) {
-    this.options = new FormGroup(this.browser.options.reduce((fg, opt) => {
-      const forceCheck = node && opt.checked ? opt.checked(node) : false;
-      return {
-        ...fg,
-        [opt.key]: new FormControl({ value: forceCheck || opt.value, disabled: forceCheck }),
-      };
-    }, {}));
-  }
 
   getTreeByScope(scope: BrowserScope) {
     this.scope = scope;
@@ -116,6 +119,7 @@ export class EntityBrowseDialogComponent implements OnInit {
         this.browserTree = [
           ...n,
         ];
+        this.treeTable.first = 0;
       }),
     ).subscribe();
   }
@@ -125,15 +129,15 @@ export class EntityBrowseDialogComponent implements OnInit {
   }
 
   done() {
-    this.dialogRef.close(this.selected);
+    this.dialogRef.close({ node: this.selected, name: this.name });
   }
 
   clear() {
     this.selected = null;
   }
 
-  nodeUpdate(e, select) {
-    this.setOptionsForm(select ? e.node : null);
+  nodeUpdate(n) {
+    this.name = n.node.data.label + ' [CLONE]';
   }
 
   isExcluded(node: IBrowserTreeNode) {

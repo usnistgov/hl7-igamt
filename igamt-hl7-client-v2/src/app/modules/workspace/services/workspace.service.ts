@@ -1,3 +1,4 @@
+import { Type } from './../../shared/constants/type.enum';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Action, Store } from '@ngrx/store';
@@ -10,6 +11,14 @@ export interface IWorkspaceCreateRequest {
   accessType: WorkspaceAccessType;
   title: string;
   description: string;
+}
+
+export interface IWorkspaceClone {
+  documentId: string,
+  documentType: Type,
+  workspaceId: string,
+  folderId: string,
+  name: string,
 }
 
 @Injectable({
@@ -96,6 +105,10 @@ export class WorkspaceService {
         }],
       }),
     ];
+  }
+
+  cloneToWorkspace(info: IWorkspaceClone): Observable<IWorkspaceInfo> {
+    return this.http.post<IWorkspaceInfo>(this.WORKSPACE_END_POINT + '/clone', info);
   }
 
 }

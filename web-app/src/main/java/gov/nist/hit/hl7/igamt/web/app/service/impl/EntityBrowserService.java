@@ -43,14 +43,14 @@ public class EntityBrowserService {
                 if(privateAudience.getEditor().equals(username)) {
                     EntityLocation location = new EntityLocation();
                     location.setId(BrowserScope.PRIVATE_IG_LIST.toString());
-                    location.setLabel("Owned IG List");
+                    location.setLabel("Owned Implementation Guides");
                     location.setType(EntityLocationType.SCOPE);
                     location.setPosition(0);
                     locations.add(location);
                 } else if(privateAudience.getViewers().contains(username)) {
                     EntityLocation location = new EntityLocation();
                     location.setId(BrowserScope.SHARED_IG_LIST.toString());
-                    location.setLabel("Shared With Me IG List");
+                    location.setLabel("Shared With Me Implementation Guides");
                     location.setType(EntityLocationType.SCOPE);
                     location.setPosition(0);
                     locations.add(location);
@@ -58,7 +58,7 @@ public class EntityBrowserService {
             } else if(ig.getAudience().getType().equals(AudienceType.PUBLIC)) {
                 EntityLocation location = new EntityLocation();
                 location.setId(BrowserScope.PUBLIC_IG_LIST.toString());
-                location.setLabel("Public IG List");
+                location.setLabel("Public Implementation Guides");
                 location.setType(EntityLocationType.SCOPE);
                 location.setPosition(0);
                 locations.add(location);

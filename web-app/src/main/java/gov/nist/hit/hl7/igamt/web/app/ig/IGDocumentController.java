@@ -22,6 +22,7 @@ import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
 import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
 import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
 import gov.nist.hit.hl7.igamt.web.app.service.impl.EntityBrowserService;
+import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceDocumentManagementService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -253,6 +254,9 @@ public class IGDocumentController extends BaseController {
   @Autowired
   AccessControlService accessControlService;
 
+  @Autowired
+  WorkspaceDocumentManagementService workspaceDocumentManagementService;
+
   private String token;
 
 
@@ -445,7 +449,7 @@ public class IGDocumentController extends BaseController {
   public @ResponseBody ResponseMessage<Object> updateIg(@PathVariable("id") String id, @RequestBody Section section,
       Authentication authentication) throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     if (!ig.getUsername().equals(authentication.getPrincipal().toString())) {
       return new ResponseMessage<Object>(Status.FAILED, TABLE_OF_CONTENT_UPDATED, ig.getId(), new Date());
@@ -499,7 +503,7 @@ public class IGDocumentController extends BaseController {
       @RequestBody Set<TextSection> content, Authentication authentication)
           throws Exception {
     Ig ig = this.findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     updateAndClean(content, ig);
     igService.save(ig);
     return new ResponseMessage<Object>(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, id, new Date());
@@ -607,28 +611,17 @@ public class IGDocumentController extends BaseController {
   public @ResponseBody ResponseMessage<String> create(@RequestBody CreationWrapper wrapper,
       Authentication authentication)
           throws Exception {
+    Ig ig = createIg(wrapper, authentication.getName());
+    return new ResponseMessage<String>(Status.SUCCESS, "", "IG created Successfully", ig.getId(), false,
+            ig.getUpdateDate(), ig.getId());
+  }
 
-    try {
-      String username = authentication.getPrincipal().toString();
-      Ig empty = igService.createEmptyIg();
-
-
-      empty.setUsername(username);
-      DomainInfo info = new DomainInfo();
-      info.setScope(Scope.USER);
-      empty.setDomainInfo(info);
-      empty.setMetadata(wrapper.getMetadata());
-      empty.setCreationDate(new Date());
-      empty.setId(new ObjectId().toString());
-      this.addService.addConformanceProfiles(empty, wrapper.getSelected(), username);
-      Ig ret = igService.save(empty);
-      return new ResponseMessage<String>(Status.SUCCESS, "", "IG created Successfuly", ret.getId(), false,
-          ret.getUpdateDate(), ret.getId());
-
-    } catch (Exception e) {
-      throw e;
+  private Ig createIg(CreationWrapper wrapper, String username) throws Exception {
+    if(wrapper.getWorkspace() == null) {
+      return this.igService.createIg(wrapper, username);
+    } else {
+      return this.workspaceDocumentManagementService.createIgAndMoveToWorkspaceLocation(wrapper, username);
     }
-
   }
 
   /**
@@ -686,7 +679,7 @@ public class IGDocumentController extends BaseController {
   public ResponseMessage deleteDatatype(@PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
       Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     Link found = findLinkById(datatypeId, ig.getDatatypeRegistry().getChildren());
     if (found != null) {
@@ -719,7 +712,7 @@ public class IGDocumentController extends BaseController {
   public ResponseMessage deleteSegment(@PathVariable("id") String id, @PathVariable("segmentId") String segmentId,
       Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     Link found = findLinkById(segmentId, ig.getSegmentRegistry().getChildren());
     if (found != null) {
@@ -775,7 +768,7 @@ public class IGDocumentController extends BaseController {
           throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
 
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     Link found = findLinkById(conformanceProfileId, ig.getConformanceProfileRegistry().getChildren());
     if (found != null) {
@@ -799,7 +792,7 @@ public class IGDocumentController extends BaseController {
           throws IGNotFoundException, ForbiddenOperationException {
 
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     Link found = findLinkById(pcId, ig.getProfileComponentRegistry().getChildren());
     if (found != null) {
@@ -818,7 +811,7 @@ public class IGDocumentController extends BaseController {
           throws IGNotFoundException, ForbiddenOperationException {
 
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     Link found = findLinkById(cpId, ig.getCompositeProfileRegistry().getChildren());
     if (found != null) {
@@ -837,7 +830,7 @@ public class IGDocumentController extends BaseController {
           throws IGNotFoundException, ForbiddenOperationException, ProfileComponentNotFoundException {
 
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     ProfileComponent pc = this.profileComponentService.deleteContextById(pcId, contextId );
     Link pcLink = ig.getProfileComponentRegistry().getLinkById(pcId);
     if(pcLink == null) {
@@ -856,7 +849,7 @@ public class IGDocumentController extends BaseController {
     Ig ig = findIgById(id);
     String username = authentication.getName();
 
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     
     ConformanceProfile clone =  resourceManagementService.createFlavor(ig.getConformanceProfileRegistry(), username, new DocumentInfo(id, DocumentType.IGDOCUMENT), Type.CONFORMANCEPROFILE, wrapper.getSelected());
     ig = igService.save(ig);
@@ -876,7 +869,7 @@ public class IGDocumentController extends BaseController {
       @PathVariable("id") String id, @PathVariable("compositeProfileId") String compositeProfileId,
       Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     String username = authentication.getName();
 
     CompositeProfileStructure clone =  resourceManagementService.createFlavor(ig.getCompositeProfileRegistry(), username, new DocumentInfo(id, DocumentType.IGDOCUMENT), Type.COMPOSITEPROFILE, wrapper.getSelected());
@@ -898,7 +891,7 @@ public class IGDocumentController extends BaseController {
       @PathVariable("id") String id, @PathVariable("pcId") String pcId,
       Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     String username = authentication.getName();
     ProfileComponent clone =  resourceManagementService.createFlavor(ig.getProfileComponentRegistry(), username, new DocumentInfo(id, DocumentType.IGDOCUMENT), Type.PROFILECOMPONENT, wrapper.getSelected());
     clone.setDerived(false);
@@ -923,7 +916,7 @@ public class IGDocumentController extends BaseController {
       @PathVariable("segmentId") String segmentId, Authentication authentication)
           throws IGNotFoundException, ValidationException, CloneException, ForbiddenOperationException, EntityNotFound {
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     String username = authentication.getPrincipal().toString();
     Segment clone =  resourceManagementService.createFlavor(ig.getSegmentRegistry(), username, new DocumentInfo(id, DocumentType.IGDOCUMENT), Type.SEGMENT, wrapper.getSelected());
@@ -945,7 +938,7 @@ public class IGDocumentController extends BaseController {
       @PathVariable("datatypeId") String datatypeId, Authentication authentication)
           throws IGNotFoundException, CloneException, ForbiddenOperationException, EntityNotFound {
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     String username = authentication.getPrincipal().toString();
     Datatype clone =  resourceManagementService.createFlavor(ig.getDatatypeRegistry(), username, new DocumentInfo(id, DocumentType.IGDOCUMENT), Type.DATATYPE, wrapper.getSelected());
@@ -966,7 +959,7 @@ public class IGDocumentController extends BaseController {
       @PathVariable("valuesetId") String valuesetId, Authentication authentication)
           throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     String username = authentication.getPrincipal().toString();
     
 
@@ -994,7 +987,7 @@ public class IGDocumentController extends BaseController {
           throws IGNotFoundException, AddingException, ForbiddenOperationException, EntityNotFound {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     AddMessageResponseObject objects = this.addService.addConformanceProfiles(ig, wrapper.getSelected(), username);
     ig = igService.save(ig);
     IGDisplayInfo info = displayInfoService.createReturn(ig, objects);
@@ -1029,7 +1022,7 @@ public class IGDocumentController extends BaseController {
       Authentication authentication) throws IGNotFoundException, SegmentNotFoundException, ForbiddenOperationException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     CoConstraintGroup group = this.coConstraintService.createCoConstraintGroupPrototype(coConstraintGroupCreateWrapper.getBaseSegment());
     group.setUsername(username);
@@ -1058,7 +1051,7 @@ public class IGDocumentController extends BaseController {
       @PathVariable("ccGroupId") String ccGroupId,
       Authentication authentication) throws IGNotFoundException, ForbiddenOperationException {
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     Link found = findLinkById(ccGroupId, ig.getCoConstraintGroupRegistry().getChildren());
     if (found != null) {
@@ -1090,7 +1083,7 @@ public class IGDocumentController extends BaseController {
       Authentication authentication) throws IGNotFoundException, ForbiddenOperationException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     ProfileComponent pc = this.igService.createProfileComponent(ig, profileComponentCreateWrapper.name , profileComponentCreateWrapper.children);
     CreateChildResponse createChildResponse = new CreateChildResponse(pc.getId(), ig.getProfileComponentRegistry(), this.displayInfoService.convertProfileComponent(pc, ig.getProfileComponentRegistry().getChildren().size() + 1));
@@ -1110,7 +1103,7 @@ public class IGDocumentController extends BaseController {
       Authentication authentication) throws IGNotFoundException, ForbiddenOperationException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     CompositeProfileStructure cp = this.igService.createCompositeProfile(ig, wrapper);
     cp.setUsername(username);
@@ -1133,7 +1126,7 @@ public class IGDocumentController extends BaseController {
       @RequestBody List<DisplayElement> children,
       Authentication authentication) throws IGNotFoundException, ForbiddenOperationException, ProfileComponentNotFoundException {
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     Link pcLink = ig.getProfileComponentRegistry().getLinkById(pcId);
     if(pcLink == null) {
       throw new ProfileComponentNotFoundException("Profile Component Link not found ") ;
@@ -1161,7 +1154,7 @@ public class IGDocumentController extends BaseController {
           throws IGNotFoundException, AddingException, ForbiddenOperationException, EntityNotFound {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     
     AddMessageResponseObject objects = addService.addDatatypes(ig, wrapper.getSelected(), username);
     ig = igService.save(ig);
@@ -1179,7 +1172,7 @@ public class IGDocumentController extends BaseController {
           throws IGNotFoundException, AddingException, ForbiddenOperationException, EntityNotFound {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     AddValueSetResponseObject objects = crudService.addValueSets(wrapper.getSelected(), ig, username);
 
@@ -1216,7 +1209,7 @@ public class IGDocumentController extends BaseController {
   public @ResponseBody ResponseMessage<String> publish(@PathVariable("id") String id, @RequestBody PublishingInfo info,  Authentication authentication)
       throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     
     this.igService.publishIG(ig, info);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig published Successfully", id, false,
@@ -1229,7 +1222,7 @@ public class IGDocumentController extends BaseController {
   public @ResponseBody ResponseMessage<String> updateSharedUser(@PathVariable("id") String id, @RequestBody SharedUsersInfo sharedUsersInfo, Authentication authentication)
       throws IGNotFoundException, IGUpdateException, ResourceNotFoundException, ForbiddenOperationException {
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getUsername(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getUsername(), ig.getUsername());
     this.sharingService.shareIg(id, sharedUsersInfo);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Shared Users Successfully Updated", id, false,
         new Date(), id);
@@ -1241,7 +1234,7 @@ public class IGDocumentController extends BaseController {
       throws IGNotFoundException, ForbiddenOperationException {
 
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     igService.delete(ig);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig deleted Successfully", ig.getId(), false,
@@ -1255,8 +1248,8 @@ public class IGDocumentController extends BaseController {
           throws Exception {
     Ig ig = findIgById(id);
     IGDisplayInfo igDisplayInfo = displayInfoService.covertIgToDisplay(ig);
-    AccessLevel accessLevel = this.accessControlService.getDocumentUserAccessLevel(new DocumentAccessInfo(ig), (UsernamePasswordAuthenticationToken) authentication);
-    ig.setSharePermission(accessLevel.equals(AccessLevel.READ) ? SharePermission.READ : SharePermission.WRITE);
+    Set<AccessLevel> accessLevel = this.accessControlService.checkDocumentAccessPermission(new DocumentAccessInfo(ig), (UsernamePasswordAuthenticationToken) authentication);
+    ig.setSharePermission(accessLevel.contains(AccessLevel.ALL) || accessLevel.contains(AccessLevel.WRITE) ? SharePermission.WRITE : SharePermission.READ);
     igDisplayInfo.setDocumentLocation(this.browserService.getDocumentLocationInformation(ig, authentication.getName()));
     return igDisplayInfo;
   }
@@ -1369,7 +1362,7 @@ public class IGDocumentController extends BaseController {
       @RequestParam("file") MultipartFile csvFile, Authentication authentication) throws ImportValueSetException, IGNotFoundException, ForbiddenOperationException {
     CSVReader reader = null;
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     if (!csvFile.isEmpty()) {
       try {

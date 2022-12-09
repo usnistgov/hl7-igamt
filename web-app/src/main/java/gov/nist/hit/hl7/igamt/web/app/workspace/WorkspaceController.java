@@ -3,21 +3,25 @@ package gov.nist.hit.hl7.igamt.web.app.workspace;
 import java.util.*;
 
 import gov.nist.hit.hl7.auth.util.requests.FindUserResponse;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
+import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.web.app.model.ResourceMovingInfo;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspaceMetadata;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspaceUser;
 import gov.nist.hit.hl7.igamt.workspace.model.*;
 import gov.nist.hit.hl7.igamt.workspace.exception.CreateRequestException;
 import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceForbidden;
 import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceNotFound;
+import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceDocumentManagementService;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceUserManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
-import gov.nist.hit.hl7.igamt.web.app.service.MovingService;
 import gov.nist.hit.hl7.igamt.workspace.domain.Workspace;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceService;
 
@@ -31,7 +35,7 @@ public class WorkspaceController {
 	@Autowired
 	private WorkspaceUserManagementService workspaceUserManagementService;
 	@Autowired
-	MovingService movingService;
+	private WorkspaceDocumentManagementService workspaceDocumentManagementService;
 	@Autowired
 	CommonService commonService;
 
@@ -213,6 +217,24 @@ public class WorkspaceController {
 		this.workspaceUserManagementService.removeUser(workspace, current, userDeleteRequest.getUsername());
 		return new ResponseMessage<>(ResponseMessage.Status.SUCCESS, "User Updated Successfully", id, null, new Date());
 	}
+
+	@RequestMapping(value = "/api/workspace/clone", method = RequestMethod.POST, produces = { "application/json" })
+	@ResponseBody
+	@PreAuthorize("AccessResource(#resourceMovingInfo.getDocumentType().toString(), #resourceMovingInfo.getDocumentId(), READ)")
+	public WorkspaceInfo move(
+			@RequestBody ResourceMovingInfo resourceMovingInfo,
+			Authentication authentication
+	) throws Exception {
+		Workspace workspace = workspaceDocumentManagementService.cloneIgAndMoveToWorkspaceLocation(
+				resourceMovingInfo.getDocumentId(),
+				resourceMovingInfo.getName(),
+				resourceMovingInfo.getWorkspaceId(),
+				resourceMovingInfo.getFolderId(),
+				authentication.getName()
+		);
+		return this.workspaceService.getWorkspaceInfo(workspace, authentication.getName());
+	}
+
 
 }
 

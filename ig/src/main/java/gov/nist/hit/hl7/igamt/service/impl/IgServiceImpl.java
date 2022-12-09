@@ -16,6 +16,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipOutputStream;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
+import gov.nist.hit.hl7.igamt.ig.service.AddService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -23,6 +27,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -35,22 +40,6 @@ import com.mongodb.client.result.UpdateResult;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintDependencyService;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.Level;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
-import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
-import gov.nist.hit.hl7.igamt.common.base.domain.Status;
-import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
@@ -148,6 +137,9 @@ public class IgServiceImpl implements  IgService {
 
 	@Autowired
 	IgRepository igRepository;
+
+	@Autowired
+	AddService addService;
 
 	@Autowired
 	MongoTemplate mongoTemplate;
@@ -323,6 +315,28 @@ public class IgServiceImpl implements  IgService {
 		}
 		emptyIg.setContent(content);
 		return emptyIg;
+	}
+
+	@Override
+	public Ig createIg(CreationWrapper wrapper, String username) throws Exception {
+		try {
+			Ig empty = this.createEmptyIg();
+			empty.setUsername(username);
+			DomainInfo info = new DomainInfo();
+			info.setScope(Scope.USER);
+			empty.setDomainInfo(info);
+			empty.setMetadata(wrapper.getMetadata());
+			empty.setCreationDate(new Date());
+			empty.setId(new ObjectId().toString());
+			this.addService.addConformanceProfiles(empty, wrapper.getSelected(), username);
+			PrivateAudience privateAudience = new PrivateAudience();
+			privateAudience.setEditor(username);
+			privateAudience.setViewers(new HashSet<>());
+			empty.setAudience(privateAudience);
+			return this.save(empty);
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
 

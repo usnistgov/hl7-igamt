@@ -164,7 +164,7 @@ public class AccessControlService {
         // If user is editor
         if(user.getName().equals(audience.getEditor())) {
             // Grant all access
-            return L(AccessLevel.WRITE);
+            return L(AccessLevel.ALL);
         }
 
         // If user is viewer
@@ -185,7 +185,7 @@ public class AccessControlService {
         if (permissionType != null) {
             switch (permissionType) {
                 case EDIT:
-                    return L(AccessLevel.WRITE);
+                    return L(AccessLevel.ALL);
                 case VIEW:
                     return L(AccessLevel.READ);
             }

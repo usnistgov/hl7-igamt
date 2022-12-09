@@ -1,5 +1,5 @@
 import { BrowserScope } from './../entity-browse-dialog/entity-browse-dialog.component';
-import { IIgLocationValue, IDocumentLocation, DocumentLocationType } from './../../../ig/models/ig/ig-document.class';
+import { IDocumentLocation, DocumentLocationType } from './../../../ig/models/ig/ig-document.class';
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
@@ -11,10 +11,8 @@ export class DocumentBreadcrumbsComponent implements OnInit {
 
   links: Record<number, { path: string[], params: Record<string, string> }>;
   @Input()
-  viewOnly: boolean;
-  @Input()
-  set locationInfo(loc: IIgLocationValue) {
-    this.location = loc.location.sort((a, b) => a.position - b.position);
+  set locationInfo(location: IDocumentLocation[]) {
+    this.location = location.sort((a, b) => a.position - b.position);
     const asMap = (this.location || []).reduce((acc, l) => {
       return {
         ...acc,

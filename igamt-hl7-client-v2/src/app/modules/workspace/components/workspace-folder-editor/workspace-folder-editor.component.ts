@@ -1,3 +1,4 @@
+import { IEntityBrowserResult } from './../../../shared/components/entity-browse-dialog/entity-browse-dialog.component';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
@@ -16,7 +17,6 @@ import { EditorUpdate } from '../../../dam-framework/store/data/dam.actions';
 import { IgListItem } from '../../../document/models/document/ig-list-item.class';
 import { BrowseType, EntityBrowseDialogComponent, IBrowserTreeNode } from '../../../shared/components/entity-browse-dialog/entity-browse-dialog.component';
 import { Type } from '../../../shared/constants/type.enum';
-import { MoveService } from '../../../shared/services/move.service';
 import { IFolderContent, WorkspacePermissionType } from '../../models/models';
 import { AbstractWorkspaceEditorComponent } from '../../services/abstract-workspace-editor';
 import { WorkspaceService } from '../../services/workspace.service';
@@ -65,7 +65,6 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
     private workspaceService: WorkspaceService,
     protected messageService: MessageService,
     private router: Router,
-    private moveService: MoveService,
     private dialog: MatDialog,
   ) {
     super({
@@ -145,10 +144,10 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
                 class: 'btn-success',
                 icon: 'fa-plus',
                 action: (item: IgListItem) => {
-                  // HANDLE CLONE
+                  this.cloneIgIntoFolder(item.id, Type.IGDOCUMENT);
                 },
                 disabled: (item: IgListItem): boolean => {
-                  return !editor;;
+                  return !editor;
                 },
                 hide: (item: IgListItem): boolean => {
                   return !editor;
@@ -203,6 +202,20 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
     this.filter$.next(text);
   }
 
+  addNewIg() {
+    this.folder$.pipe(
+      take(1),
+      map((folder) => {
+        this.router.navigate(['/', 'ig', 'create'], {
+          queryParams: {
+            workspaceId: folder.workspaceId,
+            folderId: folder.id,
+          }
+        });
+      }),
+    ).subscribe();
+  }
+
   importIg() {
     this.folder$.pipe(
       take(1),
@@ -231,22 +244,27 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
           },
         }).afterClosed();
       }),
-    ).subscribe((node: IBrowserTreeNode) => {
-      if (node) {
-        this.addNodeToWorkspace(node);
+    ).subscribe((browserResult: IEntityBrowserResult) => {
+      if (browserResult) {
+        this.addNodeToWorkspace(browserResult);
       }
     });
   }
 
-  addNodeToWorkspace(node: IBrowserTreeNode) {
+  addNodeToWorkspace(browserResult: IEntityBrowserResult) {
+    this.cloneIgIntoFolder(browserResult.node.data.id, browserResult.node.data.type, browserResult.name);
+  }
+
+  cloneIgIntoFolder(igId: string, documentType: Type, name?: string) {
     this.folder$.pipe(
       take(1),
       flatMap((folder) => {
-        return this.moveService.moveToWorkspace({
-          documentId: node.data.id,
-          documentType: node.data.type,
+        return this.workspaceService.cloneToWorkspace({
+          documentId: igId,
+          documentType,
           workspaceId: folder.workspaceId,
           folderId: folder.id,
+          name,
         }).pipe(
           flatMap((ws) => {
             return this.workspaceService.getWorkspaceFolderContent(folder.workspaceId, folder.id).pipe(

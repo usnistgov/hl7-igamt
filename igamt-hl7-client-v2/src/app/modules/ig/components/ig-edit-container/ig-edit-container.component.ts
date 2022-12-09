@@ -1,3 +1,5 @@
+import { IDocumentLocation } from './../../models/ig/ig-document.class';
+import { map } from 'rxjs/operators';
 import { selectViewOnly } from './../../../../root-store/library/library-edit/library-edit.selectors';
 import { selectIgDocumentLocation } from './../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { Component, forwardRef } from '@angular/core';
@@ -10,7 +12,6 @@ import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index
 import { DamWidgetComponent } from '../../../dam-framework/components/data-widget/dam-widget/dam-widget.component';
 import { IWorkspaceActive } from '../../../dam-framework/models/data/workspace';
 import { VerificationService } from '../../../shared/services/verification.service';
-import { IIgLocationValue } from '../../models/ig/ig-document.class';
 import { ITitleBarMetadata } from '../ig-edit-titlebar/ig-edit-titlebar.component';
 
 export const IG_EDIT_WIDGET_ID = 'IG-EDIT-WIDGET';
@@ -29,7 +30,7 @@ export class IgEditContainerComponent extends DamWidgetComponent {
   activeWorkspace: Observable<IWorkspaceActive>;
   showStatusBar$: Observable<boolean>;
   showBottomDrawer$: Observable<boolean>;
-  locationInfo$: Observable<IIgLocationValue>;
+  location$: Observable<IDocumentLocation[]>;
   viewOnly$: Observable<boolean>;
 
   constructor(
@@ -41,7 +42,9 @@ export class IgEditContainerComponent extends DamWidgetComponent {
     this.activeWorkspace = store.select(fromIgamtSelectors.selectWorkspaceActive);
     this.showStatusBar$ = verificationService.getStatusBarActive();
     this.showBottomDrawer$ = verificationService.getBottomDrawerActive();
-    this.locationInfo$ = this.store.select(selectIgDocumentLocation);
+    this.location$ = this.store.select(selectIgDocumentLocation).pipe(
+      map((igLocation) => igLocation.location),
+    );
     this.viewOnly$ = this.store.select(selectViewOnly);
   }
 

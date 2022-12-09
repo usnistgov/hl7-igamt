@@ -8,6 +8,7 @@ public class ResourceMovingInfo {
 	private DocumentType documentType;
 	private String workspaceId;
 	private String folderId;
+	private String name;
 
 	public String getDocumentId() {
 		return documentId;
@@ -39,5 +40,13 @@ public class ResourceMovingInfo {
 
 	public void setFolderId(String folderId) {
 		this.folderId = folderId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

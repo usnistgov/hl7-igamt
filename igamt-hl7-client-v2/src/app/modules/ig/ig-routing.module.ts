@@ -1,3 +1,4 @@
+import { IgCreateContext } from './services/ig-create-context.guard';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { IgEditActionTypes, IgEditResolverLoad, OpenConformanceStatementSummaryEditorNode, OpenIgMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
@@ -28,6 +29,9 @@ const routes: Routes = [
     path: 'create',
     component: CreateIGComponent,
     canActivate: [AuthenticatedGuard],
+    resolve: {
+      context: IgCreateContext,
+    }
   },
   {
     path: 'error',

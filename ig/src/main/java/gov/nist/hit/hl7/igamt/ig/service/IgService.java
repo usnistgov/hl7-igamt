@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
@@ -62,6 +63,8 @@ public interface IgService {
   public List<Ig> finByScope(String string);
 
   public Ig createEmptyIg() throws JsonParseException, JsonMappingException, FileNotFoundException, IOException;
+
+  public Ig createIg(CreationWrapper wrapper, String username) throws Exception;
 
   public List<Ig> findIgIdsForUser(String username);
 

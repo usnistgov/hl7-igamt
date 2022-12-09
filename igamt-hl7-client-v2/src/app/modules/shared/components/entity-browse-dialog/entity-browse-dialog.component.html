@@ -1,4 +1,3 @@
-<!-- <h3 mat-dialog-title style="text-align: center;">Pick {{browser.browserType === 'TARGET' ? 'a destination' : 'an Ig Document'}} </h3> -->
 <div mat-dialog-body>
   <div style="display: flex;">
     <div style="border-right: 1px solid lightgray; padding-right: 20px; text-align: center;">
@@ -20,18 +19,12 @@
           </span>
         </li>
       </ul>
-      <span style="color: #9b9898; margin-bottom: 15px;">Options</span>
-      <form [formGroup]="options" style="margin-top: 15px;">
-        <p-checkbox *ngFor="let item of browser.options; trackBy: track" [binary]="true" [name]="item.key"
-        [formControl]="options.controls[item.key]" [label]="item.label"></p-checkbox>
-      </form>
     </div>
     <div  style="padding-left: 20px;">
       <div style="color: #9b9898; margin-bottom: 15px; text-align: center;">Pick an Implementation Guide</div>
-      <p-treeTable [value]="browserTree" [columns]="columns" [paginator]="true" [rows]="5" [reorderableColumns]="true" [resizableColumns]="true" selectionMode="single"
+      <p-treeTable *ngIf="scope" #tt [value]="browserTree" [columns]="columns" [paginator]="true" [rows]="5" [reorderableColumns]="true" [resizableColumns]="true" selectionMode="single"
+      (onNodeSelect)="nodeUpdate($event)"
       [(selection)]="selected"
-      (onNodeUnselect)="nodeUpdate($event, false)"
-      (onNodeSelect)="nodeUpdate($event, true)"
       dataKey="id" >
         <ng-template pTemplate="header" let-columns>
             <tr>
@@ -75,26 +68,32 @@
             </tr>
         </ng-template>
     </p-treeTable>
-    <div *ngIf="selected"  style="color: #9b9898; margin: 15px; text-align: center;">Selection</div>
-    <ul class="list-group" *ngIf="selected" >
-      <li class="list-group-item list-item" >
-        <div>
-          <app-entity-bagde [type]="selected.data.type"></app-entity-bagde>
-          <app-scope-badge *ngIf="selected.data.domainInfo" [scope]="selected.data.domainInfo.scope" [version]="selected.data.domainInfo.version"></app-scope-badge>
-          <strong style="margin-left: 10px">{{selected.data.label}}</strong>
-        </div>
-        <div>
-          <button (click)="clear()" class="btn btn-sm btn-danger">
-            <i class="fa fa-trash"></i>
-          </button>
-        </div>
-      </li>
-    </ul>
+    <ng-container *ngIf="selected" >
+      <div style="color: #9b9898; margin: 15px; text-align: center;">Selection</div>
+      <ul class="list-group">
+        <li class="list-group-item list-item" >
+          <div>
+            <app-entity-bagde [type]="selected.data.type"></app-entity-bagde>
+            <app-scope-badge *ngIf="selected.data.domainInfo" [scope]="selected.data.domainInfo.scope" [version]="selected.data.domainInfo.version"></app-scope-badge>
+            <strong style="margin-left: 10px">{{selected.data.label}}</strong>
+          </div>
+          <div>
+            <button (click)="clear()" class="btn btn-sm btn-danger">
+              <i class="fa fa-trash"></i>
+            </button>
+          </div>
+        </li>
+      </ul>
+      <div>
+        <label style="font-weight: bold; margin: 10px;">Clone As</label>
+        <input type="text" class="form-control" [(ngModel)]="name">
+      </div>
+    </ng-container>
     </div>
   </div>
 
 </div>
 <mat-dialog-actions style="justify-content: flex-end; margin-top: 10px;">
   <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
-  <button (click)="done()" [disabled]="!selected" class="btn btn-sm btn-success">Done</button>
+  <button (click)="done()" [disabled]="!selected || !name" class="btn btn-sm btn-success">Done</button>
 </mat-dialog-actions>
