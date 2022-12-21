@@ -1548,17 +1548,7 @@ public class IGDocumentController extends BaseController {
     return null;
   }
 
-<<<<<<< Updated upstream:ig/src/main/java/gov/nist/hit/hl7/igamt/ig/controller/IGDocumentController.java
-  @RequestMapping(value = "/api/igdocuments/{igid}/compliance", method = RequestMethod.GET, produces = {"application/json"})
-  @PreAuthorize("AccessResource('IGDOCUMENT', #igid, READ)")
-  public @ResponseBody ComplianceReport complianceIGById(@PathVariable("igid") String igid, Authentication authentication) {
-    Ig ig = this.igService.findById(igid);
-    if (ig != null) return this.verificationService.verifyIgForCompliance(igid);
-    return null;
-  }
 
-=======
->>>>>>> Stashed changes:web-app/src/main/java/gov/nist/hit/hl7/igamt/web/app/ig/IGDocumentController.java
   @RequestMapping(value = "/api/igdocuments/{igid}/preverification", method = RequestMethod.POST, produces = { "application/json" })
   @PreAuthorize("AccessResource('IGDOCUMENT', #igid, READ)")
   public @ResponseBody VerificationReport preVerification(@PathVariable("igid") String igid, @RequestBody ReqId reqIds, Authentication authentication) throws Exception {
