@@ -217,6 +217,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
         assertion: conditional.condition,
         resource: this.conformanceProfile,
         excludePaths: [this.binding.segment.pathId],
+        hideFreeText: true,
       },
     });
 

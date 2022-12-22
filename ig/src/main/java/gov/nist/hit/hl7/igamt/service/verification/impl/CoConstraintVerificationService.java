@@ -138,15 +138,37 @@ public class CoConstraintVerificationService extends VerificationUtils {
                             List<IgamtObjectError> errors = new ArrayList<>();
                             if (coConstraintBindingSegment.getTables() != null) {
                                 int i = 1;
+                                List<String> tableIds = new ArrayList<>();
                                 for (CoConstraintTableConditionalBinding tableConditionalBinding : coConstraintBindingSegment.getTables()) {
+                                    TargetLocation tableLocation = TargetLocation.makeTableLocation(
+                                            segmentLocation,
+                                            Strings.isNullOrEmpty(tableConditionalBinding.getId()) ? "[Missing_ID]" : tableConditionalBinding.getId(),
+                                            i
+                                    );
+
+                                    if(Strings.isNullOrEmpty(tableConditionalBinding.getId())) {
+                                        errors.add(this.entry.CoConstraintTableIdIsMissing(
+                                                tableLocation.pathId,
+                                                tableLocation.name,
+                                                context.getResource().getId(),
+                                                context.getResource().getType()
+                                        ));
+                                    } else if(tableIds.contains(tableConditionalBinding.getId())) {
+                                        errors.add(this.entry.CoConstraintTableIdIsDuplicate(
+                                                tableLocation.pathId,
+                                                tableLocation.name,
+                                                tableConditionalBinding.getId(),
+                                                context.getResource().getId(),
+                                                context.getResource().getType()
+                                        ));
+                                    } else {
+                                        tableIds.add(tableConditionalBinding.getId());
+                                    }
+
                                     errors.addAll(checkCoConstraintTableConditionalBinding(
                                             target,
                                             context,
-                                            TargetLocation.makeTableLocation(
-                                                    segmentLocation,
-                                                    tableConditionalBinding.getId(),
-                                                    i
-                                            ),
+                                            tableLocation,
                                             tableConditionalBinding
                                     ));
                                     i++;
@@ -317,12 +339,12 @@ public class CoConstraintVerificationService extends VerificationUtils {
         }
 
         for(CoConstraint cc: coConstraints) {
-
             TargetLocation ccLocation = TargetLocation.makeRowLocation(groupOrTableLocation, cc.getId(), i);
             errors.addAll(this.checkCoConstraintRequirement(segment, ccLocation, cc.getRequirement(), false, (i == 1) && group));
 
             for(DataHeaderElementVerified header: headers) {
                 if(cc.getCells().get(header.header.getKey()) != null) {
+                    CoConstraintCell cell = cc.getCells().get(header.header.getKey());
                     TargetLocation cellLocation = TargetLocation.makeCellLocation(
                             ccLocation,
                             header.header.getKey(),
@@ -331,7 +353,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
                     );
 
                     errors.addAll(
-                            this.checkCoConstraintCell(segment, header, cellLocation, cc.getCells().get(header.header.getKey()))
+                            this.checkCoConstraintCell(segment, header, cellLocation, cell)
                     );
                 }
             }
@@ -610,9 +632,21 @@ public class CoConstraintVerificationService extends VerificationUtils {
             DatatypeCell cell = (DatatypeCell) coConstraintCell;
             if(Strings.isNullOrEmpty(cell.getValue())) {
                 // Value Is Missing
+                errors.add(this.entry.CoConstraintDatatypeCellMissingValue(
+                        cellLocation.pathId,
+                        cellLocation.name,
+                        segment.getResource().getId(),
+                        segment.getResource().getType()
+                ));
             }
             if(Strings.isNullOrEmpty(cell.getDatatypeId())) {
                 // Datatype Value Is Missing
+                errors.add(this.entry.CoConstraintDatatypeCellMissingDatatype(
+                        cellLocation.pathId,
+                        cellLocation.name,
+                        segment.getResource().getId(),
+                        segment.getResource().getType()
+                ));
                 return new DatatypeCellVerified(null, errors);
             } else {
                 Datatype dt = this.datatypeService.findById(cell.getDatatypeId());
