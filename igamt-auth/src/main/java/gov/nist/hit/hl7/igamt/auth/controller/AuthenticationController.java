@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import gov.nist.hit.hl7.auth.util.requests.AdminUserRequest;
 import gov.nist.hit.hl7.auth.util.requests.ChangePasswordConfirmRequest;
@@ -197,9 +198,11 @@ public class AuthenticationController {
 
 
   private String getUrl(HttpServletRequest request, String token) {
-    String scheme = request.getScheme();
-    String host = request.getHeader("Host");
-    return scheme +"://" + host + "/igamt"  + "/reset-password-confirm/" + token;
+    String baseUrl = ServletUriComponentsBuilder.fromRequestUri(request)
+	            .replacePath(null)
+	            .build()
+	            .toUriString();
+    return baseUrl  + "/reset-password-confirm/" + token;
   }
 
 
