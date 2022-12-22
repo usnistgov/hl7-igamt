@@ -1068,8 +1068,8 @@ public class IgServiceImpl implements IgService {
 		this.xmlSerializeService.generateIS(out, valueSetXMLStr, "ValueSets.xml");
 		this.xmlSerializeService.generateIS(out, constraintXMLStr, "Constraints.xml");
 		this.xmlSerializeService.generateIS(out, coConstraintsXMLStr, "CoConstraints.xml");
-		this.xmlSerializeService.generateIS(out, bindingsXMLStr, "Bindings.xml");
-		this.xmlSerializeService.generateIS(out, slicingXMLStr, "Slicing.xml");
+		this.xmlSerializeService.generateIS(out, bindingsXMLStr, "ValueSetBindings.xml");
+		this.xmlSerializeService.generateIS(out, slicingXMLStr, "Slicings.xml");
 
 		out.close();
 		bytes = outputStream.toByteArray();

@@ -404,10 +404,15 @@ public class DataFixer {
   }
 
 
-  /**
- * @throws ForbiddenOperationException 
-   * 
-   */
+  /***
+   *  
+   *  
+   *  
+   *  @throws ForbiddenOperationException 
+   *  
+   *  
+   *  
+   ***/
   public void addFixedExt() throws ForbiddenOperationException {
     List<Segment> segments =  this.segmentsService.findByDomainInfoScope("USERCUSTOM");
     
