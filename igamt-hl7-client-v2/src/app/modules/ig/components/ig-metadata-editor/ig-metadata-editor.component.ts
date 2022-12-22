@@ -118,7 +118,7 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
         },
         authors: {
           label: 'Authors',
-          placeholder: 'Authors',
+          placeholder: 'Type name and press Enter',
           validators: [],
           enum: [],
           type: FieldType.STRING_LIST,
@@ -135,14 +135,14 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
           id: 'HL7Versions',
           name: 'HL7Versions',
         },
-        implementationNotes: {
+        authorNotes: {
           label: 'Author Notes',
-          placeholder: 'Implementation Notes',
+          placeholder: 'Author Notes',
           validators: [],
           enum: [],
           type: FieldType.RICH,
-          id: 'implementationNotes',
-          name: 'Implementation Notes',
+          id: 'authorNotes',
+          name: 'authorNotes',
         },
       },
     };

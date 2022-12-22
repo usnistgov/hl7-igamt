@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,7 +44,9 @@ public class AuthenticationController {
 
   @Autowired
   AccountManagmenEmailService emailService;
-
+  
+  @Autowired
+  Environment env;
 
   @RequestMapping(value = "/api/login", method = RequestMethod.POST)
   public ConnectionResponseMessage<UserResponse> login(@RequestBody LoginRequest user,
@@ -198,10 +201,11 @@ public class AuthenticationController {
 
 
   private String getUrl(HttpServletRequest request, String token) {
-    String baseUrl = ServletUriComponentsBuilder.fromRequestUri(request)
-	            .replacePath(null)
-	            .build()
-	            .toUriString();
+//    String baseUrl = ServletUriComponentsBuilder.fromRequestUri(request)
+//	            .replacePath(null)
+//	            .build()
+//	            .toUriString();
+	String baseUrl = env.getProperty("host.url");
     return baseUrl  + "/reset-password-confirm/" + token;
   }
 
