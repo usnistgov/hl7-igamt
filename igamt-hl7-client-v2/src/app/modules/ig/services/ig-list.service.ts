@@ -48,6 +48,6 @@ export class IgListService {
     return this.http.delete<Message>('api/igdocuments/' + id);
   }
   lockIG(id: string) {
-    return this.http.post<Message>('api/igdocuments/' + id+ '/lock', {});
+    return this.http.post<Message>('api/igdocuments/' + id + '/lock', {});
   }
 }

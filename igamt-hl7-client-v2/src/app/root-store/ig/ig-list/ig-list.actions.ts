@@ -10,7 +10,7 @@ export enum IgListActionTypes {
   SelectIgListSortOption = '[IgList] Select Sort Option',
   ClearIgList = '[IgList] Clear Ig List',
   LockIG = '[IgList] Lock Ig  Request',
-  LockIGSuccess = '[IgList] Lock Ig Success'
+  LockIGSuccess = '[IgList] Lock Ig Success',
 }
 
 export type IgListLoad = 'USER' | 'PUBLISHED' | 'SHARED' |'ALL';
@@ -44,7 +44,6 @@ export class DeleteIgListItemSuccess implements Action {
   constructor(readonly id: string) {
   }
 }
-
 
 export class LockIG implements Action {
   readonly type = IgListActionTypes.LockIG;

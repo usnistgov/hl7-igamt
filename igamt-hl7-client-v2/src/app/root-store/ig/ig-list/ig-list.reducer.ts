@@ -49,7 +49,7 @@ export function reducer(state = initialState, action: IgListActions): IState {
         sortOptions: action.sortOption,
       };
       case IgListActionTypes.LockIGSuccess:
-        return igListItemAdapter.updateOne({ id: action.id, changes: {"status": 'LOCKED'}}, state);
+        return igListItemAdapter.updateOne({ id: action.id, changes: {status: 'LOCKED'}}, state);
     default:
       return state;
   }

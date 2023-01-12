@@ -1,8 +1,8 @@
-import { IFilterOptions } from './../../../modules/ig/components/ig-list-container/ig-list-container.component';
 import {createSelector} from '@ngrx/store';
 import {ISortOptions} from 'src/app/modules/shared/models/sort.class';
 import {IgListLoad} from 'src/app/root-store/ig/ig-list/ig-list.actions';
 import {IgListItem} from '../../../modules/document/models/document/ig-list-item.class';
+import { IFilterOptions } from './../../../modules/ig/components/ig-list-container/ig-list-container.component';
 import {selectIgList} from './../ig.reducer';
 import {igListItemAdapter, IState} from './ig-list.reducer';
 
@@ -46,7 +46,7 @@ export const selectIgListViewFiltered = createSelector(
   selectIgListView,
   (igList: IgListItem[], props: any) => {
     return igList.filter((item) => {
-      return props.filter && item.title.includes(props.filter) || !props.filter && (!item.deprecated || props.deprecated) &&  (!props.status || !props.status.length || props.status.indexOf(item["status"])> -1 ) ;
+      return props.filter && item.title.includes(props.filter) || !props.filter && (!item.deprecated || props.deprecated) &&  (!props.status || !props.status.length || props.status.indexOf(item['status']) > -1 ) ;
     });
   },
 );
@@ -55,10 +55,10 @@ export const selectIgListViewGeneralFilter = createSelector(
   selectIgListView,
   (igList: IgListItem[], props: any) => {
     return igList.filter((item) => {
-      if(!props.values || !props.values.length ){
+      if (!props.values || !props.values.length ) {
         return true;
       }
-      return props.values.indexOf(item[props.attribute])> -1;
+      return props.values.indexOf(item[props.attribute]) > -1;
     });
   },
 );
