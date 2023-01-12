@@ -1,5 +1,3 @@
-import { OpenIgVerificationEditor } from './../../root-store/ig/ig-edit/ig-edit.actions';
-import { IgVerificationComponent } from './components/ig-verification/ig-verification.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { IgEditActionTypes, IgEditResolverLoad, OpenConformanceStatementSummaryEditorNode, OpenIgMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
@@ -13,12 +11,14 @@ import { WidgetDeactivateGuard } from '../dam-framework/guards/widget-deactivate
 import { WidgetSetupGuard } from '../dam-framework/guards/widget-setup.guard';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
+import { OpenIgVerificationEditor } from './../../root-store/ig/ig-edit/ig-edit.actions';
 import { ConformanceStatementsSummaryEditorComponent } from './components/conformance-statements-summary-editor/conformance-statements-summary-editor.component';
 import { CreateIGComponent } from './components/create-ig/create-ig.component';
 import { IG_EDIT_WIDGET_ID, IgEditContainerComponent } from './components/ig-edit-container/ig-edit-container.component';
 import { IgListContainerComponent } from './components/ig-list-container/ig-list-container.component';
 import { IgMetadataEditorComponent } from './components/ig-metadata-editor/ig-metadata-editor.component';
 import { IgSectionEditorComponent } from './components/ig-section-editor/ig-section-editor.component';
+import { IgVerificationComponent } from './components/ig-verification/ig-verification.component';
 
 const routes: Routes = [
   {

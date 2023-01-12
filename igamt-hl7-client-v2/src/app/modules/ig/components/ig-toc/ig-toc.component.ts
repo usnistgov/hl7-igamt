@@ -1,5 +1,3 @@
-import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
-import { Dictionary } from '@ngrx/entity';
 import {
   AfterViewInit,
   ChangeDetectorRef,
@@ -13,6 +11,7 @@ import {
 } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Dictionary } from '@ngrx/entity';
 import { Store } from '@ngrx/store';
 import { TREE_ACTIONS, TreeComponent, TreeModel, TreeNode } from 'angular-tree-component';
 import { ContextMenuComponent } from 'ngx-contextmenu';
@@ -29,6 +28,7 @@ import { NodeHelperService } from '../../../shared/services/node-helper.service'
 import { ValueSetService } from '../../../value-set/service/value-set.service';
 import { IgDocument } from '../../models/ig/ig-document.class';
 import { IgService } from '../../services/ig.service';
+import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
 import { IContent } from './../../../shared/models/content.interface';
 import { ISectionTemplate } from './../derive-dialog/derive-dialog.component';
 import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';

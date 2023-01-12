@@ -20,7 +20,6 @@ export const selectProfileComponentContext = fromDAM.selectValue<IProfileCompone
 export const selectVerificationResult = fromDAM.selectValue<any>('verificationResult');
 export const selectVerificationStatus = fromDAM.selectValue<any>('verificationStatus');
 
-
 // SELECTED RESOURCE GETTERS
 export const selectedConformanceProfile = createSelector(
   selectSelectedResource,

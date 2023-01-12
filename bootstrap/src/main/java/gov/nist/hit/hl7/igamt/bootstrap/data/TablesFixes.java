@@ -230,6 +230,7 @@ public class TablesFixes {
     vsDtMap.put("HL70440", "RCD");
     vsDtMap.put("HL70537", "DIN");
     vsDtMap.put("HL79999", "");
+
         
     List<Segment> segments = segmentService.findByDomainInfoScopeAndDomainInfoVersion(Scope.HL7STANDARD.toString(), version);
     for(Segment s: segments) {

@@ -1,12 +1,10 @@
-import { VerificationType } from 'src/app/modules/shared/models/verification.interface';
-import { VerifyIg } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectVerificationStatus, selectVerificationResult } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
-import { Router } from '@angular/router';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import { filter, map, take, withLatestFrom } from 'rxjs/operators';
+import { VerificationType } from 'src/app/modules/shared/models/verification.interface';
 import { selectDelta, selectViewOnly } from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { selectDerived } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
@@ -22,6 +20,8 @@ import { IConnectingInfo } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.class';
 import { IgService } from '../../services/ig.service';
+import { selectVerificationResult, selectVerificationStatus } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
+import { VerifyIg } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
 
 @Component({
   selector: 'app-ig-edit-toolbar',
@@ -30,7 +30,7 @@ import { IgService } from '../../services/ig.service';
 })
 export class IgEditToolbarComponent implements OnInit, OnDestroy {
   exportTypes = ExportTypes;
-  verifiying$ :Observable<boolean> = of(true);
+  verifiying$: Observable<boolean> = of(true);
   viewOnly: boolean;
   subscription: Subscription;
   toolConfig: Observable<IConnectingInfo[]>;
@@ -48,8 +48,8 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     this.subscription = this.store.select(selectViewOnly).subscribe(
       (value) => this.viewOnly = value,
     );
-    this.verifiying$= this.store.select(selectVerificationStatus).pipe(map((x) =>  x.loading));
-    this.stats$= this.store.select(selectVerificationResult).pipe(filter(x => x),map((x) =>  x.stats));
+    this.verifiying$ = this.store.select(selectVerificationStatus).pipe(map((x) =>  x.loading));
+    this.stats$ = this.store.select(selectVerificationResult).pipe(filter((x) => x), map((x) =>  x.stats));
 
     this.toolConfig = this.store.select(selectExternalTools);
     this.deltaMode$ = this.store.select(selectDelta);
@@ -96,20 +96,16 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
 
   verifyIG(type: string) {
       this.getIgId().pipe().subscribe((igId) => {
-       const url =  '/' + 'ig/' + igId+ '/verification?type='+type;
-        this.router.navigateByUrl(url);
-        // const dialogRef = this.dialog.open(VerifyIgDialogComponent, {
-        //   data: { igId, type },
-        // });
-        // dialogRef.afterClosed().pipe(take(1)).subscribe();
+       const url =  '/' + 'ig/' + igId + '/verification?type=' + type;
+       this.router.navigateByUrl(url);
       });
   }
 
-  refreshVerify(){
+  refreshVerify() {
     this.getIgId().pipe().subscribe((igId) => {
       this.store.dispatch(new VerifyIg({  id: igId,
         resourceType: Type.IGDOCUMENT,
-        verificationType: VerificationType.VERIFICATION}))
+        verificationType: VerificationType.VERIFICATION}));
      });
   }
 

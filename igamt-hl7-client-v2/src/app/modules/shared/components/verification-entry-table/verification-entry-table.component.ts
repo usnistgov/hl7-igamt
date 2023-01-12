@@ -1,9 +1,9 @@
-import { Type } from './../../constants/type.enum';
 import { Component, Input, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, tap, filter } from 'rxjs/operators';
+import { filter, map, tap } from 'rxjs/operators';
 import { Severity } from '../../models/verification.interface';
 import { IVerificationEntryList, IVerificationEntryTable } from '../../services/verification.service';
+import { Type } from './../../constants/type.enum';
 
 export interface IEntryFilter {
   severity: {
@@ -78,15 +78,15 @@ export class VerificationEntryTableComponent implements OnInit {
     this.filter.next(this.filter.getValue());
   }
 
-  applyFilter(filter: IEntryFilter, verification: IVerificationEntryList): IVerificationEntryList {
+  applyFilter(filterValue: IEntryFilter, verification: IVerificationEntryList): IVerificationEntryList {
     const entries = verification.entries.filter((entry) => {
       const keepSeverity: boolean =
-        entry.severity === Severity.ERROR && filter.severity.error ||
-        entry.severity === Severity.FATAL && filter.severity.fatal ||
-        entry.severity === Severity.WARNING && filter.severity.warning ||
-        entry.severity === Severity.INFORMATIONAL && filter.severity.informational;
-      const keepCode = filter.codes.length === 0 || filter.codes.includes(entry.code);
-      const keepType = !filter.type || entry.targetType === filter.type;
+        entry.severity === Severity.ERROR && filterValue.severity.error ||
+        entry.severity === Severity.FATAL && filterValue.severity.fatal ||
+        entry.severity === Severity.WARNING && filterValue.severity.warning ||
+        entry.severity === Severity.INFORMATIONAL && filterValue.severity.informational;
+      const keepCode = filterValue.codes.length === 0 || filterValue.codes.includes(entry.code);
+      const keepType = !filterValue.type || entry.targetType === filterValue.type;
 
       return keepSeverity && keepCode && keepType;
     });

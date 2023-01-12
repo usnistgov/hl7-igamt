@@ -1,13 +1,13 @@
-import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
-import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { elementStart } from '@angular/core/src/render3';
 import * as _ from 'lodash';
+import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
 
 @Component({
   selector: 'app-verification-badge',
   templateUrl: './verification-badge.component.html',
   styleUrls: ['./verification-badge.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VerificationBadgeComponent implements OnInit {
 
@@ -19,28 +19,20 @@ export class VerificationBadgeComponent implements OnInit {
   elments: IVerificationEnty[];
 
   @Input()
-  set verification(elments: IVerificationEnty[] ){
+  set verification(elments: IVerificationEnty[] ) {
     this.elments = elments;
-    // this.number = elments.length;
-    if(elments){
-      let group = _.groupBy(elments, 'severity');
-      if(group['FATAL']){
-      //  this.number = group['FATAL'].length;
-      this.color= 'red';
-        this.style = 'fa fa fa-exclamation';
-      } else if(group['ERROR']){
-        //this.number = group['ERROR'].length;
+    if (elments) {
+      const group = _.groupBy(elments, 'severity');
+      if (group['FATAL']) {
+      this.color = 'red';
+      this.style = 'fa fa fa-exclamation';
+      } else if (group['ERROR']) {
         this.style = 'fa fa fa-exclamation-circle';
         this.color = 'red';
-      }else if (group['WARNING']){
-       // this.number = group['WARNING'].length;
+      } else if (group['WARNING']) {
         this.style = 'fa fa-exclamation-triangle';
         this.color = '#bb990c';
       }
-      // }else {
-      //   this.style = 'fa fa-check';
-      //   this.color = 'green';
-      // }
     }
 
   }
@@ -50,7 +42,7 @@ export class VerificationBadgeComponent implements OnInit {
   ngOnInit() {
   }
 
-  print(){
+  print() {
     console.log(this.elments);
   }
 

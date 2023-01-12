@@ -8,7 +8,7 @@ describe('VerificationBadgeComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ VerificationBadgeComponent ]
+      declarations: [ VerificationBadgeComponent ],
     })
     .compileComponents();
   }));

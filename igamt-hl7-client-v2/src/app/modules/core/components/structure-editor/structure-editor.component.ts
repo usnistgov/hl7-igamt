@@ -1,5 +1,3 @@
-import { VerificationType } from 'src/app/modules/shared/models/verification.interface';
-import { VerifyIg } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { OnDestroy, OnInit, Type as CoreType } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
@@ -7,6 +5,7 @@ import { combineLatest, Observable, of, ReplaySubject, Subscription, throwError 
 import { catchError, concatMap, filter, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { VerificationType } from 'src/app/modules/shared/models/verification.interface';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { getHl7ConfigState, selectBindingConfig } from '../../../../root-store/config/config.reducer';
@@ -25,6 +24,7 @@ import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-c
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { IBindingContext } from '../../../shared/services/structure-element-binding.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
+import { VerifyIg } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
 
 export type BindingLegend = Array<{
   label: string,
@@ -158,7 +158,7 @@ export abstract class StructureEditorComponent<T extends IResource> extends Abst
                 this.changes.next({});
                 this.resourceSubject.next(resource as T);
                 return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource }),
-                  new VerifyIg({id:documentRef.documentId, resourceType: documentRef.type, verificationType: VerificationType.VERIFICATION  }),
+                  new VerifyIg({id: documentRef.documentId, resourceType: documentRef.type, verificationType: VerificationType.VERIFICATION  }),
                 ];
               }),
             );

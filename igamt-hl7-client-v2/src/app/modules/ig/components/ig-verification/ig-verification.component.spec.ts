@@ -8,7 +8,7 @@ describe('IgVerificationComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ IgVerificationComponent ]
+      declarations: [ IgVerificationComponent ],
     })
     .compileComponents();
   }));

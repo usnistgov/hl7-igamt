@@ -1,25 +1,5 @@
 <div style="display: flex; flex-direction: row;">
     <app-dam-fullscreen-button></app-dam-fullscreen-button>
-      <!-- <div style="display: flex; flex-direction: row;" >
-        <div>
-          <button class="btn btn-sm toolbar-button btn-success" id="verifyDown" (click)="verifyIG('Verification')">
-            Verify
-          </button>
-        </div>
-        <div style="display: flex; flex-direction: row;" *ngIf="verifiying$ | async">
-          <mat-spinner class="verification-progress" diameter="30" ></mat-spinner>
-          <span style="font-style: italic; color: red"> Verification In progress ...</span>
-        </div>
-        <div style="display: flex; flex-direction: row;" *ngIf="!(verifiying$ | async)">
-          Errors 50.
-          Fatal 50,
-          waring 430
-
-        </div>
-        <div>
-        </div> -->
-
-      <!-- </div> -->
 
 <div  [routerLink]="['./verification']" routerLinkActive="verification-active"  class="verification" style="
   padding: 10px;
@@ -69,13 +49,6 @@
       <button ngbDropdownItem (click)="quickExport(exportTypes.DIFFERENTIAL, 'html')">HTML (Quick)</button>
     </div>
   </div>
-  <!-- <div ngbDropdown class="d-inline-block">
-    <button class="btn btn-info btn-sm toolbar-button" id="verifyDown" ngbDropdownToggle> Verify </button>
-    <div ngbDropdownMenu aria-labelledby="exportDropDown">
-      <button ngbDropdownItem (click)="verifyIG('Verification')"> Verification </button>
-      <button ngbDropdownItem (click)="verifyIG('Compliance')"> Compliance </button>
-    </div>
-  </div> -->
   <app-dam-reset-button *ngIf="!viewOnly"></app-dam-reset-button>
   <app-dam-save-button *ngIf="!viewOnly"></app-dam-save-button>
 </div>

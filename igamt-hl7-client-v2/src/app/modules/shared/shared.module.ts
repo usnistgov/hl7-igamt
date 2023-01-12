@@ -126,6 +126,7 @@ import { UsageViewerComponent } from './components/usage-viewer/usage-viewer.com
 import { UserProfileFormComponent } from './components/user-profile-form/user-profile-form.component';
 import { ValueSetStructureComponent } from './components/value-set-structure/value-set-structure.component';
 import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-delta.component';
+import { VerificationBadgeComponent } from './components/verification-badge/verification-badge.component';
 import { VerificationEntryTableComponent } from './components/verification-entry-table/verification-entry-table.component';
 import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
 import { VsCodePickerComponent } from './components/vs-code-picker/vs-code-picker.component';
@@ -138,7 +139,6 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { VerificationBadgeComponent } from './components/verification-badge/verification-badge.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,

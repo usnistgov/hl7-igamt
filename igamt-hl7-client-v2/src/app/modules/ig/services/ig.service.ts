@@ -38,7 +38,6 @@ import { IExportConfigurationGlobal } from './../../export-configuration/models/
 })
 export class IgService {
 
-
   readonly EXPORT_URL = '/api/export/ig/';
   readonly IG_END_POINT = '/api/igdocuments/';
   readonly CONFIGURATION = '/configuration/';
@@ -472,7 +471,7 @@ export class IgService {
     return this.http.post<Message<ICreateProfileComponentResponse>>(this.IG_END_POINT + request.documentId + '/composite-profile/create', request);
   }
 
-  verify(payload: IVerificationRequest): Observable<any>{
+  verify(payload: IVerificationRequest): Observable<any> {
     return this.http.get<any>(this.IG_END_POINT + payload.id + '/verification');
   }
 }

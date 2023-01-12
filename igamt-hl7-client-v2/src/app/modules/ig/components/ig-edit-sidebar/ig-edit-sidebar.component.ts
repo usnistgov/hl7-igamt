@@ -1,12 +1,9 @@
-import { VerificationService } from './../../../shared/services/verification.service';
-import { selectVerificationResult } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
-import { Dictionary } from '@ngrx/entity';
-import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
 import { AfterViewInit, Component, Input, OnDestroy, OnInit, SystemJsNgModuleLoader, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, ChildrenOutletContexts, Router } from '@angular/router';
 import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 import { Actions, ofType } from '@ngrx/effects';
+import { Dictionary } from '@ngrx/entity';
 import { Store } from '@ngrx/store';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { SelectItem } from 'primeng/api';
@@ -74,7 +71,10 @@ import { CrossReferencesService } from '../../../shared/services/cross-reference
 import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.class';
 import { IgTocFilterService, IIgTocFilterConfiguration, selectIgTocFilter } from '../../services/ig-toc-filter.service';
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
+import { selectVerificationResult } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
+import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
 import { UnusedElementsComponent } from './../../../shared/components/unused-elements/unused-elements.component';
+import { VerificationService } from './../../../shared/services/verification.service';
 import { ITypedSection } from './../ig-toc/ig-toc.component';
 import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
 
@@ -111,7 +111,6 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
   saveSuccessSubscription: Subscription;
   filterActive$: Observable<boolean>;
 
-
   @BlockUI('toc') blockUIView: NgBlockUI;
 
   constructor(
@@ -143,7 +142,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
       }),
     );
     // verification
-    this.verification$ =  this.store.select(selectVerificationResult).pipe(map((x => this.verificationService.convertValueToTocElements(x))));
+    this.verification$ =  this.store.select(selectVerificationResult).pipe(map(((x) => this.verificationService.convertValueToTocElements(x))));
     this.selectedSubscription = this.store.select(selectRouterURL).pipe(
       map((url: string) => {
         const regex = '/ig/[a-z0-9A-Z-]+/(?<type>[a-z]+)/(?<id>[a-z0-9A-Z-]+).*';
