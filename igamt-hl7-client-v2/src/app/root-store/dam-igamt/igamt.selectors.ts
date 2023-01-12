@@ -48,7 +48,7 @@ export const selectAudience = createSelector(
 export const selectViewOnly = createSelector(
   selectIgDocument,
   (document: IgDocument): boolean => {
-    return document.domainInfo.scope !== Scope.USER || document.status === Status.PUBLISHED || (document.sharePermission && document.sharePermission === SharePermission.READ);
+    return document.domainInfo.scope !== Scope.USER || document.status === Status.PUBLISHED || document.status === Status.LOCKED  || (document.sharePermission && document.sharePermission === SharePermission.READ);
   },
 );
 

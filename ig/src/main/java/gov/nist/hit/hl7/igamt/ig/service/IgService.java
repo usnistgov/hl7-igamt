@@ -131,6 +131,8 @@ public interface IgService {
 
   public List<String> deleteUnused(Ig ig, Type registryType, List<String> ids) throws EntityNotFound, ForbiddenOperationException;
 
+  void lockIg(Ig ig) throws IGNotFoundException, IGUpdateException;
+
 
 
   List<Ig> findByIdIn(List<String> ids);

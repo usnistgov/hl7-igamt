@@ -18,7 +18,7 @@ public interface StructureService {
     List<Segment> getUserCustomSegment(String user);
 
     MessageStructure saveMessageStructure(String id, String user, Set<SegmentRefOrGroup> children) throws InvalidStructureException;
-    MessageStructure saveMessageMetadata(String id, String user, MessageStructureMetadata metadata);
+    MessageStructure saveMessageMetadata(String id, String user, MessageStructureMetadata metadata) throws Exception;
 
     Segment saveSegment(String id, String user, Set<Field> children);
     Segment saveSegmentMetadata(String id, String user, SegmentStructureMetadata metadata);
@@ -34,7 +34,7 @@ public interface StructureService {
     Set<CustomSegmentCrossRef> getSegmentStructureReferences(String id, String user);
 
 
-    MessageStructureAndDisplay createMessageStructure(MessageStructureCreateWrapper request, String user);
+    MessageStructureAndDisplay createMessageStructure(MessageStructureCreateWrapper request, String user) throws Exception;
     SegmentStructureAndDisplay createSegmentStructure(SegmentStructureCreateWrapper request, String user);
 
     SegmentStructureAndDisplay publishSegment(String id, String user);

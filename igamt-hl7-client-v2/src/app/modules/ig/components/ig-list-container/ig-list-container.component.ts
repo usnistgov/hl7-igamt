@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
+import { Status } from 'src/app/modules/shared/models/abstract-domain.interface';
 import {
   DeleteIgListItemRequest,
   IgListLoad,
@@ -22,7 +23,8 @@ import { ClearAll } from '../../../dam-framework/store/messages/messages.actions
 import { IgListItem } from '../../../document/models/document/ig-list-item.class';
 import { IgService } from '../../services/ig.service';
 import { DeriveDialogComponent, IDeriveDialogData, IgTemplate } from '../derive-dialog/derive-dialog.component';
-import { IgListItemControl } from '../ig-list-item-card/ig-list-item-card.component';
+import { LockIG } from './../../../../root-store/ig/ig-list/ig-list.actions';
+import { IgPublisherComponent } from './../../../shared/components/ig-publisher/ig-publisher.component';
 import { SharingDialogComponent } from './../../../shared/components/sharing-dialog/sharing-dialog.component';
 import { IgPublisherComponent } from './../../../shared/components/ig-publisher/ig-publisher.component';
 import { CloneModeEnum } from './../../../shared/constants/clone-mode.enum';
@@ -52,6 +54,10 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
   username: Observable<string>;
   showDeprecated: boolean;
   filter: string;
+  filterOptions =  [{label: 'LOCKED', value: Status.LOCKED,
+  atrribute: 'status'}, {label: 'UNLOCKED', value: null,
+  atrribute: 'status'}];
+  status = [Status.LOCKED,  null];
   _shadowViewType: IgListLoad;
   controls: Observable<IgListItemControl[]>;
   sortOptions: any;
@@ -96,13 +102,12 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
     ];
   }
 
-  // tslint:disable-next-line:cognitive-complexity
+  // tslint:disable-next-line cognitive-complexity
   igListItemControls() {
     this.controls = combineLatest(this.isAdmin, this.username)
       .pipe(
         map(
           ([admin, username]) => {
-
             return [
               {
                 label: 'Share',
@@ -123,20 +128,8 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                 class: 'btn-danger',
                 icon: 'fa-trash',
                 action: (item: IgListItem) => {
-                  const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-                    data: {
-                      question: 'Are you sure you want to delete Implementation Guide "' + item.title + '" ?',
-                      action: 'Delete Implementation Guide',
-                    },
-                  });
+                  this.deleteConfirmation(item);
 
-                  dialogRef.afterClosed().subscribe(
-                    (answer) => {
-                      if (answer) {
-                        this.store.dispatch(new DeleteIgListItemRequest(item.id));
-                      }
-                    },
-                  );
                 },
                 disabled: (item: IgListItem): boolean => {
                   if (item.type === 'PUBLISHED' || item.type === 'SHARED') {
@@ -181,6 +174,20 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   return false;
                 },
                 hide: (item: IgListItem): boolean => {
+                  return false;
+                },
+              },
+              {
+                label: 'Lock',
+                class: 'btn-dark',
+                icon: 'fa-lock',
+                action: (item: IgListItem) => {
+                  this.lockConfirmation(item);
+                },
+                hide: (item: IgListItem): boolean => {
+                  return item.type === 'PUBLISHED' || item.type === 'SHARED' || item.status === 'LOCKED';
+                },
+                disabled: (item: IgListItem): boolean => {
                   return false;
                 },
               },
@@ -231,7 +238,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   return false;
                 },
                 hide: (item: IgListItem): boolean => {
-                  return item.type !== 'PUBLISHED';
+                  return item.type !== 'PUBLISHED' &&  item.status !== 'LOCKED';
                 },
               },
               {
@@ -283,6 +290,37 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
           },
         ),
       );
+  }
+
+  deleteConfirmation(item: IgListItem) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        question: 'Are you sure you want to delete Implementation Guide "' + item.title + '" ?',
+        action: 'Delete Implementation Guide',
+      },
+    });
+    dialogRef.afterClosed().subscribe(
+      (answer) => {
+        if (answer) {
+          this.store.dispatch(new DeleteIgListItemRequest(item.id));
+        }
+      },
+    );
+  }
+  lockConfirmation(item: IgListItem) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        question: 'Are you sure you want to lock Implementation Guide "' + item.title + '" ?',
+        action: 'Lock Implementation Guide',
+      },
+    });
+    dialogRef.afterClosed().subscribe(
+      (answer) => {
+        if (answer) {
+          this.store.dispatch(new LockIG(item.id));
+        }
+      },
+    );
   }
 
   shareDialog(item: IgListItem, username: string) {
@@ -425,6 +463,11 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
     this.store.dispatch(new SelectIgListSortOption(Object.assign(Object.assign({}, this.sortProperty), this.sortOrder)));
   }
 
+  generalFilter(values: any) {
+    console.log(values);
+    this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: this.filter, deprecated: this.showDeprecated, status: values });
+  }
+
   ngOnInit() {
     this.store.dispatch(new ClearAll());
     this.route.queryParams.subscribe((params) => {
@@ -445,4 +488,9 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
     this.store.dispatch(new ClearIgList());
   }
 
+}
+export interface IFilterOptions {
+  label: string;
+  value: any;
+  atrribute: string;
 }

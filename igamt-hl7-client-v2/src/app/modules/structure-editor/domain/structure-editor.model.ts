@@ -8,7 +8,8 @@ export interface ICustomStructureRegistry {
 }
 
 export interface ICreateMessageStructure {
-  name: string;
+  structureId: string;
+  messageType: string;
   description: string;
   from: string;
   version: string;

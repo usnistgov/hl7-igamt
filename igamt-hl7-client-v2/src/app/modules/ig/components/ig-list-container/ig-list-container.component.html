@@ -8,7 +8,7 @@
   <!-- TITLE BAR -->
   <div class="topbar">
     <h5>HL7 v2 Implementation Guide Documents List</h5>
-    <div [(ngModel)]="_shadowViewType" class="btn-group btn-group-toggle border-gray" name="radioBasic" ngbRadioGroup
+  <div [(ngModel)]="_shadowViewType" class="btn-group btn-group-toggle border-gray" name="radioBasic" ngbRadioGroup
          style="border-radius: 5px;">
       <label class="btn-light no-focus" ngbButtonLabel>
         <input [queryParams]="{ type : 'USER' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="USER">
@@ -45,14 +45,16 @@
                                                                   class="fa fa-filter"></i></span>
       </div>
       <input (ngModelChange)="filterTextChanged($event)" [(ngModel)]="filter" class="form-control"
-             id="validationServerUsername" placeholder="Filter" required
-             style="background-color: #f0f0f0; height: 35px;" type="text">
+             id="validationServerUsername" placeholder="Search" required
+             style="background-color: #f0f0f0; height: 35px; margin-right: 10px;" type="text">
+      <p-multiSelect [options]="filterOptions" [(ngModel)]="selectedOptions" (ngModelChange)="generalFilter($event)" defaultLabel="Status" [filter]="false"></p-multiSelect>
+
     </div>
   </div>
 
 
-  <div class="filter" style="margin-left: 5px;" *ngIf="_shadowViewType !== 'USER' && (isAdmin | async)">
-    <p-checkbox [(ngModel)]="showdialog-danger" [binary]="true" label="Show Hidden" (ngModelChange)="deprecatedChange($event)" ></p-checkbox>
+  <div class="filter" style="margin-left: 5px;" >
+    <p-checkbox  *ngIf="_shadowViewType !== 'USER' && (isAdmin | async)" [(ngModel)]="showdialog-danger" [binary]="true" label="Show Hidden" (ngModelChange)="deprecatedChange($event)" ></p-checkbox>
   </div>
 
   <!-- IG LIST -->

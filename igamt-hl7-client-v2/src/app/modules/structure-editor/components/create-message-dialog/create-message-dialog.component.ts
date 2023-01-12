@@ -1,4 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -22,7 +23,6 @@ export class CreateMessageDialogComponent implements OnInit {
   hl7Version$: Observable<string[]>;
   selectedVersion: string;
   messageStructure: MessageEventTreeData;
-  messageEvents: IEvent[] = [];
   eventStub: IEvent = {
     id: undefined,
     name: '',
@@ -32,14 +32,38 @@ export class CreateMessageDialogComponent implements OnInit {
     hl7Version: undefined,
   };
   selectedScope = Scope.HL7STANDARD;
+  formGroup: FormGroup;
+  subFormGroup: FormGroup;
+  readonly AXX_PATTERN = '[A-Z][A-Z0-9]{2}';
+  readonly AXX_AXX_PATTERN = '[A-Z][A-Z0-9]{2}(_[A-Z][A-Z0-9]{2})?';
+
+  get events() {
+    return (this.formGroup.controls['events'] as FormArray).controls;
+  }
 
   constructor(
     private igService: IgService,
     private store: Store<any>,
+    private builder: FormBuilder,
     private dialogRef: MatDialogRef<CreateMessageDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     this.hl7Version$ = this.store.select(config.getHl7Versions);
+    this.subFormGroup = this.builder.group({
+      name: ['', [Validators.pattern(this.AXX_PATTERN), Validators.required]],
+      description: [''],
+    });
+    this.initFormGroup();
+  }
+
+  initFormGroup() {
+    this.formGroup = this.builder.group({
+      name: ['', [Validators.pattern(this.AXX_AXX_PATTERN), Validators.required]],
+      messageType: ['', [Validators.pattern(this.AXX_PATTERN), Validators.required]],
+      description: ['', [Validators.required]],
+      hl7Version: ['', [Validators.required]],
+      events: this.builder.array([]),
+    });
   }
 
   startFrom(metn: MessageEventTreeNode) {
@@ -47,34 +71,46 @@ export class CreateMessageDialogComponent implements OnInit {
       ...metn.data,
     };
 
-    this.eventStub.parentStructId = metn.data.name;
-    this.eventStub.hl7Version = metn.data.hl7Version;
+    const value = {
+      name: metn.data.name,
+      description: metn.data.description,
+      messageType: metn.data.messageType,
+      hl7Version: metn.data.hl7Version,
+      events: [],
+    };
 
-    this.messageEvents = metn.children.map((value) => {
-      return {
-        id: value.data.id,
-        name: value.data.name,
-        parentStructId: value.data.parentStructId,
-        description: value.data.description,
-        type: Type.EVENT,
-        hl7Version: value.data.hl7Version,
-      };
-    });
+    this.formGroup.patchValue(value);
+
+    for (const event of metn.children) {
+      (this.formGroup.controls['events'] as FormArray).controls.push(
+        this.builder.group({
+          name: [event.data.name, [Validators.pattern(this.AXX_PATTERN), Validators.required]],
+          description: [event.data.description],
+        }),
+      );
+    }
   }
 
   deleteEvent(i: number) {
-    this.messageEvents.splice(i, 1);
+    (this.formGroup.controls['events'] as FormArray).controls.splice(i, 1);
   }
 
-  addEvent(event: IEvent) {
-    this.messageEvents.push({ ...event });
-    this.eventStub.name = '';
-    this.eventStub.description = '';
+  addEvent() {
+    if (this.subFormGroup.valid) {
+      const event: { name: string, description: string } = this.subFormGroup.getRawValue();
+      (this.formGroup.controls['events'] as FormArray).controls.push(
+        this.builder.group({
+          name: [event.name, [Validators.pattern(this.AXX_PATTERN), Validators.required]],
+          description: [event.description],
+        }),
+      );
+      this.subFormGroup.patchValue({ name: '', description: '' });
+    }
   }
 
   clearSelection() {
     this.messageStructure = undefined;
-    this.messageEvents = [];
+    this.initFormGroup();
   }
 
   cancel() {
@@ -82,14 +118,15 @@ export class CreateMessageDialogComponent implements OnInit {
   }
 
   submit() {
+    const value = this.formGroup.getRawValue();
     const query: ICreateMessageStructure = {
-      name: this.messageStructure.name,
-      description: this.messageStructure.description,
+      structureId: value.name,
+      messageType: value.messageType,
+      description: value.description,
       from: this.messageStructure.id,
-      events: this.messageEvents,
-      version: this.messageStructure.hl7Version,
+      events: value.events,
+      version: value.hl7Version,
     };
-
     this.dialogRef.close(query);
   }
 

@@ -5,10 +5,11 @@ import { Store } from '@ngrx/store';
 import { combineLatest, Observable, throwError } from 'rxjs';
 import { catchError, map, take } from 'rxjs/operators';
 import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
+import { MessageType } from 'src/app/modules/dam-framework/models/messages/message.class';
 import { UsageDialogComponent } from 'src/app/modules/shared/components/usage-dialog/usage-dialog.component';
 import { selectWorkspaceActive } from '../../../../root-store/dam-igamt/igamt.selectors';
 import { selectMessageStructures, selectSegmentStructures } from '../../../../root-store/structure-editor/structure-editor.reducer';
-import { IMessage } from '../../../dam-framework/models/messages/message.class';
+import { IMessage, UserMessage } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { DeleteResourcesFromRepostory, InsertResourcesInRepostory } from '../../../dam-framework/store/data/dam.actions';
 import { Type } from '../../../shared/constants/type.enum';
@@ -28,7 +29,7 @@ export class SideBarComponent implements OnInit {
   @ViewChild(TableOfContentComponent) toc: TableOfContentComponent;
   readonly SEGMENTS_REPO = 'segment-structures';
   readonly MESSAGES_REPO = 'message-structures';
-
+  readonly STRUCTURE_EDITOR_URL = 'structure-editor';
   constructor(
     private store: Store<any>,
     private router: Router,
@@ -90,6 +91,10 @@ export class SideBarComponent implements OnInit {
       map((response) => {
         this.notifyAndUpdateRepository(response, repository);
       }),
+      catchError((err) => {
+        this.store.dispatch(this.messageService.actionFromError(err));
+        return throwError(err);
+      }),
     ).subscribe();
   }
 
@@ -107,6 +112,10 @@ export class SideBarComponent implements OnInit {
     publish.pipe(
       map((response) => {
         this.notifyAndUpdateRepository(response, repository);
+      }),
+      catchError((err) => {
+        this.store.dispatch(this.messageService.actionFromError(err));
+        return throwError(err);
       }),
     ).subscribe();
   }
@@ -203,7 +212,7 @@ export class SideBarComponent implements OnInit {
       take(1),
       map((active) => {
         if (active.display.id === id) {
-          this.router.navigate(['/', 'structure-editor']);
+          this.router.navigate(['/', this.STRUCTURE_EDITOR_URL]);
         }
       }),
     ).subscribe();
@@ -218,6 +227,12 @@ export class SideBarComponent implements OnInit {
             values: [message.displayElement],
           }],
         }));
+        this.store.dispatch(this.messageService.userMessageToAction(new UserMessage(MessageType.SUCCESS, 'Message Structure Created Successfully')));
+        this.router.navigate(['/', this.STRUCTURE_EDITOR_URL, 'conformanceprofile', message.displayElement.id]);
+      }),
+      catchError((err) => {
+        this.store.dispatch(this.messageService.actionFromError(err));
+        return throwError(err);
       }),
     ).subscribe();
   }
@@ -231,6 +246,12 @@ export class SideBarComponent implements OnInit {
             values: [segment.displayElement],
           }],
         }));
+        this.store.dispatch(this.messageService.userMessageToAction(new UserMessage(MessageType.SUCCESS, 'Segment Structure Created Successfully')));
+        this.router.navigate(['/', this.STRUCTURE_EDITOR_URL, 'segment', segment.displayElement.id]);
+      }),
+      catchError((err) => {
+        this.store.dispatch(this.messageService.actionFromError(err));
+        return throwError(err);
       }),
     ).subscribe();
   }

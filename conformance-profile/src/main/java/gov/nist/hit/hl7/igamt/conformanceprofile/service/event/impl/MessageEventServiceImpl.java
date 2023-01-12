@@ -55,6 +55,7 @@ public class MessageEventServiceImpl implements MessageEventService {
       treedata.setHl7Version(structure.getDomainInfo().getVersion());
       treedata.setName(structure.getStructID());
       treedata.setType(Type.EVENTS);
+      treedata.setMessageType(structure.getMessageType());
       treedata.setDescription(structure.getDescription());
       List<EventTreeNode> children= new ArrayList<EventTreeNode>();
 

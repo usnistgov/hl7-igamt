@@ -376,6 +376,8 @@ public class IgServiceImpl implements  IgService {
 		qry.fields().include("draft");
 		qry.fields().include("deprecated");
 		qry.fields().include("publicationInfo");
+		qry.fields().include("status");
+
 
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		return igs;
@@ -398,6 +400,8 @@ public class IgServiceImpl implements  IgService {
 		qry.fields().include("draft");
 		qry.fields().include("deprecated");
 		qry.fields().include("publicationInfo");
+		qry.fields().include("status");
+
 
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		return igs;
@@ -419,7 +423,9 @@ public class IgServiceImpl implements  IgService {
 		qry.fields().include("draft");
 		qry.fields().include("deprecated");
 		qry.fields().include("publicationInfo");
+		qry.fields().include("status");
 
+		
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		return igs;
 	}
@@ -440,6 +446,8 @@ public class IgServiceImpl implements  IgService {
 		qry.fields().include("currentAuthor");
 		qry.fields().include("draft");
 		qry.fields().include("publicationInfo");
+		qry.fields().include("status");
+
 
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		igs.forEach(ig -> {
@@ -1813,6 +1821,71 @@ public class IgServiceImpl implements  IgService {
 			}
 		}
 		return null;
+	}
+	
+	
+	@Override
+	public void lockIg(Ig ig)  throws IGNotFoundException, IGUpdateException{
+
+		for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
+			if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+				UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.LOCKED, ConformanceProfile.class, true);
+				if(! updateResult.wasAcknowledged()) {
+					throw new IGUpdateException("Could not publish Conformance profile:" +l.getId());
+				}
+			}
+		}
+		for ( Link l: ig.getSegmentRegistry().getChildren()) {
+			if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+				UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.LOCKED, Segment.class, true);
+				if(! updateResult.wasAcknowledged()) {
+					throw new IGUpdateException("Could not publish segment:" +l.getId());
+				}
+			}
+		}
+
+		for ( Link l: ig.getDatatypeRegistry().getChildren()) {
+			if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+				UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.LOCKED, Datatype.class, true);
+				if(! updateResult.wasAcknowledged()) {
+					throw new IGUpdateException("Could not publish Datatype:" +l.getId());
+				}
+			}
+		}
+		for ( Link l: ig.getValueSetRegistry().getChildren()) {
+			if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+				UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.LOCKED, Valueset.class, true);
+				if(! updateResult.wasAcknowledged()) {
+					throw new IGUpdateException("Could not publish Value set:" +l.getId());
+				}
+			}
+		}
+
+		for ( Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
+			if(l.getId() != null && l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+				UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.LOCKED, Valueset.class, true);
+				if(! updateResult.wasAcknowledged()) {
+					throw new IGUpdateException("Could not publish Value set:" +l.getId());
+				}
+			}
+		}
+
+		for ( Link l: ig.getProfileComponentRegistry().getChildren()) {
+			UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.LOCKED, ProfileComponent.class, true);
+			if(! updateResult.wasAcknowledged()) {
+				throw new IGUpdateException("Could not publish Profile Components:" +l.getId());
+			}
+		}
+		for ( Link l: ig.getCompositeProfileRegistry().getChildren()) {
+			UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.LOCKED, CompositeProfileStructure.class, true);
+			if(! updateResult.wasAcknowledged()) {
+				throw new IGUpdateException("Could not publish Composite Profile:" +l.getId());
+			}
+		}
+		ig.setStatus(Status.LOCKED);
+
+		this.save(ig);
+
 	}
 
 }
