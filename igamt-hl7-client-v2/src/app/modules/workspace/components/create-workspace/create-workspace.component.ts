@@ -6,7 +6,6 @@ import { of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { MessageService } from '../../../dam-framework/services/message.service';
-import { WorkspaceAccessType } from './../../models/models';
 import { WorkspaceService } from './../../services/workspace.service';
 
 @Component({
@@ -25,10 +24,8 @@ export class CreateWorkspaceComponent implements OnInit {
     private router: Router,
   ) {
     this.metaDataForm = new FormGroup({
-      accessType: new FormControl(WorkspaceAccessType.PRIVATE, [Validators.required]),
       title: new FormControl('', [Validators.required]),
       description: new FormControl('', []),
-      // logo: new FormControl({}),
     });
   }
 

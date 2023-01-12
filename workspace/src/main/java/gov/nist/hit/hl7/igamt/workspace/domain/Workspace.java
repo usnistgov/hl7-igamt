@@ -13,7 +13,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Workspace {
 	@Id
 	private String id;
-	private WorkspaceAccessType accessType;
 	private WorkspaceMetadata metadata;
 	private UserAccessInfo userAccessInfo;
 	private Set<DocumentLink>  documents;
@@ -43,12 +42,6 @@ public class Workspace {
 	}
 	public void setId(String id) {
 		this.id = id;
-	}
-	public WorkspaceAccessType getAccessType() {
-		return accessType;
-	}
-	public void setAccessType(WorkspaceAccessType accessType) {
-		this.accessType = accessType;
 	}
 	public WorkspaceMetadata getMetadata() {
 		return metadata;

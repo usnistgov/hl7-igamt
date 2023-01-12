@@ -1,6 +1,4 @@
 package gov.nist.hit.hl7.igamt.workspace.model;
-
-import gov.nist.hit.hl7.igamt.workspace.domain.WorkspaceAccessType;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspaceMetadata;
 
 import java.util.Date;
@@ -9,7 +7,6 @@ import java.util.Set;
 public class WorkspaceInfo {
     private String id;
     private boolean admin;
-    private WorkspaceAccessType accessType;
     private WorkspaceMetadata metadata;
     private String homePageContent;
     private String owner;
@@ -23,14 +20,6 @@ public class WorkspaceInfo {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public WorkspaceAccessType getAccessType() {
-        return accessType;
-    }
-
-    public void setAccessType(WorkspaceAccessType accessType) {
-        this.accessType = accessType;
     }
 
     public WorkspaceMetadata getMetadata() {

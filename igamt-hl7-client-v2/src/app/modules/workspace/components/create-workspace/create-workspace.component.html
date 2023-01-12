@@ -8,16 +8,6 @@
     </div>
     <div class="metadata">
       <form [formGroup]="metaDataForm" style="display: flex; flex-direction: column;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-          <label for="privacy" class="form-label-lg">
-            Privacy
-            <i class="fa fa-question-circle-o" style="color: blue; font-size: large;"></i>
-          </label>
-          <div style="display: flex; justify-content: flex-end;">
-            <p-radioButton name="privacy" value="PRIVATE" label="Private" formControlName="accessType" [style]="{'margin-left': '30px'}" ></p-radioButton>
-            <p-radioButton name="privacy" value="PUBLIC" label="Public" formControlName="accessType" [style]="{'margin-left': '10px'}" ></p-radioButton>
-          </div>
-        </div>
         <!-- <div class="form-group">
           <label for="logo" class="form-label-lg">Logo</label>
           <div>

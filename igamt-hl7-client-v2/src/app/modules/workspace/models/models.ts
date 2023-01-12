@@ -1,11 +1,6 @@
 import { IgListItem } from '../../document/models/document/ig-list-item.class';
 import { Type } from '../../shared/constants/type.enum';
 
-export enum WorkspaceAccessType {
-  PUBLIC = 'PUBLIC',
-  PRIVATE = 'PRIVATE',
-}
-
 export enum WorkspacePermissionType {
   VIEW = 'VIEW',
   EDIT = 'EDIT',
@@ -13,7 +8,6 @@ export enum WorkspacePermissionType {
 export interface IWorkspaceInfo {
   id: string;
   admin: boolean;
-  accessType: WorkspaceAccessType;
   metadata: IWorkspaceMetadata;
   homePageContent: string;
   owner: string;
