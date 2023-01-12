@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import {IgListItem} from '../../document/models/document/ig-list-item.class';
-import { IgListLoad } from './../../../root-store/ig/ig-list/ig-list.actions';
+import { IgListLoad, LockIG } from './../../../root-store/ig/ig-list/ig-list.actions';
 
 @Injectable({
   providedIn: 'root',
@@ -46,5 +46,8 @@ export class IgListService {
 
   deleteIg(id: string) {
     return this.http.delete<Message>('api/igdocuments/' + id);
+  }
+  lockIG(id: string) {
+    return this.http.post<Message>('api/igdocuments/' + id + '/lock', {});
   }
 }

@@ -12,6 +12,8 @@ import {
   DeleteIgListItemSuccess,
   IgListActionTypes,
   LoadIgList,
+  LockIG,
+  LockIGSuccess,
   UpdateIgList,
 } from './ig-list.actions';
 
@@ -50,6 +52,28 @@ export class IgListEffects {
           return [
             new fromDAM.TurnOffLoader(),
             new DeleteIgListItemSuccess(action.id),
+            this.message.messageToAction(message),
+          ];
+        }),
+        catchError((error) => {
+          return this.catchErrorOf(error);
+        }),
+      );
+    }),
+  );
+
+  @Effect()
+  lockIG$ = this.actions$.pipe(
+    ofType(IgListActionTypes.LockIG),
+    concatMap((action: LockIG) => {
+      this.store.dispatch(new fromDAM.TurnOnLoader({
+        blockUI: true,
+      }));
+      return this.igListService.lockIG(action.id).pipe(
+        flatMap((message: Message) => {
+          return [
+            new fromDAM.TurnOffLoader(),
+            new LockIGSuccess(action.id),
             this.message.messageToAction(message),
           ];
         }),
