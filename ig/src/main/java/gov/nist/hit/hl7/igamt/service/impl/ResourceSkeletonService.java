@@ -124,6 +124,7 @@ public class ResourceSkeletonService {
                         this
                 );
                 groupChildren.forEach(gc -> gc.setParentSkeleton(group));
+                group.setResource(parent);
                 children.add(group);
             } else if(element instanceof SegmentRef) {
                 children.add(new ResourceSkeletonBone(

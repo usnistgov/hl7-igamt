@@ -85,7 +85,7 @@ public class StructureServiceImpl implements StructureService {
 
     public void checkGroup(Group group) throws InvalidStructureException {
         if(!this.groupNameIsValid(group.getName())) {
-            throw new InvalidStructureException("Group name " + group.getName() + " is invalid, only letters and underscores permitted");
+            throw new InvalidStructureException("Group name " + group.getName() + " is invalid, only uppercase letters and underscores permitted");
         }
 
         if(group.getChildren() == null || group.getChildren().size() == 0) {
@@ -100,7 +100,7 @@ public class StructureServiceImpl implements StructureService {
     }
 
     public boolean groupNameIsValid(String name) {
-        return !Strings.isNullOrEmpty(name) && name.matches("[a-zA-Z]+[a-zA-Z_]*");
+        return !Strings.isNullOrEmpty(name) && name.matches("[A-Z]+[A-Z_]*");
     }
 
     @Override
