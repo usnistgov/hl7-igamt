@@ -24,10 +24,10 @@ import { IgListItem } from '../../../document/models/document/ig-list-item.class
 import { IgService } from '../../services/ig.service';
 import { DeriveDialogComponent, IDeriveDialogData, IgTemplate } from '../derive-dialog/derive-dialog.component';
 import { LockIG } from './../../../../root-store/ig/ig-list/ig-list.actions';
-import { IgPublisherComponent } from './../../../shared/components/ig-publisher/ig-publisher.component';
 import { SharingDialogComponent } from './../../../shared/components/sharing-dialog/sharing-dialog.component';
 import { IgPublisherComponent } from './../../../shared/components/ig-publisher/ig-publisher.component';
 import { CloneModeEnum } from './../../../shared/constants/clone-mode.enum';
+import { IgListItemControl } from '../ig-list-item-card/ig-list-item-card.component';
 
 @Component({
   selector: 'app-ig-list-container',
@@ -54,10 +54,14 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
   username: Observable<string>;
   showDeprecated: boolean;
   filter: string;
-  filterOptions =  [{label: 'LOCKED', value: Status.LOCKED,
-  atrribute: 'status'}, {label: 'UNLOCKED', value: null,
-  atrribute: 'status'}];
-  status = [Status.LOCKED,  null];
+  filterOptions = [{
+    label: 'LOCKED', value: Status.LOCKED,
+    atrribute: 'status'
+  }, {
+    label: 'UNLOCKED', value: null,
+    atrribute: 'status'
+  }];
+  status = [Status.LOCKED, null];
   _shadowViewType: IgListLoad;
   controls: Observable<IgListItemControl[]>;
   sortOptions: any;
@@ -238,7 +242,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   return false;
                 },
                 hide: (item: IgListItem): boolean => {
-                  return item.type !== 'PUBLISHED' &&  item.status !== 'LOCKED';
+                  return item.type !== 'PUBLISHED' && item.status !== 'LOCKED';
                 },
               },
               {
