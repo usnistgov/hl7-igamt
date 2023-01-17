@@ -23,9 +23,6 @@ public class WorkspaceVerificationServiceImpl implements WorkspaceVerificationSe
         if(createInfo == null) {
             errors.add("Request cannot be null");
         } else {
-            if(createInfo.getAccessType() == null) {
-                errors.add("Workspace access type is required");
-            }
             if(Strings.isNullOrEmpty(createInfo.getTitle())) {
                 errors.add("Workspace title is required");
             }

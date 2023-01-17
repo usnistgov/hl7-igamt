@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipOutputStream;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
-import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.service.AddService;
 import org.bson.types.ObjectId;
@@ -27,7 +26,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -120,7 +118,6 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentLabel;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItem;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentDependencyService;
-//import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
@@ -1886,6 +1883,21 @@ public class IgServiceImpl implements  IgService {
 
 		this.save(ig);
 
+	}
+
+	@Override
+	public List<Ig> findByPrivateAudienceEditor(String username) {
+		return this.igRepository.findByPrivateAudienceEditor(username);
+	}
+
+	@Override
+	public List<Ig> findByPrivateAudienceViewer(String username) {
+		return this.igRepository.findByPrivateAudienceViewer(username);
+	}
+
+	@Override
+	public List<Ig> findByPublicAudienceAndStatusPublished() {
+		return this.igRepository.findByPublicAudienceAndStatusPublished();
 	}
 
 }

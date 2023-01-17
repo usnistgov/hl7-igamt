@@ -364,35 +364,34 @@ public class IGDocumentController extends BaseController {
   public @ResponseBody List<DocumentSummary> getUserIG(Authentication authentication,
       @RequestParam("type") AccessType type) throws ForbiddenOperationException {
     String username = authentication.getPrincipal().toString();
-    List<Ig> igdouments = new ArrayList<Ig>();
+    List<Ig> igDocuments;
 
     if (type != null) {
       if (type.equals(AccessType.PUBLIC)) {
 
-        igdouments = igService.findAllPreloadedIG();
+        igDocuments = igService.findByPublicAudienceAndStatusPublished();
 
       } else if (type.equals(AccessType.PRIVATE)) {
 
-        igdouments = igService.findByUsername(username, Scope.USER);
+        igDocuments = igService.findByPrivateAudienceEditor(username);
 
       } else if (type.equals(AccessType.ALL)) {
 
         commonService.checkAuthority(authentication, "ADMIN");
-        igdouments = igService.findAllUsersIG();
+        igDocuments = igService.findAllUsersIG();
 
       } else if (type.equals(AccessType.SHARED)) {
 
-        igdouments = igService.findAllSharedIG(username, Scope.USER);
+        igDocuments = igService.findByPrivateAudienceViewer(username);
 
       } else {
-        igdouments = igService.findByUsername(username, Scope.USER);
+        igDocuments = igService.findByPrivateAudienceEditor(username);
 
       }
-//      igdouments.removeIf((ig) -> ig.getDeprecated());
-      return igService.convertListToDisplayList(igdouments);
+      return igService.convertListToDisplayList(igDocuments);
     } else {
-      igdouments = igService.findByUsername(username, Scope.USER);
-      return igService.convertListToDisplayList(igdouments);
+      igDocuments = igService.findByPrivateAudienceEditor(username);
+      return igService.convertListToDisplayList(igDocuments);
     }
   }
 

@@ -100,11 +100,11 @@ public class EntityBrowserService {
     }
 
     private List<BrowserTreeNode> getBrowserTreeNodePrivateIgList(String username) {
-        return igService.findByUsername(username, Scope.USER).stream().map(ig -> this.igToTreeNode(ig, false)).collect(Collectors.toList());
+        return igService.findByPrivateAudienceEditor(username).stream().map(ig -> this.igToTreeNode(ig, false)).collect(Collectors.toList());
     }
 
     private List<BrowserTreeNode> getBrowserTreeNodePublicIgList() {
-        return igService.findAllPreloadedIG().stream().map(ig -> this.igToTreeNode(ig, true)).collect(Collectors.toList());
+        return igService.findByPublicAudienceAndStatusPublished().stream().map(ig -> this.igToTreeNode(ig, true)).collect(Collectors.toList());
     }
 
     private List<BrowserTreeNode> getBrowserTreeNodeWorkspaces(String username) {
@@ -155,8 +155,17 @@ public class EntityBrowserService {
         browserTreeNode.setId(folder.getId());
         browserTreeNode.setLabel(folder.getMetadata().getTitle());
         browserTreeNode.setType(Type.FOLDER);
-        browserTreeNode.setReadOnly(WorkspacePermissionType.VIEW.equals(folder.getPermissionType()));
+        boolean permission = WorkspacePermissionType.VIEW.equals(folder.getPermissionType());
+        browserTreeNode.setReadOnly(permission);
+        List<BrowserTreeNode> children = folder.getChildren()
+                .stream()
+                .filter(link -> link.getType().equals(Type.IGDOCUMENT))
+                .map(link -> this.igService.findById(link.getId()))
+                .map(ig -> this.igToTreeNode(ig, permission))
+                .collect(Collectors.toList());
+
         BrowserTreeNode node = new BrowserTreeNode();
+        node.setChildren(children);
         node.setData(browserTreeNode);
         return node;
     }

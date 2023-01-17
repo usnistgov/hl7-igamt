@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.workspace.domain.*;
 import gov.nist.hit.hl7.igamt.workspace.exception.CreateRequestException;
@@ -50,7 +49,6 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 		WorkspaceMetadata workspaceMetadata = new WorkspaceMetadata();
 		workspaceMetadata.setDescription(createInfo.getDescription());
 		workspaceMetadata.setTitle(createInfo.getTitle());
-		workspace.setAccessType(createInfo.getAccessType());
 		workspace.setMetadata(workspaceMetadata);
 		workspace.setUsername(username);
 		workspace.setFolders(new HashSet<>());
@@ -166,9 +164,6 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 		if(createInfo == null) {
 			errors.add("Request cannot be null");
 		} else {
-			if(createInfo.getAccessType() == null) {
-				errors.add("Workspace access type is required");
-			}
 			if(Strings.isNullOrEmpty(createInfo.getTitle())) {
 				errors.add("Workspace title is required");
 			}
@@ -210,7 +205,6 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 
 	private WorkspaceInfo toWorkspaceInfo(Workspace workspace, String username) {
 		WorkspaceInfo workspaceInfo = new WorkspaceInfo();
-		workspaceInfo.setAccessType(workspace.getAccessType());
 		workspaceInfo.setHomePageContent(workspace.getHomePageContent());
 		workspaceInfo.setMetadata(workspace.getMetadata());
 		workspaceInfo.setId(workspace.getId());

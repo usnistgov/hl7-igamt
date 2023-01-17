@@ -136,5 +136,9 @@ public interface IgService {
 
 
   List<Ig> findByIdIn(List<String> ids);
+  
+  List<Ig> findByPrivateAudienceEditor(String username);
+  List<Ig> findByPrivateAudienceViewer(String username);
+  List<Ig> findByPublicAudienceAndStatusPublished();
 
 }
