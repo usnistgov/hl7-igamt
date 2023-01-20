@@ -1886,6 +1886,15 @@ public class IgServiceImpl implements  IgService {
 	}
 
 	@Override
+	public String getResourceVersionSyncToken(Date updateDate) {
+		if(updateDate == null) {
+			return "0.RVST";
+		} else {
+			return updateDate.getTime() + ".RVST";
+		}
+	}
+
+	@Override
 	public List<Ig> findByPrivateAudienceEditor(String username) {
 		return this.igRepository.findByPrivateAudienceEditor(username);
 	}

@@ -118,7 +118,7 @@ public class ConformanceProfileController extends BaseController {
     @SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/api/conformanceprofiles/{id}", method = RequestMethod.POST, produces = {
             "application/json" })
-    @PreAuthorize("AccessResource('CONFORMANCEPROFILE', #id, WRITE)")
+    @PreAuthorize("AccessResource('CONFORMANCEPROFILE', #id, WRITE) && ConcurrentSync('CONFORMANCEPROFILE', #id, ALLOW_SYNC_STRICT)")
     @ResponseBody
     public ResponseMessage<?> applyChanges(@PathVariable("id") String id, @RequestBody List<ChangeItemDomain> cItems,
                                            Authentication authentication) throws Exception {

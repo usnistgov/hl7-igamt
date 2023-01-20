@@ -101,6 +101,7 @@ import { NewPasswordFromComponent } from './components/new-password-from/new-pas
 import { NgxDropdownComponent } from './components/ngx-dropdown/ngx-dropdown.component';
 import { PatternDialogComponent } from './components/pattern-dialog/pattern-dialog.component';
 import { AddPcToList } from './components/pc-list/add-profile-component/add-pc-to-list.component';
+import { RefreshDialogComponent } from './components/refresh-dialog/refresh-dialog.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { ResetPasswordRequestFormComponent } from './components/reset-password-request-form/reset-password-request-form.component';
 import { ResourceDropdownComponent } from './components/resource-dropdown/resource-dropdown.component';
@@ -244,6 +245,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DocumentBreadcrumbsComponent,
     UnusedElementsComponent,
     DeleteListConfirmationComponent,
+    RefreshDialogComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -435,6 +437,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DocumentBreadcrumbsComponent,
     UnusedElementsComponent,
     DeleteListConfirmationComponent,
+    RefreshDialogComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -470,6 +473,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     IgPublisherComponent,
     UnusedElementsComponent,
     DeleteListConfirmationComponent,
+    RefreshDialogComponent,
   ],
 })
 export class SharedModule {

@@ -1,10 +1,12 @@
+import { selectLoadedDocumentInfo } from './../../dam-igamt/igamt.selectors';
+import { SetValue } from './../../../modules/dam-framework/store/data/dam.actions';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take, withLatestFrom } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { EditorReset } from 'src/app/modules/dam-framework/store/index';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
@@ -32,6 +34,7 @@ import {
   DeleteResourcesFailure,
   DeleteResourcesSuccess,
   OpenConformanceStatementSummaryEditorNode,
+  RefreshUpdateInfo,
   UpdateSections,
 } from './ig-edit.actions';
 import {
@@ -111,7 +114,8 @@ export class IgEditEffects extends DamWidgetEffect {
               igLocation: {
                 id: igInfo.ig.id,
                 location: igInfo.documentLocation,
-              }
+              },
+              documentVersionSyncToken: igInfo.resourceVersionSyncToken,
             }),
             this.igService.loadRepositoryFromIgDisplayInfo(igInfo),
             new IgEditResolverLoadSuccess(igInfo),
@@ -134,6 +138,27 @@ export class IgEditEffects extends DamWidgetEffect {
     map((action: IgEditResolverLoadFailure) => {
       return this.message.actionFromError(action.error);
     }),
+  );
+
+  @Effect()
+  onSaveSuccess$ = this.actions$.pipe(
+    ofType(
+      fromDAM.DamActionTypes.EditorSaveSuccess,
+      IgEditActionTypes.TableOfContentSaveSuccess,
+      IgEditActionTypes.CopyResourceSuccess,
+      IgEditActionTypes.AddResourceSuccess,
+      IgEditActionTypes.DeleteResourceSuccess,
+      IgEditActionTypes.ImportResourceFromFileSuccess),
+    flatMap((action) => {
+      return this.store.select(selectLoadedDocumentInfo).pipe(
+        take(1),
+        flatMap((doc) => {
+          return this.igService.getUpdateInfo(doc.documentId).pipe(
+            map((v) => new RefreshUpdateInfo(v))
+          )
+        })
+      )
+    })
   );
 
   @Effect()
@@ -763,52 +788,68 @@ export class IgEditEffects extends DamWidgetEffect {
         blockUI: true,
       }));
       return combineLatest(
-        this.igService.deleteResources(action.payload.documentId,  action.payload.ids, action.payload.type),
+        this.igService.deleteResources(action.payload.documentId, action.payload.ids, action.payload.type),
         this.store.select(selectWorkspaceActive),
         this.store.select(selectIgDocument).pipe(take(1))).pipe(
-        take(1),
-        flatMap(([response, selected, ig]) => {
-          console.log('response');
-          console.log(response);
+          take(1),
+          flatMap(([response, selected, ig]) => {
+            console.log('response');
+            console.log(response);
 
-          const url = '/' + 'ig/' + ig.id;
+            const url = '/' + 'ig/' + ig.id;
 
-          const redirect: boolean = selected && selected.display && action.payload.ids.indexOf(selected.display.id) > -1;
+            const redirect: boolean = selected && selected.display && action.payload.ids.indexOf(selected.display.id) > -1;
 
-          if (redirect) {
-            return [
-              new EditorReset(),
+            if (redirect) {
+              return [
+                new EditorReset(),
+                new fromDAM.TurnOffLoader(),
+                ...this.igService.deleteListFromRepository(action.payload.ids, ig, action.payload.type),
+                new DeleteResourcesSuccess(action.payload.ids, true, url),
+              ];
+            } else {
+              return [
+                new fromDAM.TurnOffLoader(),
+                ...this.igService.deleteListFromRepository(action.payload.ids, ig, action.payload.type),
+                new DeleteResourcesSuccess(action.payload.ids, false, url),
+              ];
+            }
+          }),
+          catchError((error: HttpErrorResponse) => {
+            return of(
               new fromDAM.TurnOffLoader(),
-              ...this.igService.deleteListFromRepository(action.payload.ids, ig, action.payload.type),
-              new DeleteResourcesSuccess(action.payload.ids, true, url),
-            ];
-          } else {
-            return [
-              new fromDAM.TurnOffLoader(),
-              ...this.igService.deleteListFromRepository(action.payload.ids, ig, action.payload.type),
-              new DeleteResourcesSuccess(action.payload.ids, false, url),
-            ];
-          }
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return of(
-            new fromDAM.TurnOffLoader(),
-            new DeleteResourcesFailure(error),
-          );
-        }),
-      );
+              new DeleteResourcesFailure(error),
+            );
+          }),
+        );
     }),
   );
+
+  @Effect()
+  refreshUpdateInfo$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.RefreshUpdateInfo),
+    flatMap((action: RefreshUpdateInfo) => {
+      return this.store.select(selectIgDocument).pipe(
+        take(1),
+        flatMap((ig) => {
+          return [
+            new LoadPayloadData({ ...ig, updateDate: action.payload.updateDate }),
+            new SetValue({ documentVersionSyncToken: action.payload.resourceVersionSyncToken })
+          ]
+        })
+      );
+    })
+  )
 
   @Effect()
   deleteResourcesSuccess$ = this.actions$.pipe(
     ofType(IgEditActionTypes.DeleteResourcesSuccess),
     map((act: DeleteResourcesSuccess) => {
-          if (act.redirect) {
-            this.router.navigate([act.url] );
-          }
-          return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Delete Resources Success', null));
-        }),
+      if (act.redirect) {
+        this.router.navigate([act.url]);
+      }
+      return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Delete Resources Success', null));
+    }),
   );
 
   finalizeAdd(toDoo: Observable<Action>) {

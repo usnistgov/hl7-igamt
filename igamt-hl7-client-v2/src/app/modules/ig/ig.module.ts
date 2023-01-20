@@ -1,3 +1,5 @@
+import { SyncEditInterceptor } from './services/sync-edit.interceptor';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EffectsModule } from '@ngrx/effects';
@@ -83,6 +85,7 @@ import { IgService } from './services/ig.service';
   providers: [
     IgListService,
     IgService,
+    { provide: HTTP_INTERCEPTORS, useClass: SyncEditInterceptor, multi: true },
   ],
   exports: [
     IgListContainerComponent,

@@ -26,6 +26,7 @@ export const selectIgId = createSelector(
 );
 
 export const selectIgDocumentLocation = selectValue<IIgLocationValue>('igLocation');
+export const selectDocumentVersionSyncToken = selectValue<string>('documentVersionSyncToken');
 
 export const selectDerived = createSelector(
   selectIgDocument,

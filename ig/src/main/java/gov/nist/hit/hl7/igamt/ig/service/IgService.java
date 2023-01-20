@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.ig.service;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -133,7 +134,7 @@ public interface IgService {
 
   void lockIg(Ig ig) throws IGNotFoundException, IGUpdateException;
 
-
+  String getResourceVersionSyncToken(Date updateDate);
 
   List<Ig> findByIdIn(List<String> ids);
   

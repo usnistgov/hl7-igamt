@@ -27,7 +27,7 @@ import { IMetadata } from '../../shared/models/metadata.interface';
 import { IRegistry } from '../../shared/models/registry.interface';
 import { IgTemplate } from '../components/derive-dialog/derive-dialog.component';
 import { INarrative } from '../components/ig-section-editor/ig-section-editor.component';
-import { IDocumentDisplayInfo } from '../models/ig/ig-document.class';
+import { IDocumentDisplayInfo, IIgUpdateInfo } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
 
@@ -46,10 +46,10 @@ export class IgService {
   getRegistryAndCollectionByType(type: Type): { registry: string, collection: string } {
     let registry: string;
     let collection: string;
-    if (type === Type.VALUESET || type ===  Type.VALUESETREGISTRY) {
+    if (type === Type.VALUESET || type === Type.VALUESETREGISTRY) {
       registry = 'valueSetRegistry';
       collection = 'valueSets';
-    } else if (type === Type.CONFORMANCEPROFILE ||  type === Type.CONFORMANCEPROFILEREGISTRY ) {
+    } else if (type === Type.CONFORMANCEPROFILE || type === Type.CONFORMANCEPROFILEREGISTRY) {
       registry = 'conformanceProfileRegistry';
       collection = 'messages';
     } else if (type === Type.DATATYPE || type === Type.DATATYPEREGISTRY) {
@@ -467,6 +467,10 @@ export class IgService {
 
   createCompositeProfile(request: ICreateCompositeProfile): Observable<Message<ICreateProfileComponentResponse>> {
     return this.http.post<Message<ICreateProfileComponentResponse>>(this.IG_END_POINT + request.documentId + '/composite-profile/create', request);
+  }
+
+  getUpdateInfo(igId: string): Observable<IIgUpdateInfo> {
+    return this.http.get<IIgUpdateInfo>(this.IG_END_POINT + igId + '/update-info');
   }
 
 }

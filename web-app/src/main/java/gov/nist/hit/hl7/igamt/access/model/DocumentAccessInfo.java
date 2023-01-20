@@ -4,6 +4,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Audience;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 
+import java.util.Date;
 import java.util.List;
 
 public class DocumentAccessInfo {
@@ -11,6 +12,7 @@ public class DocumentAccessInfo {
     private List<String> sharedUsers;
     private Status status;
     private Audience audience;
+    private Date updateDate;
 
     public DocumentAccessInfo() {
     }
@@ -20,6 +22,7 @@ public class DocumentAccessInfo {
         this.sharedUsers = ig.getSharedUsers();
         this.status = ig.getStatus();
         this.audience = ig.getAudience();
+        this.updateDate = ig.getUpdateDate();
     }
 
     public String getUsername() {
@@ -52,5 +55,13 @@ public class DocumentAccessInfo {
 
     public void setAudience(Audience audience) {
         this.audience = audience;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
     }
 }

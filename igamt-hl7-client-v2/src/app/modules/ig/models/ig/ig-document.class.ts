@@ -52,6 +52,12 @@ export interface IDocumentDisplayInfo<T extends IDocument> {
   coConstraintGroups?: IDisplayElement[];
   targetResourceId?: string;
   documentLocation?: IDocumentLocation[];
+  resourceVersionSyncToken: string;
+}
+
+export interface IIgUpdateInfo {
+  updateDate: Date;
+  resourceVersionSyncToken: string;
 }
 
 export interface IDocumentLocation {

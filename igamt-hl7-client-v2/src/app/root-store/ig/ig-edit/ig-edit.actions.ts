@@ -1,3 +1,4 @@
+import { IIgUpdateInfo } from './../../../modules/ig/models/ig/ig-document.class';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
@@ -79,6 +80,8 @@ export enum IgEditActionTypes {
   CreateCompositeProfile = '[Ig Edit TOC] Create Composite Profile',
   CreateCompositeProfileSuccess = '[Ig Edit TOC] Create Create Composite Profile Success',
   CreateCompositeProfileFailure = '[Ig Edit TOC] Create Create Composite Profile Failure',
+
+  RefreshUpdateInfo = '[Ig Edit] Refresh Document Update Info'
 }
 
 export class ClearIgEdit implements Action {
@@ -367,12 +370,18 @@ export class DeleteResources implements Action {
 }
 export class DeleteResourcesSuccess implements Action {
   readonly type = IgEditActionTypes.DeleteResourcesSuccess;
-  constructor(readonly ids: string [], readonly redirect: boolean, readonly url) {
+  constructor(readonly ids: string[], readonly redirect: boolean, readonly url) {
   }
 }
 export class DeleteResourcesFailure implements Action {
   readonly type = IgEditActionTypes.DeleteResourcesFailure;
   constructor(readonly error: HttpErrorResponse) {
+  }
+}
+
+export class RefreshUpdateInfo implements Action {
+  readonly type = IgEditActionTypes.RefreshUpdateInfo;
+  constructor(readonly payload: IIgUpdateInfo) {
   }
 }
 
@@ -416,4 +425,5 @@ export type IgEditActions =
   | CreateCompositeProfileFailure
   | DeleteResources
   | DeleteResourcesSuccess
-  | DeleteResourcesFailure;
+  | DeleteResourcesFailure
+  | RefreshUpdateInfo;

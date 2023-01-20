@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
 import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
 import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
+import gov.nist.hit.hl7.igamt.display.model.*;
 import gov.nist.hit.hl7.igamt.web.app.service.impl.EntityBrowserService;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceDocumentManagementService;
 import org.bson.types.ObjectId;
@@ -104,10 +105,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
-import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
-import gov.nist.hit.hl7.igamt.display.model.IGMetaDataDisplay;
-import gov.nist.hit.hl7.igamt.display.model.PublishingInfo;
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CoConstraintGroupCreateWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CompositeProfileCreationWrapper;
@@ -567,7 +564,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/updatemetadata", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public @ResponseBody ResponseMessage<Object> get(@PathVariable("id") String id,
       @RequestBody IGMetaDataDisplay metadata, Authentication authentication)
           throws IGNotFoundException, IGUpdateException {
@@ -1264,6 +1261,13 @@ public class IGDocumentController extends BaseController {
     ig.setSharePermission(accessLevel.contains(AccessLevel.ALL) || accessLevel.contains(AccessLevel.WRITE) ? SharePermission.WRITE : SharePermission.READ);
     igDisplayInfo.setDocumentLocation(this.browserService.getDocumentLocationInformation(ig, authentication.getName()));
     return igDisplayInfo;
+  }
+
+  @RequestMapping(value = "/api/igdocuments/{id}/update-info", method = RequestMethod.GET, produces = {"application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
+  public @ResponseBody IgUpdateInfo getIgUpdateInfo(@PathVariable("id") String id) throws Exception {
+    Ig ig = findIgById(id);
+    return new IgUpdateInfo(ig.getUpdateDate(), this.igService.getResourceVersionSyncToken(ig.getUpdateDate()));
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/valueset/{vsId}", method = RequestMethod.GET, produces = {

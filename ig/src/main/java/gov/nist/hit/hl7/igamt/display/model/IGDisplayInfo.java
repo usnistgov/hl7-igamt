@@ -10,6 +10,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 public class IGDisplayInfo {
 
 	private Ig ig;
+	private String resourceVersionSyncToken;
 	private Set<DisplayElement> messages = new HashSet<DisplayElement>();
 	private Set<DisplayElement> segments = new HashSet<DisplayElement>();
 	private Set<DisplayElement> datatypes = new HashSet<DisplayElement>();
@@ -80,5 +81,13 @@ public class IGDisplayInfo {
 
 	public void setDocumentLocation(Set<EntityLocation> documentLocation) {
 		this.documentLocation = documentLocation;
+	}
+
+	public String getResourceVersionSyncToken() {
+		return resourceVersionSyncToken;
+	}
+
+	public void setResourceVersionSyncToken(String resourceVersionSyncToken) {
+		this.resourceVersionSyncToken = resourceVersionSyncToken;
 	}
 }
