@@ -1,3 +1,5 @@
+import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
+import { IUserConfig } from './../../../shared/models/config.class';
 import { OnDestroy, OnInit, Type as CoreType } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
@@ -38,6 +40,7 @@ export abstract class StructureEditorComponent<T extends IResource> extends Abst
   public valueSets: Observable<IDisplayElement[]>;
   public bindingConfig: Observable<IValueSetBindingConfigMap>;
   public config: Observable<Hl7Config>;
+  public userConfig: Observable<IUserConfig>;
   changes: ReplaySubject<IStructureChanges>;
   username: Observable<string>;
   resource$: Observable<T>;
@@ -59,6 +62,9 @@ export abstract class StructureEditorComponent<T extends IResource> extends Abst
     this.resourceType = editorMetadata.resourceType;
     this.hasOrigin$ = this.store.select(fromIgamtSelectedSelectors.selectedResourceHasOrigin);
     this.config = this.store.select(getHl7ConfigState).pipe(
+      filter((config) => !!config),
+    );
+    this.userConfig = this.store.select(getUserConfigState).pipe(
       filter((config) => !!config),
     );
     this.datatypes = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes);

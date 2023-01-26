@@ -1,3 +1,4 @@
+import { LoadUserConfig } from './root-store/user-config/user-config.actions';
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
@@ -37,6 +38,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(new BootstrapCheckAuthStatus());
+    this.store.dispatch(new LoadUserConfig());
     this.store.dispatch(new LoadConfig());
   }
 

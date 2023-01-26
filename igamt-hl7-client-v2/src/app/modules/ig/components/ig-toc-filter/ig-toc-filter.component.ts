@@ -35,7 +35,7 @@ export class IgTocFilterComponent implements OnInit {
   active: boolean;
   @Input()
   set config(c: Hl7Config) {
-    this.usages = Hl7Config.getUsageOptions(c.usages, true, true);
+    this.usages = Hl7Config.getUsageOptions(c.usages, true, true, true);
   }
   usages: IUsageOption[];
   conformanceProfilesMap: Record<string, IDisplayElement>;

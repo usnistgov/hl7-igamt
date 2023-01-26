@@ -1,3 +1,4 @@
+import { IUserConfig } from './../../models/config.class';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import * as _ from 'lodash';
@@ -136,6 +137,8 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   username: string;
   @Input()
   config: Hl7Config;
+  @Input()
+  userConfig: IUserConfig;
   resource$: Observable<IResource>;
   treeExpandedNodes: string[];
   resourceName: string;

@@ -63,7 +63,9 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
   set usages({ original, config }: { original: Usage, config: Hl7Config }) {
     const includeW = original === 'W';
     const includeB = original === 'B';
-    this.options = Hl7Config.getUsageOptions(config.usages, includeW, includeB);
+    const includeIX = original === 'IX';
+
+    this.options = Hl7Config.getUsageOptions(config.usages, includeW, includeB, includeIX);
   }
 
   constructor(

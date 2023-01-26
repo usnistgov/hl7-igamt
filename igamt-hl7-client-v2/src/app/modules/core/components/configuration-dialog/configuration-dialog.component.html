@@ -1,0 +1,26 @@
+<h2 mat-dialog-title> Configurations </h2>
+<form #from="ngForm">
+<mat-dialog-content>
+
+  <table class="table table-bordered table-default" style="width: 400px;">
+      <thead>
+        <th>
+          Usage Configuration
+        </th>
+      </thead>
+      <tbody>
+        <tr>
+          <td> <p-checkbox [(ngModel)]="data.config.includeIX" [binary]="true" label="Include the IX usage" name="includeIX" id="includeIX"> </p-checkbox>
+          </td>
+        </tr>
+      </tbody>
+
+  </table>
+
+</mat-dialog-content>
+
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button class="btn btn-sm btn-danger" style="margin-right: 5px;" (click)="close()">Cancel</button>
+  <button class="btn btn-sm btn-success" (click)="submit(data.config)" [disabled]="!from.dirty">Submit</button>
+</mat-dialog-actions>
+</form>
