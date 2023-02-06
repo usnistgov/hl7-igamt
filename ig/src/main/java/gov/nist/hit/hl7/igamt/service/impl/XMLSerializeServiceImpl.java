@@ -1802,8 +1802,6 @@ public
 						elmGroupContext.addAttribute(new Attribute("ID", this.str(cp.getId())));
 					}
 
-					elmMessage.appendChild(elmGroupContext);
-
 					if (item.getType().equals(SlicingMethod.OCCURRENCE)) {
 						OrderedSlicing orderedSlicing = (OrderedSlicing) item;
 
@@ -1814,17 +1812,18 @@ public
 							elmOccurrenceSlicing.addAttribute(new Attribute("Position", "" + segId[segId.length - 1]));
 							
 							orderedSlicing.getSlices().forEach(slice -> {
-								Element elmSlice = new Element("Slice");
-								elmSlice.addAttribute(new Attribute("Occurrence", "" + slice.getPosition()));
-
-								if (slice.getFlavorId() != null) {
+								if (slice.getFlavorId() != null && slice.getPosition() > 0) {
+									Element elmSlice = new Element("Slice");
+									elmSlice.addAttribute(new Attribute("Occurrence", "" + slice.getPosition()));
 									elmSlice.addAttribute(new Attribute("Ref", "" + this.segmentService
 											.findXMLRefIdById(igModel.findSegment(slice.getFlavorId()).getModel(), defaultHL7Version)));
+									elmOccurrenceSlicing.appendChild(elmSlice);
 								}
-								elmOccurrenceSlicing.appendChild(elmSlice);
+								
 							});
-
-							elmGroupContext.appendChild(elmOccurrenceSlicing);
+							if (elmOccurrenceSlicing.getChildElements().size() > 0) {
+								elmGroupContext.appendChild(elmOccurrenceSlicing);
+							}
 						}
 					} else if (item.getType().equals(SlicingMethod.ASSERTION)) {
 						ConditionalSlicing conditionalSlicing = (ConditionalSlicing) item;
@@ -1842,20 +1841,26 @@ public
 							
 							Element elmDescription = new Element("Description");
 							Element elmAssertion = new Element("Assertion");
-							elmAssertion.appendChild(this.innerXMLHandler(this.assertionXMLSerialization
-						            .generateAssertionScript(slice.getAssertion(), Level.SEGMENT, slice.getFlavorId(), null, true)
-						            .replace("\n", "").replace("\r", "")));
-				            
-							elmDescription.appendChild(slice.getAssertion().getDescription());
-							elmAssertionSlicing.appendChild(elmSlice);
 							
+							String xmlScript = this.assertionXMLSerialization.generateAssertionScript(slice.getAssertion(), Level.SEGMENT, slice.getFlavorId(), null, true);
+							if(xmlScript != null) {
+								elmAssertion.appendChild(this.innerXMLHandler(xmlScript.replace("\n", "").replace("\r", "")));
+					            
+								elmDescription.appendChild(slice.getAssertion().getDescription());
+								elmAssertionSlicing.appendChild(elmSlice);
+								
+								
+								elmSlice.appendChild(elmDescription);
+								elmSlice.appendChild(elmAssertion);	
+							} 
 							
-							elmSlice.appendChild(elmDescription);
-							elmSlice.appendChild(elmAssertion);
 						});
-						
-						elmGroupContext.appendChild(elmAssertionSlicing);
-						
+						if (elmAssertionSlicing.getChildElements().size() > 0) {
+							elmGroupContext.appendChild(elmAssertionSlicing);
+						}
+					}
+					if (elmGroupContext.getChildElements().size() > 0) {
+						elmMessage.appendChild(elmGroupContext);	
 					}
 				});
 			}
@@ -1880,16 +1885,18 @@ public
 							Element elmOccurrenceSlicing = new Element("OccurrenceSlicing");
 							elmOccurrenceSlicing.addAttribute(new Attribute("Position", "" + orderedSlicing.getPath()));
 							orderedSlicing.getSlices().forEach(slice -> {
-								Element elmSlice = new Element("Slice");
-								elmSlice.addAttribute(new Attribute("Occurrence", "" + slice.getPosition()));
-
-								if (slice.getFlavorId() != null) {
+								if (slice.getFlavorId() != null && slice.getPosition() > 0) {
+									Element elmSlice = new Element("Slice");
+									elmSlice.addAttribute(new Attribute("Occurrence", "" + slice.getPosition()));
 									elmSlice.addAttribute(new Attribute("Ref", "" + this.datatypeService.findXMLRefIdById(igModel.findDatatype(slice.getFlavorId()).getModel(), defaultHL7Version)));
-								}
-								elmOccurrenceSlicing.appendChild(elmSlice);
+									elmOccurrenceSlicing.appendChild(elmSlice);
+								} 
+								
 							});
 
-							elmSegmentContext.appendChild(elmOccurrenceSlicing);
+							if (elmOccurrenceSlicing.getChildElements().size() > 0) {
+								elmSegmentContext.appendChild(elmOccurrenceSlicing);
+							}
 						}
 
 					} else if (item.getType().equals(SlicingMethod.ASSERTION)) {
@@ -1905,20 +1912,26 @@ public
 							
 							Element elmDescription = new Element("Description");
 							Element elmAssertion = new Element("Assertion");
-							elmAssertion.appendChild(this.innerXMLHandler(this.assertionXMLSerialization
-						            .generateAssertionScript(slice.getAssertion(), Level.DATATYPE, slice.getFlavorId(), null, true)
-						            .replace("\n", "").replace("\r", "")));
-				            
-							elmDescription.appendChild(slice.getAssertion().getDescription());
-							elmAssertionSlicing.appendChild(elmSlice);
 							
+							String xmlScript = this.assertionXMLSerialization
+						            .generateAssertionScript(slice.getAssertion(), Level.DATATYPE, slice.getFlavorId(), null, true);
+							if(xmlScript != null) {
+								elmAssertion.appendChild(this.innerXMLHandler(
+										xmlScript.replace("\n", "").replace("\r", "")));
+					            
+								elmDescription.appendChild(slice.getAssertion().getDescription());
+								elmAssertionSlicing.appendChild(elmSlice);
+								
+								
+								elmSlice.appendChild(elmDescription);
+								elmSlice.appendChild(elmAssertion);	
+							}
 							
-							elmSlice.appendChild(elmDescription);
-							elmSlice.appendChild(elmAssertion);
 						});
 						
-						elmSegmentContext.appendChild(elmAssertionSlicing);
-						
+						if (elmAssertionSlicing.getChildElements().size() > 0) {
+							elmSegmentContext.appendChild(elmAssertionSlicing);
+						}
 					}
 				});
 			}
