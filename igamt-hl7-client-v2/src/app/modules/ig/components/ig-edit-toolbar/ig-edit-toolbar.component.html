@@ -1,5 +1,28 @@
-<div>
+<div style="display: flex; flex-direction: row;">
     <app-dam-fullscreen-button></app-dam-fullscreen-button>
+
+<div  [routerLink]="['./verification']" routerLinkActive="verification-active"  class="verification" style="
+  padding: 10px;
+  display: flex;
+  cursor: pointer;
+  justify-content: flex-start;
+  align-items: center;">
+<div style="margin-right: 10px;" *ngIf="verifiying$ | async">
+  <mat-spinner class="verification-progress" diameter="20" ></mat-spinner>
+</div>
+<span style="margin-right: 20px;"> Verification </span>
+<ng-container *ngIf="stats$ | async">
+<ng-container *ngTemplateOutlet="stats; context : {$implicit: stats$ | async}" >
+</ng-container>
+</ng-container>
+<!-- <span style="color: gray; margin-left: 20px;">
+  <i class="fa fa-clock-o"></i>
+  just now
+</span> -->
+<button class="refresh-verify" (click)="refreshVerify()">
+  <i class="fa fa-refresh"></i>
+</button>
+</div>
 </div>
 <div>
 
@@ -26,15 +49,45 @@
       <button ngbDropdownItem (click)="quickExport(exportTypes.DIFFERENTIAL, 'html')">HTML (Quick)</button>
     </div>
   </div>
-  <div ngbDropdown class="d-inline-block">
-    <button class="btn btn-info btn-sm toolbar-button" id="verifyDown" ngbDropdownToggle> Verify </button>
-    <div ngbDropdownMenu aria-labelledby="exportDropDown">
-      <button ngbDropdownItem (click)="verifyIG('Verification')"> Verification </button>
-      <button ngbDropdownItem (click)="verifyIG('Compliance')"> Compliance </button>
-    </div>
-  </div>
   <app-dam-reset-button *ngIf="!viewOnly"></app-dam-reset-button>
   <app-dam-save-button *ngIf="!viewOnly"></app-dam-save-button>
 </div>
 
 
+
+
+<ng-template #verificationPill let-verification let-active="active" let-type="type" let-refresh="refresh">
+    <div style="margin-right: 10px;" *ngIf="verifiying$ | async">
+      <mat-spinner class="verification-progress" diameter="20" ></mat-spinner>
+    </div>
+    <span style="margin-right: 20px;">{{ verification.title }}</span>
+    <ng-container *ngTemplateOutlet="stats; context : {$implicit: verification.stats}" >
+    </ng-container>
+    <span style="color: gray; margin-left: 20px;" *ngIf="verification.lastUpdate$ | async as lastUpdate">
+      <i class="fa fa-clock-o"></i>
+        {{lastUpdate}}
+    </span>
+    <button class="refresh-btn" (click)="refresh()">
+      <i class="fa fa-refresh"></i>
+    </button>
+</ng-template>
+
+<ng-template #stats let-stats>
+  <div *ngIf="!stats.fatal && !stats.error && !stats.warning && !stats.informational">
+    <i style="color: #1d9f1d;" class="fa fa-check" ></i>
+  </div>
+  <div *ngIf="stats && !(!stats.fatal && !stats.error && !stats.warning && !stats.informational)" style="display: flex;">
+    <div style="margin-right: 5px;">
+      <app-issue-badge *ngIf="stats.fatal" type="FATAL" [number]="stats.fatal" ></app-issue-badge>
+    </div>
+    <div style="margin-right: 5px;">
+      <app-issue-badge *ngIf="stats.error" type="ERROR" [number]="stats.error" ></app-issue-badge>
+    </div>
+    <div style="margin-right: 5px;">
+      <app-issue-badge *ngIf="stats.warning" type="WARNING" [number]="stats.warning" ></app-issue-badge>
+    </div>
+    <!-- <div style="margin-right: 5px;">
+      <app-issue-badge *ngIf="stats.informational" type="INFORMATIONAL" [number]="stats.informational" ></app-issue-badge>
+    </div> -->
+  </div>
+</ng-template>

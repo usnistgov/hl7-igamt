@@ -5,6 +5,8 @@ import { IDisplayElement } from '../../../shared/models/display-element.interfac
 import { IDomainInfo } from '../../../shared/models/domain-info.interface';
 import { IMetadata } from '../../../shared/models/metadata.interface';
 import { IRegistry } from '../../../shared/models/registry.interface';
+import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
+import { IVerificationEntryList } from './../../../shared/services/verification.service';
 
 export interface IgDocument extends IDocument {
   datatypeRegistry: IRegistry;
@@ -28,4 +30,11 @@ export interface IDocumentDisplayInfo<T extends IDocument> {
   compositeProfiles?: IDisplayElement[];
   coConstraintGroups?: IDisplayElement[];
   targetResourceId?: string;
+}
+
+export interface ITocVerification {
+  [id: string]: ITocElement;
+}
+export interface ITocElement {
+  [serverity: string]: IVerificationEnty[];
 }

@@ -165,10 +165,11 @@ public class VocabularyBindingVerificationService extends VerificationUtils {
                                         )
                                 );
                             }
+                            Set<Integer> locations =  binding.getLocations() == null ? new HashSet() : new HashSet(binding.getLocations());
                             errors.addAll(
                                     this.verifyBindingLocations(
                                             validLocation,
-                                            new HashSet<>(binding.getLocations()),
+                                            locations,
                                             (reason) -> this.entry.InvalidBindingLocation(
                                                     pathId,
                                                     target.getLocationInfo().getHl7Path(),
@@ -176,7 +177,7 @@ public class VocabularyBindingVerificationService extends VerificationUtils {
                                                     PropertyType.SINGLECODE,
                                                     resourceSkeleton.getResource().getId(),
                                                     resourceSkeleton.getResource().getType(),
-                                                    new HashSet<>(binding.getLocations()),
+                                                    locations,
                                                     reason
                                             )
                                     )

@@ -22,7 +22,7 @@ export interface IDeleteNode {
 }
 export interface IDeleteNodes {
   documentId: string;
-  ids: string[]
+  ids: string[];
   type: Type;
 }
 export interface ICopyResourceResponse {

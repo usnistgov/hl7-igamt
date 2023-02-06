@@ -36,11 +36,13 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.service.verification.impl.SimpleResourceBindingVerificationService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
@@ -69,6 +71,9 @@ public class IgFixer {
 
 	@Autowired
 	IgRepository igRepo;
+	
+	@Autowired
+	SimpleResourceBindingVerificationService simpleResourceBindingVerificationService;
 
 	@Autowired
 	private CoConstraintService coConstraintService;
@@ -329,6 +334,62 @@ public class IgFixer {
 
 		}
 
+	}
+	
+	public void checkBindingLocation() {
+	List<Datatype> dts =	this.datatypeService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
+	List<Segment> segments =	this.segmentService.findByDomainInfoScope(Scope.USER.toString());
+	List<ConformanceProfile> conformanceProfiles =	this.conformanceProfileService.findByDomainInfoScope(Scope.USER.toString());
+	
+	List<Ig> igs= this.igService.findAll();
+	for(Ig ig: igs) {
+		List<Segment> segs = this.segmentService.findByIdIn(ig.getSegmentRegistry().getLinksAsIds());	
+		for(Segment seg: segs) {
+			
+		 List<IgamtObjectError> errors=simpleResourceBindingVerificationService.verifySegmentBindings(seg);
+			if(errors != null && errors.size()>0) {	
+			System.out.println(seg.getId() +"-"+ seg.getName() +"-"+ seg.getUsername());
+			System.out.println(errors);
+			}
+			
+		}
+		
+	}
+//	for(Datatype dt: dts) {
+//		
+//		List<IgamtObjectError> errors=simpleResourceBindingVerificationService.verifyDatatypeBindings(dt);
+//			if(errors != null && errors.size()>0) {
+//
+//				System.out.println(dt.getId());
+//				System.out.println(errors);
+//		}
+//		
+//	}
+	
+//	for(Segment seg: segments) {
+//		
+//		List<IgamtObjectError> errors=simpleResourceBindingVerificationService.verifySegmentBindings(seg);
+//			if(errors != null && errors.size()>0) {
+//				
+//				System.out.println(seg.getId() +"-"+ seg.getName() +"-"+ seg.getUsername());
+//				System.out.println(errors);
+//		}
+//		
+//	}
+	
+	
+//	for(ConformanceProfile cp: conformanceProfiles) {
+//		
+//		List<IgamtObjectError> errors=simpleResourceBindingVerificationService.verifyConformanceProfileBindings(cp);
+//			if(errors != null && errors.size()>0) {
+//
+//				System.out.println(cp.getId());
+//				System.out.println(errors);
+//		}
+//		
+//	}
+	
+	
 	}
 }
 

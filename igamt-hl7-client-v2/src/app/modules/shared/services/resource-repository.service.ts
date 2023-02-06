@@ -140,11 +140,13 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
       map(([vals, leafs]) => {
         const val = {};
         vals.forEach((value) => {
-          val[value.id] = {
-            leaf: leafs[value.id],
-            name: value.fixedName,
-            version: value.domainInfo.version,
-          };
+          if (value) {
+            val[value.id] = {
+              leaf: leafs[value.id],
+              name: value.fixedName,
+              version: value.domainInfo.version,
+            };
+          }
         });
         return val;
       }),

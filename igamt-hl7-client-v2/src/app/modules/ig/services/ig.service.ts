@@ -26,6 +26,7 @@ import { IConformanceStatement } from '../../shared/models/cs.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
 import { IRegistry } from '../../shared/models/registry.interface';
+import { IVerificationReport, IVerificationRequest } from '../../shared/models/verification.interface';
 import { IgTemplate } from '../components/derive-dialog/derive-dialog.component';
 import { INarrative } from '../components/ig-section-editor/ig-section-editor.component';
 import { IDocumentDisplayInfo } from '../models/ig/ig-document.class';
@@ -47,7 +48,7 @@ export class IgService {
   getRegistryAndCollectionByType(type: Type): { registry: string, collection: string } {
     let registry: string;
     let collection: string;
-    if (type === Type.VALUESET ||type ===  Type.VALUESETREGISTRY) {
+    if (type === Type.VALUESET || type ===  Type.VALUESETREGISTRY) {
       registry = 'valueSetRegistry';
       collection = 'valueSets';
     } else if (type === Type.CONFORMANCEPROFILE ||  type === Type.CONFORMANCEPROFILEREGISTRY ) {
@@ -178,7 +179,7 @@ export class IgService {
   }
   removeByIdIn(reg: IRegistry, ids: string[]): IRegistry {
 
-    return { ...reg, children: reg.children.filter((elm) => ids.indexOf(elm.id)<0) };
+    return { ...reg, children: reg.children.filter((elm) => ids.indexOf(elm.id) < 0) };
   }
 
   igToIDisplayElement(ig: IgDocument): IDisplayElement {
@@ -315,16 +316,7 @@ export class IgService {
   }
 
   deleteResources(documentId: string, ids: string[], registryType: Type): Observable<string[]> {
-    // const options = {
-    //   headers: new HttpHeaders({
-    //     'Content-Type': 'application/json',
-    //   }),
-    //   body: {
-    //     ids: ids,
-    //   }
-
-    // };
-    return this.http.post<string[]>(this.IG_END_POINT + documentId + '/'+registryType+ '/deleteResources', ids);
+    return this.http.post<string[]>(this.IG_END_POINT + documentId + '/' + registryType + '/deleteResources', ids);
   }
 
   exportXML(igId: string, selectedIds: ISelectedIds, xmlFormat) {
@@ -479,5 +471,7 @@ export class IgService {
     return this.http.post<Message<ICreateProfileComponentResponse>>(this.IG_END_POINT + request.documentId + '/composite-profile/create', request);
   }
 
-
+  verify(payload: IVerificationRequest): Observable<any> {
+    return this.http.get<any>(this.IG_END_POINT + payload.id + '/verification');
+  }
 }

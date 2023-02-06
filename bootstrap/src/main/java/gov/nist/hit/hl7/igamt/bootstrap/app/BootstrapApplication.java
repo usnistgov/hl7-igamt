@@ -2,16 +2,21 @@ package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
 import gov.nist.hit.hl7.igamt.ig.data.fix.PcConformanceStatementsIdFixes;
+
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -32,7 +37,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import ca.uhn.fhir.context.FhirContext;
 import gov.nist.hit.hl7.igamt.bootstrap.data.CodeFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConfigCreator;
@@ -51,17 +55,25 @@ import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.domain.ConnectingInfo;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -86,11 +98,16 @@ import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.repository.IgTemplateRepository;
+import gov.nist.hit.hl7.igamt.ig.service.AddService;
+import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.IgServiceImpl;
+import gov.nist.hit.hl7.igamt.service.verification.impl.SimpleResourceBindingVerificationService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
@@ -136,10 +153,16 @@ public class BootstrapApplication implements CommandLineRunner {
 
 
 	@Autowired
+	SimpleResourceBindingVerificationService simpleResourceBindingVerificationService;
+
+
+	@Autowired
 	private ExportConfigurationRepository exportConfigurationRepository;
 
 	@Autowired
 	MessageEventFacory messageEventFactory;
+	@Autowired
+	MessageEventService messageEventService;
 
 	@Autowired
 	Environment env;
@@ -168,6 +191,8 @@ public class BootstrapApplication implements CommandLineRunner {
 
 	@Autowired
 	SegmentService segmentService;
+	@Autowired
+	SegmentRepository segmentRepo;
 
 	@Autowired
 	ValuesetService valuesetService;
@@ -202,17 +227,21 @@ public class BootstrapApplication implements CommandLineRunner {
 	CodeFixer codeFixer;
 	@Autowired
 	DocumentInfoService documentService;
-	
+
 	@Autowired
 	SanityChecker sanityChecker;
-	
+
 	@Autowired
 	SingleCodeDataFix singleCodeDataFix;
-	
+
 	@Autowired
 	ConformanceStatementsStrengthFix conformanceStatementsStrengthFix;
 	@Autowired
 	ConfigCreator configCreator;
+
+	@Autowired
+	AddService addingService;
+	private Object StructureElementBinding;
 
 
 	@Bean
@@ -325,10 +354,6 @@ public class BootstrapApplication implements CommandLineRunner {
 	 */
 
 
-	//@PostConstruct
-	void fixSegmentduplicatedBinding() throws ValidationException, ForbiddenOperationException {
-		tableFixes.removeSegmentsDuplicatedBinding();
-	}
 
 	//  @PostConstruct
 	void generateDefaultExportConfig() {
@@ -539,7 +564,7 @@ public class BootstrapApplication implements CommandLineRunner {
 		}
 	}
 
-	
+
 	//IGID:5f7cc40f9194be0006377914Type:VALUESET,ResourceID:626c07988b87bc0007dd0dec
 	//IGID:5f7cc40f9194be0006377914Type:VALUESET,ResourceID:626c07a78b87bc0007dd0dff
 	//IGID:62961b5c8b87bc0006692096Type:DATATYPE,ResourceID:HL7AD-V2-7
@@ -547,12 +572,12 @@ public class BootstrapApplication implements CommandLineRunner {
 	void fixDomainInfoForLinks() {
 
 		this.igFixer.fixDatatypeLinksDomainInfo("62961b5c8b87bc0006692096");
-//		this.igFixer.fixValuesetLinksDomainInfo("5f7cc40f9194be0006377914");
-//		this.igFixer.fixCoConstraintEmptyLink("5ef0e7dc2af19b00069cfb2b");
-//		this.igFixer.fixCoConstraintEmptyLink("5ef0e80c2af19b00069d2185");
+		//		this.igFixer.fixValuesetLinksDomainInfo("5f7cc40f9194be0006377914");
+		//		this.igFixer.fixCoConstraintEmptyLink("5ef0e7dc2af19b00069cfb2b");
+		//		this.igFixer.fixCoConstraintEmptyLink("5ef0e80c2af19b00069d2185");
 
 	}
-	
+
 
 	//@PostConstruct
 	void checkDocumentInfo() throws IGUpdateException {
@@ -568,15 +593,15 @@ public class BootstrapApplication implements CommandLineRunner {
 			//sanityChecker.checkNullDocumentInfo(ig);
 			//sanityChecker.checkWrongDocumentInfo(ig);
 			//sanityChecker.checkMissingOrigin(ig);
-					
+
 		}
 	}
-	
+
 	//@PostConstruct
 	void checkCustomStructures() {
 		this.sanityChecker.checkCustomStructures();
 	}
-	
+
 	//@PostConstruct
 	void fixConformanceStatement() {
 		conformanceStatementsStrengthFix.fix();
@@ -586,8 +611,8 @@ public class BootstrapApplication implements CommandLineRunner {
 		singleCodeDataFix.check();
 	}
 
-	
-	
+
+
 	//@PostConstruct
 	void ConfigCreateAndUpdate() {
 		System.out.println("UPDATE CONFIG");
@@ -596,46 +621,197 @@ public class BootstrapApplication implements CommandLineRunner {
 		this.configUpdater.updateValueSetLoctaionException(config, "ST","CQ_NIST", Type.DATATYPE, 2, config.getHl7Versions());
 		this.sharedConstantService.save(config);
 	}
-	
+
 	//@PostConstruct
 	void addVersionFixes() throws ForbiddenOperationException, ValidationException {
 		codeFixer.fixTableHL70125("2.9"); 
 		this.dynamicMappingFixer.processSegmentByVersion("2.9");
 		tableFixes.fix0396ByVersion("2.9");
-	
-		
+
+
 	}
-	
+
 	//@PostConstruct
-	void fixIg() throws ForbiddenOperationException, ValidationException {
-		igFixer.deprecateIG("", Boolean.TRUE);
-		
+	void deprecate() throws ForbiddenOperationException, ValidationException {
+
+
+		igFixer.deprecateIG("5e62985a08bb3a000648c146", Boolean.TRUE);
+
+		igFixer.deprecateIG("5ef10cab2af19b00069efb1d", Boolean.TRUE);
+
+		igFixer.deprecateIG("5f1ef9552af19b00065f7dd4", Boolean.TRUE);
+
+		igFixer.deprecateIG("5f6dfb0a9194be0006d226f5", Boolean.TRUE);
+
+		igFixer.deprecateIG("5f71f7e19194be0006175399", Boolean.TRUE);
+
+		igFixer.deprecateIG("5f809aee9194be0006437932", Boolean.TRUE);
+
+		igFixer.deprecateIG("5fbbcf4d9194be0006abd025", Boolean.TRUE);
+
+		igFixer.deprecateIG("6065f77a8b87bc00073091aa", Boolean.TRUE);
+
+		igFixer.deprecateIG("630644c88b87bc00075490f9", Boolean.TRUE);
+
 	}
-	
+
 	//@PostConstruct
 	void addMissing() throws ForbiddenOperationException, ValidationException {
 		List<Ig> igs = this.igService.findAll();
 		for( Ig ig: igs) {
 			igFixer.checkMessing(ig);
+		}
+	}
+
+	//@PostConstruct
+	void checkBinding() throws ForbiddenOperationException, ValidationException {
+
+		igFixer.checkBindingLocation();
+
+	}
+	//	@PostConstruct
+	void createHL7IG() throws JsonParseException, JsonMappingException, FileNotFoundException, IOException, EntityNotFound, ForbiddenOperationException {
+
+
+		Config config = this.sharedConstantService.findOne();
+
+		for (String version : config.getHl7Versions() ) {
+			//		String version = "2.9";
+			Ig ig = this.igService.createEmptyIg();
+
+			List<AddingInfo>  info = createAddingInfo(version);
+
+			ig.setUsername("wakili");
+			DomainInfo domainInfo = new DomainInfo();
+			domainInfo.setScope(Scope.USER);
+
+
+			ig.setDomainInfo(domainInfo);
+			ig.setMetadata(new DocumentMetadata());
+			ig.getMetadata().setTitle("ALL" + version);
+			ig.setId(new ObjectId().toHexString());
+			ig.setVersion(null);
+
+			this.addingService.addConformanceProfiles(ig, info, "wakili");
+
+			igService.save(ig);
+		}
+
+	}
+
+	private List<AddingInfo> createAddingInfo(String s) {
+		List<AddingInfo> list = new ArrayList<AddingInfo>();
+		this.messageService.findByDomainInfoScopeAndDomainInfoVersion(Scope.HL7STANDARD.toString(), s);
+		List<MessageStructure>  structures = messageEventService.findStructureByScopeAndVersion(s, Scope.HL7STANDARD, "wakili");
+
+		for(MessageStructure structure: structures) {
+			AddingInfo info = new  AddingInfo();
+			info.setDescription(structure.getDescription());
+			info.setDomainInfo(new DomainInfo(s, Scope.HL7STANDARD));
+			info.setId(new ObjectId().toString());
+			info.setOriginalId(structure.getId());
+			info.setExt(structure.getStructID());
+			info.setName(structure.getEvents().get(0).getName());
+			info.setFlavor(true);
+			list.add(info);
+		}
+
+		return list;
+	}
+
+	//@PostConstruct
+	void checkUsage() {
+
+		Config config = this.sharedConstantService.findOne();
+		System.out.println("Segment,Version,Field,MinCard,MaxCard");
+
+		for (String v: config.getHl7Versions()) {
+
+			List<Segment> segments = this.segmentService.findByDomainInfoScopeAndDomainInfoVersion(Scope.HL7STANDARD.toString(), v);
+			for(Segment s: segments) {
+
+				for (Field f: s.getChildren()) {
+
+					if(f.getUsage().equals(Usage.X)) {
+
+						if(f.getMin() !=0 || !f.getMax().equals("0") ) {
+							String delimiter = ",";
+							StringJoiner joiner = new StringJoiner(delimiter);
+							joiner.add(s.getName());
+							joiner.add(s.getDomainInfo().getVersion());
+							joiner.add(f.getId());
+							joiner.add(String.valueOf(f.getMin()));
+							joiner.add(f.getMax());
+							System.out.println(joiner.toString());
+
+						}
+					}	
+				}
+
+			}
 
 		}
+
+	}
+//////////////////////
+	//@PostConstruct
+	
+	// 	@PostConstruct
+	void fixSegmentduplicatedBinding() throws ValidationException, ForbiddenOperationException {
+		tableFixes.removeSegmentsDuplicatedBinding("2.9");
+	}
+
+	void updateConfIg() {
+		System.out.println("UPDATE CONFIG");
+		//configCreator.addTXExceptions();
+		configCreator.addNMExceptions();
+	}
+	//@PostConstruct
+	void addDefaultLocation() {
+		this.dataFixer.addDefaultLocation();
 		
 	}
+	//@PostConstruct
+	void updateUsage(){
+		//this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.3.1", "OBR", "5", Usage.X, Usage.B);
+		//this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.3.1", "OBR", "6", Usage.X, Usage.B);
+		
+		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.7.1", "OBX", "7", Usage.X, Usage.O);
+		
+		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.7.1", "OBX", "9", Usage.X, Usage.O);
+
+		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.7.1", "OBX", "12", Usage.X, Usage.O);
+
+		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.7.1", "OBX", "13", Usage.X, Usage.O);
+
+		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.7.1", "OBX", "14", Usage.X, Usage.O);
+		
+		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.7.1", "OBX", "15", Usage.X, Usage.O);
+
+
+
+	}
 	
-	@PostConstruct
-	void UpdateGVTLinks() {
-		System.out.println("UPDATE CONFIG");
-		List<ConnectingInfo> connection;
-		Config config = this.sharedConstantService.findOne();
-		for(ConnectingInfo info: config.getConnection()) {
-			if(info.getLabel().equals("GVT-DEV")) {
-				info.setUrl("https://gvt-dev.nist.gov/gvt/");
-			}
-		}
-		this.sharedConstantService.save(config);
+	//@PostConstruct
+	void updateSCV(){
+		this.dataFixer.updateSCVDatatype();
+	}
+	//@PostConstruct
+	void updateRCD(){
+		this.dataFixer.updateRCD();
+	}
+	
+	//@PostConstruct
+	void shiftBindingV2_9() throws ForbiddenOperationException {
+		
+		this.dataFixer.shiftBindingV2_9();
+
+	}
+	//@PostConstruct
+	void removeBindings() {
+		this.dataFixer.removeBindingsV2_9();
 	}
 	
 	
 
-	
 }

@@ -15,6 +15,7 @@ export class IgListItem {
   sharedUsers?: string[];
   currentAuthor?: string;
   draft?: boolean;
+  deprecated?: boolean;
   publicationInfo?: IPublicationInfo;
 }
 

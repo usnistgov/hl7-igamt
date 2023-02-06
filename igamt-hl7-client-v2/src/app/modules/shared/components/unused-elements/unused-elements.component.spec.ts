@@ -8,7 +8,7 @@ describe('UnusedElementsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UnusedElementsComponent ]
+      declarations: [ UnusedElementsComponent ],
     })
     .compileComponents();
   }));

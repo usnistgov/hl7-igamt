@@ -50,6 +50,11 @@
     </div>
   </div>
 
+
+  <div class="filter" style="margin-left: 5px;" *ngIf="_shadowViewType !== 'USER' && (isAdmin | async)">
+    <p-checkbox [(ngModel)]="showdialog-danger" [binary]="true" label="Show Hidden" (ngModelChange)="deprecatedChange($event)" ></p-checkbox>
+  </div>
+
   <!-- IG LIST -->
   <div class="ig-list">
     <div>

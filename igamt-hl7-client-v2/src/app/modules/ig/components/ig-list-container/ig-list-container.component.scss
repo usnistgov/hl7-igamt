@@ -4,9 +4,9 @@
   @extend %page-wrapper;
 
   display: grid;
-  grid-template-areas: 'alerts' 'topbar' 'search-bar' 'ig-list';
+  grid-template-areas: 'alerts' 'topbar' 'search-bar' 'filter' 'ig-list';
   grid-template-columns: 1fr;
-  grid-template-rows: minmax(min-content, max-content) 70px 60px auto;
+  grid-template-rows: minmax(min-content, max-content) 70px 60px minmax(min-content, max-content) auto;
   height: 100%;
 }
 
@@ -27,6 +27,7 @@
   display: flex;
   flex-direction: row;
   align-items: flex-start;
+  justify-content: space-between;
 }
 
 .ig-list {
@@ -38,4 +39,9 @@
 .spacer {
   margin-top: 5px;
   margin-bottom: 5px;
+}
+
+.filter {
+  grid-area: filter;
+  margin-bottom: 20px;
 }

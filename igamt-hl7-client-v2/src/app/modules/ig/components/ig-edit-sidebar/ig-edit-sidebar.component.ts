@@ -1,9 +1,9 @@
-import { UnusedElementsComponent } from './../../../shared/components/unused-elements/unused-elements.component';
 import { AfterViewInit, Component, Input, OnDestroy, OnInit, SystemJsNgModuleLoader, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, ChildrenOutletContexts, Router } from '@angular/router';
 import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 import { Actions, ofType } from '@ngrx/effects';
+import { Dictionary } from '@ngrx/entity';
 import { Store } from '@ngrx/store';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { SelectItem } from 'primeng/api';
@@ -71,6 +71,10 @@ import { CrossReferencesService } from '../../../shared/services/cross-reference
 import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.class';
 import { IgTocFilterService, IIgTocFilterConfiguration, selectIgTocFilter } from '../../services/ig-toc-filter.service';
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
+import { selectVerificationResult } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
+import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
+import { UnusedElementsComponent } from './../../../shared/components/unused-elements/unused-elements.component';
+import { VerificationService } from './../../../shared/services/verification.service';
 import { ITypedSection } from './../ig-toc/ig-toc.component';
 import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
 
@@ -82,6 +86,8 @@ import { ManageProfileStructureComponent } from './../manage-profile-structure/m
 export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit {
 
   nodes$: Observable<any[]>;
+
+  verification$: Observable<Dictionary<IVerificationEnty[]>>;
   hl7Version$: Observable<string[]>;
   documentRef$: Observable<IDocumentRef>;
   conformanceProfiles$: Observable<IDisplayElement[]>;
@@ -114,7 +120,8 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     private router: Router,
     private activeRoute: ActivatedRoute,
     private igTocFilterService: IgTocFilterService,
-    private actions: Actions) {
+    private actions: Actions,
+    private verificationService: VerificationService) {
     this.deltaMode$ = this.store.select(fromIgEdit.selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
     this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
@@ -134,6 +141,8 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
         return tocFilter && tocFilter.active;
       }),
     );
+    // verification
+    this.verification$ =  this.store.select(selectVerificationResult).pipe(map(((x) => this.verificationService.convertValueToTocElements(x))));
     this.selectedSubscription = this.store.select(selectRouterURL).pipe(
       map((url: string) => {
         const regex = '/ig/[a-z0-9A-Z-]+/(?<type>[a-z]+)/(?<id>[a-z0-9A-Z-]+).*';
@@ -691,7 +700,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
       }),
     ).subscribe();
   }
-  cleanUnused($event: {children: IDisplayElement[], type : Type}){
+  cleanUnused($event: {children: IDisplayElement[], type: Type}) {
     this.documentRef$.pipe(
       take(1),
       concatMap((documentRef: IDocumentRef) => {
@@ -705,21 +714,15 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
                   action: '',
                 },
               });
-              dialogRef.afterClosed().subscribe(
-                (answer) => {
-                  if (answer) {
-                    //this.store.dispatch(new DeleteResource({ documentId: documentRef.documentId, element: $event }));
-                  }
-                },
-              );
+              dialogRef.afterClosed().subscribe();
             } else {
-              let unusedMap ={};
-              unused.forEach(element => {
+              const unusedMap = {};
+              unused.forEach((element) => {
                 unusedMap[element] = true;
               });
-              let unusedDisplay: IDisplayElement[]= [];
+              let unusedDisplay: IDisplayElement[] = [];
 
-              unusedDisplay = $event.children.filter(x => unusedMap[x.id]);
+              unusedDisplay = $event.children.filter((x) => unusedMap[x.id]);
               const dialogRef = this.dialog.open(UnusedElementsComponent, {
 
                 data: {

@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 import {ActivatedRoute, Router} from '@angular/router';
 import { Type } from '../../constants/type.enum';
 import { IDisplayElement } from '../../models/display-element.interface';
+import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
+import { IVerificationEntryList } from './../../services/verification.service';
 
 @Component({
   selector: 'app-display-section',
@@ -21,6 +23,9 @@ export class DisplaySectionComponent implements OnInit {
   hideBadge: boolean;
   @Input()
   ignoreScope: boolean;
+
+  @Input()
+  verification: IVerificationEnty;
 
   constructor(    private router: Router,
                   private activeRoute: ActivatedRoute) {

@@ -1,0 +1,18 @@
+<h2 mat-dialog-title> Delete Confirmation</h2>
+<mat-dialog-content>
+
+Are you sure do you want to DELETE the following elements?
+
+<div *ngFor="let elm of data.resources" class="form-inline" style="margin-top: 5px;">
+
+  <app-display-section  [element]="elm">
+  </app-display-section>
+
+</div>
+</mat-dialog-content>
+
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="close()"class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()" class="btn btn-sm btn-danger">Yes</button>
+</mat-dialog-actions>
+

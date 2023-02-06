@@ -1,7 +1,7 @@
 <div *ngIf="verification$ | async as verification" style="padding: 20px;">
   <div *ngIf="filter | async as filterValue" style="display: flex;">
     <ng-container *ngFor="let item of severity">
-      <div class="severity-filter" *ngIf="verification.stats[item.key]" >
+      <div class="severity-filter" *ngIf="verification.stats[item.key]">
         <p-checkbox [style]="{ 'margin-right' : '5px'}" [(ngModel)]="filterValue.severity[item.key]" (ngModelChange)="updateFilter()" binary="true"></p-checkbox>
         <app-issue-badge [type]="item.type" [number]="verification.stats[item.key]" label="true"></app-issue-badge>
       </div>
@@ -9,12 +9,13 @@
   </div>
   <table class="table table-sm table-bordered table-striped" style="margin-top: 10px;">
     <tbody *ngFor="let item of verification.entries">
-      <tr style="background-color: white;">
+      <tr style="background-color: white;" *ngIf="item.entries?.length">
         <th colspan="4">
-          <app-display-section [element]="item.target"></app-display-section>
+          <app-display-ref [element]="item.target" [documentId]="documentId" documentType="IGDOCUMENT"></app-display-ref>
         </th>
       </tr>
-      <tr>
+
+      <tr *ngIf="item.entries?.length">
         <th>Location</th>
         <th>Property</th>
         <th>Message</th>

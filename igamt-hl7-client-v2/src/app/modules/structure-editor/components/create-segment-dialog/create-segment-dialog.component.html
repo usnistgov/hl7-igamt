@@ -45,6 +45,22 @@
         </button>
       </div>
       <br>
+      <div *ngIf="isZSegment(segmentBase.fixedName)">
+        <label for="name" style="font-weight: bold;"> Z Segment Name </label>
+        <input name="name" id="name" type="text" style="width: 100%"   [(ngModel)]="zname"  pattern="Z[A-Z0-9]{2}" required />
+        <div *ngIf="form.controls['name'] && form.controls['name'].errors" style="color:red; font-size: 11px">
+          <div *ngIf="form.controls['name'].errors.required">
+            <span>*name is required</span>
+          </div>
+        </div>
+        <div *ngIf="form.controls['name'] && form.controls['name'].errors" style="color:red; font-size: 11px">
+          <div *ngIf="form.controls['name'].errors.pattern">
+            <span>Invalid name: name must follow the pattern ZXX where X is an alphanumerical character</span>
+          </div>
+        </div>
+      </div>
+
+
       <label for="identifier" style="font-weight: bold;"> Identifier </label>
         <input name="identifier" id="identifier" appStructureNamingDuplication  [(ngModel)]="identifier"  [type]="'SEGMENT'" [existing]="existing" [fixedName]="segmentBase.fixedName" [domainInfo]="domainInfo"  type="text" style="width: 100%"   required />
         <div *ngIf="form.controls['identifier'] && form.controls['identifier'].errors" style="color:red; font-size: 11px">
@@ -55,6 +71,7 @@
             <span> *identifier is duplicated</span>
           </div>
         </div>
+
       <label for="description" style="font-weight: bold;"> Description </label>
       <input name="description" id="description"  type="text" [(ngModel)]="description" type="text" style="width: 100%" class="form-control" required />
     </ng-container>

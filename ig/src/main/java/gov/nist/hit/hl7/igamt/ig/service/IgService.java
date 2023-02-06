@@ -30,7 +30,6 @@ import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.display.model.PublishingInfo;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CompositeProfileCreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
@@ -113,10 +112,8 @@ public interface IgService {
 
   public ProfileComponent createProfileComponent(Ig ig, String name, List<DisplayElement> children);
 
-  public CompositeProfileStructure createCompositeProfileSercice(Ig ig,
-      CompositeProfileCreationWrapper wrapper);
-  
-  
+  public CompositeProfileStructure createCompositeProfile(Ig ig,
+                                                          CompositeProfileCreationWrapper wrapper);  
   public String findDefaultHL7VersionById(String id);
 
   void removeChildren(String id);

@@ -94,7 +94,7 @@ public class MessageStructure extends Resource {
     }
     return this.getName();
   }
-  public void complete( MessageStructure elm) {
+  public void complete(MessageStructure elm) {
     super.complete(elm);
     elm.identifier = identifier;
     elm.messageType = messageType;

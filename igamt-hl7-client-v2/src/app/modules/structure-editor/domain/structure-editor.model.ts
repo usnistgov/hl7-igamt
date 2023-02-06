@@ -19,6 +19,7 @@ export interface ICreateSegmentStructure {
   identifier: string;
   description: string;
   from: string;
+  zname?: string;
 }
 
 export interface IMessageStructureAndDisplay {
