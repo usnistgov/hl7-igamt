@@ -801,7 +801,8 @@ public class BootstrapApplication implements CommandLineRunner {
 	}
 	
 	//@PostConstruct
-	void shiftBindingV2_9() throws ForbiddenOperationException{
+	void shiftBindingV2_9() throws ForbiddenOperationException {
+		
 		this.dataFixer.shiftBindingV2_9();
 
 	}
