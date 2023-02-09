@@ -10,6 +10,7 @@ import { DamFrameworkModule } from './../dam-framework/dam-framework.module';
 import { SharedModule } from './../shared/shared.module';
 import { AddUserDialogComponent } from './components/add-user-dialog/add-user-dialog.component';
 import { CreateWorkspaceComponent } from './components/create-workspace/create-workspace.component';
+import { DocumentMoveDialogComponent } from './components/document-move-dialog/document-move-dialog.component';
 import { FolderAddDialogComponent } from './components/folder-add-dialog/folder-add-dialog.component';
 import { PermissionSelectorComponent } from './components/permission-selector/permission-selector.component';
 import { WorkspaceActiveTitlebarComponent } from './components/workspace-active-titlebar/workspace-active-titlebar.component';
@@ -20,11 +21,11 @@ import { WorkspaceListCardComponent } from './components/workspace-list-card/wor
 import { WorkspaceListComponent } from './components/workspace-list/workspace-list.component';
 import { WorkspaceMetadataEditorComponent } from './components/workspace-metadata-editor/workspace-metadata-editor.component';
 import { WorkspaceSideBarComponent } from './components/workspace-side-bar/workspace-side-bar.component';
-import { WorkspaceUserManagementComponent, PermsPipe } from './components/workspace-user-management/workspace-user-management.component';
+import { PermsPipe, WorkspaceUserManagementComponent } from './components/workspace-user-management/workspace-user-management.component';
 import { WorkspaceRoutingModule } from './workspace-routing.module';
 
 @NgModule({
-  declarations: [CreateWorkspaceComponent, WorkspaceListComponent, WorkspaceEditComponent, WorkspaceListCardComponent, WorkspaceSideBarComponent, WorkspaceHomeEditorComponent, WorkspaceActiveTitlebarComponent, FolderAddDialogComponent, WorkspaceMetadataEditorComponent, WorkspaceFolderEditorComponent, WorkspaceUserManagementComponent, AddUserDialogComponent, PermissionSelectorComponent, PermsPipe],
+  declarations: [CreateWorkspaceComponent, WorkspaceListComponent, WorkspaceEditComponent, WorkspaceListCardComponent, WorkspaceSideBarComponent, WorkspaceHomeEditorComponent, WorkspaceActiveTitlebarComponent, FolderAddDialogComponent, WorkspaceMetadataEditorComponent, WorkspaceFolderEditorComponent, WorkspaceUserManagementComponent, AddUserDialogComponent, PermissionSelectorComponent, PermsPipe, DocumentMoveDialogComponent],
   imports: [
     CommonModule,
     DamFrameworkModule.forRoot(),
@@ -35,11 +36,11 @@ import { WorkspaceRoutingModule } from './workspace-routing.module';
     StoreModule.forFeature(fromWorkspace.featureName, fromWorkspace.reducers),
     CoreModule,
     SharedModule,
-
   ],
   entryComponents: [
     FolderAddDialogComponent,
     AddUserDialogComponent,
+    DocumentMoveDialogComponent,
   ],
   providers: [],
 })

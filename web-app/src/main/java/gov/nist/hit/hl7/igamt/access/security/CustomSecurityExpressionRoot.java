@@ -52,6 +52,16 @@ public abstract class CustomSecurityExpressionRoot extends SecurityExpressionRoo
                 new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action"));
     }
 
+    public boolean CanPublish() throws ResourceAccessDeniedException {
+        return allowOrException(this.accessControlService.isPublisher(getAuthToken()),
+                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action"));
+    }
+
+    public boolean IsAdmin() throws ResourceAccessDeniedException {
+        return allowOrException(this.accessControlService.isAdmin(getAuthToken()),
+                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action"));
+    }
+
     public Type getType(String type) {
         return Type.fromString(type);
     }

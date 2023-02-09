@@ -25,7 +25,7 @@ import { IConformanceStatement } from '../../shared/models/cs.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
 import { IRegistry } from '../../shared/models/registry.interface';
-import { IgTemplate } from '../components/derive-dialog/derive-dialog.component';
+import { IgTemplate } from '../../shared/components/derive-dialog/derive-dialog.component';
 import { INarrative } from '../components/ig-section-editor/ig-section-editor.component';
 import { IDocumentDisplayInfo, IIgUpdateInfo } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';

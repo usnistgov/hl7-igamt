@@ -545,7 +545,6 @@ public class IGDocumentController extends BaseController {
   }
 
   /**
-   * @param conformanceprofileregistry
    * @return
    */
   private TextSection findRegistryByType(Type type, Set<TextSection> content) {
@@ -1201,7 +1200,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/publish", method = RequestMethod.POST, produces = {
   "application/json" })
-  // TODO
+  @PreAuthorize("CanPublish()")
   public @ResponseBody ResponseMessage<String> publish(@PathVariable("id") String id, @RequestBody PublishingInfo info,  Authentication authentication)
       throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);
@@ -1215,7 +1214,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/lock", method = RequestMethod.POST, produces = {
   "application/json" })
-  // TODO
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public @ResponseBody ResponseMessage<String> lockIg(@PathVariable("id") String id,  Authentication authentication)
       throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);

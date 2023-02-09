@@ -22,7 +22,7 @@ import { MessageService } from '../../../dam-framework/services/message.service'
 import { ClearAll } from '../../../dam-framework/store/messages/messages.actions';
 import { IgListItem } from '../../../document/models/document/ig-list-item.class';
 import { IgService } from '../../services/ig.service';
-import { DeriveDialogComponent, IDeriveDialogData, IgTemplate } from '../derive-dialog/derive-dialog.component';
+import { DeriveDialogComponent, IDeriveDialogData } from '../../../shared/components/derive-dialog/derive-dialog.component';
 import { LockIG } from './../../../../root-store/ig/ig-list/ig-list.actions';
 import { SharingDialogComponent } from './../../../shared/components/sharing-dialog/sharing-dialog.component';
 import { IgPublisherComponent } from './../../../shared/components/ig-publisher/ig-publisher.component';
@@ -210,9 +210,9 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                 },
               },
               {
-                label: 'Derive from',
-                class: 'btn-secondary',
-                icon: 'fa fa-map-marker',
+                label: 'Derive From',
+                class: 'btn-warning',
+                icon: 'fa fa-code-fork',
                 action: (item: IgListItem) => {
 
                   if (item.draft) {

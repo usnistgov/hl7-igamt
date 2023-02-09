@@ -3,10 +3,11 @@ package gov.nist.hit.hl7.igamt.web.app.workspace;
 import java.util.*;
 
 import gov.nist.hit.hl7.auth.util.requests.FindUserResponse;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
-import gov.nist.hit.hl7.igamt.ig.service.IgService;
-import gov.nist.hit.hl7.igamt.web.app.model.ResourceMovingInfo;
+import gov.nist.hit.hl7.igamt.web.app.model.WorkspaceDocumentCopy;
+import gov.nist.hit.hl7.igamt.web.app.model.WorkspaceDocumentMove;
+import gov.nist.hit.hl7.igamt.web.app.model.WorkspaceDocumentPublish;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspaceMetadata;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspaceUser;
 import gov.nist.hit.hl7.igamt.workspace.model.*;
@@ -220,16 +221,72 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/clone", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
-	@PreAuthorize("AccessResource(#resourceMovingInfo.getDocumentType().toString(), #resourceMovingInfo.getDocumentId(), READ)")
-	public WorkspaceInfo move(
-			@RequestBody ResourceMovingInfo resourceMovingInfo,
+	@PreAuthorize("AccessResource(#workspaceDocumentCopy.getDocumentType().toString(), #workspaceDocumentCopy.getDocumentId(), READ)")
+	public WorkspaceInfo clone(
+			@RequestBody WorkspaceDocumentCopy workspaceDocumentCopy,
 			Authentication authentication
 	) throws Exception {
 		Workspace workspace = workspaceDocumentManagementService.cloneIgAndMoveToWorkspaceLocation(
-				resourceMovingInfo.getDocumentId(),
-				resourceMovingInfo.getName(),
-				resourceMovingInfo.getWorkspaceId(),
-				resourceMovingInfo.getFolderId(),
+				workspaceDocumentCopy.getDocumentId(),
+				workspaceDocumentCopy.getName(),
+				workspaceDocumentCopy.getWorkspaceId(),
+				workspaceDocumentCopy.getFolderId(),
+				workspaceDocumentCopy.getCopyInfo(),
+				authentication.getName()
+		);
+		return this.workspaceService.getWorkspaceInfo(workspace, authentication.getName());
+	}
+
+	@RequestMapping(value = "/api/workspace/move", method = RequestMethod.POST, produces = { "application/json" })
+	@ResponseBody
+	@PreAuthorize("AccessResource(#workspaceDocumentMove.getDocumentType().toString(), #workspaceDocumentMove.getDocumentId(), WRITE)")
+	public WorkspaceInfo clone(
+			@RequestBody WorkspaceDocumentMove workspaceDocumentMove,
+			Authentication authentication
+	) throws Exception {
+		Workspace workspace = workspaceDocumentManagementService.moveIg(
+				workspaceDocumentMove.getDocumentId(),
+				workspaceDocumentMove.getTitle(),
+				workspaceDocumentMove.getWorkspaceId(),
+				workspaceDocumentMove.getSourceFolderId(),
+				workspaceDocumentMove.getFolderId(),
+				workspaceDocumentMove.isClone(),
+				authentication.getName()
+		);
+		return this.workspaceService.getWorkspaceInfo(workspace, authentication.getName());
+	}
+
+	@RequestMapping(value = "/api/workspace/publish", method = RequestMethod.POST, produces = { "application/json" })
+	@ResponseBody
+	@PreAuthorize("AccessResource(#workspaceDocumentMove.getDocumentType().toString(), #workspaceDocumentMove.getDocumentId(), WRITE)")
+	public WorkspaceInfo publish(
+			@RequestBody WorkspaceDocumentPublish workspaceDocumentPublish,
+			Authentication authentication
+	) throws Exception {
+		Workspace workspace = workspaceDocumentManagementService.publishIg(
+				workspaceDocumentPublish.getDocumentId(),
+				workspaceDocumentPublish.getWorkspaceId(),
+				workspaceDocumentPublish.getFolderId(),
+				workspaceDocumentPublish.getInfo(),
+				authentication.getName()
+		);
+		return this.workspaceService.getWorkspaceInfo(workspace, authentication.getName());
+	}
+
+	@RequestMapping(value = "/api/workspace/{wsId}/folder/{folderId}/document/{documentType}/{documentId}", method = RequestMethod.DELETE, produces = { "application/json" })
+	@ResponseBody
+	@PreAuthorize("AccessResource(#documentType, #documentId, WRITE)")
+	public WorkspaceInfo deleteDocument(
+			@PathVariable("wsId") String workspaceId,
+			@PathVariable("folderId") String folderId,
+			@PathVariable("documentId") String documentId,
+			@PathVariable("documentType") Type documentType,
+			Authentication authentication
+	) throws Exception {
+		Workspace workspace = workspaceDocumentManagementService.deleteDocumentFromWorkspace(
+				documentId,
+				workspaceId,
+				folderId,
 				authentication.getName()
 		);
 		return this.workspaceService.getWorkspaceInfo(workspace, authentication.getName());

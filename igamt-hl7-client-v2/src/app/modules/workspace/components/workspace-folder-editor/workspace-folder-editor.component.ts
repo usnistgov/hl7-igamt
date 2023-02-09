@@ -1,3 +1,7 @@
+import { WorkspaceDocumentService } from './../../services/workspace-document.service';
+import { selectIsAdmin } from './../../../dam-framework/store/authentication/authentication.selectors';
+import { selectIsWorkspaceAdmin } from './../../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
+import { CloneModeEnum } from './../../../shared/constants/clone-mode.enum';
 import { IEntityBrowserResult } from './../../../shared/components/entity-browse-dialog/entity-browse-dialog.component';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
@@ -5,15 +9,13 @@ import { Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { BehaviorSubject, combineLatest, Observable, of, Subscription } from 'rxjs';
-import { flatMap, map, take, tap } from 'rxjs/operators';
+import { flatMap, map, take } from 'rxjs/operators';
 import { UserMessage } from 'src/app/modules/dam-framework/models/messages/message.class';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { EditorSave } from 'src/app/modules/dam-framework/store';
 import { IgListItemControl } from 'src/app/modules/ig/components/ig-list-item-card/ig-list-item-card.component';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
-import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { MessageType } from '../../../dam-framework/models/messages/message.class';
-import { EditorUpdate } from '../../../dam-framework/store/data/dam.actions';
 import { IgListItem } from '../../../document/models/document/ig-list-item.class';
 import { BrowseType, EntityBrowseDialogComponent, IBrowserTreeNode } from '../../../shared/components/entity-browse-dialog/entity-browse-dialog.component';
 import { Type } from '../../../shared/constants/type.enum';
@@ -58,7 +60,6 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
   }>;
   documents$: Observable<IgListItem[]>;
 
-  // tslint:disable-next-line: cognitive-complexity
   constructor(
     actions$: Actions,
     store: Store<any>,
@@ -66,6 +67,7 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
     protected messageService: MessageService,
     private router: Router,
     private dialog: MatDialog,
+    private workspaceDocumentService: WorkspaceDocumentService,
   ) {
     super({
       id: EditorID.WORKSPACE_FOLDER,
@@ -107,85 +109,141 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
       }),
     ).subscribe();
 
-    this.listControls = this.isEditor$
-      .pipe(
-        map(
-          (editor) => {
-            return [
-              {
-                label: 'Delete',
-                class: 'btn-danger',
-                icon: 'fa-trash',
-                action: (item: IgListItem) => {
-                  const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-                    data: {
-                      question: 'Are you sure you want to delete Implementation Guide "' + item.title + '" ?',
-                      action: 'Delete Implementation Guide',
-                    },
-                  });
-
-                  dialogRef.afterClosed().subscribe(
-                    (answer) => {
-                      if (answer) {
-                        // HANDLE DELETE
-                      }
-                    },
-                  );
-                },
-                disabled: (item: IgListItem): boolean => {
-                  return !editor;
-                },
-                hide: (item: IgListItem): boolean => {
-                  return !editor;
-                },
+    this.listControls = combineLatest(
+      store.select(selectIsAdmin),
+      this.store.select(selectIsWorkspaceAdmin),
+      this.isEditor$
+    ).pipe(
+      map(
+        ([admin, wsAdmin, editor]) => {
+          return [
+            {
+              label: 'Delete',
+              class: 'btn-danger',
+              icon: 'fa-trash',
+              action: (item: IgListItem) => {
+                this.workspaceDocumentService.execute(
+                  this.workspaceDocumentService.DELETE,
+                  this.folder$,
+                  item,
+                  new UserMessage(MessageType.SUCCESS, "Document Deleted Successfully"),
+                );
               },
-              {
-                label: 'Clone',
-                class: 'btn-success',
-                icon: 'fa-plus',
-                action: (item: IgListItem) => {
-                  this.cloneIgIntoFolder(item.id, Type.IGDOCUMENT);
-                },
-                disabled: (item: IgListItem): boolean => {
-                  return !editor;
-                },
-                hide: (item: IgListItem): boolean => {
-                  return !editor;
-                },
+              disabled: (item: IgListItem): boolean => {
+                return !editor || item.status === 'PUBLISHED';
               },
-              {
-                label: 'Derive from',
-                class: 'btn-secondary',
-                icon: 'fa fa-map-marker',
-                action: (item: IgListItem) => {
-                  // HANDLE DERIVE
-                },
-                disabled: (item: IgListItem): boolean => {
-                  return false;
-                },
-                hide: (item: IgListItem): boolean => {
-                  return item.type !== 'PUBLISHED';
-                },
+              hide: (item: IgListItem): boolean => {
+                return !editor || item.status === 'PUBLISHED';
               },
-              {
-                label: 'Open',
-                class: 'btn-primary',
-                icon: 'fa-arrow-right',
-                default: true,
-                action: (item: IgListItem) => {
-                  this.router.navigate(['/ig', item.id]);
-                },
-                disabled: (item: IgListItem): boolean => {
-                  return false;
-                },
-                hide: (item: IgListItem): boolean => {
-                  return false;
-                },
+            }, {
+              label: 'Move',
+              class: 'btn-primary',
+              icon: 'fa fa-arrows',
+              action: (item: IgListItem) => {
+                this.workspaceDocumentService.execute(
+                  this.workspaceDocumentService.MOVE,
+                  this.folder$,
+                  item,
+                  new UserMessage(MessageType.SUCCESS, "Document Moved Successfully")
+                );
               },
-            ];
-          },
-        ),
-      );
+              disabled: (item: IgListItem): boolean => {
+                return !editor;
+              },
+              hide: (item: IgListItem): boolean => {
+                return !editor;
+              },
+            }, {
+              label: 'Clone',
+              class: 'btn-success',
+              icon: 'fa-plus',
+              action: (item: IgListItem) => {
+                this.workspaceDocumentService.execute(
+                  this.workspaceDocumentService.CLONE,
+                  this.folder$,
+                  item,
+                  new UserMessage(MessageType.SUCCESS, "Document Cloned Successfully")
+                );
+              },
+              disabled: (item: IgListItem): boolean => {
+                return !editor;
+              },
+              hide: (item: IgListItem): boolean => {
+                return !editor;
+              },
+            }, {
+              label: 'Lock',
+              class: 'btn-dark',
+              icon: 'fa-lock',
+              action: (item: IgListItem) => {
+                this.workspaceDocumentService.execute(
+                  this.workspaceDocumentService.LOCK,
+                  this.folder$,
+                  item,
+                  new UserMessage(MessageType.SUCCESS, "Document Locked Successfully")
+                );
+              },
+              hide: (item: IgListItem): boolean => {
+                return item.status === 'PUBLISHED' || item.status === 'LOCKED';
+              },
+              disabled: (item: IgListItem): boolean => {
+                return false;
+              },
+            }, {
+              label: 'Publish',
+              class: 'btn-secondary',
+              icon: 'fa fa-globe',
+              action: (item: IgListItem) => {
+                this.workspaceDocumentService.execute(
+                  this.workspaceDocumentService.PUBLISH,
+                  this.folder$,
+                  item,
+                  new UserMessage(MessageType.SUCCESS, "Document Published Successfully")
+                );
+              },
+              disabled: (item: IgListItem): boolean => {
+                return !(admin && wsAdmin) || item.status === 'PUBLISHED';
+              },
+              hide: (item: IgListItem): boolean => {
+                return item.status === 'PUBLISHED'
+              },
+            }, {
+              label: 'Derive From',
+              class: 'btn-warning',
+              icon: 'fa fa-code-fork',
+              action: (item: IgListItem) => {
+                this.workspaceDocumentService.execute(
+                  this.workspaceDocumentService.DERIVE,
+                  this.folder$,
+                  item,
+                  new UserMessage(MessageType.SUCCESS, "Document Derived Successfully")
+                );
+              },
+              disabled: (item: IgListItem): boolean => {
+                return false;
+              },
+              hide: (item: IgListItem): boolean => {
+                return item.type !== 'PUBLISHED' && item.status !== 'LOCKED';
+              },
+            }, {
+              label: 'Open',
+              class: 'btn-primary',
+              icon: 'fa-arrow-right',
+              default: true,
+              action: (item: IgListItem) => {
+                this.router.navigate(['/ig', item.id]);
+              },
+              disabled: (item: IgListItem): boolean => {
+                return false;
+              },
+              hide: (item: IgListItem): boolean => {
+                return false;
+              },
+            },
+          ];
+        },
+      ),
+    );
   }
 
   sortPropertyChanged(sortProperty) {
@@ -252,38 +310,23 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
   }
 
   addNodeToWorkspace(browserResult: IEntityBrowserResult) {
-    this.cloneIgIntoFolder(browserResult.node.data.id, browserResult.node.data.type, browserResult.name);
-  }
-
-  cloneIgIntoFolder(igId: string, documentType: Type, name?: string) {
-    this.folder$.pipe(
-      take(1),
-      flatMap((folder) => {
+    this.workspaceDocumentService.execute(
+      (folder) => {
         return this.workspaceService.cloneToWorkspace({
-          documentId: igId,
-          documentType,
+          documentId: browserResult.node.data.id,
+          documentType: browserResult.node.data.type,
           workspaceId: folder.workspaceId,
           folderId: folder.id,
-          name,
-        }).pipe(
-          flatMap((ws) => {
-            return this.workspaceService.getWorkspaceFolderContent(folder.workspaceId, folder.id).pipe(
-              flatMap((folderContent) => {
-                this.folder$.next(folderContent);
-                return [
-                  ...this.workspaceService.getWorkspaceInfoUpdateAction(ws),
-                  new EditorUpdate({ value: folderContent, updateDate: false }),
-                  this.messageService.userMessageToAction(new UserMessage(MessageType.SUCCESS, 'Document Added Successfully')),
-                ];
-              }),
-              tap((action) => {
-                this.store.dispatch(action);
-              }),
-            );
-          }),
-        );
-      }),
-    ).subscribe();
+          name: browserResult.name,
+          copyInfo: {
+            mode: CloneModeEnum.CLONE,
+          }
+        });
+      },
+      this.folder$,
+      undefined,
+      new UserMessage(MessageType.SUCCESS, "Document Added Successfully")
+    );
   }
 
   onEditorSave(action: EditorSave): Observable<Action> {

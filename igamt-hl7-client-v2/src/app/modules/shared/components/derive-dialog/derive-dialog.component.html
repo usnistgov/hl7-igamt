@@ -1,27 +1,77 @@
-<h2 mat-dialog-title>Derive IG</h2>
-<mat-dialog-content style="max-height: 800px; overflow-y:scroll">
-  <div>
+<h2 mat-dialog-title>Deriving from {{data.origin}}</h2>
+<form #from="ngForm">
+<mat-dialog-content>
+  <div style=" display: flex; justify-content: flex-start; padding: 10px">
+    <p-radioButton name="gr" [value]="true" label="Keep Original IG Outline and Content" [(ngModel)]="inherit"></p-radioButton>
 
 
-    <div>
-      <form [formGroup]="metaDataForm">
-        <app-form-input formControlName="title" id="title" label="IG Document Title*" name="Title"
-                        placeholder="IG Document Title" type="text">
-        </app-form-input>
-      </form>
-
-    </div>
-
-    <div>
-      <p-radioButton [(ngModel)]="customizeNarratives"  label="Keep narrative sections" name="IG" value=""></p-radioButton>
-
-      <p-radioButton [(ngModel)]="customizeNarratives"  label="Profile Only" [style]="{'margin-left': '50px'}" name="PROFILE"
-                     value="PROFILEONLY"></p-radioButton>
-    </div>
+    <p-radioButton name="gr" [value]="false" label="Use Local IG Templates" [(ngModel)]="inherit" [style]="{'margin-left': '10px'}" ></p-radioButton>
 
   </div>
+  <div *ngIf="!inherit">
+
+ <table class="table table-borderless">
+   <thead>
+   <th>
+     Available Narrative Templates
+   </th>
+   <th>
+     Template overview
+   </th>
+   </thead>
+   <tbody>
+
+   <tr>
+     <td style=" display: flex; flex-direction: column; justify-content: flex-start;">
+         <ng-container *ngFor=" let template of data.templates">
+
+           <p-radioButton [(ngModel)]="selectedTemplate" (ngModelChange)="select($event)"  [style]="{'margin-left': '10px'}" [label]="template.name"
+                          [value]="template" [name]="template.name" [inputId]="template.id">
+           </p-radioButton>
+         </ng-container>
+     </td>
+     <td>
+       <tree-root #treeroot [nodes]="selectedTemplate?.children">
+         <ng-template #treeNodeTemplate let-index="index" let-node>
+           <span >{{getPath(node)}}.{{node.data.label}}</span>
+         </ng-template>
+       </tree-root>
+     </td>
+   </tr>
+   </tbody>
+
+ </table>
+<!--    <div style=" display: flex; flex-direction: column; justify-content: flex-start;">-->
+<!--      <Strong> Available Narrative Templates </Strong>-->
+
+<!--      <ng-container *ngFor=" let template of data.templates">-->
+
+<!--        <p-radioButton [(ngModel)]="selectedTemplate" [style]="{'margin-left': '10px'}" [label]="template.name"-->
+<!--                       [value]="template" [name]="template.name" [inputId]="template.id">-->
+<!--        </p-radioButton>-->
+<!--      </ng-container>-->
+<!--    </div>-->
+
+<!--    <p-panel header="Template Overview" *ngIf="selectedTemplate">-->
+<!--      <div style="max-height: 300px; overflow: scroll">-->
+
+
+<!--        <tree-root #treeroot [nodes]="selectedTemplate.children">-->
+<!--          <ng-template #treeNodeTemplate let-index="index" let-node>-->
+<!--            <span> {{node.data.label}}</span>-->
+<!--          </ng-template>-->
+<!--        </tree-root>-->
+<!--      </div>-->
+<!--    </p-panel>-->
+<!--    <div>-->
+
+
+<!--    </div>-->
+  </div>
+
 </mat-dialog-content>
 <mat-dialog-actions style="justify-content: flex-end;">
-  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
-  <button (click)="submit()" class="btn btn-sm btn-success">Submit</button>
+  <button class="btn btn-sm btn-danger" style="margin-right: 5px;" (click)="close()">Cancel</button>
+  <button class="btn btn-sm btn-success" [disabled]="!selectedTemplate && !inherit" (click)="submit()">Submit</button>
 </mat-dialog-actions>
+</form>

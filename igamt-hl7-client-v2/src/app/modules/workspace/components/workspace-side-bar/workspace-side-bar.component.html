@@ -28,7 +28,7 @@
     </div>
   </div>
   <div class="list">
-    <div style="background-color: white; flex-grow: 1;">
+    <div style="background-color: #f3f3f3; flex-grow: 1;">
       <ul class="list-group">
         <li *ngFor="let folder of folders$ | async" [routerLink]="['folder', folder.id]" class="list-group-item folder-list-item cursor-pointer" routerLinkActive="nav-active-link" >
           <span>

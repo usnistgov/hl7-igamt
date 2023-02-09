@@ -4,9 +4,11 @@ import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.WorkspaceAudience;
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
+import gov.nist.hit.hl7.igamt.display.model.PublishingInfo;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.service.CloneService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
@@ -23,7 +25,6 @@ import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -42,11 +43,48 @@ public class WorkspaceDocumentManagementServiceImpl implements WorkspaceDocument
 
     @Override
     @Transactional
-    public Workspace cloneIgAndMoveToWorkspaceLocation(String igId, String cloneName, String workspaceId, String folderId, String username) throws Exception {
+    public Workspace moveIg(String igId, String title, String workspaceId, String sourceFolderId, String targetFolder, boolean clone, String username) throws Exception {
+        if(clone) {
+            CopyInfo copyInfo = new CopyInfo();
+            copyInfo.setMode(CloneMode.CLONE);
+            Ig ig = this.igService.findById(igId);
+            Ig cloned = cloneService.clone(ig, username, copyInfo);
+            if(!Strings.isNullOrEmpty(title)) {
+                cloned.getMetadata().setTitle(title);
+            }
+
+            if(!Strings.isNullOrEmpty(targetFolder)) {
+                return this.addDocumentToWorkspace(cloned, workspaceId, targetFolder, username);
+            } else {
+                return this.workspaceService.findById(workspaceId);
+            }
+        } else {
+            if(!Strings.isNullOrEmpty(targetFolder)) {
+                Ig ig = this.igService.findById(igId);
+                this.addDocumentToWorkspace(ig, workspaceId, targetFolder, username);
+                return this.removeDocumentFromWorkspace(ig, workspaceId, sourceFolderId, false, username);
+            } else {
+                throw new Exception("Target folder is required");
+            }
+        }
+    }
+
+    @Override
+    public Workspace publishIg(String igId, String workspaceId, String folderId, PublishingInfo info, String username) throws Exception {
+        Ig ig = this.igService.findById(igId);
+        if(ig != null) {
+            this.igService.publishIG(ig, info);
+            return this.removeDocumentFromWorkspace(ig, workspaceId, folderId, false, username);
+        } else {
+            throw new ResourceNotFoundException(igId, Type.IGDOCUMENT);
+        }
+    }
+
+    @Override
+    @Transactional
+    public Workspace cloneIgAndMoveToWorkspaceLocation(String igId, String cloneName, String workspaceId, String folderId, CopyInfo copyInfo, String username) throws Exception {
         // CLONE IG
         Ig ig = this.igService.findById(igId);
-        CopyInfo copyInfo = new CopyInfo();
-        copyInfo.setMode(CloneMode.CLONE);
         Ig clone = cloneService.clone(ig, username, copyInfo);
         if(!Strings.isNullOrEmpty(cloneName)) {
             clone.getMetadata().setTitle(cloneName);
@@ -102,7 +140,19 @@ public class WorkspaceDocumentManagementServiceImpl implements WorkspaceDocument
     }
 
     @Override
-    public Workspace removeDocumentFromWorkspace(String igId, String workspaceId, String folderId, String username) throws Exception {
+    public Workspace deleteDocumentFromWorkspace(String igId, String workspaceId, String folderId, String username) throws Exception {
+        Ig ig = this.igService.findById(igId);
+        if(ig != null) {
+            return this.removeDocumentFromWorkspace(ig, workspaceId, folderId, true, username);
+        } else {
+            throw new ResourceNotFoundException(igId, Type.IGDOCUMENT);
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public Workspace removeDocumentFromWorkspace(Ig document, String workspaceId, String folderId, boolean delete, String username) throws Exception {
         Workspace workspace = this.workspaceRepo.findById(workspaceId)
                 .orElseThrow(() -> new WorkspaceNotFound(workspaceId));
         WorkspacePermissionType permission = workspacePermissionService.getWorkspacePermissionTypeByFolder(workspace, username, folderId);
@@ -112,7 +162,7 @@ public class WorkspaceDocumentManagementServiceImpl implements WorkspaceDocument
                     .findFirst()
                     .orElseThrow(() -> new Exception("Folder not found"));
             DocumentLink documentLink = folder.getChildren().stream()
-                    .filter((d) -> d.getId().equals(igId))
+                    .filter((d) -> d.getId().equals(document.getId()))
                     .findFirst()
                     .orElseThrow(() -> new Exception("Ig document not found"));
 
@@ -122,6 +172,13 @@ public class WorkspaceDocumentManagementServiceImpl implements WorkspaceDocument
                 a.setPosition(i.get());
                 i.getAndSet(i.get() + 1);
             });
+
+            if(delete) {
+                if(Status.PUBLISHED.equals(document.getStatus())) {
+                    throw new Exception("Can not delete a published IG");
+                }
+                this.igService.delete(document);
+            }
 
             return this.workspaceRepo.save(workspace);
         } else {

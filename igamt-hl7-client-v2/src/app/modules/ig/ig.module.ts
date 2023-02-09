@@ -20,7 +20,6 @@ import { CoreModule } from './../core/core.module';
 import { SharedModule } from './../shared/shared.module';
 import { ConformanceStatementsSummaryEditorComponent } from './components/conformance-statements-summary-editor/conformance-statements-summary-editor.component';
 import { CreateIGComponent } from './components/create-ig/create-ig.component';
-import { DeriveDialogComponent } from './components/derive-dialog/derive-dialog.component';
 import { ExportGvtComponent } from './components/export-gvt/export-gvt.component';
 import { IgEditActiveTitlebarComponent } from './components/ig-edit-active-titlebar/ig-edit-active-titlebar.component';
 import { IgEditContainerComponent } from './components/ig-edit-container/ig-edit-container.component';
@@ -55,7 +54,6 @@ import { IgService } from './services/ig.service';
     IgMetadataEditorComponent,
     ExportGvtComponent,
     ConformanceStatementsSummaryEditorComponent,
-    DeriveDialogComponent,
     IgEditStatusBarComponent,
     IgEditDrawerComponent,
     IgTocFilterComponent,
@@ -80,7 +78,7 @@ import { IgService } from './services/ig.service';
     MatProgressSpinnerModule,
   ],
   entryComponents: [
-    IgEditContainerComponent, DeriveDialogComponent, ManageProfileStructureComponent,
+    IgEditContainerComponent, ManageProfileStructureComponent,
   ],
   providers: [
     IgListService,

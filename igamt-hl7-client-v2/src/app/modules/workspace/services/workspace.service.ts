@@ -1,3 +1,5 @@
+import { IgTemplate } from '../../shared/components/derive-dialog/derive-dialog.component';
+import { CloneModeEnum } from './../../shared/constants/clone-mode.enum';
 import { Type } from './../../shared/constants/type.enum';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -18,6 +20,29 @@ export interface IWorkspaceClone {
   workspaceId: string,
   folderId: string,
   name: string,
+  copyInfo: {
+    inherit?: boolean,
+    mode: CloneModeEnum,
+    template?: IgTemplate,
+  }
+}
+
+export interface IWorkspaceMove {
+  documentId: string,
+  documentType: Type,
+  workspaceId: string,
+  sourceFolderId: string,
+  folderId: string,
+  title: string,
+  clone: boolean,
+}
+
+export interface IWorkspacePublish {
+  documentId: string,
+  documentType: Type,
+  workspaceId: string,
+  folderId: string,
+  info: any,
 }
 
 @Injectable({
@@ -108,6 +133,19 @@ export class WorkspaceService {
 
   cloneToWorkspace(info: IWorkspaceClone): Observable<IWorkspaceInfo> {
     return this.http.post<IWorkspaceInfo>(this.WORKSPACE_END_POINT + '/clone', info);
+  }
+
+  moveIg(info: IWorkspaceMove): Observable<IWorkspaceInfo> {
+    return this.http.post<IWorkspaceInfo>(this.WORKSPACE_END_POINT + '/move', info);
+  }
+
+  publishIg(info: IWorkspacePublish): Observable<IWorkspaceInfo> {
+    return this.http.post<IWorkspaceInfo>(this.WORKSPACE_END_POINT + '/publish', info);
+  }
+
+
+  deleteFromWorkspace(documentId: string, documentType: Type, wsId: string, folderId: string): Observable<IWorkspaceInfo> {
+    return this.http.delete<IWorkspaceInfo>(this.WORKSPACE_END_POINT + `/${wsId}/folder/${folderId}/document/${documentType}/${documentId}`);
   }
 
 }

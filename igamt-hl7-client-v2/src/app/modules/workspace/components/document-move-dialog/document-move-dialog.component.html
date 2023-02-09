@@ -1,0 +1,78 @@
+<h3 mat-dialog-title style="text-align: center;"> Move Document : {{title}} </h3>
+<div mat-dialog-body>
+  <div style="display: flex;">
+    <div style="border-right: 1px solid lightgray; padding-right: 20px; text-align: center;">
+      <span style="color: #9b9898;">Move To</span>
+      <ul class="list-group" style="margin-top: 15px; margin-bottom: 15px;" >
+        <li (click)="selectScope(BrowserScope.PRIVATE_IG_LIST)" [ngClass]="{'nav-active-link': scope === BrowserScope.PRIVATE_IG_LIST}" class="list-group-item list-item cursor-pointer">
+          <span>
+            <i class="fa fa-lock" style="margin-right: 5px;"></i> Private Ig List
+          </span>
+        </li>
+        <li (click)="selectScope(BrowserScope.WORKSPACES)" [ngClass]="{'nav-active-link': scope === BrowserScope.WORKSPACES}" class="list-group-item list-item cursor-pointer">
+          <span>
+            <i class="fa fa-briefcase" style="margin-right: 5px;"></i> Workspaces
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div  style="padding-left: 20px; width: 100%;">
+      <p-treeTable *ngIf="scope && scope === BrowserScope.WORKSPACES" #tt [value]="workspaceTree" [columns]="columns" [paginator]="true" [rows]="5" [reorderableColumns]="true" [resizableColumns]="true" selectionMode="single"
+      [(selection)]="target"
+      dataKey="id" >
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+              <ng-container *ngFor="let col of columns" [ngSwitch]="col">
+                <th *ngSwitchCase="colType.NAME" style="width: 700px;" ttReorderableColumn ttResizableColumn>
+                  Name
+                </th>
+                <th *ngSwitchCase="colType.TYPE" ttReorderableColumn ttResizableColumn>
+                  Type
+                </th>
+              </ng-container>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+            <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode" [ttSelectableRowDisabled]="!rowNode.node.selectable">
+                <td [ngSwitch]="col" class="text-cell" *ngFor="let col of columns; let i = index" >
+                  <ng-container *ngSwitchCase="colType.NAME">
+                    <tbody>
+                      <tr>
+                        <td style="width: 30px;">
+                          <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
+                        </td>
+                        <td style="white-space: normal;">
+                          <app-entity-bagde [type]="rowData.type"></app-entity-bagde>
+                          <app-scope-badge *ngIf="rowData.domainInfo" [scope]="rowData.domainInfo.scope" [version]="rowData.domainInfo.version"></app-scope-badge>
+                          <strong [ngStyle]="{ 'color': rowNode.node.selectable ? 'black' : '#b1b1b1'}" style="margin-left: 10px">{{rowData.label}}</strong>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="colType.TYPE">
+                    {{rowData.type}}
+                  </ng-container>
+                </td>
+            </tr>
+        </ng-template>
+    </p-treeTable>
+    <div style="margin-top: 10px;">
+      <p-checkbox
+        [(ngModel)]="clone"
+        [label]="'Clone Document and Move'"
+        [binary]="true"
+        [disabled]="scope === BrowserScope.PRIVATE_IG_LIST"
+      ></p-checkbox>
+    </div>
+    <div *ngIf="clone">
+      <label style="font-weight: bold; margin-top: 10px;">Document Title</label>
+      <input type="text" class="form-control" [placeholder]="title" [(ngModel)]="name">
+    </div>
+    </div>
+  </div>
+
+</div>
+<mat-dialog-actions style="justify-content: flex-end; margin-top: 10px;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="done()" [disabled]="!isValid()" class="btn btn-sm btn-success">Done</button>
+</mat-dialog-actions>

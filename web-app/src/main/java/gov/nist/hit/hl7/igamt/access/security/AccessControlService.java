@@ -194,6 +194,10 @@ public class AccessControlService {
         return false;
     }
 
+    public boolean isPublisher(UsernamePasswordAuthenticationToken user) {
+        return this.isAdmin(user);
+    }
+
     public boolean isAdmin(UsernamePasswordAuthenticationToken user) {
         return user.getAuthorities() != null && user.getAuthorities().stream().anyMatch((a) -> a.getAuthority().equals("ADMIN"));
     }

@@ -1,14 +1,16 @@
 package gov.nist.hit.hl7.igamt.web.app.model;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
+import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 
-public class ResourceMovingInfo {
+public class WorkspaceDocumentCopy {
 
 	private String documentId;
 	private DocumentType documentType;
 	private String workspaceId;
 	private String folderId;
 	private String name;
+	private CopyInfo copyInfo;
 
 	public String getDocumentId() {
 		return documentId;
@@ -48,5 +50,13 @@ public class ResourceMovingInfo {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public CopyInfo getCopyInfo() {
+		return copyInfo;
+	}
+
+	public void setCopyInfo(CopyInfo copyInfo) {
+		this.copyInfo = copyInfo;
 	}
 }

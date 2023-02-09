@@ -15,7 +15,7 @@ import { Store } from '@ngrx/store';
 import { TREE_ACTIONS, TreeComponent, TreeModel, TreeNode } from 'angular-tree-component';
 import { ContextMenuComponent } from 'ngx-contextmenu';
 import { SelectItem } from 'primeng/api';
-import { filter, map, take } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
 import { IClickInfo } from '../../../document/models/toc/click-info.interface';
@@ -28,7 +28,7 @@ import { ValueSetService } from '../../../value-set/service/value-set.service';
 import { IgDocument } from '../../models/ig/ig-document.class';
 import { IgService } from '../../services/ig.service';
 import { IContent } from './../../../shared/models/content.interface';
-import { ISectionTemplate } from './../derive-dialog/derive-dialog.component';
+import { ISectionTemplate } from '../../../shared/components/derive-dialog/derive-dialog.component';
 import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
 
 @Component({
@@ -87,7 +87,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @Output()
   addPcChildren = new EventEmitter<IDisplayElement>();
   @Output()
-  checkUnused = new EventEmitter<{children: IDisplayElement[], type: Type} >();
+  checkUnused = new EventEmitter<{ children: IDisplayElement[], type: Type }>();
 
   @Output()
   manageProfileStructure = new EventEmitter<IContent[]>();
@@ -330,21 +330,21 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   manageStructure(node: TreeNode) {
 
-        const dialogRef = this.dialog.open(ManageProfileStructureComponent, {
-          data: node.data.children,
-        });
-        dialogRef.afterClosed().subscribe(
-          (answer) => {
+    const dialogRef = this.dialog.open(ManageProfileStructureComponent, {
+      data: node.data.children,
+    });
+    dialogRef.afterClosed().subscribe(
+      (answer) => {
 
-            if (answer) {
-              this.nodeHelperService.updateProfileStructure(node, answer);
-              this.update();
-           }
-          },
-        );
+        if (answer) {
+          this.nodeHelperService.updateProfileStructure(node, answer);
+          this.update();
+        }
+      },
+    );
   }
   deleteUnused(registryNode) {
-    this.checkUnused.emit({children: registryNode.children, type: registryNode.type});
+    this.checkUnused.emit({ children: registryNode.children, type: registryNode.type });
   }
 
 }

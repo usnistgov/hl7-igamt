@@ -1345,7 +1345,8 @@ public class IgServiceImpl implements  IgService {
 			pubInfo.setPublicationDate(new Date());
 		}
 		ig.setPublicationInfo(pubInfo);
-
+		Audience audience = new PublicAudience();
+		ig.setAudience(audience);
 		this.save(ig);
 
 	}

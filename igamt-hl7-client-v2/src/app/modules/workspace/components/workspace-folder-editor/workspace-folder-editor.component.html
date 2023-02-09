@@ -23,7 +23,11 @@
     {{active.display.name}}
   </h4>
 </ng-template>
-
+<ng-container *ngIf="folder$ | async as folder" >
+  <span style="margin-top: 10px; margin-bottom: 20px;" *ngIf="folder && folder.metadata?.description" >
+    {{folder.metadata?.description}}
+  </span>
+</ng-container>
 <div style="overflow: hidden;">
   <div class="search-bar">
 

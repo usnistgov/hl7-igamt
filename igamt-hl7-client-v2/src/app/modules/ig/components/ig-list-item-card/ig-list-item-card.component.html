@@ -1,57 +1,75 @@
 <p-card [style]="{'background': igListItem.deprecated? 'lightgray': 'white'}">
 
   <!-- CARD CONTENT -->
-  <div style="display: flex; flex-direction: row;">
+  <div style="display: flex; flex-direction: row; justify-content: space-between;">
+    <div style="display: flex; flex-direction: row;">
 
-    <!-- ITEM COVER IMAGE -->
-    <div *ngIf="!igListItem.coverpage"
-         style="height: 60px; width: 60px; background-color: #feec9d; text-align: center; display: flex; flex-direction: column; justify-content: center;">
-      <strong style="color: #c9c9c9;">HL7</strong>
-    </div>
-    <img *ngIf="igListItem.coverpage" [src]="igListItem.coverpage" height="60px" >
+      <!-- ITEM COVER IMAGE -->
+      <div *ngIf="!igListItem.coverpage"
+          style="height: 60px; width: 60px; background-color: #feec9d; text-align: center; display: flex; flex-direction: column; justify-content: center;">
+        <strong style="color: #c9c9c9;">HL7</strong>
+      </div>
+      <img *ngIf="igListItem.coverpage" [src]="igListItem.coverpage" height="60px" >
 
-    <!-- ITEM DETAILS -->
-    <div style="display: flex; flex-direction: column;">
+      <!-- ITEM DETAILS -->
+      <div style="display: flex; flex-direction: column;">
 
-      <h6 style="margin-left: 10px; margin-bottom: 0;" class="link" (click)="doDefault()">
-        <strong>
-        <span *ngIf="igListItem.status ==='LOCKED'" class="badge badge-secondary">
+        <h6 style="margin-left: 10px; margin-bottom: 0;" class="link" (click)="doDefault()">
+          <strong>
+            <span style="margin-right: 3px;" *ngIf="igListItem.status ==='LOCKED'" class="badge badge-secondary">
+              <i class="fa fa-lock"
+                ngbPopover="Locked Implementation Guide"
+                placement="right"
+                triggers="mouseenter:mouseleave">
+              </i>
+            </span>
 
-        <i class="fa fa-lock" style="margin-right: 3px;"
-          ngbPopover="Locked Implementation Guide"
-          placement="right"
-          triggers="mouseenter:mouseleave">
-        </i>
-      </span>
+            <span class="badge badge-danger" *ngIf="igListItem.draft" style="margin-right: 3px;"
+            [ngbPopover]="igListItem?.publicationInfo?.warning? igListItem.publicationInfo.warning :'Warning: This is a DRAFT publication for trial use only. It will be updated and replaced. It is not advised to create permanent derived profiles form this DRAFT implementation Guide'"
+            popoverClass="dialog-danger"
+            placement="right"
+            triggers="mouseenter:mouseleave">
+              Draft
+            </span>
+            
+            {{igListItem.title}}
+          </strong>
+        </h6>
 
-        <span class="badge badge-danger" *ngIf="igListItem.draft" style="margin-right: 3px;"
-        [ngbPopover]="igListItem?.publicationInfo?.warning? igListItem.publicationInfo.warning :'Warning: This is a DRAFT publication for trial use only. It will be updated and replaced. It is not advised to create permanent derived profiles form this DRAFT implementation Guide'"
-        popoverClass="dialog-danger"
-        placement="right"
-        triggers="mouseenter:mouseleave">
-          Draft
+        <span style="margin-left: 10px; color: #818181;">{{igListItem.subtitle}}</span>
+        <span *ngIf="igListItem.username" style="margin-left: 10px; color: #818181;">
+          <i class="fa fa-user"></i>
+          {{igListItem.username}}
         </span>
-
-        {{igListItem.title}}</strong>
-      </h6>
-
-      <span style="margin-left: 10px; color: #818181;">{{igListItem.subtitle}}</span>
-      <span *ngIf="igListItem.username" style="margin-left: 10px; color: #818181;">
-        <i class="fa fa-user"></i>
-         {{igListItem.username}}
+        <span *ngIf="igListItem.dateUpdated" style="margin-left: 10px; color: #818181;">
+          <i class="fa fa-calendar"></i>
+          updated on:  {{igListItem.dateUpdated | date}}
+        </span>
+        <span *ngIf="igListItem.participants" style="margin-left: 10px;">
+          <i class="fa fa-users"></i>
+          <span *ngFor="let participant of igListItem.participants">{{participant}} </span>
+        </span>
+      </div>
+    </div>
+    <div>
+      <span *ngIf="igListItem.status === 'PUBLISHED' && !igListItem.draft" class="status status-published" >
+        <i class="fa fa-globe" style="margin-right: 3px;"></i>
+        PUBLISHED
       </span>
-      <span *ngIf="igListItem.dateUpdated" style="margin-left: 10px; color: #818181;">
-        <i class="fa fa-calendar"></i>
-         updated on:  {{igListItem.dateUpdated | date}}
+      <span *ngIf="igListItem.status === 'PUBLISHED' && igListItem.draft" class="status status-published-draft" >
+        <i class="fa fa-globe" style="margin-right: 3px;"></i>
+        PUBLISHED DRAFT
       </span>
-      <span *ngIf="igListItem.participants" style="margin-left: 10px;">
-        <i class="fa fa-users"></i>
-        <span *ngFor="let participant of igListItem.participants">{{participant}} </span>
+      <span *ngIf="igListItem.status === 'LOCKED'" class="status status-locked" >
+        <i class="fa fa-lock" style="margin-right: 3px;"></i>
+        LOCKED
+      </span>
+      <span *ngIf="igListItem.derived" class="status status-derived" >
+        <i class="fa fa-code-fork" style="margin-right: 3px;"></i>
+        DERIVED
       </span>
     </div>
-
   </div>
-
 
   <!-- CARD FOOTER -->
   <p-footer>
@@ -70,17 +88,20 @@
 
         <!-- ITEM CONTROL BUTTONS -->
         <div style="width: 100%; display: flex; flex-direction: row; justify-content: flex-end;">
-          <ng-container *ngFor="let control of controls" >
+          <div class="btn-group" role="group" aria-label="Actions">
+            <ng-container *ngFor="let control of controls" >
 
 
-          <button (click)="control.action(igListItem)" [class]="'btn btn-sm ' + control.class"
-                  [disabled]="control.disabled(igListItem)" style="margin-right: 5px;" *ngIf ="!control.hide || control.hide(igListItem) ==false">
-            <i [class]="'fa ' + control.icon"></i>
-
-            {{ control.label }}
-
-          </button>
+              <button (click)="control.action(igListItem)" [class]="'btn btn-sm btn-primary btn-action'"
+                      [disabled]="control.disabled(igListItem)" *ngIf ="!control.hide || control.hide(igListItem) ==false">
+                <i [class]="'fa ' + control.icon"></i>
+                <span style="margin-left: 3px;">
+                  {{ control.label }}
+                </span>
+              </button>
+          
           </ng-container>
+        </div>
         </div>
 
       </div>
