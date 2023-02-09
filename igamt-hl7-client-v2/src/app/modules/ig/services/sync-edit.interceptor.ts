@@ -1,12 +1,12 @@
-import { RefreshDialogComponent } from './../../shared/components/refresh-dialog/refresh-dialog.component';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import { Store } from '@ngrx/store';
+import { Observable, throwError } from 'rxjs';
 import { take } from 'rxjs/internal/operators/take';
+import { catchError, flatMap } from 'rxjs/operators';
 import { selectDocumentVersionSyncToken } from './../../../root-store/ig/ig-edit/ig-edit.selectors';
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { Store } from "@ngrx/store";
-import { Observable, throwError } from "rxjs";
-import { flatMap, catchError } from 'rxjs/operators';
+import { RefreshDialogComponent } from './../../shared/components/refresh-dialog/refresh-dialog.component';
 
 @Injectable()
 export class SyncEditInterceptor implements HttpInterceptor {
@@ -19,7 +19,7 @@ export class SyncEditInterceptor implements HttpInterceptor {
       take(1),
       flatMap((value) => {
         const req = (value && request.method !== 'GET') ?
-          request.clone({ setHeaders: { "Document-Sync-Version": value } }) :
+          request.clone({ setHeaders: { 'Document-Sync-Version': value } }) :
           request;
 
         return next.handle(req).pipe(
@@ -30,16 +30,16 @@ export class SyncEditInterceptor implements HttpInterceptor {
                 disableClose: true,
                 data: {
                   message: err.error.text,
-                  title: 'Page Out Of Synchronization'
-                }
-              })
+                  title: 'Page Out Of Synchronization',
+                },
+              });
             } else {
               return throwError(err);
             }
-          })
+          }),
         );
-      })
-    )
+      }),
+    );
   }
 
 }

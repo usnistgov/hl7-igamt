@@ -1,8 +1,8 @@
-import { IWorkspaceInfo, WorkspacePermissionType } from './../../models/models';
-import { IBrowserTreeNode, BrowserScope, BrowserColumn } from './../../../shared/components/entity-browse-dialog/entity-browse-dialog.component';
 import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
+import { BrowserColumn, BrowserScope, IBrowserTreeNode } from './../../../shared/components/entity-browse-dialog/entity-browse-dialog.component';
+import { IWorkspaceInfo, WorkspacePermissionType } from './../../models/models';
 
 @Component({
   selector: 'app-document-move-dialog',

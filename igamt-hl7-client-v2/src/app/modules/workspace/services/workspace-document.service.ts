@@ -1,25 +1,25 @@
-import { IgPublisherComponent } from './../../shared/components/ig-publisher/ig-publisher.component';
-import { DocumentMoveDialogComponent } from './../components/document-move-dialog/document-move-dialog.component';
-import { selectWorkspaceInfo } from './../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
-import { DeriveDialogComponent } from './../../shared/components/derive-dialog/derive-dialog.component';
-import { ConfirmDialogComponent } from './../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { CloneModeEnum } from './../../shared/constants/clone-mode.enum';
-import { throwError, of, Subject } from 'rxjs';
-import { MessageService } from './../../dam-framework/services/message.service';
-import { UserMessage } from './../../dam-framework/models/messages/message.class';
-import { take, flatMap, tap, catchError } from 'rxjs/operators';
-import { IgListItem } from './../../document/models/document/ig-list-item.class';
-import { IFolderInfo, IWorkspaceInfo } from './../models/models';
-import { Observable } from 'rxjs';
-import { WorkspaceService } from './workspace.service';
-import { IgService } from 'src/app/modules/ig/services/ig.service';
-import { IgListService } from './../../ig/services/ig-list.service';
 import { Store } from '@ngrx/store';
-import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { of, Subject, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
+import { catchError, flatMap, take, tap } from 'rxjs/operators';
+import { IgService } from 'src/app/modules/ig/services/ig.service';
 import { EditorUpdate } from '../../dam-framework/store';
 import { Type } from '../../shared/constants/type.enum';
+import { selectWorkspaceInfo } from './../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
+import { ConfirmDialogComponent } from './../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
+import { UserMessage } from './../../dam-framework/models/messages/message.class';
+import { MessageService } from './../../dam-framework/services/message.service';
+import { IgListItem } from './../../document/models/document/ig-list-item.class';
+import { IgListService } from './../../ig/services/ig-list.service';
+import { DeriveDialogComponent } from './../../shared/components/derive-dialog/derive-dialog.component';
+import { IgPublisherComponent } from './../../shared/components/ig-publisher/ig-publisher.component';
+import { CloneModeEnum } from './../../shared/constants/clone-mode.enum';
+import { DocumentMoveDialogComponent } from './../components/document-move-dialog/document-move-dialog.component';
+import { IFolderInfo, IWorkspaceInfo } from './../models/models';
+import { WorkspaceService } from './workspace.service';
 
 @Injectable({
   providedIn: 'root',
@@ -45,7 +45,7 @@ export class WorkspaceDocumentService {
       name: undefined,
       copyInfo: {
         mode: CloneModeEnum.CLONE,
-      }
+      },
     });
   }
 
@@ -60,13 +60,13 @@ export class WorkspaceDocumentService {
         if (answer) {
           return this.igListService.lockIG(item.id).pipe(
             flatMap(() => {
-              return this.workspaceService.getWorkspaceInfo(folder.workspaceId)
+              return this.workspaceService.getWorkspaceInfo(folder.workspaceId);
             }),
           );
         }
         return of();
-      })
-    )
+      }),
+    );
   }
 
   readonly DERIVE = (folder: IFolderInfo, item: IgListItem): Observable<IWorkspaceInfo> => {
@@ -85,12 +85,12 @@ export class WorkspaceDocumentService {
               documentType: Type.IGDOCUMENT,
               workspaceId: folder.workspaceId,
               folderId: folder.id,
-              name: "",
-              copyInfo: { inherit: result['inherit'], mode: CloneModeEnum.DERIVE, template: result.template }
+              name: '',
+              copyInfo: { inherit: result['inherit'], mode: CloneModeEnum.DERIVE, template: result.template },
             });
-          })
-        )
-      })
+          }),
+        );
+      }),
     );
   }
 
@@ -108,14 +108,14 @@ export class WorkspaceDocumentService {
               ig: item,
             },
           }).afterClosed().pipe(
-            flatMap((answer) => {
-              if (answer) {
+            flatMap((pinfo) => {
+              if (pinfo) {
                 return this.workspaceService.publishIg({
                   documentId: item.id,
                   documentType: Type.IGDOCUMENT,
                   workspaceId: folder.workspaceId,
                   folderId: folder.id,
-                  info: { draft: answer.draft, info: answer.info },
+                  info: { draft: pinfo.draft, info: pinfo.info },
                 });
               }
               return of();
@@ -123,7 +123,7 @@ export class WorkspaceDocumentService {
           );
         }
         return of();
-      })
+      }),
     );
   }
 
@@ -141,7 +141,7 @@ export class WorkspaceDocumentService {
             Type.IGDOCUMENT,
             folder.workspaceId,
             folder.id,
-          )
+          );
         }
         return of();
       }),
@@ -158,7 +158,7 @@ export class WorkspaceDocumentService {
             workspace,
             id: folder.id,
             name: item.title,
-          }
+          },
         }).afterClosed().pipe(
           flatMap((result) => {
             if (result) {
@@ -173,7 +173,7 @@ export class WorkspaceDocumentService {
               });
             }
             return of();
-          })
+          }),
         );
       }),
     );
@@ -194,19 +194,18 @@ export class WorkspaceDocumentService {
                   this.messageService.userMessageToAction(success),
                 ];
               }),
-              tap((action) => {
-                this.store.dispatch(action);
+              tap((a) => {
+                this.store.dispatch(a);
               }),
             );
           }),
           catchError((err) => {
             this.store.dispatch(this.messageService.actionFromError(err));
             return throwError(err);
-          })
+          }),
         );
-      })
+      }),
     ).subscribe();
   }
-
 
 }

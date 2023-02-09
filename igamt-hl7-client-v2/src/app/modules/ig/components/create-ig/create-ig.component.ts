@@ -1,7 +1,6 @@
-import { IgCreateContextType, IIgCreateContext } from './../../services/ig-create-context.guard';
-import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import * as config from '../../../../root-store/config/config.reducer';
@@ -11,6 +10,7 @@ import { IDocumentCreationWrapper } from '../../../document/models/document/docu
 import { MessageEventTreeNode } from '../../../document/models/message-event/message-event.class';
 import { Scope } from '../../../shared/constants/scope.enum';
 import { IAddingInfo } from '../../../shared/models/adding-info';
+import { IgCreateContextType, IIgCreateContext } from './../../services/ig-create-context.guard';
 
 @Component({
   selector: 'app-create-ig',
@@ -33,11 +33,9 @@ export class CreateIGComponent implements OnInit {
     });
   }
 
-
   ngOnInit() {
     this.context = this.route.snapshot.data['context'];
   }
-
 
   getVersion({ version, scope }) {
     this.store.dispatch(new LoadMessageEvents({ version, scope }));

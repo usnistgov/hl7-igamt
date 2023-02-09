@@ -1,4 +1,3 @@
-import { IIgUpdateInfo } from './../../../modules/ig/models/ig/ig-document.class';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
@@ -12,12 +11,12 @@ import {
   IDeleteNode,
 } from '../../../modules/document/models/toc/toc-operation.class';
 import { IDocumentDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
-import { IIgTocFilter } from '../../../modules/ig/services/ig-toc-filter.service';
 import { Type } from '../../../modules/shared/constants/type.enum';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
 import { IHL7EditorMetadata } from '../../../modules/shared/models/editor.enum';
 import { IDeleteNodes } from './../../../modules/document/models/toc/toc-operation.class';
+import { IIgUpdateInfo } from './../../../modules/ig/models/ig/ig-document.class';
 
 export enum IgEditActionTypes {
   IgEditResolverLoad = '[Ig Edit Resolver] Load Ig',
@@ -81,7 +80,7 @@ export enum IgEditActionTypes {
   CreateCompositeProfileSuccess = '[Ig Edit TOC] Create Create Composite Profile Success',
   CreateCompositeProfileFailure = '[Ig Edit TOC] Create Create Composite Profile Failure',
 
-  RefreshUpdateInfo = '[Ig Edit] Refresh Document Update Info'
+  RefreshUpdateInfo = '[Ig Edit] Refresh Document Update Info',
 }
 
 export class ClearIgEdit implements Action {

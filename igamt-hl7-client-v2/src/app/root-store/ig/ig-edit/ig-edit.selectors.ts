@@ -1,4 +1,3 @@
-import { IIgLocationValue } from './../../../modules/ig/models/ig/ig-document.class';
 import { Dictionary } from '@ngrx/entity';
 import { createSelector } from '@ngrx/store';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
@@ -10,6 +9,7 @@ import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
 import { IRegistry } from '../../../modules/shared/models/registry.interface';
 import { ITitleBarMetadata } from './../../../modules/ig/components/ig-edit-titlebar/ig-edit-titlebar.component';
+import { IIgLocationValue } from './../../../modules/ig/models/ig/ig-document.class';
 
 export const selectIgDocument = createSelector(
   fromDam.selectPayloadData,

@@ -28,7 +28,6 @@ import { ValueSetService } from '../../../value-set/service/value-set.service';
 import { IgDocument } from '../../models/ig/ig-document.class';
 import { IgService } from '../../services/ig.service';
 import { IContent } from './../../../shared/models/content.interface';
-import { ISectionTemplate } from '../../../shared/components/derive-dialog/derive-dialog.component';
 import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
 
 @Component({

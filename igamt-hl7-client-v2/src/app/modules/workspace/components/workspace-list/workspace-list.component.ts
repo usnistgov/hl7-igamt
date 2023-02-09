@@ -7,7 +7,7 @@ import { catchError, map } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromRoot from 'src/app/root-store/index';
 import * as fromWorkspaceList from 'src/app/root-store/workspace/workspace-list/workspace-list.index';
-import { ClearWorkspaceList, LoadWorkspaceList, SelectWorkspaceListSortOption, SelectWorkspaceListViewType, WorkspaceLoadType, DeleteWorkspaceListItemSuccess } from './../../../../root-store/workspace/workspace-list/workspace-list.actions';
+import { ClearWorkspaceList, DeleteWorkspaceListItemSuccess, LoadWorkspaceList, SelectWorkspaceListSortOption, SelectWorkspaceListViewType, WorkspaceLoadType } from './../../../../root-store/workspace/workspace-list/workspace-list.actions';
 import { MessageService } from './../../../dam-framework/services/message.service';
 import { ClearAll } from './../../../dam-framework/store/messages/messages.actions';
 import { IWorkspaceListItem } from './../../../shared/models/workspace-list-item.interface';
@@ -115,7 +115,7 @@ export class WorkspaceListComponent implements OnInit, OnDestroy {
                     catchError((err) => {
                       this.store.dispatch(this.messageService.actionFromError(err));
                       return throwError(err);
-                    })
+                    }),
                   ).subscribe();
                 },
                 disabled: (item: IWorkspaceListItem): boolean => {
@@ -138,7 +138,7 @@ export class WorkspaceListComponent implements OnInit, OnDestroy {
                     catchError((err) => {
                       this.store.dispatch(this.messageService.actionFromError(err));
                       return throwError(err);
-                    })
+                    }),
                   ).subscribe();
                 },
                 disabled: (item: IWorkspaceListItem): boolean => {

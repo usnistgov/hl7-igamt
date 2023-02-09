@@ -1,4 +1,3 @@
-import { SyncEditInterceptor } from './services/sync-edit.interceptor';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -38,6 +37,7 @@ import { NarrativeSectionFormComponent } from './components/narrative-section-fo
 import { IgRoutingModule } from './ig-routing.module';
 import { IgListService } from './services/ig-list.service';
 import { IgService } from './services/ig.service';
+import { SyncEditInterceptor } from './services/sync-edit.interceptor';
 
 @NgModule({
   declarations: [

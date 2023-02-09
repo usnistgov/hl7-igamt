@@ -1,8 +1,3 @@
-import { WorkspaceDocumentService } from './../../services/workspace-document.service';
-import { selectIsAdmin } from './../../../dam-framework/store/authentication/authentication.selectors';
-import { selectIsWorkspaceAdmin } from './../../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
-import { CloneModeEnum } from './../../../shared/constants/clone-mode.enum';
-import { IEntityBrowserResult } from './../../../shared/components/entity-browse-dialog/entity-browse-dialog.component';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
@@ -22,6 +17,11 @@ import { Type } from '../../../shared/constants/type.enum';
 import { IFolderContent, WorkspacePermissionType } from '../../models/models';
 import { AbstractWorkspaceEditorComponent } from '../../services/abstract-workspace-editor';
 import { WorkspaceService } from '../../services/workspace.service';
+import { selectIsWorkspaceAdmin } from './../../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
+import { selectIsAdmin } from './../../../dam-framework/store/authentication/authentication.selectors';
+import { IEntityBrowserResult } from './../../../shared/components/entity-browse-dialog/entity-browse-dialog.component';
+import { CloneModeEnum } from './../../../shared/constants/clone-mode.enum';
+import { WorkspaceDocumentService } from './../../services/workspace-document.service';
 
 @Component({
   selector: 'app-workspace-folder-editor',
@@ -60,6 +60,7 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
   }>;
   documents$: Observable<IgListItem[]>;
 
+  // tslint:disable-next-line: cognitive-complexity
   constructor(
     actions$: Actions,
     store: Store<any>,
@@ -112,7 +113,7 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
     this.listControls = combineLatest(
       store.select(selectIsAdmin),
       this.store.select(selectIsWorkspaceAdmin),
-      this.isEditor$
+      this.isEditor$,
     ).pipe(
       map(
         ([admin, wsAdmin, editor]) => {
@@ -126,7 +127,7 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
                   this.workspaceDocumentService.DELETE,
                   this.folder$,
                   item,
-                  new UserMessage(MessageType.SUCCESS, "Document Deleted Successfully"),
+                  new UserMessage(MessageType.SUCCESS, 'Document Deleted Successfully'),
                 );
               },
               disabled: (item: IgListItem): boolean => {
@@ -144,7 +145,7 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
                   this.workspaceDocumentService.MOVE,
                   this.folder$,
                   item,
-                  new UserMessage(MessageType.SUCCESS, "Document Moved Successfully")
+                  new UserMessage(MessageType.SUCCESS, 'Document Moved Successfully'),
                 );
               },
               disabled: (item: IgListItem): boolean => {
@@ -162,7 +163,7 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
                   this.workspaceDocumentService.CLONE,
                   this.folder$,
                   item,
-                  new UserMessage(MessageType.SUCCESS, "Document Cloned Successfully")
+                  new UserMessage(MessageType.SUCCESS, 'Document Cloned Successfully'),
                 );
               },
               disabled: (item: IgListItem): boolean => {
@@ -180,7 +181,7 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
                   this.workspaceDocumentService.LOCK,
                   this.folder$,
                   item,
-                  new UserMessage(MessageType.SUCCESS, "Document Locked Successfully")
+                  new UserMessage(MessageType.SUCCESS, 'Document Locked Successfully'),
                 );
               },
               hide: (item: IgListItem): boolean => {
@@ -198,14 +199,14 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
                   this.workspaceDocumentService.PUBLISH,
                   this.folder$,
                   item,
-                  new UserMessage(MessageType.SUCCESS, "Document Published Successfully")
+                  new UserMessage(MessageType.SUCCESS, 'Document Published Successfully'),
                 );
               },
               disabled: (item: IgListItem): boolean => {
                 return !(admin && wsAdmin) || item.status === 'PUBLISHED';
               },
               hide: (item: IgListItem): boolean => {
-                return item.status === 'PUBLISHED'
+                return item.status === 'PUBLISHED';
               },
             }, {
               label: 'Derive From',
@@ -216,7 +217,7 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
                   this.workspaceDocumentService.DERIVE,
                   this.folder$,
                   item,
-                  new UserMessage(MessageType.SUCCESS, "Document Derived Successfully")
+                  new UserMessage(MessageType.SUCCESS, 'Document Derived Successfully'),
                 );
               },
               disabled: (item: IgListItem): boolean => {
@@ -268,7 +269,7 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
           queryParams: {
             workspaceId: folder.workspaceId,
             folderId: folder.id,
-          }
+          },
         });
       }),
     ).subscribe();
@@ -320,12 +321,12 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
           name: browserResult.name,
           copyInfo: {
             mode: CloneModeEnum.CLONE,
-          }
+          },
         });
       },
       this.folder$,
       undefined,
-      new UserMessage(MessageType.SUCCESS, "Document Added Successfully")
+      new UserMessage(MessageType.SUCCESS, 'Document Added Successfully'),
     );
   }
 

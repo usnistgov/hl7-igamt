@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
-
 @Component({
   selector: 'app-derive-dialog',
   templateUrl: './derive-dialog.component.html',
@@ -13,7 +12,7 @@ export class DeriveDialogComponent implements OnInit, AfterViewInit {
   @ViewChild('tree') tree;
 
   constructor(public dialogRef: MatDialogRef<DeriveDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: IDeriveDialogData) {
+              @Inject(MAT_DIALOG_DATA) public data: IDeriveDialogData) {
 
   }
 

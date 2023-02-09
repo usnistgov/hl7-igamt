@@ -1,16 +1,16 @@
-import { Store, Action } from '@ngrx/store';
-import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
-import { map, catchError, flatMap } from 'rxjs/operators';
-import { WorkspaceService } from './../../workspace/services/workspace.service';
+import { Injectable } from '@angular/core';
+import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
+import { Action, Store } from '@ngrx/store';
+import { EMPTY, Observable, of } from 'rxjs';
+import { catchError, flatMap } from 'rxjs/operators';
 import { Message, MessageType, UserMessage } from 'src/app/modules/dam-framework/models/messages/message.class';
-import { IDocumentLocation, DocumentLocationType } from './../models/ig/ig-document.class';
-import { Injectable } from "@angular/core";
-import { ActivatedRouteSnapshot, RouterStateSnapshot, Resolve, Router } from "@angular/router";
-import { EMPTY, Observable, of } from "rxjs";
+import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
+import { WorkspaceService } from './../../workspace/services/workspace.service';
+import { DocumentLocationType, IDocumentLocation } from './../models/ig/ig-document.class';
 
 export enum IgCreateContextType {
   PRIVATE_IG_LIST = 'PRIVATE_IG_LIST',
-  WORKSPACE = 'WORKSPACE'
+  WORKSPACE = 'WORKSPACE',
 }
 
 export interface IIgCreateContext {
@@ -44,11 +44,11 @@ export class IgCreateContext implements Resolve<IIgCreateContext> {
                 type: DocumentLocationType.FOLDER,
                 id: folderInfo.id,
                 label: folderInfo.metadata.title,
-              }]
-            })
+              }],
+            });
           } else {
             return this.handleError(
-              this.messageService.messageToAction(new Message<string>(MessageType.FAILED, 'Folder Not Found in Workspace "' + workspaceInfo.metadata.title + '"', ''))
+              this.messageService.messageToAction(new Message<string>(MessageType.FAILED, 'Folder Not Found in Workspace "' + workspaceInfo.metadata.title + '"', '')),
             );
           }
         }),
@@ -56,8 +56,8 @@ export class IgCreateContext implements Resolve<IIgCreateContext> {
           return this.handleError(
             this.messageService.actionFromError(e),
           );
-        })
-      )
+        }),
+      );
     } else {
       return of<IIgCreateContext>({
         scope: IgCreateContextType.PRIVATE_IG_LIST,
@@ -70,7 +70,6 @@ export class IgCreateContext implements Resolve<IIgCreateContext> {
       });
     }
   }
-
 
   handleError(messageAction: Action): Observable<IIgCreateContext> {
     this.store.dispatch(messageAction);

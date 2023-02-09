@@ -1,13 +1,13 @@
-import { IgTemplate } from '../../shared/components/derive-dialog/derive-dialog.component';
-import { CloneModeEnum } from './../../shared/constants/clone-mode.enum';
-import { Type } from './../../shared/constants/type.enum';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Action, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { LoadPayloadData, LoadResourcesInRepostory } from '../../dam-framework/store';
+import { IgTemplate } from '../../shared/components/derive-dialog/derive-dialog.component';
 import { IFolderContent, IFolderInfo, IWorkspaceInfo, IWorkspaceMetadata, IWorkspacePermissions, IWorkspaceUser } from '../models/models';
+import { CloneModeEnum } from './../../shared/constants/clone-mode.enum';
+import { Type } from './../../shared/constants/type.enum';
 
 export interface IWorkspaceCreateRequest {
   title: string;
@@ -15,34 +15,34 @@ export interface IWorkspaceCreateRequest {
 }
 
 export interface IWorkspaceClone {
-  documentId: string,
-  documentType: Type,
-  workspaceId: string,
-  folderId: string,
-  name: string,
+  documentId: string;
+  documentType: Type;
+  workspaceId: string;
+  folderId: string;
+  name: string;
   copyInfo: {
     inherit?: boolean,
     mode: CloneModeEnum,
     template?: IgTemplate,
-  }
+  };
 }
 
 export interface IWorkspaceMove {
-  documentId: string,
-  documentType: Type,
-  workspaceId: string,
-  sourceFolderId: string,
-  folderId: string,
-  title: string,
-  clone: boolean,
+  documentId: string;
+  documentType: Type;
+  workspaceId: string;
+  sourceFolderId: string;
+  folderId: string;
+  title: string;
+  clone: boolean;
 }
 
 export interface IWorkspacePublish {
-  documentId: string,
-  documentType: Type,
-  workspaceId: string,
-  folderId: string,
-  info: any,
+  documentId: string;
+  documentType: Type;
+  workspaceId: string;
+  folderId: string;
+  info: any;
 }
 
 @Injectable({
@@ -142,7 +142,6 @@ export class WorkspaceService {
   publishIg(info: IWorkspacePublish): Observable<IWorkspaceInfo> {
     return this.http.post<IWorkspaceInfo>(this.WORKSPACE_END_POINT + '/publish', info);
   }
-
 
   deleteFromWorkspace(documentId: string, documentType: Type, wsId: string, folderId: string): Observable<IWorkspaceInfo> {
     return this.http.delete<IWorkspaceInfo>(this.WORKSPACE_END_POINT + `/${wsId}/folder/${folderId}/document/${documentType}/${documentId}`);

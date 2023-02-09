@@ -1,11 +1,9 @@
-import { EditorUpdate } from './../../../dam-framework/store/data/dam.actions';
-import { InvitationStatus, IWorkspaceUser, IFolderInfo, IWorkspacePermissions, WorkspacePermissionType } from './../../models/models';
 import { Component, OnDestroy, OnInit, Pipe, PipeTransform } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { BehaviorSubject, combineLatest, Observable, of, throwError } from 'rxjs';
-import { map, take, tap, flatMap, switchMap, catchError } from 'rxjs/operators';
+import { catchError, flatMap, map, switchMap, take, tap } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { EditorSave } from 'src/app/modules/dam-framework/store';
 import { FroalaService } from 'src/app/modules/shared/services/froala.service';
@@ -14,6 +12,8 @@ import { EditorID } from '../../../shared/models/editor.enum';
 import { AbstractWorkspaceEditorComponent } from '../../services/abstract-workspace-editor';
 import { WorkspaceService } from '../../services/workspace.service';
 import { AddUserDialogComponent } from '../add-user-dialog/add-user-dialog.component';
+import { EditorUpdate } from './../../../dam-framework/store/data/dam.actions';
+import { IFolderInfo, InvitationStatus, IWorkspacePermissions, IWorkspaceUser, WorkspacePermissionType } from './../../models/models';
 
 export enum UserTableColumn {
   USERNAME = 'USERNAME',
@@ -21,18 +21,18 @@ export enum UserTableColumn {
   ADDED = 'ADDED',
   JOINED = 'JOINED',
   ADDEDBY = 'ADDEDBY',
-  PERMISSIONS = 'PERMISSIONS'
+  PERMISSIONS = 'PERMISSIONS',
 }
 export enum PermissionType {
   GLOBAL = 'GLOBAL',
   ADMIN = 'ADMIN',
-  FOLDER = 'FOLDER'
+  FOLDER = 'FOLDER',
 }
 
 export interface IPermissionsDetails {
-  type: PermissionType,
-  perm?: WorkspacePermissionType,
-  label: string,
+  type: PermissionType;
+  perm?: WorkspacePermissionType;
+  label: string;
 }
 
 @Pipe({ name: 'perms' })
@@ -43,6 +43,7 @@ export class PermsPipe implements PipeTransform {
     this.folders$ = this.store.select(selectAllFolders);
   }
 
+  // tslint:disable-next-line: cognitive-complexity
   transform(permissions: IWorkspacePermissions): Observable<IPermissionsDetails[]> {
     if (permissions.admin) {
       return of([{ type: PermissionType.ADMIN, label: 'Admin' }]);
@@ -52,7 +53,7 @@ export class PermsPipe implements PipeTransform {
       } else {
         return combineLatest(
           this.folders$,
-          permissions.global === WorkspacePermissionType.VIEW ? of({ type: PermissionType.GLOBAL, label: 'Global', perm: WorkspacePermissionType.VIEW }) : of(undefined)
+          permissions.global === WorkspacePermissionType.VIEW ? of({ type: PermissionType.GLOBAL, label: 'Global', perm: WorkspacePermissionType.VIEW }) : of(undefined),
         ).pipe(
           map(([folders, global]) => {
             return Object.keys(permissions.byFolder || {}).reduce((acc, id) => {
@@ -60,16 +61,16 @@ export class PermsPipe implements PipeTransform {
               if (folder) {
                 return [
                   ...acc,
-                  { type: 'FOLDER', label: folder.metadata.title, perm: permissions.byFolder[id] }
-                ]
+                  { type: 'FOLDER', label: folder.metadata.title, perm: permissions.byFolder[id] },
+                ];
               } else {
                 return [
                   ...acc,
-                  { type: 'FOLDER', label: '[DELETED]', perm: permissions.byFolder[id] }
-                ]
+                  { type: 'FOLDER', label: '[DELETED]', perm: permissions.byFolder[id] },
+                ];
               }
-            }, [...global ? [global] : []])
-          })
+            }, [...global ? [global] : []]);
+          }),
         );
       }
     }
@@ -131,22 +132,22 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
     this.currentSynchronized$.pipe(
       tap((current) => {
         this.workspaceUsers$.next([...(current.users || [])]);
-      })
+      }),
     ).subscribe();
 
     this.filteredUserList$ = combineLatest(
       this.workspaceUsers$,
       this.filterText$,
-      this.status$
+      this.status$,
     ).pipe(
       map(([users, text, status]) => {
         return users.filter((user) => {
-          const mtxt = !text || user.username.toLowerCase().includes(text.toLowerCase())
+          const mtxt = !text || user.username.toLowerCase().includes(text.toLowerCase());
           const mstatus = !status || user.status === status;
           return mtxt && mstatus;
-        })
-      })
-    )
+        });
+      }),
+    );
   }
 
   filterTextChanged(username) {
@@ -169,9 +170,9 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
           catchError((err) => {
             this.store.dispatch(this.messageService.actionFromError(err));
             return throwError(err);
-          })
-        )
-      })
+          }),
+        );
+      }),
     ).subscribe();
   }
 
@@ -202,15 +203,15 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
                     catchError((err) => {
                       this.store.dispatch(this.messageService.actionFromError(err));
                       return throwError(err);
-                    })
-                  )
-                })
+                    }),
+                  );
+                }),
               );
             } else {
               return of();
             }
-          })
-        )
+          }),
+        );
       }),
     ).subscribe();
   }
@@ -227,9 +228,9 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
           catchError((err) => {
             this.store.dispatch(this.messageService.actionFromError(err));
             return throwError(err);
-          })
-        )
-      })
+          }),
+        );
+      }),
     ).subscribe();
   }
 
@@ -257,15 +258,15 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
                     catchError((err) => {
                       this.store.dispatch(this.messageService.actionFromError(err));
                       return throwError(err);
-                    })
-                  )
-                })
+                    }),
+                  );
+                }),
               );
             } else {
               return of();
             }
-          })
-        )
+          }),
+        );
       }),
     ).subscribe();
   }
@@ -276,10 +277,10 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
       switchMap((id) => {
         return this.workspaceService.getWorkspaceUsers(id).pipe(
           map((users) => {
-            this.store.dispatch(new EditorUpdate({ value: { users }, updateDate: true }))
-          })
-        )
-      })
+            this.store.dispatch(new EditorUpdate({ value: { users }, updateDate: true }));
+          }),
+        );
+      }),
     ).subscribe();
   }
 

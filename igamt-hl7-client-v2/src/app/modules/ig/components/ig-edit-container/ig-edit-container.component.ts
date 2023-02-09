@@ -1,11 +1,8 @@
-import { IDocumentLocation } from './../../models/ig/ig-document.class';
-import { map } from 'rxjs/operators';
-import { selectViewOnly } from './../../../../root-store/library/library-edit/library-edit.selectors';
-import { selectIgDocumentLocation } from './../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { Component, forwardRef } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
@@ -13,6 +10,9 @@ import { DamWidgetComponent } from '../../../dam-framework/components/data-widge
 import { IWorkspaceActive } from '../../../dam-framework/models/data/workspace';
 import { VerificationService } from '../../../shared/services/verification.service';
 import { ITitleBarMetadata } from '../ig-edit-titlebar/ig-edit-titlebar.component';
+import { selectIgDocumentLocation } from './../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectViewOnly } from './../../../../root-store/library/library-edit/library-edit.selectors';
+import { IDocumentLocation } from './../../models/ig/ig-document.class';
 
 export const IG_EDIT_WIDGET_ID = 'IG-EDIT-WIDGET';
 

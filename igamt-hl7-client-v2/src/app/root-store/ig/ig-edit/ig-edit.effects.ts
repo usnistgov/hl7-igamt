@@ -1,5 +1,3 @@
-import { selectLoadedDocumentInfo } from './../../dam-igamt/igamt.selectors';
-import { SetValue } from './../../../modules/dam-framework/store/data/dam.actions';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -19,6 +17,8 @@ import { LoadPayloadData } from '../../../modules/dam-framework/store/data/dam.a
 import { IG_EDIT_WIDGET_ID } from '../../../modules/ig/components/ig-edit-container/ig-edit-container.component';
 import { IDocumentDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
 import { selectWorkspaceActive } from '../../dam-igamt/igamt.selectors';
+import { SetValue } from './../../../modules/dam-framework/store/data/dam.actions';
+import { selectLoadedDocumentInfo } from './../../dam-igamt/igamt.selectors';
 import {
   AddProfileComponentContext,
   AddProfileComponentContextFailure,
@@ -154,11 +154,11 @@ export class IgEditEffects extends DamWidgetEffect {
         take(1),
         flatMap((doc) => {
           return this.igService.getUpdateInfo(doc.documentId).pipe(
-            map((v) => new RefreshUpdateInfo(v))
-          )
-        })
-      )
-    })
+            map((v) => new RefreshUpdateInfo(v)),
+          );
+        }),
+      );
+    }),
   );
 
   @Effect()
@@ -834,12 +834,12 @@ export class IgEditEffects extends DamWidgetEffect {
         flatMap((ig) => {
           return [
             new LoadPayloadData({ ...ig, updateDate: action.payload.updateDate }),
-            new SetValue({ documentVersionSyncToken: action.payload.resourceVersionSyncToken })
-          ]
-        })
+            new SetValue({ documentVersionSyncToken: action.payload.resourceVersionSyncToken }),
+          ];
+        }),
       );
-    })
-  )
+    }),
+  );
 
   @Effect()
   deleteResourcesSuccess$ = this.actions$.pipe(

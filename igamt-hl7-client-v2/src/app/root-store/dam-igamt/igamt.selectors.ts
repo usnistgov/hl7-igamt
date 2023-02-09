@@ -1,4 +1,3 @@
-import { IAudience } from './../../modules/ig/models/ig/ig-document.class';
 import { createSelector } from '@ngrx/store';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IWorkspace } from '../../modules/dam-framework/models/data/workspace';
@@ -13,6 +12,7 @@ import {
 import { IHL7WorkspaceActive } from '../../modules/shared/models/editor.class';
 import { VerificationTab } from '../../modules/shared/services/verification.service';
 import { selectIgDocument } from '../ig/ig-edit/ig-edit.selectors';
+import { IAudience } from './../../modules/ig/models/ig/ig-document.class';
 
 export const selectWorkspaceActive = createSelector(
   fromDAM.selectWorkspace,
@@ -42,7 +42,7 @@ export const selectAudience = createSelector(
   selectIgDocument,
   (document: IgDocument): IAudience => {
     return document.audience;
-  }
+  },
 );
 
 export const selectViewOnly = createSelector(

@@ -103,7 +103,7 @@ export class EntityBrowseDialogComponent implements OnInit {
     if (this.browser.scope.privateIgList) {
       this.getTreeByScope(BrowserScope.PRIVATE_IG_LIST);
     } else if (this.browser.scope.publicIgList) {
-      this.getTreeByScope(BrowserScope.PUBLIC_IG_LIST)
+      this.getTreeByScope(BrowserScope.PUBLIC_IG_LIST);
     } else if (this.browser.scope.workspaces) {
       this.getTreeByScope(this.scope = BrowserScope.WORKSPACES);
     }

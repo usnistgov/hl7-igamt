@@ -1,4 +1,3 @@
-import { IgCreateContext } from './services/ig-create-context.guard';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { IgEditActionTypes, IgEditResolverLoad, OpenConformanceStatementSummaryEditorNode, OpenIgMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
@@ -18,6 +17,7 @@ import { IG_EDIT_WIDGET_ID, IgEditContainerComponent } from './components/ig-edi
 import { IgListContainerComponent } from './components/ig-list-container/ig-list-container.component';
 import { IgMetadataEditorComponent } from './components/ig-metadata-editor/ig-metadata-editor.component';
 import { IgSectionEditorComponent } from './components/ig-section-editor/ig-section-editor.component';
+import { IgCreateContext } from './services/ig-create-context.guard';
 
 const routes: Routes = [
   {
@@ -31,7 +31,7 @@ const routes: Routes = [
     canActivate: [AuthenticatedGuard],
     resolve: {
       context: IgCreateContext,
-    }
+    },
   },
   {
     path: 'error',

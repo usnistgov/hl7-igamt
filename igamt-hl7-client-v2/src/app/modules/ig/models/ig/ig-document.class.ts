@@ -18,7 +18,7 @@ export interface IgDocument extends IDocument {
 export enum AudienceType {
   PRIVATE = 'PRIVATE',
   PUBLIC = 'PUBLIC',
-  WORKSPACE = 'WORKSPACE'
+  WORKSPACE = 'WORKSPACE',
 }
 
 export interface IAudience {
@@ -70,7 +70,7 @@ export interface IDocumentLocation {
 export enum DocumentLocationType {
   SCOPE = 'SCOPE',
   WORKSPACE = 'WORKSPACE',
-  FOLDER = 'FOLDER'
+  FOLDER = 'FOLDER',
 }
 
 export interface IIgLocationValue {

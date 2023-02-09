@@ -438,7 +438,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     UnusedElementsComponent,
     DeleteListConfirmationComponent,
     RefreshDialogComponent,
-    DeriveDialogComponent
+    DeriveDialogComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,

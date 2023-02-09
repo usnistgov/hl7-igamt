@@ -25,7 +25,23 @@ import { PermsPipe, WorkspaceUserManagementComponent } from './components/worksp
 import { WorkspaceRoutingModule } from './workspace-routing.module';
 
 @NgModule({
-  declarations: [CreateWorkspaceComponent, WorkspaceListComponent, WorkspaceEditComponent, WorkspaceListCardComponent, WorkspaceSideBarComponent, WorkspaceHomeEditorComponent, WorkspaceActiveTitlebarComponent, FolderAddDialogComponent, WorkspaceMetadataEditorComponent, WorkspaceFolderEditorComponent, WorkspaceUserManagementComponent, AddUserDialogComponent, PermissionSelectorComponent, PermsPipe, DocumentMoveDialogComponent],
+  declarations: [
+    CreateWorkspaceComponent,
+    WorkspaceListComponent,
+    WorkspaceEditComponent,
+    WorkspaceListCardComponent,
+    WorkspaceSideBarComponent,
+    WorkspaceHomeEditorComponent,
+    WorkspaceActiveTitlebarComponent,
+    FolderAddDialogComponent,
+    WorkspaceMetadataEditorComponent,
+    WorkspaceFolderEditorComponent,
+    WorkspaceUserManagementComponent,
+    AddUserDialogComponent,
+    PermissionSelectorComponent,
+    PermsPipe,
+    DocumentMoveDialogComponent,
+  ],
   imports: [
     CommonModule,
     DamFrameworkModule.forRoot(),
