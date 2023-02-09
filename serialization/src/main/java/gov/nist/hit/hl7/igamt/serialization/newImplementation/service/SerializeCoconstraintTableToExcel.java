@@ -55,14 +55,7 @@ public class SerializeCoconstraintTableToExcel {
 	CoConstraintSerializationHelper coConstraintSerializationHelper;
 
 	public ByteArrayOutputStream exportToExcel(String conformanceProfileId, String contextId, String segmentRef, CoConstraintTable coConstraintTableNotMerged) throws ResourceNotFoundException, PathNotFoundException {
-		//		final String FILE_NAME = "/Users/ynb4/Desktop/MyFirstExcelTryout.xlsx";
 		final int HEADER_FONT_SIZE = 20;
-		//		if (coConstraintService.getCoConstraintForSegment(id) != null) {
-		//			CoConstraintTable coConstraintTable = coConstraintService.getCoConstraintForSegment(id);
-
-		//		ConformanceProfile conformanceProfile = conformanceProfileService.findById("5e2874487ca5c06e4a2283af");
-		//		CoConstraintTable coConstraintTable = conformanceProfile.getCoConstraintsBindings().get(0).getBindings().get(0).getTables().get(0).getValue();
-
 		CoConstraintTable coConstraintTable = coConstraintService.resolveRefAndMerge(coConstraintTableNotMerged);
 		ResourceSkeleton segment = this.coConstraintSerializationHelper.getSegmentSkeleton(
 				this.coConstraintSerializationHelper.getSegmentRef(

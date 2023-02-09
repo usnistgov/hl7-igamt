@@ -15,6 +15,8 @@ import gov.nist.hit.hl7.igamt.delta.domain.StructureDelta;
 import gov.nist.hit.hl7.igamt.delta.service.DeltaService;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
 import gov.nist.hit.hl7.igamt.serialization.util.SerializationTools;
+import gov.nist.hit.hl7.igamt.service.impl.ResourceSkeletonService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +41,8 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportTools;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ComponentDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -75,6 +79,9 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 
   @Autowired
   private SerializationTools serializationTools;
+  
+  @Autowired
+  private ResourceSkeletonService resourceSkeletonService;
 
   @Autowired
   private ReasonForChangeSerializationService reasonForChangeSerializationService;
@@ -84,6 +91,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
     //	    try {
     Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, position, datatypeExportConfiguration);
     Datatype datatype = datatypeDataModel.getModel();
+	ResourceSkeleton root = new ResourceSkeleton(
+            new ResourceRef(Type.DATATYPE, datatype.getId()),
+            this.resourceSkeletonService
+    );
     if(datatypeExportConfiguration.isReasonForChange()){
       if(datatype instanceof ComplexDatatype) {
         datatypeElement.appendChild(reasonForChangeSerializationService.serializeReasonForChange(datatype.getLabel(), datatype.getBinding(),  ((ComplexDatatype)datatype).getComponents()));
@@ -162,14 +173,17 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
         .addAttribute(new Attribute("publicationDate", datatype.getPublicationDateString()));
       }
     }
+    datatypeElement
+    .addAttribute(new Attribute("isPrimitive",datatype instanceof ComplexDatatype ? "false" : "true"));
     if (datatype instanceof ComplexDatatype) {
-      datatypeElement = serializeComplexDatatype(datatypeElement,datatypeDataModel,datatypeExportConfiguration, type);
 
+      datatypeElement = serializeComplexDatatype(datatypeElement,datatypeDataModel,datatypeExportConfiguration, type);
     } else if (datatype instanceof DateTimeDatatype) {
       datatypeElement = serializeDateTimeDatatype(datatypeElement, datatypeDataModel, datatypeExportConfiguration);
     }
+    
     if(!datatypeDataModel.getConformanceStatements().isEmpty()|| !datatypeDataModel.getPredicateMap().isEmpty()) {
-      Element constraints = constraintSerializationService.serializeConstraints(datatypeDataModel.getConformanceStatements(), datatypeDataModel.getPredicateMap(), datatypeExportConfiguration.getConstraintExportConfiguration());
+      Element constraints = constraintSerializationService.serializeConstraints(datatypeDataModel.getConformanceStatements(), datatypeDataModel.getPredicateMap(), datatypeExportConfiguration.getConstraintExportConfiguration(), root);
       if (constraints != null) {
         datatypeElement.appendChild(constraints);
       }
