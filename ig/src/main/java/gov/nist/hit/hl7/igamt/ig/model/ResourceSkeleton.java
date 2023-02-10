@@ -5,6 +5,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 import gov.nist.hit.hl7.igamt.service.impl.ResourceSkeletonService;
+
+import java.util.Arrays;
 import java.util.List;
 
 public class ResourceSkeleton {
@@ -84,6 +86,30 @@ public class ResourceSkeleton {
             }
         }
         return null;
+    }
+    
+    public ResourceSkeletonBone getByPositionPath(String positionalPath) throws ResourceNotFoundException {
+    	try {
+        	String[] positions = positionalPath.split("\\.");
+        	if(positions.length > 0) {
+        		String top = positions[0];
+        		String[] others = Arrays.copyOfRange(positions, 1, positions.length);
+            	ResourceSkeletonBone current = this.get(Integer.parseInt(top));
+            	for(String position: others) {
+            		if(current != null) {
+                		current = current.get(Integer.parseInt(position));
+            		}
+            		else {
+            			return null;
+            		}
+            	}
+            	return current;
+        	} else {
+        		return null;
+        	}
+    	} catch(Exception e) {
+    		return null;
+    	}
     }
 
     public ResourceSkeletonBone get(int position) throws ResourceNotFoundException {

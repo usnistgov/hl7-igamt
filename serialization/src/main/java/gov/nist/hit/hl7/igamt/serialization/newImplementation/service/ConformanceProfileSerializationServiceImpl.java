@@ -99,6 +99,10 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                                                ConformanceProfileExportConfiguration conformanceProfileExportConfiguration, Boolean deltaMode) throws ResourceSerializationException {
         ConformanceProfile conformanceProfile = conformanceProfileDataModel.getModel();
         ResourceSkeleton conformanceProfileSkeleton = this.coConstraintSerializationHelper.getConformanceProfileSkeleton(conformanceProfile.getId());
+    	ResourceSkeleton root = new ResourceSkeleton(
+                new ResourceRef(Type.CONFORMANCEPROFILE, conformanceProfile.getId()),
+                this.resourceSkeletonService
+        );
         if (conformanceProfile != null) {
             try {
                 Element conformanceProfileElement = igDataModelSerializationService.serializeResource(conformanceProfileDataModel.getModel(), Type.CONFORMANCEPROFILE, position, conformanceProfileExportConfiguration);
@@ -191,7 +195,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                             conformanceProfile.getRole() != null ? conformanceProfile.getRole().name() : ""));
                 }
                 if (!conformanceProfileDataModel.getConformanceStatements().isEmpty() || !conformanceProfileDataModel.getPredicateMap().isEmpty()) {
-                    Element constraints = constraintSerializationService.serializeConstraints(conformanceProfileDataModel.getConformanceStatements(), conformanceProfileDataModel.getPredicateMap(), conformanceProfileExportConfiguration.getConstraintExportConfiguration());
+                    Element constraints = constraintSerializationService.serializeConstraints(conformanceProfileDataModel.getConformanceStatements(), conformanceProfileDataModel.getPredicateMap(), conformanceProfileExportConfiguration.getConstraintExportConfiguration(), root);
                     if (constraints != null) {
                         conformanceProfileElement.appendChild(constraints);
                     }
@@ -222,10 +226,8 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                 }
 
                 if (conformanceProfile.getSlicings()!= null) {
-                	ResourceSkeleton root = new ResourceSkeleton(
-                            new ResourceRef(Type.CONFORMANCEPROFILE, conformanceProfile.getId()),
-                            this.resourceSkeletonService
-                    );
+
+                	
                     Element slicingElement = slicingSerialization.serializeSlicing(conformanceProfile.getSlicings(), root, Type.CONFORMANCEPROFILE, bindedPaths);
                     if (slicingElement != null) {
                         conformanceProfileElement.appendChild(slicingElement);

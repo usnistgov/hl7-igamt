@@ -3,6 +3,9 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:param name="displayMasterDatatypeLabel" select="'false'"></xsl:param>
     <xsl:template name="displayTableOfContentInfoSection">
+    	<xsl:param name="increment" select="0"></xsl:param>
+    	<xsl:variable name="h" select="@h + $increment" />
+    	
         <xsl:if test="name() = 'Section'">
         
             <xsl:element name="a">
@@ -10,7 +13,7 @@
                     <xsl:value-of select="concat('#',@id)"/>
                 </xsl:attribute>
                 <xsl:attribute name="class">
-                    <xsl:value-of select="concat('divh', @h)"/>
+                    <xsl:value-of select="concat('divh', $h)"/>
                 </xsl:attribute>  
                 <xsl:value-of select="@title"/>
           </xsl:element>
