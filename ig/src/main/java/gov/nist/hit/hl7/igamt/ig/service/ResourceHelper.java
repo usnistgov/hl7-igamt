@@ -15,6 +15,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 
 /**
@@ -39,8 +40,11 @@ public interface ResourceHelper {
    * @param resource
    * @param type
    * @return
+   * @throws ForbiddenOperationException 
    */
-  <T extends Resource> T saveByType(T resource, Type type);
+  <T extends Resource> T saveByType(T resource, Type type) throws ForbiddenOperationException;
+
+  <T extends Resource> void deleteByType(T resource, Type type) throws ForbiddenOperationException;
   
   
   

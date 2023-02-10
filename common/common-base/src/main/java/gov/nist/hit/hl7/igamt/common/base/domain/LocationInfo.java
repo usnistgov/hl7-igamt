@@ -5,15 +5,17 @@ public class LocationInfo {
     private String hl7Path; // RXA-5
     private Type type; // Component
     private String positionalPath; // 1.2.3
+    private String pathId;
 
     public LocationInfo() {
     }
 
-    public LocationInfo(String name, String hl7Path, Type type, String positionalPath) {
+    public LocationInfo(String name, String hl7Path, String pathId, Type type, String positionalPath) {
         this.name = name;
         this.hl7Path = hl7Path;
         this.type = type;
         this.positionalPath = positionalPath;
+        this.pathId = pathId;
     }
 
     public String getName() {
@@ -47,4 +49,18 @@ public class LocationInfo {
     public void setPositionalPath(String positionalPath) {
         this.positionalPath = positionalPath;
     }
+
+    public String getPathId() {
+        return pathId;
+    }
+
+    public void setPathId(String pathId) {
+        this.pathId = pathId;
+    }
+
+	@Override
+	public String toString() {
+		return "LocationInfo [name=" + name + ", hl7Path=" + hl7Path + ", type=" + type + ", positionalPath="
+				+ positionalPath + ", pathId=" + pathId + "]";
+	}
 }

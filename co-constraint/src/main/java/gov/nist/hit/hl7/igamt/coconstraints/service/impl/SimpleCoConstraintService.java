@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.coconstraints.service.impl;
 
+import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.coconstraints.repository.CoConstraintGroupRepository;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
@@ -144,6 +145,51 @@ public class SimpleCoConstraintService implements CoConstraintService {
     } else {
       throw new SegmentNotFoundException(id);
     }
+  }
+
+  @Override
+  public boolean codeCellIsEmpty(CodeCell cell) {
+    return cell == null || Strings.isNullOrEmpty(cell.getCode()) && Strings.isNullOrEmpty(cell.getCodeSystem()) && (cell.getLocations() == null || cell.getLocations().isEmpty());
+  }
+
+  @Override
+  public boolean constantCellIsEmpty(ValueCell cell) {
+    return cell == null || Strings.isNullOrEmpty(cell.getValue());
+  }
+
+  @Override
+  public boolean datatypeCellIsEmpty(DatatypeCell cell) {
+    return cell == null || (Strings.isNullOrEmpty(cell.getValue()) && Strings.isNullOrEmpty(cell.getDatatypeId()));
+  }
+
+  @Override
+  public boolean valueSetCellIsEmpty(ValueSetCell cell) {
+    return cell == null || (cell.getBindings() == null || cell.getBindings().isEmpty());
+  }
+
+  @Override
+  public boolean variesCellIsEmpty(VariesCell variesCell) {
+    return variesCell == null || this.cellIsEmpty(variesCell.getCellValue());
+  }
+
+  @Override
+  public boolean cellIsEmpty(CoConstraintCell cell) {
+    if(cell == null)
+      return true;
+
+    switch (cell.getType()) {
+      case CODE:
+        return this.codeCellIsEmpty((CodeCell) cell);
+      case VALUE:
+        return this.constantCellIsEmpty((ValueCell) cell);
+      case VARIES:
+        return this.variesCellIsEmpty((VariesCell) cell);
+      case DATATYPE:
+        return this.datatypeCellIsEmpty((DatatypeCell) cell);
+      case VALUESET:
+        return this.valueSetCellIsEmpty((ValueSetCell) cell);
+    }
+    return true;
   }
 
   @Override

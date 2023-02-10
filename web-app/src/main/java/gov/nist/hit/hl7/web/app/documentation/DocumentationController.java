@@ -110,8 +110,7 @@ public class DocumentationController {
 	}
 	@RequestMapping(value = "/api/documentations/getAll", method = RequestMethod.GET, produces = {
 	"application/json" })
-	public List<Documentation> getAll(Authentication authentication) throws Exception
-	{
+	public List<Documentation> getAll(Authentication authentication) throws Exception {
 		List<Documentation> ret = new ArrayList<Documentation>();
 		ret.addAll(documentationRepo.findByType(DocumentationType.IMPLEMENTATIONDECISION));
 		ret.addAll(documentationRepo.findByType(DocumentationType.GLOSSARY));

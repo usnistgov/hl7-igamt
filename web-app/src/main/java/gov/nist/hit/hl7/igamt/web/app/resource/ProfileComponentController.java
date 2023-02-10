@@ -20,6 +20,7 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyDynamicMa
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,6 +47,7 @@ import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentContext
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.web.app.service.DateUpdateService;
 
 /**
  * @author Abdelghani El Ouakili
@@ -69,8 +71,12 @@ public class ProfileComponentController extends BaseController {
 
   @Autowired 
   CommonService commonService;
+  
+  @Autowired
+  DateUpdateService dateUpdateService;
     
   @RequestMapping(value = "/api/profile-component/{id}", method = RequestMethod.GET, produces = {"application/json"})
+  @PreAuthorize("AccessResource('PROFILECOMPONENT', #id, READ)")
   public ProfileComponent getProfileComponent(
           @PathVariable("id") String id,
           Authentication authentication) throws ProfileComponentNotFoundException  {
@@ -79,6 +85,7 @@ public class ProfileComponentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}", method = RequestMethod.GET, produces = {"application/json"})
+  @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, READ)")
   public ProfileComponentContext getProfileComponentChild(
           @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId,
           Authentication authentication) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException  {
@@ -86,6 +93,7 @@ public class ProfileComponentController extends BaseController {
   }
   
   @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/resources", method = RequestMethod.GET, produces = {"application/json"})
+  @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, READ)")
   public Set<Resource> getResources(
           @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId,
           Authentication authentication) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException  {
@@ -94,14 +102,20 @@ public class ProfileComponentController extends BaseController {
   
   
   @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/update", method = RequestMethod.POST, produces = {"application/json"})
+  @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE)")
   @ResponseBody
   public ProfileComponentContext updateContext(
           @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody ProfileComponentContext ctx,
           Authentication authentication) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException  {
-      return profileComponentService.updateContext(pcId, contextId, ctx);
+      ProfileComponent pc = this.findById(pcId);
+      ProfileComponentContext ret =  profileComponentService.updateContext(pc.getId(), contextId, ctx);
+      this.dateUpdateService.updateDate(pc.getDocumentInfo());
+      return ret;
+
   }
 
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/conformance-statements", method = RequestMethod.POST, produces = {"application/json"})
+    @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE)")
     @ResponseBody
     public List<PropertyConformanceStatement> updateContextConformanceStatements(
             @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody List<PropertyConformanceStatement> conformanceStatements,
@@ -110,47 +124,53 @@ public class ProfileComponentController extends BaseController {
     }
 
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/co-constraints", method = RequestMethod.POST, produces = {"application/json"})
+    @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE)")
     @ResponseBody
     public ProfileComponentContext updateContextCoConstraints(
             @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody PropertyCoConstraintBindings coConstraintBindings,
             Authentication authentication) throws Exception  {
-        return profileComponentService.updateContextCoConstraintBindings(pcId, contextId, coConstraintBindings);
+        ProfileComponent pc = this.findById(pcId);
+        ProfileComponentContext ret = profileComponentService.updateContextCoConstraintBindings(pc.getId(), contextId, coConstraintBindings);
+        this.dateUpdateService.updateDate(pc.getDocumentInfo());
+        return ret;
     }
 
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/co-constraints", method = RequestMethod.DELETE, produces = {"application/json"})
+    @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE)")
     @ResponseBody
     public ProfileComponentContext removeContextCoConstraints(
             @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId,
             Authentication authentication) throws Exception  {
-        return profileComponentService.updateContextCoConstraintBindings(pcId, contextId, null);
+        ProfileComponent pc = this.findById(pcId);
+        ProfileComponentContext ret = profileComponentService.updateContextCoConstraintBindings(pcId, contextId, null);
+        this.dateUpdateService.updateDate(pc.getDocumentInfo());
+        return ret;
+
     }
   
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/dynamic-mapping", method = RequestMethod.POST, produces = {"application/json"})
+    @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE)")
     @ResponseBody
     public PropertyDynamicMapping updateDynamicMapping(
             @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody PropertyDynamicMapping dynamicMapping,
             Authentication authentication) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException  {
-        return profileComponentService.updateContextDynamicMapping(pcId, contextId, dynamicMapping);
+        ProfileComponent pc = this.findById(pcId);
+        PropertyDynamicMapping ret = profileComponentService.updateContextDynamicMapping(pc, contextId, dynamicMapping);
+        this.dateUpdateService.updateDate(pc.getDocumentInfo());
+    	return ret;
     }
 
   @RequestMapping(value = "/api/profile-component/{id}", method = RequestMethod.POST, produces = {
           "application/json" })
+  @PreAuthorize("AccessResource('PROFILECOMPONENT', #id, WRITE)")
   @ResponseBody
-  public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
-                                         @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
+  public ResponseMessage<?> applyChanges(@PathVariable("id") String id, @RequestBody List<ChangeItemDomain> cItems,
                                          Authentication authentication) throws Exception {
     
       ProfileComponent cp = this.profileComponentService.findById(id);
-      commonService.checkRight(authentication, cp.getCurrentAuthor(), cp.getUsername());
-      this.profileComponentService.applyChanges(cp, cItems, documentId);
-      EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-      entityChangeDomain.setDocumentId(documentId);
-      entityChangeDomain.setDocumentType(DocumentType.IG);
-      entityChangeDomain.setTargetId(id);
-      entityChangeDomain.setTargetType(EntityType.PROFILECOMPONENT);
-      entityChangeDomain.setChangeItems(cItems);
-      entityChangeDomain.setTargetVersion(cp.getVersion());
-      entityChangeService.save(entityChangeDomain);
+      this.profileComponentService.applyChanges(cp, cItems);
+      dateUpdateService.updateDate(cp.getDocumentInfo());
+
       return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, cp.getId(), new Date());
   }
   

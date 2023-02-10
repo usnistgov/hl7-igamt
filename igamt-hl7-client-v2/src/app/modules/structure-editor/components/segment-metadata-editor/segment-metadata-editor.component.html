@@ -1,7 +1,6 @@
 <form [formGroup]="formGroup" style="display: flex; flex-direction: column; height: 100%;">
-
   <app-form-input formControlName="name" id="structId" name="structId"
-    placeholder="Name" label="Name" [viewOnly]="true">
+    placeholder="Name" label="Name" [viewOnly]="(viewOnly$ | async) || !(isZSegment | async)">
   </app-form-input>
 
   <app-form-input formControlName="identifier" id="identifier" name="identifier"

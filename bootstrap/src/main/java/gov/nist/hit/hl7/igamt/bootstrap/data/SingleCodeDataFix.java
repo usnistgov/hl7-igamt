@@ -6,6 +6,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
@@ -181,7 +182,7 @@ public class SingleCodeDataFix {
     ConfigService configService;
 
 //    @PostConstruct
-    void check() throws Exception {
+    public void check() throws Exception {
         Config config = this.configService.findOne();
         int dts = fixDatatypes(config);
         int segs = fixSegments(config);
@@ -198,7 +199,14 @@ public class SingleCodeDataFix {
         return this.fixAll(
                 Datatype::getBinding,
                 () -> this.datatypeService.findAll(),
-                (resource) -> this.datatypeService.save(resource),
+                (resource) -> {
+					try {
+						return this.datatypeService.save(resource);
+					} catch (ForbiddenOperationException e) {
+						e.printStackTrace();
+					}
+					return resource;
+				},
                 config
         );
     }
@@ -207,7 +215,14 @@ public class SingleCodeDataFix {
         return this.fixAll(
                 Segment::getBinding,
                 () -> this.segmentsService.findAll(),
-                (resource) -> this.segmentsService.save(resource),
+                (resource) -> {
+					try {
+						return this.segmentsService.save(resource);
+					} catch (ForbiddenOperationException e) {
+						e.printStackTrace();
+					}
+					return resource;
+				},
                 config
         );
     }

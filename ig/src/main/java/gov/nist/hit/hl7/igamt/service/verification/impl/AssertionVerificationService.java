@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.service.verification.impl;
 
+import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.*;
@@ -55,6 +56,7 @@ public class AssertionVerificationService extends VerificationUtils {
     }
 
     public List<IgamtObjectError> checkSubContextAssertion(ResourceSkeleton skeleton, Location location, SubContextAssertion assertion) {
+
         return this.getTargetAndVerify(
                 skeleton,
                 null,
@@ -62,8 +64,71 @@ public class AssertionVerificationService extends VerificationUtils {
                 assertion.getContext().getPath(),
                 null,
                 "SubContext",
-                (context) -> this.checkAssertion(context, location, assertion.getChild())
+                (context) -> {
+                    List<IgamtObjectError> issues = new ArrayList<>();
+                    issues.addAll(
+                            this.checkOccurrences(
+                                    context,
+                                    skeleton,
+                                    location,
+                                    assertion.getContext().getOccurenceType(),
+                                    assertion.getContext().getOccurenceValue()
+                            )
+                    );
+                    issues.addAll(this.checkAssertion(context, location, assertion.getChild()));
+                    return issues;
+                }
         );
+    }
+
+    public List<IgamtObjectError> checkOccurrences(ResourceSkeleton subject, ResourceSkeleton context, Location location, String occurrenceType, int occurrenceValue) {
+        int max = this.getMaxRepeat(subject, context);
+        int multi = this.getMultiLevelRepeat(subject, context);
+
+        if(max <= 1) {
+            // No Repeat Allowed
+            return Arrays.asList(
+                    this.entry.AssertionOccurrenceTypeOnNotRepeatable(
+                            location,
+                            subject.getResource().getId(),
+                            subject.getResource().getType(),
+                            ((ResourceSkeletonBone) subject).getLocationInfo(),
+                            occurrenceType,
+                            ((ResourceSkeletonBone) subject).getLocationInfo().getName()
+                    )
+            );
+        }
+
+        if(multi > 1 && occurrenceType.equals("instance")) {
+            // Instance not allowed on multi level repeat
+            return Arrays.asList(
+                    this.entry.AssertionOccurrenceTypeInstanceOnNotMultiLevelRepeatable(
+                            location,
+                            subject.getResource().getId(),
+                            subject.getResource().getType(),
+                            ((ResourceSkeletonBone) subject).getLocationInfo(),
+                            ((ResourceSkeletonBone) subject).getLocationInfo().getName()
+                    )
+            );
+        }
+
+        if(occurrenceValue > max) {
+            // Over max
+            return Arrays.asList(
+                    this.entry.AssertionOccurrenceValueOverMax(
+                            location,
+                            subject.getResource().getId(),
+                            subject.getResource().getType(),
+                            ((ResourceSkeletonBone) subject).getLocationInfo(),
+                            occurrenceType,
+                            max,
+                            occurrenceValue,
+                            ((ResourceSkeletonBone) subject).getLocationInfo().getName()
+                    )
+            );
+        }
+
+        return this.NoErrors();
     }
 
     public List<IgamtObjectError> checkSingleAssertion(ResourceSkeleton skeleton, Location location, SingleAssertion assertion) {
@@ -90,6 +155,10 @@ public class AssertionVerificationService extends VerificationUtils {
                             );
                         }
                     }
+
+                    if(!Strings.isNullOrEmpty(assertion.getSubject().getOccurenceType())) {
+                        return this.checkOccurrences(subject, skeleton, location, assertion.getSubject().getOccurenceType(), assertion.getSubject().getOccurenceValue());
+                    }
                     return this.NoErrors();
                 }
         ));
@@ -114,12 +183,61 @@ public class AssertionVerificationService extends VerificationUtils {
                                             )
                                     );
                                 }
+                                if(!Strings.isNullOrEmpty(assertion.getComplement().getOccurenceType())) {
+                                    return this.checkOccurrences(complement, skeleton, location, assertion.getComplement().getOccurenceType(), assertion.getComplement().getOccurenceValue());
+                                }
                                 return this.NoErrors();
                             }
                     )
             );
         }
         return issues;
+    }
+
+    private int getMaxRepeat(ResourceSkeleton skeleton, ResourceSkeleton context) {
+        if(skeleton instanceof ResourceSkeletonBone && skeleton != context) {
+            ResourceSkeletonBone bone = (ResourceSkeletonBone) skeleton;
+            if(bone.getCardinality() != null) {
+                if(bone.getCardinality().getMax().equals("*")) {
+                    return Integer.MAX_VALUE;
+                } else {
+                    try {
+                        int max = Integer.parseInt(bone.getCardinality().getMax());
+                        return max * getMaxRepeat(bone.getParentSkeleton(), context);
+                    } catch (Exception e) {
+                        return 1;
+                    }
+                }
+            } else {
+                return getMaxRepeat(bone.getParentSkeleton(), context);
+            }
+        }
+        return 1;
+    }
+
+    private int getMultiLevelRepeat(ResourceSkeleton skeleton, ResourceSkeleton context) {
+        if(skeleton instanceof ResourceSkeletonBone && skeleton != context) {
+            ResourceSkeletonBone bone = (ResourceSkeletonBone) skeleton;
+            if(bone.getCardinality() != null) {
+                if(bone.getCardinality().getMax().equals("*")) {
+                    return 1 + getMultiLevelRepeat(bone.getParentSkeleton(), context);
+                }  else {
+                    try {
+                        int max = Integer.parseInt(bone.getCardinality().getMax());
+                        if(max > 1) {
+                            return 1 + getMultiLevelRepeat(bone.getParentSkeleton(), context);
+                        } else {
+                            return getMultiLevelRepeat(bone.getParentSkeleton(), context);
+                        }
+                    } catch (Exception e) {
+                        return getMultiLevelRepeat(bone.getParentSkeleton(), context);
+                    }
+                }
+            } else {
+                return getMultiLevelRepeat(bone.getParentSkeleton(), context);
+            }
+        }
+        return 0;
     }
 
     protected String pathId(Location location) {

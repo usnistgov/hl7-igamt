@@ -49,6 +49,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.PublicationEntry;
@@ -261,7 +262,6 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   }
   public void addDatatypes(Set<String> ids, DatatypeLibrary lib, AddDatatypeResponseObject ret)
       throws AddingException {
-    // TODO Auto-generated method stub
     if (lib.getDatatypeRegistry() != null) {
       if (lib.getDatatypeRegistry().getChildren() != null) {
         Set<String> existants = mapLinkToId(lib.getDatatypeRegistry().getChildren());
@@ -442,7 +442,6 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    */
   @Override
   public List<DatatypeLibrary> findPublished() {
-    // TODO Auto-generated method stub
 
 
     Criteria where = Criteria.where("status").is(Status.PUBLISHED);
@@ -555,7 +554,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    * @see gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#publishLibray(java.lang.String, gov.nist.hit.hl7.igamt.common.base.model.PublicationResult)
    */
   @Override
-  public String publishLibray(String id, PublicationResult publicationResult) {
+  public String publishLibray(String id, PublicationResult publicationResult) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     DatatypeLibrary lib = this.findById(id);
     lib.setStatus(Status.PUBLISHED);
@@ -582,7 +581,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   }
   
   @Override
-  public void deactivateChildren(String id, Set<String> ids) {
+  public void deactivateChildren(String id, Set<String> ids) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
 
    List<Datatype> datatypes =  this.datatypeService.findByIdIn(ids);
@@ -685,7 +684,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    * @see gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#clone(java.lang.String, java.lang.String, gov.nist.hit.hl7.igamt.display.model.CopyInfo)
    */
   @Override
-  public DatatypeLibrary clone(String id, String username, CopyInfo info) throws DatatypeLibraryNotFoundException {
+  public DatatypeLibrary clone(String id, String username, CopyInfo info) throws DatatypeLibraryNotFoundException, ForbiddenOperationException {
     // TODO Auto-generated method stub
     DatatypeLibrary lib = this.findById(id);
   

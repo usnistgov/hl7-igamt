@@ -72,6 +72,8 @@ public class ConfigCreator {
     hl7Versions.add("2.8");
     hl7Versions.add("2.8.1");
     hl7Versions.add("2.8.2");
+    hl7Versions.add("2.9");
+
 
     List<String> usages = new ArrayList<String>();
 
@@ -168,6 +170,8 @@ public class ConfigCreator {
 
     allowedBindingLocations_coded.put("2-8-1", newOption1);
     allowedBindingLocations_coded.put("2-8-2", oldOptions1);
+    allowedBindingLocations_coded.put("2-9", oldOptions1);
+
     BindingInfo coded =  BindingInfo.createCoded();
     coded.setAllowedBindingLocations(allowedBindingLocations_coded);
 

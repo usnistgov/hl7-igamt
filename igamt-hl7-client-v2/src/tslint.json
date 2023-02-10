@@ -6,9 +6,6 @@
     ]
   },
   "rules": {
-    "parameters-max-number" : [
-      false
-     ],
     "directive-selector": [
       true,
       "attribute",

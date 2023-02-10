@@ -26,5 +26,14 @@
 
 </div>
 <div class="sidebar-content" id="sidebar-content">
-  <app-table-of-content [nodes]="nodes | async" (createMessageStructure)="createMessage($event)" (createSegmentStructure)="createSegment($event)" (publish)="publish($event)"></app-table-of-content>
+  <app-table-of-content
+    [nodes]="nodes | async"
+    (createMessageStructure)="createMessage($event)"
+    (createSegmentStructure)="createSegment($event)"
+    (deleteMessage)="deleteMessageStructure($event)"
+    (deleteSegment)="deleteSegmentStructure($event)"
+    (unlockSegment)="unlockSegmentStructure($event)"
+    (unlockMessage)="unlockMessageStructure($event)"
+    (publish)="publish($event)">
+  </app-table-of-content>
 </div>

@@ -18,6 +18,11 @@ const routes: Routes = [
     redirectTo: 'home',
   },
   {
+    path: 'igamt',
+    pathMatch: 'full',
+    redirectTo: 'home',
+  },
+  {
     path: 'login',
     component: LoginComponent,
     canActivate: [NotAuthenticatedGuard],

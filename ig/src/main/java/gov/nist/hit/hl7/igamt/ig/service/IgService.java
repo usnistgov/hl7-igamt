@@ -22,13 +22,14 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
+import gov.nist.hit.hl7.igamt.display.model.PublishingInfo;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CompositeProfileCreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
@@ -78,7 +79,7 @@ public interface IgService {
   
   public List<Ig> findAllSharedIG(String username, Scope scope);
 
-  public void delete(Ig ig);
+  public void delete(Ig ig) throws ForbiddenOperationException;
 
   Set<ConformanceStatement> conformanceStatementsSummary(Ig igdoument);
 
@@ -97,9 +98,7 @@ public interface IgService {
   public Set<RelationShip> buildRelationShip(Ig ig, Type type);
   
   public Set<RelationShip> builAllRelations(Ig ig) ;
-  
-  public void publishIG(Ig ig) throws IGNotFoundException, IGUpdateException;
-  
+    
   UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass, boolean updateDate);
   
   public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo);
@@ -111,8 +110,8 @@ public interface IgService {
 
   public ProfileComponent createProfileComponent(Ig ig, String name, List<DisplayElement> children);
 
-  public CompositeProfileStructure createCompositeProfileSercice(Ig ig,
-      CompositeProfileCreationWrapper wrapper);
+  public CompositeProfileStructure createCompositeProfile(Ig ig,
+                                                          CompositeProfileCreationWrapper wrapper);
 
   void removeChildren(String id);
 
@@ -120,6 +119,17 @@ public interface IgService {
       throws IGUpdateException;
 
   public FilterResponse getFilterResponse(String id, FilterIGInput filter) throws EntityNotFound;
+
+  public void publishIG(Ig ig, PublishingInfo info) throws IGNotFoundException, IGUpdateException;
+
+  public FilterResponse getUnused(String id) throws EntityNotFound;
+
+  public Set<String> findUnused(Ig ig, Type registryType);
+
+  public List<String> deleteUnused(Ig ig, Type registryType, List<String> ids) throws EntityNotFound, ForbiddenOperationException;
+
+  void lockIg(Ig ig) throws IGNotFoundException, IGUpdateException;
+
 
 
 }

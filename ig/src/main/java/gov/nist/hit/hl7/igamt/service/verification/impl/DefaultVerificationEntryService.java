@@ -139,6 +139,39 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
+    public IgamtObjectError CoConstraintOBX3MappingIsDuplicate(String pathId, String id, Type type, String code) {
+        return new IgamtVerificationEntryBuilder("COCONSTRAINT_OBX3_TO_FLAVOR_MAPPING")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(pathId, PropertyType.COCONSTRAINTBINDING_ROW)
+                .message("OBX-3 Code : " + code + " is duplicated and associated with different flavors for OBX-5")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError CoConstraintTableIdIsMissing(String pathId, String locationName, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("COCONSTRAINT_TABLE_ID_MISSING")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_TABLE)
+                .message("Co-Constraint table is missing Identifier property")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError CoConstraintTableIdIsDuplicate(String pathId, String locationName, String duplicateIdentifier, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("COCONSTRAINT_TABLE_ID_DUPLICATE")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_TABLE)
+                .message("Co-Constraint table Identifier \""+ duplicateIdentifier +"\" is duplicate")
+                .entry();
+    }
+
+    @Override
     public IgamtObjectError CoConstraintInvalidHeaderType(String pathId, String name, PropertyType propertyType, String id, Type type, LocationInfo info, ColumnType column, String reason) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_INVALID_HEADER_TYPE")
                 .error()
@@ -358,6 +391,39 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
                 .message("Co-Constraint Table has multiple a column of VARIES type but no DATATYPE column")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError AssertionOccurrenceTypeOnNotRepeatable(Location location, String id, Type type, LocationInfo path, String occurrenceType, String pathQualifier) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_OCCTYPE_NOT_REPEATABLE")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Path : " + path.getHl7Path() + " is not a repeatable element, but has an occurrence selection of type '"+ occurrenceType + "'. " + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError AssertionOccurrenceTypeInstanceOnNotMultiLevelRepeatable(Location location, String id, Type type, LocationInfo path, String pathQualifier) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_OCCTYPE_INSTANCE_MULTI")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Path : " + path.getHl7Path() + " is repeating at multiple levels, selecting a specific instance of the element is not possible." + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError AssertionOccurrenceValueOverMax(Location location, String id, Type type, LocationInfo path, String occurrenceType, int max, int value, String pathQualifier) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_OCC_OVER_MAX")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Path : " + path.getHl7Path() + " is allowed a maximum repetition of " + max + ". An occurrence selector defined with type '" + occurrenceType + "' was given the value of " + value + " which is higher than the allowed"  + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
                 .entry();
     }
 

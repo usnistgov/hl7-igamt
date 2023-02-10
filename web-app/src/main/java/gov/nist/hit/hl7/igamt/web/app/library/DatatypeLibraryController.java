@@ -40,7 +40,9 @@ import com.mongodb.client.result.UpdateResult;
 import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
 import gov.nist.hit.hl7.igamt.common.base.domain.ActiveInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.ActiveStatus;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -194,7 +196,7 @@ public class DatatypeLibraryController {
 
   public @ResponseBody ResponseMessage<String> create(@RequestBody CreationWrapper wrapper,
       Authentication authentication) throws JsonParseException, JsonMappingException,
-  FileNotFoundException, IOException, AddingException, DatatypeNotFoundException {
+  FileNotFoundException, IOException, AddingException, DatatypeNotFoundException, ForbiddenOperationException {
 
     String username = authentication.getPrincipal().toString();
     DatatypeLibrary empty = dataypeLibraryService.createEmptyDatatypeLibrary();
@@ -217,7 +219,8 @@ public class DatatypeLibraryController {
           if (datatypes != null && !datatypes.isEmpty()) {
             Datatype clone = datatypes.get(0).clone();
             clone.setUsername(username);
-            clone.setId(null);
+            clone.setId(new ObjectId().toString());
+            clone.setVersion(null);
             clone.setName(datatypes.get(0).getName());
             clone.setExt(elm.getExt());
             ActiveInfo active = new ActiveInfo();
@@ -228,6 +231,7 @@ public class DatatypeLibraryController {
             clone.getDomainInfo().setCompatibilityVersion(datatypeClassificationService.findCompatibility(clone.getName(), clone.getDomainInfo().getVersion()));
             clone.setParentId(id);
             clone.setParentType(Type.DATATYPELIBRARY);
+            clone.setDocumentInfo(new DocumentInfo(id, DocumentType.DATATYPELIBRARY));
             clone = datatypeService.save(clone);
             savedIds.add(clone.getId());
           }else {
@@ -381,7 +385,6 @@ public class DatatypeLibraryController {
     DatatypeLibrary library = findLibraryById(id);
     if (library.getUsername().equals(authentication.getPrincipal().toString())) {
       dataypeLibraryService.delete(id);
-      //delete(library.getId());
       return new ResponseMessage(Status.SUCCESS, DATATYPE_LIBRARY_DELETED, id, new Date());
     } else {
       throw new OperationNotAllowedException("Operation Not allowed");
@@ -537,7 +540,7 @@ public class DatatypeLibraryController {
   @RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
   public ResponseMessage deleteDatatype(@PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
-      Authentication authentication) throws DatatypeLibraryNotFoundException {
+      Authentication authentication) throws DatatypeLibraryNotFoundException, ForbiddenOperationException {
     DatatypeLibrary library = dataypeLibraryService.findById(id);
     Link found = findLinkById(datatypeId, library.getDatatypeRegistry().getChildren());
     if (found != null) {
@@ -560,7 +563,7 @@ public class DatatypeLibraryController {
   @RequestMapping(value = "/api/datatype-library/{id}/datatypes/add", method = RequestMethod.POST, produces = {
   "application/json" })
   public ResponseMessage<DocumentDisplayInfo> add(@PathVariable("id") String id,
-      @RequestBody AddingWrapper wrapper, Authentication authentication) throws AddingException{
+      @RequestBody AddingWrapper wrapper, Authentication authentication) throws AddingException, ForbiddenOperationException{
     String username = authentication.getPrincipal().toString();
     DatatypeLibrary library = dataypeLibraryService.findById(id);
     Set<String> savedIds = new HashSet<String>();
@@ -569,6 +572,7 @@ public class DatatypeLibraryController {
         Datatype datatype = datatypeService.findById(elm.getOriginalId());
         if (datatype != null) {
           Datatype clone = datatype.clone();
+          clone.setId(new ObjectId().toString());
           clone.getDomainInfo().setScope(Scope.USER);
           clone.setParentId(id);
           ActiveInfo active = new ActiveInfo();
@@ -580,6 +584,8 @@ public class DatatypeLibraryController {
           clone.getDomainInfo().setCompatibilityVersion(datatypeClassificationService.findCompatibility(clone.getName(), clone.getDomainInfo().getVersion()));
           clone.setUsername(username);
           clone.setName(datatype.getName());
+          clone.setDocumentInfo(new DocumentInfo(id, DocumentType.DATATYPELIBRARY));
+          clone.setVersion(null);
           clone.setExt(elm.getExt());
           clone = datatypeService.save(clone);
 
@@ -604,7 +610,7 @@ public class DatatypeLibraryController {
   @RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
   public ResponseMessage<AddResourceResponse> copyDatatype(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
-      @PathVariable("datatypeId") String datatypeId, Authentication authentication) throws CloneException
+      @PathVariable("datatypeId") String datatypeId, Authentication authentication) throws CloneException, ForbiddenOperationException
   {
     DatatypeLibrary library = dataypeLibraryService.findById(id);
     String username = authentication.getPrincipal().toString();
@@ -615,6 +621,8 @@ public class DatatypeLibraryController {
     Datatype clone = datatype.clone();
     clone.setUsername(username);
     clone.setId(new ObjectId().toString());
+    clone.setVersion(null);
+    clone.setDocumentInfo(new DocumentInfo(id, DocumentType.DATATYPELIBRARY));
     clone.setExt(wrapper.getSelected().getExt());
     clone.getDomainInfo().setScope(Scope.USER);
     clone.setParentId(id);
@@ -655,7 +663,7 @@ public class DatatypeLibraryController {
   @RequestMapping(value = "/api/datatype-library/{id}/publish", method = RequestMethod.POST,
       produces = {"application/json"})
   public ResponseMessage<String> publish(@PathVariable("id") String id,  @RequestBody PublicationResult publicationResult,
-      Authentication authentication) {
+      Authentication authentication) throws ForbiddenOperationException {
 
     return new ResponseMessage<String>(Status.SUCCESS, "", "Publish Library Success", id, false,
         new Date(), dataypeLibraryService.publishLibray(id, publicationResult));
@@ -666,7 +674,7 @@ public class DatatypeLibraryController {
   @RequestMapping(value = "/api/datatype-library/{id}/deactivate-children", method = RequestMethod.POST,
       produces = {"application/json"})
   public ResponseMessage<String> decativate(@PathVariable("id") String id,  @RequestBody Set<String> elements,
-      Authentication authentication) {
+      Authentication authentication) throws ForbiddenOperationException {
     this.dataypeLibraryService.deactivateChildren(id, elements);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Data types decativated successfully", id, false,
         new Date(), id);
@@ -676,7 +684,7 @@ public class DatatypeLibraryController {
   @RequestMapping(value = "/api/datatype-library/{id}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
   public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id, @RequestBody CopyInfo info,  Authentication authentication)
-      throws IGNotFoundException, DatatypeLibraryNotFoundException {
+      throws IGNotFoundException, DatatypeLibraryNotFoundException, ForbiddenOperationException {
     String username = authentication.getPrincipal().toString();
     DatatypeLibrary clone = dataypeLibraryService.clone(id, username, info);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Data type Library new version created", clone.getId(), false,

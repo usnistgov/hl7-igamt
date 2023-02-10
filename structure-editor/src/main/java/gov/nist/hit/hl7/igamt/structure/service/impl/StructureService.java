@@ -18,7 +18,7 @@ public interface StructureService {
     List<Segment> getUserCustomSegment(String user);
 
     MessageStructure saveMessageStructure(String id, String user, Set<SegmentRefOrGroup> children) throws InvalidStructureException;
-    MessageStructure saveMessageMetadata(String id, String user, MessageStructureMetadata metadata);
+    MessageStructure saveMessageMetadata(String id, String user, MessageStructureMetadata metadata) throws Exception;
 
     Segment saveSegment(String id, String user, Set<Field> children);
     Segment saveSegmentMetadata(String id, String user, SegmentStructureMetadata metadata);
@@ -29,12 +29,18 @@ public interface StructureService {
     MessageStructureState getMessageStructureState(MessageStructure structure);
     SegmentStructureState getSegmentStructureState(Segment structure);
 
+    boolean deleteMessageStructure(String id, String user);
+    boolean deleteSegmentStructure(String id, String user);
+    Set<CustomSegmentCrossRef> getSegmentStructureReferences(String id, String user);
 
-    MessageStructureAndDisplay createMessageStructure(MessageStructureCreateWrapper request, String user);
+
+    MessageStructureAndDisplay createMessageStructure(MessageStructureCreateWrapper request, String user) throws Exception;
     SegmentStructureAndDisplay createSegmentStructure(SegmentStructureCreateWrapper request, String user);
 
     SegmentStructureAndDisplay publishSegment(String id, String user);
     MessageStructureAndDisplay publishMessageStructure(String id, String user);
+    SegmentStructureAndDisplay unpublishSegment(String id, String user);
+    MessageStructureAndDisplay unpublishMessageStructure(String id, String user);
 
     CustomStructureRegistry getCustomStructureRegistry(String user);
     List<DisplayElement> getResources(Type type, Scope scope, String version, String user);
@@ -44,4 +50,5 @@ public interface StructureService {
 	 * @return
 	 */
 	Set<DisplayElement> getCustomSegments(MessageStructure structure);
+	Set<CustomSegmentCrossRef> getLockedSegmentStructure(String id, String user);
 }

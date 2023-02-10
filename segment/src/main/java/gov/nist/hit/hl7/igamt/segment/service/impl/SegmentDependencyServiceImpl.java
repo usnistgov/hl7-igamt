@@ -38,6 +38,7 @@ import gov.nist.hit.hl7.igamt.common.slicing.domain.OrderedSlicing;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.Slice;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
 import gov.nist.hit.hl7.igamt.common.slicing.service.SlicingService;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeDependencyService;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
@@ -108,7 +109,6 @@ public class SegmentDependencyServiceImpl implements SegmentDependencyService {
   @Override
   public void process(Segment segment, SegmentDependencies used, DependencyFilter filter,
       ResourceBindingProcessor rb, String path) throws EntityNotFound {
-
     Map<String, Slicing> slicingMap =  segment.getSlicings() != null ?  segment.getSlicings().stream().collect(
         Collectors.toMap(x -> x.getPath(), x -> x)) : new HashMap<String, Slicing>();
 
@@ -168,13 +168,6 @@ public class SegmentDependencyServiceImpl implements SegmentDependencyService {
 
 
 
-  /**
-   * @return
-   */
-  private boolean isFiltered(DependencyFilter filter, Field f ) {
-    return false;
-  }
-
   private <T extends Slice> void processSlices(List<T> slices, SegmentDependencies used, DependencyFilter filter, String path) throws EntityNotFound {
     if(slices != null) {
       for ( T slice: slices) {
@@ -189,14 +182,14 @@ public class SegmentDependencyServiceImpl implements SegmentDependencyService {
   public void visit(String id, Map<String, Segment> existing, SegmentDependencies used,
       DependencyFilter filter, ResourceBindingProcessor rb, String path) throws EntityNotFound {
 
-    if(!existing.containsKey(id)) {
-      Segment s = segmentService.findById(id);
+      Segment s = existing.containsKey(id)? existing.get(id):  segmentService.findById(id);
+
       if(s != null) {
         existing.put(s.getId(), s);
         rb.addChild(s.getBinding(), path);
         this.process(s, used , filter, rb,  path);
-      }else throw new EntityNotFound(id);
-    }
+      } else throw new EntityNotFound(id);
+    
   }
   private void updateDynamicMapping(Segment segment, HashMap<RealKey, String> newKeys) {
     if (segment.getDynamicMappingInfo() != null) {

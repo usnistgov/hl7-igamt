@@ -6,6 +6,7 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
 import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -55,11 +56,23 @@ public class PathFixes {
 
             DatatypeRegistry datatypeRegistry = ig.getDatatypeRegistry();
             List<Datatype> datatypes = datatypeService.findByIdIn(datatypeRegistry.getLinksAsIds());
-            this.fixDatatypes(datatypes).forEach(datatypeService::save);;
+            this.fixDatatypes(datatypes).forEach(t -> {
+				try {
+					datatypeService.save(t);
+				} catch (ForbiddenOperationException e) {
+					e.printStackTrace();
+				}
+			});;
 
             SegmentRegistry segmentRegistry = ig.getSegmentRegistry();
             List<Segment> segments = segmentService.findByIdIn(segmentRegistry.getLinksAsIds());
-            this.fixSegments(segments).forEach(segmentService::save);
+            this.fixSegments(segments).forEach(t -> {
+				try {
+					segmentService.save(t);
+				} catch (ForbiddenOperationException e) {
+					e.printStackTrace();
+				}
+			});
         });
     }
 

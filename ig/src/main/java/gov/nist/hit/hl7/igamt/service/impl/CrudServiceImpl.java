@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +18,12 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
+import gov.nist.hit.hl7.igamt.common.base.domain.ResourceOrigin;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -447,7 +450,7 @@ public class CrudServiceImpl implements CrudService {
    * @see gov.nist.hit.hl7.igamt.ig.service.CrudService#addValueSets(java.util.List, gov.nist.hit.hl7.igamt.ig.domain.Ig)
    */
   @Override
-  public AddValueSetResponseObject addValueSets(List<AddingInfo> toAdd, Ig ig, String username) throws AddingException, EntityNotFound {
+  public AddValueSetResponseObject addValueSets(List<AddingInfo> toAdd, Ig ig, String username) throws AddingException, EntityNotFound, ForbiddenOperationException {
     // TODO Auto-generated method stub
     Set<String> savedIds = new HashSet<String>();
     for (AddingInfo elm : toAdd) {
@@ -467,8 +470,9 @@ public class CrudServiceImpl implements CrudService {
    * @param savedIds
    * @param ig
    * @param username
+ * @throws ForbiddenOperationException 
    */
-  private void addAsIs(AddingInfo elm, Set<String> savedIds, Ig ig, String username) {
+  private void addAsIs(AddingInfo elm, Set<String> savedIds, Ig ig, String username) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
       addPhinvadsAsIs(elm, savedIds,ig, username );
@@ -478,7 +482,7 @@ public class CrudServiceImpl implements CrudService {
     }
   }
 
-  private void addPhinvadsAsIs(AddingInfo elm, Set<String> savedIds, Ig ig, String username) {
+  private void addPhinvadsAsIs(AddingInfo elm, Set<String> savedIds, Ig ig, String username) throws ForbiddenOperationException {
     Valueset valueset = valuesetService.findExternalPhinvadsByOid(elm.getOid());
 
     if(valueset == null) {
@@ -496,6 +500,8 @@ public class CrudServiceImpl implements CrudService {
       newValueset.setExtensibility(Extensibility.Closed);
       newValueset.setStability(Stability.Dynamic);
       newValueset.setContentDefinition(ContentDefinition.Extensional);
+      newValueset.setId(new ObjectId().toString());
+      newValueset.setResourceOrigin(ResourceOrigin.PHINVADS);
       Valueset saved = valuesetService.save(newValueset);
       ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
       savedIds.add(saved.getId());
@@ -512,10 +518,10 @@ public class CrudServiceImpl implements CrudService {
    * @param ig
    * @param username
    * @throws EntityNotFound 
+   * @throws ForbiddenOperationException 
    */
-  private void addValueSetAsFlavor(AddingInfo elm, Set<String> savedIds, Ig ig, String username) throws EntityNotFound {
+  private void addValueSetAsFlavor(AddingInfo elm, Set<String> savedIds, Ig ig, String username) throws EntityNotFound, ForbiddenOperationException {
     if (elm.getOriginalId() != null) {
-     // Valueset valueset = valuesetService.findById(elm.getOriginalId());
         
         Valueset clone =  resourceManagementService.getElmentFormAddingInfo( username, new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT), Type.VALUESET, elm);
 
@@ -523,7 +529,6 @@ public class CrudServiceImpl implements CrudService {
         clone.getDomainInfo().setScope(Scope.USER);
 
         clone.setUsername(username);
-        clone.setBindingIdentifier(elm.getName());
         clone.setSourceType(elm.getSourceType());
         clone = valuesetService.save(clone);
         ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), elm.isIncludeChildren());
@@ -542,15 +547,16 @@ public class CrudServiceImpl implements CrudService {
    * @param savedIds
    * @param ig
    * @param username
+ * @throws ForbiddenOperationException 
    */
   private void importPhinvadsAsFlavor(AddingInfo elm, Set<String> savedIds, Ig ig,
-      String username) {
+      String username) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
 
 
     Valueset valueset = new Valueset();
     DomainInfo info = new DomainInfo();
-    info.setScope(Scope.PHINVADS);
+    info.setScope(Scope.USER);
     info.setVersion(elm.getDomainInfo().getVersion());
     valueset.setDomainInfo(info);
     if (!elm.isIncludeChildren()) {
@@ -572,12 +578,14 @@ public class CrudServiceImpl implements CrudService {
       }
     }
     valueset.setUsername(username);
+    valueset.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
     valueset.setBindingIdentifier(elm.getName());
     valueset.setName(elm.getDescription());
     valueset.setUrl(elm.getUrl());
     valueset.setOid(elm.getOid());
     valueset.setFlavor(true);
-
+    valueset.setId(new ObjectId().toString());
+    valueset.setResourceOrigin(ResourceOrigin.PHINVADS);
     Valueset saved = valuesetService.save(valueset);
     ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
     savedIds.add(saved.getId());
@@ -589,8 +597,9 @@ public class CrudServiceImpl implements CrudService {
    * @param savedIds
    * @param ig
    * @param username
+ * @throws ForbiddenOperationException 
    */
-  private void createNewValueSet(AddingInfo elm, Set<String> savedIds, Ig ig, String username) {
+  private void createNewValueSet(AddingInfo elm, Set<String> savedIds, Ig ig, String username) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     Valueset valueset = new Valueset();
     DomainInfo info = new DomainInfo();
@@ -606,6 +615,8 @@ public class CrudServiceImpl implements CrudService {
     valueset.setUsername(username);
     valueset.setBindingIdentifier(elm.getName());
     valueset.setUrl(elm.getUrl());
+    valueset.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
+    valueset.setId(new ObjectId().toString());
     Valueset saved = valuesetService.save(valueset);
     ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
     savedIds.add(saved.getId());

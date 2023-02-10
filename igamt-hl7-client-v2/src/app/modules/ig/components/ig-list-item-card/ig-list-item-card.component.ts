@@ -33,6 +33,6 @@ export interface IgListItemControl {
   icon: string;
   default?: boolean;
   action: (item: IgListItem) => void;
-  disabled: (item: IgListItem) => boolean;
+  disabled?: (item: IgListItem) => boolean;
   hide?: (item: IgListItem ) => boolean;
 }

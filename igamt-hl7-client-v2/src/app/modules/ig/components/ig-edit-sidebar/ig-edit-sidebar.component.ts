@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, SystemJsNgModuleLoader, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, ChildrenOutletContexts, Router } from '@angular/router';
 import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
@@ -9,6 +9,7 @@ import { SelectItem } from 'primeng/api';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import { concatMap, filter, flatMap, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { Hl7Config } from 'src/app/modules/shared/models/config.class';
+import { IContent } from 'src/app/modules/shared/models/content.interface';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { selectAllMessages } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
@@ -37,6 +38,7 @@ import { getHl7ConfigState } from '../../../../root-store/config/config.reducer'
 import {
   CreateCoConstraintGroup,
   CreateCoConstraintGroupSuccess,
+  DeleteResources,
 } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
 import { ClearResource } from '../../../../root-store/resource-loader/resource-loader.actions';
@@ -68,6 +70,9 @@ import { CrossReferencesService } from '../../../shared/services/cross-reference
 import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.class';
 import { IgTocFilterService, IIgTocFilterConfiguration, selectIgTocFilter } from '../../services/ig-toc-filter.service';
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
+import { UnusedElementsComponent } from './../../../shared/components/unused-elements/unused-elements.component';
+import { ITypedSection } from './../ig-toc/ig-toc.component';
+import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -604,6 +609,24 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
       })).subscribe();
   }
 
+  manageProfileStructure(event: IContent[]) {
+    console.log(event);
+    this.documentRef$.pipe(
+      take(1),
+      tap((documentRef) => {
+
+        const dialogRef = this.dialog.open(ManageProfileStructureComponent, {
+          data: event,
+        });
+        dialogRef.afterClosed().subscribe(
+          (answer) => {
+            event = [];
+
+          },
+        );
+      })).subscribe();
+  }
+
   triggerTocFilterWarning() {
     this.triggerPopOver.open();
     setTimeout(() => {
@@ -662,6 +685,50 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
             if (tocFilter && tocFilter.usedInConformanceProfiles.active) {
               this.igTocFilterService.setFilter(tocFilter);
               this.triggerTocFilterWarning();
+            }
+          }),
+        );
+      }),
+    ).subscribe();
+  }
+  cleanUnused($event: {children: IDisplayElement[], type: Type}) {
+    this.documentRef$.pipe(
+      take(1),
+      concatMap((documentRef: IDocumentRef) => {
+        return this.crossReferencesService.getUnused(documentRef.documentId, $event.type).pipe(
+          take(1),
+          map((unused: string[]) => {
+            if (unused.length === 0) {
+              const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+                data: {
+                  question: 'No Unused Elements',
+                  action: '',
+                },
+              });
+              dialogRef.afterClosed().subscribe();
+            } else {
+              const unusedMap = {};
+              unused.forEach((element) => {
+                unusedMap[element] = true;
+              });
+              let unusedDisplay: IDisplayElement[] = [];
+
+              unusedDisplay = $event.children.filter((x) => unusedMap[x.id]);
+              const dialogRef = this.dialog.open(UnusedElementsComponent, {
+
+                data: {
+                  ids: unused,
+                  resources: unusedDisplay,
+                },
+              });
+              dialogRef.afterClosed().subscribe(
+                (answer) => {
+                  if (answer) {
+                    console.log(answer);
+                    this.store.dispatch(new DeleteResources({ documentId: documentRef.documentId, ids: answer, type: $event.type }));
+                  }
+                },
+              );
             }
           }),
         );

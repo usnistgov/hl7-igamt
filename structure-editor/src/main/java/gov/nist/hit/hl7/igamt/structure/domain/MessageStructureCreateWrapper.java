@@ -5,18 +5,35 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.Event;
 import java.util.List;
 
 public class MessageStructureCreateWrapper {
-    String name;
+    String structureId;
+    String messageType;
     String description;
     String from;
     String version;
-    List<Event> events;
+    List<MessageEvent> events;
 
-    public String getName() {
-        return name;
+    public String getStructureId() {
+        return structureId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setStructureId(String structureId) {
+        this.structureId = structureId;
+    }
+
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
+    }
+
+    public List<MessageEvent> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<MessageEvent> events) {
+        this.events = events;
     }
 
     public String getDescription() {
@@ -35,9 +52,6 @@ public class MessageStructureCreateWrapper {
         this.from = from;
     }
 
-    public List<Event> getEvents() {
-        return events;
-    }
 
     public String getVersion() {
         return version;
@@ -47,7 +61,4 @@ public class MessageStructureCreateWrapper {
         this.version = version;
     }
 
-    public void setEvents(List<Event> events) {
-        this.events = events;
-    }
 }

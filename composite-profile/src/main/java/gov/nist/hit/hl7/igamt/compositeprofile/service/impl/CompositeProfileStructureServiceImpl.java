@@ -103,16 +103,16 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
 
   
   @Override
-  public void applyChanges(CompositeProfileStructure pc, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException {
+  public void applyChanges(CompositeProfileStructure pc, List<ChangeItemDomain> cItems) throws ApplyChangeException {
 
     Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
-    this.applyMetaData(pc, singlePropertyMap , documentId);
+    this.applyMetaData(pc, singlePropertyMap);
     this.save(pc);
   }
 
-  private void applyMetaData( CompositeProfileStructure cp, Map<PropertyType, ChangeItemDomain> singlePropertyMap, String documentId) throws ApplyChangeException{
+  private void applyMetaData( CompositeProfileStructure cp, Map<PropertyType, ChangeItemDomain> singlePropertyMap) throws ApplyChangeException{
 
-    applyChange.applyResourceChanges(cp, singlePropertyMap , documentId);
+    applyChange.applyResourceChanges(cp, singlePropertyMap);
     ObjectMapper mapper = new ObjectMapper();
 
     if (singlePropertyMap.containsKey(PropertyType.NAME)) {

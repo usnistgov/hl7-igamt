@@ -24,6 +24,7 @@ import nu.xom.Element;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -123,6 +124,7 @@ public class ExportController {
   Path source = Paths.get(this.getClass().getResource("/").getPath());
 
   @RequestMapping(value = "/api/export/ig/{igId}/{format}", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #igId, READ)")
   public @ResponseBody void exportIgDocument(@PathVariable("igId") String igId,
       @PathVariable("format") String format,
       @RequestParam(required = false) String deltamode,
@@ -264,9 +266,7 @@ public class ExportController {
 
   
 
-
-@RequestMapping(value = "/api/export/library/{igId}/configuration/{configId}/{format}", method = RequestMethod.POST, produces = {
-		  "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+  @RequestMapping(value = "/api/export/library/{igId}/configuration/{configId}/{format}", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
   public @ResponseBody void exportLibrary(@PathVariable("igId") String igId,
       @PathVariable("configId") String configId,
       @PathVariable("format") String format,
@@ -308,6 +308,7 @@ public class ExportController {
   }
 
   @RequestMapping(value = "/api/export/ig/{documentId}/quickHtml", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #documentId, READ)")
   public @ResponseBody void exportIgDocumentHtml(@PathVariable("documentId") String documentId,
       @PathVariable("type") ExportType type,
       HttpServletResponse response,
@@ -338,6 +339,7 @@ public class ExportController {
   }
 
   @RequestMapping(value = "/api/export/coconstraintTable", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+  @PreAuthorize("AccessResource('CONFORMANCEPROFILE', #formData.conformanceProfileId, READ)")
   public @ResponseBody void exportCoconstraintTable(CoConstraintExcelExportFormData formData, HttpServletResponse response) throws ExportException, JsonParseException, JsonMappingException, IOException, ResourceNotFoundException, PathNotFoundException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if(formData.getJson() != null) {
@@ -369,6 +371,7 @@ public class ExportController {
 
 
   @RequestMapping(value="/api/import/coconstraintTable", method=RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PreAuthorize("AccessResource('CONFORMANCEPROFILE', #conformanceProfileID, WRITE)")
   @ResponseBody
   public ParserResults handleFileUpload(@RequestPart("file") MultipartFile file,
       @RequestParam("segmentRef") String segmentRef,
@@ -401,6 +404,7 @@ public class ExportController {
   }
 
   @RequestMapping(value = "/api/export/library/{dlId}/quickWord", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+  // TODO Library
   public @ResponseBody void exportDtlDocumentWord(@PathVariable("dlId") String dlId,
       HttpServletResponse response, FormData formData) throws ExportException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -427,6 +431,7 @@ public class ExportController {
 
 
   @RequestMapping(value = "/api/export/{document}/{id}/configuration/{configId}/getFilteredDocument", method = RequestMethod.GET)
+  @PreAuthorize("AccessResource(#document.equals('ig') ? 'IGDOCUMENT' : 'DATATYPELIBRARY', #id, READ)")
   public @ResponseBody ExportConfigurationGlobal getFilteredDocument(
       @PathVariable("id") String id,
       @PathVariable("configId") String configId,
@@ -462,7 +467,8 @@ public class ExportController {
   }
 
 	@RequestMapping(value = "/api/export/ig/{id}/xml/diff", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-	public void exportXML(@PathVariable("id") String id, HttpServletResponse response) throws Exception {
+    @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
+    public void exportXML(@PathVariable("id") String id, HttpServletResponse response) throws Exception {
 
 		Ig ig = igService.findById(id);
 		if (ig != null)  {
@@ -479,7 +485,8 @@ public class ExportController {
 		}
 	}
 	@RequestMapping(value = "/api/export/ig/{id}/{profileId}/xml/diff", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-	public void exportXML(@PathVariable("id") String id, @PathVariable("profileId") String profileId,  HttpServletResponse response) throws Exception {
+    @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
+    public void exportXML(@PathVariable("id") String id, @PathVariable("profileId") String profileId,  HttpServletResponse response) throws Exception {
 		String[] profiles = {profileId};
 		ReqId reqIds = new ReqId();
 		reqIds.setConformanceProfilesId(profiles);

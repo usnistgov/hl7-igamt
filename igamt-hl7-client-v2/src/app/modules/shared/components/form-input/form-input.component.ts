@@ -18,6 +18,8 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
   @Output()
   change: EventEmitter<any>;
   @Input()
+  hideLabel: boolean;
+  @Input()
   type: string;
   @Input()
   options: any;
@@ -40,6 +42,11 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
   @ViewChild('inputElm', { read: ElementRef }) inputElm: ElementRef;
   disabled: boolean;
   control: AbstractControl;
+  patternsUserFriendlyDescription = {
+    '^Z[A-Z0-9]{2}$': 'ZXX where X is an alphanumerical character',
+    '^[A-Z][A-Z0-9]{2}(_[A-Z][A-Z0-9]{2})?$': 'AXX[_AXX] where A is a letter and X is an alphanumerical',
+    '^[A-Z][A-Z0-9]{2}$': 'AXX where A is a letter and X is an alphanumerical',
+  };
 
   constructor(private controlContainer: ControlContainer, private cd: ChangeDetectorRef) {
     this.change = new EventEmitter<any>();
@@ -93,6 +100,14 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
         errors.push('Please enter a valid e-mail');
         break;
 
+      } else if (property === 'pattern') {
+        let error = 'Invalid ' + this.label + ' format';
+        const requiredPattern = this.control.errors['pattern'].requiredPattern;
+        if (requiredPattern && this.patternsUserFriendlyDescription[requiredPattern]) {
+          error += ' name must follow the pattern ' + this.patternsUserFriendlyDescription[requiredPattern];
+        }
+        errors.push(error);
+        break;
       } else if (this.control.errors[property]) {
         errors.push(this.control.errors[property]);
         break;

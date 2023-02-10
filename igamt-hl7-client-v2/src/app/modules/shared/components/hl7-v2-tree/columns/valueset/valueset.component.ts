@@ -251,7 +251,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
       skipReason,
     );
     this.updateSingleCodeBindings(change);
-    if (change) {
+    if (change && change.length > 0) {
       this.vsBindingsChange([], true);
       this.updateValueSetsBindings([]);
     }
@@ -301,30 +301,22 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
     const context = { resource: this.context };
     switch (change.propertyType) {
       case PropertyType.SINGLECODE:
-        return combineLatest(
-          change.oldPropertyValue ? this.bindingService.getSingleCodeBindingDisplay(change.oldPropertyValue, this.repository) : of(undefined),
-          change.propertyValue ? this.bindingService.getSingleCodeBindingDisplay(change.propertyValue, this.repository) : of(undefined),
-        ).pipe(
-          take(1),
-          map(([previous, current]) => {
-            return {
-              current: {
-                context: {
-                  context,
-                  value: current,
-                },
-                template: this.displaySingleCodeTemplate,
-              },
-              previous: {
-                context: {
-                  context,
-                  value: previous,
-                },
-                template: this.displaySingleCodeTemplate,
-              },
-            };
-          }),
-        );
+        return of({
+          current: {
+            context: {
+              context,
+              value: change.propertyValue,
+            },
+            template: this.displaySingleCodeTemplate,
+          },
+          previous: {
+            context: {
+              context,
+              value: change.oldPropertyValue,
+            },
+            template: this.displaySingleCodeTemplate,
+          },
+        });
       case PropertyType.VALUESET:
         return combineLatest(
           change.oldPropertyValue ? this.bindingService.getValueSetBindingDisplay(change.oldPropertyValue, this.repository) : of(undefined),

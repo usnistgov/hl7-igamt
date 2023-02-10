@@ -67,7 +67,7 @@
           <tr>
             <td>
               <p-multiSelect
-              appendTo="body"
+              appendTo="usage"
               [options]="usages" [(ngModel)]="activeFilter.usedInConformanceProfiles.usages" [style]="{'width':'100%'}">
               <ng-template let-selected pTemplate="selectedItems">
                 <span *ngIf="!selected || selected.length === 0">Any Usage</span>

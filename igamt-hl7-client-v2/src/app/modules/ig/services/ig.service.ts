@@ -47,25 +47,25 @@ export class IgService {
   getRegistryAndCollectionByType(type: Type): { registry: string, collection: string } {
     let registry: string;
     let collection: string;
-    if (type === Type.VALUESET) {
+    if (type === Type.VALUESET || type ===  Type.VALUESETREGISTRY) {
       registry = 'valueSetRegistry';
       collection = 'valueSets';
-    } else if (type === Type.CONFORMANCEPROFILE) {
+    } else if (type === Type.CONFORMANCEPROFILE ||  type === Type.CONFORMANCEPROFILEREGISTRY ) {
       registry = 'conformanceProfileRegistry';
       collection = 'messages';
-    } else if (type === Type.DATATYPE) {
+    } else if (type === Type.DATATYPE || type === Type.DATATYPEREGISTRY) {
       registry = 'datatypeRegistry';
       collection = 'datatypes';
-    } else if (type === Type.SEGMENT) {
+    } else if (type === Type.SEGMENT || type === Type.SEGMENTREGISTRY) {
       registry = 'segmentRegistry';
       collection = 'segments';
-    } else if (type === Type.COCONSTRAINTGROUP) {
+    } else if (type === Type.COCONSTRAINTGROUP || type === Type.COCONSTRAINTGROUPREGISTRY) {
       registry = 'coConstraintGroupRegistry';
       collection = 'coConstraintGroups';
-    } else if (type === Type.PROFILECOMPONENT) {
+    } else if (type === Type.PROFILECOMPONENT || type === Type.PROFILECOMPONENTREGISTRY) {
       registry = 'profileComponentRegistry';
       collection = 'profileComponents';
-    } else if (type === Type.COMPOSITEPROFILE) {
+    } else if (type === Type.COMPOSITEPROFILE || type === Type.COMPOSITEPROFILEREGISTRY) {
       registry = 'compositeProfileRegistry';
       collection = 'compositeProfiles';
     }
@@ -137,6 +137,22 @@ export class IgService {
     ];
   }
 
+  deleteListFromRepository(ids: string[], ig: IgDocument, registryType: Type): Action[] {
+    const { registry, collection } = this.getRegistryAndCollectionByType(registryType);
+    return [
+      ...(registry ? [new fromDam.LoadPayloadData({
+        ...ig,
+        [registry]: this.removeByIdIn(ig[registry], ids),
+      })] : []),
+      ...(collection ? [new fromDam.DeleteResourcesFromRepostory({
+        collections: [{
+          key: collection,
+          values: ids,
+        }],
+      })] : []),
+    ];
+  }
+
   updateSections(sections: IDisplayElement[], ig: IgDocument): Action[] {
     const content: IContent[] = IgTOCNodeHelper.updateSections(sections);
     const sectionList: IDisplayElement[] = IgTOCNodeHelper.getIDisplayFromSections(content, '');
@@ -160,6 +176,10 @@ export class IgService {
   removeById(reg: IRegistry, id: string): IRegistry {
     return { ...reg, children: reg.children.filter((elm) => elm.id !== id) };
   }
+  removeByIdIn(reg: IRegistry, ids: string[]): IRegistry {
+
+    return { ...reg, children: reg.children.filter((elm) => ids.indexOf(elm.id) < 0) };
+  }
 
   igToIDisplayElement(ig: IgDocument): IDisplayElement {
     return {
@@ -179,8 +199,9 @@ export class IgService {
     return this.http.post<Message<string>>(this.IG_END_POINT + id + '/clone', data).pipe();
   }
 
-  publish(id: string): Observable<Message<string>> {
-    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/publish', {}).pipe();
+  publish(id: string, publicationInfo: any): Observable<Message<string>> {
+    console.log(publicationInfo);
+    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/publish', publicationInfo).pipe();
   }
 
   updateSharedUsers(sharedUsers: any, id: string): Observable<Message<string>> {
@@ -291,6 +312,10 @@ export class IgService {
     if (url != null) {
       return this.http.delete<Message<any>>(url);
     } else { throwError('Unsupported Url'); }
+  }
+
+  deleteResources(documentId: string, ids: string[], registryType: Type): Observable<string[]> {
+    return this.http.post<string[]>(this.IG_END_POINT + documentId + '/' + registryType + '/deleteResources', ids);
   }
 
   exportXML(igId: string, selectedIds: ISelectedIds, xmlFormat) {
@@ -444,4 +469,5 @@ export class IgService {
   createCompositeProfile(request: ICreateCompositeProfile): Observable<Message<ICreateProfileComponentResponse>> {
     return this.http.post<Message<ICreateProfileComponentResponse>>(this.IG_END_POINT + request.documentId + '/composite-profile/create', request);
   }
+
 }

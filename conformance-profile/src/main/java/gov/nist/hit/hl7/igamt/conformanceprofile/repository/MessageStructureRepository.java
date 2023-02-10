@@ -14,6 +14,7 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.repository;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
@@ -75,7 +76,8 @@ public interface MessageStructureRepository  extends MongoRepository<MessageStru
     public List<MessageStructure> findByCustomTrueAndParticipantsContainingAndStatus(String username, Status status);
 
     public MessageStructure findByCustomTrueAndParticipantsContainingAndId(String username, String id);
-
+    
+    public void deleteByDomainInfoScopeAndDomainInfoVersionIn(Scope scope, List<String> versions);
 
 
 }

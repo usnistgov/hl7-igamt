@@ -1,11 +1,12 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Actions} from '@ngrx/effects';
-import {Action, Store} from '@ngrx/store';
-import {combineLatest, Observable, Subscription, throwError} from 'rxjs';
-import {catchError, concatMap, flatMap, map, take, tap, withLatestFrom} from 'rxjs/operators';
-import {MessageService} from 'src/app/modules/dam-framework/services/message.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Actions } from '@ngrx/effects';
+import { Action, Store } from '@ngrx/store';
+import { combineLatest, Observable, Subscription, throwError } from 'rxjs';
+import { catchError, concatMap, flatMap, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { validateStructureConvention } from 'src/app/modules/shared/functions/convention-factory';
 import {
   selectSegmentStructureById,
   selectSegmentStructures,
@@ -17,6 +18,7 @@ import {IDisplayElement} from '../../../shared/models/display-element.interface'
 import {EditorID} from '../../../shared/models/editor.enum';
 import {StructureEditorComponent} from '../../services/structure-editor-component.abstract';
 import {StructureEditorService} from '../../services/structure-editor.service';
+import { LoadUserStructures } from './../../../../root-store/structure-editor/structure-editor.actions';
 
 export interface ISegmentStructureMetadata {
   name: string;
@@ -34,6 +36,7 @@ export class SegmentMetadataEditorComponent extends StructureEditorComponent imp
 
   s_workspace: Subscription;
   formGroup: FormGroup;
+  isZSegment: Observable<boolean>;
 
   constructor(
     actions$: Actions,
@@ -47,7 +50,9 @@ export class SegmentMetadataEditorComponent extends StructureEditorComponent imp
       title: 'Metadata',
       resourceType: Type.SEGMENT,
     }, actions$, store);
-
+    this.isZSegment = this.initial$.pipe(
+      map((x) => x.name.startsWith('Z')),
+    );
     this.s_workspace = this.currentSynchronized$.pipe(
       withLatestFrom(this.getOthers()),
 
@@ -63,7 +68,7 @@ export class SegmentMetadataEditorComponent extends StructureEditorComponent imp
 
   initFormGroup(others: IDisplayElement[], name: string, version: string) {
     this.formGroup = this.formBuilder.group({
-      name: [''],
+      name: ['', [Validators.pattern('Z[A-Z0-9]{2}'),  Validators.required]],
       identifier: ['', [ validateStructureUnicity(others, name, { version, scope: Scope.USERCUSTOM} ), Validators.required]],
       description: [''],
       hl7Version: [''],
@@ -71,7 +76,7 @@ export class SegmentMetadataEditorComponent extends StructureEditorComponent imp
   }
 
   getOthers(): Observable<IDisplayElement[]> {
-    return  this.store.select(selectSegmentStructures).pipe(
+    return this.store.select(selectSegmentStructures).pipe(
       take(1),
       withLatestFrom(this.elementId$),
       map(([exiting, id]) => {
@@ -82,7 +87,7 @@ export class SegmentMetadataEditorComponent extends StructureEditorComponent imp
 
   editorDisplayNode(): Observable<IDisplayElement> {
     return this.elementId$.pipe(
-      flatMap((id) => {
+      switchMap((id) => {
         return this.store.select(selectSegmentStructureById, { id });
       }),
     );
@@ -94,7 +99,7 @@ export class SegmentMetadataEditorComponent extends StructureEditorComponent imp
       concatMap(([id, current]) => {
         return this.structureEditorService.saveSegmentMetadata(id, current.data).pipe(
           flatMap((message) => {
-            return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: current.data, updateDate: false }), new fromDam.SetValue({ selected: current.data })];
+            return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: current.data, updateDate: false }), new fromDam.SetValue({ selected: current.data }), new LoadUserStructures()];
           }),
           catchError((error) => throwError(this.messageService.actionFromError(error))),
         );

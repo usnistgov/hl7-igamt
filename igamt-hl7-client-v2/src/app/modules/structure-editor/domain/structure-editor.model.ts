@@ -8,7 +8,8 @@ export interface ICustomStructureRegistry {
 }
 
 export interface ICreateMessageStructure {
-  name: string;
+  structureId: string;
+  messageType: string;
   description: string;
   from: string;
   version: string;
@@ -19,6 +20,7 @@ export interface ICreateSegmentStructure {
   identifier: string;
   description: string;
   from: string;
+  zname?: string;
 }
 
 export interface IMessageStructureAndDisplay {
