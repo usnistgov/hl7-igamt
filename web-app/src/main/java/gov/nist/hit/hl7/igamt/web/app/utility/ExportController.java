@@ -9,6 +9,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,6 +20,7 @@ import gov.nist.hit.hl7.igamt.export.domain.ExportFormat;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
 import gov.nist.hit.hl7.igamt.web.app.ig.FormData;
+import nu.xom.Element;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -39,19 +42,28 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableCoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
 import gov.nist.hit.hl7.igamt.common.base.service.DocumentStructureService;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.common.exception.IGNotFoundException;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 import gov.nist.hit.hl7.igamt.delta.exception.IGDeltaException;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.CoConstraintExportMode;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfigurationGlobal;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportDocType;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportType;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConformanceProfileExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
 import gov.nist.hit.hl7.igamt.export.configuration.previous.ExportDecisionRepository;
@@ -64,6 +76,9 @@ import gov.nist.hit.hl7.igamt.export.service.IgNewExportService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
+import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.serialization.newImplementation.service.ExcelImportService;
 import gov.nist.hit.hl7.igamt.serialization.newImplementation.service.SerializeCoconstraintTableToExcel;
@@ -98,6 +113,12 @@ public class ExportController {
   
   @Autowired
   ExportDecisionRepository exportDecisionRepository;
+  
+  @Autowired
+  ConformanceProfileService conformanceProfileService;
+  
+  @Autowired
+  CoConstraintSerializationHelper coConstraintSerializationHelper;
 
   List<String> files = new ArrayList<String>();
   Path source = Paths.get(this.getClass().getResource("/").getPath());
@@ -151,13 +172,38 @@ public class ExportController {
         response.setContentType("text/html");
         response.setHeader("Content-disposition",
             "attachment;filename=" + exportedFile.getFileName());
+        FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+
       }			
       if(format.equalsIgnoreCase(ExportDocType.WORD.toString())) {
         exportedFile = igExportService.exportIgDocumentToWord(username, igDataModel, decision, config.getId());
+        List<ByteArrayOutputStream> excelFiles = this.generateExcelFilesForWord(igDataModel,decision,config.getId());
+        if(excelFiles.isEmpty()) {
+        	response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+            response.setHeader("Content-disposition",
+                "attachment;filename=" + exportedFile.getFileName());
+            FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
 
-        response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-        response.setHeader("Content-disposition",
-            "attachment;filename=" + exportedFile.getFileName());
+        } else {
+        	// Convert ByteArrayOutputStream to imputstreams
+      	  List<InputStream> inputExcelFiles= new ArrayList<InputStream>(); 
+      	  for( ByteArrayOutputStream file : excelFiles) {
+      				InputStream excelInputStream = new ByteArrayInputStream(file.toByteArray());
+      				inputExcelFiles.add(excelInputStream);
+      	  }
+
+        	// Zip the files
+      	ByteArrayOutputStream baos = createZip(exportedFile.getContent(), inputExcelFiles);
+      	InputStream zippedFiles = new ByteArrayInputStream(baos.toByteArray());
+      	
+        	// Set response
+      	response.setContentType("application/zip");   	
+      	response.setHeader("Content-disposition", "attachment;filename=exportedWord.zip");
+//        response.setHeader("Content-disposition",
+//            "attachment;filename=" + exportedFile.getFileName());
+        FileCopyUtils.copy(zippedFiles, response.getOutputStream());
+        }
+        
       }
       FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
 
@@ -167,9 +213,60 @@ public class ExportController {
     }
   }
 
+  private List<ByteArrayOutputStream> generateExcelFilesForWord(IgDataModel igDataModel, ExportFilterDecision decision, String configId) throws ResourceNotFoundException, PathNotFoundException {
+	  List<ByteArrayOutputStream> excelFiles= new ArrayList<ByteArrayOutputStream>(); 
+	  for(String id: decision.getConformanceProfileFilterMap().keySet()) {
+		  ConformanceProfile conformanceProfile = conformanceProfileService.findById(id);
+	        ResourceSkeleton conformanceProfileSkeleton = this.coConstraintSerializationHelper.getConformanceProfileSkeleton(conformanceProfile.getId());
+		  ConformanceProfileExportConfiguration conformanceProfileExportConfiguration = new ConformanceProfileExportConfiguration();
+    	  String coConstraintContextId = "";
+		  if(decision.getOveriddedConformanceProfileMap().containsKey(id)) {
+			  conformanceProfileExportConfiguration = decision.getOveriddedConformanceProfileMap().get(id);
+		  } else {
+				ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
+			  conformanceProfileExportConfiguration = exportConfiguration.getConformamceProfileExportConfiguration();
+		  }
+	      if (conformanceProfile.getCoConstraintsBindings() != null) {
+	          for (CoConstraintBinding coConstraintBinding : conformanceProfile.getCoConstraintsBindings()) {
+	              if (coConstraintBinding != null) {
+	            	  String coConstraintContext = "";
+//                      if(coConstraintBinding.getContext() == null || Strings.isNullOrEmpty(coConstraintBinding.getContext().getPathId())) {
+//                          coConstraintContext = conformanceProfileSkeleton.get().getResource().getVariableName();
+//                      } else {
+//                          ResourceSkeletonBone context = this.coConstraintSerializationHelper.getStructureElementRef(conformanceProfileSkeleton, coConstraintBinding.getContext());
+//                          coConstraintContext = context.getLocationInfo().getHl7Path();
+//                          coConstraintContextId = context.getElementId();
+//                      }    
+                      }
+                  if (coConstraintBinding.getBindings() != null) {
+                      for (CoConstraintBindingSegment coConstraintBindingSegment : coConstraintBinding.getBindings()) {
+                          if (coConstraintBindingSegment != null) {
+//                              ResourceSkeletonBone segmentRef = this.coConstraintSerializationHelper.getSegmentRef(conformanceProfileSkeleton, coConstraintBinding.getContext(), coConstraintBindingSegment.getSegment());
+                              for (CoConstraintTableConditionalBinding coConstraintTableConditionalBinding : coConstraintBindingSegment.getTables()) {
+                            	  ByteArrayOutputStream excelFile = serializeCoconstraintTableToExcel.exportToExcel(
+                                          id,
+                                          coConstraintBinding.getContext().getPathId(),
+                                          coConstraintBindingSegment.getSegment().getPathId(),
+                                          coConstraintTableConditionalBinding.getValue()
+                                  );
+                            	  excelFiles.add(excelFile);
+                          }
+
+	          }
+
+	      }
+
+	  }
+	      }
+	  }
+	  
+  }
+	  return excelFiles;
+  }
+
+  
 
   @RequestMapping(value = "/api/export/library/{igId}/configuration/{configId}/{format}", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-  // TODO Library
   public @ResponseBody void exportLibrary(@PathVariable("igId") String igId,
       @PathVariable("configId") String configId,
       @PathVariable("format") String format,
@@ -411,6 +508,32 @@ public class ExportController {
 			FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
 		}
 	}
+	
+	// Helper functions for zipping
+	
 
+	public ByteArrayOutputStream createZip(InputStream word, List<InputStream> excelFiles) throws IOException {
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	    ZipOutputStream zipOut = new ZipOutputStream(baos);
+	    addFileToZip("WORD_EXPORT.docx", word, zipOut);
+	    int i = 1;
+	    for(InputStream excelFile : excelFiles ) {
+	    addFileToZip("EXCEL_FILE " + i +".xlsx", excelFile, zipOut);
+	    i++;
+	    }
+	    zipOut.close();
+	    return baos;
+	}
+
+
+	public void addFileToZip(String filename, InputStream in, ZipOutputStream zipOut) throws IOException {
+	    ZipEntry entry = new ZipEntry(filename);
+	    zipOut.putNextEntry(entry);
+	    byte[] bytes = new byte[1024];
+	    int length;
+	    while((length = in.read(bytes)) >= 0) {
+	        zipOut.write(bytes, 0, length);
+	    }
+	}
 
 }

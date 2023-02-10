@@ -290,7 +290,7 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
             				ItemProperty itemProperty = profileComponentItemDataModel.getItemProperties().stream().filter((item) -> {
             					return item instanceof PropertyPredicate;
             				}).findAny().get();
-            			Element predicateElement = constraintSerializationService.serializePredicate(((PropertyPredicate) itemProperty).getPredicate(), profileComponentItemDataModel.getLocationInfo().getHl7Path());
+            			Element predicateElement = constraintSerializationService.serializePredicate(((PropertyPredicate) itemProperty).getPredicate(), profileComponentItemDataModel.getLocationInfo().getHl7Path(), null);
                     if(predicateElement != null) {
                     	constraints.appendChild(predicateElement);
                         }

@@ -155,7 +155,7 @@
                                                         <xsl:value-of
 														select="concat('width: 50%;background-color:' , $addedColor) " />
                                                     </xsl:attribute>
-													<xsl:value-of select="@location" />
+													<xsl:value-of select="@locationName" />
 												</xsl:element>
 											</xsl:element>
 										</xsl:when>
@@ -166,7 +166,7 @@
                                                 <xsl:value-of
 												select="concat('background-color:' , $updatedColor)" />
                                             </xsl:attribute>
-											<xsl:value-of select="@location" />
+											<xsl:value-of select="@locationName" />
 										</xsl:when>
 										<xsl:when
 											test="$changeClass[@property='location']/@action = 'ADDED'">
@@ -174,7 +174,7 @@
                                                 <xsl:value-of
 												select="concat('background-color:' , $addedColor)" />
                                             </xsl:attribute>
-											<xsl:value-of select="@location" />
+											<xsl:value-of select="@locationName" />
 										</xsl:when>
 										<xsl:when
 											test="$changeClass[@property='location']/@action = 'DELETED'">
@@ -189,7 +189,7 @@
 								<xsl:otherwise>
 
 									<!-- <xsl:if test="not($deltaMode) or $deltaMode != 'HIDE_WITH_CHANGED_ONLY'"> -->
-									<xsl:value-of select="@location" />
+									<xsl:value-of select="@locationName" />
 									<!-- </xsl:if> -->
 								</xsl:otherwise>
 							</xsl:choose>

@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
+import java.io.IOException;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructureDataModel;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
@@ -20,7 +22,7 @@ import nu.xom.Element;
 public interface IgDataModelSerializationService {
 
 	public Element serializeDocument(DocumentStructureDataModel documentStructureDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
-		      throws SerializationException;
+		      throws SerializationException, IllegalStateException, IOException;
 	
 	public Element serializeAbstractDomain(AbstractDomain abstractDomain, Type type, int position, String title, AbstractDomainExportConfiguration abstractDomainExportConfiguration);
 	
