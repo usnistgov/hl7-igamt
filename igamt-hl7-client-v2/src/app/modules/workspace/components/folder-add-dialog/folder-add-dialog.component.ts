@@ -10,14 +10,16 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 export class FolderAddDialogComponent implements OnInit {
 
   metaDataForm: FormGroup;
+  title: string;
 
   constructor(
     public dialogRef: MatDialogRef<FolderAddDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
+    this.title = data.title || 'Folder';
     this.metaDataForm = new FormGroup({
-      title: new FormControl('', [Validators.required]),
-      description: new FormControl('', []),
+      title: new FormControl(data.folder ? data.folder.title || '' : '', [Validators.required]),
+      description: new FormControl(data.folder ? data.folder.description || '' : '', []),
     });
   }
 

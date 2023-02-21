@@ -1,8 +1,10 @@
+import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
+import { IWorkspaceInfo } from './../../models/models';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { flatMap, map, take, tap } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { selectAllFolders, selectIsWorkspaceAdmin, selectWorkspaceId } from '../../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
@@ -37,8 +39,62 @@ export class WorkspaceSideBarComponent implements OnInit {
     );
   }
 
+  editFolder(folder: IFolderInfo) {
+    this.dialog.open(FolderAddDialogComponent, {
+      data: {
+        title: 'Update Folder : ' + folder.metadata.title,
+        folder: {
+          title: folder.metadata.title,
+          description: folder.metadata.description,
+        }
+      }
+    }).afterClosed().pipe(
+      flatMap((data) => {
+        if (data) {
+          return this.workspaceId$.pipe(
+            take(1),
+            flatMap((id) => {
+              return this.workspaceService.updateFolder(folder.workspaceId, folder.id, data).pipe(
+                flatMap((message) => {
+                  this.store.dispatch(this.messageService.messageToAction(message));
+                  return this.updateWorkspaceState(id);
+                }),
+              );
+            }),
+          );
+        }
+      }),
+    ).subscribe();
+  }
+
+  deleteFolder(folder: IFolderInfo) {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        action: 'Delete Folder',
+        question: 'Are you sure you want to delete folder ' + folder.metadata.title + '? This action will delete all the Implementation Guides inside the folder',
+      }
+    }).afterClosed().pipe(
+      flatMap((answer) => {
+        if (answer) {
+          return this.workspaceService.deleteFolder(folder).pipe(
+            flatMap((message) => {
+              this.store.dispatch(this.messageService.messageToAction(message));
+              return this.updateWorkspaceState(folder.workspaceId);
+            }),
+          );
+        }
+        return of();
+      })
+    ).subscribe();
+
+  }
+
   createFolder() {
-    this.dialog.open(FolderAddDialogComponent, {}).afterClosed().pipe(
+    this.dialog.open(FolderAddDialogComponent, {
+      data: {
+        title: 'Create Folder',
+      }
+    }).afterClosed().pipe(
       flatMap((folder) => {
         if (folder) {
           return this.workspaceId$.pipe(
@@ -47,13 +103,7 @@ export class WorkspaceSideBarComponent implements OnInit {
               return this.workspaceService.addFolder(id, folder).pipe(
                 flatMap((message) => {
                   this.store.dispatch(this.messageService.messageToAction(message));
-                  return this.workspaceService.getWorkspaceInfo(id).pipe(
-                    tap((ws) => {
-                      this.workspaceService.getWorkspaceInfoUpdateAction(ws).forEach((action) => {
-                        this.store.dispatch(action);
-                      });
-                    }),
-                  );
+                  return this.updateWorkspaceState(id);
                 }),
               );
             }),
@@ -61,6 +111,16 @@ export class WorkspaceSideBarComponent implements OnInit {
         }
       }),
     ).subscribe();
+  }
+
+  updateWorkspaceState(id: string): Observable<IWorkspaceInfo> {
+    return this.workspaceService.getWorkspaceInfo(id).pipe(
+      tap((ws) => {
+        this.workspaceService.getWorkspaceInfoUpdateAction(ws).forEach((action) => {
+          this.store.dispatch(action);
+        });
+      }),
+    );
   }
 
   ngOnInit() {

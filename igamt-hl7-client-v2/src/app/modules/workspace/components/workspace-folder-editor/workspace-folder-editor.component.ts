@@ -1,3 +1,4 @@
+import { IFolderMetadata } from './../../models/models';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
@@ -17,7 +18,7 @@ import { Type } from '../../../shared/constants/type.enum';
 import { IFolderContent, WorkspacePermissionType } from '../../models/models';
 import { AbstractWorkspaceEditorComponent } from '../../services/abstract-workspace-editor';
 import { WorkspaceService } from '../../services/workspace.service';
-import { selectIsWorkspaceAdmin } from './../../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
+import { selectIsWorkspaceAdmin, selectFolderById } from './../../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
 import { selectIsAdmin } from './../../../dam-framework/store/authentication/authentication.selectors';
 import { IEntityBrowserResult } from './../../../shared/components/entity-browse-dialog/entity-browse-dialog.component';
 import { CloneModeEnum } from './../../../shared/constants/clone-mode.enum';
@@ -31,6 +32,7 @@ import { WorkspaceDocumentService } from './../../services/workspace-document.se
 export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorComponent implements OnInit, OnDestroy {
 
   folder$: BehaviorSubject<IFolderContent>;
+  folderMeta$: Observable<IFolderMetadata>;
   isEditor$: BehaviorSubject<boolean>;
   subs: Subscription;
   sortOptions = [
@@ -83,6 +85,16 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
       ascending: true,
     });
     this.filter$ = new BehaviorSubject('');
+
+    this.folderMeta$ = this.folder$.pipe(
+      flatMap((f) => {
+        return this.store.select(selectFolderById, { id: f.id }).pipe(
+          map((folder) => {
+            return folder.metadata;
+          }),
+        );
+      }),
+    );
 
     this.documents$ = combineLatest(
       this.folder$,

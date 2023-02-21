@@ -78,13 +78,18 @@ export class WorkspaceService {
     return this.http.get<IFolderContent>(this.WORKSPACE_END_POINT + workspaceId + '/folder/' + folderId);
   }
 
-  addFolder(id: string, folder: IFolderInfo): Observable<Message<string>> {
-    return this.http.post<Message<string>>(this.WORKSPACE_END_POINT + id + '/add-folder', folder);
+  addFolder(workspaceId: string, folder: { title: string, description: string }): Observable<Message<string>> {
+    return this.http.post<Message<string>>(this.WORKSPACE_END_POINT + workspaceId + '/add-folder', folder);
   }
 
-  updateFolder(id: string, folderId: string, folder: IFolderInfo): Observable<Message<string>> {
-    return this.http.post<Message<string>>(this.WORKSPACE_END_POINT + id + '/update-folder/' + folderId, folder);
+  updateFolder(workspaceId: string, folderId: string, folder: { title: string, description: string }): Observable<Message<string>> {
+    return this.http.post<Message<string>>(this.WORKSPACE_END_POINT + workspaceId + '/folder/' + folderId, folder);
   }
+
+  deleteFolder(folder: IFolderInfo): Observable<Message<string>> {
+    return this.http.delete<Message<string>>(this.WORKSPACE_END_POINT + folder.workspaceId + '/folder/' + folder.id);
+  }
+
 
   getWorkspaceUsers(id: string): Observable<IWorkspaceUser[]> {
     return this.http.get<IWorkspaceUser[]>(this.WORKSPACE_END_POINT + id + '/users');

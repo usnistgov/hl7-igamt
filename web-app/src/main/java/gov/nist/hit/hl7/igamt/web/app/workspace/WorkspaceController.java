@@ -88,7 +88,7 @@ public class WorkspaceController {
 		return new ResponseMessage<>(ResponseMessage.Status.SUCCESS, "Folder Created Successfully",  id, new Date());
 	}
 
-	@RequestMapping(value = "/api/workspace/{id}/update-folder/{folderId}", method = RequestMethod.POST, produces = { "application/json" })
+	@RequestMapping(value = "/api/workspace/{id}/folder/{folderId}", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
 	public ResponseMessage<String> getWorkspaceInfo(
 			Authentication authentication,
@@ -110,6 +110,19 @@ public class WorkspaceController {
 	) throws Exception {
 		String username = authentication.getPrincipal().toString();
 		return workspaceService.getFolderContent(id, folderId, username);
+	}
+
+	@RequestMapping(value = "/api/workspace/{id}/folder/{folderId}", method = RequestMethod.DELETE, produces = { "application/json" })
+	@ResponseBody
+	public ResponseMessage<String> deleteFolderContent(
+			Authentication authentication,
+			@PathVariable("id") String id,
+			@PathVariable("folderId") String folderId
+	) throws Exception {
+		String username = authentication.getPrincipal().toString();
+		workspaceService.deleteFolder(id, folderId, username);
+		return new ResponseMessage<>(ResponseMessage.Status.SUCCESS, "Folder Deleted Successfully",  id, new Date());
+
 	}
 
 	@RequestMapping(value = "/api/workspace/{id}/home", method = RequestMethod.POST, produces = { "application/json" })

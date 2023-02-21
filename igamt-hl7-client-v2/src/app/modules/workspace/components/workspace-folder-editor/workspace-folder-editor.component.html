@@ -17,21 +17,26 @@
     </div>
   </ng-container>
 </ng-template>
-<ng-template #headerTitle let-active>
-  <h4 style="margin: 0;">
-    <i class="fa fa-folder" style="margin-right: 5px;"></i>
-    {{active.display.name}}
-  </h4>
-</ng-template>
-<ng-container *ngIf="folder$ | async as folder" >
-  <span style="margin-top: 10px; margin-bottom: 20px;" *ngIf="folder && folder.metadata?.description" >
-    {{folder.metadata?.description}}
-  </span>
+<ng-container *ngIf="folderMeta$ | async as folder">
+  <ng-template #headerTitle>
+    <h4 style="margin: 0;">
+      <i class="fa fa-folder" style="margin-right: 5px;"></i>
+      {{folder.title}}
+    </h4>
+  </ng-template>
 </ng-container>
 <div style="overflow: hidden;">
-  <div class="search-bar">
 
-    <p-dropdown *ngIf="sortProperty$ | async as sp" (ngModelChange)="sortPropertyChanged($event)" [(ngModel)]="sp.property" [autoDisplayFirst]="false"
+  <ng-container *ngIf="folderMeta$ | async as folder">
+    <div style="padding-top: 10px; padding-bottom: 20px;" *ngIf="folder && folder.description">
+      <span >
+        {{folder.description}}
+      </span>
+    </div>
+  </ng-container>
+
+  <div class="search-bar" >
+    <p-dropdown *ngIf="sortProperty$ | async as sp" (ngModelChange)="sortPropertyChanged($event)" [ngModel]="sp" [autoDisplayFirst]="false"
                 [options]="sortOptions" [placeholder]="'Sort Criterion'">
     </p-dropdown>
     <button *ngIf="sortOrder$ | async as so" (click)="sortOrderChanged(!so.ascending)" class="btn btn-sm btn-primary" style="height: 35px;">

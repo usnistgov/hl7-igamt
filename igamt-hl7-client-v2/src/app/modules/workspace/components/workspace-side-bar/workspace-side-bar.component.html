@@ -30,11 +30,19 @@
   <div class="list">
     <div style="background-color: #f3f3f3; flex-grow: 1;">
       <ul class="list-group">
-        <li *ngFor="let folder of folders$ | async" [routerLink]="['folder', folder.id]" class="list-group-item folder-list-item cursor-pointer" routerLinkActive="nav-active-link" >
+        <li [contextMenu]="folderMenu" *ngFor="let folder of folders$ | async" [routerLink]="['folder', folder.id]" class="list-group-item folder-list-item cursor-pointer" routerLinkActive="nav-active-link" >
           <span>
             <i class="fa fa-folder" style="font-size: larger; margin-right: 5px;"></i>
             {{folder.metadata.title}}
           </span>
+          <context-menu #folderMenu [disabled]="!(isAdmin$ | async)">
+            <ng-template (execute)="editFolder(folder)" contextMenuItem>
+              <i class="fa fa-pencil"></i> Edit Folder
+            </ng-template>
+            <ng-template (execute)="deleteFolder(folder)" contextMenuItem>
+              <i class="fa fa-trash"></i> Delete Folder
+            </ng-template>
+          </context-menu>
           <span style="display: flex;">
             <ng-container style="margin-left: 5px;" [ngSwitch]="folder.permissionType">
               <span *ngSwitchCase="'VIEW'" [ngbPopover]="viewPopContent" triggers="mouseenter:mouseleave" container="body" placement="bottom" tr  class="badge" style="background-color: green; color: white; font-weight: bold;">V</span>

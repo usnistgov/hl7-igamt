@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
+import gov.nist.hit.hl7.igamt.common.base.domain.WorkspaceAudience;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.workspace.domain.*;
 import gov.nist.hit.hl7.igamt.workspace.exception.CreateRequestException;
@@ -86,6 +87,42 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 		int position = workspace.getFolders().stream().mapToInt(Folder::getPosition).max().orElse(0) + 1;
 		folder.setPosition(position);
 		workspace.getFolders().add(folder);
+		return this.workspaceRepo.save(workspace);
+	}
+
+	@Override
+	public Workspace deleteFolder(String workspaceId, String folderId, String username) throws Exception {
+		Workspace workspace = this.workspaceRepo.findById(workspaceId)
+				.orElseThrow(() -> new WorkspaceNotFound(workspaceId));
+		if(!this.workspacePermissionService.isAdmin(workspace, username)) {
+			throw new WorkspaceForbidden();
+		}
+
+		Folder folder = workspace.getFolders().stream()
+				.filter((f) -> f.getId().equals(folderId)).findAny()
+				.orElseThrow(() -> new Exception("Folder not found " + folderId));
+
+		List<Ig> igs = folder.getChildren().stream().map((child) -> this.igService.findById(child.getId())).collect(Collectors.toList());
+
+		// Delete IGs in the folder (Check that the IGs have the correct Audience)
+		for(Ig ig: igs) {
+			if(ig.getAudience() instanceof WorkspaceAudience) {
+				WorkspaceAudience audience = (WorkspaceAudience) ig.getAudience();
+				if(workspaceId.equals(audience.getWorkspaceId()) && folderId.equals(audience.getFolderId())) {
+					this.igService.delete(ig);
+				}
+			}
+		}
+
+		// Delete workspace from the folder
+		workspace.getFolders().remove(folder);
+		// Delete user permissions related to the folder
+		workspace.getUserAccessInfo().getUsers().forEach((user) -> {
+			WorkspacePermissions permissions = user.getPermissions();
+			if(permissions.getByFolder() != null) {
+				permissions.getByFolder().remove(folderId);
+			}
+		});
 		return this.workspaceRepo.save(workspace);
 	}
 

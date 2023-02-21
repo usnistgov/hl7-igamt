@@ -27,6 +27,7 @@ public interface WorkspaceService {
 	// Actions
 	Workspace createWorkspace(WorkspaceCreateRequest createInfo, String username) throws CreateRequestException;
 	Workspace createFolder(String workspaceId, AddFolderRequest addFolderRequest, String username) throws Exception;
+	Workspace deleteFolder(String workspaceId, String folderId, String username) throws Exception;
 
 	// Save
 	Workspace saveHomeContent(String workspaceId, HomeContentWrapper home, String username) throws Exception;
