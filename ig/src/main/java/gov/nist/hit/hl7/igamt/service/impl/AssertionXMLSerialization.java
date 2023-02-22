@@ -37,8 +37,14 @@ public class AssertionXMLSerialization {
 
         if (assertion.getSubject().getOccurenceType() != null) {
             if (assertion.getSubject().getOccurenceType().equals("atLeast")) {
-            	occurenceStr = "AtLeastOnce=\"true\"";
-            	strPath1Mode = "Path1Mode=\"AtLeastOne\"";
+            	if(notAssertion) {
+                	occurenceStr = "AtLeastOnce=\"false\"";
+                	strPath1Mode = "Path1Mode=\"All\"";
+            	} else {
+                	occurenceStr = "AtLeastOnce=\"true\"";
+                	strPath1Mode = "Path1Mode=\"AtLeastOne\"";            		
+            	}
+
             } else if (assertion.getSubject().getOccurenceType().equals("noOccurrence")) {
             	occurenceStr = "Min=\"0\" Max\"0\"";
             	strPath1Mode = "Path1Mode=\"0\"";
@@ -49,8 +55,14 @@ public class AssertionXMLSerialization {
             	occurenceStr = "Min=\"" + assertion.getSubject().getOccurenceValue() + "\" Max\"" + assertion.getSubject().getOccurenceValue()+ "\"";
             	strPath1Mode = "Path1Mode=\"" + assertion.getSubject().getOccurenceValue() + "\"";
             } else if (assertion.getSubject().getOccurenceType().equals("all")) {
-            	occurenceStr = "AtLeastOnce=\"false\"";
-            	strPath1Mode = "Path1Mode=\"All\"";
+            	if(notAssertion) {
+            		occurenceStr = "AtLeastOnce=\"true\"";
+                	strPath1Mode = "Path1Mode=\"AtLeastOne\"";
+            	} else {
+            		occurenceStr = "AtLeastOnce=\"false\"";
+                	strPath1Mode = "Path1Mode=\"All\"";	
+            	}
+            	
             } else if (assertion.getSubject().getOccurenceType().equals("instance")) {
                 sPathStr = this.generatePathService.replaceLast(sPathStr, "[*]", "" + assertion.getSubject().getOccurenceValue());
             }
@@ -224,7 +236,7 @@ public class AssertionXMLSerialization {
             case cEquivalentLater:
                 result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GE" + "\" Path2=\""
                         + cPathStr
-                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr + "\" Truncated=\"false\" IdenticalEquality=\"true\" "
+                        + "\" NotPresentBehavior=\"" + notPresentBehaviorStr + "\" Truncated=\"false\" IdenticalEquality=\"false\" "
                         + strPath1Mode + " " + strPath2Mode
                         + "/>";
                 break;
