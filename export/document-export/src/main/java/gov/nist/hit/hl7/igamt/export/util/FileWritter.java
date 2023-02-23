@@ -1,9 +1,11 @@
 package gov.nist.hit.hl7.igamt.export.util;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 public class FileWritter {
 	
 	public void createAndWriteToFile(String content) throws IOException {
@@ -12,4 +14,6 @@ public class FileWritter {
         Files.write(xmlFile, content.getBytes(StandardCharsets.UTF_8));
         System.out.println("FINISHED WRITTING XML IN :" + xmlFile.toString());
 	}
+
 }
+

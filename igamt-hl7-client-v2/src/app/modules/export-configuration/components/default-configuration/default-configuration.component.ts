@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import * as _ from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { UserMessage } from 'src/app/modules/dam-framework/models/messages/message.class';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
@@ -45,7 +45,7 @@ export class DefaultConfigurationComponent implements OnInit {
     this.exportConfigurationService.getAllExportConfigurations(type).subscribe(
       (x) => {
         this.configList = x;
-        if (this.currentConfiguration.type !== type ) {
+        if (this.currentConfiguration && this.currentConfiguration.type !== type ) {
           this.currentConfiguration = null;
         }
          });
@@ -203,7 +203,7 @@ export class DefaultConfigurationComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.activeRoute.queryParams.subscribe((params) => {
+    this.activeRoute.queryParams.pipe(filter((x) => x != null)).subscribe((params) => {
       this.type = params.type;
       console.log(this.type);
       this.loadExportConfigurationList(this.type);

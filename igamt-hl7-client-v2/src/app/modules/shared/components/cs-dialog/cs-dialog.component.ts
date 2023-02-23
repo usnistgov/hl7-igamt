@@ -75,6 +75,7 @@ export class CsDialogComponent implements OnDestroy {
     this.assertionMode = data.assertionMode;
     this.title = data.title;
     this.excludePaths = data.excludePaths || [];
+    this.hideFreeText = data.hideFreeText;
 
     this.predicateElementId = data.predicateElementId;
     if (this.predicateMode && this.predicateElementId) {
@@ -192,6 +193,7 @@ export class CsDialogComponent implements OnDestroy {
   xmlVisible = true;
   activeStatement = 0;
   alive = true;
+  hideFreeText = false;
 
   @ViewChild('csForm', { read: NgForm }) form: NgForm;
 
@@ -495,8 +497,10 @@ export class CsDialogComponent implements OnDestroy {
   }
 
   setActiveWithoutDependencies() {
-    this.activeStatement = this.pattern.tokens
-      .find((t) => !t.dependency && t.type === TokenType.STATEMENT).value.data.id;
+    if (this.pattern) {
+      this.activeStatement = this.pattern.tokens
+        .find((t) => !t.dependency && t.type === TokenType.STATEMENT).value.data.id;
+    }
   }
 
   done() {

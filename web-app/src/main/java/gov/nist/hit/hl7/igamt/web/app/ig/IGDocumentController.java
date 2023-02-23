@@ -1224,6 +1224,19 @@ public class IGDocumentController extends BaseController {
         new Date(), id);
   }
 
+
+  @RequestMapping(value = "/api/igdocuments/{id}/lock", method = RequestMethod.POST, produces = {
+  "application/json" })
+  // TODO
+  public @ResponseBody ResponseMessage<String> lockIg(@PathVariable("id") String id,  Authentication authentication)
+      throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
+    Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+    
+    this.igService.lockIg(ig);
+    return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Locked Successfully", id, false,
+        new Date(), id);
+  }
   @RequestMapping(value = "/api/igdocuments/{id}/updateSharedUser", method = RequestMethod.POST, produces = {
   "application/json" })
   // TODO

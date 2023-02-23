@@ -241,7 +241,7 @@ export class LibraryEditEffects extends DamWidgetEffect {
                 authors: library.authors,
                 hl7Versions: library.metadata.hl7Versions,
                 status: library.status,
-                implementationNotes: library.authorNotes,
+                authorNotes: library.authorNotes,
               },
             });
           }),

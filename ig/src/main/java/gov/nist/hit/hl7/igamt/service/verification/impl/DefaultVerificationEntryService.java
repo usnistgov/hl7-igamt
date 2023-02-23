@@ -153,6 +153,28 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
+    public IgamtObjectError CoConstraintTableIdIsMissing(String pathId, String locationName, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("COCONSTRAINT_TABLE_ID_MISSING")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_TABLE)
+                .message("Co-Constraint table is missing Identifier property")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError CoConstraintTableIdIsDuplicate(String pathId, String locationName, String duplicateIdentifier, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("COCONSTRAINT_TABLE_ID_DUPLICATE")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_TABLE)
+                .message("Co-Constraint table Identifier \""+ duplicateIdentifier +"\" is duplicate")
+                .entry();
+    }
+
+    @Override
     public IgamtObjectError CoConstraintInvalidHeaderType(String pathId, String name, PropertyType propertyType, String id, Type type, LocationInfo info, ColumnType column, String reason) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_INVALID_HEADER_TYPE")
                 .error()

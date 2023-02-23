@@ -56,6 +56,7 @@ public class AssertionVerificationService extends VerificationUtils {
     }
 
     public List<IgamtObjectError> checkSubContextAssertion(ResourceSkeleton skeleton, Location location, SubContextAssertion assertion) {
+
         return this.getTargetAndVerify(
                 skeleton,
                 null,
@@ -63,8 +64,71 @@ public class AssertionVerificationService extends VerificationUtils {
                 assertion.getContext().getPath(),
                 null,
                 "SubContext",
-                (context) -> this.checkAssertion(context, location, assertion.getChild())
+                (context) -> {
+                    List<IgamtObjectError> issues = new ArrayList<>();
+                    issues.addAll(
+                            this.checkOccurrences(
+                                    context,
+                                    skeleton,
+                                    location,
+                                    assertion.getContext().getOccurenceType(),
+                                    assertion.getContext().getOccurenceValue()
+                            )
+                    );
+                    issues.addAll(this.checkAssertion(context, location, assertion.getChild()));
+                    return issues;
+                }
         );
+    }
+
+    public List<IgamtObjectError> checkOccurrences(ResourceSkeleton subject, ResourceSkeleton context, Location location, String occurrenceType, int occurrenceValue) {
+        int max = this.getMaxRepeat(subject, context);
+        int multi = this.getMultiLevelRepeat(subject, context);
+
+        if(max <= 1) {
+            // No Repeat Allowed
+            return Arrays.asList(
+                    this.entry.AssertionOccurrenceTypeOnNotRepeatable(
+                            location,
+                            subject.getResource().getId(),
+                            subject.getResource().getType(),
+                            ((ResourceSkeletonBone) subject).getLocationInfo(),
+                            occurrenceType,
+                            ((ResourceSkeletonBone) subject).getLocationInfo().getName()
+                    )
+            );
+        }
+
+        if(multi > 1 && occurrenceType.equals("instance")) {
+            // Instance not allowed on multi level repeat
+            return Arrays.asList(
+                    this.entry.AssertionOccurrenceTypeInstanceOnNotMultiLevelRepeatable(
+                            location,
+                            subject.getResource().getId(),
+                            subject.getResource().getType(),
+                            ((ResourceSkeletonBone) subject).getLocationInfo(),
+                            ((ResourceSkeletonBone) subject).getLocationInfo().getName()
+                    )
+            );
+        }
+
+        if(occurrenceValue > max) {
+            // Over max
+            return Arrays.asList(
+                    this.entry.AssertionOccurrenceValueOverMax(
+                            location,
+                            subject.getResource().getId(),
+                            subject.getResource().getType(),
+                            ((ResourceSkeletonBone) subject).getLocationInfo(),
+                            occurrenceType,
+                            max,
+                            occurrenceValue,
+                            ((ResourceSkeletonBone) subject).getLocationInfo().getName()
+                    )
+            );
+        }
+
+        return this.NoErrors();
     }
 
     public List<IgamtObjectError> checkSingleAssertion(ResourceSkeleton skeleton, Location location, SingleAssertion assertion) {
@@ -93,51 +157,7 @@ public class AssertionVerificationService extends VerificationUtils {
                     }
 
                     if(!Strings.isNullOrEmpty(assertion.getSubject().getOccurenceType())) {
-                        int max = this.getMaxRepeat(subject, skeleton);
-                        int multi = this.getMultiLevelRepeat(subject, skeleton);
-
-                        if(max <= 1) {
-                            // No Repeat Allowed
-                            return Arrays.asList(
-                                    this.entry.AssertionOccurrenceTypeOnNotRepeatable(
-                                            location,
-                                            subject.getResource().getId(),
-                                            subject.getResource().getType(),
-                                            ((ResourceSkeletonBone) subject).getLocationInfo(),
-                                            assertion.getSubject().getOccurenceType(),
-                                            ((ResourceSkeletonBone) subject).getLocationInfo().getName()
-                                    )
-                            );
-                        }
-
-                        if(multi > 1 && assertion.getSubject().getOccurenceType().equals("instance")) {
-                            // Instance not allowed on multi level repeat
-                            return Arrays.asList(
-                                    this.entry.AssertionOccurrenceTypeInstanceOnNotMultiLevelRepeatable(
-                                            location,
-                                            subject.getResource().getId(),
-                                            subject.getResource().getType(),
-                                            ((ResourceSkeletonBone) subject).getLocationInfo(),
-                                            ((ResourceSkeletonBone) subject).getLocationInfo().getName()
-                                    )
-                            );
-                        }
-
-                        if(assertion.getSubject().getOccurenceValue() > max) {
-                            // Over max
-                            return Arrays.asList(
-                                    this.entry.AssertionOccurrenceValueOverMax(
-                                            location,
-                                            subject.getResource().getId(),
-                                            subject.getResource().getType(),
-                                            ((ResourceSkeletonBone) subject).getLocationInfo(),
-                                            assertion.getSubject().getOccurenceType(),
-                                            max,
-                                            assertion.getSubject().getOccurenceValue(),
-                                            ((ResourceSkeletonBone) subject).getLocationInfo().getName()
-                                    )
-                            );
-                        }
+                        return this.checkOccurrences(subject, skeleton, location, assertion.getSubject().getOccurenceType(), assertion.getSubject().getOccurenceValue());
                     }
                     return this.NoErrors();
                 }
@@ -164,51 +184,7 @@ public class AssertionVerificationService extends VerificationUtils {
                                     );
                                 }
                                 if(!Strings.isNullOrEmpty(assertion.getComplement().getOccurenceType())) {
-                                    int max = this.getMaxRepeat(complement, skeleton);
-                                    int multi = this.getMultiLevelRepeat(complement, skeleton);
-
-                                    if(max <= 1) {
-                                        // No Repeat Allowed
-                                        return Arrays.asList(
-                                                this.entry.AssertionOccurrenceTypeOnNotRepeatable(
-                                                        location,
-                                                        complement.getResource().getId(),
-                                                        complement.getResource().getType(),
-                                                        ((ResourceSkeletonBone) complement).getLocationInfo(),
-                                                        assertion.getComplement().getOccurenceType(),
-                                                        ((ResourceSkeletonBone) complement).getLocationInfo().getName()
-                                                )
-                                        );
-                                    }
-
-                                    if(multi > 1 && assertion.getComplement().getOccurenceType().equals("instance")) {
-                                        // Instance not allowed on multi level repeat
-                                        return Arrays.asList(
-                                                this.entry.AssertionOccurrenceTypeInstanceOnNotMultiLevelRepeatable(
-                                                        location,
-                                                        complement.getResource().getId(),
-                                                        complement.getResource().getType(),
-                                                        ((ResourceSkeletonBone) complement).getLocationInfo(),
-                                                        ((ResourceSkeletonBone) complement).getLocationInfo().getName()
-                                                )
-                                        );
-                                    }
-
-                                    if(assertion.getComplement().getOccurenceValue() > max) {
-                                        // Over max
-                                        return Arrays.asList(
-                                                this.entry.AssertionOccurrenceValueOverMax(
-                                                        location,
-                                                        complement.getResource().getId(),
-                                                        complement.getResource().getType(),
-                                                        ((ResourceSkeletonBone) complement).getLocationInfo(),
-                                                        assertion.getComplement().getOccurenceType(),
-                                                        max,
-                                                        assertion.getComplement().getOccurenceValue(),
-                                                        ((ResourceSkeletonBone) complement).getLocationInfo().getName()
-                                                )
-                                        );
-                                    }
+                                    return this.checkOccurrences(complement, skeleton, location, assertion.getComplement().getOccurenceType(), assertion.getComplement().getOccurenceValue());
                                 }
                                 return this.NoErrors();
                             }

@@ -163,6 +163,9 @@ body {
   width: 100%;
 }
 
+body .ui-chips > ul.ui-inputtext .ui-chips-input-token input{
+  width: 200px;
+}
 .fr-box.fr-basic .fr-element {
   min-height: 200px !important;
 }

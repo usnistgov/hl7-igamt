@@ -106,6 +106,10 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
   public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, int position, SegmentExportConfiguration segmentExportConfiguration, ExportFilterDecision exportFilterDecision, Boolean deltaMode) throws SerializationException {
     Element segmentElement = igDataModelSerializationService.serializeResource(segmentDataModel.getModel(), Type.SEGMENT, position, segmentExportConfiguration);
     Segment segment = segmentDataModel.getModel();
+	ResourceSkeleton root = new ResourceSkeleton(
+            new ResourceRef(Type.SEGMENT, segment.getId()),
+            this.resourceSkeletonService
+    );
     if(segmentExportConfiguration.isReasonForChange()){
       segmentElement.appendChild(reasonForChangeSerializationService.serializeReasonForChange(segment.getLabel(),segment.getBinding(), segment.getChildren()));
     }
@@ -223,10 +227,6 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
       }
     }
     if (segment.getSlicings()!= null) {
-    	ResourceSkeleton root = new ResourceSkeleton(
-                new ResourceRef(Type.SEGMENT, segment.getId()),
-                this.resourceSkeletonService
-        );
         Element slicingElement = null;
 		try {
 			slicingElement = slicingSerialization.serializeSlicing(segment.getSlicings(), root, Type.SEGMENT,bindedPaths);
@@ -240,7 +240,7 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
     
   }
     if(!segmentDataModel.getConformanceStatements().isEmpty()|| !segmentDataModel.getPredicateMap().isEmpty()) {
-      Element constraints = constraintSerializationService.serializeConstraints(segmentDataModel.getConformanceStatements(), segmentDataModel.getPredicateMap(), segmentExportConfiguration.getConstraintExportConfiguration());
+      Element constraints = constraintSerializationService.serializeConstraints(segmentDataModel.getConformanceStatements(), segmentDataModel.getPredicateMap(), segmentExportConfiguration.getConstraintExportConfiguration(), root);
       if (constraints != null) {
         segmentElement.appendChild(constraints);
       }

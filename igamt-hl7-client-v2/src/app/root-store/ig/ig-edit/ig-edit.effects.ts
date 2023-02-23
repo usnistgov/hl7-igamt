@@ -303,7 +303,7 @@ export class IgEditEffects extends DamWidgetEffect {
                 authors: ig.authors,
                 hl7Versions: ig.metadata.hl7Versions,
                 status: ig.status,
-                implementationNotes: ig.authorNotes,
+                authorNotes: ig.authorNotes,
               },
             });
           }),

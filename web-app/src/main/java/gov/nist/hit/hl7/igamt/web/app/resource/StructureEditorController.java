@@ -35,7 +35,7 @@ public class StructureEditorController {
 
     @RequestMapping(value = "api/structure-editor/structure", method = RequestMethod.POST, produces = {"application/json" })
     public @ResponseBody
-    MessageStructureAndDisplay createStructure(@RequestBody MessageStructureCreateWrapper request, Authentication authentication) {
+    MessageStructureAndDisplay createStructure(@RequestBody MessageStructureCreateWrapper request, Authentication authentication) throws Exception {
         return structureService.createMessageStructure(request, authentication.getName());
     }
 
@@ -56,7 +56,7 @@ public class StructureEditorController {
     @RequestMapping(value = "api/structure-editor/structure/{id}/metadata/save", method = RequestMethod.POST, produces = {"application/json" })
     @PreAuthorize("AccessResource('MESSAGESTRUCTURE', #id, WRITE)")
     public @ResponseBody
-    ResponseMessage<Object> saveMetadata(@PathVariable("id") String id, @RequestBody MessageStructureMetadata metadata, Authentication authentication) {
+    ResponseMessage<Object> saveMetadata(@PathVariable("id") String id, @RequestBody MessageStructureMetadata metadata, Authentication authentication) throws Exception {
         MessageStructure ms = structureService.saveMessageMetadata(id, authentication.getName(), metadata);
         return new ResponseMessage<Object>(ResponseMessage.Status.SUCCESS, "MESSAGE METADATA SAVED", ms.getId(), new Date());
     }
