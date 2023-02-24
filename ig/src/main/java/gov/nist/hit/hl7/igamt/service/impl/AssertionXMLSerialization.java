@@ -19,7 +19,6 @@ public class AssertionXMLSerialization {
         ComplementKey key = complement.getComplementKey();
         boolean notAssertion = assertion.getVerbKey().contains("NOT");
 
-
         String sPathStr = this.generatePathService.generatePath(assertion.getSubject().getPath(), targetId, level, context);
         String cPathStr = null;
         String occurenceStr = "";
@@ -380,8 +379,10 @@ public class AssertionXMLSerialization {
                 }
             }
         	
+        	Subcon subcon = this.generatePathService.generateSubCon(sAssertion.getContext().getPath(), targetId, level, context);
+        	
             return "<SubContext Path=\"" + sPathStr + "\" " + occurenceStr + ">"
-            		+ this.generateAssertionScript(sAssertion.getChild(), level, targetId, context, presenceCheckOn)
+            		+ this.generateAssertionScript(sAssertion.getChild(), subcon.getLevel(), subcon.getTargetId(), subcon.getContext(), presenceCheckOn)
             		+ "</SubContext>";
         } else if (assertion instanceof SingleAssertion) {
             return this.generateSingleAssertionScript((SingleAssertion) assertion, level, targetId,
