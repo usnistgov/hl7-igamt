@@ -132,7 +132,7 @@ export class StatementTarget {
     }
   }
 
-  clearOccurrenceValue(clearType?: boolean) {
+  clearOccurrenceValue(clearType: boolean = false) {
     if (clearType) {
       this.value.occurenceType = undefined;
     }

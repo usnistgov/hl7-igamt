@@ -1,8 +1,7 @@
-import { Hl7V2TreeService } from './../../services/hl7-v2-tree.service';
 import { Component, EventEmitter, Input, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { combineLatest } from 'rxjs';
-import { finalize, map, take, tap, flatMap } from 'rxjs/operators';
+import { finalize, flatMap, map, take, tap } from 'rxjs/operators';
 import { ComparativeType, DeclarativeType, OccurrenceType, PropositionType, StatementType } from '../../models/conformance-statements.domain';
 import { AssertionMode, IComplement, IPath, ISimpleAssertion, ISubject } from '../../models/cs.interface';
 import { ElementNamingService } from '../../services/element-naming.service';
@@ -13,6 +12,7 @@ import { CsStatementComponent, IStatementTokenPayload } from '../cs-dialog/cs-st
 import { ALL_OCCURRENCES, COMPARATIVES, DECLARATIVES, IOption, PROPOSITIONS, VERBS_SHOULD } from '../cs-dialog/cs-statement.constants';
 import { IToken, LeafStatementType, Statement } from '../pattern-dialog/cs-pattern.domain';
 import { ConformanceStatementStrength } from './../../models/conformance-statements.domain';
+import { Hl7V2TreeService } from './../../services/hl7-v2-tree.service';
 import { VERBS_SHALL } from './../cs-dialog/cs-statement.constants';
 
 @Component({
@@ -209,7 +209,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
               }
               this.statementsList = this.getAllowedStatements(this.subject, token.value.data.branch, this.statementType);
               this.subjectOccurrenceList = this.getAllowedOccurrenceList(this.subject, this.assertion);
-            })
+            }),
           ),
           this.findNode(this.compare.getValue().path, token.payload.getValue().effectiveTree).pipe(
             tap((node) => {
@@ -217,7 +217,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
                 this.compare.setNode(node, token.payload.getValue().effectiveTree);
               }
               this.compareOccurrenceList = this.getAllowedOccurrenceList(this.compare, this.assertion);
-            })
+            }),
           ),
         );
       }),

@@ -1,6 +1,6 @@
-import { Hl7V2TreeService } from './../../services/hl7-v2-tree.service';
 import { Component } from '@angular/core';
-import { map, take, tap, flatMap, catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
+import { catchError, flatMap, map, take, tap } from 'rxjs/operators';
 import { ISubContext, ISubject } from '../../models/cs.interface';
 import { ElementNamingService } from '../../services/element-naming.service';
 import { PathService } from '../../services/path.service';
@@ -8,8 +8,8 @@ import { StatementTarget } from '../../services/statement.service';
 import { RestrictionCombinator, RestrictionType } from '../../services/tree-filter.service';
 import { CsStatementComponent, IStatementTokenPayload } from '../cs-dialog/cs-statement.component';
 import { IToken, Statement } from '../pattern-dialog/cs-pattern.domain';
-import { IOption, ALL_OCCURRENCES } from './../cs-dialog/cs-statement.constants';
-import { throwError } from 'rxjs';
+import { Hl7V2TreeService } from './../../services/hl7-v2-tree.service';
+import { ALL_OCCURRENCES, IOption } from './../cs-dialog/cs-statement.constants';
 
 @Component({
   selector: 'app-cs-subcontext',
@@ -73,7 +73,7 @@ export class CsSubcontextComponent extends CsStatementComponent<ISubContext> {
       }),
       catchError((e) => {
         return throwError(e);
-      })
+      }),
     ).subscribe();
   }
 

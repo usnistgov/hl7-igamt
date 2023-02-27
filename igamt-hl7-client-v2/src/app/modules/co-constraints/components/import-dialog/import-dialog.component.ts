@@ -66,7 +66,6 @@ export class ImportDialogComponent implements OnInit {
       mergeMap((cp) => {
         return this.fileUploadService.upload(this.file, this.segmentRef, cp.id, this.documentId, this.contextId).pipe(
           map((parseResult) => {
-            console.log('ERRORS : ', parseResult);
             if (parseResult.coConstraintTable) {
               this.coConstraintTable = parseResult.coConstraintTable;
             }
@@ -79,8 +78,6 @@ export class ImportDialogComponent implements OnInit {
               if (this.isEmptyErrorList) {
                 this.close();
               }
-              console.log('second if for errors');
-
             } else {
               this.close();
             }
@@ -92,14 +89,11 @@ export class ImportDialogComponent implements OnInit {
   }
 
   close() {
-    console.log('we closed dialog with table', this.coConstraintTable);
     this.dialogRef.close(this.coConstraintTable);
 
   }
   cancel() {
-    console.log('we closed dialog');
     this.dialogRef.close();
-
   }
 
 }

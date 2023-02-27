@@ -226,8 +226,8 @@ export class VerificationService {
           if (!x) {
             console.log(key.type, key.id);
           }
-        } )),
-        ),
+        })),
+      ),
 
     ).pipe(
       map((resources) => {
@@ -245,7 +245,6 @@ export class VerificationService {
             ],
           };
         }, {} as Record<string, IVerificationEnty[]>);
-        console.log(grouped);
         const resourceLists = Object.keys(grouped).map((key) => {
           return {
             target: resources.find((resource) => keyToStr(resource.id, resource.type) === key),
@@ -271,11 +270,11 @@ export class VerificationService {
     for (const property in report) {
       if (report[property].length) {
         report[property].forEach((element) => {
-           errors = _.union(errors, element.errors);
+          errors = _.union(errors, element.errors);
         });
       }
     }
-    return this.getVerificationEntryTable(this.convertErrorsToEntries(errors), repository );
+    return this.getVerificationEntryTable(this.convertErrorsToEntries(errors), repository);
 
   }
 
@@ -286,9 +285,9 @@ export class VerificationService {
 
       prop = 'igVerificationResult';
     } else if (type === Type.SEGMENT) {
-     prop = 'segmentVerificationResults';
+      prop = 'segmentVerificationResults';
 
-    } else if ( type === Type.CONFORMANCEPROFILE) {
+    } else if (type === Type.CONFORMANCEPROFILE) {
       prop = 'conformanceProfileVerificationResults';
     } else if (type === Type.DATATYPE) {
       prop = 'datatypeVerificationResults';
@@ -296,18 +295,17 @@ export class VerificationService {
       prop = 'valuesetVerificationResults';
     }
     if (report && report[prop] && report[prop].length) {
-        console.log(prop);
-        report[prop].forEach((element) => {
-           errors = _.union(errors, element.errors);
-        });
-      }
-    return this.getVerificationEntryTable(this.convertErrorsToEntries(errors), repository );
+      report[prop].forEach((element) => {
+        errors = _.union(errors, element.errors);
+      });
+    }
+    return this.getVerificationEntryTable(this.convertErrorsToEntries(errors), repository);
   }
 
   convertErrorsToEntries(errors: any[]): IVerificationEnty[] {
-   const ret: IVerificationEnty[] = [];
-   errors.forEach((element) => {
-      ret.push( {
+    const ret: IVerificationEnty[] = [];
+    errors.forEach((element) => {
+      ret.push({
         code: element.code,
         pathId: element.location,
         property: element.locationInfo && element.locationInfo.property ? element.locationInfo.property : null,
@@ -319,16 +317,16 @@ export class VerificationService {
 
       });
     });
-   return ret;
+    return ret;
   }
 
   convertValueToTocElements(report: any): Dictionary<IVerificationEnty[]> {
-    let temp: Dictionary<IVerificationEnty[]>  = {};
+    let temp: Dictionary<IVerificationEnty[]> = {};
     let errors = [];
     for (const property in report) {
       if (report[property] && report[property].length) {
         report[property].forEach((element) => {
-           errors = _.union(errors, element.errors);
+          errors = _.union(errors, element.errors);
         });
       }
     }

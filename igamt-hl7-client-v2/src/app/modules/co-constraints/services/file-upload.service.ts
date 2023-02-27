@@ -28,7 +28,6 @@ export class FileUploadService {
 
     // Make http post request over api
     // with formData as req
-    console.log('in service file name is :', file.name);
     return this.http.post<Message<any>>(this.BackEndUploadEndPoint, formData);
   }
 }
