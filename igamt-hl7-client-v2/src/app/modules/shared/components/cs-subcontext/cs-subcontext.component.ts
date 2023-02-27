@@ -1,5 +1,6 @@
+import { Hl7V2TreeService } from './../../services/hl7-v2-tree.service';
 import { Component } from '@angular/core';
-import { finalize, map, take, tap } from 'rxjs/operators';
+import { finalize, map, take, tap, flatMap, catchError } from 'rxjs/operators';
 import { ISubContext, ISubject } from '../../models/cs.interface';
 import { ElementNamingService } from '../../services/element-naming.service';
 import { PathService } from '../../services/path.service';
@@ -8,6 +9,7 @@ import { RestrictionCombinator, RestrictionType } from '../../services/tree-filt
 import { CsStatementComponent, IStatementTokenPayload } from '../cs-dialog/cs-statement.component';
 import { IToken, Statement } from '../pattern-dialog/cs-pattern.domain';
 import { IOption, NB_OCCURRENCES, TARGET_OCCURRENCES } from './../cs-dialog/cs-statement.constants';
+import { throwError } from 'rxjs';
 
 @Component({
   selector: 'app-cs-subcontext',
@@ -23,24 +25,27 @@ export class CsSubcontextComponent extends CsStatementComponent<ISubContext> {
   constructor(
     elementNamingService: ElementNamingService,
     private pathService: PathService,
+    treeService: Hl7V2TreeService,
   ) {
-    super({
-      hide: false,
-      restrictions: [
-        {
-          criterion: RestrictionType.PRIMITIVE,
-          combine: RestrictionCombinator.ENFORCE,
-          allow: false,
-          value: true,
-        },
-        {
-          criterion: RestrictionType.MULTI,
-          combine: RestrictionCombinator.ENFORCE,
-          allow: false,
-          value: false,
-        },
-      ],
-    },
+    super(
+      treeService,
+      {
+        hide: false,
+        restrictions: [
+          {
+            criterion: RestrictionType.PRIMITIVE,
+            combine: RestrictionCombinator.ENFORCE,
+            allow: false,
+            value: true,
+          },
+          {
+            criterion: RestrictionType.MULTI,
+            combine: RestrictionCombinator.ENFORCE,
+            allow: false,
+            value: false,
+          },
+        ],
+      },
       {
         path: undefined,
         occurenceIdPath: undefined,
@@ -55,10 +60,20 @@ export class CsSubcontextComponent extends CsStatementComponent<ISubContext> {
 
   initializeStatement(token: IToken<Statement, IStatementTokenPayload>) {
     this.subject.setSubject(token.value.payload as ISubject, token.payload.getValue().effectiveContext, this.res, this.repository).pipe(
-      finalize(() => {
-        this.occurences = this.getAllowedOccurrenceList(this.subject);
+      flatMap(() => {
         this.updateTokenStatus();
+        return this.findNode(this.subject.getValue().path, token.payload.getValue().effectiveTree).pipe(
+          tap((node) => {
+            if (node) {
+              this.subject.setNode(node, token.payload.getValue().effectiveTree);
+              this.occurences = this.getAllowedOccurrenceList(this.subject);
+            }
+          }),
+        );
       }),
+      catchError((e) => {
+        return throwError(e);
+      })
     ).subscribe();
   }
 

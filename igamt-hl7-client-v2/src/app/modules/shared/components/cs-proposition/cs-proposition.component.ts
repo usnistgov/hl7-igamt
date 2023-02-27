@@ -1,7 +1,10 @@
+import { IHL7v2TreeNode } from './../hl7-v2-tree/hl7-v2-tree.component';
+import { StoreResourceRepositoryService } from './../../services/resource-repository.service';
+import { Hl7V2TreeService } from './../../services/hl7-v2-tree.service';
 import { Component, EventEmitter, Input, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { combineLatest } from 'rxjs';
-import { finalize, map, take, tap } from 'rxjs/operators';
+import { combineLatest, throwError, Observable, of } from 'rxjs';
+import { finalize, map, take, tap, flatMap, catchError } from 'rxjs/operators';
 import { Type } from '../../constants/type.enum';
 import { ComparativeType, DeclarativeType, OccurrenceType, PropositionType, StatementType } from '../../models/conformance-statements.domain';
 import { AssertionMode, IComplement, IPath, ISimpleAssertion, ISubject } from '../../models/cs.interface';
@@ -110,36 +113,39 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
   constructor(
     elementNamingService: ElementNamingService,
     private pathService: PathService,
+    treeService: Hl7V2TreeService,
   ) {
-    super({
-      hide: false,
-      restrictions: [],
-    }, {
-        mode: AssertionMode.SIMPLE,
-        complement: {
-          complementKey: undefined,
-          path: undefined,
-          occurenceIdPath: undefined,
-          occurenceLocationStr: undefined,
-          occurenceValue: undefined,
-          occurenceType: undefined,
-          value: '',
-          values: [],
-          descs: [],
-          desc: '',
-          codesys: '',
-          codesyses: [],
-        },
-        subject: {
-          path: undefined,
-          occurenceIdPath: undefined,
-          occurenceLocationStr: undefined,
-          occurenceValue: undefined,
-          occurenceType: undefined,
-        },
-        verbKey: '',
-        description: '',
-      });
+    super(
+      treeService,
+      {
+        hide: false,
+        restrictions: [],
+      }, {
+      mode: AssertionMode.SIMPLE,
+      complement: {
+        complementKey: undefined,
+        path: undefined,
+        occurenceIdPath: undefined,
+        occurenceLocationStr: undefined,
+        occurenceValue: undefined,
+        occurenceType: undefined,
+        value: '',
+        values: [],
+        descs: [],
+        desc: '',
+        codesys: '',
+        codesyses: [],
+      },
+      subject: {
+        path: undefined,
+        occurenceIdPath: undefined,
+        occurenceLocationStr: undefined,
+        occurenceValue: undefined,
+        occurenceType: undefined,
+      },
+      verbKey: '',
+      description: '',
+    });
     this.id = new Date().getTime() + '';
     this.csType = LeafStatementType.DECLARATION;
     const allOccurrenceOptions = [...NB_OCCURRENCES, ...TARGET_OCCURRENCES];
@@ -197,10 +203,26 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
       this.subject.setSubject(token.value.payload.subject as ISubject, token.payload.getValue().effectiveContext, this.res, this.repository),
       this.compare.setSubject(token.value.payload.complement as ISubject, token.payload.getValue().effectiveContext, this.res, this.repository),
     ).pipe(
-      tap(() => {
-        this.statementsList = this.getAllowedStatements(this.subject, token.value.data.branch, this.statementType);
-        this.subjectOccurrenceList = this.getAllowedOccurrenceList(this.subject);
-        this.compareOccurrenceList = this.getAllowedOccurrenceList(this.compare);
+      flatMap(() => {
+        return combineLatest(
+          this.findNode(this.subject.getValue().path, token.payload.getValue().effectiveTree).pipe(
+            tap((node) => {
+              if (node) {
+                this.subject.setNode(node, token.payload.getValue().effectiveTree);
+              }
+              this.statementsList = this.getAllowedStatements(this.subject, token.value.data.branch, this.statementType);
+              this.subjectOccurrenceList = this.getAllowedOccurrenceList(this.subject);
+            })
+          ),
+          this.findNode(this.compare.getValue().path, token.payload.getValue().effectiveTree).pipe(
+            tap((node) => {
+              if (node) {
+                this.compare.setNode(node, token.payload.getValue().effectiveTree);
+              }
+              this.compareOccurrenceList = this.getAllowedOccurrenceList(this.compare);
+            })
+          ),
+        );
       }),
       finalize(() => this.updateTokenStatus()),
     ).subscribe();

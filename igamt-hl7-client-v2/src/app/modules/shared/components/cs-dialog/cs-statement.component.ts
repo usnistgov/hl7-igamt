@@ -1,11 +1,12 @@
 import { EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { skip } from 'rxjs/operators';
+import { Observable, of, Subscription } from 'rxjs';
+import { catchError, flatMap, skip } from 'rxjs/operators';
 import { Type } from '../../constants/type.enum';
 import { OccurrenceType } from '../../models/conformance-statements.domain';
 import { IPath } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';
-import { AResourceRepositoryService } from '../../services/resource-repository.service';
+import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
+import { AResourceRepositoryService, StoreResourceRepositoryService } from '../../services/resource-repository.service';
 import { StatementTarget } from '../../services/statement.service';
 import { IHL7v2TreeFilter, ITreeRestriction, RestrictionType } from '../../services/tree-filter.service';
 import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
@@ -83,7 +84,10 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
   subjectTreeRestrictions: ISubjectTreeRestrictions;
   treeFilter: IHL7v2TreeFilter;
 
-  constructor(public baseTreeFilter: IHL7v2TreeFilter, private blank: T) {
+  constructor(
+    private treeService: Hl7V2TreeService,
+    public baseTreeFilter: IHL7v2TreeFilter,
+    private blank: T) {
     this.valueChange = new EventEmitter<T>();
     this.value = Object.assign({}, this.blank);
     this.updateSubjectTreeFilter({});
@@ -141,6 +145,22 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
       sub.unsubscribe();
     }
   }
+
+  findNode(path: IPath, tree: IHL7v2TreeNode[]): Observable<IHL7v2TreeNode> {
+    return path ? this.treeService.loadNodeChildren(tree[0], this.repository).pipe(
+      flatMap((children) => {
+        return this.treeService.getNodeByPath(children, path, this.repository).pipe(
+          catchError(() => {
+            return of(undefined);
+          }),
+        )
+      }),
+      catchError(() => {
+        return of(undefined);
+      }),
+    ) : of(undefined);
+  }
+
 
   ngOnInit() {
     // Initialize Statement
