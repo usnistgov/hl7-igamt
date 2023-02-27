@@ -1,3 +1,5 @@
+import { VerbType } from './../../models/conformance-statements.domain';
+import { IConformanceStatement, ISimpleAssertion } from './../../models/cs.interface';
 import { EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Observable, of, Subscription } from 'rxjs';
 import { catchError, flatMap, skip } from 'rxjs/operators';
@@ -6,12 +8,12 @@ import { OccurrenceType } from '../../models/conformance-statements.domain';
 import { IPath } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
-import { AResourceRepositoryService, StoreResourceRepositoryService } from '../../services/resource-repository.service';
+import { AResourceRepositoryService } from '../../services/resource-repository.service';
 import { StatementTarget } from '../../services/statement.service';
 import { IHL7v2TreeFilter, ITreeRestriction, RestrictionType } from '../../services/tree-filter.service';
 import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 import { IToken, Statement } from '../pattern-dialog/cs-pattern.domain';
-import { IOption, NB_OCCURRENCES, TARGET_OCCURRENCES } from './cs-statement.constants';
+import { IOption, TARGET_OCCURRENCES, SHALL_OCCURRENCES, SHALL_NOT_OCCURRENCES } from './cs-statement.constants';
 
 export interface IStatementTokenPayload {
   effectiveTree: IHL7v2TreeNode[];
@@ -128,13 +130,12 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
     }
   }
 
-  getAllowedOccurrenceList(subject: StatementTarget): IOption[] {
+  getAllowedOccurrenceList(subject: StatementTarget, assertion: ISimpleAssertion): IOption[] {
     if (subject && subject.repeatMax > 0) {
-      if (subject.hierarchicalRepeat) {
-        return [...NB_OCCURRENCES];
-      } else {
-        return [...NB_OCCURRENCES, ...TARGET_OCCURRENCES];
-      }
+      return [
+        ...(assertion && assertion.verbKey && (assertion.verbKey === VerbType.SHALL_NOT || assertion.verbKey === VerbType.SHOULD_NOT) ? SHALL_NOT_OCCURRENCES : SHALL_OCCURRENCES),
+        ...(subject.hierarchicalRepeat ? [] : TARGET_OCCURRENCES)
+      ]
     } else {
       return [];
     }

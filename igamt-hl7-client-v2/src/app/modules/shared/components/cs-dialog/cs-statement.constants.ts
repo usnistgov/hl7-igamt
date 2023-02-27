@@ -1,16 +1,27 @@
 import { ComparativeType, DeclarativeType, OccurrenceType, PropositionType, VerbType } from '../../models/conformance-statements.domain';
 
-export const NB_OCCURRENCES = [
+export const SHALL_OCCURRENCES = [
   { label: 'At least one occurrence of', value: OccurrenceType.AT_LEAST_ONE },
-  { label: 'No occurrence of', value: OccurrenceType.NONE },
   { label: 'Exactly one occurrence of', value: OccurrenceType.ONE },
   { label: '\'COUNT\' occurrences of', value: OccurrenceType.COUNT },
+  { label: 'All occurrences of', value: OccurrenceType.ALL },
+];
+
+export const SHALL_NOT_OCCURRENCES = [
+  { label: 'At least one occurrence of', value: OccurrenceType.AT_LEAST_ONE },
   { label: 'All occurrences of', value: OccurrenceType.ALL },
 ];
 
 export const TARGET_OCCURRENCES = [
   { label: 'The \'INSTANCE\' occurrence of', value: OccurrenceType.INSTANCE },
 ];
+
+export const ALL_OCCURRENCES = [
+  { label: 'At least one occurrence of', value: OccurrenceType.AT_LEAST_ONE },
+  { label: 'Exactly one occurrence of', value: OccurrenceType.ONE },
+  { label: '\'COUNT\' occurrences of', value: OccurrenceType.COUNT },
+  { label: 'All occurrences of', value: OccurrenceType.ALL },
+]
 
 export const VERBS_SHALL = [
   { label: 'SHALL', value: VerbType.SHALL },

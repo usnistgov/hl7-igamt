@@ -1,6 +1,6 @@
 import { Hl7V2TreeService } from './../../services/hl7-v2-tree.service';
 import { Component } from '@angular/core';
-import { finalize, map, take, tap, flatMap, catchError } from 'rxjs/operators';
+import { map, take, tap, flatMap, catchError } from 'rxjs/operators';
 import { ISubContext, ISubject } from '../../models/cs.interface';
 import { ElementNamingService } from '../../services/element-naming.service';
 import { PathService } from '../../services/path.service';
@@ -8,7 +8,7 @@ import { StatementTarget } from '../../services/statement.service';
 import { RestrictionCombinator, RestrictionType } from '../../services/tree-filter.service';
 import { CsStatementComponent, IStatementTokenPayload } from '../cs-dialog/cs-statement.component';
 import { IToken, Statement } from '../pattern-dialog/cs-pattern.domain';
-import { IOption, NB_OCCURRENCES, TARGET_OCCURRENCES } from './../cs-dialog/cs-statement.constants';
+import { IOption, ALL_OCCURRENCES } from './../cs-dialog/cs-statement.constants';
 import { throwError } from 'rxjs';
 
 @Component({
@@ -55,7 +55,7 @@ export class CsSubcontextComponent extends CsStatementComponent<ISubContext> {
         description: '',
       });
 
-    this.subject = new StatementTarget(elementNamingService, pathService, [...NB_OCCURRENCES, ...TARGET_OCCURRENCES]);
+    this.subject = new StatementTarget(elementNamingService, pathService, [...ALL_OCCURRENCES]);
   }
 
   initializeStatement(token: IToken<Statement, IStatementTokenPayload>) {
@@ -66,7 +66,7 @@ export class CsSubcontextComponent extends CsStatementComponent<ISubContext> {
           tap((node) => {
             if (node) {
               this.subject.setNode(node, token.payload.getValue().effectiveTree);
-              this.occurences = this.getAllowedOccurrenceList(this.subject);
+              this.occurences = this.getAllowedOccurrenceList(this.subject, null);
             }
           }),
         );
@@ -80,7 +80,7 @@ export class CsSubcontextComponent extends CsStatementComponent<ISubContext> {
   targetElement(event) {
     this.subject.reset(this.token.payload.getValue().effectiveContext, this.pathService.trimPathRoot(event.path), this.res, this.repository, this.token.payload.getValue().effectiveTree, event.node, !!this.token.dependency).pipe(
       tap(() => {
-        this.occurences = this.getAllowedOccurrenceList(this.subject);
+        this.occurences = this.getAllowedOccurrenceList(this.subject, null);
         this.change();
       }),
     ).subscribe();

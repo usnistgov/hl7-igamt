@@ -1,11 +1,8 @@
-import { IHL7v2TreeNode } from './../hl7-v2-tree/hl7-v2-tree.component';
-import { StoreResourceRepositoryService } from './../../services/resource-repository.service';
 import { Hl7V2TreeService } from './../../services/hl7-v2-tree.service';
 import { Component, EventEmitter, Input, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { combineLatest, throwError, Observable, of } from 'rxjs';
-import { finalize, map, take, tap, flatMap, catchError } from 'rxjs/operators';
-import { Type } from '../../constants/type.enum';
+import { combineLatest } from 'rxjs';
+import { finalize, map, take, tap, flatMap } from 'rxjs/operators';
 import { ComparativeType, DeclarativeType, OccurrenceType, PropositionType, StatementType } from '../../models/conformance-statements.domain';
 import { AssertionMode, IComplement, IPath, ISimpleAssertion, ISubject } from '../../models/cs.interface';
 import { ElementNamingService } from '../../services/element-naming.service';
@@ -13,10 +10,10 @@ import { PathService } from '../../services/path.service';
 import { StatementTarget } from '../../services/statement.service';
 import { IHL7v2TreeFilter, ITreeRestriction, RestrictionCombinator, RestrictionType } from '../../services/tree-filter.service';
 import { CsStatementComponent, IStatementTokenPayload } from '../cs-dialog/cs-statement.component';
-import { COMPARATIVES, DECLARATIVES, IOption, PROPOSITIONS, VERBS_SHOULD } from '../cs-dialog/cs-statement.constants';
+import { ALL_OCCURRENCES, COMPARATIVES, DECLARATIVES, IOption, PROPOSITIONS, VERBS_SHOULD } from '../cs-dialog/cs-statement.constants';
 import { IToken, LeafStatementType, Statement } from '../pattern-dialog/cs-pattern.domain';
 import { ConformanceStatementStrength } from './../../models/conformance-statements.domain';
-import { NB_OCCURRENCES, TARGET_OCCURRENCES, VERBS_SHALL } from './../cs-dialog/cs-statement.constants';
+import { VERBS_SHALL } from './../cs-dialog/cs-statement.constants';
 
 @Component({
   selector: 'app-cs-proposition',
@@ -148,7 +145,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     });
     this.id = new Date().getTime() + '';
     this.csType = LeafStatementType.DECLARATION;
-    const allOccurrenceOptions = [...NB_OCCURRENCES, ...TARGET_OCCURRENCES];
+    const allOccurrenceOptions = [...ALL_OCCURRENCES];
     const allVerbs = [...VERBS_SHALL, ...VERBS_SHOULD];
     this.subject = new StatementTarget(elementNamingService, pathService, allOccurrenceOptions);
     this.compare = new StatementTarget(elementNamingService, pathService, allOccurrenceOptions);
@@ -166,14 +163,14 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
           const idxShould = VERBS_SHOULD.map((v) => v.value).findIndex((v) => assertion.verbKey === v);
           if (idxShould !== -1) {
             this.assertion.verbKey = VERBS_SHALL[idxShould].value;
-            this.change();
+            this.changeVerbType();
           }
           break;
         case ConformanceStatementStrength.SHOULD:
           const idxShall = VERBS_SHALL.map((v) => v.value).findIndex((v) => assertion.verbKey === v);
           if (idxShall !== -1) {
             this.assertion.verbKey = VERBS_SHOULD[idxShall].value;
-            this.change();
+            this.changeVerbType();
           }
           break;
       }
@@ -211,7 +208,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
                 this.subject.setNode(node, token.payload.getValue().effectiveTree);
               }
               this.statementsList = this.getAllowedStatements(this.subject, token.value.data.branch, this.statementType);
-              this.subjectOccurrenceList = this.getAllowedOccurrenceList(this.subject);
+              this.subjectOccurrenceList = this.getAllowedOccurrenceList(this.subject, this.assertion);
             })
           ),
           this.findNode(this.compare.getValue().path, token.payload.getValue().effectiveTree).pipe(
@@ -219,7 +216,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
               if (node) {
                 this.compare.setNode(node, token.payload.getValue().effectiveTree);
               }
-              this.compareOccurrenceList = this.getAllowedOccurrenceList(this.compare);
+              this.compareOccurrenceList = this.getAllowedOccurrenceList(this.compare, this.assertion);
             })
           ),
         );
@@ -399,7 +396,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
 
   targetElement(event) {
     this.subject.reset(this.token.payload.getValue().effectiveContext, this.pathService.trimPathRoot(event.path), this.res, this.repository, this.token.payload.getValue().effectiveTree, event.node, !!this.token.dependency).pipe(tap((s) => {
-      this.subjectOccurrenceList = this.getAllowedOccurrenceList(this.subject);
+      this.subjectOccurrenceList = this.getAllowedOccurrenceList(this.subject, this.assertion);
       this.statementsList = this.getAllowedStatements(this.subject, this.csType, this.statementType);
       if (
         this.assertion.complement.complementKey &&
@@ -416,7 +413,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
 
   comparativeElement(event) {
     this.compare.reset(this.token.payload.getValue().effectiveContext, this.pathService.trimPathRoot(event.path), this.res, this.repository, this.token.payload.getValue().effectiveTree, event.node, !!this.token.dependency).pipe(tap((s) => {
-      this.compareOccurrenceList = this.getAllowedOccurrenceList(this.compare);
+      this.compareOccurrenceList = this.getAllowedOccurrenceList(this.compare, this.assertion);
       this.changeElement(this.compare, this.assertion.complement);
     })).subscribe();
   }
@@ -444,6 +441,23 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     this.change();
   }
 
+  changeVerbType() {
+    this.subjectOccurrenceList = this.getAllowedOccurrenceList(this.subject, this.assertion);
+    this.compareOccurrenceList = this.getAllowedOccurrenceList(this.compare, this.assertion);
+    const subjectIsValid = !this.assertion.subject.occurenceType || !!this.subjectOccurrenceList.find((option) => option.value === this.assertion.subject.occurenceType);
+    const complementIsValid = !this.assertion.complement || !this.assertion.complement.occurenceType || this.compareOccurrenceList.find((option) => option.value === this.assertion.complement.occurenceType);
+
+    if (!subjectIsValid) {
+      this.subject.clearOccurrenceValue(true);
+    }
+
+    if (!complementIsValid) {
+      this.compare.clearOccurrenceValue(true);
+    }
+
+    this.change();
+  }
+
   changeStatementType() {
     this.assertion.complement = {
       ...this.assertion.complement,
@@ -468,93 +482,54 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
   }
 
   setSubjectTreeFilter(statementType: LeafStatementType, mode: StatementType) {
-    if (mode === StatementType.COMPARATIVE) {
-      this.updateSubjectTreeFilter({
-        primitive: null,
-        types: {
-          criterion: RestrictionType.TYPE,
-          combine: RestrictionCombinator.ENFORCE,
-          allow: true,
-          value: [Type.FIELD, Type.COMPONENT, Type.SUBCOMPONENT],
-        },
-      });
-    } else {
-      if (statementType === LeafStatementType.DECLARATION) {
-        this.updateSubjectTreeFilter({
-          primitive: {
+    this.updateSubjectTreeFilter({
+      primitive: {
+        criterion: RestrictionType.PRIMITIVE,
+        combine: RestrictionCombinator.ENFORCE,
+        allow: true,
+        value: true,
+      },
+      types: null,
+    });
+  }
+
+  setCompareTreeFilter(subject: StatementTarget) {
+    if (subject && subject.node) {
+      const restriction: ITreeRestriction<any> = {
+        criterion: RestrictionType.DATATYPES,
+        combine: RestrictionCombinator.ENFORCE,
+        allow: true,
+        value: [],
+      };
+
+      const name = this.subject.resourceName;
+      const type = this.getPrimitiveType(name);
+      switch (type) {
+        case 'NUMBER':
+          restriction.value = [...this.numberDatatypes];
+          restriction.allow = true;
+          break;
+        case 'TEMPORAL':
+          restriction.value = [name];
+          restriction.allow = true;
+          break;
+        default:
+          restriction.value = [...this.numberDatatypes, ...this.timeDatatypes];
+          restriction.allow = false;
+      }
+
+      this.compareTreeFilter = {
+        hide: false,
+        restrictions: [
+          {
             criterion: RestrictionType.PRIMITIVE,
             combine: RestrictionCombinator.ENFORCE,
             allow: true,
             value: true,
           },
-          types: null,
-        });
-      } else {
-        this.updateSubjectTreeFilter({
-          primitive: null,
-          types: null,
-        });
-      }
-    }
-  }
-
-  setCompareTreeFilter(subject: StatementTarget) {
-    if (subject && subject.node) {
-      if (subject.node.leaf) {
-        const restriction: ITreeRestriction<any> = {
-          criterion: RestrictionType.DATATYPES,
-          combine: RestrictionCombinator.ENFORCE,
-          allow: true,
-          value: [],
-        };
-
-        const name = this.subject.resourceName;
-        const type = this.getPrimitiveType(name);
-        switch (type) {
-          case 'NUMBER':
-            restriction.value = [...this.numberDatatypes];
-            restriction.allow = true;
-            break;
-          case 'TEMPORAL':
-            restriction.value = [name];
-            restriction.allow = true;
-            break;
-          default:
-            restriction.value = [...this.numberDatatypes, ...this.timeDatatypes];
-            restriction.allow = false;
-        }
-
-        this.compareTreeFilter = {
-          hide: false,
-          restrictions: [
-            {
-              criterion: RestrictionType.PRIMITIVE,
-              combine: RestrictionCombinator.ENFORCE,
-              allow: true,
-              value: true,
-            },
-            restriction,
-          ],
-        };
-      } else {
-        this.compareTreeFilter = {
-          hide: false,
-          restrictions: [
-            {
-              criterion: RestrictionType.PRIMITIVE,
-              combine: RestrictionCombinator.ENFORCE,
-              allow: false,
-              value: true,
-            },
-            {
-              criterion: RestrictionType.TYPE,
-              combine: RestrictionCombinator.ENFORCE,
-              allow: true,
-              value: [Type.FIELD, Type.COMPONENT, Type.SUBCOMPONENT],
-            },
-          ],
-        };
-      }
+          restriction,
+        ],
+      };
     }
   }
 
