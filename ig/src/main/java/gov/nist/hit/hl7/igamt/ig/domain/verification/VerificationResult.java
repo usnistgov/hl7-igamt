@@ -14,11 +14,15 @@ package gov.nist.hit.hl7.igamt.ig.domain.verification;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+
 /**
  * @author jungyubw
  *
  */
 public class VerificationResult {
+	private String resourceId;
+	private Type resourceType;
 	private ErrorStats stats = new ErrorStats();
 	private List<IgamtObjectError> errors;
 
@@ -42,4 +46,22 @@ public class VerificationResult {
 	public void setStats(ErrorStats stats) {
 		this.stats = stats;
 	}
+
+	public String getResourceId() {
+		return resourceId;
+	}
+
+	public void setResourceId(String resourceId) {
+		this.resourceId = resourceId;
+	}
+
+	public Type getResourceType() {
+		return resourceType;
+	}
+
+	public void setResourceType(Type resourceType) {
+		this.resourceType = resourceType;
+	}
+
+
 }
