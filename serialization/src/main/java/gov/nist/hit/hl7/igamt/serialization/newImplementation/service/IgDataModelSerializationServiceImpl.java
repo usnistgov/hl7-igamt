@@ -83,7 +83,9 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 			PublicationInfo publicationInfo, DocumentMetadataConfiguration documentMetadataConfiguration) throws IllegalStateException, IOException {
 		Element metadataElement = new Element("Metadata");
 		Element coverPictureElement = new Element("CoverPicture");
+		if(metadata.getCoverPicture() !=null) {
 		coverPictureElement.appendChild(this.saveCoverPicture(metadata.getCoverPicture()));
+		}
 		metadataElement.appendChild(coverPictureElement);
 		metadataElement.addAttribute(new Attribute("topics", metadata.getTopics() != null ? metadata.getTopics() : ""));
 		metadataElement.addAttribute(new Attribute("description",

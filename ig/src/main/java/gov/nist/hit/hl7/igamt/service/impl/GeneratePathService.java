@@ -173,4 +173,118 @@ public class GeneratePathService {
         return text.replaceFirst("(?s)"+regex+"(?!.*?"+regex+")", replacement);
     }
 
+
+	public Subcon generateSubCon(InstancePath path, String targetId, Level level, InstancePath context) {
+		if (level.equals(Level.DATATYPE)) {
+            Datatype target = this.datatypeService.findById(targetId);
+            if(target == null) {
+                target = this.inMemoryDomainExtensionService.findById(targetId, ComplexDatatype.class);
+            }
+
+            if (target != null) {
+                if (path != null)
+                    return this.visitComponentSubCon(target, path);
+            }
+        } else if (level.equals(Level.SEGMENT)) {
+            Segment target = this.segmentService.findById(targetId);
+            if(target == null) {
+                target = this.inMemoryDomainExtensionService.findById(targetId, Segment.class);
+            }
+            if (target != null) {
+                if (path != null)
+                    return this.visitFieldSubCon(target, path);
+            }
+        } else if (level.equals(Level.GROUP)) {
+            ConformanceProfile cp = this.conformanceProfileService.findById(targetId);
+            if(cp == null) {
+                cp = this.inMemoryDomainExtensionService.findById(targetId, ConformanceProfile.class);
+            }
+            Group target = this.findGroupByContext(context, cp.getChildren());
+            if (target != null) {
+                if (path != null)
+                    return this.visitSegOrGroupSubCon(target.getChildren(), path, context);
+            }
+        } else if (level.equals(Level.CONFORMANCEPROFILE)) {
+            ConformanceProfile target = this.conformanceProfileService.findById(targetId);
+            if(target == null) {
+                target = this.inMemoryDomainExtensionService.findById(targetId, ConformanceProfile.class);
+            }
+            if (target != null) {
+                if (path != null)
+                    return this.visitSegOrGroupSubCon(target.getChildren(), path, context);
+            }
+        }
+		return null;
+	}
+
+
+	private Subcon visitComponentSubCon(Datatype dt, InstancePath child) {
+		if (dt instanceof ComplexDatatype) {
+            ComplexDatatype complexDatatype = (ComplexDatatype) dt;
+            for (Component c : complexDatatype.getComponents()) {
+                if (child.getElementId().equals(c.getId())) {
+                    Datatype childDT = this.datatypeService.findById(c.getRef().getId());
+                    if (child.getChild() != null)
+                        return this.visitComponentSubCon(childDT, child.getChild());
+                    else {
+                    	Subcon result = new Subcon();
+                    	result.setLevel(Level.DATATYPE);
+                    	result.setTargetId(c.getRef().getId());
+                    	return result;
+                    }
+                }
+            }
+        }
+		
+		return null;
+	}
+	
+	private Subcon visitFieldSubCon(Segment seg, InstancePath child) {
+        for (Field f : seg.getChildren()) {
+            if (child.getElementId().equals(f.getId())) {
+                Datatype childDT = this.datatypeService.findById(f.getRef().getId());
+                if (child.getChild() != null)
+                    this.visitComponentSubCon(childDT, child.getChild());
+                else {
+                	Subcon result = new Subcon();
+                	result.setLevel(Level.DATATYPE);
+                	result.setTargetId(f.getRef().getId());
+                	return result;
+                }
+            }
+        }
+        return null;
+    }
+	
+	
+    private Subcon visitSegOrGroupSubCon(Set<SegmentRefOrGroup> segOrGroups, InstancePath child, InstancePath context) {
+    	for (SegmentRefOrGroup segOrGroup : segOrGroups) {
+    		if (child.getElementId().equals(segOrGroup.getId())) {
+    			if (child.getChild() != null) {
+    				if (segOrGroup instanceof SegmentRef) {
+    					Segment childSeg = this.segmentService.findById(((SegmentRef) segOrGroup).getRef().getId());
+    					return this.visitFieldSubCon(childSeg, child.getChild());
+    				}else {
+    					context.setChild(child.getChild());
+    					return this.visitSegOrGroupSubCon(((Group) segOrGroup).getChildren(), child.getChild(), context);
+    				}
+    				
+    			} else {
+    				if (segOrGroup instanceof SegmentRef) {
+    					Subcon result = new Subcon();
+                    	result.setLevel(Level.SEGMENT);
+                    	result.setTargetId(((SegmentRef) segOrGroup).getRef().getId());
+                    	return result;
+    				}else {
+    					Subcon result = new Subcon();
+                    	result.setLevel(Level.GROUP);
+                    	result.setTargetId(segOrGroup.getId());
+                    	result.setContext(context);
+                    	return result;
+    				}
+    			}
+    		}
+    	}
+        return null;
+    }
 }
