@@ -11,15 +11,15 @@ import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
 public class AssertionVerificationService extends VerificationUtils {
+
+    private final Set<String> TEMPORAL_DT = new HashSet<>(Arrays.asList("DT", "DTM", "TM"));
+    private final Set<String> NUMERICAL_DT = new HashSet<>(Arrays.asList("NM", "SI"));
 
     public List<IgamtObjectError> checkAssertion(ResourceSkeleton skeleton, Location location, Assertion assertion) {
         switch (assertion.getMode()) {
@@ -85,55 +85,71 @@ public class AssertionVerificationService extends VerificationUtils {
         int max = this.getMaxRepeat(subject, context);
         int multi = this.getMultiLevelRepeat(subject, context);
 
-        if(max <= 1) {
-            // No Repeat Allowed
-            return Arrays.asList(
-                    this.entry.AssertionOccurrenceTypeOnNotRepeatable(
-                            location,
-                            subject.getResource().getId(),
-                            subject.getResource().getType(),
-                            ((ResourceSkeletonBone) subject).getLocationInfo(),
-                            occurrenceType,
-                            ((ResourceSkeletonBone) subject).getLocationInfo().getName()
-                    )
-            );
+        if(!Strings.isNullOrEmpty(occurrenceType)) {
+            if (max <= 1) {
+                // No Repeat Allowed
+                return Arrays.asList(
+                        this.entry.AssertionOccurrenceTypeOnNotRepeatable(
+                                location,
+                                subject.getResource().getId(),
+                                subject.getResource().getType(),
+                                ((ResourceSkeletonBone) subject).getLocationInfo(),
+                                occurrenceType,
+                                ((ResourceSkeletonBone) subject).getLocationInfo().getName()
+                        )
+                );
+            }
+
+            if (multi > 1 && occurrenceType.equals("instance")) {
+                // Instance not allowed on multi level repeat
+                return Arrays.asList(
+                        this.entry.AssertionOccurrenceTypeInstanceOnNotMultiLevelRepeatable(
+                                location,
+                                subject.getResource().getId(),
+                                subject.getResource().getType(),
+                                ((ResourceSkeletonBone) subject).getLocationInfo(),
+                                ((ResourceSkeletonBone) subject).getLocationInfo().getName()
+                        )
+                );
+            }
+
+            if (occurrenceValue > max) {
+                // Over max
+                return Arrays.asList(
+                        this.entry.AssertionOccurrenceValueOverMax(
+                                location,
+                                subject.getResource().getId(),
+                                subject.getResource().getType(),
+                                ((ResourceSkeletonBone) subject).getLocationInfo(),
+                                occurrenceType,
+                                max,
+                                occurrenceValue,
+                                ((ResourceSkeletonBone) subject).getLocationInfo().getName()
+                        )
+                );
+            }
+        } else {
+            if(max > 1) {
+                return Arrays.asList(
+                        this.entry.AssertionOccurrenceTypeMissing(
+                                location,
+                                subject.getResource().getId(),
+                                subject.getResource().getType(),
+                                ((ResourceSkeletonBone) subject).getLocationInfo(),
+                                occurrenceType,
+                                ((ResourceSkeletonBone) subject).getLocationInfo().getName()
+                        )
+                );
+            }
         }
 
-        if(multi > 1 && occurrenceType.equals("instance")) {
-            // Instance not allowed on multi level repeat
-            return Arrays.asList(
-                    this.entry.AssertionOccurrenceTypeInstanceOnNotMultiLevelRepeatable(
-                            location,
-                            subject.getResource().getId(),
-                            subject.getResource().getType(),
-                            ((ResourceSkeletonBone) subject).getLocationInfo(),
-                            ((ResourceSkeletonBone) subject).getLocationInfo().getName()
-                    )
-            );
-        }
 
-        if(occurrenceValue > max) {
-            // Over max
-            return Arrays.asList(
-                    this.entry.AssertionOccurrenceValueOverMax(
-                            location,
-                            subject.getResource().getId(),
-                            subject.getResource().getType(),
-                            ((ResourceSkeletonBone) subject).getLocationInfo(),
-                            occurrenceType,
-                            max,
-                            occurrenceValue,
-                            ((ResourceSkeletonBone) subject).getLocationInfo().getName()
-                    )
-            );
-        }
 
         return this.NoErrors();
     }
 
     public List<IgamtObjectError> checkSingleAssertion(ResourceSkeleton skeleton, Location location, SingleAssertion assertion) {
-        List<IgamtObjectError> issues = new ArrayList<>();
-        issues.addAll(this.getTargetOrFailAndVerify(
+        return this.getTargetOrFailAndVerify(
                 skeleton,
                 location.getProperty(),
                 location.getPathId(),
@@ -141,55 +157,204 @@ public class AssertionVerificationService extends VerificationUtils {
                 assertion.getSubject().getPath(),
                 "Assertion Subject",
                 (subject) -> {
-                    if(!Arrays.asList(ComplementKey.valued, ComplementKey.notValued)
-                            .contains(assertion.getComplement().getComplementKey())) {
-                        if(!subject.getResource().isLeaf() && subject instanceof ResourceSkeletonBone) {
-                            return Arrays.asList(
-                                    this.entry.PathShouldBePrimitive(
+                    List<IgamtObjectError> issues = new ArrayList<>();
+
+                    // Assertion is a presence check
+                    boolean isPresenceCheck = Arrays.asList(ComplementKey.valued, ComplementKey.notValued)
+                            .contains(assertion.getComplement().getComplementKey());
+                    // Assertion is a comparison
+                    boolean isComparison = assertion.getComplement().getComplementKey().isComparison();
+                    // Subject is primitive
+                    boolean subjectIsPrimitive = subject.getResource().isLeaf();
+
+                    if (!isPresenceCheck && !subjectIsPrimitive) {
+                        // Subject should be primitive
+
+                            issues.add(
+                                this.entry.PathShouldBePrimitive(
+                                        location,
+                                        subject.getResource().getId(),
+                                        subject.getResource().getType(),
+                                        ((ResourceSkeletonBone) subject).getLocationInfo(),
+                                        ((ResourceSkeletonBone) subject).getLocationInfo().getName()
+                                )
+                            );
+
+                    }
+
+                    // Check Subject Occurrence Type
+                    issues.addAll(
+                            this.checkOccurrences(subject, skeleton, location, assertion.getSubject().getOccurenceType(), assertion.getSubject().getOccurenceValue())
+                    );
+
+                    // Check Assertion
+                    if(!isComparison) {
+                        issues.addAll(
+                                this.checkSingleAssertionDeclarativeContent(subject, location, assertion)
+                        );
+                    } else {
+                        if (assertion.getComplement().getPath() != null) {
+                            issues.addAll(
+                                    this.checkComparison(skeleton, (ResourceSkeletonBone) subject, location, assertion)
+                            );
+                        } else {
+                            issues.add(
+                                    this.entry.AssertionComparisonPathMissing(
                                             location,
                                             subject.getResource().getId(),
-                                            subject.getResource().getType(),
-                                            ((ResourceSkeletonBone) subject).getLocationInfo(),
-                                            ((ResourceSkeletonBone) subject).getLocationInfo().getName()
+                                            subject.getResource().getType()
                                     )
                             );
                         }
                     }
 
-                    if(!Strings.isNullOrEmpty(assertion.getSubject().getOccurenceType())) {
-                        return this.checkOccurrences(subject, skeleton, location, assertion.getSubject().getOccurenceType(), assertion.getSubject().getOccurenceValue());
-                    }
-                    return this.NoErrors();
+                    return issues;
                 }
-        ));
+        );
+    }
 
-        if(assertion.getComplement().getPath() != null) {
-            issues.addAll(this.getTargetOrFailAndVerify(
-                            skeleton,
-                            location.getProperty(),
-                            location.getPathId(),
-                            location.getName(),
-                            assertion.getComplement().getPath(),
-                            "Assertion Complement",
-                            (complement) -> {
-                                if(!complement.getResource().isLeaf()) {
-                                    return Collections.singletonList(
-                                            this.entry.PathShouldBePrimitive(
-                                                    location,
-                                                    complement.getResource().getId(),
-                                                    complement.getResource().getType(),
-                                                    ((ResourceSkeletonBone) complement).getLocationInfo(),
-                                                    ((ResourceSkeletonBone) complement).getLocationInfo().getName()
-                                            )
-                                    );
-                                }
-                                if(!Strings.isNullOrEmpty(assertion.getComplement().getOccurenceType())) {
-                                    return this.checkOccurrences(complement, skeleton, location, assertion.getComplement().getOccurenceType(), assertion.getComplement().getOccurenceValue());
-                                }
-                                return this.NoErrors();
-                            }
-                    )
-            );
+    private List<IgamtObjectError> checkComparison(ResourceSkeleton skeleton, ResourceSkeletonBone subject, Location location, SingleAssertion assertion) {
+        ComplementKey key = assertion.getComplement().getComplementKey();
+        return this.getTargetOrFailAndVerify(
+                skeleton,
+                location.getProperty(),
+                location.getPathId(),
+                location.getName(),
+                assertion.getComplement().getPath(),
+                "Assertion Complement",
+                (target) -> {
+                    List<IgamtObjectError> issues = new ArrayList<>();
+                    ResourceSkeletonBone complement = (ResourceSkeletonBone) target;
+                    boolean subjectIsPrimitive = subject.getResource().isLeaf();
+                    boolean complementIsPrimitive = complement.getResource().isLeaf();
+                    String subjectDT = subject.getResource().getResourceName();
+                    String complementDT = complement.getResource().getResourceName();
+
+                    if (!complementIsPrimitive) {
+                        issues.add(
+                                this.entry.PathShouldBePrimitive(
+                                        location,
+                                        complement.getResource().getId(),
+                                        complement.getResource().getType(),
+                                        complement.getLocationInfo(),
+                                        complement.getLocationInfo().getName()
+                                )
+                        );
+                    } else if(subjectIsPrimitive) {
+
+                        // Using DateTime comparator with incompatible datatypes
+                        if(key.isDateTime() && (!TEMPORAL_DT.contains(subjectDT) || !TEMPORAL_DT.contains(complementDT))) {
+                            issues.add(this.entry.AssertionComparisonDateTimeIncompatible(
+                                    location,
+                                    subject.getResource().getId(),
+                                    subject.getResource().getType(),
+                                    subject.getLocationInfo(),
+                                    subjectDT,
+                                    complement.getLocationInfo(),
+                                    complementDT
+                            ));
+                        }
+
+                        // Check if only one is numerical
+                        boolean incompatibleNumerical = Stream.of(subjectDT, complementDT)
+                                .filter(NUMERICAL_DT::contains).count() == 1;
+                        // Check if only one is temporal
+                        boolean incompatibleTemporal = Stream.of(subjectDT, complementDT)
+                                .filter(TEMPORAL_DT::contains).count() == 1;
+
+
+                        if(incompatibleNumerical || incompatibleTemporal) {
+                            issues.add(this.entry.AssertionComparisonIncompatible(
+                                    location,
+                                    subject.getResource().getId(),
+                                    subject.getResource().getType(),
+                                    subject.getLocationInfo(),
+                                    subjectDT,
+                                    complement.getLocationInfo(),
+                                    complementDT
+                            ));
+                        }
+                    }
+
+                    // Check Occurrence type
+                    issues.addAll(
+                            this.checkOccurrences(complement, skeleton, location, assertion.getComplement().getOccurenceType(), assertion.getComplement().getOccurenceValue())
+                    );
+
+                    return issues;
+                }
+        );
+    }
+
+    private List<IgamtObjectError> checkSingleAssertionDeclarativeContent(ResourceSkeleton subject, Location location, SingleAssertion assertion) {
+        List<IgamtObjectError> issues = new ArrayList<>();
+        ComplementKey key = assertion.getComplement().getComplementKey();
+
+        // Declaration Type Requires CodeSys and CodeSys is empty
+        if(key.isCodeSys() && Strings.isNullOrEmpty(assertion.getComplement().getCodesys())) {
+            issues.add(this.entry.AssertionCodeSysMissing(
+                    location,
+                    subject.getResource().getId(),
+                    subject.getResource().getType()
+            ));
+        }
+
+        if(key.isMulti()) {
+            boolean empty = assertion.getComplement().getValues() == null || assertion.getComplement().getValues().length == 0;
+            // Declaration Type Requires Value List and Value List is empty
+            if(key.isValue()) {
+                boolean emptyOrContainsEmpty = empty || Arrays.stream(assertion.getComplement().getValues()).anyMatch(Strings::isNullOrEmpty);
+                if(emptyOrContainsEmpty) {
+                    issues.add(this.entry.AssertionValueMissing(
+                            location,
+                            subject.getResource().getId(),
+                            subject.getResource().getType(),
+                            true
+                    ));
+                }
+            }
+
+            // Declaration Type Requires Description
+            if(key.isDescription() && !empty) {
+                // Description List is null or empty
+                boolean nullOrEmpty = assertion.getComplement().getDescs() == null || assertion.getComplement().getDescs().length == 0;
+                // Description List doesn't contain a description per value
+                boolean notSameNumberAsValues = nullOrEmpty || assertion.getComplement().getDescs().length != assertion.getComplement().getValues().length;
+                // Description List contains empty value
+                boolean containsEmpty = nullOrEmpty || Arrays.stream(assertion.getComplement().getDescs()).anyMatch(Strings::isNullOrEmpty);
+
+                // If one or more of the above, then consider that description is missing
+                if(nullOrEmpty || notSameNumberAsValues || containsEmpty) {
+                    issues.add(this.entry.AssertionDescriptionMissing(
+                            location,
+                            subject.getResource().getId(),
+                            subject.getResource().getType(),
+                            true
+                    ));
+                }
+            }
+
+        } else {
+
+            // Declaration Type Requires Value but its missing
+            if(key.isValue() && Strings.isNullOrEmpty(assertion.getComplement().getValue())) {
+                issues.add(this.entry.AssertionValueMissing(
+                        location,
+                        subject.getResource().getId(),
+                        subject.getResource().getType(),
+                        false
+                ));
+            }
+
+            // Declaration Type Requires Description but its missing
+            if(key.isDescription() && Strings.isNullOrEmpty(assertion.getComplement().getDesc())) {
+                issues.add(this.entry.AssertionDescriptionMissing(
+                        location,
+                        subject.getResource().getId(),
+                        subject.getResource().getType(),
+                        false
+                ));
+            }
         }
         return issues;
     }

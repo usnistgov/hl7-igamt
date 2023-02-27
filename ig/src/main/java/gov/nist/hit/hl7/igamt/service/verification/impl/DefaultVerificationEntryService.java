@@ -409,6 +409,17 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
+    public IgamtObjectError AssertionOccurrenceTypeMissing(Location location, String id, Type type, LocationInfo path, String occurrenceType, String pathQualifier) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_OCCTYPE_MISSING")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Path : " + path.getHl7Path() + " is a repeatable element, but has no occurrence selection. " + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
+                .entry();
+    }
+
+    @Override
     public IgamtObjectError AssertionOccurrenceTypeInstanceOnNotMultiLevelRepeatable(Location location, String id, Type type, LocationInfo path, String pathQualifier) {
         return new IgamtVerificationEntryBuilder("ASSERTION_OCCTYPE_INSTANCE_MULTI")
                 .error()
@@ -430,7 +441,74 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .entry();
     }
 
-	@Override
+    @Override
+    public IgamtObjectError AssertionCodeSysMissing(Location location, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_CODESYS_MISSING")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Assertion required code system attribute is missing")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError AssertionValueMissing(Location location, String id, Type type, boolean list) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_VALUE_MISSING")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Assertion required value "+(list ? "list " : "")+"attribute is missing")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError AssertionDescriptionMissing(Location location, String id, Type type, boolean list) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_DESCRIPTION_MISSING")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Assertion required description "+(list ? "in list " : "attribute ")+"is missing")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError AssertionComparisonIncompatible(Location location, String id, Type type, LocationInfo path1, String path1ResourceName, LocationInfo path2, String path2ResourceName) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_COMPARE_INCOMPATIBLE")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message(path1.getHl7Path() + " ("+ path1ResourceName +") and " + path2.getHl7Path() + " ("+ path2ResourceName +") can't be compared because of their incompatible types")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError AssertionComparisonPathMissing(Location location, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_COMPARE_PATH_MISSING")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Comparison target path is missing")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError AssertionComparisonDateTimeIncompatible(Location location, String id, Type type, LocationInfo path1, String path1ResourceName, LocationInfo path2, String path2ResourceName) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_COMPARE_DATETIME_INCOMPATIBLE")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Date/Time comparator can’t be used to compare " + path1.getHl7Path() + " ("+ path1ResourceName +") and " + path2.getHl7Path() + " ("+ path2ResourceName +")")
+                .entry();
+    }
+
+
+    @Override
 	public IgamtObjectError Valueset_Missing_Code(Location l, String id, Type type) {
 		Location location = l.clone();
 		location.setProperty(PropertyType.CODES);
