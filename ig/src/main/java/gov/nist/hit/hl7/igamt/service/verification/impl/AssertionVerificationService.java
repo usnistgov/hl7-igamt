@@ -20,6 +20,7 @@ public class AssertionVerificationService extends VerificationUtils {
 
     private final Set<String> TEMPORAL_DT = new HashSet<>(Arrays.asList("DT", "DTM", "TM"));
     private final Set<String> NUMERICAL_DT = new HashSet<>(Arrays.asList("NM", "SI"));
+    private final Set<String> OCCURRENCE_TYPES = new HashSet<>(Arrays.asList("atLeast", "instance", "exactlyOne", "count", "all"));
 
     public List<IgamtObjectError> checkAssertion(ResourceSkeleton skeleton, Location location, Assertion assertion) {
         switch (assertion.getMode()) {
@@ -113,6 +114,19 @@ public class AssertionVerificationService extends VerificationUtils {
                 );
             }
 
+            if(!OCCURRENCE_TYPES.contains(occurrenceType)) {
+                return Arrays.asList(
+                        this.entry.AssertionOccurrenceTypeNotValid(
+                                location,
+                                subject.getResource().getId(),
+                                subject.getResource().getType(),
+                                ((ResourceSkeletonBone) subject).getLocationInfo(),
+                                occurrenceType,
+                                ((ResourceSkeletonBone) subject).getLocationInfo().getName()
+                        )
+                );
+            }
+
             if (occurrenceValue > max) {
                 // Over max
                 return Arrays.asList(
@@ -136,7 +150,6 @@ public class AssertionVerificationService extends VerificationUtils {
                                 subject.getResource().getId(),
                                 subject.getResource().getType(),
                                 ((ResourceSkeletonBone) subject).getLocationInfo(),
-                                occurrenceType,
                                 ((ResourceSkeletonBone) subject).getLocationInfo().getName()
                         )
                 );

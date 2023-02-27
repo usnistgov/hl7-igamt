@@ -409,7 +409,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
-    public IgamtObjectError AssertionOccurrenceTypeMissing(Location location, String id, Type type, LocationInfo path, String occurrenceType, String pathQualifier) {
+    public IgamtObjectError AssertionOccurrenceTypeMissing(Location location, String id, Type type, LocationInfo path, String pathQualifier) {
         return new IgamtVerificationEntryBuilder("ASSERTION_OCCTYPE_MISSING")
                 .error()
                 .handleByUser()
@@ -418,6 +418,18 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .message("Path : " + path.getHl7Path() + " is a repeatable element, but has no occurrence selection. " + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
                 .entry();
     }
+
+    @Override
+    public IgamtObjectError AssertionOccurrenceTypeNotValid(Location location, String id, Type type, LocationInfo path, String occurrenceType, String pathQualifier) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_OCCTYPE_INVALID")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Path : " + path.getHl7Path() + " has an invalid occurrence type '"+occurrenceType+"' " + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
+                .entry();
+    }
+
 
     @Override
     public IgamtObjectError AssertionOccurrenceTypeInstanceOnNotMultiLevelRepeatable(Location location, String id, Type type, LocationInfo path, String pathQualifier) {
