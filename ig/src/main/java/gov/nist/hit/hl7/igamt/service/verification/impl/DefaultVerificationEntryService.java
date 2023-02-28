@@ -21,7 +21,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError ResourceNotFound(Location location, String id, Type type) {
         return new IgamtVerificationEntryBuilder("RESOURCE_NOT_FOUND")
-                .error()
+                .fatal()
                 .handleInternally()
                 .target(id, type)
                 .locationInfo(location)
@@ -32,8 +32,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError PathNotFound(Location location, String id, Type type, String path, String pathQualifier) {
         return new IgamtVerificationEntryBuilder("PATH_NOT_FOUND")
-                .error()
-                .handleByUser()
+                .fatal()
                 .target(id, type)
                 .locationInfo(location)
                 .message("Path : " + path + " does not exist" + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
@@ -44,7 +43,6 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     public IgamtObjectError PathShouldBePrimitive(Location location, String id, Type type, LocationInfo path, String pathQualifier) {
         return new IgamtVerificationEntryBuilder("PATH_SHOULD_BE_PRIMITIVE")
                 .error()
-                .handleByUser()
                 .target(id, type)
                 .locationInfo(location)
                 .message("Path : " + path.getHl7Path() + " should be primitive" + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
@@ -55,7 +53,6 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     public IgamtObjectError PathShouldBeComplex(Location location, String id, Type type, LocationInfo path, String pathQualifier) {
         return new IgamtVerificationEntryBuilder("PATH_SHOULD_BE_COMPLEX")
                 .error()
-                .handleByUser()
                 .target(id, type)
                 .locationInfo(location)
                 .message("Path : " + path.getHl7Path() + " should be complex" + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
@@ -65,8 +62,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError SingleCodeNotAllowed(String pathId, LocationInfo info, String id, Type type) {
         return new IgamtVerificationEntryBuilder("SINGLE_CODE_NOT_ALLOWED")
-                .error()
-                .handleByUser()
+                .fatal()
                 .target(id, type)
                 .locationInfo(pathId, info, PropertyType.SINGLECODE)
                 .message("Single Code binding not allowed at location")
@@ -76,8 +72,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError SingleCodeMissingCode(String pathId, LocationInfo info, String id, Type type) {
         return new IgamtVerificationEntryBuilder("SINGLE_CODE_MISSING_CODE")
-                .error()
-                .handleInternally()
+                .fatal()
                 .target(id, type)
                 .locationInfo(pathId, info, PropertyType.SINGLECODE)
                 .message("Single Code binding is missing code property")
@@ -87,8 +82,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError SingleCodeMissingCodeSystem(String pathId, LocationInfo info, String id, Type type) {
         return new IgamtVerificationEntryBuilder("SINGLE_CODE_MISSING_CODE_SYS")
-                .error()
-                .handleInternally()
+                .fatal()
                 .target(id, type)
                 .locationInfo(pathId, info, PropertyType.SINGLECODE)
                 .message("Single Code binding is missing code system property")
@@ -99,8 +93,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError ValueSetBindingNotAllowed(String pathId, LocationInfo info, String id, Type type) {
         return new IgamtVerificationEntryBuilder("VALUESET_BINDING_NOT_ALLOWED")
-                .error()
-                .handleByUser()
+                .fatal()
                 .target(id, type)
                 .locationInfo(pathId, info, PropertyType.VALUESET)
                 .message("Value Set binding not allowed at location")
@@ -110,8 +103,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError MultipleValueSetNotAllowed(String pathId, LocationInfo info, String id, Type type) {
         return new IgamtVerificationEntryBuilder("MULTI_VALUESET_BINDING_NOT_ALLOWED")
-                .error()
-                .handleByUser()
+                .fatal()
                 .target(id, type)
                 .locationInfo(pathId, info, PropertyType.VALUESET)
                 .message("Multiple Value Set bindings not allowed at location")
@@ -122,8 +114,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     public IgamtObjectError InvalidBindingLocation(String pathId, String name, LocationInfo target, PropertyType prop, String id, Type type, Set<Integer> bindingLocations, String reason) {
         boolean blIsSet = bindingLocations != null && bindingLocations.size() > 0;
         return new IgamtVerificationEntryBuilder("INVALID_BINDING_LOCATION")
-                .error()
-                .handleInternally()
+                .fatal()
                 .target(id, type)
                 .locationInfo(pathId, name, prop)
                 .message("Invalid binding location : " + (blIsSet ? bindingLocations : '.') + " at " + target.getHl7Path() + (!Strings.isNullOrEmpty(reason) ? " ("+ reason +")" : ""))
@@ -133,8 +124,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintTargetIsNotSegment(String pathId, String locationName, String id, Type type, String path, String pathQualifier) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_TARGET_IS_NOT_SEGMENT")
-                .error()
-                .handleByUser()
+                .fatal()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_SEGMENT)
                 .message("Path " + path + " target is not a segment reference "+ (Strings.isNullOrEmpty(pathQualifier) ? "" : "("+ pathQualifier +")"))
@@ -144,8 +134,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintOBX3MappingIsDuplicate(String pathId, String id, Type type, String code) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_OBX3_TO_FLAVOR_MAPPING")
-                .error()
-                .handleByUser()
+                .fatal()
                 .target(id, type)
                 .locationInfo(pathId, PropertyType.COCONSTRAINTBINDING_ROW)
                 .message("OBX-3 Code : " + code + " is duplicated and associated with different flavors for OBX-5")
@@ -177,8 +166,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintInvalidHeaderType(String pathId, String name, PropertyType propertyType, String id, Type type, LocationInfo info, ColumnType column, String reason) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_INVALID_HEADER_TYPE")
-                .error()
-                .handleByUser()
+                .fatal()
                 .target(id, type)
                 .locationInfo(pathId, name, propertyType)
                 .message("Co-Constraint Table Header " + info.getHl7Path() + " has invalid column type \"" + column + "\" "+ (!Strings.isNullOrEmpty(reason) ? "" : "reason : " + reason))
@@ -188,8 +176,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintInvalidGroupRef(String pathId, String locationName, String id, Type type) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_INVALID_GROUP_REF")
-                .error()
-                .handleByUser()
+                .fatal()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_GROUP)
                 .message("Co-Constraint Group Reference not found")
@@ -199,7 +186,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintGroupNameIsMissing(String pathId, String locationName, String id, Type type) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_GROUP_NAME_MISSING")
-                .error()
+                .fatal()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_GROUP)
@@ -210,7 +197,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintCardinalityMissing(String pathId, String locationName, String id, Type type, boolean group, String cardinality) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_CARDINALITY_MISSING")
-                .error()
+                .fatal()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(pathId, locationName, group ? PropertyType.COCONSTRAINTBINDING_GROUP : PropertyType.COCONSTRAINTBINDING_ROW)
@@ -221,7 +208,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintUsageMissing(String pathId, String locationName, String id, Type type, boolean group) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_USAGE_MISSING")
-                .error()
+                .fatal()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(pathId, locationName, group ? PropertyType.COCONSTRAINTBINDING_GROUP : PropertyType.COCONSTRAINTBINDING_ROW)
@@ -232,8 +219,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintPrimaryUsageInvalid(String pathId, String locationName, String id, Type type, CoConstraintUsage usage) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_PRIMARY_USAGE_INVALID")
-                .error()
-                .handleByUser()
+                .fatal()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_ROW)
                 .message("Primary Co-Constraint has invalid usage " + usage)
@@ -243,7 +229,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintCardinalityInvalid(String pathId, String locationName, String id, Type type, boolean group, int min, String max) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_CARDINALITY_INVALID")
-                .error()
+                .fatal()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(pathId, locationName, group ? PropertyType.COCONSTRAINTBINDING_GROUP : PropertyType.COCONSTRAINTBINDING_ROW)
@@ -254,7 +240,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintCardinalityAndUsageInvalid(String pathId, String locationName, String id, Type type, boolean group, int min, String max, CoConstraintUsage usage) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_CARDINALITY_USAGE_INVALID")
-                .error()
+                .fatal()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(pathId, locationName, group ? PropertyType.COCONSTRAINTBINDING_GROUP : PropertyType.COCONSTRAINTBINDING_ROW)
@@ -265,8 +251,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintIncompatibleHeaderAndCellType(String pathId, String name, String id, Type type, ColumnType header, ColumnType cell) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_CELL_INCOMPATIBLE_TYPE")
-                .error()
-                .handleByUser()
+                .fatal()
                 .target(id, type)
                 .locationInfo(pathId, name, PropertyType.COCONSTRAINTBINDING_CELL)
                 .message("Co-Constraint Cell has incompatible type with header, cell type is \"" + cell + "\" header type is \"" + header +"\"")
@@ -276,7 +261,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintCodeCellMissingCode(String pathId, String locationName, String id, Type type) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_CODE_CELL_MISSING_CODE")
-                .error()
+                .fatal()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
@@ -287,7 +272,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintCodeCellMissingCodeSystem(String pathId, String locationName, String id, Type type) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_CODE_CELL_MISSING_CODESYS")
-                .error()
+                .fatal()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
@@ -298,7 +283,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintCodeCellMissingBindingLocation(String pathId, String locationName, String id, Type type) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_CODE_CELL_MISSING_BL")
-                .error()
+                .fatal()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
@@ -310,8 +295,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     public IgamtObjectError CoConstraintCodeCellInvalidBindingLocation(String pathId, String locationName, LocationInfo info, String id, Type type, Set<Integer> bindingLocations, String reason) {
         boolean blIsSet = bindingLocations != null && bindingLocations.size() > 0;
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_CODE_CELL_INVALID_BL")
-                .error()
-                .handleInternally()
+                .fatal()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
                 .message("Co-Constraint Code Cell has invalid binding location : " + (blIsSet ? bindingLocations : '.') + " at " + info.getHl7Path() + (!Strings.isNullOrEmpty(reason) ? " ("+ reason +")" : ""))
@@ -321,7 +305,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintValueCellMissingValue(String pathId, String locationName, String id, Type type) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_VALUE_CELL_MISSING_VALUE")
-                .error()
+                .fatal()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
@@ -332,7 +316,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintDatatypeCellMissingValue(String pathId, String locationName, String id, Type type) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_DATATYPE_CELL_MISSING_VALUE")
-                .error()
+                .fatal()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
@@ -343,7 +327,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintDatatypeCellMissingDatatype(String pathId, String locationName, String id, Type type) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_DATATYPE_CELL_MISSING_DATATYPE")
-                .error()
+                .fatal()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
@@ -355,8 +339,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     public IgamtObjectError CoConstraintValueSetCellInvalidBindingLocation(String pathId, String locationName, LocationInfo info, String id, Type type, Set<Integer> bindingLocations, String reason) {
         boolean blIsSet = bindingLocations != null && bindingLocations.size() > 0;
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_VALUESET_CELL_INVALID_BL")
-                .error()
-                .handleInternally()
+                .fatal()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
                 .message("Co-Constraint ValueSet Cell has invalid binding location : " + (blIsSet ? bindingLocations : '.')  + " at " + info.getHl7Path() + (!Strings.isNullOrEmpty(reason) ? " ("+ reason +")" : ""))
@@ -366,7 +349,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintMultiDatatypeCells(String pathId, String locationName, String id, Type type) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_DATATYPE_CELL_MULTI")
-                .error()
+                .fatal()
                 .handleInternally()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
@@ -378,7 +361,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintMultiVariesCells(String pathId, String locationName, String id, Type type) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_VARIES_CELL_MULTI")
-                .error()
+                .fatal()
                 .handleInternally()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
@@ -389,7 +372,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError CoConstraintNoDatatypeCell(String pathId, String locationName, String id, Type type) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_NO_DATATYPE_CELL")
-                .error()
+                .fatal()
                 .handleInternally()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
@@ -401,7 +384,6 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     public IgamtObjectError AssertionOccurrenceTypeOnNotRepeatable(Location location, String id, Type type, LocationInfo path, String occurrenceType, String pathQualifier) {
         return new IgamtVerificationEntryBuilder("ASSERTION_OCCTYPE_NOT_REPEATABLE")
                 .error()
-                .handleByUser()
                 .target(id, type)
                 .locationInfo(location)
                 .message("Path : " + path.getHl7Path() + " is not a repeatable element, but has an occurrence selection of type '"+ occurrenceType + "'. " + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
@@ -422,7 +404,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError AssertionOccurrenceTypeNotValid(Location location, String id, Type type, LocationInfo path, String occurrenceType, String pathQualifier) {
         return new IgamtVerificationEntryBuilder("ASSERTION_OCCTYPE_INVALID")
-                .error()
+                .fatal()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(location)
@@ -467,7 +449,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError AssertionValueMissing(Location location, String id, Type type, boolean list) {
         return new IgamtVerificationEntryBuilder("ASSERTION_VALUE_MISSING")
-                .error()
+                .fatal()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(location)
@@ -489,7 +471,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError AssertionComparisonIncompatible(Location location, String id, Type type, LocationInfo path1, String path1ResourceName, LocationInfo path2, String path2ResourceName) {
         return new IgamtVerificationEntryBuilder("ASSERTION_COMPARE_INCOMPATIBLE")
-                .error()
+                .fatal()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(location)
@@ -500,7 +482,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError AssertionComparisonPathMissing(Location location, String id, Type type) {
         return new IgamtVerificationEntryBuilder("ASSERTION_COMPARE_PATH_MISSING")
-                .error()
+                .fatal()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(location)
@@ -511,7 +493,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     @Override
     public IgamtObjectError AssertionComparisonDateTimeIncompatible(Location location, String id, Type type, LocationInfo path1, String path1ResourceName, LocationInfo path2, String path2ResourceName) {
         return new IgamtVerificationEntryBuilder("ASSERTION_COMPARE_DATETIME_INCOMPATIBLE")
-                .error()
+                .fatal()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(location)
