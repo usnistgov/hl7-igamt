@@ -296,9 +296,14 @@ export class VerificationService {
       prop = 'valuesetVerificationResults';
     }
     if (report && report[prop] && report[prop].length) {
-        console.log(prop);
         report[prop].forEach((element) => {
-           errors = _.union(errors, element.errors);
+
+          const elementErrors = element.errors.map((error) => {
+
+            const ret  = {...error,target: element.resourceId, targetType: element.resourceType }
+            return ret;
+          });
+           errors = _.union(errors, elementErrors);
         });
       }
     return this.getVerificationEntryTable(this.convertErrorsToEntries(errors), repository );
@@ -326,11 +331,29 @@ export class VerificationService {
     let temp: Dictionary<IVerificationEnty[]>  = {};
     let errors = [];
     for (const property in report) {
-      if (report[property] && report[property].length) {
-        report[property].forEach((element) => {
-           errors = _.union(errors, element.errors);
-        });
-      }
+      // if (report[property] && report[property].length) {
+
+
+
+
+
+        // report[property].forEach((element) => {
+        //    errors = _.union(errors, element.errors);
+        // });
+
+
+        if (report && report[property] && report[property].length) {
+          report[property].forEach((element) => {
+
+            const elementErrors = element.errors.map((error) => {
+
+              const ret  = {...error, targetType: element.resourceType, target: element.resourceId }
+              return ret;
+            });
+             errors = _.union(errors, elementErrors);
+          });
+        }
+
     }
     temp = _.groupBy(errors, (x) => x.target);
     return temp;
