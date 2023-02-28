@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.verification;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 
 /**
@@ -26,6 +27,8 @@ public class CPVerificationResult extends VerificationResult {
 
   public CPVerificationResult(ConformanceProfile conformanceProfile) {
     super();
+    this.setResourceId(conformanceProfile.getId());
+    this.setResourceType(Type.CONFORMANCEPROFILE);
     metadata = new CPMetadata(conformanceProfile);
   }
 

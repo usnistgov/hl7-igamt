@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.verification;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 /**
@@ -32,6 +33,8 @@ public class VSVerificationResult  extends VerificationResult{
    */
   public VSVerificationResult(Valueset valueset) {
     super();
+    this.setResourceId(valueset.getId());
+    this.setResourceType(Type.VALUESET);
     this.metadata = new VSMetadata(valueset);
   }
 

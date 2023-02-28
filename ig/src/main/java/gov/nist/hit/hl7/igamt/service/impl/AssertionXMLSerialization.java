@@ -369,9 +369,9 @@ public class AssertionXMLSerialization {
                 } else if (sAssertion.getContext().getOccurenceType().equals("noOccurrence")) {
                 	occurenceStr = "Min=\"0\" Max\"0\"";
                 } else if (sAssertion.getContext().getOccurenceType().equals("exactlyOne")) {
-                	occurenceStr = "MinOccurrence=\"1\" MaxOccurrence\"1\"";
+                	occurenceStr = "MinOccurrence=\"1\" MaxOccurrence=\"1\"";
                 } else if (sAssertion.getContext().getOccurenceType().equals("count")) {
-                	occurenceStr = "MinOccurrence=\"" + sAssertion.getContext().getOccurenceValue() + "\" MaxOccurrence\"" + sAssertion.getContext().getOccurenceValue()+ "\"";
+                	occurenceStr = "MinOccurrence=\"" + sAssertion.getContext().getOccurenceValue() + "\" MaxOccurrence=\"" + sAssertion.getContext().getOccurenceValue()+ "\"";
                 } else if (sAssertion.getContext().getOccurenceType().equals("all")) {
                 	occurenceStr = "AtLeastOnce=\"false\"";
                 } else if (sAssertion.getContext().getOccurenceType().equals("instance")) {
