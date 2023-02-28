@@ -265,6 +265,7 @@ public class GeneratePathService {
     					Segment childSeg = this.segmentService.findById(((SegmentRef) segOrGroup).getRef().getId());
     					return this.visitFieldSubCon(childSeg, child.getChild());
     				}else {
+    					if(context == null) context = child;
     					context.setChild(child.getChild());
     					return this.visitSegOrGroupSubCon(((Group) segOrGroup).getChildren(), child.getChild(), context);
     				}

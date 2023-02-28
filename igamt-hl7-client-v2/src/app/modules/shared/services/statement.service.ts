@@ -1,5 +1,5 @@
 import { EventEmitter } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { flatMap, map, take } from 'rxjs/operators';
 import { ICardinalityRange, IHL7v2TreeNode } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
@@ -74,7 +74,18 @@ export class StatementTarget {
     };
   }
 
-  setSubject(subject: ISubject, context: IPath, resource: IResource, repository: AResourceRepositoryService, relativeName: boolean = false) {
+  setNode(node: IHL7v2TreeNode, tree: IHL7v2TreeNode[]) {
+    if (tree && node) {
+      this.repeatMax = this.getNodeRepeatMax(node, tree[0]);
+      this.hierarchicalRepeat = this.getNodeHierarchyRepeat(node, tree[0]);
+    }
+    if (node) {
+      this.resourceName = node.data.ref ? node.data.ref.getValue().name : '';
+    }
+    this.node = node;
+  }
+
+  setSubject(subject: ISubject, context: IPath, resource: IResource, repository: AResourceRepositoryService, relativeName: boolean = false): Observable<StatementTarget> {
     this.setValue(subject);
     this.name = '';
     this.valid = false;
@@ -94,7 +105,7 @@ export class StatementTarget {
           }),
         );
       } catch (e) {
-        console.error(e);
+        return throwError(e);
       }
     } else {
       return of(this);
@@ -121,7 +132,10 @@ export class StatementTarget {
     }
   }
 
-  clearOccurrenceValue() {
+  clearOccurrenceValue(clearType: boolean = false) {
+    if (clearType) {
+      this.value.occurenceType = undefined;
+    }
     this.value.occurenceValue = undefined;
     this.value.occurenceLocationStr = undefined;
   }

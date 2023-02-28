@@ -33,7 +33,6 @@ public interface VerificationEntryService {
     IgamtObjectError CoConstraintOBX3MappingIsDuplicate(String pathId, String id, Type type, String code);
     IgamtObjectError CoConstraintTableIdIsMissing(String pathId, String locationName, String id, Type type);
     IgamtObjectError CoConstraintTableIdIsDuplicate(String pathId, String locationName, String duplicateIdentifier, String id, Type type);
-
     IgamtObjectError CoConstraintInvalidHeaderType(String pathId, String name, PropertyType propertyType, String id, Type type, LocationInfo info, ColumnType column, String reason);
     IgamtObjectError CoConstraintInvalidGroupRef(String pathId, String locationName, String id, Type type);
     IgamtObjectError CoConstraintGroupNameIsMissing(String pathId, String locationName, String id, Type type);
@@ -57,9 +56,17 @@ public interface VerificationEntryService {
 
     // Conformance Statements
     IgamtObjectError AssertionOccurrenceTypeOnNotRepeatable(Location location, String id, Type type, LocationInfo path, String occurrenceType, String pathQualifier);
+    IgamtObjectError AssertionOccurrenceTypeMissing(Location location, String id, Type type, LocationInfo path, String pathQualifier);
+    IgamtObjectError AssertionOccurrenceTypeNotValid(Location location, String id, Type type, LocationInfo path, String occurrenceType, String pathQualifier);
     IgamtObjectError AssertionOccurrenceTypeInstanceOnNotMultiLevelRepeatable(Location location, String id, Type type, LocationInfo path, String pathQualifier);
     IgamtObjectError AssertionOccurrenceValueOverMax(Location location, String id, Type type, LocationInfo path, String occurrenceType, int max, int value, String pathQualifier);
-    
+    IgamtObjectError AssertionCodeSysMissing(Location location, String id, Type type);
+    IgamtObjectError AssertionValueMissing(Location location, String id, Type type, boolean list);
+    IgamtObjectError AssertionDescriptionMissing(Location location, String id, Type type, boolean list);
+    IgamtObjectError AssertionComparisonPathMissing(Location location, String id, Type type);
+    IgamtObjectError AssertionComparisonIncompatible(Location location, String id, Type type, LocationInfo path1, String path1ResourceName, LocationInfo path2, String path2ResourceName);
+    IgamtObjectError AssertionComparisonDateTimeIncompatible(Location location, String id, Type type, LocationInfo path1, String path1ResourceName, LocationInfo path2, String path2ResourceName);
+
     // Value Sets
     IgamtObjectError Valueset_Missing_Code(Location info, String id, Type type);
     IgamtObjectError Valueset_Missing_Description(Location info, String id, Type type);

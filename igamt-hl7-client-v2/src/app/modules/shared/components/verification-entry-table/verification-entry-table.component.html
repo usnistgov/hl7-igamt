@@ -10,7 +10,7 @@
   <table class="table table-sm table-bordered table-striped" style="margin-top: 10px;">
     <tbody *ngFor="let item of verification.entries">
       <tr style="background-color: white;" *ngIf="item.entries?.length">
-        <th colspan="4">
+        <th colspan="3">
           <app-display-ref [element]="item.target" [documentId]="documentId" documentType="IGDOCUMENT"></app-display-ref>
         </th>
       </tr>
@@ -19,16 +19,14 @@
         <th>Location</th>
         <th>Property</th>
         <th>Message</th>
-        <th>Code</th>
       </tr>
       <tr *ngFor="let entry of item.entries">
         <td>
-          <app-issue-badge [type]="entry.severity"></app-issue-badge>
+          <app-issue-badge [ngbPopover]="entry.code" triggers="mouseenter:mouseleave" [type]="entry.severity"></app-issue-badge>
           <span style="margin-left: 5px;"> {{entry.location}} </span>
         </td>
         <td>{{entry.property}}</td>
         <td>{{entry.message}}</td>
-        <td>{{entry.code}}</td>
       </tr>
     </tbody>
   </table>
