@@ -167,8 +167,6 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			IgDataModel igDataModel = igService.generateDataModel(igDocument);
 			String xmlContent =
 					igDataModelSerializationService.serializeDocument(igDataModel, exportConfiguration,null).toXML();
-			System.out.println("XML_EXPORT : " + xmlContent);
-
 			return xmlContent;
 
 		} catch (SerializationException serializationException) {
