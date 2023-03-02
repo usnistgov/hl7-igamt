@@ -7,10 +7,12 @@
             <xsl:attribute name="class">
                 <xsl:text>metadata</xsl:text>
             </xsl:attribute>
-            
-            <xsl:text disable-output-escaping="yes">&lt;img src="data:image/png;base64,</xsl:text>
-<xsl:value-of select="CoverPicture" disable-output-escaping="yes" />
-<xsl:text disable-output-escaping="yes">" /&gt;</xsl:text>
+             <xsl:if test="@CoverPicture!=''">
+           			 <xsl:text disable-output-escaping="yes">&lt;img src="data:image/png;base64,</xsl:text>
+					<xsl:value-of select="CoverPicture" disable-output-escaping="yes" />
+					<xsl:text disable-output-escaping="yes">" /&gt;</xsl:text>
+					
+			</xsl:if>
             
 
             <xsl:element name="p">
