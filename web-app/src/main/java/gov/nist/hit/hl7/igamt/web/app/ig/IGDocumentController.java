@@ -1683,7 +1683,7 @@ public class IGDocumentController extends BaseController {
       } else if (srg instanceof SegmentRef) {
         SegmentRef sr = (SegmentRef)srg;
 
-        if(sr != null && sr.getId() != null && sr.getRef() != null) {
+        if(sr != null && sr.getId() != null && sr.getRef() != null && sr.getRef().getId() != null) {
           Link l = all.getSegmentRegistry().getLinkById(sr.getRef().getId());
           if(l == null) {
         	  Segment s = this.inMemoryDomainExtensionService.findById(sr.getRef().getId(), Segment.class);
