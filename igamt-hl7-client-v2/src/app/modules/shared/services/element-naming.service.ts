@@ -306,7 +306,7 @@ export class ElementNamingService {
   }
 
   getStartPathInfo(pathInfo: IPathInfo, from: string): IPathInfo {
-    if (pathInfo.type === Type.SEGMENTREF || pathInfo.id === from) {
+    if (pathInfo.type === Type.SEGMENTREF || pathInfo.type === Type.SEGMENT || pathInfo.id === from) {
       return pathInfo;
     } else {
       return this.getStartPathInfo(pathInfo.child, from);
