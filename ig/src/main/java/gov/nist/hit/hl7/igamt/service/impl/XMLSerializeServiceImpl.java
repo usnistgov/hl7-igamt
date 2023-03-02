@@ -2270,11 +2270,12 @@ public
 	}
 
 	private String makeInstancePath(String path) {
-		String paths[] = path.split("\\-");
+		
+		String paths[] = path.split("\\.");
 		for(int i=0; i < paths.length; i++) {
 			paths[i] = paths[i] + "[*]";
 		}
-		return String.join("-", paths);
+		return String.join(".", paths);
 	}
 
 	private void generateElmValueSetBinding(Element parentElm, Set<StructureElementBinding> children, String path, String defaultHL7Version, IgDataModel igModel, DatatypeDataModel dtdm) {
