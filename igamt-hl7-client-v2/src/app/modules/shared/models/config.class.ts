@@ -38,10 +38,10 @@ export interface IBindingInfo {
   allowedBindingLocations: IAllowedBindingLocationsMap;
 }
 export class Hl7Config {
-  constructor(readonly hl7Versions?: string[], readonly usages?: string[], readonly phinvadsUrl?: string, readonly connection?: IConnectingInfo[], readonly valueSetBindingConfig?: IValueSetBindingConfigMap, readonly froalaConfig?: any) {
+  constructor(readonly hl7Versions?: string[], readonly usages?: string[], readonly phinvadsUrl?: string, readonly connection?: IConnectingInfo[], readonly valueSetBindingConfig?: IValueSetBindingConfigMap, readonly froalaConfig?: any, readonly userConfig?: IUserConfig) {
   }
 
-  static getUsageOptions(usages: string[], includeW: boolean, includeB: boolean): IUsageOption[] {
+  static getUsageOptions(usages: string[], includeW: boolean, includeB: boolean, includeIX: boolean ): IUsageOption[] {
     return usages.map((u) => {
       return {
         label: u === 'CAB' ? 'C (A/B)' : u,
@@ -51,16 +51,24 @@ export class Hl7Config {
       if (elm.value === Usage.W && includeW) {
         return true;
       }
-
       if (elm.value === Usage.B && includeB) {
         return true;
       }
-
-      if (elm.value === Usage.W || elm.value === Usage.B) {
+      if (elm.value === Usage.IX && includeIX) {
+        return true;
+      }
+      if (elm.value === Usage.W || elm.value === Usage.B || elm.value === Usage.IX ) {
         return false;
       }
 
       return true;
     });
   }
+}
+
+export interface IUserConfig {
+  id?: string;
+  username?: string;
+  includeIX?: boolean;
+
 }

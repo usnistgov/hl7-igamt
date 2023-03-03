@@ -20,6 +20,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { ResetPasswordRequestComponent } from './components/reset-password-request/reset-password-request.component';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
+import { ConfigurationDialogComponent } from './components/configuration-dialog/configuration-dialog.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
     NewPasswordComponent,
     HomeComponent,
     ErrorPageComponent,
+    ConfigurationDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -69,7 +71,11 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
     ProgressBarModule,
     HomeComponent,
     ErrorPageComponent,
+    ConfigurationDialogComponent,
   ],
+  entryComponents: [
+    ConfigurationDialogComponent,
+  ]
 })
 export class CoreModule {
 }

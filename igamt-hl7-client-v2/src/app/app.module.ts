@@ -1,3 +1,4 @@
+import { UserConfigEffects } from './root-store/user-config/user-config.effects';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -23,7 +24,7 @@ import { ResourceLoaderEffects } from './root-store/resource-loader/resource-loa
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    EffectsModule.forRoot([ConfigEffects, ResourceLoaderEffects, LoadedResourcesEffects]),
+    EffectsModule.forRoot([ConfigEffects, UserConfigEffects,  ResourceLoaderEffects, LoadedResourcesEffects]),
     StoreModule.forRoot(reducers),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states

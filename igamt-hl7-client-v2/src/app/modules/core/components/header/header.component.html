@@ -64,14 +64,11 @@
       <li [ngClass]="{'active': isConfig | async }" class="nav-item" ngbDropdown>
         <span class="nav-link" ngbDropdownToggle>Configuration</span>
         <div ngbDropdownMenu>
-          <button [routerLink]="[ '/configuration']" [queryParams]="{type: 'IGDOCUMENT'}" ngbDropdownItem routerLinkActive="active-dropdown">
-            Implementation Guide Export Configuration
+          <button [routerLink]="[ '/export-configuration']" [queryParams]="{type: 'IGDOCUMENT'}" ngbDropdownItem routerLinkActive="active-dropdown">
+            Export Configuration
           </button>
-          <button [routerLink]="[ '/configuration']" [queryParams]="{type: 'DIFFERENTIAL'}" ngbDropdownItem routerLinkActive="active-dropdown">
-            Differential Export Configuration
-          </button>
-          <button [routerLink]="[ '/configuration']" [queryParams]="{type: 'DATATYPELIBRARY'}" ngbDropdownItem routerLinkActive="active-dropdown">
-            Datatype Library Export Configuration
+          <button (click)="openConfig()" ngbDropdownItem >
+            Other Configurations
           </button>
         </div>
       </li>

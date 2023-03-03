@@ -1,5 +1,5 @@
 export enum Usage {
-  R = 'R', RE = 'RE', X = 'X', C = 'C', O = 'O', B = 'B', W = 'W', CAB = 'CAB',
+  R = 'R', RE = 'RE', X = 'X', C = 'C', O = 'O', B = 'B', W = 'W', CAB = 'CAB', IX= 'IX',
 }
 export enum CodeUsage {
   P = 'P',

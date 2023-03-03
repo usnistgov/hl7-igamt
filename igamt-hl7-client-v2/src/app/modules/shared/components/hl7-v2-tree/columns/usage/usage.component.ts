@@ -1,3 +1,4 @@
+import { IUserConfig } from './../../../../models/config.class';
 import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import * as _ from 'lodash';
@@ -45,10 +46,13 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
   repository: AResourceRepositoryService;
 
   @Input()
-  set usages({ original, config }: { original: Usage, config: Hl7Config }) {
+  set usages({ original, config, userConfig }: { original: Usage, config: Hl7Config, userConfig: IUserConfig }) {
     const includeW = original === 'W';
     const includeB = original === 'B';
-    this.options = Hl7Config.getUsageOptions(config.usages, includeW, includeB);
+    const includeIX = (this.usage &&this.usage.value === 'IX' || userConfig.includeIX);
+
+
+    this.options = Hl7Config.getUsageOptions(config.usages, includeW, includeB, includeIX);
   }
 
   @Input()
