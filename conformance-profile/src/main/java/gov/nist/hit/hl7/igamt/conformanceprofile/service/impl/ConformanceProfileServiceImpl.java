@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtensionService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,6 +143,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   @Autowired
   SlicingService slicingService;
 
+  @Autowired
+  InMemoryDomainExtensionService domainExtensionService;
+
   @Override
   public ConformanceProfile create(ConformanceProfile conformanceProfile) {
     conformanceProfile.setId(new String());
@@ -227,8 +231,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Override
   public ConformanceProfile findById(String id) {
-    ConformanceProfile conformanceProfile = conformanceProfileRepository.findOneById(id);
-    return conformanceProfile;
+    ConformanceProfile conformanceProfile = this.domainExtensionService.findById(id, ConformanceProfile.class);
+    return conformanceProfile == null ? conformanceProfileRepository.findById(id).orElse(null) : conformanceProfile;
   }
 
 
