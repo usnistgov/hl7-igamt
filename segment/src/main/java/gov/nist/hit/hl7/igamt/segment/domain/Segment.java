@@ -13,7 +13,8 @@ import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
 
 @Document(collection = "segment")
 public class Segment extends Resource {
-  private String ext;
+  private static final long serialVersionUID = -6670148730722042931L;
+private String ext;
   private DynamicMappingInfo dynamicMappingInfo;
   private ResourceBinding binding;
   private boolean custom;
@@ -110,6 +111,7 @@ public class Segment extends Resource {
 	 elm.binding = binding;
 	 elm.children = children;
 	 elm.custom = custom;
+	 elm.slicings = slicings;
  }
 
 public Set<Slicing> getSlicings() {

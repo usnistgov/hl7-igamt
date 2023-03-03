@@ -1,7 +1,11 @@
 package gov.nist.hit.hl7.igamt.web.app.resource;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,21 +30,17 @@ import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementDisplay;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
-import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeDisplayMetadata;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.DTSegVerificationResult;
+import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
 import gov.nist.hit.hl7.igamt.web.app.service.DateUpdateService;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 
@@ -63,6 +62,9 @@ public class DatatypeController extends BaseController {
 
 	@Autowired
 	DateUpdateService dateUpdateService;
+	
+	@Autowired
+	VerificationService verificationService;
 
 	private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
 
@@ -162,6 +164,18 @@ public class DatatypeController extends BaseController {
 		dateUpdateService.updateDate(dt.getDocumentInfo());
 		return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, dt.getId(), dt.getUpdateDate());
 	}
-
+	
+	@RequestMapping(value = "/api/datatypes/{id}/verification", method = RequestMethod.GET, produces = {
+			"application/json" })
+	@PreAuthorize("AccessResource('DATATYPE', #id, READ)")
+	public @ResponseBody DTSegVerificationResult verifyById(@PathVariable("id") String id,
+			Authentication authentication) {
+		Datatype dt = this.datatypeService.findById(id);
+		if (dt != null) {
+			DTSegVerificationResult report = this.verificationService.verifyDatatype(dt);
+			return report;
+		}
+		return null;
+	}
 
 }

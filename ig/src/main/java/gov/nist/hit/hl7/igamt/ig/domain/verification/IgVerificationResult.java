@@ -12,6 +12,7 @@
 package gov.nist.hit.hl7.igamt.ig.domain.verification;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 
 /**
@@ -19,6 +20,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.Ig;
  *
  */
 public class IgVerificationResult extends VerificationResult {
+  
   private DocumentMetadata metadata;
 
   public IgVerificationResult() {
@@ -27,6 +29,8 @@ public class IgVerificationResult extends VerificationResult {
 
   public IgVerificationResult(Ig ig) {
     super();
+    this.setResourceId(ig.getId());
+    this.setResourceType(Type.IGDOCUMENT);;
     this.metadata = ig.getMetadata();
   }
 

@@ -28,6 +28,8 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfi
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.CPVerificationResult;
+import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
 import gov.nist.hit.hl7.igamt.web.app.service.DateUpdateService;
 
 @RestController
@@ -46,6 +48,9 @@ public class ConformanceProfileController extends BaseController {
     
 	@Autowired
 	DateUpdateService dateUpdateService;
+	
+	@Autowired
+	VerificationService verificationService;
     
     public ConformanceProfileController() {
         // TODO Auto-generated constructor stub
@@ -136,5 +141,17 @@ public class ConformanceProfileController extends BaseController {
         return this.findById(id);
     }
 
+    
+	@RequestMapping(value = "/api/conformanceprofiles/{ig}/verification", method = RequestMethod.GET, produces = {
+			"application/json" })
+	@PreAuthorize("AccessResource('CONFORMANCEPROFILE', #id, READ)")
+	public @ResponseBody CPVerificationResult verifyById(@PathVariable("id") String id, Authentication authentication) {
+		ConformanceProfile cp = this.conformanceProfileService.findById(id);
+		if (cp != null) {
+			CPVerificationResult report = this.verificationService.verifyConformanceProfile(cp);
+			return report;
+		}
+		return null;
+	}
 
 }

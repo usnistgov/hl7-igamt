@@ -60,6 +60,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
   atrribute: 'status'}, {label: 'UNLOCKED', value: null,
   atrribute: 'status'}];
   status = [Status.LOCKED,  null];
+  selectedOptions: any;
   _shadowViewType: IgListLoad;
   controls: Observable<IgListItemControl[]>;
   sortOptions: any;

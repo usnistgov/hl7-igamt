@@ -12,7 +12,7 @@ import { MessageType } from '../../../dam-framework/models/messages/message.clas
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { IExportConfiguration } from '../../models/default-export-configuration.interface';
-import {ExportTypes} from '../../models/export-types';
+import { ExportTypes } from '../../models/export-types';
 import { IExportConfigurationItemList } from '../../models/exportConfigurationForFrontEnd.interface';
 import { ExportConfigurationService } from '../../services/export-configuration.service';
 
@@ -45,10 +45,10 @@ export class DefaultConfigurationComponent implements OnInit {
     this.exportConfigurationService.getAllExportConfigurations(type).subscribe(
       (x) => {
         this.configList = x;
-        if (this.currentConfiguration && this.currentConfiguration.type !== type ) {
+        if (this.currentConfiguration && this.currentConfiguration.type !== type) {
           this.currentConfiguration = null;
         }
-         });
+      });
   }
 
   filteredList(): IExportConfigurationItemList[] {

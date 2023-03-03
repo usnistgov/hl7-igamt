@@ -104,10 +104,10 @@
                   <tr>
                     <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
                     <td><span class="badge error-code">{{error.code}}</span></td>
-                    <td>
+                    <!-- <td>
                       <app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
                       <span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>
-                    </td>
+                    </td> -->
                     <td>{{error.description}}</td>
                   </tr>
                 </ng-template>
@@ -145,10 +145,10 @@
                   <tr>
                     <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
                     <td><span class="badge error-code">{{error.code}}</span></td>
-                    <td>
+                    <!-- <td>
                       <app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
                       <span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>
-                    </td>
+                    </td> -->
                     <td>{{error.description}}</td>
                   </tr>
                 </ng-template>
@@ -194,10 +194,10 @@
                   <tr>
                     <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
                     <td><span class="badge error-code">{{error.code}}</span></td>
-                    <td>
+                    <!-- <td>
                       <app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
                       <span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>
-                    </td>
+                    </td> -->
                     <td>{{error.description}}</td>
                   </tr>
                 </ng-template>
@@ -235,10 +235,10 @@
                   <tr>
                     <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
                     <td><span class="badge error-code">{{error.code}}</span></td>
-                    <td>
+                    <!-- <td>
                       <app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
                       <span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>
-                    </td>
+                    </td> -->
                     <td>{{error.description}}</td>
                   </tr>
                 </ng-template>
@@ -284,10 +284,10 @@
                   <tr>
                     <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
                     <td><span class="badge error-code">{{error.code}}</span></td>
-                    <td>
+                    <!-- <td>
                       <app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
                       <span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>
-                    </td>
+                    </td> -->
                     <td>{{error.description}}</td>
                   </tr>
                 </ng-template>
@@ -325,10 +325,10 @@
                   <tr>
                     <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
                     <td><span class="badge error-code">{{error.code}}</span></td>
-                    <td>
+                    <!-- <td>
                       <app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
                       <span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>
-                    </td>
+                    </td> -->
                     <td>{{error.description}}</td>
                   </tr>
                 </ng-template>
@@ -374,12 +374,10 @@
                   <tr>
                     <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
                     <td><span class="badge error-code">{{error.code}}</span></td>
-                    <td>
+                    <!-- <td>
                       <app-scope-badge *ngIf="error.targetMeta && error.targetMeta.domainInfo" [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
                       <span> {{error.targetMeta.bindingIdentifier}}<ng-container *ngIf="error.targetMeta.name">{{'-' + error.targetMeta.name}}</ng-container></span>
-                      <!--<app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>-->
-                      <!--<span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>-->
-                    </td>
+                    </td> -->
                     <td>{{error.description}}</td>
                   </tr>
                 </ng-template>
@@ -417,12 +415,10 @@
                   <tr>
                     <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
                     <td><span class="badge error-code">{{error.code}}</span></td>
-                    <td>
+                    <!-- <td>
                       <app-scope-badge *ngIf="error.targetMeta && error.targetMeta.domainInfo" [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
                       <span> {{error.targetMeta.bindingIdentifier}}<ng-container *ngIf="error.targetMeta.name">{{'-' + error.targetMeta.name}}</ng-container></span>
-                      <!--<app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>-->
-                      <!--<span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>-->
-                    </td>
+                    </td> -->
                     <td>{{error.description}}</td>
                   </tr>
                 </ng-template>

@@ -33,6 +33,7 @@ import { IgMetadataEditorComponent } from './components/ig-metadata-editor/ig-me
 import { IgSectionEditorComponent } from './components/ig-section-editor/ig-section-editor.component';
 import { IgTocFilterComponent } from './components/ig-toc-filter/ig-toc-filter.component';
 import { IgTocComponent } from './components/ig-toc/ig-toc.component';
+import { IgVerificationComponent } from './components/ig-verification/ig-verification.component';
 import { ManageProfileStructureComponent } from './components/manage-profile-structure/manage-profile-structure.component';
 import { NarrativeSectionFormComponent } from './components/narrative-section-form/narrative-section-form.component';
 import { IgRoutingModule } from './ig-routing.module';
@@ -60,6 +61,7 @@ import { IgService } from './services/ig.service';
     IgEditDrawerComponent,
     IgTocFilterComponent,
     ManageProfileStructureComponent,
+    IgVerificationComponent,
   ],
   imports: [
     DamFrameworkModule.forRoot(),

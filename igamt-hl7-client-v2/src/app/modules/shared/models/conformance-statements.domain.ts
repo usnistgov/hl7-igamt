@@ -23,7 +23,6 @@ export interface IStatement {
 export enum OccurrenceType {
   AT_LEAST_ONE = 'atLeast',
   INSTANCE = 'instance',
-  NONE = 'noOccurrence',
   ONE = 'exactlyOne',
   COUNT = 'count',
   ALL = 'all',

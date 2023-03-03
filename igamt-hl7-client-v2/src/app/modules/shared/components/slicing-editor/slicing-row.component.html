@@ -152,7 +152,7 @@
   <ng-template #flavorSelector let-param>
     <p-dropdown [(ngModel)]="map[param.slice.flavorId]" [appendTo]="param.anchor" [optionLabel]="'fixedName'"
                 [options]="available_" [style]="{'minWidth':'100%'}"
-                [placeholder]="'Select Flavor'" (ngModelChange)="modelChange($event, param.slice)" [id]="node.data.id+param.index" [name]="node.data.id+param.index" [disabled]="viewOnly">
+                [placeholder]="'Select Flavor'" (ngModelChange)="modelChange($event, param.slice)" [id]="node.data.id+param.index" [name]="node.data.id+param.index" [disabled]="viewOnly" required>
       <ng-template let-item pTemplate="selectedItem">
           <ng-container>
             <app-display-section [element]="map[param.slice.flavorId]" [hideDescription]="true"></app-display-section>

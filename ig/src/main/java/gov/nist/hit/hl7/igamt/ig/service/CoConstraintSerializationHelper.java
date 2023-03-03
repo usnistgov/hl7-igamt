@@ -36,4 +36,6 @@ public interface CoConstraintSerializationHelper {
     SerializableCoConstraintTable getSerializableCoConstraintTable(CoConstraintTable table, ResourceSkeleton segment) throws ResourceNotFoundException, PathNotFoundException;
 
     Map<CoConstraintMappingLocation, Set<CoConstraintOBX3MappingValue>> getOBX3ToFlavorMap(ConformanceProfile conformanceProfile) throws AmbiguousOBX3MappingException, ResourceNotFoundException, PathNotFoundException;
+
+    Set<String> getCoConstraintReferencedValueSetIds(ConformanceProfile conformanceProfile);
 }

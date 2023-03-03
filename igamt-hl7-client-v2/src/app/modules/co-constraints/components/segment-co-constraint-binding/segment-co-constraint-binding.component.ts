@@ -1,4 +1,3 @@
-import { IContextCoConstraint } from './../context-co-constraint-binding/context-co-constraint-binding.component';
 import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material';
@@ -35,6 +34,7 @@ import { FileUploadService } from '../../services/file-upload.service';
 import { CoConstraintGroupSelectorComponent } from '../co-constraint-group-selector/co-constraint-group-selector.component';
 import { CoConstraintAction, CoConstraintTableComponent } from '../co-constraint-table/co-constraint-table.component';
 import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
+import { IContextCoConstraint } from './../context-co-constraint-binding/context-co-constraint-binding.component';
 
 export interface ISegmentCoConstraint {
   resolved: boolean;
@@ -171,7 +171,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   }
 
   createTable(binding: ICoConstraintBindingSegment, scc: ISegmentCoConstraint) {
-    const id = this.generateTableId(scc, this.contextInfo, Guid.create().toString().substring(0, 5))
+    const id = this.generateTableId(scc, this.contextInfo, Guid.create().toString().substring(0, 5));
     this.ccService.createCoConstraintTableForSegment(scc.segment, this.repository).pipe(
       take(1),
       tap((table) => {

@@ -11,6 +11,10 @@
       <ng-container *ngTemplateOutlet="titleBarTemplate; context: { }" ></ng-container>
     </div>
 
+    <!-- <div class="notification">
+      <ng-container *ngTemplateOutlet="notificationsTemplate; context: { }" ></ng-container>
+    </div> -->
+
     <div class="page-container"
         [ngStyle]="{
           'grid-template-columns': '[sidebar] minmax(min-content, '+ (!collapsed ? positionX : '45px') +') [resize-bar] 4px [container] minmax(600px, 8fr)'

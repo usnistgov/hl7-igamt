@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.verification;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 
@@ -28,11 +29,15 @@ public class DTSegVerificationResult extends VerificationResult{
 
   public DTSegVerificationResult(Datatype datatype) {
     super();
+    this.setResourceId(datatype.getId());
+    this.setResourceType(Type.DATATYPE);
     this.metadata = new DTSegMetadata(datatype);
   }
   
   public DTSegVerificationResult(Segment segment) {
     super();
+    this.setResourceId(segment.getId());
+    this.setResourceType(Type.SEGMENT);
     this.metadata = new DTSegMetadata(segment);
   }
 

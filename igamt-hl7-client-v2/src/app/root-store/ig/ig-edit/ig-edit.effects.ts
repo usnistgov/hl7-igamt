@@ -11,6 +11,7 @@ import { MessageService } from 'src/app/modules/dam-framework/services/message.s
 import {CleanWorkspace, EditorReset, selectWorkspaceCurrent} from 'src/app/modules/dam-framework/store/index';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IgService } from 'src/app/modules/ig/services/ig.service';
+import { VerificationType } from 'src/app/modules/shared/models/verification.interface';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import {IWorkspaceCurrent} from '../../../modules/dam-framework';
 import { Message, MessageType, UserMessage } from '../../../modules/dam-framework/models/messages/message.class';
@@ -30,6 +31,8 @@ import {
 } from '../../dam-igamt/igamt.loaded-resources.actions';
 import {selectProfileComponentContext, selectSelectedResource} from '../../dam-igamt/igamt.selected-resource.selectors';
 import {selectLoadedDocumentInfo, selectWorkspaceActive} from '../../dam-igamt/igamt.selectors';
+import { DamActionTypes, EditorSaveSuccess } from './../../../modules/dam-framework/store/data/dam.actions';
+import { selectVerificationResult } from './../../dam-igamt/igamt.selected-resource.selectors';
 import {
   AddProfileComponentContext,
   AddProfileComponentContextFailure,
@@ -45,7 +48,9 @@ import {
   DeleteResourcesFailure,
   DeleteResourcesSuccess,
   OpenConformanceStatementSummaryEditorNode,
+  OpenIgVerificationEditor,
   UpdateSections,
+  VerifyIg,
 } from './ig-edit.actions';
 import {
   AddResourceFailure,
@@ -121,6 +126,7 @@ export class IgEditEffects extends DamWidgetEffect {
             new fromDAM.LoadPayloadData(igInfo.ig),
             this.igService.loadRepositoryFromIgDisplayInfo(igInfo),
             new IgEditResolverLoadSuccess(igInfo),
+            new VerifyIg({id: action.id, resourceType: Type.IGDOCUMENT, verificationType: VerificationType.VERIFICATION  }),
           ];
         }),
         catchError((error: HttpErrorResponse) => {
@@ -816,6 +822,67 @@ export class IgEditEffects extends DamWidgetEffect {
         }),
   );
 
+  @Effect()
+  verifyIg = this.actions$.pipe(
+    ofType(IgEditActionTypes.VerifiyIg),
+    switchMap((action: VerifyIg) => {
+      this.store.dispatch(new fromDam.SetValue({verificationStatus: {loading: true}}));
+
+      return  this.igService.verify(action.payload).pipe(
+
+        flatMap((response) => {
+          return [
+            new fromDam.SetValue({verificationResult: response}),
+            new fromDam.SetValue({verificationStatus: {loading: false }}),
+            new fromDAM.TurnOffLoader(),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new fromDam.SetValue({verificationStatus: {loading: false }}),
+          );
+        }),
+      );
+  }));
+
+  @Effect()
+  openVerificationEditor$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.OpenIgVerificationEditor),
+      mergeMap((action: OpenIgVerificationEditor) => {
+          return combineLatest(
+            this.store.select(selectIgDocument),
+            // this.store.select(selectVerificationResult)
+            )
+            .pipe(
+              take(1),
+              map(([ig, result]) => {
+                return new fromDAM.OpenEditor({
+                  id: action.payload.id,
+                  display: this.igService.igToIDisplayElement(ig),
+                  editor: action.payload.editor,
+                  initial: {
+                    verificationResult: result,
+                    changes: {},
+                  },
+                });
+              }),
+            );
+        }),
+    );
+
+    @Effect()
+    EditorSaveSuccess$ = this.actions$.pipe(
+      ofType(DamActionTypes.EditorSaveSuccess , IgEditActionTypes.AddResourceSuccess),
+        mergeMap((action: EditorSaveSuccess) => {
+         return  this.store.select(selectIgDocument).pipe(
+                take(1),
+                map((ig) => {
+                  return new VerifyIg({id: ig.id,  resourceType: Type.IGDOCUMENT, verificationType: VerificationType.VERIFICATION});
+                }),
+              );
+          }),
+      );
+
   finalizeAdd(toDoo: Observable<Action>) {
     return combineLatest(
       this.store.select(selectTableOfContentChanged),
@@ -855,5 +922,4 @@ export class IgEditEffects extends DamWidgetEffect {
       }),
     );
   }
-
 }

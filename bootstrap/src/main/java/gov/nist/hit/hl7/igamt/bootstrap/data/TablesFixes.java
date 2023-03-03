@@ -200,7 +200,7 @@ public class TablesFixes {
   
   
 
-  public void removeSegmentsDuplicatedBinding() throws ValidationException, ForbiddenOperationException {
+  public void removeSegmentsDuplicatedBinding(String version) throws ValidationException, ForbiddenOperationException {
     Map<String, String> vsDtMap = new HashMap<String, String>();
     vsDtMap.put("HL70061", "CX");
     vsDtMap.put("HL70064", "FC");
@@ -230,11 +230,12 @@ public class TablesFixes {
     vsDtMap.put("HL70440", "RCD");
     vsDtMap.put("HL70537", "DIN");
     vsDtMap.put("HL79999", "");
+
         
-    List<Segment> segments = segmentService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
+    List<Segment> segments = segmentService.findByDomainInfoScopeAndDomainInfoVersion(Scope.HL7STANDARD.toString(), version);
     for(Segment s: segments) {
       removeIf(s, vsDtMap);
-      segmentService.save(s);
+      segmentRepo.save(s);
     }
   }
   

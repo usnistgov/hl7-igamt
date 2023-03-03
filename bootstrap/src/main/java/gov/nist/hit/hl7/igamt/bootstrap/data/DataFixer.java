@@ -30,7 +30,9 @@ import com.opencsv.CSVReader;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.StandardKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetStrength;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
@@ -48,9 +50,11 @@ import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
@@ -77,6 +81,14 @@ public class DataFixer {
   MessageStructureRepository  messageStructureRepository;
   @Autowired
   ConfigService configService;
+  
+  @Autowired
+  SegmentRepository segmentRepo;
+  
+  @Autowired
+  DatatypeRepository datatypeRepo;
+  @Autowired
+  ConfigCreator configCreator;
 
 
 
@@ -167,7 +179,7 @@ public class DataFixer {
       if(segments  != null) {
         for(Segment seg: segments) {
           shiftBinding(seg, fieldPosition, newPosition, defaultLocation );
-          this.segmentsService.save(seg);
+          this.segmentRepo.save(seg);
         }
       }
     }
@@ -404,10 +416,15 @@ public class DataFixer {
   }
 
 
-  /**
- * @throws ForbiddenOperationException 
-   * 
-   */
+  /***
+   *  
+   *  
+   *  
+   *  @throws ForbiddenOperationException 
+   *  
+   *  
+   *  
+   ***/
   public void addFixedExt() throws ForbiddenOperationException {
     List<Segment> segments =  this.segmentsService.findByDomainInfoScope("USERCUSTOM");
     
@@ -419,5 +436,182 @@ public class DataFixer {
       }
     }
   }
+  
+  
+  
+  	//@PostConstruct
+	public void updateConfIg() {
+		System.out.println("UPDATE CONFIG");
+		//configCreator.addTXExceptions();
+		configCreator.addNMExceptions();
+	}
+	public void addDefaultLocation() {
+		HashMap<String, Datatype> complexDts = new HashMap<String, Datatype>();
+
+		List<Datatype> allDts = this.datatypeService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
+		for (Datatype dt: allDts) {
+			if(dt instanceof ComplexDatatype) {
+				complexDts.put(dt.getId(), dt);
+			}
+		}
+
+		List<Segment> allSegments = this.segmentsService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
+		for( Segment segment: allSegments) {
+			HashMap<String, String> fieldDtComplex = new HashMap<String, String>();
+			
+			for(Field f: segment.getChildren()) {
+				if(complexDts.containsKey(f.getRef().getId())) {
+					fieldDtComplex.put(f.getId(), f.getRef().getId());
+				}
+			}
+			
+			if(segment.getBinding() != null && segment.getBinding().getChildren() != null) {
+				
+				for(StructureElementBinding binding:  segment.getBinding().getChildren() ) {
+					if(fieldDtComplex.containsKey(binding.getElementId())){
+						if(binding.getValuesetBindings() != null) {
+							for(ValuesetBinding vsBinding: binding.getValuesetBindings()) {
+								if(vsBinding.getValueSets() != null && !vsBinding.getValueSets().isEmpty()) {
+									if(vsBinding.getValuesetLocations().isEmpty()) {
+										System.out.println(segment.getId() + "-" + binding.getElementId() );
+										vsBinding.getValuesetLocations().add(1);
+										segmentRepo.save(segment);
+									}
+									
+								}
+								
+							}
+						}
+					}
+					
+				}
+				
+			}
+		}
+	}
+	
+	public void updateUsage(Scope scope, String version, String name, String location, Usage oldUsage,  Usage newUsage) {
+		
+		List<Segment>  segments = segmentsService.findByDomainInfoScopeAndDomainInfoVersionAndName(scope.toString(), version, name);
+		for(Segment segment: segments) {
+			System.out.println(segment.getId());
+			for(Field f: segment.getChildren()) {
+				if(f.getId().equals(location) && f.getUsage().equals(oldUsage)) {
+					f.setUsage(newUsage);
+					f.setOldUsage(newUsage);
+					System.out.println("Found and saved");
+					
+					this.segmentRepo.save(segment);
+				}
+			}
+			
+		}
+		
+	}
+
+
+	public void updateSCVDatatype() {
+		// remove binding from SCV.2 to SCV.1  
+		
+		Datatype dt = this.datatypeService.findById("HL7SCV-V2-4");
+		ComplexDatatype scv = (ComplexDatatype) dt;
+		StandardKey key= new StandardKey();
+		key.setName("HL70294");
+		key.setVersion("2.4");
+
+		for( Component c : scv.getComponents()) {
+			if(c.getId().equals("2")) {
+				if(c.getConceptDomain() != null) {
+				c.setConceptDomain(null);
+				System.out.println("Changed");
+
+				}
+				
+			}else if(c.getId().equals("1")) {
+				c.setConceptDomain(key);
+				System.out.println("Changed");
+
+			}
+		}
+		
+		for(StructureElementBinding binding: dt.getBinding().getChildren()) {
+			if(binding.getElementId().equals("2")) {
+				binding.setElementId("1");
+				binding.getLocationInfo().setName("parameter class");
+				binding.getLocationInfo().setPosition(1);
+				System.out.println("Changed");
+			}	
+		}
+		this.datatypeRepo.save(scv);
+	}
+  
+  
+  
+	public void updateRCD() {
+		// change RCD-2 of 2.4 from ST to ID
+		Datatype dt = this.datatypeService.findById("HL7RCD-V2-4");
+		ComplexDatatype rcd = (ComplexDatatype) dt;
+		StandardKey key= new StandardKey();
+		key.setName("HL70294");
+		key.setVersion("2.4");
+
+		for( Component c : rcd.getComponents()) {
+			if(c.getId().equals("2")) {
+				if(c.getRef().getId().equals("HL7ST-V2-4")) {
+					System.out.println("FOUND");
+					c.getRef().setId("HL7ID-V2-4");
+				}
+				
+			}
+		}
+		
+		this.datatypeRepo.save(rcd);
+	}
+	
+	public void shiftBindingV2_9() throws ForbiddenOperationException {
+		
+	    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.9")), "CDO", "4", "2", 1);
+	    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.9")), "PSL", "12", "2", 1);
+	    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.9")), "ADJ", "6", "2", 1);
+	    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.9")), "RCP", "2", "2", 1);    
+
+	}
+
+
+	public void removeBindingsV2_9() {
+
+		Segment orc = this.segmentsService.findById("HL7ORC-V2-9");
+		
+		orc.getBinding().getChildren().removeIf(sub -> sub.getElementId().equals("17"));
+		orc.getBinding().getChildren().removeIf(sub -> sub.getElementId().equals("18"));
+		
+		//this.segmentRepo.save(orc);
+
+		
+		Segment mfe = this.segmentsService.findById("HL7MFE-V2-9");
+		mfe.getBinding().getChildren().removeIf(sub -> sub.getElementId().equals("4"));
+		//this.segmentRepo.save(mfe);
+
+		
+		Segment mfa = this.segmentsService.findById("HL7MFA-V2-9");
+		mfa.getBinding().getChildren().removeIf(sub -> sub.getElementId().equals("5"));
+		//this.segmentRepo.save(mfa);
+		
+		Datatype ppn = this.datatypeService.findById("HL7PPN-V2-9");
+		
+		ppn.getBinding().getChildren().removeIf(sub -> sub.getElementId().equals("8"));
+		
+		//this.datatypeRepo.save(ppn);
+
+
+	}
+  
+  
+  
+  
+  
+  
+  
+  
 
 }

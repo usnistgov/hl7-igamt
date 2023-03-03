@@ -152,8 +152,9 @@ public class SimpleCoConstraintSerializationHelper implements CoConstraintSerial
     Map<CoConstraintMappingLocation, Set<CoConstraintOBX3MappingValue>> getOBX3MappingFromProfile(ConformanceProfile conformanceProfile) throws ResourceNotFoundException, PathNotFoundException {
         ResourceSkeleton skeleton = this.getConformanceProfileSkeleton(conformanceProfile.getId());
         Map<CoConstraintMappingLocation, Set<CoConstraintOBX3MappingValue>> mapping = new HashMap<>();
+        
         if(conformanceProfile.getCoConstraintsBindings() != null) {
-            for(CoConstraintBinding bindingContext: conformanceProfile.getCoConstraintsBindings()) {
+        	for(CoConstraintBinding bindingContext: conformanceProfile.getCoConstraintsBindings()) {
                 for(CoConstraintBindingSegment bindingSegment: bindingContext.getBindings()) {
 
                     ResourceSkeletonBone bone = this.getSegmentRef(skeleton, bindingContext.getContext(), bindingSegment.getSegment());
@@ -171,7 +172,7 @@ public class SimpleCoConstraintSerializationHelper implements CoConstraintSerial
                         }
                     }
                 }
-            }
+            }	
         }
         return mapping;
     }
@@ -203,6 +204,15 @@ public class SimpleCoConstraintSerializationHelper implements CoConstraintSerial
             return mapping;
         } else {
             throw new AmbiguousOBX3MappingException(ambiguous);
+        }
+    }
+
+    @Override
+    public Set<String> getCoConstraintReferencedValueSetIds(ConformanceProfile conformanceProfile) {
+        if(conformanceProfile.getCoConstraintsBindings() != null) {
+            return this.coConstraintService.getValueSetIds(conformanceProfile.getCoConstraintsBindings());
+        } else {
+            return new HashSet<>();
         }
     }
 

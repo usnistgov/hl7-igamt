@@ -1,8 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { filter, map, tap } from 'rxjs/operators';
 import { Severity } from '../../models/verification.interface';
 import { IVerificationEntryList, IVerificationEntryTable } from '../../services/verification.service';
+import { Type } from './../../constants/type.enum';
 
 export interface IEntryFilter {
   severity: {
@@ -13,6 +14,7 @@ export interface IEntryFilter {
   };
   codes: string[];
   properties: string[];
+  type?: Type;
 }
 
 @Component({
@@ -35,7 +37,13 @@ export class VerificationEntryTableComponent implements OnInit {
   set value(table: IVerificationEntryTable) {
     this.table.next(table);
   }
+  @Input()
+  documentId: string;
 
+  @Input()
+  set filterType(type: Type) {
+    this.filter.next({ ...this.filter.getValue(), type });
+  }
   verification$: Observable<IVerificationEntryTable>;
 
   constructor() {
@@ -43,11 +51,12 @@ export class VerificationEntryTableComponent implements OnInit {
       severity: {
         fatal: true,
         error: true,
-        warning: true,
-        informational: true,
+        warning: false,
+        informational: false,
       },
       codes: [],
       properties: [],
+      type: undefined,
     });
     this.table = new BehaviorSubject(undefined);
     this.verification$ = combineLatest(
@@ -69,15 +78,17 @@ export class VerificationEntryTableComponent implements OnInit {
     this.filter.next(this.filter.getValue());
   }
 
-  applyFilter(filter: IEntryFilter, verification: IVerificationEntryList): IVerificationEntryList {
+  applyFilter(filterValue: IEntryFilter, verification: IVerificationEntryList): IVerificationEntryList {
     const entries = verification.entries.filter((entry) => {
       const keepSeverity: boolean =
-        entry.severity === Severity.ERROR && filter.severity.error ||
-        entry.severity === Severity.FATAL && filter.severity.fatal ||
-        entry.severity === Severity.WARNING && filter.severity.warning ||
-        entry.severity === Severity.INFORMATIONAL && filter.severity.informational;
-      const keepCode = filter.codes.length === 0 || filter.codes.includes(entry.code);
-      return keepSeverity && keepCode;
+        entry.severity === Severity.ERROR && filterValue.severity.error ||
+        entry.severity === Severity.FATAL && filterValue.severity.fatal ||
+        entry.severity === Severity.WARNING && filterValue.severity.warning ||
+        entry.severity === Severity.INFORMATIONAL && filterValue.severity.informational;
+      const keepCode = filterValue.codes.length === 0 || filterValue.codes.includes(entry.code);
+      const keepType = !filterValue.type || entry.targetType === filterValue.type;
+
+      return keepSeverity && keepCode && keepType;
     });
     return {
       ...verification,

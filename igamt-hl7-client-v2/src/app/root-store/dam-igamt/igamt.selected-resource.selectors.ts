@@ -17,6 +17,9 @@ export const selectSelectedProfileComponent = fromDAM.selectValue<IResource>('pr
 
 export const selectProfileComponentContext = fromDAM.selectValue<IProfileComponentContext>('context');
 
+export const selectVerificationResult = fromDAM.selectValue<any>('verificationResult');
+export const selectVerificationStatus = fromDAM.selectValue<any>('verificationStatus');
+
 // SELECTED RESOURCE GETTERS
 export const selectedConformanceProfile = createSelector(
   selectSelectedResource,

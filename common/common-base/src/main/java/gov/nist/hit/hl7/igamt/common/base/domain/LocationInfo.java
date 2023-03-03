@@ -63,4 +63,15 @@ public class LocationInfo {
 		return "LocationInfo [name=" + name + ", hl7Path=" + hl7Path + ", type=" + type + ", positionalPath="
 				+ positionalPath + ", pathId=" + pathId + "]";
 	}
+    
+    public LocationInfo clone() {
+    	LocationInfo info = new LocationInfo();
+    	info.setHl7Path(this.hl7Path);
+    	info.setName(this.getName());
+    	info.setPathId(this.pathId);
+    	info.setPositionalPath(this.getPositionalPath());
+    	info.setType(this.type);
+    	
+    	return info;
+    }
 }

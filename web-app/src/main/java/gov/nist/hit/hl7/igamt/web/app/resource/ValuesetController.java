@@ -1,7 +1,6 @@
 package gov.nist.hit.hl7.igamt.web.app.resource;
 
 import java.io.IOException;
-
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,9 +22,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
@@ -34,10 +33,9 @@ import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.VSVerificationResult;
+import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.exception.ValuesetException;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
@@ -57,6 +55,8 @@ public class ValuesetController extends BaseController {
 	CommonService commonService;
 	@Autowired
 	DateUpdateService dateUpdateService;
+	@Autowired
+	VerificationService verificationService;
 
 	private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
 
@@ -129,6 +129,18 @@ public class ValuesetController extends BaseController {
 		this.valuesetService.applyChanges(vs, cItems);
 		this.dateUpdateService.updateDate(vs.getDocumentInfo());
 		return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, vs.getId(), vs.getUpdateDate());
+	}
+	
+	@RequestMapping(value = "/api/valuesets/{id}/verification", method = RequestMethod.GET, produces = {
+			"application/json" })
+	@PreAuthorize("AccessResource('VALUESET', #id, READ)")
+	public @ResponseBody VSVerificationResult verifyById(@PathVariable("id") String id, Authentication authentication) {
+		Valueset vs = this.valuesetService.findById(id);
+		if (vs != null) {
+			VSVerificationResult report = this.verificationService.verifyValueset(vs);
+			return report;
+		}
+		return null;
 	}
 
 }
