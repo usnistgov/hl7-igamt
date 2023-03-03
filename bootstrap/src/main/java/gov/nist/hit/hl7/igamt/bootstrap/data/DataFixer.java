@@ -585,23 +585,23 @@ public class DataFixer {
 		orc.getBinding().getChildren().removeIf(sub -> sub.getElementId().equals("17"));
 		orc.getBinding().getChildren().removeIf(sub -> sub.getElementId().equals("18"));
 		
-		//this.segmentRepo.save(orc);
+		this.segmentRepo.save(orc);
 
 		
 		Segment mfe = this.segmentsService.findById("HL7MFE-V2-9");
 		mfe.getBinding().getChildren().removeIf(sub -> sub.getElementId().equals("4"));
-		//this.segmentRepo.save(mfe);
+		this.segmentRepo.save(mfe);
 
 		
 		Segment mfa = this.segmentsService.findById("HL7MFA-V2-9");
 		mfa.getBinding().getChildren().removeIf(sub -> sub.getElementId().equals("5"));
-		//this.segmentRepo.save(mfa);
+		this.segmentRepo.save(mfa);
 		
 		Datatype ppn = this.datatypeService.findById("HL7PPN-V2-9");
 		
 		ppn.getBinding().getChildren().removeIf(sub -> sub.getElementId().equals("8"));
 		
-		//this.datatypeRepo.save(ppn);
+		this.datatypeRepo.save(ppn);
 
 
 	}

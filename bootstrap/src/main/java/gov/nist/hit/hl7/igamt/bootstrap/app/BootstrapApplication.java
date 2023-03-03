@@ -756,25 +756,31 @@ public class BootstrapApplication implements CommandLineRunner {
 //////////////////////
 	//@PostConstruct
 	
-	// 	@PostConstruct
+	//@PostConstruct
 	void fixSegmentduplicatedBinding() throws ValidationException, ForbiddenOperationException {
+		System.out.println("fixSegmentduplicatedBinding");
+
 		tableFixes.removeSegmentsDuplicatedBinding("2.9");
 	}
-
+	//@PostConstruct
 	void updateConfIg() {
 		System.out.println("UPDATE CONFIG");
-		//configCreator.addTXExceptions();
+		configCreator.addTXExceptions();
 		configCreator.addNMExceptions();
 	}
 	//@PostConstruct
 	void addDefaultLocation() {
+		System.out.println("ADD DEFAULT LOCATION");
+
 		this.dataFixer.addDefaultLocation();
 		
 	}
 	//@PostConstruct
 	void updateUsage(){
-		//this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.3.1", "OBR", "5", Usage.X, Usage.B);
-		//this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.3.1", "OBR", "6", Usage.X, Usage.B);
+		System.out.println("FIX USAGES");
+
+		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.3.1", "OBR", "5", Usage.X, Usage.B);
+		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.3.1", "OBR", "6", Usage.X, Usage.B);
 		
 		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.7.1", "OBX", "7", Usage.X, Usage.O);
 		
@@ -794,21 +800,28 @@ public class BootstrapApplication implements CommandLineRunner {
 	
 	//@PostConstruct
 	void updateSCV(){
+		System.out.println("FIX SCV");
+
 		this.dataFixer.updateSCVDatatype();
 	}
 	//@PostConstruct
 	void updateRCD(){
+		System.out.println("FIX RCD");
+
 		this.dataFixer.updateRCD();
 	}
 	
 	//@PostConstruct
 	void shiftBindingV2_9() throws ForbiddenOperationException {
-		
+		System.out.println("SHIFT BINDING");
+
 		this.dataFixer.shiftBindingV2_9();
 
 	}
 	//@PostConstruct
 	void removeBindings() {
+		System.out.println("RMOVE BINDING");
+
 		this.dataFixer.removeBindingsV2_9();
 	}
 	
