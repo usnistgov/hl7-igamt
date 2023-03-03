@@ -296,13 +296,10 @@ export class VerificationService {
     }
     if (report && report[prop] && report[prop].length) {
         report[prop].forEach((element) => {
-
           const elementErrors = element.errors.map((error) => {
-
-            const ret  = {...error,target: element.resourceId, targetType: element.resourceType }
-            return ret;
+            return  {...error, target: element.resourceId, targetType: element.resourceType };
           });
-           errors = _.union(errors, elementErrors);
+          errors = _.union(errors, elementErrors);
         });
       }
     return this.getVerificationEntryTable(this.convertErrorsToEntries(errors), repository );
@@ -330,29 +327,15 @@ export class VerificationService {
     let temp: Dictionary<IVerificationEnty[]> = {};
     let errors = [];
     for (const property in report) {
-      // if (report[property] && report[property].length) {
-
-
-
-
-
-        // report[property].forEach((element) => {
-        //    errors = _.union(errors, element.errors);
-        // });
-
-
         if (report && report[property] && report[property].length) {
           report[property].forEach((element) => {
 
             const elementErrors = element.errors.map((error) => {
-
-              const ret  = {...error, targetType: element.resourceType, target: element.resourceId }
-              return ret;
+              return {...error, targetType: element.resourceType, target: element.resourceId };
             });
-             errors = _.union(errors, elementErrors);
+            errors = _.union(errors, elementErrors);
           });
         }
-
     }
     temp = _.groupBy(errors, (x) => x.target);
     return temp;
