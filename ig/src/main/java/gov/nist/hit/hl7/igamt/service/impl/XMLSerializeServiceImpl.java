@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -204,7 +205,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   public Element serializeCoConstraintXML(IgDataModel igModel) throws CoConstraintXMLSerializationException {
       String defaultHL7Version = this.igService.findDefaultHL7VersionById(igModel.getModel().getId());
       Element ccc = new Element("CoConstraintContext");
-      ccc.addAttribute(new Attribute("ID", igModel.getModel().getId()));
+      ccc.addAttribute(new Attribute("ID", UUID.randomUUID().toString()));
       for(ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
         Element message = this.simpleCoConstraintXMLSerialization.serialize(cpModel.getModel(), defaultHL7Version);
         if(message != null) {
@@ -339,7 +340,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     schemaDecl.setNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
     elmTableLibrary.addAttribute(schemaDecl);
     elmTableLibrary
-        .addAttribute(new Attribute("ValueSetLibraryIdentifier", igModel.getModel().getId()));
+        .addAttribute(new Attribute("ValueSetLibraryIdentifier", UUID.randomUUID().toString()));
 
     Element elmMetaData = new Element("MetaData");
     if (igModel.getModel().getMetadata() == null) {
@@ -500,7 +501,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     schemaDecl.setNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
     e.addAttribute(schemaDecl);
 
-    e.addAttribute(new Attribute("UUID", igModel.getModel().getId()));
+    e.addAttribute(new Attribute("UUID", UUID.randomUUID().toString()));
 
     Element elmMetaData = new Element("MetaData");
     if (igModel.getModel().getMetadata() == null) {
@@ -1438,7 +1439,7 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
     }
 
     if (igModel != null && igModel.getModel() != null) {
-      e.addAttribute(new Attribute("ID", igModel.getModel().getId()));
+      e.addAttribute(new Attribute("ID", UUID.randomUUID().toString()));
       if (defaultHL7Version != null && defaultHL7Version.equals("NOTFOUND"))
         e.addAttribute(new Attribute("HL7Version", this.str(defaultHL7Version)));
 
@@ -1781,7 +1782,7 @@ public
 	@Override
 	public Element serializeSlicingXML(IgDataModel igModel) {
 		Element e = new Element("ProfileSlicing");
-		e.addAttribute(new Attribute("ID", igModel.getModel().getId()));
+		e.addAttribute(new Attribute("ID", UUID.randomUUID().toString()));
 
 		String defaultHL7Version = this.igService.findDefaultHL7VersionById(igModel.getModel().getId());
 
@@ -1954,7 +1955,7 @@ public
 	@Override
 	public Element serializeBindingsXML(IgDataModel igModel) {
 		Element e = new Element("ValueSetBindingsContext");
-		e.addAttribute(new Attribute("ID", igModel.getModel().getId()));
+		e.addAttribute(new Attribute("ID", UUID.randomUUID().toString()));
 		
 		String defaultHL7Version = this.igService.findDefaultHL7VersionById(igModel.getModel().getId());
 		
