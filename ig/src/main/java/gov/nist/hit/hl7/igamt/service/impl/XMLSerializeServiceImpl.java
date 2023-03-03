@@ -204,6 +204,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   public Element serializeCoConstraintXML(IgDataModel igModel) throws CoConstraintXMLSerializationException {
       String defaultHL7Version = this.igService.findDefaultHL7VersionById(igModel.getModel().getId());
       Element ccc = new Element("CoConstraintContext");
+      ccc.addAttribute(new Attribute("ID", igModel.getModel().getId()));
       for(ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
         Element message = this.simpleCoConstraintXMLSerialization.serialize(cpModel.getModel(), defaultHL7Version);
         if(message != null) {
@@ -1780,6 +1781,7 @@ public
 	@Override
 	public Element serializeSlicingXML(IgDataModel igModel) {
 		Element e = new Element("ProfileSlicing");
+		e.addAttribute(new Attribute("ID", igModel.getModel().getId()));
 
 		String defaultHL7Version = this.igService.findDefaultHL7VersionById(igModel.getModel().getId());
 
@@ -1952,6 +1954,7 @@ public
 	@Override
 	public Element serializeBindingsXML(IgDataModel igModel) {
 		Element e = new Element("ValueSetBindingsContext");
+		e.addAttribute(new Attribute("ID", igModel.getModel().getId()));
 		
 		String defaultHL7Version = this.igService.findDefaultHL7VersionById(igModel.getModel().getId());
 		
