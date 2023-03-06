@@ -1,4 +1,4 @@
-import { SaveUserConfig } from './../../../../root-store/user-config/user-config.actions';
+import { SaveUserConfig, LoadUserConfig } from './../../../../root-store/user-config/user-config.actions';
 import { IUserConfig } from './../../../shared/models/config.class';
 import { ConfigurationDialogComponent } from './../configuration-dialog/configuration-dialog.component';
 import { MatDialog } from '@angular/material';
@@ -65,6 +65,8 @@ export class HeaderComponent implements OnInit {
   }
 
   openConfig(){
+  this.store.dispatch(new LoadUserConfig());
+
    this.store.select(getUserConfigState).pipe(
       filter((config) => !!config),
       take(1),
