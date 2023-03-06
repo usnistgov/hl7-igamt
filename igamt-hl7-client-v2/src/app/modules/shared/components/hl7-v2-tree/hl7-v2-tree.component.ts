@@ -19,6 +19,7 @@ import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
 import { IBindingContext, IElementBinding } from '../../services/structure-element-binding.service';
 import { IBindingLocationInfo } from '../binding-selector/binding-selector.component';
+import { IUserConfig } from './../../models/config.class';
 
 export enum HL7v2TreeColumnType {
   USAGE = 'Usage',
@@ -136,6 +137,8 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   username: string;
   @Input()
   config: Hl7Config;
+  @Input()
+  userConfig: IUserConfig;
   resource$: Observable<IResource>;
   treeExpandedNodes: string[];
   resourceName: string;

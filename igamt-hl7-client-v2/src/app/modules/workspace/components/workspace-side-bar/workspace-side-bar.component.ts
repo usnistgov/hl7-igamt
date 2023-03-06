@@ -1,16 +1,16 @@
-import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
-import { IWorkspaceInfo } from './../../models/models';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { flatMap, map, take, tap } from 'rxjs/operators';
+import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { selectAllFolders, selectIsWorkspaceAdmin, selectWorkspaceId } from '../../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
 import { IFolderInfo } from '../../models/models';
 import { WorkspaceService } from '../../services/workspace.service';
 import { FolderAddDialogComponent } from '../folder-add-dialog/folder-add-dialog.component';
+import { IWorkspaceInfo } from './../../models/models';
 
 @Component({
   selector: 'app-workspace-side-bar',
@@ -46,8 +46,8 @@ export class WorkspaceSideBarComponent implements OnInit {
         folder: {
           title: folder.metadata.title,
           description: folder.metadata.description,
-        }
-      }
+        },
+      },
     }).afterClosed().pipe(
       flatMap((data) => {
         if (data) {
@@ -72,7 +72,7 @@ export class WorkspaceSideBarComponent implements OnInit {
       data: {
         action: 'Delete Folder',
         question: 'Are you sure you want to delete folder ' + folder.metadata.title + '? This action will delete all the Implementation Guides inside the folder',
-      }
+      },
     }).afterClosed().pipe(
       flatMap((answer) => {
         if (answer) {
@@ -84,7 +84,7 @@ export class WorkspaceSideBarComponent implements OnInit {
           );
         }
         return of();
-      })
+      }),
     ).subscribe();
 
   }
@@ -93,7 +93,7 @@ export class WorkspaceSideBarComponent implements OnInit {
     this.dialog.open(FolderAddDialogComponent, {
       data: {
         title: 'Create Folder',
-      }
+      },
     }).afterClosed().pipe(
       flatMap((folder) => {
         if (folder) {

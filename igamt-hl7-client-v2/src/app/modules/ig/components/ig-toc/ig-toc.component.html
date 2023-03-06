@@ -1,4 +1,5 @@
 <div id="toc-container" class="toc-container">
+  <!-- <button (click)="print(verification)"> TOC VERIF</button> -->
   <span id="TOC-IG" routerLink="metadata" routerLinkActive="active-node" style="cursor: pointer; width: fit-content;">&emsp; Implementation Guide Document Metadata</span>
   <tree-root #treeroot [nodes]="nodes" [options]="options">
     <ng-template #treeNodeTemplate let-index="index" let-node>
@@ -151,8 +152,15 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'DATATYPE'">
+          <div style="display:flex; flex-direction: row;">
+
+        <span style="width: 16px;">
+          <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
+        </span>
+
           <app-display-section [contextMenu]="datatypeContextMenu" #rla="routerLinkActive" [element]="node.data"
                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" ></app-display-section>
+            </div>
           <context-menu #datatypeContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-copy"></i> Create Flavor
@@ -165,8 +173,14 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
+          <div style="display:flex; flex-direction: row;">
+
+            <span style="width: 16px;">
+              <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
+            </span>
           <app-display-section [contextMenu]="conformanceProfileContextMenu" [element]="node.data" #rla="routerLinkActive"
                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" [hideDescription]="true" style="cursor: move !important;"></app-display-section>
+                               </div>
           <context-menu #conformanceProfileContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="exportDiffProfileXML(node)" contextMenuItem>
               <i class="fa fa-download"></i> Export Diff. Profile XML
@@ -201,8 +215,14 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'SEGMENT'">
+          <div style="display:flex; flex-direction: row;">
+
+            <span style="width: 16px;">
+              <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
+            </span>
           <app-display-section  [contextMenu]='segmentContextMenu' [element]="node.data" #rla="routerLinkActive"
                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true"></app-display-section>
+           </div>
           <context-menu #segmentContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-copy"></i> Create Flavor
@@ -215,8 +235,15 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'VALUESET'">
+          <div style="display:flex; flex-direction: row;">
+
+            <span style="width: 16px;">
+              <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]">
+              </app-verification-badge>
+            </span>
           <app-display-section  [contextMenu]='valueSetContextMenu' [element]="node.data" #rla="routerLinkActive"
                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" ></app-display-section>
+          </div>
           <context-menu #valueSetContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-copy"></i> Create Flavor

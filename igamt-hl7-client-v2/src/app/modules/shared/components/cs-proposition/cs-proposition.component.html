@@ -274,7 +274,7 @@
     <!-- Verb -->
     <td style="white-space: nowrap;" *ngIf="csType === _csType.DECLARATION" class="table-font">
       <ng-container *ngFor="let verb of verbs">
-        <input type="radio" [name]="id + 'verbs'" [value]="verb.value" [(ngModel)]="assertion.verbKey" (ngModelChange)="change()"/> {{ verb.label }}<br>
+        <input type="radio" [name]="id + 'verbs'" [value]="verb.value" [(ngModel)]="assertion.verbKey" (ngModelChange)="changeVerbType()"/> {{ verb.label }}<br>
       </ng-container>
     </td>
 

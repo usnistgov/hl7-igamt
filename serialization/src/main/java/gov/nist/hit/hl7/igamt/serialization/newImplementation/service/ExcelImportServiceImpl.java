@@ -134,9 +134,9 @@ public class ExcelImportServiceImpl implements ExcelImportService {
         coConstraintHeaders.setConstraints(constraints);
         coConstraintHeaders.setNarratives(narratives);
         if (checkCardinalityColumns(constraints)) {
-            IgamtObjectError igamtObjectError = new IgamtObjectError("Wrong Table Structure", "Use a template as a starting point", Type.COCONSTRAINTBINDINGS, null, "Varies cells should be followed by a cardinality Column",
-                    "first row", "ERROR", "handleBy");
-            errors.add(igamtObjectError);
+//            IgamtObjectError igamtObjectError = new IgamtObjectError("Wrong Table Structure", "Use a template as a starting point", Type.COCONSTRAINTBINDINGS, null, "Varies cells should be followed by a cardinality Column",
+//                    "first row", "ERROR", "handleBy");
+//            errors.add(igamtObjectError);
         }
 
         if (table.isHasGrouper()) {
@@ -179,11 +179,11 @@ public class ExcelImportServiceImpl implements ExcelImportService {
         List<IgamtObjectError> errors = new ArrayList<IgamtObjectError>();
         verificationResult.setErrors(errors);
         parserResults.setVerificationResult(verificationResult);
-        if (parsedTable.isHasGrouper() != parsedTable.getParsedGroups().size() > 0) {
-            IgamtObjectError igamtObjectError = new IgamtObjectError("Wrong Table Structure", "Use a template as a starting point", Type.COCONSTRAINTBINDINGS, null, "If coconstraint table contains groups, then table must contain a group By column right after THEN columns",
-                    "first row", "ERROR", "handleBy");
-            errors.add(igamtObjectError);
-        }
+//        if (parsedTable.isHasGrouper() != parsedTable.getParsedGroups().size() > 0) {
+//            IgamtObjectError igamtObjectError = new IgamtObjectError("Wrong Table Structure", "Use a template as a starting point", Type.COCONSTRAINTBINDINGS, null, "If coconstraint table contains groups, then table must contain a group By column right after THEN columns",
+//                    "first row", "ERROR", "handleBy");
+//            errors.add(igamtObjectError);
+//        }
 
         Map<Integer, CoConstraintHeader> headerMap = new HashMap<Integer, CoConstraintHeader>();
 
@@ -191,9 +191,9 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 //		Row row2 = rowIterator.next();
 
         if (wrongHeaderStructure == true) {
-            IgamtObjectError igamtObjectError = new IgamtObjectError("Wrong Table Structure", "Use a template as a starting point", Type.COCONSTRAINTBINDINGS, null, "Wrong Table Structure Or Empty Spread Sheet, the first row of the spread sheet should only contains cells with following values : Usage, Cardinality, IF, THEN, NARRATIVES, - Case Sensitive-",
-                    "first row", "ERROR", "handleBy");
-            errors.add(igamtObjectError);
+//            IgamtObjectError igamtObjectError = new IgamtObjectError("Wrong Table Structure", "Use a template as a starting point", Type.COCONSTRAINTBINDINGS, null, "Wrong Table Structure Or Empty Spread Sheet, the first row of the spread sheet should only contains cells with following values : Usage, Cardinality, IF, THEN, NARRATIVES, - Case Sensitive-",
+//                    "first row", "ERROR", "handleBy");
+//            errors.add(igamtObjectError);
         } else {
 
 
@@ -430,9 +430,9 @@ public class ExcelImportServiceImpl implements ExcelImportService {
                                 datatypeCell.setType(ColumnType.DATATYPE);
                             } else {
 //					throw new Exception("Couldn't find datatype : " + datatypeName );
-                                IgamtObjectError igamtObjectError = new IgamtObjectError("Datatype not found", "", Type.COCONSTRAINTBINDINGS, null, "Couldn't find datatype : " + datatypeName,
-                                        "location", "ERROR", "handleBy");
-                                errors.add(igamtObjectError);
+//                                IgamtObjectError igamtObjectError = new IgamtObjectError("Datatype not found", "", Type.COCONSTRAINTBINDINGS, null, "Couldn't find datatype : " + datatypeName,
+//                                        "location", "ERROR", "handleBy");
+//                                errors.add(igamtObjectError);
                             }
 
                         } else {
@@ -440,11 +440,11 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 //	    							" . Should match the following regular expression : " + datatypeRegularExpression 
 //	    							+ ". Example : Value: CE,  Flavor: CE_01");
 
-                            IgamtObjectError igamtObjectError = new IgamtObjectError("Invalid datatype cell expression", "Value: CE,  Flavor: CE_01", Type.COCONSTRAINTBINDINGS, null, "Invalid Datatype Cell expression : " + cellValue +
-                                    " . Should match the following regular expression : " + datatypeRegularExpression
-                                    + ".",
-                                    "location", "ERROR", "handleBy");
-                            errors.add(igamtObjectError);
+//                            IgamtObjectError igamtObjectError = new IgamtObjectError("Invalid datatype cell expression", "Value: CE,  Flavor: CE_01", Type.COCONSTRAINTBINDINGS, null, "Invalid Datatype Cell expression : " + cellValue +
+//                                    " . Should match the following regular expression : " + datatypeRegularExpression
+//                                    + ".",
+//                                    "location", "ERROR", "handleBy");
+//                            errors.add(igamtObjectError);
                         }
                     }
 //	    		return null;	
@@ -509,18 +509,18 @@ public class ExcelImportServiceImpl implements ExcelImportService {
     public CoConstraintHeader processIfHeaderCell(String cellValue, Segment segment, List<IgamtObjectError> errors) throws Exception {
         DataElementHeader dataElementHeader = new DataElementHeader();
         if (cellValue == null) {
-            IgamtObjectError igamtObjectError = new IgamtObjectError("Empty Header Cell", "CODE OBX-3", Type.COCONSTRAINTBINDINGS, null, "Invalid header value",
-                    "table_headers", "ERROR", "handleBy");
-            errors.add(igamtObjectError);
+//            IgamtObjectError igamtObjectError = new IgamtObjectError("Empty Header Cell", "CODE OBX-3", Type.COCONSTRAINTBINDINGS, null, "Invalid header value",
+//                    "table_headers", "ERROR", "handleBy");
+//            errors.add(igamtObjectError);
         } else {
             String[] splitCellValue = cellValue.split("\\s+");
             ;
 
             String columnType = splitCellValue[0];
             if (!(columnType.equals("VALUE") || columnType.equals("VARIES") || columnType.equals("DATATYPE") || columnType.equals("VALUESET") || columnType.equals("CODE") || columnType.equals("Cardinality"))) {
-                IgamtObjectError igamtObjectError = new IgamtObjectError("Invalid header type value", "CODE OBX-3", Type.COCONSTRAINTBINDINGS, null, "Invalid header value, encountred " + columnType + " expected values : " + " CODE, VALUE, VALUESET, DATATYPE, VARIES.",
-                        "table_headers", "ERROR", "handleBy");
-                errors.add(igamtObjectError);
+//                IgamtObjectError igamtObjectError = new IgamtObjectError("Invalid header type value", "CODE OBX-3", Type.COCONSTRAINTBINDINGS, null, "Invalid header value, encountred " + columnType + " expected values : " + " CODE, VALUE, VALUESET, DATATYPE, VARIES.",
+//                        "table_headers", "ERROR", "handleBy");
+//                errors.add(igamtObjectError);
             } else {
                 if (!columnType.equals("Cardinality")) {
                     String name = splitCellValue[1];
@@ -647,10 +647,10 @@ public class ExcelImportServiceImpl implements ExcelImportService {
                 String[] splitCodeCellValue = cellValue.split(",");
                 String codeValue = splitCodeCellValue[0].split(":")[1];
                 if (codeValue.contains(" ")) {
-                    IgamtObjectError igamtObjectError = new IgamtObjectError(" Code Cell Containing White Space ", "Code:AAAA,  Code System:BBBB, Location: 1 or 4", Type.COCONSTRAINTBINDINGS, null, "Code cell value : " + cellValue + " should not contain white space."
-                            + " . Should match the following regular expression : " + codeRegularExpression,
-                            "location", "INFO", "handleBy");
-                    errors.add(igamtObjectError);
+//                    IgamtObjectError igamtObjectError = new IgamtObjectError(" Code Cell Containing White Space ", "Code:AAAA,  Code System:BBBB, Location: 1 or 4", Type.COCONSTRAINTBINDINGS, null, "Code cell value : " + cellValue + " should not contain white space."
+//                            + " . Should match the following regular expression : " + codeRegularExpression,
+//                            "location", "INFO", "handleBy");
+//                    errors.add(igamtObjectError);
                 }
                 System.out.println(newLine + " CODE VALUE : " + codeValue);
                 String codeSystemValue = splitCodeCellValue[1].split(":")[1];
@@ -671,10 +671,10 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 //							" . Should match the following regular expression : " + codeRegularExpression 
 //							+ ". Example : Code: IF1 code 1,  Code System: IF1 codesystem 1, Location: 1 or 4");
 //					
-                IgamtObjectError igamtObjectError = new IgamtObjectError("Invalid Code Cell expression", "Code:AAAA,  Code System:BBBB, Location: 1 or 4", Type.COCONSTRAINTBINDINGS, null, "Invalid Code Cell expression : " + cellValue +
-                        " . Should match the following regular expression : " + codeRegularExpression,
-                        "table_headers", "ERROR", "handleBy");
-                errors.add(igamtObjectError);
+//                IgamtObjectError igamtObjectError = new IgamtObjectError("Invalid Code Cell expression", "Code:AAAA,  Code System:BBBB, Location: 1 or 4", Type.COCONSTRAINTBINDINGS, null, "Invalid Code Cell expression : " + cellValue +
+//                        " . Should match the following regular expression : " + codeRegularExpression,
+//                        "table_headers", "ERROR", "handleBy");
+//                errors.add(igamtObjectError);
             }
         }
         return null;
@@ -733,9 +733,9 @@ public class ExcelImportServiceImpl implements ExcelImportService {
                     } else {
 //					throw new Exception("Couldn't find valueSet : " + valueSet );
 
-                        IgamtObjectError igamtObjectError = new IgamtObjectError("ValueSet not found", "HL70001", Type.COCONSTRAINTBINDINGS, null, "Couldn't find valueset : " + valueSet,
-                                "location", "ERROR", "handleBy");
-                        errors.add(igamtObjectError);
+//                        IgamtObjectError igamtObjectError = new IgamtObjectError("ValueSet not found", "HL70001", Type.COCONSTRAINTBINDINGS, null, "Couldn't find valueset : " + valueSet,
+//                                "location", "ERROR", "handleBy");
+//                        errors.add(igamtObjectError);
                     }
                 }
                 valueSetBinding.setValueSets(valueSets);
@@ -747,10 +747,10 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 //					" . Should match the following regular expression : " + valueSetRegularExpression 
 //					+ ". Example : Strength: S,  Location: [1, 4],  Valuesets: [HL70002, HL70004]");
 
-                IgamtObjectError igamtObjectError = new IgamtObjectError("Invalid ValueSet expression ", "Strength: S,  Location: [1, 4],  Valuesets: [HL70002, HL70004]", Type.COCONSTRAINTBINDINGS, null, "Invalid ValueSet expression : " + cellValue +
-                        " . Should match the following regular expression : " + valueSetRegularExpression,
-                        "location", "ERROR", "handleBy");
-                errors.add(igamtObjectError);
+//                IgamtObjectError igamtObjectError = new IgamtObjectError("Invalid ValueSet expression ", "Strength: S,  Location: [1, 4],  Valuesets: [HL70002, HL70004]", Type.COCONSTRAINTBINDINGS, null, "Invalid ValueSet expression : " + cellValue +
+//                        " . Should match the following regular expression : " + valueSetRegularExpression,
+//                        "location", "ERROR", "handleBy");
+//                errors.add(igamtObjectError);
             }
 
             valueSetCell.setBindings(list);

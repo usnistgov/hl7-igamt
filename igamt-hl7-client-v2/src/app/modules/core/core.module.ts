@@ -11,6 +11,7 @@ import { RegistrationEffects } from '../../root-store/registration/registration.
 import { UserProfileEffects } from '../../root-store/user-profile/user-profile.effects';
 import { DamAuthenticationModule, DamMessagesModule } from '../dam-framework/dam-framework.module';
 import { SharedModule } from '../shared/shared.module';
+import { ConfigurationDialogComponent } from './components/configuration-dialog/configuration-dialog.component';
 import { ErrorPageComponent } from './components/error-page/error-page.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -32,6 +33,7 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
     NewPasswordComponent,
     HomeComponent,
     ErrorPageComponent,
+    ConfigurationDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -69,6 +71,10 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
     ProgressBarModule,
     HomeComponent,
     ErrorPageComponent,
+    ConfigurationDialogComponent,
+  ],
+  entryComponents: [
+    ConfigurationDialogComponent,
   ],
 })
 export class CoreModule {

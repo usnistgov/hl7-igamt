@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.constraints.domain.AssertionConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.AssertionPredicate;
@@ -13,13 +14,15 @@ import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextPredicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConstraintExportConfiguration;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
 @Service
 public class ConstraintSerializationServiceImpl implements ConstraintSerializationService{
 
-	public Element serializeConstraints(Set<ConformanceStatement> conformanceStatements, Map<String,Predicate> predicates, ConstraintExportConfiguration constraintExportConfiguration) 
+	public Element serializeConstraints(Set<ConformanceStatement> conformanceStatements, Map<String,Predicate> predicates, ConstraintExportConfiguration constraintExportConfiguration, ResourceSkeleton root) 
 	{
 		if(!constraintExportConfiguration.getConformanceStatement() && !constraintExportConfiguration.getPredicate()){
 			return null;
@@ -41,7 +44,7 @@ public class ConstraintSerializationServiceImpl implements ConstraintSerializati
 				for(String location : predicates.keySet()){
 					Predicate predicate = predicates.get(location);
 					System.out.println("Location is : " + location);
-					Element predicateElement = serializePredicate(predicate, location);
+					Element predicateElement = serializePredicate(predicate, location, root);
 					constraintsElement.appendChild(predicateElement);
 				}
 			}
@@ -74,7 +77,7 @@ public class ConstraintSerializationServiceImpl implements ConstraintSerializati
 	}
 
 	@Override
-	public Element serializePredicate(Predicate predicate, String location) {
+	public Element serializePredicate(Predicate predicate, String location, ResourceSkeleton root) {
 		Element predicateElement = new Element("Predicate");
 		predicateElement.addAttribute(new Attribute("trueUsage",
 				predicate.getTrueUsage() != null ? predicate.getTrueUsage().name() : ""));
@@ -84,6 +87,18 @@ public class ConstraintSerializationServiceImpl implements ConstraintSerializati
 				predicate.getLocation() != null ? predicate.getLocation() : location != null ? location : ""));
 		predicateElement.addAttribute(new Attribute("position",
 				location != null ? location : ""));	
+		
+		if(root != null) {
+			try {
+				ResourceSkeletonBone bone = root.getByPositionPath(location);
+				if(bone != null) {
+					predicateElement.addAttribute(new Attribute("locationName", bone.getLocationInfo().getHl7Path()));
+				}
+			} catch (ResourceNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+
 		if (predicate instanceof AssertionPredicate) {
 			if (((AssertionPredicate) predicate).getAssertion() != null) {
 				String description = ((AssertionPredicate) predicate).getAssertion().getDescription();

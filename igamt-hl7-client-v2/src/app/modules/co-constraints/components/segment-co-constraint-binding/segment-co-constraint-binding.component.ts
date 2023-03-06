@@ -34,6 +34,7 @@ import { FileUploadService } from '../../services/file-upload.service';
 import { CoConstraintGroupSelectorComponent } from '../co-constraint-group-selector/co-constraint-group-selector.component';
 import { CoConstraintAction, CoConstraintTableComponent } from '../co-constraint-table/co-constraint-table.component';
 import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
+import { IContextCoConstraint } from './../context-co-constraint-binding/context-co-constraint-binding.component';
 
 export interface ISegmentCoConstraint {
   resolved: boolean;
@@ -76,6 +77,8 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   structure: IHL7v2TreeNode[];
   @Input()
   context: IStructureElementRef;
+  @Input()
+  contextInfo: IContextCoConstraint;
   @Input()
   documentRef: IDocumentRef;
   @Output()
@@ -161,14 +164,21 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     return this.repository.fetchResource(Type.SEGMENT, id).pipe(take(1), map((seg) => seg as ISegment));
   }
 
-  createTable(binding: ICoConstraintBindingSegment, segment: ISegment) {
-    this.ccService.createCoConstraintTableForSegment(segment, this.repository).pipe(
+  generateTableId(segment: ISegmentCoConstraint, context: IContextCoConstraint, rand: string) {
+    const prefix = context.pathInfo && context.pathInfo.type === Type.GROUP && context.name ? context.name.replace('.', '_') + '_' : '';
+    const postfix = segment.name ? segment.name.replace('.', '_') + '_' : '';
+    return prefix + postfix + rand;
+  }
+
+  createTable(binding: ICoConstraintBindingSegment, scc: ISegmentCoConstraint) {
+    const id = this.generateTableId(scc, this.contextInfo, Guid.create().toString().substring(0, 5));
+    this.ccService.createCoConstraintTableForSegment(scc.segment, this.repository).pipe(
       take(1),
       tap((table) => {
         binding.tables.push({
           condition: undefined,
           value: table,
-          id: Guid.create().toString(),
+          id,
         });
         this.triggerChange();
       }),

@@ -1,12 +1,19 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
+
+import com.mongodb.client.gridfs.model.GridFSFile;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
@@ -23,6 +30,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.AbstractDomainExport
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentMetadataConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ResourceExportConfiguration;
+import gov.nist.hit.hl7.igamt.files.service.FileStorageService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -42,8 +50,14 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 	@Autowired
 	private FroalaSerializationUtil frolaCleaning;
 
+	@Autowired
+	private FileStorageService fileStorageService;
+
+	@Autowired
+	private GridFsTemplate gridFsTemplate;
+	
 	@Override
-	public Element serializeDocument(DocumentStructureDataModel documentStructureDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision) throws RegistrySerializationException {
+	public Element serializeDocument(DocumentStructureDataModel documentStructureDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision) throws RegistrySerializationException, IllegalStateException, IOException {
 		//		if(exportConfiguration.getAbstractDomainExportConfiguration() == null) {System.out.println("Export IG document export null ici");}
 		DocumentStructure documentStructure = documentStructureDataModel.getModel();
 		Element igDocumentElement = serializeAbstractDomain(documentStructure, Type.IGDOCUMENT, 1, documentStructure.getName(), exportConfiguration.getAbstractDomainExportConfiguration());
@@ -66,8 +80,14 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 	}
 
 	public Element serializeDocumentMetadata(DocumentMetadata metadata, DomainInfo domainInfo,
-			PublicationInfo publicationInfo, DocumentMetadataConfiguration documentMetadataConfiguration) {
+			PublicationInfo publicationInfo, DocumentMetadataConfiguration documentMetadataConfiguration) throws IllegalStateException, IOException {
 		Element metadataElement = new Element("Metadata");
+		if(metadata.getCoverPicture() != null) {
+			Element coverPictureElement = new Element("CoverPicture");
+			coverPictureElement.appendChild(this.saveCoverPicture(metadata.getCoverPicture()));
+			metadataElement.appendChild(coverPictureElement);
+
+		}
 		metadataElement.addAttribute(new Attribute("topics", metadata.getTopics() != null ? metadata.getTopics() : ""));
 		metadataElement.addAttribute(new Attribute("description",
 				metadata.getSpecificationName() != null ? metadata.getSpecificationName() : ""));
@@ -79,9 +99,11 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 		.addAttribute(new Attribute("orgName", metadata.getOrgName() != null ? metadata.getOrgName() : ""));
 		metadataElement.addAttribute(new Attribute("title", metadata.getTitle() != null ? metadata.getTitle() : ""));
 		metadataElement.addAttribute(
-				new Attribute("coverPicture", metadata.getCoverPicture() != null ? "aade49bd-1af7-4061-81d2-60b8fb6eee60b.png" : ""));
+				new Attribute("coverPicture", metadata.getCoverPicture() != null ?  this.saveCoverPicture(metadata.getCoverPicture()) : ""));
 		metadataElement
 		.addAttribute(new Attribute("subTitle", metadata.getSubTitle() != null ? metadata.getSubTitle() : ""));
+		metadataElement
+		.addAttribute(new Attribute("documentVersion", metadata.getVersion() != null ? metadata.getVersion() : ""));
 
 		metadataElement.addAttribute(new Attribute("hl7Version",
 				domainInfo != null && domainInfo.getVersion() != null ? domainInfo.getVersion() : ""));
@@ -105,6 +127,18 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 		return metadataElement;
 	}
 
+
+	private String saveCoverPicture(String coverPictureUrl) throws IllegalStateException, IOException {
+		// /api/storage/file?name=84ec6b5c-0fe8-466a-ac30-59d9b6a04ab5.png
+		String coverPictureName = coverPictureUrl.split("name=")[1];
+		GridFSFile gridFSFile = this.fileStorageService.findOneByFilename(coverPictureName);
+		String ctnType = gridFSFile.getMetadata().getString("_contentType");
+		InputStream inputStream = this.gridFsTemplate.getResource(gridFSFile).getInputStream();
+		byte[] sourceBytes = IOUtils.toByteArray(inputStream);
+		String encodedString = Base64.getEncoder().encodeToString(sourceBytes);
+		
+		return encodedString;
+			}
 
 	public Element serializeAbstractDomain(AbstractDomain abstractDomain, Type type, int position, String title, AbstractDomainExportConfiguration abstractDomainExportConfiguration) {
 		Element element = getElement(type, position, abstractDomain.getId(), title);

@@ -1,11 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import { getUserConfigState } from 'src/app/root-store/user-config/user-config.reducer';
 import * as fromAuth from '../../../dam-framework/store/authentication/index';
 import { LogoutRequest } from '../../../dam-framework/store/authentication/index';
 import * as fromRoot from './../../../../root-store/index';
+import { SaveUserConfig } from './../../../../root-store/user-config/user-config.actions';
+import { IUserConfig } from './../../../shared/models/config.class';
+import { ConfigurationDialogComponent } from './../configuration-dialog/configuration-dialog.component';
 
 @Component({
   selector: 'app-header',
@@ -23,7 +28,8 @@ export class HeaderComponent implements OnInit {
   isLoggedIn: Observable<boolean>;
   username: Observable<string>;
 
-  constructor(private store: Store<fromRoot.IRouteState>) {
+  constructor(private store: Store<fromRoot.IRouteState>, private dialog: MatDialog,
+  ) {
     this.isLoading = store.select(fromDAM.selectLoaderIsLoading);
     this.isAdmin = store.select(fromAuth.selectIsAdmin);
     this.isIG = store.select(fromDAM.selectRouterURL).pipe(
@@ -64,6 +70,27 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  openConfig() {
+    this.store.select(getUserConfigState).pipe(
+      filter((config) => !!config),
+      take(1),
+      map((x) => {
+        const dialogRef = this.dialog.open(ConfigurationDialogComponent, {
+          data: { config: x },
+        });
+        dialogRef.afterClosed().pipe(
+          filter((res) => res !== undefined),
+          take(1),
+          map((result: IUserConfig) => {
+            this.store.dispatch(new SaveUserConfig(result));
+          }),
+        ).subscribe();
+
+      },
+      ),
+    ).subscribe();
   }
 
 }

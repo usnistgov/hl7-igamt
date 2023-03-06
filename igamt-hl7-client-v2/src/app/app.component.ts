@@ -8,6 +8,7 @@ import { BootstrapCheckAuthStatus } from './modules/dam-framework/store/authenti
 import { selectIsLoggedIn } from './modules/dam-framework/store/authentication/authentication.selectors';
 import { selectIsFullScreen } from './modules/dam-framework/store/data/dam.selectors';
 import { LoadConfig } from './root-store/config/config.actions';
+import { LoadUserConfig } from './root-store/user-config/user-config.actions';
 
 @Component({
   selector: 'app-root',
@@ -37,6 +38,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(new BootstrapCheckAuthStatus());
+    this.store.dispatch(new LoadUserConfig());
     this.store.dispatch(new LoadConfig());
   }
 

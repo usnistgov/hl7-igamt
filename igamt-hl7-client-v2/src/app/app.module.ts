@@ -16,6 +16,7 @@ import { reducers } from './root-store';
 import { ConfigEffects } from './root-store/config/config.effects';
 import {LoadedResourcesEffects} from './root-store/dam-igamt/igamt.loaded-resources.effects';
 import { ResourceLoaderEffects } from './root-store/resource-loader/resource-loader.effects';
+import { UserConfigEffects } from './root-store/user-config/user-config.effects';
 @NgModule({
   declarations: [
     AppComponent,
@@ -24,7 +25,7 @@ import { ResourceLoaderEffects } from './root-store/resource-loader/resource-loa
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    EffectsModule.forRoot([ConfigEffects, ResourceLoaderEffects, LoadedResourcesEffects]),
+    EffectsModule.forRoot([ConfigEffects, UserConfigEffects,  ResourceLoaderEffects, LoadedResourcesEffects]),
     StoreModule.forRoot(reducers),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states

@@ -64,12 +64,6 @@ public class ComponentDataModel implements Serializable{
     
   }
 
-  public ComponentDataModel(Component c, Predicate predicate2, Set<Comment> set, String string,
-		ExternalSingleCode externalSingleCode, Set<ValuesetBindingDataModel> set2,
-		DatatypeBindingDataModel datatypeBindingDataModel) {
-	// TODO Auto-generated constructor stub
-}
-
 public Component getModel() {
     return model;
   }

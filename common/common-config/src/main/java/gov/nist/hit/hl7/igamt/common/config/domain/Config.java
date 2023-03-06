@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Config {
 	@Id
 	String id;
-	
+		
 	List<String> hl7Versions=new ArrayList<String>();
 	List<String> usages=new ArrayList<String>();
 	private String phinvadsUrl; 

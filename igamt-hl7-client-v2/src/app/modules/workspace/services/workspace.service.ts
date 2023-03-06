@@ -90,7 +90,6 @@ export class WorkspaceService {
     return this.http.delete<Message<string>>(this.WORKSPACE_END_POINT + folder.workspaceId + '/folder/' + folder.id);
   }
 
-
   getWorkspaceUsers(id: string): Observable<IWorkspaceUser[]> {
     return this.http.get<IWorkspaceUser[]>(this.WORKSPACE_END_POINT + id + '/users');
   }

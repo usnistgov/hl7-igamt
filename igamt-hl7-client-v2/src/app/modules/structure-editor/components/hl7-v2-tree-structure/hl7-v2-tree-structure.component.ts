@@ -77,7 +77,7 @@ export class Hl7V2TreeStructureComponent implements OnInit, OnDestroy {
   @Input()
   set config(conf: Hl7Config) {
     this._config = conf;
-    this.usageOptions = Hl7Config.getUsageOptions(conf.usages, false, false).filter((u) => u.value !== Usage.CAB);
+    this.usageOptions = Hl7Config.getUsageOptions(conf.usages, false, false, false).filter((u) => u.value !== Usage.CAB);
   }
 
   get config() {

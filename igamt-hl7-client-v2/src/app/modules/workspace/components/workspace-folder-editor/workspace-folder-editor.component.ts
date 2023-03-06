@@ -1,4 +1,3 @@
-import { IFolderMetadata } from './../../models/models';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
@@ -18,10 +17,11 @@ import { Type } from '../../../shared/constants/type.enum';
 import { IFolderContent, WorkspacePermissionType } from '../../models/models';
 import { AbstractWorkspaceEditorComponent } from '../../services/abstract-workspace-editor';
 import { WorkspaceService } from '../../services/workspace.service';
-import { selectIsWorkspaceAdmin, selectFolderById } from './../../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
+import { selectFolderById, selectIsWorkspaceAdmin } from './../../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
 import { selectIsAdmin } from './../../../dam-framework/store/authentication/authentication.selectors';
 import { IEntityBrowserResult } from './../../../shared/components/entity-browse-dialog/entity-browse-dialog.component';
 import { CloneModeEnum } from './../../../shared/constants/clone-mode.enum';
+import { IFolderMetadata } from './../../models/models';
 import { WorkspaceDocumentService } from './../../services/workspace-document.service';
 
 @Component({

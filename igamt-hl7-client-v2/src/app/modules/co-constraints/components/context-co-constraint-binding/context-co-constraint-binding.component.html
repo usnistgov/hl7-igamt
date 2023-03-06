@@ -48,6 +48,7 @@
           [conformanceProfile]="conformanceProfile"
           [structure]="structure"
           [context]="binding.context"
+          [contextInfo]="contextCoConstraint"
           (valueChange)="segmentBindingChange(binding.context.pathId, $event)"
           (formValid)="formValid(binding.context.pathId, $event)"
           (delete)="deleteSegmentBinding(binding.bindings, segment, binding.context.pathId, j)"

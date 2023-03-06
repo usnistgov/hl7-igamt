@@ -23,6 +23,9 @@ export class DamLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
   @ContentChild('alerts')
   alertsTemplate: TemplateRef<any>;
 
+  // @ContentChild('notifications')
+  // notificationsTemplate: TemplateRef<any>;
+
   @ContentChild('titleBar')
   titleBarTemplate: TemplateRef<any>;
 

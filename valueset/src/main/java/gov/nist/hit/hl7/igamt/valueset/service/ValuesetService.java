@@ -77,8 +77,7 @@ public interface ValuesetService {
 	DisplayElement convertValueSet(Valueset valueset);
 	Set<DisplayElement> convertValueSets(Set<Valueset> valueSets);
 	Set<DisplayElement> convertValueSetRegistry(ValueSetRegistry registry);
-
+//	public String findXMLRefIdById(String vsId, String defaultHL7Version);
+	public String findXMLRefIdById(Valueset vs, String defaultHL7Version);
 	List<Valueset> saveAll(Set<Valueset> valueSets) throws ForbiddenOperationException;
-
-
 }

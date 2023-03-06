@@ -7,12 +7,13 @@
             <xsl:attribute name="class">
                 <xsl:text>metadata</xsl:text>
             </xsl:attribute>
-            <xsl:element name="img">
-                <xsl:attribute name="src">
-                    <xsl:value-of select="$imageLogoSrc"/>
-                </xsl:attribute>
-            </xsl:element>
-
+<!--              <xsl:if test="@CoverPicture!=''">
+ -->           			 <xsl:text disable-output-escaping="yes">&lt;img src="data:image/png;base64,</xsl:text>
+					<xsl:value-of select="CoverPicture" disable-output-escaping="yes" />
+					
+<!-- 			</xsl:if>
+ -->         <xsl:text disable-output-escaping="yes">" /&gt;</xsl:text>
+ 
             <xsl:element name="p">
                 <xsl:attribute name="style">
                     <xsl:text>font-size:250%;</xsl:text>
@@ -52,14 +53,13 @@
                     <xsl:value-of select="@description"></xsl:value-of>
                 </xsl:element>
             </xsl:if>
-            <!--xsl:element name="p">
+            <xsl:element name="p">
                 <xsl:attribute name="style">
                     <xsl:text>font-size:80%;</xsl:text>
                 </xsl:attribute>
-                <xsl:text>Document version </xsl:text>
-                <xsl:value-of select="@DocumentVersion"></xsl:value-of>
+                <xsl:text>Document version : </xsl:text>
+                <xsl:value-of select="@documentVersion "></xsl:value-of>
             </xsl:element>
-            <xsl:element name="br"/-->
             <xsl:element name="p">
                 <xsl:attribute name="style">
                     <xsl:text>font-size:65%;</xsl:text>

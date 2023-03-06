@@ -15,6 +15,7 @@ public class ConfigController {
   @Autowired
   ConfigService configService;
 
+
   public ConfigController() {
     // TODO Auto-generated constructor stub
   }
@@ -26,5 +27,5 @@ public class ConfigController {
      return new ResponseMessage<Config>(Status.SUCCESS, null, null, null, false, null, this.configService.findOne());
   }
 
-
+  
 }

@@ -287,6 +287,18 @@ public class ValuesetBindingDataModel implements Serializable {
     this.valuesetBinding = valuesetBinding;
   }
 
+@Override
+public String toString() {
+	return "ValuesetBindingDataModel [id=" + id + ", creationDate=" + creationDate + ", updateDate=" + updateDate
+			+ ", name=" + name + ", type=" + type + ", origin=" + origin + ", publicationInfo=" + publicationInfo
+			+ ", domainInfo=" + domainInfo + ", username=" + username + ", comment=" + comment + ", description="
+			+ description + ", createdFrom=" + createdFrom + ", authorNotes=" + authorNotes + ", usageNotes="
+			+ usageNotes + ", from=" + from + ", bindingIdentifier=" + bindingIdentifier + ", oid=" + oid
+			+ ", intensionalComment=" + intensionalComment + ", url=" + url + ", stability=" + stability
+			+ ", extensibility=" + extensibility + ", contentDefinition=" + contentDefinition + ", sourceType="
+			+ sourceType + ", numberOfCodes=" + numberOfCodes + ", valuesetBinding=" + valuesetBinding + "]";
+}
+
 
 
 }

@@ -1,4 +1,3 @@
-import { SetValue } from './../../../modules/dam-framework/store/data/dam.actions';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,6 +11,7 @@ import { WORKSPACE_EDIT_WIDGET_ID } from 'src/app/modules/workspace/components/w
 import { EditorSave } from '../../../modules/dam-framework/store/data/dam.actions';
 import { IWorkspaceInfo } from '../../../modules/workspace/models/models';
 import { DamWidgetEffect } from './../../../modules/dam-framework/store/dam-widget-effect.class';
+import { SetValue } from './../../../modules/dam-framework/store/data/dam.actions';
 import { WorkspaceService } from './../../../modules/workspace/services/workspace.service';
 import { OpenWorkspaceAccessManagementEditor, OpenWorkspaceFolderEditor, OpenWorkspaceHomeEditor, OpenWorkspaceMetadataEditor, WorkspaceEditActions, WorkspaceEditActionTypes, WorkspaceEditResolverLoad, WorkspaceEditResolverLoadFailure, WorkspaceEditResolverLoadSuccess } from './workspace-edit.actions';
 import { selectWorkspaceId } from './workspace-edit.selectors';
