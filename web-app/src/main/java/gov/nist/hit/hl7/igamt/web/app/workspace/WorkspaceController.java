@@ -66,6 +66,15 @@ public class WorkspaceController {
 		return workspaceService.convertToDisplayList(workspaces, type.equals(WorkspaceListType.PENDING));
 	}
 
+	@RequestMapping(value = "/api/workspace/pending-count", method = RequestMethod.GET, produces = { "application/json" })
+	public @ResponseBody WorkspacePendingNumber getWorkspacePendingCount(Authentication authentication) throws ForbiddenOperationException {
+		String username = authentication.getPrincipal().toString();
+		List<Workspace> workspaces = workspaceUserManagementService.getUserInvitations(username);
+		WorkspacePendingNumber workspacePendingNumber = new WorkspacePendingNumber();
+		workspacePendingNumber.setCount(workspaces != null ? workspaces.size() : 0);
+		return workspacePendingNumber;
+	}
+
 	@RequestMapping(value = "/api/workspace/{id}/state", method = RequestMethod.GET, produces = { "application/json" })
 	@ResponseBody
 	public WorkspaceInfo getWorkspaceInfo(

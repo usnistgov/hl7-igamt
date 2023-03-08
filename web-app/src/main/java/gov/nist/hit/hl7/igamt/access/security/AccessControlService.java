@@ -56,18 +56,6 @@ public class AccessControlService {
             return null;
         }
 
-        // If the user is the OWNER of the document
-        if(document.getUsername().equals(user.getName())) {
-            // Grant ALL access
-            return L(AccessLevel.ALL);
-        }
-
-        // If the document is shared with the user
-        if(document.getSharedUsers() != null && document.getSharedUsers().contains(user.getName())) {
-            // Grant READ access
-            return L(AccessLevel.READ);
-        }
-
         if(document.getAudience() != null) {
             return this.checkAudience(document.getAudience(), user);
         }
@@ -150,6 +138,10 @@ public class AccessControlService {
             return L(AccessLevel.READ);
         }
 
+        if(isAdmin(user)) {
+            return L(AccessLevel.READ);
+        }
+
         return null;
     }
 
@@ -167,6 +159,11 @@ public class AccessControlService {
                     return L(AccessLevel.READ);
             }
         }
+
+        if(isAdmin(user)) {
+            return L(AccessLevel.READ);
+        }
+
         return null;
     }
 

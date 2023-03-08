@@ -3,11 +3,13 @@ import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, flatMap, map } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
+import { WorkspaceListService } from 'src/app/modules/workspace/services/workspace-list.service';
 import * as fromRoot from 'src/app/root-store/index';
 import * as fromWorkspaceList from 'src/app/root-store/workspace/workspace-list/workspace-list.index';
-import { ClearWorkspaceList, DeleteWorkspaceListItemSuccess, LoadWorkspaceList, SelectWorkspaceListSortOption, SelectWorkspaceListViewType, WorkspaceLoadType } from './../../../../root-store/workspace/workspace-list/workspace-list.actions';
+import { ClearWorkspaceList, DeleteWorkspaceListItemSuccess, LoadWorkspaceList, SelectWorkspaceListSortOption, SelectWorkspaceListViewType, UpdatePendingInvitationCount, WorkspaceLoadType } from './../../../../root-store/workspace/workspace-list/workspace-list.actions';
+import { selectWorkspacePendingInvitations } from './../../../../root-store/workspace/workspace-list/workspace-list.selectors';
 import { MessageService } from './../../../dam-framework/services/message.service';
 import { ClearAll } from './../../../dam-framework/store/messages/messages.actions';
 import { IWorkspaceListItem } from './../../../shared/models/workspace-list-item.interface';
@@ -27,7 +29,8 @@ export class WorkspaceListComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private router: Router,
     private messageService: MessageService,
-    private workspaceService: WorkspaceService) {
+    private workspaceService: WorkspaceService,
+    private workspaceListService: WorkspaceListService) {
     this.storeSelectors();
     this.initializeProperties();
     this.workspaceListItemControls();
@@ -47,12 +50,14 @@ export class WorkspaceListComponent implements OnInit, OnDestroy {
   sortOrder: {
     ascending: boolean,
   };
+  pendingCount: Observable<number>;
 
   storeSelectors() {
     this.listItems = this.store.select(fromWorkspaceList.selectWorkspaceListViewFilteredAndSorted, { filter: this.filter });
     this.viewType = this.store.select(fromWorkspaceList.selectViewType);
     this.isAdmin = this.store.select(fromAuth.selectIsAdmin);
     this.username = this.store.select(fromAuth.selectUsername);
+    this.pendingCount = this.store.select(selectWorkspacePendingInvitations);
     this.store.select(fromWorkspaceList.selectSortOptions).subscribe(
       (next) => {
         this.sortOrder = {
@@ -131,9 +136,14 @@ export class WorkspaceListComponent implements OnInit, OnDestroy {
                 icon: 'fa-times',
                 action: (item: IWorkspaceListItem) => {
                   this.workspaceService.declineWorkspaceInvitation(item.id).pipe(
-                    map((response) => {
-                      this.store.dispatch(this.messageService.messageToAction(response));
-                      this.store.dispatch(new DeleteWorkspaceListItemSuccess(item.id));
+                    flatMap((response) => {
+                      return this.workspaceListService.getWorkspacesPendingCount().pipe(
+                        map((count) => {
+                          this.store.dispatch(this.messageService.messageToAction(response));
+                          this.store.dispatch(new DeleteWorkspaceListItemSuccess(item.id));
+                          this.store.dispatch(new UpdatePendingInvitationCount(count));
+                        }),
+                      );
                     }),
                     catchError((err) => {
                       this.store.dispatch(this.messageService.actionFromError(err));

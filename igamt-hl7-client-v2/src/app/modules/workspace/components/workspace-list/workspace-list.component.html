@@ -8,15 +8,16 @@
   <!-- TITLE BAR -->
   <div class="topbar">
     <h3>Workspace List</h3>
-    <div [(ngModel)]="_shadowViewType" class="btn-group btn-group-toggle border-gray" name="radioBasic" ngbRadioGroup
+    <div  [(ngModel)]="_shadowViewType" class="btn-group btn-group-toggle border-gray" name="radioBasic" ngbRadioGroup
          style="border-radius: 5px;">
       <label class="btn-light no-focus" ngbButtonLabel>
         <input [queryParams]="{ type : 'MEMBER' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="MEMBER">
         Member
       </label>
       <label class="btn-light no-focus" ngbButtonLabel>
-        <input [queryParams]="{ type : 'PENDING' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="INVITATION">
-        Invitations
+        <input [queryParams]="{ type : 'PENDING' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="PENDING">
+        Invitations 
+        <span *ngIf="pendingCount | async as count" class="badge badge-danger">{{ count }}</span>
       </label>
       <label *ngIf="isAdmin | async" class="btn-light no-focus" ngbButtonLabel>
         <input [queryParams]="{ type : 'ALL' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="ALL">

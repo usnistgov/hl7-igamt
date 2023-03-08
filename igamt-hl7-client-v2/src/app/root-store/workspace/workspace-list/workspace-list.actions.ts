@@ -1,7 +1,7 @@
 import { Action } from '@ngrx/store';
 import { ISortOptions } from 'src/app/modules/shared/models/sort.class';
 import { IWorkspaceListItem } from './../../../modules/shared/models/workspace-list-item.interface';
-export enum  WorkspaceListActionTypes {
+export enum WorkspaceListActionTypes {
   LoadWorkspaceList = '[WorkspaceList] Load Workspace List Items',
   UpdateWorkspaceList = '[WorkspaceList] Update Workspace List Items',
   DeleteWorkspaceListItemRequest = '[WorkspaceList] Delete Workspace List Item Request',
@@ -9,9 +9,10 @@ export enum  WorkspaceListActionTypes {
   SelectWorkspaceListViewType = '[WorkspaceList] Select Workspace List View Type',
   SelectWorkspaceListSortOption = '[WorkspaceList] Select Sort Option',
   ClearWorkspaceList = '[WorkspaceList] Clear Workspace List',
+  UpdatePendingInvitationCount = '[WorkspaceList] Update Pending Invitation Count',
 }
 
-export type WorkspaceLoadType = 'PRIVATE' | 'DISCOVERABLE' | 'PUBLIC' |'ALL';
+export type WorkspaceLoadType = 'PRIVATE' | 'DISCOVERABLE' | 'PUBLIC' | 'ALL';
 
 export class LoadWorkspaceList implements Action {
   readonly type = WorkspaceListActionTypes.LoadWorkspaceList;
@@ -57,6 +58,13 @@ export class SelectWorkspaceListSortOption implements Action {
   }
 }
 
+export class UpdatePendingInvitationCount implements Action {
+  readonly type = WorkspaceListActionTypes.UpdatePendingInvitationCount;
+
+  constructor(readonly payload: { count: number }) {
+  }
+}
+
 export class ClearWorkspaceList implements Action {
   readonly type = WorkspaceListActionTypes.ClearWorkspaceList;
 
@@ -71,4 +79,5 @@ export type WorkspaceListActions =
   DeleteWorkspaceListItemSuccess |
   ClearWorkspaceList |
   SelectWorkspaceListViewType |
-  SelectWorkspaceListSortOption;
+  SelectWorkspaceListSortOption |
+  UpdatePendingInvitationCount;

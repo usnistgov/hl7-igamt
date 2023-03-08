@@ -6,12 +6,14 @@ import { WorkspaceListActions, WorkspaceListActionTypes, WorkspaceLoadType } fro
 export interface IState extends EntityState<IWorkspaceListItem> {
   viewType: WorkspaceLoadType;
   sortOptions: ISortOptions;
+  pendingInvitations: number;
 }
 
 export const initialState: IState = {
   entities: {},
   ids: [],
   viewType: 'PRIVATE',
+  pendingInvitations: 0,
   sortOptions: {
     property: 'dateUpdated',
     ascending: false,
@@ -47,6 +49,12 @@ export function reducer(state = initialState, action: WorkspaceListActions): ISt
       return {
         ...state,
         sortOptions: action.sortOption,
+      };
+
+    case WorkspaceListActionTypes.UpdatePendingInvitationCount:
+      return {
+        ...state,
+        pendingInvitations: action.payload.count,
       };
 
     default:

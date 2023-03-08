@@ -11,6 +11,9 @@ public class BrowserTreeNodeData {
     private Type type;
     private DomainInfo domainInfo;
     private Date dateUpdated;
+    private boolean draft;
+    private boolean deprecated;
+    private boolean locked;
     private boolean readOnly;
 
     public String getId() {
@@ -59,5 +62,29 @@ public class BrowserTreeNodeData {
 
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
+    }
+
+    public boolean isDraft() {
+        return draft;
+    }
+
+    public void setDraft(boolean draft) {
+        this.draft = draft;
+    }
+
+    public boolean isDeprecated() {
+        return deprecated;
+    }
+
+    public void setDeprecated(boolean deprecated) {
+        this.deprecated = deprecated;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
     }
 }

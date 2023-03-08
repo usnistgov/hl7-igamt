@@ -22,6 +22,13 @@
     </div>
     <div  style="padding-left: 20px;">
       <div style="color: #9b9898; margin-bottom: 15px; text-align: center;">Pick an Implementation Guide</div>
+      <p-checkbox
+        *ngIf="scope === BrowserScope.PUBLIC_IG_LIST"
+        [(ngModel)]="showDeprecated"
+        (ngModelChange)="filter($event)"
+        [binary]="true"
+        label="Show Deprecated"
+      ></p-checkbox>
       <p-treeTable *ngIf="scope" #tt [value]="browserTree" [columns]="columns" [paginator]="true" [rows]="5" [reorderableColumns]="true" [resizableColumns]="true" selectionMode="single"
       (onNodeSelect)="nodeUpdate($event)"
       [(selection)]="selected"
@@ -53,6 +60,20 @@
                         <td style="white-space: normal;">
                           <app-entity-bagde [type]="rowData.type"></app-entity-bagde>
                           <app-scope-badge *ngIf="rowData.domainInfo" [scope]="rowData.domainInfo.scope" [version]="rowData.domainInfo.version"></app-scope-badge>
+                          
+                          <span style="margin-left: 3px;" *ngIf="rowData.locked" class="badge badge-secondary">
+                            <i class="fa fa-lock"></i>
+                          </span>
+              
+                          <span class="badge badge-danger" *ngIf="rowData.draft" style="margin-left: 3px;">
+                            Draft
+                          </span>
+              
+                          <span style="margin-left: 3px;" *ngIf="rowData.deprecated" class="badge badge-warning">
+                            <i class="fa fa-times-circle"></i>
+                            Deprecated
+                          </span>
+
                           <strong [ngStyle]="{ 'color': rowNode.node.selectable ? 'black' : '#b1b1b1'}" style="margin-left: 10px">{{rowData.label}}</strong>
                         </td>
                       </tr>

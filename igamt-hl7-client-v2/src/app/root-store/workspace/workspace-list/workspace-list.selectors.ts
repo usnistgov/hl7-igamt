@@ -1,9 +1,9 @@
-import {createSelector} from '@ngrx/store';
-import {ISortOptions} from 'src/app/modules/shared/models/sort.class';
+import { createSelector } from '@ngrx/store';
+import { ISortOptions } from 'src/app/modules/shared/models/sort.class';
 import { IWorkspaceListItem } from './../../../modules/shared/models/workspace-list-item.interface';
-import {selectWorkspaceList} from './../workspace.reducer';
+import { selectWorkspaceList } from './../workspace.reducer';
 import { WorkspaceLoadType } from './workspace-list.actions';
-import {IState, workspaceListItemAdapter} from './workspace-list.reducer';
+import { IState, workspaceListItemAdapter } from './workspace-list.reducer';
 
 export const {
   selectAll,
@@ -23,6 +23,13 @@ export const selectSortOptions = createSelector(
   selectWorkspaceList,
   (state: IState) => {
     return state.sortOptions;
+  },
+);
+
+export const selectWorkspacePendingInvitations = createSelector(
+  selectWorkspaceList,
+  (state: IState) => {
+    return state.pendingInvitations;
   },
 );
 

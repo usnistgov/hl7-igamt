@@ -92,6 +92,7 @@ export class EntityBrowseDialogComponent implements OnInit {
   ];
   options: FormGroup;
   name: string;
+  showDeprecated = false;
   @ViewChild('tt') treeTable: TreeTable;
 
   constructor(
@@ -113,6 +114,7 @@ export class EntityBrowseDialogComponent implements OnInit {
 
   getTreeByScope(scope: BrowserScope) {
     this.scope = scope;
+
     this.http.get<IBrowserTreeNode[]>('/api/browser/' + scope).pipe(
       map((nodes) => {
         const n = this.processNodes(nodes);
@@ -120,8 +122,16 @@ export class EntityBrowseDialogComponent implements OnInit {
           ...n,
         ];
         this.treeTable.first = 0;
+        setTimeout(() => {
+          this.showDeprecated = false;
+          this.filter(this.showDeprecated);
+        });
       }),
     ).subscribe();
+  }
+
+  filter(showDeprecated: boolean) {
+    this.treeTable.filter(showDeprecated, 'deprecated', 'equals');
   }
 
   cancel() {

@@ -5,8 +5,8 @@
   </ng-template>
 
   <ng-template #titleBar>
-    <div *ngIf="metadata$ | async as metadata" style="width: 100%; display: flex; align-items: center; padding-left: 5px;">
-      <h2>{{metadata.title}}</h2>
+    <div *ngIf="metadata$ | async as metadata" style="width: 100%; display: flex; align-items: center; padding: 5px 20px;">
+      <h2 style="margin: 0;">{{metadata.title}}</h2>
     </div>
   </ng-template>
 

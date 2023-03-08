@@ -7,10 +7,10 @@
   </ng-container>
 </ng-template>
 <ng-template #headerTitle>
-  <h4 style="margin: 0;">
+  <h5 style="margin: 0;">
     <i class="fa fa-users" style="margin-right: 5px;"></i>
     Manage Access
-  </h4>
+  </h5>
 </ng-template>
 <div style="margin-bottom: 10px; display: flex;
       flex-direction: row;
@@ -89,10 +89,10 @@
         <ng-container *ngTemplateOutlet="pemissions; context : { $implicit: row.permissions | perms | async }" ></ng-container>
       </td>
       <td>
-        <button *ngIf="status !== 'DECLINED'" (click)="editUser(row)" class="btn btn-sm btn-primary">
+        <button *ngIf="row.status !== 'DECLINED'" (click)="editUser(row)" class="btn btn-sm btn-primary">
           Edit
         </button>
-        <button *ngIf="status === 'DECLINED'" (click)="reInvite(row)" class="btn btn-sm btn-primary">
+        <button *ngIf="row.status === 'DECLINED'" (click)="reInvite(row)" class="btn btn-sm btn-primary">
           Resend
         </button>
         <button (click)="removeUser(row)" style="margin-left: 5px" class="btn btn-sm btn-danger">

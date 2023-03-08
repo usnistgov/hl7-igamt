@@ -47,4 +47,8 @@ export class WorkspaceListService {
   deleteWorkspace(id: string) {
     return this.http.delete<Message>('api/workspace/' + id);
   }
+
+  getWorkspacesPendingCount(): Observable<{ count: number }> {
+    return this.http.get<{ count: number }>('api/workspace/pending-count');
+  }
 }

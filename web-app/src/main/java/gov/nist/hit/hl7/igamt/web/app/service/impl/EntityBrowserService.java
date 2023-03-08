@@ -133,6 +133,9 @@ public class EntityBrowserService {
         browserTreeNode.setDomainInfo(ig.getDomainInfo());
         browserTreeNode.setDateUpdated(ig.getUpdateDate());
         browserTreeNode.setReadOnly(readOnly);
+        browserTreeNode.setDeprecated(ig.getDeprecated());
+        browserTreeNode.setLocked(ig.getStatus() != null && ig.getStatus().equals(Status.LOCKED));
+        browserTreeNode.setDraft(ig.getDraft() != null && ig.getDraft());
         BrowserTreeNode node = new BrowserTreeNode();
         node.setData(browserTreeNode);
         return node;

@@ -1,4 +1,4 @@
-<p-card [style]="{'background': igListItem.deprecated? 'lightgray': 'white'}">
+<p-card>
 
   <!-- CARD CONTENT -->
   <div style="display: flex; flex-direction: row; justify-content: space-between;">
@@ -31,6 +31,15 @@
             triggers="mouseenter:mouseleave">
               Draft
             </span>
+
+            <span style="margin-right: 3px;" *ngIf="igListItem.deprecated" class="badge badge-warning">
+              <i class="fa fa-times-circle"
+                ngbPopover="Deprecated Implementation Guide"
+                placement="right"
+                triggers="mouseenter:mouseleave">
+              </i>
+              Deprecated
+            </span>
             
             {{igListItem.title}}
           </strong>
@@ -59,6 +68,10 @@
       <span *ngIf="igListItem.status === 'PUBLISHED' && igListItem.draft" class="status status-published-draft" >
         <i class="fa fa-globe" style="margin-right: 3px;"></i>
         PUBLISHED DRAFT
+      </span>
+      <span *ngIf="igListItem.deprecated" class="status status-deprecated" >
+        <i class="fa fa-times-circle" style="margin-right: 3px;"></i>
+        DEPRECATED
       </span>
       <span *ngIf="igListItem.status === 'LOCKED'" class="status status-locked" >
         <i class="fa fa-lock" style="margin-right: 3px;"></i>

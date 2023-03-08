@@ -161,10 +161,10 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
                 );
               },
               disabled: (item: IgListItem): boolean => {
-                return !editor;
+                return false;
               },
               hide: (item: IgListItem): boolean => {
-                return !editor;
+                return false;
               },
             }, {
               label: 'Clone',
@@ -197,7 +197,7 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
                 );
               },
               hide: (item: IgListItem): boolean => {
-                return item.status === 'PUBLISHED' || item.status === 'LOCKED';
+                return item.status === 'PUBLISHED' || item.status === 'LOCKED' || !editor;
               },
               disabled: (item: IgListItem): boolean => {
                 return false;
@@ -218,7 +218,7 @@ export class WorkspaceFolderEditorComponent extends AbstractWorkspaceEditorCompo
                 return !(admin && wsAdmin) || item.status === 'PUBLISHED';
               },
               hide: (item: IgListItem): boolean => {
-                return item.status === 'PUBLISHED';
+                return !(admin && wsAdmin) || item.status === 'PUBLISHED';
               },
             }, {
               label: 'Derive From',
