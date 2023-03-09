@@ -75,342 +75,352 @@ import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
 import gov.nist.hit.hl7.resource.change.service.ApplyClone;
-import   gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintDependencyService;
+import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintDependencyService;
+
 /**
  * @author Abdelghani El Ouakili
  *
  */
 @Service
-public class CloneServiceImpl implements  CloneService {
+public class CloneServiceImpl implements CloneService {
 
-  @Autowired
-  IgRepository igRepository;
+	@Autowired
+	IgRepository igRepository;
 
-  @Autowired
-  MongoTemplate mongoTemplate;
+	@Autowired
+	MongoTemplate mongoTemplate;
 
-  @Autowired
-  DatatypeService datatypeService;
+	@Autowired
+	DatatypeService datatypeService;
 
-  @Autowired
-  ConfigService configService;
+	@Autowired
+	ConfigService configService;
 
-  @Autowired
-  SegmentService segmentService;
+	@Autowired
+	SegmentService segmentService;
 
-  @Autowired
-  ConformanceProfileService conformanceProfileService;
+	@Autowired
+	ConformanceProfileService conformanceProfileService;
 
-  @Autowired
-  ProfileComponentService profileComponentService;
+	@Autowired
+	ProfileComponentService profileComponentService;
 
-  @Autowired
-  CompositeProfileStructureService compositeProfileServie;
+	@Autowired
+	CompositeProfileStructureService compositeProfileServie;
 
-  @Autowired
-  ConformanceStatementRepository conformanceStatementRepository;
+	@Autowired
+	ConformanceStatementRepository conformanceStatementRepository;
 
-  @Autowired
-  ConformanceProfileCompositeService compose;
+	@Autowired
+	ConformanceProfileCompositeService compose;
 
-  @Autowired
-  PredicateRepository predicateRepository;
+	@Autowired
+	PredicateRepository predicateRepository;
 
-  @Autowired
-  ValuesetService valueSetService;
+	@Autowired
+	ValuesetService valueSetService;
 
-  @Autowired
-  RelationShipService relationshipService;
+	@Autowired
+	RelationShipService relationshipService;
 
-  @Autowired
-  CoConstraintService coConstraintService;
-  @Autowired
-  FhirHandlerService fhirHandlerService;
-  @Autowired
-  SlicingService slicingService;
-  @Autowired
-  CommonService commonService;
+	@Autowired
+	CoConstraintService coConstraintService;
+	@Autowired
+	FhirHandlerService fhirHandlerService;
+	@Autowired
+	SlicingService slicingService;
+	@Autowired
+	CommonService commonService;
 
-  @Autowired
-  CompositeProfileStructureService compositeProfileService;
-  
-  @Autowired
-  BindingService bindingService;
-  
-  @Autowired
-  ApplyClone applyClone;
-  
-  @Autowired
-  IgService igService;
-  
-  @Autowired
-  ConformanceProfileDependencyService conformanceProfileDependencyService;
-  @Autowired
-  SegmentDependencyService segmentDependencyService; 
-  @Autowired
-  MessageStructureRepository messageStructureRepository;
-  @Autowired
-  ResourceManagementService resourceManagementService;
-  @Autowired
-  DatatypeDependencyService datatypeDependencyService;
-  
-  @Autowired
-  ProfileComponentDependencyService profileComponentDependencyService;
-  @Autowired
-  CompositeProfileDependencyService compositeProfilDependencyService;
-  @Autowired
-  CoConstraintDependencyService CoConstraintDependencyService;
-  
+	@Autowired
+	CompositeProfileStructureService compositeProfileService;
 
-  @Override
-  public Ig clone(Ig ig, String username, CopyInfo copyInfo) throws ForbiddenOperationException, EntityNotFound {
+	@Autowired
+	BindingService bindingService;
 
-    updateIGAttributes(ig, username, copyInfo);
-    HashMap<RealKey, String> newKeys = generateNewIds(ig); 
-    DocumentInfo documentInfo = new DocumentInfo(this.generateAbstractDomainId(), DocumentType.IGDOCUMENT);
-    RegistryUpdateReturn<Datatype> datatypeClones = cloneRegistry(ig.getDatatypeRegistry(), username, newKeys, documentInfo, Type.DATATYPE, copyInfo.getMode());
-    RegistryUpdateReturn<Segment> segmentClones = cloneRegistry(ig.getSegmentRegistry(), username, newKeys, documentInfo, Type.SEGMENT, copyInfo.getMode());
-    RegistryUpdateReturn<ConformanceProfile> conformanceProfileClones = cloneRegistry(ig.getConformanceProfileRegistry(), username, newKeys, documentInfo, Type.CONFORMANCEPROFILE, copyInfo.getMode());
+	@Autowired
+	ApplyClone applyClone;
 
-    RegistryUpdateReturn<ProfileComponent> profileComponentClones = cloneRegistry(ig.getProfileComponentRegistry(), username, newKeys, documentInfo, Type.PROFILECOMPONENT, copyInfo.getMode());
+	@Autowired
+	IgService igService;
 
-    RegistryUpdateReturn<CompositeProfileStructure> compositeProfileStructureClones = cloneRegistry(ig.getCompositeProfileRegistry(), username, newKeys, documentInfo, Type.COMPOSITEPROFILE, copyInfo.getMode());
+	@Autowired
+	ConformanceProfileDependencyService conformanceProfileDependencyService;
+	@Autowired
+	SegmentDependencyService segmentDependencyService;
+	@Autowired
+	MessageStructureRepository messageStructureRepository;
+	@Autowired
+	ResourceManagementService resourceManagementService;
+	@Autowired
+	DatatypeDependencyService datatypeDependencyService;
 
-    RegistryUpdateReturn<Valueset> valueSetClones = cloneRegistry(ig.getValueSetRegistry(), username, newKeys, documentInfo, Type.VALUESET, copyInfo.getMode());
+	@Autowired
+	ProfileComponentDependencyService profileComponentDependencyService;
+	@Autowired
+	CompositeProfileDependencyService compositeProfilDependencyService;
+	@Autowired
+	CoConstraintDependencyService CoConstraintDependencyService;
 
-    RegistryUpdateReturn<CoConstraintGroup> coConstraintGroupClones = cloneRegistry(ig.getCoConstraintGroupRegistry(), username, newKeys, documentInfo, Type.COCONSTRAINTGROUP, copyInfo.getMode());
+	@Override
+	public Ig clone(Ig ig, String username, CopyInfo copyInfo) throws ForbiddenOperationException, EntityNotFound {
 
+		updateIGAttributes(ig, username, copyInfo);
+		HashMap<RealKey, String> newKeys = generateNewIds(ig);
+		DocumentInfo documentInfo = new DocumentInfo(this.generateAbstractDomainId(), DocumentType.IGDOCUMENT);
+		RegistryUpdateReturn<Datatype> datatypeClones = cloneRegistry(ig.getDatatypeRegistry(), username, newKeys,
+				documentInfo, Type.DATATYPE, copyInfo.getMode());
+		RegistryUpdateReturn<Segment> segmentClones = cloneRegistry(ig.getSegmentRegistry(), username, newKeys,
+				documentInfo, Type.SEGMENT, copyInfo.getMode());
+		RegistryUpdateReturn<ConformanceProfile> conformanceProfileClones = cloneRegistry(
+				ig.getConformanceProfileRegistry(), username, newKeys, documentInfo, Type.CONFORMANCEPROFILE,
+				copyInfo.getMode());
 
-    try {
+		RegistryUpdateReturn<ProfileComponent> profileComponentClones = cloneRegistry(ig.getProfileComponentRegistry(),
+				username, newKeys, documentInfo, Type.PROFILECOMPONENT, copyInfo.getMode());
 
-      if(datatypeClones.getSavedResources() != null && !datatypeClones.getSavedResources().isEmpty() ) {
-        this.datatypeService.saveAll(datatypeClones.getSavedResources());
-        ig.getDatatypeRegistry().setChildren(datatypeClones.getLinks());
-      }
-      if(segmentClones.getSavedResources() != null && !segmentClones.getSavedResources().isEmpty()) {
-        this.segmentService.saveAll(segmentClones.getSavedResources());
-        ig.getSegmentRegistry().setChildren(segmentClones.getLinks());
-      }
-      if(conformanceProfileClones.getSavedResources() != null && !conformanceProfileClones.getSavedResources().isEmpty()) {
-        this.conformanceProfileService.saveAll(conformanceProfileClones.getSavedResources());
-        ig.getConformanceProfileRegistry().setChildren(conformanceProfileClones.getLinks());
-      }
-      if(profileComponentClones.getSavedResources() != null && !profileComponentClones.getSavedResources().isEmpty()) {
+		RegistryUpdateReturn<CompositeProfileStructure> compositeProfileStructureClones = cloneRegistry(
+				ig.getCompositeProfileRegistry(), username, newKeys, documentInfo, Type.COMPOSITEPROFILE,
+				copyInfo.getMode());
 
-        this.profileComponentService.saveAll(profileComponentClones.getSavedResources());
-        ig.getProfileComponentRegistry().setChildren(profileComponentClones.getLinks());
-      }
-      if(compositeProfileStructureClones.getSavedResources() != null && !compositeProfileStructureClones.getSavedResources().isEmpty()) {
+		RegistryUpdateReturn<Valueset> valueSetClones = cloneRegistry(ig.getValueSetRegistry(), username, newKeys,
+				documentInfo, Type.VALUESET, copyInfo.getMode());
 
-        this.compositeProfileService.saveAll(compositeProfileStructureClones.getSavedResources());
-        ig.getCompositeProfileRegistry().setChildren(compositeProfileStructureClones.getLinks());
-      }
-      if(valueSetClones.getSavedResources() != null && !valueSetClones.getSavedResources().isEmpty()) { 
-        this.valueSetService.saveAll(valueSetClones.getSavedResources());
-        ig.getValueSetRegistry().setChildren(valueSetClones.getLinks());
-      }
-      if(coConstraintGroupClones.getSavedResources() != null && !coConstraintGroupClones.getSavedResources().isEmpty()) { 
-        this.coConstraintService.saveAll(coConstraintGroupClones.getSavedResources());
-        ig.getCoConstraintGroupRegistry().setChildren(coConstraintGroupClones.getLinks());
-      }
+		RegistryUpdateReturn<CoConstraintGroup> coConstraintGroupClones = cloneRegistry(
+				ig.getCoConstraintGroupRegistry(), username, newKeys, documentInfo, Type.COCONSTRAINTGROUP,
+				copyInfo.getMode());
 
-      ig.setId(documentInfo.getDocumentId());
-      Ig ret  = this.igRepository.save(ig);
+		try {
 
-      return ret;
-    } catch(Exception e) {
-      igService.removeChildren(documentInfo.getDocumentId());
-      this.igRepository.deleteById(documentInfo.getDocumentId());
-      throw e;
-    }
-  }
+			if (datatypeClones.getSavedResources() != null && !datatypeClones.getSavedResources().isEmpty()) {
+				this.datatypeService.saveAll(datatypeClones.getSavedResources());
+				ig.getDatatypeRegistry().setChildren(datatypeClones.getLinks());
+			}
+			if (segmentClones.getSavedResources() != null && !segmentClones.getSavedResources().isEmpty()) {
+				this.segmentService.saveAll(segmentClones.getSavedResources());
+				ig.getSegmentRegistry().setChildren(segmentClones.getLinks());
+			}
+			if (conformanceProfileClones.getSavedResources() != null
+					&& !conformanceProfileClones.getSavedResources().isEmpty()) {
+				this.conformanceProfileService.saveAll(conformanceProfileClones.getSavedResources());
+				ig.getConformanceProfileRegistry().setChildren(conformanceProfileClones.getLinks());
+			}
+			if (profileComponentClones.getSavedResources() != null
+					&& !profileComponentClones.getSavedResources().isEmpty()) {
 
-  private String generateAbstractDomainId() {
-    return new ObjectId().toString();
-  }
+				this.profileComponentService.saveAll(profileComponentClones.getSavedResources());
+				ig.getProfileComponentRegistry().setChildren(profileComponentClones.getLinks());
+			}
+			if (compositeProfileStructureClones.getSavedResources() != null
+					&& !compositeProfileStructureClones.getSavedResources().isEmpty()) {
 
+				this.compositeProfileService.saveAll(compositeProfileStructureClones.getSavedResources());
+				ig.getCompositeProfileRegistry().setChildren(compositeProfileStructureClones.getLinks());
+			}
+			if (valueSetClones.getSavedResources() != null && !valueSetClones.getSavedResources().isEmpty()) {
+				this.valueSetService.saveAll(valueSetClones.getSavedResources());
+				ig.getValueSetRegistry().setChildren(valueSetClones.getLinks());
+			}
+			if (coConstraintGroupClones.getSavedResources() != null
+					&& !coConstraintGroupClones.getSavedResources().isEmpty()) {
+				this.coConstraintService.saveAll(coConstraintGroupClones.getSavedResources());
+				ig.getCoConstraintGroupRegistry().setChildren(coConstraintGroupClones.getLinks());
+			}
 
+			ig.setId(documentInfo.getDocumentId());
+			Ig ret = this.igRepository.save(ig);
 
+			return ret;
+		} catch (Exception e) {
+			igService.removeChildren(documentInfo.getDocumentId());
+			this.igRepository.deleteById(documentInfo.getDocumentId());
+			throw e;
+		}
+	}
 
-  public Ig updateIGAttributes(Ig ig, String username, CopyInfo info) {
-    applyClone.updateAbstractDomainAttributes(ig, this.generateAbstractDomainId(), username);
-    ig.setDraft(false);
-    ig.setDomainInfo(ig.getDomainInfo());
-    ig.getDomainInfo().setScope(Scope.USER);
-    ig.setStatus(null);
-    if(info.getMode().equals(CloneMode.CLONE)) {
-      ig.getMetadata().setTitle(ig.getMetadata().getTitle() + "[clone]");
-      ig.setContent(ig.getContent());
+	private String generateAbstractDomainId() {
+		return new ObjectId().toString();
+	}
 
-    } else if(info.getMode().equals(CloneMode.DERIVE)) {
-      ig.getMetadata().setTitle(ig.getMetadata().getTitle() + "[derived]");
-      ig.setDerived(true); 
-      ig.setOrigin(ig.getFrom());
-      if(!info.isInherit()) {
+	public Ig updateIGAttributes(Ig ig, String username, CopyInfo info) {
+		applyClone.updateAbstractDomainAttributes(ig, this.generateAbstractDomainId(), username);
+		ig.setDeprecated(false);
+		ig.setDraft(false);
+		ig.setDomainInfo(ig.getDomainInfo());
+		ig.getDomainInfo().setScope(Scope.USER);
+		ig.setStatus(null);
+		if (info.getMode().equals(CloneMode.CLONE)) {
+			ig.getMetadata().setTitle(ig.getMetadata().getTitle() + "[clone]");
+			ig.setContent(ig.getContent());
 
-        Set<TextSection> content = new HashSet<TextSection>();
-        if(info.getTemplate() !=null && info.getTemplate().getChildren() !=null) {
-          for (SectionTemplate template : info.getTemplate().getChildren()) {
-            content.add(createSectionContent(template));
-          }
-          ig.setContent(content);
-        }
-      }
-    }
-    return ig;
-  }
+		} else if (info.getMode().equals(CloneMode.DERIVE)) {
+			ig.getMetadata().setTitle(ig.getMetadata().getTitle() + "[derived]");
+			ig.setDerived(true);
+			ig.setOrigin(ig.getFrom());
+			if (!info.isInherit()) {
 
+				Set<TextSection> content = new HashSet<TextSection>();
+				if (info.getTemplate() != null && info.getTemplate().getChildren() != null) {
+					for (SectionTemplate template : info.getTemplate().getChildren()) {
+						content.add(createSectionContent(template));
+					}
+					ig.setContent(content);
+				}
+			}
+		}
+		return ig;
+	}
 
-  private HashMap<RealKey, String> generateNewIds(Ig ig) {
-    HashMap<RealKey, String> newKeys= new HashMap<RealKey, String>();
-    addKeys(ig.getConformanceProfileRegistry(), Type.CONFORMANCEPROFILE, newKeys);
-    addKeys(ig.getValueSetRegistry(), Type.VALUESET, newKeys);
-    addKeys(ig.getDatatypeRegistry(), Type.DATATYPE, newKeys);
-    addKeys(ig.getSegmentRegistry(), Type.SEGMENT, newKeys);
-    addKeys(ig.getCoConstraintGroupRegistry(), Type.COCONSTRAINTGROUP, newKeys);
-    addKeys(ig.getProfileComponentRegistry(), Type.PROFILECOMPONENT, newKeys);
-    addKeys(ig.getCompositeProfileRegistry(), Type.COMPOSITEPROFILE, newKeys);
-    return newKeys;
+	private HashMap<RealKey, String> generateNewIds(Ig ig) {
+		HashMap<RealKey, String> newKeys = new HashMap<RealKey, String>();
+		addKeys(ig.getConformanceProfileRegistry(), Type.CONFORMANCEPROFILE, newKeys);
+		addKeys(ig.getValueSetRegistry(), Type.VALUESET, newKeys);
+		addKeys(ig.getDatatypeRegistry(), Type.DATATYPE, newKeys);
+		addKeys(ig.getSegmentRegistry(), Type.SEGMENT, newKeys);
+		addKeys(ig.getCoConstraintGroupRegistry(), Type.COCONSTRAINTGROUP, newKeys);
+		addKeys(ig.getProfileComponentRegistry(), Type.PROFILECOMPONENT, newKeys);
+		addKeys(ig.getCompositeProfileRegistry(), Type.COMPOSITEPROFILE, newKeys);
+		return newKeys;
 
-  }
+	}
 
-  @SuppressWarnings("unchecked")
-  public <T extends Resource> RegistryUpdateReturn<T> cloneRegistry(Registry reg, String username, HashMap<RealKey, String> newKeys, DocumentInfo documentInfo, Type resourceType, CloneMode cloneMode) throws EntityNotFound {
-    RegistryUpdateReturn<T> ret = new RegistryUpdateReturn<T>();
-    Set<Link> links  = new HashSet<Link>();
-    ret.setSavedResources(new HashSet<T>());
-    if(reg instanceof ValueSetRegistry) {
-    	updateCodePresence((ValueSetRegistry)reg, newKeys);
-    	
-    }
-    if(reg.getChildren() != null) {
-      for(Link l: reg.getChildren()) {
-        if(this.shouldClone(l)) {
-          Resource res = getResourceByType(l.getId(), username, documentInfo, resourceType);
-          RealKey rel = new RealKey(l.getId(), resourceType);
-          resourceManagementService.applyCloneResource(res, newKeys.get(rel), username, documentInfo, cloneMode); // resource with new Id
-          updateDependencies(res, newKeys); // resource with updated dependencies     
-          l.setId(newKeys.get(rel));
-          l.setDerived(res.isDerived());
-          l.setOrigin(res.getOrigin());
-          ret.getSavedResources().add((T)res);
-        }
-        links.add(l);
-      }
-    }
+	@SuppressWarnings("unchecked")
+	public <T extends Resource> RegistryUpdateReturn<T> cloneRegistry(Registry reg, String username,
+			HashMap<RealKey, String> newKeys, DocumentInfo documentInfo, Type resourceType, CloneMode cloneMode)
+			throws EntityNotFound {
+		RegistryUpdateReturn<T> ret = new RegistryUpdateReturn<T>();
+		Set<Link> links = new HashSet<Link>();
+		ret.setSavedResources(new HashSet<T>());
+		if (reg instanceof ValueSetRegistry) {
+			updateCodePresence((ValueSetRegistry) reg, newKeys);
 
-    ret.setLinks(links);
-    return ret;
+		}
+		if (reg.getChildren() != null) {
+			for (Link l : reg.getChildren()) {
+				if (this.shouldClone(l)) {
+					Resource res = getResourceByType(l.getId(), username, documentInfo, resourceType);
+					RealKey rel = new RealKey(l.getId(), resourceType);
+					resourceManagementService.applyCloneResource(res, newKeys.get(rel), username, documentInfo,
+							cloneMode); // resource with new Id
+					updateDependencies(res, newKeys); // resource with updated dependencies
+					l.setId(newKeys.get(rel));
+					l.setDerived(res.isDerived());
+					l.setOrigin(res.getOrigin());
+					ret.getSavedResources().add((T) res);
+				}
+				links.add(l);
+			}
+		}
 
-  }
+		ret.setLinks(links);
+		return ret;
 
-  private void updateCodePresence(ValueSetRegistry reg, HashMap<RealKey, String> newKeys) {
-	  HashMap<String, Boolean> newCodesPresence = new HashMap<String, Boolean>();
-	  
-	  
-	  
-	  if(reg.getCodesPresence() != null) {
-		  for(String s: reg.getCodesPresence().keySet() ) {
-			  if(s != null ) {
-				  RealKey key = new RealKey(s, Type.VALUESET);
-				  if(newKeys.containsKey(key)) {  
-					newCodesPresence.put(newKeys.get(key),reg.getCodesPresence().get(s));
-				  }else {
-					newCodesPresence.put(s,reg.getCodesPresence().get(s));
+	}
 
-				  }
-			  }
-		  }
-	  }
-	  reg.setCodesPresence(newCodesPresence);
- }
+	private void updateCodePresence(ValueSetRegistry reg, HashMap<RealKey, String> newKeys) {
+		HashMap<String, Boolean> newCodesPresence = new HashMap<String, Boolean>();
 
-/**
-   * @param res
-   * @param newKeys
-   */
-  private void updateDependencies(Resource resource, HashMap<RealKey, String> newKeys) {
+		if (reg.getCodesPresence() != null) {
+			for (String s : reg.getCodesPresence().keySet()) {
+				if (s != null) {
+					RealKey key = new RealKey(s, Type.VALUESET);
+					if (newKeys.containsKey(key)) {
+						newCodesPresence.put(newKeys.get(key), reg.getCodesPresence().get(s));
+					} else {
+						newCodesPresence.put(s, reg.getCodesPresence().get(s));
 
-    if(resource instanceof ConformanceProfile) {
-      this.conformanceProfileDependencyService.updateDependencies((ConformanceProfile) resource, newKeys);
-    } 
-    if(resource instanceof Segment) {
-      this.segmentDependencyService.updateDependencies((Segment)resource, newKeys);
-    } 
-    if(resource instanceof Datatype) {
-      this.datatypeDependencyService.updateDependencies((Datatype)resource, newKeys);
+					}
+				}
+			}
+		}
+		reg.setCodesPresence(newCodesPresence);
+	}
 
-    } 
-    if(resource instanceof ProfileComponent) {
-      this.profileComponentDependencyService.updateDependencies((ProfileComponent)resource, newKeys);
+	/**
+	 * @param res
+	 * @param newKeys
+	 */
+	private void updateDependencies(Resource resource, HashMap<RealKey, String> newKeys) {
 
-    } 
-    if(resource instanceof CompositeProfileStructure) {
-      this.compositeProfilDependencyService.updateDependencies((CompositeProfileStructure)resource, newKeys);
-    } 
-    if(resource instanceof CoConstraintGroup) {
-      this.CoConstraintDependencyService.updateDependencies((CoConstraintGroup)resource, newKeys);
-    } 
-  }
+		if (resource instanceof ConformanceProfile) {
+			this.conformanceProfileDependencyService.updateDependencies((ConformanceProfile) resource, newKeys);
+		}
+		if (resource instanceof Segment) {
+			this.segmentDependencyService.updateDependencies((Segment) resource, newKeys);
+		}
+		if (resource instanceof Datatype) {
+			this.datatypeDependencyService.updateDependencies((Datatype) resource, newKeys);
 
-  private boolean shouldClone(Link link) {
-    return link.isUser();
-  }
+		}
+		if (resource instanceof ProfileComponent) {
+			this.profileComponentDependencyService.updateDependencies((ProfileComponent) resource, newKeys);
 
-  private TextSection createSectionContent(SectionTemplate template) {
-    TextSection section = new TextSection();
-    section.setId(new ObjectId().toString());
-    section.setType(Type.fromString(template.getType()));
-    section.setDescription("");
-    section.setLabel(template.getLabel());
-    section.setPosition(template.getPosition());
+		}
+		if (resource instanceof CompositeProfileStructure) {
+			this.compositeProfilDependencyService.updateDependencies((CompositeProfileStructure) resource, newKeys);
+		}
+		if (resource instanceof CoConstraintGroup) {
+			this.CoConstraintDependencyService.updateDependencies((CoConstraintGroup) resource, newKeys);
+		}
+	}
 
-    if (template.getChildren() != null) {
-      Set<TextSection> children = new HashSet<TextSection>();
-      for (SectionTemplate child : template.getChildren()) {
-        children.add(createSectionContent(child));
-      }
-      section.setChildren(children);
-    }
-    return section;
-  }
+	private boolean shouldClone(Link link) {
+		return link.isUser();
+	}
 
-  public  Resource getResourceByType( String id, String username, DocumentInfo parent, Type type ) throws EntityNotFound {
+	private TextSection createSectionContent(SectionTemplate template) {
+		TextSection section = new TextSection();
+		section.setId(new ObjectId().toString());
+		section.setType(Type.fromString(template.getType()));
+		section.setDescription("");
+		section.setLabel(template.getLabel());
+		section.setPosition(template.getPosition());
 
-    switch(type) {
-      case CONFORMANCEPROFILE:
-        return conformanceProfileService.findById(id);
-      case PROFILECOMPONENT:
-        return profileComponentService.findById(id);
-      case COMPOSITEPROFILE:
-        return compositeProfileService.findById(id);
-      case SEGMENT:
-        return segmentService.findById(id);
-      case DATATYPE:
-        return datatypeService.findById(id);
-      case COCONSTRAINTGROUP:
-        return coConstraintService.findById(id);
-      case VALUESET:
-        return valueSetService.findById(id);
-      default:
-        break;
-    }
-    return null;
-  }
+		if (template.getChildren() != null) {
+			Set<TextSection> children = new HashSet<TextSection>();
+			for (SectionTemplate child : template.getChildren()) {
+				children.add(createSectionContent(child));
+			}
+			section.setChildren(children);
+		}
+		return section;
+	}
 
-  private void addKeys(Registry reg, Type type, HashMap<RealKey, String> map) {
-    if (reg != null && reg.getChildren() != null) {
-      for (Link l : reg.getChildren()) {
-        if (l.getDomainInfo().getScope().equals(Scope.USER)) {
-          String newId = new ObjectId().toString();
-          map.put(new RealKey(l.getId(), type), newId);
-        } else {
-          map.put(new RealKey(l.getId(), type), l.getId());
-        }
-      }
-    }
-  }
+	public Resource getResourceByType(String id, String username, DocumentInfo parent, Type type)
+			throws EntityNotFound {
 
+		switch (type) {
+		case CONFORMANCEPROFILE:
+			return conformanceProfileService.findById(id);
+		case PROFILECOMPONENT:
+			return profileComponentService.findById(id);
+		case COMPOSITEPROFILE:
+			return compositeProfileService.findById(id);
+		case SEGMENT:
+			return segmentService.findById(id);
+		case DATATYPE:
+			return datatypeService.findById(id);
+		case COCONSTRAINTGROUP:
+			return coConstraintService.findById(id);
+		case VALUESET:
+			return valueSetService.findById(id);
+		default:
+			break;
+		}
+		return null;
+	}
 
+	private void addKeys(Registry reg, Type type, HashMap<RealKey, String> map) {
+		if (reg != null && reg.getChildren() != null) {
+			for (Link l : reg.getChildren()) {
+				if (l.getDomainInfo().getScope().equals(Scope.USER)) {
+					String newId = new ObjectId().toString();
+					map.put(new RealKey(l.getId(), type), newId);
+				} else {
+					map.put(new RealKey(l.getId(), type), l.getId());
+				}
+			}
+		}
+	}
 
 }

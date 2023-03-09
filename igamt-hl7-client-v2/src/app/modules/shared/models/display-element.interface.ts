@@ -15,7 +15,8 @@ export interface IDisplayElement {
   type: Type;
   leaf: boolean;
   position?: number;
-  differential: boolean;
+  differential?: boolean; // delta could be calculated
+  derived?: boolean;
   children?: IDisplayElement[];
   parentType?: Type;
   parentId?: string;
