@@ -787,4 +787,17 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .message(String.format("In %s, MIN Length value is bigger than MAX Length. The current MinLength is %s and current MaxLength is %s", location.getInfo().getName(), minLength, maxLength))
                 .entry();
 	}
+
+	@Override
+	public IgamtObjectError Usage_NOTAllowed_IXUsage(Location l, String id, Type type) {
+		Location location = l.clone();
+		location.setProperty(PropertyType.USAGE);
+		return new IgamtVerificationEntryBuilder("Usage_NOTAllowed_IXUsage")
+                .warning()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message(String.format("At %s, Receiver Conformance profile does not allow IX usage.", location.getInfo().getType().toString() + ' ' + location.getName() + "(Position:  " + location.getInfo().getPositionalPath() + ')'))
+                .entry();
+	}
 }
