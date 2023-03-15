@@ -1,5 +1,3 @@
-import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
-import { IUserConfig } from './../../../shared/models/config.class';
 import { OnDestroy, OnInit, Type as CoreType } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
@@ -27,6 +25,8 @@ import { StoreResourceRepositoryService } from '../../../shared/services/resourc
 import { IBindingContext } from '../../../shared/services/structure-element-binding.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
 import { VerifyIg } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
+import { IUserConfig } from './../../../shared/models/config.class';
 
 export type BindingLegend = Array<{
   label: string,

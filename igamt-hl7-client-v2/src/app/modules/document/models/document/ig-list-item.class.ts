@@ -17,6 +17,7 @@ export class IgListItem {
   draft?: boolean;
   deprecated?: boolean;
   publicationInfo?: IPublicationInfo;
+  derived?: boolean;
 }
 
 export type IgListItemType = 'USER' | 'PUBLISHED' | 'SHARED';

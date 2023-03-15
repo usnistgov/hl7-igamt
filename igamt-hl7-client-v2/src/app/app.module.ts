@@ -1,4 +1,3 @@
-import { UserConfigEffects } from './root-store/user-config/user-config.effects';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -16,6 +15,7 @@ import { reducers } from './root-store';
 import { ConfigEffects } from './root-store/config/config.effects';
 import {LoadedResourcesEffects} from './root-store/dam-igamt/igamt.loaded-resources.effects';
 import { ResourceLoaderEffects } from './root-store/resource-loader/resource-loader.effects';
+import { UserConfigEffects } from './root-store/user-config/user-config.effects';
 @NgModule({
   declarations: [
     AppComponent,

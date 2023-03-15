@@ -1,16 +1,16 @@
-import { SaveUserConfig, LoadUserConfig } from './../../../../root-store/user-config/user-config.actions';
-import { IUserConfig } from './../../../shared/models/config.class';
-import { ConfigurationDialogComponent } from './../configuration-dialog/configuration-dialog.component';
-import { MatDialog } from '@angular/material';
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { map, filter, take } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import { getUserConfigState } from 'src/app/root-store/user-config/user-config.reducer';
 import * as fromAuth from '../../../dam-framework/store/authentication/index';
 import { LogoutRequest } from '../../../dam-framework/store/authentication/index';
 import * as fromRoot from './../../../../root-store/index';
-import { getUserConfigState } from 'src/app/root-store/user-config/user-config.reducer';
+import { LoadUserConfig, SaveUserConfig } from './../../../../root-store/user-config/user-config.actions';
+import { IUserConfig } from './../../../shared/models/config.class';
+import { ConfigurationDialogComponent } from './../configuration-dialog/configuration-dialog.component';
 
 @Component({
   selector: 'app-header',
@@ -28,7 +28,7 @@ export class HeaderComponent implements OnInit {
   username: Observable<string>;
 
   constructor(private store: Store<fromRoot.IRouteState>, private dialog: MatDialog,
-    ) {
+  ) {
     this.isLoading = store.select(fromDAM.selectLoaderIsLoading);
     this.isAdmin = store.select(fromAuth.selectIsAdmin);
     this.isIG = store.select(fromDAM.selectRouterURL).pipe(
@@ -64,29 +64,27 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
   }
 
-  openConfig(){
-  this.store.dispatch(new LoadUserConfig());
+  openConfig() {
+    this.store.dispatch(new LoadUserConfig());
 
-   this.store.select(getUserConfigState).pipe(
+    this.store.select(getUserConfigState).pipe(
       filter((config) => !!config),
       take(1),
       map((x) => {
         const dialogRef = this.dialog.open(ConfigurationDialogComponent, {
-          data: {config: x},
+          data: { config: x },
         });
         dialogRef.afterClosed().pipe(
-          filter((x) => x !== undefined),
+          filter((res) => res !== undefined),
           take(1),
           map((result: IUserConfig) => {
             this.store.dispatch(new SaveUserConfig(result));
           }),
         ).subscribe();
 
-        }
+      },
       ),
     ).subscribe();
   }
-
-
 
 }

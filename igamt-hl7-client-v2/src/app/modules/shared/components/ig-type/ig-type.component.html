@@ -1,0 +1,13 @@
+<ng-container  *ngIf="info">
+  <div *ngIf="info.published" class="status status-published" >
+    <i class="fa fa-globe" style="margin-right: 3px;"></i>
+    PUBLISHED
+  </div>
+  <div *ngIf="info.locked" class="status status-locked" >
+    <i class="fa fa-lock" style="margin-right: 3px;"></i>
+    LOCKED
+  </div>
+  <div *ngIf="info.draft" class="status status-draft">DRAFT</div>
+  <div *ngIf="info.deprecated" class="status status-deprecated">DEPRECATED</div>
+  <div *ngIf="info.derived" class="status status-derived">DERIVED</div>
+</ng-container>

@@ -3,7 +3,9 @@
   align-items: center;
 }
 
-.badge {
+.badge-custom {
+  align-items: center;
+  justify-content: center;
   display: flex;
   font-weight: 500;
   font-size: 1.5rem;
@@ -54,3 +56,17 @@
   transform: translateX(1.5rem); //translateX(0.75rem);
 }
 
+.status {
+  padding: 5px;
+  border-radius: 5px;
+  margin-left: 5px;
+  display: inline;
+}
+
+.custom-ig-badge {
+  display: inline;
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
+  font-weight: 600;
+}

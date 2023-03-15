@@ -1,12 +1,7 @@
-import {IDocument} from '../../../document/models/document/IDocument.interface';
-import { IAbstractDomain } from '../../../shared/models/abstract-domain.interface';
-import { IContent } from '../../../shared/models/content.interface';
+import { IDocument } from '../../../document/models/document/IDocument.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IDomainInfo } from '../../../shared/models/domain-info.interface';
-import { IMetadata } from '../../../shared/models/metadata.interface';
 import { IRegistry } from '../../../shared/models/registry.interface';
 import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
-import { IVerificationEntryList } from './../../../shared/services/verification.service';
 
 export interface IgDocument extends IDocument {
   datatypeRegistry: IRegistry;
@@ -37,4 +32,12 @@ export interface ITocVerification {
 }
 export interface ITocElement {
   [serverity: string]: IVerificationEnty[];
+}
+
+export interface IgDocumentStatusInfo {
+  derived?: boolean;
+  draft?: boolean;
+  published?: boolean;
+  deprecated?: boolean;
+  locked?: boolean;
 }

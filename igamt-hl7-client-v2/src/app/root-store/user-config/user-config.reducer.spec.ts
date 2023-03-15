@@ -1,4 +1,4 @@
-import { reducer, initialState } from './user-config.reducer';
+import { initialState, reducer } from './user-config.reducer';
 
 describe('UserConfig Reducer', () => {
   describe('an unknown action', () => {

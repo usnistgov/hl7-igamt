@@ -1,0 +1,31 @@
+:host {
+  display: contents;
+}
+
+.status {
+  padding: 5px;
+  border-radius: 5px;
+  margin-right: 5px;
+  display: inline;
+}
+
+.status-published {
+  background-color: #a9ffbf;
+}
+
+.status-draft {
+  background-color: #fdd3d8;
+}
+
+.status-deprecated {
+  background-color: #ffe3bf;
+}
+
+.status-locked {
+  background-color: lightgrey;
+  color: #494949;
+}
+
+.status-derived {
+  background-color: #c1e2ff;
+}

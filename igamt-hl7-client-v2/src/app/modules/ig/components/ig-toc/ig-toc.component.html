@@ -154,9 +154,14 @@
         <ng-container *ngSwitchCase="'DATATYPE'">
           <div style="display:flex; flex-direction: row;">
 
-        <span style="width: 16px;">
-          <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
-        </span>
+          <div style="width: 30px; display: flex; align-items: center; justify-content: flex-end;">
+            <span style="margin-right: 5px;" *ngIf="node.data.derived">
+              <i class="fa fa-code-fork" style="font-weight: bold; color: blue;"></i>
+            </span>
+            <span style="margin-right: 5px;">
+              <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
+            </span>
+          </div>
 
           <app-display-section [contextMenu]="datatypeContextMenu" #rla="routerLinkActive" [element]="node.data"
                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" ></app-display-section>
@@ -175,9 +180,15 @@
         <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
           <div style="display:flex; flex-direction: row;">
 
-            <span style="width: 16px;">
+          <div style="width: 30px; display: flex; align-items: center; justify-content: flex-end;">
+            <span style="margin-right: 5px;" *ngIf="node.data.derived">
+              <i class="fa fa-code-fork" style="font-weight: bold; color: blue;"></i>
+            </span>
+            <span style="margin-right: 5px;">
               <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
             </span>
+          </div>
+
           <app-display-section [contextMenu]="conformanceProfileContextMenu" [element]="node.data" #rla="routerLinkActive"
                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" [hideDescription]="true" style="cursor: move !important;"></app-display-section>
                                </div>
@@ -217,9 +228,15 @@
         <ng-container *ngSwitchCase="'SEGMENT'">
           <div style="display:flex; flex-direction: row;">
 
-            <span style="width: 16px;">
+          <div style="width: 30px; display: flex; align-items: center; justify-content: flex-end;">
+            <span style="margin-right: 5px;" *ngIf="node.data.derived">
+              <i class="fa fa-code-fork" style="font-weight: bold; color: blue;"></i>
+            </span>
+            <span style="margin-right: 5px;">
               <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
             </span>
+          </div>
+
           <app-display-section  [contextMenu]='segmentContextMenu' [element]="node.data" #rla="routerLinkActive"
                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true"></app-display-section>
            </div>
@@ -237,10 +254,15 @@
         <ng-container *ngSwitchCase="'VALUESET'">
           <div style="display:flex; flex-direction: row;">
 
-            <span style="width: 16px;">
-              <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]">
-              </app-verification-badge>
+          <div style="width: 30px; display: flex; align-items: center; justify-content: flex-end;">
+            <span style="margin-right: 5px;" *ngIf="node.data.derived">
+              <i class="fa fa-code-fork" style="font-weight: bold; color: blue;"></i>
             </span>
+            <span style="margin-right: 5px;">
+              <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
+            </span>
+          </div>
+          
           <app-display-section  [contextMenu]='valueSetContextMenu' [element]="node.data" #rla="routerLinkActive"
                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" ></app-display-section>
           </div>

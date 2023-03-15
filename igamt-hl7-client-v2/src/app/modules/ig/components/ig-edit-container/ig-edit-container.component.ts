@@ -9,6 +9,8 @@ import { DamWidgetComponent } from '../../../dam-framework/components/data-widge
 import { IWorkspaceActive } from '../../../dam-framework/models/data/workspace';
 import { VerificationService } from '../../../shared/services/verification.service';
 import { ITitleBarMetadata } from '../ig-edit-titlebar/ig-edit-titlebar.component';
+import { selectDerived, selectIgDocumentStatusInfo } from './../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { IgDocumentStatusInfo } from './../../models/ig/ig-document.class';
 
 export const IG_EDIT_WIDGET_ID = 'IG-EDIT-WIDGET';
 
@@ -26,6 +28,7 @@ export class IgEditContainerComponent extends DamWidgetComponent {
   activeWorkspace: Observable<IWorkspaceActive>;
   showStatusBar$: Observable<boolean>;
   showBottomDrawer$: Observable<boolean>;
+  statusInfo$: Observable<IgDocumentStatusInfo>;
 
   constructor(
     protected store: Store<any>,
@@ -36,6 +39,7 @@ export class IgEditContainerComponent extends DamWidgetComponent {
     this.activeWorkspace = store.select(fromIgamtSelectors.selectWorkspaceActive);
     this.showStatusBar$ = verificationService.getStatusBarActive();
     this.showBottomDrawer$ = verificationService.getBottomDrawerActive();
+    this.statusInfo$ = this.store.select(selectIgDocumentStatusInfo);
   }
 
   containsUnsavedChanges$(): Observable<boolean> {

@@ -359,7 +359,7 @@ public class IgServiceImpl implements IgService {
 		qry.fields().include("deprecated");
 		qry.fields().include("publicationInfo");
 		qry.fields().include("status");
-
+		qry.fields().include("derived");
 
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		return igs;
@@ -383,7 +383,7 @@ public class IgServiceImpl implements IgService {
 		qry.fields().include("deprecated");
 		qry.fields().include("publicationInfo");
 		qry.fields().include("status");
-
+		qry.fields().include("derived");
 
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		return igs;
@@ -406,6 +406,7 @@ public class IgServiceImpl implements IgService {
 		qry.fields().include("deprecated");
 		qry.fields().include("publicationInfo");
 		qry.fields().include("status");
+		qry.fields().include("derived");
 
 		
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
@@ -429,7 +430,7 @@ public class IgServiceImpl implements IgService {
 		qry.fields().include("draft");
 		qry.fields().include("publicationInfo");
 		qry.fields().include("status");
-
+		qry.fields().include("derived");
 
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		igs.forEach(ig -> {
