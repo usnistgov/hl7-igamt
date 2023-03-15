@@ -38,6 +38,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
+import gov.nist.hit.hl7.igamt.common.base.domain.Role;
 import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
@@ -427,11 +428,31 @@ public class VerificationServiceImpl implements VerificationService {
 				info.setPositionalPath(positionPath);
 				location.setInfo(info);
 				
+				if(conformanceProfile.getRole().equals(Role.Receiver) && usage.equals(Usage.IX)) {
+					result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage(location, segment.getId(), Type.SEGMENT));
+				}
+				
 				result.getErrors().addAll(checkCardinalityVerificationErr(location, segment.getId(), Type.SEGMENT, usage, min, max));
 				
 				
 				if(segment.getChildren() != null) {
 					segment.getChildren().forEach(field -> {
+						String fieldPositionPath = location.getInfo().getPositionalPath() + "." + field.getPosition();
+						String fieldPath = location.getInfo().getPathId()+ "." + field.getId();
+						Location fieldLocation = new Location();
+						fieldLocation.setPathId(fieldPath);
+						fieldLocation.setName(field.getName());
+						LocationInfo fieldInfo = new LocationInfo();
+						fieldInfo.setType(Type.FIELD);
+						fieldInfo.setName(field.getName());
+						fieldInfo.setPathId(fieldPath);
+						fieldInfo.setPositionalPath(fieldPositionPath);
+						fieldLocation.setInfo(fieldInfo);
+						
+						if(conformanceProfile.getRole().equals(Role.Receiver) && field.getUsage().equals(Usage.IX)) {	
+							result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage(fieldLocation, field.getId(), Type.FIELD));
+						}
+						
 						Datatype childDT = this.datatypeService.findById(ref.getId());
 						if(childDT == null) childDT = this.inMemoryDomainExtensionService.findById(ref.getId(), Datatype.class);
 						if (childDT == null) {}
@@ -440,7 +461,7 @@ public class VerificationServiceImpl implements VerificationService {
 								ComplexDatatype complexChildDT = (ComplexDatatype)childDT;
 								if(complexChildDT.getComponents() != null) {
 									complexChildDT.getComponents().forEach(component -> {
-										this.travelComponent(component);
+										this.travelComponent(result, conformanceProfile, fieldLocation, component);
 									});
 								}
 							}
@@ -451,7 +472,25 @@ public class VerificationServiceImpl implements VerificationService {
 		}
 	}
 
-	private void travelComponent(Component component) {
+	private void travelComponent(CPVerificationResult result, ConformanceProfile cp, Location l, Component component) {
+		if(cp.getRole().equals(Role.Receiver) && component.getUsage().equals(Usage.IX)) {
+			String componentPositionPath = l.getInfo().getPositionalPath() + "." + component.getPosition();
+			String componentdPath = l.getInfo().getPathId()+ "." + component.getId();
+			Location cLocation = new Location();
+			cLocation.setPathId(componentdPath);
+			cLocation.setName(component.getName());
+			LocationInfo fieldInfo = new LocationInfo();
+			fieldInfo.setType(Type.COMPONENT);
+			fieldInfo.setName(component.getName());
+			fieldInfo.setPathId(componentdPath);
+			fieldInfo.setPositionalPath(componentPositionPath);
+			cLocation.setInfo(fieldInfo);
+			
+			result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage(cLocation, component.getId(), Type.COMPONENT));
+		}
+		
+		
+		
 		Datatype childDT = this.datatypeService.findById(component.getRef().getId());
 		if(childDT == null) childDT = this.inMemoryDomainExtensionService.findById(component.getRef().getId(), Datatype.class);
 		if (childDT == null) {}
@@ -460,7 +499,7 @@ public class VerificationServiceImpl implements VerificationService {
 				ComplexDatatype complexChildDT = (ComplexDatatype)childDT;
 				if(complexChildDT.getComponents() != null) {
 					complexChildDT.getComponents().forEach(childComponent -> {
-						this.travelComponent(childComponent);
+						this.travelComponent(result, cp, l, childComponent);
 					});
 				}
 			}
@@ -613,6 +652,10 @@ public class VerificationServiceImpl implements VerificationService {
 			info.setPathId(path);
 			info.setPositionalPath(positionPath);
 			location.setInfo(info);
+			
+			if(conformanceProfile.getRole().equals(Role.Receiver) && group.getUsage().equals(Usage.IX)) {
+				result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage(location, group.getId(), Type.GROUP));
+			}
 
 			result.getErrors().addAll(this.checkCardinalityVerificationErr(location, group.getId(), Type.GROUP, usage, min, max));
 
