@@ -1,6 +1,7 @@
 import { Dictionary } from '@ngrx/entity';
 import { createSelector } from '@ngrx/store';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { Status } from 'src/app/modules/shared/models/abstract-domain.interface';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { IgTOCNodeHelper } from '../../../modules/document/services/ig-toc-node-helper.service';
 import { IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
@@ -8,6 +9,7 @@ import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
 import { IRegistry } from '../../../modules/shared/models/registry.interface';
 import { ITitleBarMetadata } from './../../../modules/ig/components/ig-edit-titlebar/ig-edit-titlebar.component';
+import { IgDocumentStatusInfo } from './../../../modules/ig/models/ig/ig-document.class';
 
 export const selectIgDocument = createSelector(
   fromDam.selectPayloadData,
@@ -27,6 +29,19 @@ export const selectDerived = createSelector(
   selectIgDocument,
   (state: IgDocument) => {
     return state.derived;
+  },
+);
+
+export const selectIgDocumentStatusInfo = createSelector(
+  selectIgDocument,
+  (state: IgDocument): IgDocumentStatusInfo => {
+    return {
+      derived: state.derived,
+      deprecated: state.deprecated,
+      draft: state.draft,
+      published: state.status === Status.PUBLISHED,
+      locked: state.status === Status.LOCKED,
+    };
   },
 );
 
@@ -205,7 +220,7 @@ export const selectToc = createSelector(
     compositeProfilesNodes: IDisplayElement[],
   ) => {
     return IgTOCNodeHelper.buildTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, profileComponentsNodes, compositeProfilesNodes);
-},
+  },
 );
 
 export const selectProfileTree = createSelector(
@@ -225,7 +240,7 @@ export const selectProfileTree = createSelector(
     coConstraintGroupNodes: IDisplayElement[],
     profileComponentsNodes: IDisplayElement[],
     compositeProfilesNodes: IDisplayElement[],
-) => {
+  ) => {
   return IgTOCNodeHelper.buildProfileTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, profileComponentsNodes, compositeProfilesNodes);
 },
 );

@@ -1,4 +1,3 @@
-import { IUserConfig } from './../../../../models/config.class';
 import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import * as _ from 'lodash';
@@ -18,6 +17,7 @@ import { IChangeReasonDialogDisplay } from '../../../change-reason-dialog/change
 import { CsDialogComponent } from '../../../cs-dialog/cs-dialog.component';
 import { IStringValue } from '../../hl7-v2-tree.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
+import { IUserConfig } from './../../../../models/config.class';
 
 export interface IUsageOption {
   label: string;
@@ -49,8 +49,7 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
   set usages({ original, config, userConfig }: { original: Usage, config: Hl7Config, userConfig: IUserConfig }) {
     const includeW = original === 'W';
     const includeB = original === 'B';
-    const includeIX = (this.usage &&this.usage.value === 'IX' || userConfig.includeIX);
-
+    const includeIX = (this.usage && this.usage.value === 'IX' || userConfig.includeIX);
 
     this.options = Hl7Config.getUsageOptions(config.usages, includeW, includeB, includeIX);
   }

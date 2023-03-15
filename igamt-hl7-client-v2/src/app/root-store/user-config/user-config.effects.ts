@@ -1,5 +1,5 @@
-import { IUserConfig } from './../../modules/shared/models/config.class';
 import { Injectable } from '@angular/core';
+import { IUserConfig } from './../../modules/shared/models/config.class';
 
 import { HttpErrorResponse } from '@angular/common/http';
 import { Actions, Effect, ofType } from '@ngrx/effects';
@@ -13,8 +13,7 @@ import { Hl7Config } from '../../modules/shared/models/config.class';
 import { ConfigService } from '../../modules/shared/services/config.service';
 
 import { EMPTY } from 'rxjs';
-import { UserConfigActionTypes, UserConfigActions, LoadUserConfig, LoadUserConfigSuccess, LoadUserConfigFailure, SaveUserConfig, SaveUserConfigSuccess, SaveUserConfigFailure } from './user-config.actions';
-
+import { LoadUserConfig, LoadUserConfigFailure, LoadUserConfigSuccess, SaveUserConfig, SaveUserConfigFailure, SaveUserConfigSuccess, UserConfigActions, UserConfigActionTypes } from './user-config.actions';
 
 @Injectable()
 export class UserConfigEffects {
@@ -58,7 +57,6 @@ export class UserConfigEffects {
     }),
   );
 
-
   @Effect()
   saveConfigSuccess$ = this.actions$.pipe(
     ofType(UserConfigActionTypes.SaveUserConfigSuccess),
@@ -67,7 +65,6 @@ export class UserConfigEffects {
       turnOffLoader: true,
     }),
   );
-
 
   @Effect()
   saveConfig$ = this.actions$.pipe(
@@ -87,8 +84,6 @@ export class UserConfigEffects {
       );
     }),
   );
-
-
 
   constructor(
     private actions$: Actions<UserConfigActions>,

@@ -1,12 +1,12 @@
-import { IUserConfig } from './../../../shared/models/config.class';
+import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { Component, OnInit, ChangeDetectionStrategy, Inject } from '@angular/core';
+import { IUserConfig } from './../../../shared/models/config.class';
 
 @Component({
   selector: 'app-configuration-dialog',
   templateUrl: './configuration-dialog.component.html',
   styleUrls: ['./configuration-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigurationDialogComponent implements OnInit {
 
@@ -17,12 +17,11 @@ export class ConfigurationDialogComponent implements OnInit {
 
   ngOnInit() {
   }
-  submit(config: IUserConfig){
+  submit(config: IUserConfig) {
     this.dialogRef.close(config);
   }
-  close(){
+  close() {
     this.dialogRef.close();
   }
-
 
 }

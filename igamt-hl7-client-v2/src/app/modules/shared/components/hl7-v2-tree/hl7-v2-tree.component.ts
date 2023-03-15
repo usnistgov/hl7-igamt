@@ -1,4 +1,3 @@
-import { IUserConfig } from './../../models/config.class';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import * as _ from 'lodash';
@@ -20,6 +19,7 @@ import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
 import { IBindingContext, IElementBinding } from '../../services/structure-element-binding.service';
 import { IBindingLocationInfo } from '../binding-selector/binding-selector.component';
+import { IUserConfig } from './../../models/config.class';
 
 export enum HL7v2TreeColumnType {
   USAGE = 'Usage',

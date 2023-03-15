@@ -56,10 +56,14 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
   username: Observable<string>;
   showDeprecated: boolean;
   filter: string;
-  filterOptions =  [{label: 'LOCKED', value: Status.LOCKED,
-  atrribute: 'status'}, {label: 'UNLOCKED', value: null,
-  atrribute: 'status'}];
-  status = [Status.LOCKED,  null];
+  filterOptions = [{
+    label: 'LOCKED', value: Status.LOCKED,
+    atrribute: 'status',
+  }, {
+    label: 'UNLOCKED', value: null,
+    atrribute: 'status',
+  }];
+  status = [Status.LOCKED, null];
   selectedOptions: any;
   _shadowViewType: IgListLoad;
   controls: Observable<IgListItemControl[]>;
@@ -211,7 +215,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
               {
                 label: 'Derive from',
                 class: 'btn-secondary',
-                icon: 'fa fa-map-marker',
+                icon: 'fa fa-code-fork',
                 action: (item: IgListItem) => {
 
                   if (item.draft) {
@@ -241,7 +245,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   return false;
                 },
                 hide: (item: IgListItem): boolean => {
-                  return item.type !== 'PUBLISHED' &&  item.status !== 'LOCKED';
+                  return item.type !== 'PUBLISHED' && item.status !== 'LOCKED';
                 },
               },
               {
@@ -350,19 +354,19 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
 
   proceedClone(item: IgListItem, cloneMode: CloneModeEnum) {
 
-          this.ig.cloneIg(item.id, CloneModeEnum.CLONE, { mode: cloneMode}).subscribe(
-            (response: Message<string>) => {
-              this.store.dispatch(this.message.messageToAction(response));
-              this.router.navigate(['ig', response.data]);
-            },
-            (error) => {
-              this.store.dispatch(this.message.actionFromError(error));
-            },
-          );
+    this.ig.cloneIg(item.id, CloneModeEnum.CLONE, { mode: cloneMode }).subscribe(
+      (response: Message<string>) => {
+        this.store.dispatch(this.message.messageToAction(response));
+        this.router.navigate(['ig', response.data]);
+      },
+      (error) => {
+        this.store.dispatch(this.message.actionFromError(error));
+      },
+    );
 
   }
 
-  proceedDerive(item: IgListItem ) {
+  proceedDerive(item: IgListItem) {
 
     this.ig.loadTemplate().pipe(
       take(1),
@@ -397,7 +401,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(IgPublisherComponent, {
       data: {
         ig: item,
-        },
+      },
     });
     dialogRef.afterClosed().subscribe(
       (answer) => {
@@ -405,7 +409,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
           console.log(answer);
           console.log(answer);
 
-          this.ig.publish(item.id, {draft: answer.draft, info: answer.info}).subscribe(
+          this.ig.publish(item.id, { draft: answer.draft, info: answer.info }).subscribe(
             (response: Message<string>) => {
               this.store.dispatch(this.message.messageToAction(response));
               this.router.navigateByUrl('/ig/list?type=PUBLISHED');
@@ -422,7 +426,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
   getWarning(item: IgListItem) {
 
     if (item.publicationInfo && item.publicationInfo.warning && item.publicationInfo.warning.length > 0) {
-          return item.publicationInfo.warning;
+      return item.publicationInfo.warning;
     }
     return this.draftWarning;
   }

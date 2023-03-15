@@ -1,5 +1,5 @@
-import { IUserConfig } from './../../modules/shared/models/config.class';
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { IUserConfig } from './../../modules/shared/models/config.class';
 import { UserConfigActions, UserConfigActionTypes } from './user-config.actions';
 
 export interface IState {
