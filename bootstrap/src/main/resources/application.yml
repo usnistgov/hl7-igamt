@@ -52,6 +52,4 @@ gvt:
    apps: GVT|https://hl7v2-gvt.nist.gov/gvt/;GVT-DEV|https://hit-dev.nist.gov:8099/gvt/;IZ-TOOL-DEV|https://hit-dev.nist.gov:8098/iztool/;IZ-TOOL|https://hl7v2-iz-r1-5-testing.nist.gov/iztool/
    
 host:
-   url: https://hl7v2-igamt-2.nist.gov
-
-   
+   url: http://localhost:8090
