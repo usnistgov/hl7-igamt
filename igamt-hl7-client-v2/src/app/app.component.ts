@@ -39,7 +39,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.store.dispatch(new BootstrapCheckAuthStatus());
     this.store.dispatch(new LoadConfig());
-    this.store.select(selectIsLoggedIn).pipe(map((x) => { if(x) {
+    this.store.select(selectIsLoggedIn).pipe(map((x) => { if (x) {
       this.store.dispatch(new LoadUserConfig());
     }})).subscribe();
   }

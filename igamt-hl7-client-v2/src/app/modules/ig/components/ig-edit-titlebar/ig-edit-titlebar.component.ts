@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { IDomainInfo } from '../../../shared/models/domain-info.interface';
+import { IgDocumentStatusInfo } from './../../models/ig/ig-document.class';
 
 @Component({
   selector: 'app-ig-edit-titlebar',
@@ -9,6 +10,7 @@ import { IDomainInfo } from '../../../shared/models/domain-info.interface';
 export class IgEditTitlebarComponent implements OnInit {
 
   @Input() metadata: ITitleBarMetadata;
+  @Input() info: IgDocumentStatusInfo;
 
   constructor() {
   }

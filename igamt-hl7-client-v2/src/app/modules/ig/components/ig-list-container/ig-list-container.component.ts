@@ -62,6 +62,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
     atrribute: 'status',
   }];
   status = [Status.LOCKED, null];
+  selectedOptions: any;
   _shadowViewType: IgListLoad;
   controls: Observable<IgListItemControl[]>;
   sortOptions: any;

@@ -16,31 +16,3 @@
   color: black;
   background-color: #feec9d;
 }
-
-.status {
-  padding: 5px;
-  border-radius: 5px;
-  margin-left: 5px;
-}
-
-.status-published {
-  background-color: #a9ffbf;
-}
-
-.status-published-draft {
-  background-color: #fdd3d8;
-}
-
-.status-deprecated {
-  background-color: #e88709;
-  color: white;
-}
-
-.status-locked {
-  background-color: lightgrey;
-  color: #494949;
-}
-
-.status-derived {
-  background-color: #c1e2ff;
-}

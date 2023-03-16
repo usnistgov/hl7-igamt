@@ -1,15 +1,15 @@
-import { SaveUserConfig, LoadUserConfig } from './../../../../root-store/user-config/user-config.actions';
-import { IUserConfig } from './../../../shared/models/config.class';
-import { ConfigurationDialogComponent } from './../configuration-dialog/configuration-dialog.component';
-import { MatDialog } from '@angular/material';
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import { IUserConfig } from 'src/app/modules/shared/models/config.class';
+import { LoadUserConfig, SaveUserConfig } from 'src/app/root-store/user-config/user-config.actions';
 import { getUserConfigState } from 'src/app/root-store/user-config/user-config.reducer';
 import * as fromAuth from '../../../dam-framework/store/authentication/index';
 import { LogoutRequest } from '../../../dam-framework/store/authentication/index';
+import { ConfigurationDialogComponent } from '../configuration-dialog/configuration-dialog.component';
 import * as fromRoot from './../../../../root-store/index';
 @Component({
   selector: 'app-header',

@@ -23,6 +23,7 @@ export class IgListItem extends DiscoverableListItem {
   draft?: boolean;
   deprecated?: boolean;
   publicationInfo?: IPublicationInfo;
+  derived?: boolean;
 }
 
 export type IgListItemType = 'USER' | 'PUBLISHED' | 'SHARED';

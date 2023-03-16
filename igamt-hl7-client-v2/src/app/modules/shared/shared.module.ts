@@ -92,6 +92,7 @@ import { UsageComponent } from './components/hl7-v2-tree/columns/usage/usage.com
 import { ValuesetComponent } from './components/hl7-v2-tree/columns/valueset/valueset.component';
 import { Hl7V2TreeComponent } from './components/hl7-v2-tree/hl7-v2-tree.component';
 import { IgPublisherComponent } from './components/ig-publisher/ig-publisher.component';
+import { IgTypeComponent } from './components/ig-type/ig-type.component';
 import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
 import { ImportStructureComponent } from './components/import-structure/import-structure.component';
 import { IssueBadgeComponent } from './components/issue-badge/issue-badge.component';
@@ -248,6 +249,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DeleteListConfirmationComponent,
     RefreshDialogComponent,
     VerificationBadgeComponent,
+    IgTypeComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -442,6 +444,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     RefreshDialogComponent,
     DeriveDialogComponent,
     VerificationBadgeComponent,
+    IgTypeComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,

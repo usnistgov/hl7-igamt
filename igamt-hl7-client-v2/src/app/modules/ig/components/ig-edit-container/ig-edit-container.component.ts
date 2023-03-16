@@ -13,6 +13,8 @@ import { ITitleBarMetadata } from '../ig-edit-titlebar/ig-edit-titlebar.componen
 import { selectIgDocumentLocation } from './../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { selectViewOnly } from './../../../../root-store/library/library-edit/library-edit.selectors';
 import { IDocumentLocation } from './../../models/ig/ig-document.class';
+import { selectIgDocumentStatusInfo } from './../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { IgDocumentStatusInfo } from './../../models/ig/ig-document.class';
 
 export const IG_EDIT_WIDGET_ID = 'IG-EDIT-WIDGET';
 
@@ -32,6 +34,7 @@ export class IgEditContainerComponent extends DamWidgetComponent {
   showBottomDrawer$: Observable<boolean>;
   location$: Observable<IDocumentLocation[]>;
   viewOnly$: Observable<boolean>;
+  statusInfo$: Observable<IgDocumentStatusInfo>;
 
   constructor(
     protected store: Store<any>,
@@ -46,6 +49,7 @@ export class IgEditContainerComponent extends DamWidgetComponent {
       map((igLocation) => igLocation.location),
     );
     this.viewOnly$ = this.store.select(selectViewOnly);
+    this.statusInfo$ = this.store.select(selectIgDocumentStatusInfo);
   }
 
   containsUnsavedChanges$(): Observable<boolean> {
