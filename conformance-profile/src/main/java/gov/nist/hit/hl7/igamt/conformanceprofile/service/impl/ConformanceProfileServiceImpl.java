@@ -1267,7 +1267,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     displayElement.setId(conformanceProfile.getId());
     displayElement.setDomainInfo(conformanceProfile.getDomainInfo());
     displayElement.setDescription(conformanceProfile.getDescription());
-    displayElement.setDifferantial(conformanceProfile.getOrigin() !=null);
+    displayElement.setDifferantial(conformanceProfile.isDerived());
     displayElement.setLeaf(false);
     displayElement.setPosition(position);
     displayElement.setVariableName(conformanceProfile.getName());

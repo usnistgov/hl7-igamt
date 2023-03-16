@@ -1134,7 +1134,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 			displayElement.setFixedName(datatype.getLabel());
 		}
 		displayElement.setDescription(datatype.getDescription());
-		displayElement.setDifferantial(datatype.getOrigin() !=null);
+		displayElement.setDifferantial(datatype.isDerived());
 		displayElement.setActiveInfo(datatype.getActiveInfo());
 		displayElement.setLeaf(!(datatype instanceof ComplexDatatype));
 		displayElement.setType(Type.DATATYPE);

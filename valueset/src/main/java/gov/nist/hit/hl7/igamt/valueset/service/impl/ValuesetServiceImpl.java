@@ -327,7 +327,7 @@ public class ValuesetServiceImpl implements ValuesetService {
         displayElement.setId(valueset.getId());
         displayElement.setDomainInfo(valueset.getDomainInfo());
         displayElement.setDescription(valueset.getName());
-        displayElement.setDifferantial(valueset.getOrigin() !=null);
+        displayElement.setDifferantial(valueset.isDerived());
         displayElement.setLeaf(false);
         displayElement.setVariableName(valueset.getBindingIdentifier());
         displayElement.setType(Type.VALUESET);

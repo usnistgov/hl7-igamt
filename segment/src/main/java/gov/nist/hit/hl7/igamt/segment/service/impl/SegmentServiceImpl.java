@@ -1180,7 +1180,7 @@ public class SegmentServiceImpl implements SegmentService {
     }
     displayElement.setStructureIdentifier(segment.getStructureIdentifier());
     displayElement.setFlavorExt(segment.getFixedExtension());
-    displayElement.setDifferantial(segment.getOrigin() !=null);
+    displayElement.setDifferantial(segment.isDerived());
     displayElement.setLeaf(false);
     displayElement.setType(Type.SEGMENT);
     displayElement.setOrigin(segment.getOrigin());

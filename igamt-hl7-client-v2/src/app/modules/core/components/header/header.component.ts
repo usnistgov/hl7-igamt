@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { SaveUserConfig, LoadUserConfig } from './../../../../root-store/user-config/user-config.actions';
+import { IUserConfig } from './../../../shared/models/config.class';
+import { ConfigurationDialogComponent } from './../configuration-dialog/configuration-dialog.component';
 import { MatDialog } from '@angular/material';
+import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
@@ -8,10 +11,6 @@ import { getUserConfigState } from 'src/app/root-store/user-config/user-config.r
 import * as fromAuth from '../../../dam-framework/store/authentication/index';
 import { LogoutRequest } from '../../../dam-framework/store/authentication/index';
 import * as fromRoot from './../../../../root-store/index';
-import { SaveUserConfig } from './../../../../root-store/user-config/user-config.actions';
-import { IUserConfig } from './../../../shared/models/config.class';
-import { ConfigurationDialogComponent } from './../configuration-dialog/configuration-dialog.component';
-
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -73,6 +72,8 @@ export class HeaderComponent implements OnInit {
   }
 
   openConfig() {
+    this.store.dispatch(new LoadUserConfig());
+
     this.store.select(getUserConfigState).pipe(
       filter((config) => !!config),
       take(1),

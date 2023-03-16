@@ -353,40 +353,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Override
 	public UserListResponse getAllUsers(HttpServletRequest req) {
-		Cookie cookies[] = req.getCookies();
-
-		HttpHeaders headers = new HttpHeaders();
-
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("authCookie")) {
-					headers.add("Cookie", "authCookie=" + cookie.getValue());
-				}
-			}
-		}
-
 		ResponseEntity<UserListResponse> response = restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/users",
-				HttpMethod.GET, new HttpEntity<String>(headers), UserListResponse.class);
+				HttpMethod.GET, new HttpEntity<String>(this.getCookiesHeaders(req)), UserListResponse.class);
 		return response.getBody();
 	}
 
 	@Override
 	public UserResponse getCurrentUser(String username, HttpServletRequest req) {
-		Cookie cookies[] = req.getCookies();
-
-		HttpHeaders headers = new HttpHeaders();
-
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("authCookie")) {
-					headers.add("Cookie", "authCookie=" + cookie.getValue());
-				}
-			}
-		}
-
 		ResponseEntity<UserResponse> response = restTemplate.exchange(
 				env.getProperty(AUTH_URL) + "/api/tool/user/" + username, HttpMethod.GET,
-				new HttpEntity<String>(headers), UserResponse.class);
+				new HttpEntity<String>(this.getCookiesHeaders(req)), UserResponse.class);
 		return response.getBody();
 	}
 
@@ -395,21 +371,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			throws AuthenticationException {
 
 		try {
-			Cookie cookies[] = req.getCookies();
-
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-type", "application/json");
-
-			if (cookies != null) {
-				for (Cookie cookie : cookies) {
-					if (cookie.getName().equals("authCookie")) {
-						headers.add("Cookie", "authCookie=" + cookie.getValue());
-					}
-				}
-			}
-
 			RestTemplate restTemplate = new RestTemplate();
-			HttpEntity<RegistrationRequest> request = new HttpEntity<>(user);
+			HttpEntity<RegistrationRequest> request = new HttpEntity<>(user, this.getCookiesHeaders(req));
 
 			ResponseEntity<ConnectionResponseMessage<UserResponse>> response = restTemplate.exchange(
 					env.getProperty(AUTH_URL) + "/api/tool/user", HttpMethod.POST, request,
@@ -437,27 +400,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	public ConnectionResponseMessage<UserResponse> updatePendingAdmin(AdminUserRequest requestPara, HttpServletRequest req)
 			throws AuthenticationException {
 		try {
-			Cookie cookies[] = req.getCookies();
-
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-type", "application/json");
-
-			if (cookies != null) {
-				for (Cookie cookie : cookies) {
-					if (cookie.getName().equals("authCookie")) {
-						System.out.println("authCookie=" + cookie.getValue());
-						headers.add("Cookie", "authCookie=" + cookie.getValue());
-					}
-				}
-			}
+			
 			RestTemplate restTemplate = new RestTemplate();
-			HttpEntity<AdminUserRequest> request = new HttpEntity<>(requestPara);
+			HttpEntity<AdminUserRequest> request = new HttpEntity<>(requestPara, this.getCookiesHeaders(req));
+			
 			
 			ResponseEntity<ConnectionResponseMessage<UserResponse>> response = restTemplate.exchange(
 					env.getProperty(AUTH_URL) + "/api/tool/adminUpdate", HttpMethod.POST, request,
 					new ParameterizedTypeReference<ConnectionResponseMessage<UserResponse>>() {
 					});
-
 			return response.getBody();
 		} catch (HttpClientErrorException e) {
 			String message = e.getResponseBodyAsString();
@@ -475,5 +426,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		}
 
 	}
+	
+	private HttpHeaders getCookiesHeaders(HttpServletRequest req){
+		Cookie cookies[] = req.getCookies();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-type", "application/json");
+
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equals("authCookie")) {
+					headers.add("Cookie", "authCookie=" + cookie.getValue());
+				}
+			}
+		}
+		return headers;
+		
+	}
+	
 
 }
