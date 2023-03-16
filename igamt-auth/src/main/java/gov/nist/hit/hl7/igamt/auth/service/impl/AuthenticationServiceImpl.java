@@ -128,7 +128,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-type", "application/json");
 			RestTemplate restTemplate = new RestTemplate();
-			HttpEntity<FindUserRequest> request = new HttpEntity<>(user);
+			HttpEntity<FindUserRequest> request = new HttpEntity<>(user, this.getCookiesHeaders(req));
 
 
 			ResponseEntity<FindUserResponse> response =
