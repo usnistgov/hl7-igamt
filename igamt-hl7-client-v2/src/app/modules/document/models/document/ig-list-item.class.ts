@@ -12,7 +12,6 @@ export class IgListItem extends DiscoverableListItem {
   subtitle: string;
   dateUpdated: string;
   type: IgListItemType;
-  derived: boolean;
   username: any;
   participants?: any;
   elements?: string[];
