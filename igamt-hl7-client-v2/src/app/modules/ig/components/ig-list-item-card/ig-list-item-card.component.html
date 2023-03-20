@@ -16,31 +16,31 @@
 
         <h6 style="margin-left: 10px; margin-bottom: 0;" class="link" (click)="doDefault()">
           <strong>
-          <span *ngIf="igListItem.status ==='LOCKED'" class="badge badge-secondary" style="margin-right: 3px;">
+          <!-- <span *ngIf="igListItem.status ==='LOCKED'" class="badge badge-secondary" style="margin-right: 3px;">
 
             <i class="fa fa-lock"
               ngbPopover="Locked Implementation Guide"
               placement="top"
               triggers="mouseenter:mouseleave">
             </i>
-          </span>
+          </span> -->
 
-          <span class="badge badge-danger" *ngIf="igListItem.draft" style="margin-right: 3px;"
+          <!-- <span class="badge badge-danger" *ngIf="igListItem.draft" style="margin-right: 3px;"
             [ngbPopover]="igListItem?.publicationInfo?.warning? igListItem.publicationInfo.warning :'Warning: This is a DRAFT publication for trial use only. It will be updated and replaced. It is not advised to create permanent derived profiles form this DRAFT implementation Guide'"
             popoverClass="dialog-danger"
             placement="top"
             triggers="mouseenter:mouseleave">
               Draft
-          </span>
+          </span> -->
 
-          <span style="margin-right: 3px;" *ngIf="igListItem.deprecated" class="badge badge-warning">
+          <!-- <span style="margin-right: 3px;" *ngIf="igListItem.deprecated" class="badge badge-warning">
             <i class="fa fa-times-circle"
               ngbPopover="Deprecated Implementation Guide"
               placement="top"
               triggers="mouseenter:mouseleave">
             </i>
             Deprecated
-          </span>
+          </span> -->
 
           {{igListItem.title}}</strong>
         </h6>
@@ -65,7 +65,7 @@
     <div>
       <app-ig-type [info]="statusInfo" ></app-ig-type>
     </div>
-    
+
 
   </div>
 
@@ -96,7 +96,7 @@
                   {{ control.label }}
                 </span>
               </button>
-          
+
             </ng-container>
           </div>
         </div>

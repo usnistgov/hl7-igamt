@@ -7,7 +7,12 @@
     <i class="fa fa-lock" style="margin-right: 3px;"></i>
     LOCKED
   </div>
-  <div *ngIf="info.draft" class="status status-draft">DRAFT</div>
+  <div *ngIf="info.draft" class="status status-draft">
+    <i class="fa pencil" style="margin-right: 3px;"></i>
+    DRAFT
+  </div>
   <div *ngIf="info.deprecated" class="status status-deprecated">DEPRECATED</div>
-  <div *ngIf="info.derived" class="status status-derived">DERIVED</div>
+  <div *ngIf="info.derived" class="status status-derived">
+    <i class="fa fa-code-fork" style="margin-right: 3px;"></i>
+    DERIVED</div>
 </ng-container>

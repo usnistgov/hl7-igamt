@@ -28,6 +28,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Role;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
@@ -168,6 +169,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     clone.setDescription(ev.getDescription());
     clone.setIdentifier(ev.getExt());
     clone.setName(ev.getExt());
+    clone.setRole(Role.SenderAndReceiver);
     conformanceProfileService.save(clone);
     return clone;
   }

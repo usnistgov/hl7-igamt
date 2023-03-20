@@ -428,7 +428,7 @@ public class VerificationServiceImpl implements VerificationService {
 				info.setPositionalPath(positionPath);
 				location.setInfo(info);
 				
-				if(conformanceProfile.getRole().equals(Role.Receiver) && usage.equals(Usage.IX)) {
+				if(usage.equals(Usage.IX) && !this.supportIX(conformanceProfile)) {
 					result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage(location, segment.getId(), Type.SEGMENT));
 				}
 				
@@ -449,7 +449,7 @@ public class VerificationServiceImpl implements VerificationService {
 						fieldInfo.setPositionalPath(fieldPositionPath);
 						fieldLocation.setInfo(fieldInfo);
 						
-						if(conformanceProfile.getRole().equals(Role.Receiver) && field.getUsage().equals(Usage.IX)) {	
+						if(field.getUsage().equals(Usage.IX) && !this.supportIX(conformanceProfile)) {	
 							result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage(fieldLocation, field.getId(), Type.FIELD));
 						}
 						
@@ -472,8 +472,13 @@ public class VerificationServiceImpl implements VerificationService {
 		}
 	}
 
+	private boolean supportIX(ConformanceProfile conformanceProfile) {
+		
+		return conformanceProfile.getRole()!= null && conformanceProfile.getRole().equals(Role.Receiver);
+	}
+
 	private void travelComponent(CPVerificationResult result, ConformanceProfile cp, Location l, Component component) {
-		if(cp.getRole().equals(Role.Receiver) && component.getUsage().equals(Usage.IX)) {
+		if(component.getUsage().equals(Usage.IX) && !this.supportIX(cp)) {
 			String componentPositionPath = l.getInfo().getPositionalPath() + "." + component.getPosition();
 			String componentdPath = l.getInfo().getPathId()+ "." + component.getId();
 			Location cLocation = new Location();
@@ -653,7 +658,7 @@ public class VerificationServiceImpl implements VerificationService {
 			info.setPositionalPath(positionPath);
 			location.setInfo(info);
 			
-			if(conformanceProfile.getRole().equals(Role.Receiver) && group.getUsage().equals(Usage.IX)) {
+			if(group.getUsage().equals(Usage.IX) && !supportIX(conformanceProfile)) {
 				result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage(location, group.getId(), Type.GROUP));
 			}
 
