@@ -139,7 +139,7 @@ public class SegmentController extends BaseController {
 
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/api/segments/{id}", method = RequestMethod.POST, produces = { "application/json" })
-	@PreAuthorize("AccessResource('SEGMENT', #id, WRITE)")
+	@PreAuthorize("AccessResource('SEGMENT', #id, WRITE) && ConcurrentSync('SEGMENT', #id, ALLOW_SYNC_STRICT)")
 	@ResponseBody
 	public ResponseMessage<?> applyStructureChanges(@PathVariable("id") String id, @RequestBody List<ChangeItemDomain> cItems,
 			Authentication authentication) throws Exception {

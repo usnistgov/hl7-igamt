@@ -105,7 +105,7 @@ public class CompositeProfileController {
 
   @RequestMapping(value = "/api/composite-profile", method = RequestMethod.POST,
       produces = {"application/json"})
-  @PreAuthorize("AccessResource('COMPOSITEPROFILE', #compositeProfileStructure.id, WRITE)")
+  @PreAuthorize("AccessResource('COMPOSITEPROFILE', #compositeProfileStructure.id, WRITE) && ConcurrentSync('COMPOSITEPROFILE', #compositeProfileStructure.id, ALLOW_SYNC_STRICT)")
   public CompositeProfileStructure save(Authentication authentication, @RequestBody CompositeProfileStructure compositeProfileStructure) {
 	dateUpdateService.updateDate(compositeProfileStructure.getDocumentInfo());
     return compositeProfileService.save(compositeProfileStructure);
@@ -140,7 +140,7 @@ public class CompositeProfileController {
   
     @RequestMapping(value = "/api/composite-profile/{id}", method = RequestMethod.POST, produces = {
     "application/json" })
-    @PreAuthorize("AccessResource('COMPOSITEPROFILE', #id, WRITE)")
+    @PreAuthorize("AccessResource('COMPOSITEPROFILE', #id, WRITE) && ConcurrentSync('COMPOSITEPROFILE', #id, ALLOW_SYNC_STRICT)")
     @ResponseBody
     public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
                                  @RequestBody List<ChangeItemDomain> cItems,

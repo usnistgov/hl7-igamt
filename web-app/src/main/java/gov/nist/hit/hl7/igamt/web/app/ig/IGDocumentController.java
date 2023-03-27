@@ -453,7 +453,7 @@ public class IGDocumentController extends BaseController {
    */
   @RequestMapping(value = "/api/igdocuments/{id}/section", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public @ResponseBody ResponseMessage<Object> updateIg(@PathVariable("id") String id, @RequestBody Section section,
       Authentication authentication) throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);
@@ -484,7 +484,7 @@ public class IGDocumentController extends BaseController {
    */
   @RequestMapping(value = "/api/igdocuments/{id}/updatetoc", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public @ResponseBody ResponseMessage<Object> get(@PathVariable("id") String id, @RequestBody List<TreeNode> toc,
       Authentication authentication) throws IGNotFoundException, IGUpdateException {
 
@@ -506,7 +506,7 @@ public class IGDocumentController extends BaseController {
    */
   @RequestMapping(value = "/api/igdocuments/{id}/update/sections", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public @ResponseBody ResponseMessage<Object> updateSections(@PathVariable("id") String id,
       @RequestBody Set<TextSection> content, Authentication authentication)
           throws Exception {
@@ -682,7 +682,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage deleteDatatype(@PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
       Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
     Ig ig = findIgById(id);
@@ -715,7 +715,7 @@ public class IGDocumentController extends BaseController {
    */
   @RequestMapping(value = "/api/igdocuments/{id}/segments/{segmentId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage deleteSegment(@PathVariable("id") String id, @PathVariable("segmentId") String segmentId,
       Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
     Ig ig = findIgById(id);
@@ -748,7 +748,7 @@ public class IGDocumentController extends BaseController {
    */
   @RequestMapping(value = "/api/igdocuments/{id}/valuesets/{valuesetId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage deleteValueSet(@PathVariable("id") String id, @PathVariable("valuesetId") String valuesetId,
       Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
 
@@ -769,7 +769,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceprofileId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage deleteConformanceProfile(@PathVariable("id") String id,
       @PathVariable("conformanceprofileId") String conformanceProfileId, Authentication authentication)
           throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
@@ -793,7 +793,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage deletProfileComponent(@PathVariable("id") String id,
       @PathVariable("pcId") String pcId, Authentication authentication)
           throws IGNotFoundException, ForbiddenOperationException {
@@ -812,7 +812,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/composite-profile/{cpId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage deleteCompoisteProfile(@PathVariable("id") String id,
       @PathVariable("cpId") String cpId, Authentication authentication)
           throws IGNotFoundException, ForbiddenOperationException {
@@ -831,7 +831,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/removeContext", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public DisplayElement deletProfileComponentContext(@PathVariable("id") String id,
       @PathVariable("pcId") String pcId,  @RequestBody String contextId, Authentication authentication)
           throws IGNotFoundException, ForbiddenOperationException, ProfileComponentNotFoundException {
@@ -849,7 +849,7 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceProfileId}/clone", method = RequestMethod.POST, produces = {"application/json"})
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage<AddResourceResponse> cloneConformanceProfile(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("conformanceProfileId") String conformanceProfileId,
       Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
@@ -871,7 +871,7 @@ public class IGDocumentController extends BaseController {
   }
   
   @RequestMapping(value = "/api/igdocuments/{id}/composite-profile/{compositeProfileId}/clone", method = RequestMethod.POST, produces = {"application/json"})
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage<AddResourceResponse> cloneProfileComposite(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("compositeProfileId") String compositeProfileId,
       Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
@@ -893,7 +893,7 @@ public class IGDocumentController extends BaseController {
 
 
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/clone", method = RequestMethod.POST, produces = {"application/json"})
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage<AddResourceResponse> cloneProfileComponent(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("pcId") String pcId,
       Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
@@ -918,7 +918,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/segments/{segmentId}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage<AddResourceResponse> cloneSegment(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
       @PathVariable("segmentId") String segmentId, Authentication authentication)
           throws IGNotFoundException, ValidationException, CloneException, ForbiddenOperationException, EntityNotFound {
@@ -940,7 +940,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage<AddResourceResponse> copyDatatype(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
       @PathVariable("datatypeId") String datatypeId, Authentication authentication)
           throws IGNotFoundException, CloneException, ForbiddenOperationException, EntityNotFound {
@@ -961,7 +961,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/valuesets/{valuesetId}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage<AddResourceResponse> cloneValueSet(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
       @PathVariable("valuesetId") String valuesetId, Authentication authentication)
           throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
@@ -988,7 +988,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/add", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage<IGDisplayInfo> addConforanceProfile(@PathVariable("id") String id,
       @RequestBody AddingWrapper wrapper, Authentication authentication)
           throws IGNotFoundException, AddingException, ForbiddenOperationException, EntityNotFound {
@@ -1006,7 +1006,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/segments/add", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage<IGDisplayInfo> addSegments(@PathVariable("id") String id, @RequestBody AddingWrapper wrapper,
       Authentication authentication) throws IGNotFoundException, ValidationException, AddingException, EntityNotFound, ForbiddenOperationException {
     String username = authentication.getPrincipal().toString();
@@ -1022,7 +1022,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/co-constraint-group/create", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage<CreateChildResponse> createCoConstraint(
       @PathVariable("id") String id,
       @RequestBody CoConstraintGroupCreateWrapper coConstraintGroupCreateWrapper,
@@ -1052,7 +1052,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/co-constraint-group/{ccGroupId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage deleteCoConstraintGroup(
       @PathVariable("id") String id,
       @PathVariable("ccGroupId") String ccGroupId,
@@ -1083,7 +1083,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/create", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage<CreateChildResponse> createProfileComponent(
       @PathVariable("id") String id,
       @RequestBody ProfileComponentCreateWrapper profileComponentCreateWrapper,
@@ -1103,7 +1103,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/composite-profile/create", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage<CreateChildResponse> createCompositeProfile(
       @PathVariable("id") String id,
       @RequestBody CompositeProfileCreationWrapper wrapper,
@@ -1126,7 +1126,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/addChildren", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage<CreateChildResponse> updatePcChildren(
       @PathVariable("id") String id,
       @PathVariable("pcId") String pcId,
@@ -1155,7 +1155,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/datatypes/add", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage<IGDisplayInfo> addDatatypes(@PathVariable("id") String id,
       @RequestBody AddingWrapper wrapper, Authentication authentication)
           throws IGNotFoundException, AddingException, ForbiddenOperationException, EntityNotFound {
@@ -1173,7 +1173,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/valuesets/add", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage<IGDisplayInfo> addValueSets(@PathVariable("id") String id,
       @RequestBody AddingWrapper wrapper, Authentication authentication)
           throws IGNotFoundException, AddingException, ForbiddenOperationException, EntityNotFound {
@@ -1212,11 +1212,10 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/publish", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("CanPublish()")
+  @PreAuthorize("CanPublish() && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public @ResponseBody ResponseMessage<String> publish(@PathVariable("id") String id, @RequestBody PublishingInfo info,  Authentication authentication)
       throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);
-//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     
     this.igService.publishIG(ig, info);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig published Successfully", id, false,
@@ -1226,7 +1225,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/lock", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public @ResponseBody ResponseMessage<String> lockIg(@PathVariable("id") String id,  Authentication authentication)
       throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);
@@ -1249,7 +1248,7 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}", method = RequestMethod.DELETE, produces = { "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public @ResponseBody ResponseMessage<String> archive(@PathVariable("id") String id, Authentication authentication)
       throws IGNotFoundException, ForbiddenOperationException {
 
@@ -1384,7 +1383,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/valuesets/uploadCSVFile",
       method = RequestMethod.POST)
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
   public ResponseMessage<AddResourceResponse> addValuesetFromCSV(@PathVariable("id") String id,
       @RequestParam("file") MultipartFile csvFile, Authentication authentication) throws ImportValueSetException, IGNotFoundException, ForbiddenOperationException {
     CSVReader reader = null;
@@ -1856,7 +1855,7 @@ private void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all)
   
   @RequestMapping(value = "/api/igdocuments/{igId}/{type}/deleteResources", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #igId, WRITE)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #igId, WRITE) && ConcurrentSync('IGDOCUMENT', #igId, ALLOW_SYNC_STRICT)")
   public @ResponseBody List<String> deleteUnused(@PathVariable("igId") String igId, @PathVariable("type") Type registryType, @RequestBody List<String> ids,
     Authentication authentication) throws IGNotFoundException, EntityNotFound, ForbiddenOperationException {
     Ig ig = findIgById(igId);

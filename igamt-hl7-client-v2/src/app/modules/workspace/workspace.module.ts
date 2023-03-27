@@ -57,6 +57,7 @@ import { WorkspaceRoutingModule } from './workspace-routing.module';
     FolderAddDialogComponent,
     AddUserDialogComponent,
     DocumentMoveDialogComponent,
+    WorkspaceEditComponent,
   ],
   providers: [],
 })

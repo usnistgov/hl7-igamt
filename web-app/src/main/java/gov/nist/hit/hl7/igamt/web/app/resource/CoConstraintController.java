@@ -37,7 +37,7 @@ public class CoConstraintController extends BaseController {
     }
 
     @RequestMapping(value = "/api/coconstraints/group", method = RequestMethod.POST, produces = {"application/json" })
-    @PreAuthorize("AccessResource('COCONSTRAINTGROUP', #group.id, WRITE)")
+    @PreAuthorize("AccessResource('COCONSTRAINTGROUP', #group.id, WRITE) && ConcurrentSync('COCONSTRAINTGROUP', #group.id, ALLOW_SYNC_STRICT)")
     public ResponseMessage getCoConstraintGroup(@RequestBody CoConstraintGroup group,
                                                 Authentication authentication) throws CoConstraintNotFoundException {
         CoConstraintGroup gp = this.ccService.saveCoConstraintGroup(group);

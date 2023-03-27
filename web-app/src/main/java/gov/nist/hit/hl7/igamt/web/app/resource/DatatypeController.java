@@ -155,7 +155,7 @@ public class DatatypeController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/api/datatypes/{id}", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
-	@PreAuthorize("AccessResource('DATATYPE', #id, WRITE)")
+	@PreAuthorize("AccessResource('DATATYPE', #id, WRITE) && ConcurrentSync('DATATYPE', #id, ALLOW_SYNC_STRICT)")
 	public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
 			@RequestBody List<ChangeItemDomain> cItems,
 			Authentication authentication) throws DatatypeException, IOException, ForbiddenOperationException, ApplyChangeException {

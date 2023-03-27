@@ -122,7 +122,7 @@ public class ValuesetController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/api/valuesets/{id}", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
-	@PreAuthorize("AccessResource('VALUESET', #id, WRITE)")
+	@PreAuthorize("AccessResource('VALUESET', #id, WRITE) && ConcurrentSync('VALUESET', #id, ALLOW_SYNC_STRICT)")
 	public ResponseMessage<?> applyStructureChanges(@PathVariable("id") String id, @RequestBody List<ChangeItemDomain> cItems,
 			Authentication authentication) throws ValuesetException, IOException, ForbiddenOperationException {
 		Valueset vs = this.valuesetService.findById(id);
