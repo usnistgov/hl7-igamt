@@ -11,9 +11,8 @@ import { WORKSPACE_EDIT_WIDGET_ID } from 'src/app/modules/workspace/components/w
 import { EditorSave } from '../../../modules/dam-framework/store/data/dam.actions';
 import { IWorkspaceInfo } from '../../../modules/workspace/models/models';
 import { DamWidgetEffect } from './../../../modules/dam-framework/store/dam-widget-effect.class';
-import { SetValue } from './../../../modules/dam-framework/store/data/dam.actions';
 import { WorkspaceService } from './../../../modules/workspace/services/workspace.service';
-import { OpenWorkspaceAccessManagementEditor, OpenWorkspaceFolderEditor, OpenWorkspaceHomeEditor, OpenWorkspaceMetadataEditor, WorkspaceEditActions, WorkspaceEditActionTypes, WorkspaceEditResolverLoad, WorkspaceEditResolverLoadFailure, WorkspaceEditResolverLoadSuccess } from './workspace-edit.actions';
+import { OpenWorkspaceFolderEditor, OpenWorkspaceHomeEditor, OpenWorkspaceMetadataEditor, WorkspaceEditActions, WorkspaceEditActionTypes, WorkspaceEditResolverLoad, WorkspaceEditResolverLoadFailure, WorkspaceEditResolverLoadSuccess } from './workspace-edit.actions';
 import { selectWorkspaceId } from './workspace-edit.selectors';
 
 @Injectable()
@@ -24,8 +23,6 @@ export class WorkspaceEditEffects extends DamWidgetEffect {
     private workspaceService: WorkspaceService,
     private store: Store<any>,
     private message: MessageService,
-    private router: Router,
-    private activeRoute: ActivatedRoute,
   ) {
     super(WORKSPACE_EDIT_WIDGET_ID, actions$);
   }
@@ -48,7 +45,6 @@ export class WorkspaceEditEffects extends DamWidgetEffect {
           ];
         }),
         catchError((error: HttpErrorResponse) => {
-          console.log(error);
           return of(
             new fromDAM.TurnOffLoader(),
             new WorkspaceEditResolverLoadFailure(error),
@@ -126,29 +122,24 @@ export class WorkspaceEditEffects extends DamWidgetEffect {
   OpenWorkspaceAccessManagementEditor$ = this.actions$.pipe(
     ofType(WorkspaceEditActionTypes.OpenWorkspaceAccessManagementEditor),
     switchMap((action: OpenWorkspaceFolderEditor) => {
-      return this.store.select(selectWorkspaceId).pipe(
-        take(1),
-        flatMap((wsId) => {
-          return combineLatest(
-            this.workspaceService.getWorkspaceInfo(action.payload.id),
-            this.workspaceService.getWorkspaceUsers(action.payload.id),
-          ).pipe(
-            flatMap(([wsInfo, users]) => {
-              return [
-                ...this.workspaceService.getWorkspaceInfoUpdateAction(wsInfo),
-                new fromDAM.OpenEditor({
-                  id: action.payload.id,
-                  display: {
-                    id: action.payload.id,
-                  },
-                  editor: action.payload.editor,
-                  initial: {
-                    users: [...users],
-                  },
-                }),
-              ];
+      return combineLatest(
+        this.workspaceService.getWorkspaceInfo(action.payload.id),
+        this.workspaceService.getWorkspaceUsers(action.payload.id),
+      ).pipe(
+        flatMap(([wsInfo, users]) => {
+          return [
+            ...this.workspaceService.getWorkspaceInfoUpdateAction(wsInfo),
+            new fromDAM.OpenEditor({
+              id: action.payload.id,
+              display: {
+                id: action.payload.id,
+              },
+              editor: action.payload.editor,
+              initial: {
+                users: [...users],
+              },
             }),
-          );
+          ];
         }),
       );
     }),

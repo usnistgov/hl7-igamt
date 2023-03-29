@@ -1225,7 +1225,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/lock", method = RequestMethod.POST, produces = {
   "application/json" })
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
   public @ResponseBody ResponseMessage<String> lockIg(@PathVariable("id") String id,  Authentication authentication)
       throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);

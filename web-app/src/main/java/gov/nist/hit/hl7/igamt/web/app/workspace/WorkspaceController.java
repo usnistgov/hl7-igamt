@@ -280,7 +280,7 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/publish", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
-	@PreAuthorize("AccessResource(#workspaceDocumentMove.getDocumentType().toString(), #workspaceDocumentMove.getDocumentId(), WRITE)")
+	@PreAuthorize("AccessResource(#workspaceDocumentPublish.getDocumentType().toString(), #workspaceDocumentPublish.getDocumentId(), WRITE)")
 	public WorkspaceInfo publish(
 			@RequestBody WorkspaceDocumentPublish workspaceDocumentPublish,
 			Authentication authentication
