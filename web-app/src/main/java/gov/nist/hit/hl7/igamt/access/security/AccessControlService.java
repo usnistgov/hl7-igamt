@@ -35,6 +35,10 @@ public class AccessControlService {
         return false;
     }
 
+    public Set<AccessLevel> getDocumentAccessPermission(Type type, String id, UsernamePasswordAuthenticationToken user) throws ResourceNotFoundException {
+        return this.checkDocumentAccessPermission(resourceAccessInfoFetcher.getDocument(type, id), user);
+    }
+
     public boolean checkResourceAccessPermission(Type type, String id, UsernamePasswordAuthenticationToken user, AccessLevel requested) throws ResourceNotFoundException {
         if(resourceAccessInfoFetcher.isDocument(type)) {
             return this.evaluateAccessLevel(this.checkDocumentAccessPermission(resourceAccessInfoFetcher.getDocument(type, id), user), requested);

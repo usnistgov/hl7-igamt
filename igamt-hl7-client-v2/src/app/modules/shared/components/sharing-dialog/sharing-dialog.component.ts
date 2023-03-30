@@ -1,9 +1,9 @@
-import {HttpClient} from '@angular/common/http';
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {SelectItem} from 'primeng/api';
-import {Observable} from 'rxjs';
-import {IgListItem} from '../../../document/models/document/ig-list-item.class';
+import { HttpClient } from '@angular/common/http';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { SelectItem } from 'primeng/api';
+import { Observable } from 'rxjs';
+import { IgListItem } from '../../../document/models/document/ig-list-item.class';
 
 @Component({
   selector: 'app-sharing-dialog',
@@ -20,7 +20,7 @@ export class SharingDialogComponent implements OnInit {
   title = 'Sharing Info for ';
 
   sharedUsers: SelectItem[] = [];
-   changed = false;
+  changed = false;
 
   constructor(public dialogRef: MatDialogRef<SharingDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: IShareDialogData,
@@ -32,11 +32,10 @@ export class SharingDialogComponent implements OnInit {
       this.users = data.users;
     });
 
-    // this.sharedUsers.push({label: this.data.username + ' #Owner', value: this.data.username});
     if (this.data && this.data.item) {
       if (this.data.item.sharedUsers) {
         this.data.item.sharedUsers.forEach((u) => {
-          this.sharedUsers.push({label: u, value: u});
+          this.sharedUsers.push({ label: u, value: u });
         });
       }
 
@@ -78,7 +77,7 @@ export class SharingDialogComponent implements OnInit {
 
   addUser() {
     if (!this.checkUser()) {
-      this.sharedUsers.push({label: this.newSharedUser.username, value: this.newSharedUser.username});
+      this.sharedUsers.push({ label: this.newSharedUser.username, value: this.newSharedUser.username });
       this.changed = true;
     }
     this.newSharedUser = {};
@@ -92,7 +91,7 @@ export class SharingDialogComponent implements OnInit {
 
   removeUser(user) {
     this.changed = true;
-    this.sharedUsers.forEach( (item, index) => {
+    this.sharedUsers.forEach((item, index) => {
       if (item === user) {
         this.sharedUsers.splice(index, 1);
         if (user.value === this.currentAuthor) {

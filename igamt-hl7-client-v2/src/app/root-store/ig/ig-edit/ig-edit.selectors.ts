@@ -2,6 +2,7 @@ import { Dictionary } from '@ngrx/entity';
 import { createSelector } from '@ngrx/store';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { selectValue } from 'src/app/modules/dam-framework/store/index';
+import { IDocumentSessionId } from 'src/app/modules/ig/services/document-session-id.guard';
 import { Status } from 'src/app/modules/shared/models/abstract-domain.interface';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { IgTOCNodeHelper } from '../../../modules/document/services/ig-toc-node-helper.service';
@@ -29,6 +30,7 @@ export const selectIgId = createSelector(
 
 export const selectIgDocumentLocation = selectValue<IIgLocationValue>('igLocation');
 export const selectDocumentVersionSyncToken = selectValue<string>('documentVersionSyncToken');
+export const selectDocumentSessionId = selectValue<IDocumentSessionId>('documentSessionId');
 
 export const selectDerived = createSelector(
   selectIgDocument,

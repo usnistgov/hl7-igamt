@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.web.app.resource;
 
+import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
@@ -37,6 +38,7 @@ public class CoConstraintController extends BaseController {
     }
 
     @RequestMapping(value = "/api/coconstraints/group", method = RequestMethod.POST, produces = {"application/json" })
+    @NotifySave(id = "#group.id", type = "'COCONSTRAINTGROUP'")
     @PreAuthorize("AccessResource('COCONSTRAINTGROUP', #group.id, WRITE) && ConcurrentSync('COCONSTRAINTGROUP', #group.id, ALLOW_SYNC_STRICT)")
     public ResponseMessage getCoConstraintGroup(@RequestBody CoConstraintGroup group,
                                                 Authentication authentication) throws CoConstraintNotFoundException {

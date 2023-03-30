@@ -36,6 +36,7 @@ import { IgVerificationComponent } from './components/ig-verification/ig-verific
 import { ManageProfileStructureComponent } from './components/manage-profile-structure/manage-profile-structure.component';
 import { NarrativeSectionFormComponent } from './components/narrative-section-form/narrative-section-form.component';
 import { IgRoutingModule } from './ig-routing.module';
+import { DocumentSessionIdInterceptor } from './services/document-session-id.interceptor';
 import { IgListService } from './services/ig-list.service';
 import { IgService } from './services/ig.service';
 import { SyncEditInterceptor } from './services/sync-edit.interceptor';
@@ -86,6 +87,7 @@ import { SyncEditInterceptor } from './services/sync-edit.interceptor';
     IgListService,
     IgService,
     { provide: HTTP_INTERCEPTORS, useClass: SyncEditInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: DocumentSessionIdInterceptor, multi: true },
   ],
   exports: [
     IgListContainerComponent,

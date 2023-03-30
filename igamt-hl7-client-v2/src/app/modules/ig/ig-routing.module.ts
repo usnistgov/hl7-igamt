@@ -19,6 +19,7 @@ import { IgListContainerComponent } from './components/ig-list-container/ig-list
 import { IgMetadataEditorComponent } from './components/ig-metadata-editor/ig-metadata-editor.component';
 import { IgSectionEditorComponent } from './components/ig-section-editor/ig-section-editor.component';
 import { IgVerificationComponent } from './components/ig-verification/ig-verification.component';
+import { DocumentSessionIdGuard } from './services/document-session-id.guard';
 import { IgCreateContext } from './services/ig-create-context.guard';
 
 const routes: Routes = [
@@ -53,6 +54,7 @@ const routes: Routes = [
     canActivate: [
       WidgetSetupGuard,
       DataLoaderGuard,
+      DocumentSessionIdGuard,
     ],
     canDeactivate: [
       WidgetDeactivateGuard,

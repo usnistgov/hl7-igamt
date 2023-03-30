@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.web.app.resource;
 
+import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
@@ -105,6 +106,7 @@ public class CompositeProfileController {
 
   @RequestMapping(value = "/api/composite-profile", method = RequestMethod.POST,
       produces = {"application/json"})
+  @NotifySave(id = "#compositeProfileStructure.id", type = "'COMPOSITEPROFILE'")
   @PreAuthorize("AccessResource('COMPOSITEPROFILE', #compositeProfileStructure.id, WRITE) && ConcurrentSync('COMPOSITEPROFILE', #compositeProfileStructure.id, ALLOW_SYNC_STRICT)")
   public CompositeProfileStructure save(Authentication authentication, @RequestBody CompositeProfileStructure compositeProfileStructure) {
 	dateUpdateService.updateDate(compositeProfileStructure.getDocumentInfo());
@@ -140,6 +142,7 @@ public class CompositeProfileController {
   
     @RequestMapping(value = "/api/composite-profile/{id}", method = RequestMethod.POST, produces = {
     "application/json" })
+    @NotifySave(id = "#id", type = "'COMPOSITEPROFILE'")
     @PreAuthorize("AccessResource('COMPOSITEPROFILE', #id, WRITE) && ConcurrentSync('COMPOSITEPROFILE', #id, ALLOW_SYNC_STRICT)")
     @ResponseBody
     public ResponseMessage<?> applyChanges(@PathVariable("id") String id,

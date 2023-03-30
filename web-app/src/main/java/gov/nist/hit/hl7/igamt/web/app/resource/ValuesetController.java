@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,6 +123,7 @@ public class ValuesetController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/api/valuesets/{id}", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
+	@NotifySave(id = "#id", type = "'VALUESET'")
 	@PreAuthorize("AccessResource('VALUESET', #id, WRITE) && ConcurrentSync('VALUESET', #id, ALLOW_SYNC_STRICT)")
 	public ResponseMessage<?> applyStructureChanges(@PathVariable("id") String id, @RequestBody List<ChangeItemDomain> cItems,
 			Authentication authentication) throws ValuesetException, IOException, ForbiddenOperationException {

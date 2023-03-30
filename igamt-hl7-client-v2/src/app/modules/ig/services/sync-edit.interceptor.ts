@@ -30,7 +30,7 @@ export class SyncEditInterceptor implements HttpInterceptor {
                 disableClose: true,
                 data: {
                   message: err.error.text,
-                  title: 'Page Out Of Synchronization',
+                  title: 'Document Out Of Synchronization',
                 },
               });
             } else {

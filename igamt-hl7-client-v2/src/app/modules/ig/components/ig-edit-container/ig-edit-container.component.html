@@ -3,7 +3,8 @@
   <ng-template #breadCrumbs>
     <div style="padding: 5px 5px 5px 20px; display: flex; justify-content: space-between;">
       <app-document-breadcrumbs [locationInfo]="location$ | async" ></app-document-breadcrumbs>
-      <ng-container>
+      <div style="display: flex; justify-content: center; align-items: center;">
+        <app-active-users-list [active]="sessionId$ | async" [users]="activeUsers$ | async" ></app-active-users-list>
         <div *ngIf="viewOnly$ | async" class="view-only-badge">
           <i class="fa fa-eye"></i>
           <span style="margin-left: 10px;">View Mode</span>
@@ -12,7 +13,7 @@
           <i class="fa fa-pencil"></i>
           <span style="margin-left: 10px;">Edit Mode</span>
         </div>
-      </ng-container>
+      </div>
     </div>
   </ng-template>
 
