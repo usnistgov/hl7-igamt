@@ -32,7 +32,6 @@ export class SharingDialogComponent implements OnInit {
       this.users = data.users;
     });
 
-    // this.sharedUsers.push({label: this.data.username + ' #Owner', value: this.data.username});
     if (this.data && this.data.item) {
       if (this.data.item.sharedUsers) {
         this.data.item.sharedUsers.forEach((u) => {
