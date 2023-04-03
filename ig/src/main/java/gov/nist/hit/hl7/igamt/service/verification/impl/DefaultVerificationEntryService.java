@@ -789,7 +789,20 @@ public class DefaultVerificationEntryService implements VerificationEntryService
 	}
 
 	@Override
-	public IgamtObjectError Usage_NOTAllowed_IXUsage(Location l, String id, Type type) {
+	public IgamtObjectError Usage_NOTAllowed_IXUsage_SenderProfile(Location l, String id, Type type) {
+		Location location = l.clone();
+		location.setProperty(PropertyType.USAGE);
+		return new IgamtVerificationEntryBuilder("Usage_NOTAllowed_IXUsage")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message(String.format("IX usage could be used only in profiles with role \"Receiver\". The IX usage is used on %s.", location.getInfo().getType().toString() + ' ' + location.getName() + "(Position:  " + location.getInfo().getPositionalPath() + ')'))
+                .entry();
+	}
+	
+	@Override
+	public IgamtObjectError Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(Location l, String id, Type type) {
 		Location location = l.clone();
 		location.setProperty(PropertyType.USAGE);
 		return new IgamtVerificationEntryBuilder("Usage_NOTAllowed_IXUsage")
@@ -797,7 +810,20 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(location)
-                .message(String.format("At %s, Receiver Conformance profile does not allow IX usage.", location.getInfo().getType().toString() + ' ' + location.getName() + "(Position:  " + location.getInfo().getPositionalPath() + ')'))
+                .message(String.format("IX usage could be used only in profiles with role \"Receiver\". The IX usage is used on %s.", location.getInfo().getType().toString() + ' ' + location.getName() + "(Position:  " + location.getInfo().getPositionalPath() + ')'))
+                .entry();
+	}
+	
+	@Override
+	public IgamtObjectError Required_ProfileRole(Location l, String id, Type type) {
+		Location location = l.clone();
+		location.setProperty(PropertyType.USAGE);
+		return new IgamtVerificationEntryBuilder("Usage_NOTAllowed_IXUsage")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message(String.format("Profile Role must be specified"))
                 .entry();
 	}
 }

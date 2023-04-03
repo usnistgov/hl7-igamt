@@ -97,5 +97,7 @@ public interface VerificationEntryService {
     IgamtObjectError Length_INVALID_MinLength(Location info, String id, Type type, String minLength);
     IgamtObjectError Length_INVALID_Range(Location info, String id, Type type, String minLength, String maxLength);
     
-    IgamtObjectError Usage_NOTAllowed_IXUsage(Location info, String id, Type type);
+	IgamtObjectError Usage_NOTAllowed_IXUsage_SenderProfile(Location info, String id, Type type);
+	IgamtObjectError Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(Location l, String id, Type type);
+	IgamtObjectError Required_ProfileRole(Location l, String id, Type type);
 }
