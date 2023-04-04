@@ -817,7 +817,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
 	@Override
 	public IgamtObjectError Required_ProfileRole_Error(Location l, String id, Type type) {
 		Location location = l.clone();
-		location.setProperty(PropertyType.USAGE);
+		location.setProperty(PropertyType.ROLE);
 		return new IgamtVerificationEntryBuilder("Usage_NOTAllowed_IXUsage")
                 .error()
                 .handleByUser()
@@ -830,7 +830,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
 	@Override
 	public IgamtObjectError Required_ProfileRole_Warning(Location l, String id, Type type) {
 		Location location = l.clone();
-		location.setProperty(PropertyType.USAGE);
+		location.setProperty(PropertyType.ROLE);
 		return new IgamtVerificationEntryBuilder("Usage_NOTAllowed_IXUsage")
                 .warning()
                 .handleByUser()
