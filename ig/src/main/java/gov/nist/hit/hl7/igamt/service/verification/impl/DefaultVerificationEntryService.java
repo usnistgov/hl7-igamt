@@ -815,11 +815,24 @@ public class DefaultVerificationEntryService implements VerificationEntryService
 	}
 	
 	@Override
-	public IgamtObjectError Required_ProfileRole(Location l, String id, Type type) {
+	public IgamtObjectError Required_ProfileRole_Error(Location l, String id, Type type) {
 		Location location = l.clone();
 		location.setProperty(PropertyType.USAGE);
 		return new IgamtVerificationEntryBuilder("Usage_NOTAllowed_IXUsage")
                 .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message(String.format("Profile Role must be specified"))
+                .entry();
+	}
+	
+	@Override
+	public IgamtObjectError Required_ProfileRole_Warning(Location l, String id, Type type) {
+		Location location = l.clone();
+		location.setProperty(PropertyType.USAGE);
+		return new IgamtVerificationEntryBuilder("Usage_NOTAllowed_IXUsage")
+                .warning()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(location)

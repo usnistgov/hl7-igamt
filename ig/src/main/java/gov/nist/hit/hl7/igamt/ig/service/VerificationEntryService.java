@@ -99,5 +99,6 @@ public interface VerificationEntryService {
     
 	IgamtObjectError Usage_NOTAllowed_IXUsage_SenderProfile(Location info, String id, Type type);
 	IgamtObjectError Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(Location l, String id, Type type);
-	IgamtObjectError Required_ProfileRole(Location l, String id, Type type);
+	IgamtObjectError Required_ProfileRole_Error(Location l, String id, Type type);
+	IgamtObjectError Required_ProfileRole_Warning(Location l, String id, Type type);
 }

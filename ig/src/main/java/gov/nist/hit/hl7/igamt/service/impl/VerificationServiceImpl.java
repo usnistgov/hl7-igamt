@@ -112,6 +112,8 @@ public class VerificationServiceImpl implements VerificationService {
 	@Autowired
 	VerificationEntryService verificationEntryService;
 
+	private boolean IXUsageExist = false;
+
 //  @Autowired
 //  private PredicateRepository predicateRepository;
 
@@ -428,11 +430,17 @@ public class VerificationServiceImpl implements VerificationService {
 				info.setPositionalPath(positionPath);
 				location.setInfo(info);
 				
-				if(usage.equals(Usage.IX) && conformanceProfile.getRole()!= null) {
-					if(conformanceProfile.getRole().equals(Role.Sender))
-						result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderProfile(location, segment.getId(), Type.SEGMENT));
-					else if(conformanceProfile.getRole().equals(Role.SenderAndReceiver))
-						result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(location, segment.getId(), Type.SEGMENT));
+				if(usage.equals(Usage.IX)) {
+					
+					this.IXUsageExist = true;
+					
+					if(conformanceProfile.getRole()!= null) {
+						if(conformanceProfile.getRole().equals(Role.Sender))
+							result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderProfile(location, segment.getId(), Type.SEGMENT));
+						else if(conformanceProfile.getRole().equals(Role.SenderAndReceiver))
+							result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(location, segment.getId(), Type.SEGMENT));	
+					}
+					
 				}
 				
 				result.getErrors().addAll(checkCardinalityVerificationErr(location, segment.getId(), Type.SEGMENT, usage, min, max));
@@ -452,11 +460,17 @@ public class VerificationServiceImpl implements VerificationService {
 						fieldInfo.setPositionalPath(fieldPositionPath);
 						fieldLocation.setInfo(fieldInfo);
 						
-						if(field.getUsage().equals(Usage.IX) && conformanceProfile.getRole()!= null) {
-							if(conformanceProfile.getRole().equals(Role.Sender))
-								result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderProfile(fieldLocation, field.getId(), Type.FIELD));
-							else if(conformanceProfile.getRole().equals(Role.SenderAndReceiver))
-								result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(fieldLocation, field.getId(), Type.FIELD));
+						if(field.getUsage().equals(Usage.IX)) {
+							
+							this.IXUsageExist = true;
+							
+							if(conformanceProfile.getRole()!= null) {
+								if(conformanceProfile.getRole().equals(Role.Sender))
+									result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderProfile(fieldLocation, field.getId(), Type.FIELD));
+								else if(conformanceProfile.getRole().equals(Role.SenderAndReceiver))
+									result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(fieldLocation, field.getId(), Type.FIELD));	
+							}
+							
 						}
 						
 						Datatype childDT = this.datatypeService.findById(ref.getId());
@@ -479,23 +493,26 @@ public class VerificationServiceImpl implements VerificationService {
 	}
 
 	private void travelComponent(CPVerificationResult result, ConformanceProfile cp, Location l, Component component) {
-		if(component.getUsage().equals(Usage.IX) && cp.getRole()!= null) {
-			String componentPositionPath = l.getInfo().getPositionalPath() + "." + component.getPosition();
-			String componentdPath = l.getInfo().getPathId()+ "." + component.getId();
-			Location cLocation = new Location();
-			cLocation.setPathId(componentdPath);
-			cLocation.setName(component.getName());
-			LocationInfo fieldInfo = new LocationInfo();
-			fieldInfo.setType(Type.COMPONENT);
-			fieldInfo.setName(component.getName());
-			fieldInfo.setPathId(componentdPath);
-			fieldInfo.setPositionalPath(componentPositionPath);
-			cLocation.setInfo(fieldInfo);
+		if(component.getUsage().equals(Usage.IX)) {
+			this.IXUsageExist = true;
+			if(cp.getRole()!= null) {
+				String componentPositionPath = l.getInfo().getPositionalPath() + "." + component.getPosition();
+				String componentdPath = l.getInfo().getPathId()+ "." + component.getId();
+				Location cLocation = new Location();
+				cLocation.setPathId(componentdPath);
+				cLocation.setName(component.getName());
+				LocationInfo fieldInfo = new LocationInfo();
+				fieldInfo.setType(Type.COMPONENT);
+				fieldInfo.setName(component.getName());
+				fieldInfo.setPathId(componentdPath);
+				fieldInfo.setPositionalPath(componentPositionPath);
+				cLocation.setInfo(fieldInfo);
 
-			if(cp.getRole().equals(Role.Sender))
-				result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderProfile(cLocation, component.getId(), Type.COMPONENT));
-			else if(cp.getRole().equals(Role.SenderAndReceiver))
-				result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(cLocation, component.getId(), Type.COMPONENT));
+				if(cp.getRole().equals(Role.Sender))
+					result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderProfile(cLocation, component.getId(), Type.COMPONENT));
+				else if(cp.getRole().equals(Role.SenderAndReceiver))
+					result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(cLocation, component.getId(), Type.COMPONENT));	
+			}
 		}
 		
 		
@@ -663,11 +680,17 @@ public class VerificationServiceImpl implements VerificationService {
 			location.setInfo(info);
 			
 			
-			if(group.getUsage().equals(Usage.IX) && conformanceProfile.getRole()!= null) {
-				if(conformanceProfile.getRole().equals(Role.Sender))
-					result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderProfile(location, group.getId(), Type.GROUP));
-				else if(conformanceProfile.getRole().equals(Role.SenderAndReceiver))
-					result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(location, group.getId(), Type.GROUP));
+			if(group.getUsage().equals(Usage.IX)) {
+				this.IXUsageExist = true;
+				
+				if(conformanceProfile.getRole()!= null) {
+					if(conformanceProfile.getRole().equals(Role.Sender))
+						result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderProfile(location, group.getId(), Type.GROUP));
+					else if(conformanceProfile.getRole().equals(Role.SenderAndReceiver))
+						result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(location, group.getId(), Type.GROUP));	
+				}
+				
+				
 			}
 
 			result.getErrors().addAll(this.checkCardinalityVerificationErr(location, group.getId(), Type.GROUP, usage, min, max));
@@ -892,7 +915,12 @@ public class VerificationServiceImpl implements VerificationService {
 			info.setName(conformanceProfile.getName());
 			location.setInfo(info);
 			
-			result.getErrors().add(this.verificationEntryService.Required_ProfileRole(location, conformanceProfile.getId(), Type.PROFILE));
+			if(this.IXUsageExist) {
+				result.getErrors().add(this.verificationEntryService.Required_ProfileRole_Error(location, conformanceProfile.getId(), Type.PROFILE));	
+			}else {
+				result.getErrors().add(this.verificationEntryService.Required_ProfileRole_Warning(location, conformanceProfile.getId(), Type.PROFILE));	
+			}
+			
 		}
 	}
 
@@ -977,12 +1005,14 @@ public class VerificationServiceImpl implements VerificationService {
 	@Override
 	public CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile) {
 		CPVerificationResult result = new CPVerificationResult(conformanceProfile);
-
-		// 1. Metadata checking
-		this.checkingMetadataForConformanceProfile(conformanceProfile, result);
+		
+		this.IXUsageExist  = false;
 
 		// 2. Structure Checking
 		this.checkingStructureForConformanceProfile(conformanceProfile, result);
+		
+		// 1. Metadata checking
+		this.checkingMetadataForConformanceProfile(conformanceProfile, result);
 		
 		// 3. Binding Checking
 		this.checkingBindingForConformanceProfile(conformanceProfile, result);
