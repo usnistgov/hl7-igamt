@@ -473,7 +473,7 @@ public class VerificationServiceImpl implements VerificationService {
 							
 						}
 						
-						Datatype childDT = this.datatypeService.findById(ref.getId());
+						Datatype childDT = this.datatypeService.findById(field.getRef().getId());
 						if(childDT == null) childDT = this.inMemoryDomainExtensionService.findById(ref.getId(), Datatype.class);
 						if (childDT == null) {}
 						else {
