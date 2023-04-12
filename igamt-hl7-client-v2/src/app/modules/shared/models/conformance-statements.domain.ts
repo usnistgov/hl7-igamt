@@ -68,6 +68,7 @@ export enum PropositionType {
   NOT_CONTAINS_VALUES_DESC = 'notContainListValuesDesc',
   VALUED = 'valued',
   NOT_VALUED = 'notValued',
+  CONTAINS_REGEX = 'regex',
 }
 
 export enum ComparativeType {
