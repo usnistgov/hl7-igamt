@@ -1,5 +1,6 @@
 import { createEntityAdapter, Dictionary } from '@ngrx/entity';
 import { createSelector } from '@ngrx/store';
+import { selectUsername } from 'src/app/modules/dam-framework/store/authentication';
 import { selectFromCollection, selectPayloadData } from '../../../modules/dam-framework/store/data/dam.selectors';
 import { IFolderInfo, IWorkspaceInfo } from '../../../modules/workspace/models/models';
 
@@ -21,6 +22,21 @@ export const selectWorkspaceId = createSelector(
   selectWorkspaceInfo,
   (state: IWorkspaceInfo) => {
     return state.id;
+  },
+);
+
+export const selectWorkspaceOwner = createSelector(
+  selectWorkspaceInfo,
+  (state: IWorkspaceInfo) => {
+    return state.owner;
+  },
+);
+
+export const selectIsWorkspaceOwner = createSelector(
+  selectWorkspaceInfo,
+  selectUsername,
+  (state: IWorkspaceInfo, username: string) => {
+    return state.owner === username;
   },
 );
 

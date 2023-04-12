@@ -34,7 +34,5 @@ public interface WorkspaceService {
 	Workspace saveMetadata(String workspaceId, WorkspaceMetadataWrapper workspaceMetadataWrapper, String username) throws Exception;
 	Workspace save(Workspace workspace) throws ForbiddenOperationException;
 	Workspace updateFolder(String workspaceId, String folderId, AddFolderRequest addFolderRequest, String username) throws Exception;
-	void delete(Workspace workspace) throws ForbiddenOperationException;
-
-	
+	void delete(Workspace workspace, String performedBy) throws WorkspaceForbidden;
 }

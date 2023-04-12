@@ -10,6 +10,7 @@ import { DamFrameworkModule } from './../dam-framework/dam-framework.module';
 import { SharedModule } from './../shared/shared.module';
 import { AddUserDialogComponent } from './components/add-user-dialog/add-user-dialog.component';
 import { CreateWorkspaceComponent } from './components/create-workspace/create-workspace.component';
+import { DeleteWorkspaceDialogComponent } from './components/delete-workspace-dialog/delete-workspace-dialog.component';
 import { DocumentMoveDialogComponent } from './components/document-move-dialog/document-move-dialog.component';
 import { FolderAddDialogComponent } from './components/folder-add-dialog/folder-add-dialog.component';
 import { PermissionSelectorComponent } from './components/permission-selector/permission-selector.component';
@@ -41,6 +42,7 @@ import { WorkspaceRoutingModule } from './workspace-routing.module';
     PermissionSelectorComponent,
     PermsPipe,
     DocumentMoveDialogComponent,
+    DeleteWorkspaceDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -58,7 +60,9 @@ import { WorkspaceRoutingModule } from './workspace-routing.module';
     AddUserDialogComponent,
     DocumentMoveDialogComponent,
     WorkspaceEditComponent,
+    DeleteWorkspaceDialogComponent,
   ],
   providers: [],
+  exports: [],
 })
 export class WorkspaceModule { }

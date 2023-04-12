@@ -4,14 +4,17 @@ import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { BehaviorSubject, combineLatest, Observable, of, throwError } from 'rxjs';
 import { catchError, flatMap, map, switchMap, take, tap } from 'rxjs/operators';
+import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { EditorSave } from 'src/app/modules/dam-framework/store';
+import { selectUsername } from 'src/app/modules/dam-framework/store/authentication';
 import { FroalaService } from 'src/app/modules/shared/services/froala.service';
 import { selectAllFolders } from '../../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { AbstractWorkspaceEditorComponent } from '../../services/abstract-workspace-editor';
 import { WorkspaceService } from '../../services/workspace.service';
 import { AddUserDialogComponent } from '../add-user-dialog/add-user-dialog.component';
+import { selectIsWorkspaceAdmin, selectIsWorkspaceOwner, selectWorkspaceOwner } from './../../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
 import { EditorUpdate } from './../../../dam-framework/store/data/dam.actions';
 import { IFolderInfo, InvitationStatus, IWorkspacePermissions, IWorkspaceUser, WorkspacePermissionType } from './../../models/models';
 
@@ -93,6 +96,9 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
   filterText$: BehaviorSubject<string>;
   status$: BehaviorSubject<InvitationStatus>;
   filteredUserList$: Observable<IWorkspaceUser[]>;
+  owner$: Observable<string>;
+  isOwner$: Observable<boolean>;
+  username$: Observable<string>;
   statusOptions = [{
     label: 'Pending',
     value: InvitationStatus.PENDING,
@@ -128,7 +134,9 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
     this.workspaceUsers$ = new BehaviorSubject([]);
     this.filterText$ = new BehaviorSubject('');
     this.status$ = new BehaviorSubject(undefined);
-
+    this.owner$ = this.store.select(selectWorkspaceOwner);
+    this.isOwner$ = this.store.select(selectIsWorkspaceOwner);
+    this.username$ = this.store.select(selectUsername);
     this.currentSynchronized$.pipe(
       tap((current) => {
         this.workspaceUsers$.next([...(current.users || [])]);
@@ -166,10 +174,42 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
           map((response) => {
             this.store.dispatch(this.messageService.messageToAction(response));
             this.reloadWorkspaceUsers();
+            this.reloadWorkspace();
           }),
           catchError((err) => {
             this.store.dispatch(this.messageService.actionFromError(err));
             return throwError(err);
+          }),
+        );
+      }),
+    ).subscribe();
+  }
+
+  makeOwner(user: IWorkspaceUser) {
+    this.elementId$.pipe(
+      take(1),
+      flatMap((id) => {
+        return this.dialog.open(ConfirmDialogComponent, {
+          data: {
+            action: 'Transfer workspace ownership to "' + user.username + '"',
+            question: 'Are you sure you want to transfer the workspace ownership to user "' + user.username + '"? Once transfered the user will have all privileges on the workspace and you will lose ownership of the workspace.',
+          },
+        }).afterClosed().pipe(
+          flatMap((answer) => {
+            if (answer) {
+              return this.workspaceService.makeOwner(id, user.username).pipe(
+                map((response) => {
+                  this.store.dispatch(this.messageService.messageToAction(response));
+                  this.reloadWorkspaceUsers();
+                  this.reloadWorkspace();
+                }),
+                catchError((err) => {
+                  this.store.dispatch(this.messageService.actionFromError(err));
+                  return throwError(err);
+                }),
+              );
+            }
+            return of();
           }),
         );
       }),
@@ -199,6 +239,7 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
                     map((response) => {
                       this.store.dispatch(this.messageService.messageToAction(response));
                       this.reloadWorkspaceUsers();
+                      this.reloadWorkspace();
                     }),
                     catchError((err) => {
                       this.store.dispatch(this.messageService.actionFromError(err));
@@ -278,6 +319,19 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
         return this.workspaceService.getWorkspaceUsers(id).pipe(
           map((users) => {
             this.store.dispatch(new EditorUpdate({ value: { users }, updateDate: true }));
+          }),
+        );
+      }),
+    ).subscribe();
+  }
+
+  reloadWorkspace() {
+    this.elementId$.pipe(
+      take(1),
+      switchMap((id) => {
+        return this.workspaceService.getWorkspaceInfo(id).pipe(
+          map((info) => {
+            this.workspaceService.getWorkspaceInfoUpdateAction(info).forEach((action) => this.store.dispatch(action));
           }),
         );
       }),

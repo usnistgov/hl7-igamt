@@ -11,6 +11,7 @@ public interface WorkspacePermissionService {
     WorkspacePermissionType getWorkspacePermissionTypeByFolder(Workspace workspace, String username, String folderId);
     WorkspacePermissionType getWorkspacePermissionTypeByFolder(String workspaceId, String username, String folderId);
     boolean isAdmin(Workspace workspace, String username);
+    boolean isOwner(Workspace workspace, String username);
     boolean hasAccessTo(Workspace workspace, String username);
     WorkspaceAccessInfo getWorkspaceAccessInfo(String workspaceId) throws ResourceNotFoundException;
     Set<String> getFolderEditors(Workspace workspace, String folderId);

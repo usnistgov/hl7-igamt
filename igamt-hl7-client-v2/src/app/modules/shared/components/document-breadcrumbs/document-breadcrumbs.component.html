@@ -1,4 +1,4 @@
-<div *ngIf="location && location.length > 0">
+<div *ngIf="location && location.length > 0" style="line-height: 0;">
   <ng-container *ngTemplateOutlet="locationBreadCrumbs; context: { $implicit: location }"></ng-container>
 </div>
 <ng-template #locationBreadCrumbs let-locations>

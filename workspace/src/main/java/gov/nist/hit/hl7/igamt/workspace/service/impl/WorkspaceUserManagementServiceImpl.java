@@ -148,6 +148,31 @@ public class WorkspaceUserManagementServiceImpl implements WorkspaceUserManageme
     }
 
     @Override
+    public Workspace changeOwner(Workspace workspace, String performedBy, String username) throws Exception {
+        if(this.permissionService.isOwner(workspace, performedBy)) {
+            if(this.permissionService.hasAccessTo(workspace, username)) {
+                workspace.setUsername(username);
+                WorkspaceUser user = this.getUserFromWorkspace(workspace, username);
+                workspace.getUserAccessInfo().getUsers().remove(user);
+
+                WorkspacePermissions permissions = new WorkspacePermissions();
+                WorkspaceUser admin = new WorkspaceUser();
+                admin.setUsername(performedBy);
+                permissions.setAdmin(true);
+                admin.setPermissions(permissions);
+                admin.setStatus(InvitationStatus.ACCEPTED);
+
+                workspace.getUserAccessInfo().getUsers().add(admin);
+                return this.workspaceRepo.save(workspace);
+            } else {
+                throw new Exception("User does not have access to the workspace");
+            }
+        } else {
+            throw new WorkspaceForbidden();
+        }
+    }
+
+    @Override
     public boolean userHasPendingInvitation(Workspace workspace, String username) {
         if(workspace.getUsername().equals(username)) return false;
         if(workspace.getUserAccessInfo() != null && workspace.getUserAccessInfo().getUsers() != null) {
@@ -170,7 +195,6 @@ public class WorkspaceUserManagementServiceImpl implements WorkspaceUserManageme
     }
 
     public WorkspaceUser getUserFromWorkspace(Workspace workspace, String username) {
-        if(workspace.getUsername().equals(username)) return null;
         if(workspace.getUserAccessInfo() != null && workspace.getUserAccessInfo().getUsers() != null) {
             return workspace.getUserAccessInfo().getUsers().stream()
                     .filter((user) -> user.getUsername().equals(username))

@@ -140,6 +140,7 @@ public class WorkspaceDocumentManagementServiceImpl implements WorkspaceDocument
     }
 
     @Override
+    @Transactional
     public Workspace deleteDocumentFromWorkspace(String igId, String workspaceId, String folderId, String username) throws Exception {
         Ig ig = this.igService.findById(igId);
         if(ig != null) {

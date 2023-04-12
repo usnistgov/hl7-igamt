@@ -16,6 +16,7 @@ public interface WorkspaceUserManagementService {
     WorkspaceUser declineInvitation(String invitationId, String username) throws Exception;
     Workspace removeUser(Workspace workspace, String performedBy, String username) throws Exception;
     Workspace changeUserPermissions(Workspace workspace, String performedBy, String username, WorkspacePermissions permissions) throws Exception;
+    Workspace changeOwner(Workspace workspace, String performedBy, String username) throws Exception;
     boolean userHasPendingInvitation(Workspace workspace, String username);
     List<Workspace> getUserInvitations(String username);
 }

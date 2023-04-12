@@ -24,6 +24,7 @@ import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.workspace.repository.WorkspaceRepo;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceService;
 import gov.nist.hit.hl7.resource.change.service.OperationService;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class WorkspaceServiceImpl implements WorkspaceService {
@@ -222,8 +223,25 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 	}
 
 	@Override
-	public void delete(Workspace workspace) throws ForbiddenOperationException {
-		this.workspaceRepo.delete(workspace);
+	@Transactional
+	public void delete(Workspace workspace, String performedBy) throws WorkspaceForbidden {
+		if(this.workspacePermissionService.isOwner(workspace, performedBy)) {
+			workspace.getFolders().forEach((folder) -> {
+				folder.getChildren().forEach((child) -> {
+					Ig ig = this.igService.findById(child.getId());
+					if(ig != null) {
+						try {
+							this.igService.delete(ig);
+						} catch (ForbiddenOperationException e) {
+							throw new RuntimeException(e);
+						}
+					}
+				});
+			});
+			this.workspaceRepo.delete(workspace);
+		} else {
+			throw new WorkspaceForbidden();
+		}
 	}
 
     @Override

@@ -8,6 +8,7 @@ import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.web.app.model.WorkspaceDocumentCopy;
 import gov.nist.hit.hl7.igamt.web.app.model.WorkspaceDocumentMove;
 import gov.nist.hit.hl7.igamt.web.app.model.WorkspaceDocumentPublish;
+import gov.nist.hit.hl7.igamt.web.app.model.WorkspaceOwnerChange;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspaceMetadata;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspaceUser;
 import gov.nist.hit.hl7.igamt.workspace.model.*;
@@ -48,6 +49,18 @@ public class WorkspaceController {
 	) throws CreateRequestException {
 		Workspace ws = this.workspaceService.createWorkspace(workspaceCreateRequest, authentication.getName());
 		return new ResponseMessage<>(ResponseMessage.Status.SUCCESS, "Workspace Created Successfully",  ws.getId(), ws.getId(), new Date());
+	}
+
+	@RequestMapping(value = "/api/workspace/{id}", method = RequestMethod.DELETE, produces = {
+			"application/json" })
+	public ResponseMessage<String> deleteWorkspace(
+			Authentication authentication,
+			@PathVariable("id") String id
+	) throws WorkspaceNotFound, WorkspaceForbidden {
+		String username = authentication.getPrincipal().toString();
+		Workspace workspace = this.workspaceService.findById(id);
+		this.workspaceService.delete(workspace, username);
+		return new ResponseMessage<>(ResponseMessage.Status.SUCCESS, "Workspace Deleted Successfully",  workspace.getId(), workspace.getId(), new Date());
 	}
 
 	@RequestMapping(value = "/api/workspaces", method = RequestMethod.GET, produces = { "application/json" })
@@ -165,6 +178,7 @@ public class WorkspaceController {
 	) throws Exception {
 		Workspace workspace = this.workspaceService.findById(id);
 		if(workspace != null) {
+
 			if(workspace.getUserAccessInfo().getUsers() == null) {
 				return new HashSet<>();
 			} else {
@@ -213,6 +227,19 @@ public class WorkspaceController {
 		String current = authentication.getPrincipal().toString();
 		this.workspaceUserManagementService.declineInvitation(id, current);
 		return new ResponseMessage<>(ResponseMessage.Status.SUCCESS, "Invitation declined", id, null, new Date());
+	}
+
+	@RequestMapping(value = "/api/workspace/{id}/users/change-owner", method = RequestMethod.POST, produces = { "application/json" })
+	@ResponseBody
+	public ResponseMessage<WorkspaceUser> changeOwner(
+			Authentication authentication,
+			@PathVariable("id") String id,
+			@RequestBody WorkspaceOwnerChange owner
+	) throws Exception {
+		String current = authentication.getPrincipal().toString();
+		Workspace workspace = this.workspaceService.findById(id);
+		this.workspaceUserManagementService.changeOwner(workspace, current, owner.getUsername());
+		return new ResponseMessage<>(ResponseMessage.Status.SUCCESS, "Owner Updated Successfully", id, null, new Date());
 	}
 
 	@RequestMapping(value = "/api/workspace/{id}/users/update", method = RequestMethod.POST, produces = { "application/json" })

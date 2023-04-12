@@ -32,6 +32,20 @@
            style="background-color: #fbfbfb; height: 35px;" type="text">
   </div>
 </div>
+<table *ngIf="owner$ | async as owner" class="table table-stripped table-bordered">
+  <tr>
+    <th style="vertical-align: middle;">Workspace Owner</th>
+    <td style="vertical-align: middle;">
+      <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+        <span><i class="fa fa-user" style="margin-right: 5px;"></i> 
+          {{owner}}
+          <span *ngIf="owner === (username$ | async)" class="badge badge-primary" style="margin-left: 5px;" >current</span>
+        </span>
+        
+      </div>
+    </td>
+  </tr>
+</table>
 <p-table [value]="filteredUserList$ | async" [columns]="columns" [paginator]="true" [rows]="10">
 
   <ng-template pTemplate="header">
@@ -68,6 +82,7 @@
     <tr>
       <td>
         {{row.username}}
+        <span *ngIf="row.username === (username$ | async)" class="badge badge-primary" style="margin-left: 5px;" >current</span>
       </td>
       <td>
         <ng-container  [ngSwitch]="row.status">
@@ -89,14 +104,17 @@
         <ng-container *ngTemplateOutlet="pemissions; context : { $implicit: row.permissions | perms | async }" ></ng-container>
       </td>
       <td>
-        <button *ngIf="row.status !== 'DECLINED'" (click)="editUser(row)" class="btn btn-sm btn-primary">
+        <button style="margin-top: 5px;" *ngIf="row.status !== 'DECLINED'" (click)="editUser(row)" class="btn btn-sm btn-primary">
           Edit
         </button>
-        <button *ngIf="row.status === 'DECLINED'" (click)="reInvite(row)" class="btn btn-sm btn-primary">
+        <button style="margin-top: 5px;" *ngIf="row.status === 'DECLINED'" (click)="reInvite(row)" class="btn btn-sm btn-primary">
           Resend
         </button>
-        <button (click)="removeUser(row)" style="margin-left: 5px" class="btn btn-sm btn-danger">
+        <button (click)="removeUser(row)" style="margin-left: 5px; margin-top: 5px;" class="btn btn-sm btn-danger">
           Remove
+        </button>
+        <button  *ngIf="(isOwner$ | async) && row.status === 'ACCEPTED'" (click)="makeOwner(row)" style="margin-left: 5px; margin-top: 5px;" class="btn btn-sm btn-dark">
+          Make Owner
         </button>
       </td>
     </tr>

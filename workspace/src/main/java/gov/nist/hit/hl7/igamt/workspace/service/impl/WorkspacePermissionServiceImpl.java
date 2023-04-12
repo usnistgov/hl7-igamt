@@ -87,6 +87,11 @@ public class WorkspacePermissionServiceImpl implements WorkspacePermissionServic
     }
 
     @Override
+    public boolean isOwner(Workspace workspace, String username) {
+        return workspace.getUsername().equals(username);
+    }
+
+    @Override
     public boolean hasAccessTo(Workspace workspace, String username) {
         if(workspace.getUsername().equals(username)) return true;
         if(workspace.getUserAccessInfo() != null && workspace.getUserAccessInfo().getUsers() != null) {

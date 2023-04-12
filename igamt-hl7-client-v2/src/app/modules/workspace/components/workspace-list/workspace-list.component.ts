@@ -3,11 +3,12 @@ import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, throwError } from 'rxjs';
-import { catchError, flatMap, map } from 'rxjs/operators';
+import { catchError, flatMap, map, tap } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import { WorkspaceListService } from 'src/app/modules/workspace/services/workspace-list.service';
 import * as fromRoot from 'src/app/root-store/index';
 import * as fromWorkspaceList from 'src/app/root-store/workspace/workspace-list/workspace-list.index';
+import { DeleteWorkspaceDialogComponent } from '../delete-workspace-dialog/delete-workspace-dialog.component';
 import { ClearWorkspaceList, DeleteWorkspaceListItemSuccess, LoadWorkspaceList, SelectWorkspaceListSortOption, SelectWorkspaceListViewType, UpdatePendingInvitationCount, WorkspaceLoadType } from './../../../../root-store/workspace/workspace-list/workspace-list.actions';
 import { selectWorkspacePendingInvitations } from './../../../../root-store/workspace/workspace-list/workspace-list.selectors';
 import { MessageService } from './../../../dam-framework/services/message.service';
@@ -93,6 +94,30 @@ export class WorkspaceListComponent implements OnInit, OnDestroy {
         map(
           ([admin, username]) => {
             return [
+              {
+                label: 'Delete',
+                class: 'btn-danger',
+                icon: 'fa-trash',
+                action: (item: IWorkspaceListItem) => {
+                  this.dialog.open(DeleteWorkspaceDialogComponent, {
+                    data: {
+                      name: item.title,
+                    },
+                  }).afterClosed().pipe(
+                    tap((answer) => {
+                      if (answer) {
+                        this.store.dispatch(new fromWorkspaceList.DeleteWorkspaceListItemRequest(item.id));
+                      }
+                    }),
+                  ).subscribe();
+                },
+                disabled: (item: IWorkspaceListItem): boolean => {
+                  return false;
+                },
+                hide: (item: IWorkspaceListItem): boolean => {
+                  return item.username !== username;
+                },
+              },
               {
                 label: 'Open',
                 class: 'btn-primary',

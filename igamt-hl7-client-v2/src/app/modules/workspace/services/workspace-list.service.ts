@@ -14,19 +14,6 @@ export class WorkspaceListService {
   constructor(private http: HttpClient) {
   }
 
-  // loadTypeToAPI(type: WorkspaceLoadType) {
-  //   switch (type) {
-  //     case 'PRIVATE':
-  //       return 'PRIVATE';
-  //     case 'PUBLIC':
-  //       return 'PUBLIC';
-  //     case 'DISCOERABLE':
-  //       return 'DISCOERABLE';
-  //     case 'ALL':
-  //       return 'ALL';
-  //   }
-  // }
-
   fetchWorkspaceList(type: WorkspaceLoadType): Observable<IWorkspaceListItem[]> {
     return this.http.get<IWorkspaceListItem[]>('api/workspaces', {
       params: {

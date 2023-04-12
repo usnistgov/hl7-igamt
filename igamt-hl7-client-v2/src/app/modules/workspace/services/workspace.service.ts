@@ -90,6 +90,10 @@ export class WorkspaceService {
     return this.http.delete<Message<string>>(this.WORKSPACE_END_POINT + folder.workspaceId + '/folder/' + folder.id);
   }
 
+  delete(id: string): Observable<Message<string>> {
+    return this.http.delete<Message<string>>(this.WORKSPACE_END_POINT + id);
+  }
+
   getWorkspaceUsers(id: string): Observable<IWorkspaceUser[]> {
     return this.http.get<IWorkspaceUser[]>(this.WORKSPACE_END_POINT + id + '/users');
   }
@@ -99,6 +103,12 @@ export class WorkspaceService {
       email: isEmail,
       value: user,
       permissions,
+    });
+  }
+
+  makeOwner(id: string, username: string): Observable<Message<IWorkspaceUser>> {
+    return this.http.post<Message<IWorkspaceUser>>(this.WORKSPACE_END_POINT + id + '/users/change-owner', {
+      username,
     });
   }
 
