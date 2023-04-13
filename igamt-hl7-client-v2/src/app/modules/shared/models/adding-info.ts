@@ -1,4 +1,5 @@
 import {Type} from '../constants/type.enum';
+import { ProfileType, Role } from './conformance-profile.interface';
 import {IDomainInfo} from './domain-info.interface';
 export enum SourceType {
   INTERNAL = 'INTERNAL',
@@ -30,4 +31,6 @@ export interface IAddingInfo {
   url?: string;
   oid?: string;
   substitutes?: ISubstitution[];
+  role?: Role;
+  profileType?: ProfileType;
 }

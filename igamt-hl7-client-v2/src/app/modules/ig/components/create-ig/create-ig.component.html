@@ -11,14 +11,20 @@
                       placeholder="IG Document Title" type="text">
       </app-form-input>
     </form>
+    <span class="form-label-lg" style="margin-right: 5px;">Conformance Profiles</span> <button class="btn btn-primary" (click)="pickMessages()"><i class="fa fa-plus"></i></button>
+
   </div>
+
   <div class="messages">
-    <app-select-messages (messages)="setSelected($event)" (selected)="getVersion($event)" [hl7Versions]=" hl7Version$ | async"
-                         [table]="table$ | async "></app-select-messages>
+
+    <!-- <span class="form-label-lg" style="margin-right: 5px;">Conformance Profiles</span> <button class="btn btn-primary" (click)="pickMessages(version)"><i class="fa fa-plus"></i></button> -->
+
+    <app-selected-messages (messages)="setSelected($event)" #child style="height:100%; background-color: black;"
+                         [selectedData]="selectedEvents"></app-selected-messages>
   </div>
 
   <div class="submit">
-    <button (click)="submit()" [disabled]="metaDataForm.invalid" class="btn btn-primary"
+    <button (click)="submit()" [disabled]="metaDataForm.invalid || !child?.isValid()" class="btn btn-primary"
             type="submit">Create IG Document
     </button>
   </div>

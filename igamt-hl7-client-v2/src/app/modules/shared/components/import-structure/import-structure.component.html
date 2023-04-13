@@ -28,6 +28,12 @@
           <th>
             Name
           </th>
+          <th>
+            Profile Type
+          </th>
+          <th>
+            Role
+          </th>
         </tr>
         </thead>
         <tbody>
@@ -53,6 +59,22 @@
               </div>
             </div>
           </td>
+
+          <td>
+            <div style="display:flex; flex-direction: column;">
+              <p-radioButton name="{{structure.id + 'type1'}}" id="{{structure.id+ 'type1'}}" [value]="'Constrainable'" [label]="'Constrainable'" [(ngModel)]="structure.profileType"></p-radioButton>
+              <p-radioButton name="{{structure.id + 'type2'}}" id="{{structure.id + 'type2'}}"  [value]="'Implementation'" [label]="'Implementation'" [(ngModel)]="structure.profileType"></p-radioButton>
+            </div>
+          </td>
+          <td>
+            <div style="display:flex; flex-direction: column;">
+
+              <p-radioButton name="{{structure.id + 'role1'}}" id="{{structure.id+ 'role1'}}" [value]="'Sender'" [label]="'SENDER'" [(ngModel)]="structure.role"></p-radioButton>
+              <p-radioButton name="{{structure.id + 'role2'}}" id="{{structure.id + 'role2'}}"  [value]="'Receiver'" [label]="'RECEIVER'" [(ngModel)]="structure.role"></p-radioButton>
+              <p-radioButton name="{{structure.id + 'role3'}}" id="{{structure.id + 'role3'}}"  [value]="'SenderAndReceiver'" [label]="'SENDER And RECEIVER'" [(ngModel)]="structure.role"></p-radioButton>
+            </div>
+          </td>
+
         </tr>
         </tbody>
       </table>

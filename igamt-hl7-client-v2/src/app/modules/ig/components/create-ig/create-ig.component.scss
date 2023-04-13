@@ -7,6 +7,7 @@
 .create-ig-layout {
   display: grid;
   height: 100%;
+  overflow: hidden;
   flex-direction: column;
   background-color: #f7f7f7;
   padding: 10px;
@@ -34,6 +35,7 @@
 
 .submit {
   grid-area: submit;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -41,8 +43,10 @@
 
 .messages {
   grid-area: messages;
-  height: 100%;
   padding: 5px;
+  height: 100%;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 input.ng-invalid {

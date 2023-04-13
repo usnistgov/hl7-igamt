@@ -169,7 +169,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     clone.setDescription(ev.getDescription());
     clone.setIdentifier(ev.getExt());
     clone.setName(ev.getExt());
-    clone.setRole(Role.SenderAndReceiver);
+    clone.setRole(ev.getRole());
+    clone.setProfileType(ev.getProfileType());
+    
     conformanceProfileService.save(clone);
     return clone;
   }
