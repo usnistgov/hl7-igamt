@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { combineLatest } from 'rxjs';
 import { finalize, flatMap, map, take, tap } from 'rxjs/operators';
+import { Type } from '../../constants/type.enum';
 import { ComparativeType, DeclarativeType, OccurrenceType, PropositionType, StatementType } from '../../models/conformance-statements.domain';
 import { AssertionMode, IComplement, IPath, ISimpleAssertion, ISubject } from '../../models/cs.interface';
 import { ElementNamingService } from '../../services/element-naming.service';
@@ -302,38 +303,40 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
   }
 
   getStatementLiteral(complement: IComplement): string {
+    const add_s = this.csType === LeafStatementType.PROPOSITION ? 's' : '';
+    const add_es = this.csType === LeafStatementType.PROPOSITION ? 'es' : '';
     if (complement) {
       switch (complement.complementKey) {
         case DeclarativeType.CONTAINS_VALUE:
-          return `contain the value \'${this.valueOrBlank(complement.value)}\'.`;
+          return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\'.`;
         case PropositionType.NOT_CONTAINS_VALUE:
           return `does not contain the value \'${this.valueOrBlank(complement.value)}\'.`;
         case DeclarativeType.CONTAINS_VALUE_DESC:
-          return `contain the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}).`;
+          return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}).`;
         case PropositionType.NOT_CONTAINS_VALUE_DESC:
           return `does not contain the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}).`;
         case DeclarativeType.CONTAINS_CODE:
-          return `contain the value \'${this.valueOrBlank(complement.value)}\' drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
+          return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\' drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
         case DeclarativeType.CONTAINS_CODE_DESC:
-          return `contain the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}) drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
+          return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}) drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
         case DeclarativeType.CONTAINS_VALUES:
-          return `contain one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}].`;
+          return `contain${add_s} one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}].`;
         case DeclarativeType.CONTAINS_VALUES_DESC:
           const values = complement.values.map((v) => '\'' + v + '\'').map((val, i) => {
             return `${val} (${complement.descs[i]})`;
           });
-          return `contain one of the values in the list: [${this.valueOrBlank(values.join(','))}].`;
+          return `contain${add_s} one of the values in the list: [${this.valueOrBlank(values.join(','))}].`;
         case PropositionType.NOT_CONTAINS_VALUES:
           return `does not contain one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}].`;
         case DeclarativeType.CONTAINS_CODES:
-          return `contain one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}] drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
+          return `contain${add_s} one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}] drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
         case DeclarativeType.CONTAINS_CODES_DESC:
           const _values = complement.values.map((v) => `\'${v}\'`).map((val, i) => {
             return `${val} (${complement.descs[i]})`;
           });
-          return `contain one of the values in the list: [${this.valueOrBlank(_values.join(','))}] drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
+          return `contain${add_s} one of the values in the list: [${this.valueOrBlank(_values.join(','))}] drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
         case DeclarativeType.CONTAINS_REGEX:
-          return `match the regular expression \'${this.valueOrBlank(complement.value)}\'.`;
+          return `match${add_es} the regular expression \'${this.valueOrBlank(complement.value)}\'.`;
         case PropositionType.NOT_CONTAINS_VALUES_DESC:
           const __values = complement.values.map((v) => `\'${v}\'`).map((val, i) => {
             return `${val} (${complement.descs[i]})`;
@@ -482,15 +485,34 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
   }
 
   setSubjectTreeFilter(statementType: LeafStatementType, mode: StatementType) {
-    this.updateSubjectTreeFilter({
-      primitive: {
-        criterion: RestrictionType.PRIMITIVE,
-        combine: RestrictionCombinator.ENFORCE,
-        allow: true,
-        value: true,
-      },
-      types: null,
-    });
+    if (mode === StatementType.COMPARATIVE) {
+      this.updateSubjectTreeFilter({
+        primitive: {
+          criterion: RestrictionType.PRIMITIVE,
+          combine: RestrictionCombinator.ENFORCE,
+          allow: true,
+          value: true,
+        },
+        types: null,
+      });
+    } else {
+      if (statementType === LeafStatementType.DECLARATION) {
+        this.updateSubjectTreeFilter({
+          primitive: {
+            criterion: RestrictionType.PRIMITIVE,
+            combine: RestrictionCombinator.ENFORCE,
+            allow: true,
+            value: true,
+          },
+          types: null,
+        });
+      } else {
+        this.updateSubjectTreeFilter({
+          primitive: null,
+          types: null,
+        });
+      }
+    }
   }
 
   setCompareTreeFilter(subject: StatementTarget) {
