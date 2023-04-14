@@ -1,0 +1,22 @@
+<h2 mat-dialog-title> Select Conformance profiles</h2>
+<!-- <button class="btn btn-primary" (click)="step =1"> <i class="fa fa-plus"> </i>Add more </button> -->
+<mat-dialog-content style="height: 500px;">
+  <ng-container *ngIf="step == 1">
+    <app-select-messages #child (messages)="selected($event)"
+    (selected)="update($event.version, $event.scope)"
+    [selectedScope]="data.scope"
+    [existing]="data.existing"
+    [hl7Versions]="data.hl7Versions" [selectedVersion]="data.version"
+    [table]="data$ | async" ></app-select-messages>
+  </ng-container>
+
+  <ng-container *ngIf="step == 2">
+    <app-selected-messages #child (messages)="selected($event)" style="height:100%; background-color: black;" [selectedData]="toSubmit"></app-selected-messages>
+  </ng-container>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()" [disabled]="!isValid()" class="btn btn-sm btn-success" *ngIf="step == 2 || data.context =='CREATE'">Submit</button>
+  <button [disabled]="!isValid()" class="btn btn-sm btn-info" (click)="next()" *ngIf="step == 1 && data.context =='ADD'" >Next</button>
+
+</mat-dialog-actions>

@@ -10,6 +10,7 @@ import { selectAllSegments } from '../../../../root-store/dam-igamt/igamt.resour
 import { Scope } from '../../constants/scope.enum';
 import { Type } from '../../constants/type.enum';
 import { IAddingInfo, ISubstitution } from '../../models/adding-info';
+import { ProfileType, Role } from '../../models/conformance-profile.interface';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { IResourcePickerData } from '../../models/resource-picker-data.interface';
 import { IResource } from '../../models/resource.interface';
@@ -125,6 +126,8 @@ export class ImportStructureComponent implements OnInit {
         description: obj.description,
         domainInfo: { version: obj.hl7Version, scope: Scope.USER },
         flavor: true,
+        role: Role.SenderAndReceiver,
+        profileType: ProfileType.Constrainable,
       };
       this.step = 2;
     });

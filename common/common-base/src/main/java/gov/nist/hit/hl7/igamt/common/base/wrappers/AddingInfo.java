@@ -3,6 +3,8 @@ package gov.nist.hit.hl7.igamt.common.base.wrappers;
 import java.util.List;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
+import gov.nist.hit.hl7.igamt.common.base.domain.Role;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
@@ -24,7 +26,15 @@ public class AddingInfo {
 	private String oid;
 	private List<Substitue> substitutes;
 	private String fixedExtension;
+	private ProfileType profileType;
+	private Role role;
 	
+	public Role getRole() {
+		return role;
+	}
+	public void setRole(Role role) {
+		this.role = role;
+	}
 	public String getOriginalId() {
 		return originalId;
 	}
@@ -121,6 +131,12 @@ public class AddingInfo {
   }
   public void setFixedExtension(String fixedExtension) {
     this.fixedExtension = fixedExtension;
-  } 
+  }
+public ProfileType getProfileType() {
+	return profileType;
+}
+public void setProfileType(ProfileType profileType) {
+	this.profileType = profileType;
+} 
 	
 }
