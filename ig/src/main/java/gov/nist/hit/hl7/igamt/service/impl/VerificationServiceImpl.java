@@ -101,14 +101,13 @@ public class VerificationServiceImpl implements VerificationService {
 
 	@Autowired
 	private ValuesetService valuesetService;
-	
+
 	@Autowired
 	private ResourceBindingVerificationService resourceBindingVerificationService;
-	
+
 	@Autowired
 	InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
-	
-	
+
 	@Autowired
 	VerificationEntryService verificationEntryService;
 
@@ -308,26 +307,26 @@ public class VerificationServiceImpl implements VerificationService {
 
 		// 2. Structure Checking - Done
 		this.checkingStructureForValueset(valueset, result);
-		
+
 		this.countErrors(result);
 
 		return result;
 	}
 
 	private void countErrors(VerificationResult result) {
-		if(result.getErrors() != null) {
+		if (result.getErrors() != null) {
 			result.getErrors().forEach(error -> {
-				if(error.getSeverity() != null) {
-					if(error.getSeverity().equals("FATAL")) {
+				if (error.getSeverity() != null) {
+					if (error.getSeverity().equals("FATAL")) {
 						result.getStats().setFatal(result.getStats().getFatal() + 1);
 						result.getStats().setTotal(result.getStats().getTotal() + 1);
-					} else if(error.getSeverity().equals("ERROR")) {
+					} else if (error.getSeverity().equals("ERROR")) {
 						result.getStats().setError(result.getStats().getError() + 1);
 						result.getStats().setTotal(result.getStats().getTotal() + 1);
-					} else if(error.getSeverity().equals("WARNING")) {
+					} else if (error.getSeverity().equals("WARNING")) {
 						result.getStats().setWarning(result.getStats().getWarning() + 1);
 						result.getStats().setTotal(result.getStats().getTotal() + 1);
-					} else if(error.getSeverity().equals("IMFORMATIONAL")) {
+					} else if (error.getSeverity().equals("IMFORMATIONAL")) {
 						result.getStats().setInformational(result.getStats().getInformational() + 1);
 						result.getStats().setTotal(result.getStats().getTotal() + 1);
 					}
@@ -345,12 +344,12 @@ public class VerificationServiceImpl implements VerificationService {
 
 		// 2. Structure Checking
 		this.checkingStructureForDatatype(datatype, result);
-		
+
 		// 3. Binding Checking
 		this.checkingBindingeForDatatype(datatype, result);
 
 		this.countErrors(result);
-		
+
 		return result;
 	}
 
@@ -373,14 +372,16 @@ public class VerificationServiceImpl implements VerificationService {
 		}
 	}
 
-	private void checkingStructureForConformanceProfile(ConformanceProfile conformanceProfile, CPVerificationResult result) {
+	private void checkingStructureForConformanceProfile(ConformanceProfile conformanceProfile,
+			CPVerificationResult result) {
 		this.checkingSegmentRefOrGroups(conformanceProfile, conformanceProfile.getChildren(), result, null, null);
 	}
 
-	private void checkingSegmentRefOrGroups(ConformanceProfile conformanceProfile, Set<SegmentRefOrGroup> segmentRefOrGroups, CPVerificationResult result, String positionPath, String path) {
+	private void checkingSegmentRefOrGroups(ConformanceProfile conformanceProfile,
+			Set<SegmentRefOrGroup> segmentRefOrGroups, CPVerificationResult result, String positionPath, String path) {
 		if (segmentRefOrGroups != null) {
-			segmentRefOrGroups.forEach(srog -> this.checkingSegmentRefOrGroup(conformanceProfile, srog, result,
-					positionPath, path));
+			segmentRefOrGroups.forEach(
+					srog -> this.checkingSegmentRefOrGroup(conformanceProfile, srog, result, positionPath, path));
 		}
 	}
 
@@ -408,18 +409,19 @@ public class VerificationServiceImpl implements VerificationService {
 			positionPath = positionPath + "." + position;
 		}
 
-		if (ref == null || ref.getId() == null) {}
-		else {
+		if (ref == null || ref.getId() == null) {
+		} else {
 			segment = this.segmentService.findById(ref.getId());
-			if(segment == null) segment = this.inMemoryDomainExtensionService.findById(ref.getId(), Segment.class);
-			if (segment == null) {}
-			else {
+			if (segment == null)
+				segment = this.inMemoryDomainExtensionService.findById(ref.getId(), Segment.class);
+			if (segment == null) {
+			} else {
 				if (path == null) {
 					path = segment.getId();
 				} else {
 					path = path + "." + segment.getId();
 				}
-				
+
 				Location location = new Location();
 				location.setPathId(path);
 				location.setName(segment.getLabel());
@@ -429,27 +431,31 @@ public class VerificationServiceImpl implements VerificationService {
 				info.setPathId(path);
 				info.setPositionalPath(positionPath);
 				location.setInfo(info);
-				
-				if(usage.equals(Usage.IX)) {
-					
+
+				if (usage.equals(Usage.IX)) {
+
 					this.IXUsageExist = true;
-					
-					if(conformanceProfile.getRole()!= null) {
-						if(conformanceProfile.getRole().equals(Role.Sender))
-							result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderProfile(location, segment.getId(), Type.SEGMENT));
-						else if(conformanceProfile.getRole().equals(Role.SenderAndReceiver))
-							result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(location, segment.getId(), Type.SEGMENT));	
+
+					if (conformanceProfile.getRole() != null) {
+						if (conformanceProfile.getRole().equals(Role.Sender))
+							result.getErrors().add(this.verificationEntryService
+									.Usage_NOTAllowed_IXUsage_SenderProfile(location, segment.getId(), Type.SEGMENT));
+						else if (conformanceProfile.getRole().equals(Role.SenderAndReceiver))
+							result.getErrors()
+									.add(this.verificationEntryService
+											.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(location,
+													segment.getId(), Type.SEGMENT));
 					}
-					
+
 				}
-				
-				result.getErrors().addAll(checkCardinalityVerificationErr(location, segment.getId(), Type.SEGMENT, usage, min, max));
-				
-				
-				if(segment.getChildren() != null) {
+
+				result.getErrors().addAll(
+						checkCardinalityVerificationErr(location, segment.getId(), Type.SEGMENT, usage, min, max));
+
+				if (segment.getChildren() != null) {
 					segment.getChildren().forEach(field -> {
 						String fieldPositionPath = location.getInfo().getPositionalPath() + "." + field.getPosition();
-						String fieldPath = location.getInfo().getPathId()+ "." + field.getId();
+						String fieldPath = location.getInfo().getPathId() + "." + field.getId();
 						Location fieldLocation = new Location();
 						fieldLocation.setPathId(fieldPath);
 						fieldLocation.setName(field.getName());
@@ -459,27 +465,33 @@ public class VerificationServiceImpl implements VerificationService {
 						fieldInfo.setPathId(fieldPath);
 						fieldInfo.setPositionalPath(fieldPositionPath);
 						fieldLocation.setInfo(fieldInfo);
-						
-						if(field.getUsage().equals(Usage.IX)) {
-							
+
+						if (field.getUsage().equals(Usage.IX)) {
+
 							this.IXUsageExist = true;
-							
-							if(conformanceProfile.getRole()!= null) {
-								if(conformanceProfile.getRole().equals(Role.Sender))
-									result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderProfile(fieldLocation, field.getId(), Type.FIELD));
-								else if(conformanceProfile.getRole().equals(Role.SenderAndReceiver))
-									result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(fieldLocation, field.getId(), Type.FIELD));	
+
+							if (conformanceProfile.getRole() != null) {
+								if (conformanceProfile.getRole().equals(Role.Sender))
+									result.getErrors()
+											.add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderProfile(
+													fieldLocation, field.getId(), Type.FIELD));
+								else if (conformanceProfile.getRole().equals(Role.SenderAndReceiver))
+									result.getErrors()
+											.add(this.verificationEntryService
+													.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(fieldLocation,
+															field.getId(), Type.FIELD));
 							}
-							
+
 						}
-						
+
 						Datatype childDT = this.datatypeService.findById(field.getRef().getId());
-						if(childDT == null) childDT = this.inMemoryDomainExtensionService.findById(ref.getId(), Datatype.class);
-						if (childDT == null) {}
-						else {
-							if(childDT instanceof ComplexDatatype) {
-								ComplexDatatype complexChildDT = (ComplexDatatype)childDT;
-								if(complexChildDT.getComponents() != null) {
+						if (childDT == null)
+							childDT = this.inMemoryDomainExtensionService.findById(ref.getId(), Datatype.class);
+						if (childDT == null) {
+						} else {
+							if (childDT instanceof ComplexDatatype) {
+								ComplexDatatype complexChildDT = (ComplexDatatype) childDT;
+								if (complexChildDT.getComponents() != null) {
 									complexChildDT.getComponents().forEach(component -> {
 										this.travelComponent(result, conformanceProfile, fieldLocation, component);
 									});
@@ -493,11 +505,11 @@ public class VerificationServiceImpl implements VerificationService {
 	}
 
 	private void travelComponent(CPVerificationResult result, ConformanceProfile cp, Location l, Component component) {
-		if(component.getUsage().equals(Usage.IX)) {
+		if (component.getUsage().equals(Usage.IX)) {
 			this.IXUsageExist = true;
-			if(cp.getRole()!= null) {
+			if (cp.getRole() != null) {
 				String componentPositionPath = l.getInfo().getPositionalPath() + "." + component.getPosition();
-				String componentdPath = l.getInfo().getPathId()+ "." + component.getId();
+				String componentdPath = l.getInfo().getPathId() + "." + component.getId();
 				Location cLocation = new Location();
 				cLocation.setPathId(componentdPath);
 				cLocation.setName(component.getName());
@@ -508,34 +520,76 @@ public class VerificationServiceImpl implements VerificationService {
 				fieldInfo.setPositionalPath(componentPositionPath);
 				cLocation.setInfo(fieldInfo);
 
-				if(cp.getRole().equals(Role.Sender))
-					result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderProfile(cLocation, component.getId(), Type.COMPONENT));
-				else if(cp.getRole().equals(Role.SenderAndReceiver))
-					result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(cLocation, component.getId(), Type.COMPONENT));	
+				if (cp.getRole().equals(Role.Sender))
+					result.getErrors().add(this.verificationEntryService
+							.Usage_NOTAllowed_IXUsage_SenderProfile(cLocation, component.getId(), Type.COMPONENT));
+				else if (cp.getRole().equals(Role.SenderAndReceiver))
+					result.getErrors().add(
+							this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(cLocation,
+									component.getId(), Type.COMPONENT));
 			}
 		}
-		
-		
-		
+
 		Datatype childDT = this.datatypeService.findById(component.getRef().getId());
-		if(childDT == null) childDT = this.inMemoryDomainExtensionService.findById(component.getRef().getId(), Datatype.class);
-		if (childDT == null) {}
-		else {
-			if(childDT instanceof ComplexDatatype) {
-				ComplexDatatype complexChildDT = (ComplexDatatype)childDT;
-				if(complexChildDT.getComponents() != null) {
+		if (childDT == null)
+			childDT = this.inMemoryDomainExtensionService.findById(component.getRef().getId(), Datatype.class);
+		if (childDT == null) {
+		} else {
+			if (childDT instanceof ComplexDatatype) {
+				ComplexDatatype complexChildDT = (ComplexDatatype) childDT;
+				if (complexChildDT.getComponents() != null) {
 					complexChildDT.getComponents().forEach(childComponent -> {
 						this.travelComponent(result, cp, l, childComponent);
 					});
 				}
 			}
 		}
-		
+
 	}
 
-	private List<IgamtObjectError> checkLengthVerificationErr(SubStructElement e, Location location, String id, Type type, String minLength, String maxLength, String confLength) {
+	private List<IgamtObjectError> checkConstantErr(SubStructElement e, Location location, String id, Type type,
+			String minLength, String maxLength, Usage usage, String constantValue) {
 		List<IgamtObjectError> results = new ArrayList<IgamtObjectError>();
-		
+
+		if (constantValue != null) {
+			int lengthofConstant = constantValue.length();
+			if (!this.isPrimitiveDatatype(e))
+				results.add(this.verificationEntryService.Constant_INVALID_Datatype(location, id, type, e));
+			else if (e.getUsage().equals(Usage.X))
+				results.add(this.verificationEntryService.Constant_INVALID_Usage(location, id, type));
+			else {
+				if (!this.isNullOrNA(minLength) && !this.isNullOrNA(maxLength)) {
+					if (!maxLength.equals("*")) {
+						if (this.isInt(minLength) && this.isInt(maxLength)) {
+							int minLengthInt = Integer.parseInt(minLength);
+							int maxLengthInt = Integer.parseInt(maxLength);
+
+							if (minLengthInt > lengthofConstant || lengthofConstant > maxLengthInt) {
+								results.add(this.verificationEntryService.Constant_INVALID_LengthRange(location, id,
+										type, minLength, maxLength, constantValue));
+							}
+						}
+					} else {
+						if (this.isInt(minLength)) {
+							int minLengthInt = Integer.parseInt(minLength);
+
+							if (minLengthInt > lengthofConstant) {
+								results.add(this.verificationEntryService.Constant_INVALID_LengthRange(location, id,
+										type, minLength, maxLength, constantValue));
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return results;
+	}
+
+	private List<IgamtObjectError> checkLengthVerificationErr(SubStructElement e, Location location, String id,
+			Type type, String minLength, String maxLength, String confLength) {
+		List<IgamtObjectError> results = new ArrayList<IgamtObjectError>();
+
 		if (!this.isNullOrNA(minLength) && !this.isNullOrNA(maxLength)) {
 			if (!maxLength.equals("*")) {
 				if (this.isInt(minLength) && this.isInt(maxLength)) {
@@ -543,30 +597,31 @@ public class VerificationServiceImpl implements VerificationService {
 					int maxLengthInt = Integer.parseInt(maxLength);
 
 					if (minLengthInt > maxLengthInt) {
-						results.add(this.verificationEntryService.Length_INVALID_Range(location, id, type, minLength, maxLength));
+						results.add(this.verificationEntryService.Length_INVALID_Range(location, id, type, minLength,
+								maxLength));
 					}
 				}
 			}
 		}
-		
+
 		if (!this.isNullOrNA(maxLength)) {
 			if (!this.isIntOrStar(maxLength)) {
 				results.add(this.verificationEntryService.Length_INVALID_MaxLength(location, id, type, maxLength));
 			}
 		}
-		
+
 		if (!this.isNullOrNA(minLength)) {
 			if (!this.isInt(minLength)) {
 				results.add(this.verificationEntryService.Length_INVALID_MinLength(location, id, type, minLength));
 			}
 		}
-		
+
 		if (!this.isNullOrNA(confLength)) {
 			if (!confLength.contains("#") && !confLength.contains("=")) {
 				results.add(this.verificationEntryService.ConfLength_INVALID(location, id, type, confLength));
 			}
 		}
-		
+
 		if (this.isLengthAllowedElement(e)) {
 			if (this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) {
 				results.add(this.verificationEntryService.LengthorConfLength_Missing(location, id, type));
@@ -575,7 +630,8 @@ public class VerificationServiceImpl implements VerificationService {
 		return results;
 	}
 
-	private List<IgamtObjectError> checkCardinalityVerificationErr(Location location, String id, Type type, Usage usage, int min, String max) {
+	private List<IgamtObjectError> checkCardinalityVerificationErr(Location location, String id, Type type, Usage usage,
+			int min, String max) {
 		List<IgamtObjectError> result = new ArrayList<IgamtObjectError>();
 		if (max == null) {
 		} else {
@@ -583,18 +639,22 @@ public class VerificationServiceImpl implements VerificationService {
 				if (this.isInt(max)) {
 					int maxInt = Integer.parseInt(max);
 					if (min > maxInt) {
-						result.add(this.verificationEntryService.Cardinality_INVALID_Range(location, id, type, "" + min, max));
+						result.add(this.verificationEntryService.Cardinality_INVALID_Range(location, id, type, "" + min,
+								max));
 					} else {
 						if (usage != null && usage.equals(Usage.X) && !max.equals("0")) {
-							result.add(this.verificationEntryService.Cardinality_NOTAllowed_MAXCardinality(location, id, type, max));
+							result.add(this.verificationEntryService.Cardinality_NOTAllowed_MAXCardinality(location, id,
+									type, max));
 						}
 
 						if (usage != null && usage.equals(Usage.R) && min < 1) {
-							result.add(this.verificationEntryService.Cardinality_NOTAllowed_MINCardinality1(location, id, type, "" + min));
+							result.add(this.verificationEntryService.Cardinality_NOTAllowed_MINCardinality1(location,
+									id, type, "" + min));
 						}
 
 						if (usage != null && !usage.equals(Usage.R) && min != 0) {
-							result.add(this.verificationEntryService.Cardinality_NOTAllowed_MINCardinality2(location, id, type, usage.getValue(), "" + min));
+							result.add(this.verificationEntryService.Cardinality_NOTAllowed_MINCardinality2(location,
+									id, type, usage.getValue(), "" + min));
 						}
 					}
 				}
@@ -612,37 +672,37 @@ public class VerificationServiceImpl implements VerificationService {
 				if (!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C)
 						|| usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X)
 						|| usage.equals(Usage.B) || usage.equals(Usage.W))) {
-//					result.getErrors()
-//							.add(new IgamtObjectError("Usage_Value_Base", target, targetType, targetMeta, "In " + path
-//									+ ", Usage should be one of R/RE/C/C(a/b)/O/X/B/W, " + "Current Usage is " + usage,
-//									positionPath + "", "WARNING", "User"));
+//                  result.getErrors()
+//                          .add(new IgamtObjectError("Usage_Value_Base", target, targetType, targetMeta, "In " + path
+//                                  + ", Usage should be one of R/RE/C/C(a/b)/O/X/B/W, " + "Current Usage is " + usage,
+//                                  positionPath + "", "WARNING", "User"));
 				}
 			} else if (conformanceProfile.getProfileType().equals(ProfileType.Constrainable)) {
 				if (!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C)
 						|| usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X)
 						|| usage.equals(Usage.B))) {
-//					result.getErrors().add(new IgamtObjectError(
-//							"Usage_Value_Constraintable", target, targetType, targetMeta, "In " + path
-//									+ ", Usage should be one of R/RE/C/C(a/b)/O/X/B, " + "Current Usage is " + usage,
-//							positionPath + "", "WARNING", "User"));
+//                  result.getErrors().add(new IgamtObjectError(
+//                          "Usage_Value_Constraintable", target, targetType, targetMeta, "In " + path
+//                                  + ", Usage should be one of R/RE/C/C(a/b)/O/X/B, " + "Current Usage is " + usage,
+//                          positionPath + "", "WARNING", "User"));
 				}
 			} else if (conformanceProfile.getProfileType().equals(ProfileType.Implementation)) {
 				if (!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.CAB)
 						|| usage.equals(Usage.X))) {
-//					result.getErrors()
-//							.add(new IgamtObjectError(
-//									"Usage_Value_Implementable", target, targetType, targetMeta, "In " + path
-//											+ ", Usage should be one of R/RE/C(a/b)/X, " + "Current Usage is " + usage,
-//									positionPath + "", "WARNING", "User"));
+//                  result.getErrors()
+//                          .add(new IgamtObjectError(
+//                                  "Usage_Value_Implementable", target, targetType, targetMeta, "In " + path
+//                                          + ", Usage should be one of R/RE/C(a/b)/X, " + "Current Usage is " + usage,
+//                                  positionPath + "", "WARNING", "User"));
 				}
 			} else {
 				if (!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C)
 						|| usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X)
 						|| usage.equals(Usage.B) || usage.equals(Usage.W))) {
-//					result.getErrors()
-//							.add(new IgamtObjectError("Usage_Value_Any", target, targetType, targetMeta, "In " + path
-//									+ ", Usage must be one of R/RE/C/C(a/b)/O/X/B/W, " + "Current Usage is " + usage,
-//									positionPath + "", "ERROR", "User"));
+//                  result.getErrors()
+//                          .add(new IgamtObjectError("Usage_Value_Any", target, targetType, targetMeta, "In " + path
+//                                  + ", Usage must be one of R/RE/C/C(a/b)/O/X/B/W, " + "Current Usage is " + usage,
+//                                  positionPath + "", "ERROR", "User"));
 				}
 			}
 		}
@@ -668,7 +728,7 @@ public class VerificationServiceImpl implements VerificationService {
 				path = group.getId();
 			else
 				path = path + "." + group.getId();
-			
+
 			Location location = new Location();
 			location.setPathId(path);
 			location.setName(group.getName());
@@ -678,22 +738,24 @@ public class VerificationServiceImpl implements VerificationService {
 			info.setPathId(path);
 			info.setPositionalPath(positionPath);
 			location.setInfo(info);
-			
-			
-			if(group.getUsage().equals(Usage.IX)) {
+
+			if (group.getUsage().equals(Usage.IX)) {
 				this.IXUsageExist = true;
-				
-				if(conformanceProfile.getRole()!= null) {
-					if(conformanceProfile.getRole().equals(Role.Sender))
-						result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderProfile(location, group.getId(), Type.GROUP));
-					else if(conformanceProfile.getRole().equals(Role.SenderAndReceiver))
-						result.getErrors().add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(location, group.getId(), Type.GROUP));	
+
+				if (conformanceProfile.getRole() != null) {
+					if (conformanceProfile.getRole().equals(Role.Sender))
+						result.getErrors().add(this.verificationEntryService
+								.Usage_NOTAllowed_IXUsage_SenderProfile(location, group.getId(), Type.GROUP));
+					else if (conformanceProfile.getRole().equals(Role.SenderAndReceiver))
+						result.getErrors()
+								.add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(
+										location, group.getId(), Type.GROUP));
 				}
-				
-				
+
 			}
 
-			result.getErrors().addAll(this.checkCardinalityVerificationErr(location, group.getId(), Type.GROUP, usage, min, max));
+			result.getErrors()
+					.addAll(this.checkCardinalityVerificationErr(location, group.getId(), Type.GROUP, usage, min, max));
 
 			if (group.getChildren() != null && group.getChildren().size() > 0) {
 				for (SegmentRefOrGroup child : group.getChildren()) {
@@ -745,10 +807,12 @@ public class VerificationServiceImpl implements VerificationService {
 		String description = c.getDescription();
 		String codeSystem = c.getCodeSystem();
 		CodeUsage usage = c.getUsage();
-		
+
 		Location location = new Location();
-		if(c.getValue() == null) location.setName("Missing Value");
-		else location.setName(c.getValue());
+		if (c.getValue() == null)
+			location.setName("Missing Value");
+		else
+			location.setName(c.getValue());
 		location.setPathId(c.getId());
 		LocationInfo info = new LocationInfo();
 		info.setType(Type.CODE);
@@ -756,22 +820,27 @@ public class VerificationServiceImpl implements VerificationService {
 		location.setInfo(info);
 
 		if (!this.isNotNullNotEmpty(value))
-			result.getErrors().add(this.verificationEntryService.Valueset_Missing_Code(location, valueset.getId(), Type.VALUESET));
-		
+			result.getErrors().add(
+					this.verificationEntryService.Valueset_Missing_Code(location, valueset.getId(), Type.VALUESET));
+
 		if (description == null)
-			result.getErrors().add(this.verificationEntryService.Valueset_Missing_Description(location, valueset.getId(), Type.VALUESET));
-		
+			result.getErrors().add(this.verificationEntryService.Valueset_Missing_Description(location,
+					valueset.getId(), Type.VALUESET));
+
 		if (!this.isNotNullNotEmpty(codeSystem))
-			result.getErrors().add(this.verificationEntryService.Valueset_Missing_CodeSys(location, valueset.getId(), Type.VALUESET));
-		
+			result.getErrors().add(
+					this.verificationEntryService.Valueset_Missing_CodeSys(location, valueset.getId(), Type.VALUESET));
+
 		if (usage == null) {
-			result.getErrors().add(this.verificationEntryService.Valueset_Missing_Usage(location, valueset.getId(), Type.VALUESET));
+			result.getErrors().add(
+					this.verificationEntryService.Valueset_Missing_Usage(location, valueset.getId(), Type.VALUESET));
 		}
 
 		valueset.getCodes().forEach(otherC -> {
 			if (!otherC.getId().equals(c.getId())) {
 				if ((otherC.getValue() + "-" + otherC.getCodeSystem()).equals(c.getValue() + "-" + c.getCodeSystem()))
-					result.getErrors().add(this.verificationEntryService.Valueset_Duplicated_Code(location, valueset.getId(), Type.VALUESET, c.getValue(), c.getCodeSystem()));
+					result.getErrors().add(this.verificationEntryService.Valueset_Duplicated_Code(location,
+							valueset.getId(), Type.VALUESET, c.getValue(), c.getCodeSystem()));
 			}
 		});
 	}
@@ -787,7 +856,10 @@ public class VerificationServiceImpl implements VerificationService {
 		info.setPositionalPath("" + c.getPosition());
 		location.setInfo(info);
 
-		result.getErrors().addAll(this.checkLengthVerificationErr(c, location, cDt.getId(), Type.DATATYPE, c.getMinLength(), c.getMaxLength(), c.getConfLength()));
+		result.getErrors().addAll(this.checkLengthVerificationErr(c, location, cDt.getId(), Type.DATATYPE,
+				c.getMinLength(), c.getMaxLength(), c.getConfLength()));
+		result.getErrors().addAll(this.checkConstantErr(c, location, cDt.getId(), Type.DATATYPE, c.getMinLength(),
+				c.getMaxLength(), c.getUsage(), c.getConstantValue()));
 	}
 
 	private void checkingField(Segment segment, Field f, DTSegVerificationResult result) {
@@ -800,9 +872,13 @@ public class VerificationServiceImpl implements VerificationService {
 		info.setPathId(f.getId());
 		info.setPositionalPath("" + f.getPosition());
 		location.setInfo(info);
-		
-		result.getErrors().addAll(this.checkLengthVerificationErr(f, location, segment.getId(), Type.SEGMENT, f.getMinLength(), f.getMaxLength(), f.getConfLength()));
-		result.getErrors().addAll(this.checkCardinalityVerificationErr(location, segment.getId(), Type.SEGMENT, f.getUsage(), f.getMin(), f.getMax()));
+
+		result.getErrors().addAll(this.checkLengthVerificationErr(f, location, segment.getId(), Type.SEGMENT,
+				f.getMinLength(), f.getMaxLength(), f.getConfLength()));
+		result.getErrors().addAll(this.checkCardinalityVerificationErr(location, segment.getId(), Type.SEGMENT,
+				f.getUsage(), f.getMin(), f.getMax()));
+		result.getErrors().addAll(this.checkConstantErr(f, location, segment.getId(), Type.SEGMENT, f.getMinLength(),
+				f.getMaxLength(), f.getUsage(), f.getConstantValue()));
 	}
 
 	private boolean isNullOrNA(String s) {
@@ -814,6 +890,18 @@ public class VerificationServiceImpl implements VerificationService {
 	}
 
 	private boolean isLengthAllowedElement(SubStructElement e) {
+		if (e != null) {
+			Ref ref = e.getRef();
+			if (ref.getId() != null) {
+				Datatype childDt = this.datatypeService.findById(ref.getId());
+				if (childDt != null)
+					return this.isPrimitiveDatatype(childDt);
+			}
+		}
+		return false;
+	}
+
+	private boolean isPrimitiveDatatype(SubStructElement e) {
 		if (e != null) {
 			Ref ref = e.getRef();
 			if (ref.getId() != null) {
@@ -891,14 +979,14 @@ public class VerificationServiceImpl implements VerificationService {
 		if (valueset == null) {
 
 		} else {
-			//No metadata ValueSet Rules 10/08/2022
+			// No metadata ValueSet Rules 10/08/2022
 		}
 	}
 
 	private void checkingMetadataForDatatype(Datatype datatype, DTSegVerificationResult result) {
 		if (datatype == null) {
 		} else {
-			
+
 		}
 	}
 
@@ -907,20 +995,24 @@ public class VerificationServiceImpl implements VerificationService {
 
 	private void checkingMetadataForConformanceProfile(ConformanceProfile conformanceProfile,
 			CPVerificationResult result) {
-		if(conformanceProfile.getRole() == null || !(conformanceProfile.getRole().equals(Role.Receiver) || conformanceProfile.getRole().equals(Role.Sender) || conformanceProfile.getRole().equals(Role.SenderAndReceiver))) {
+		if (conformanceProfile.getRole() == null || !(conformanceProfile.getRole().equals(Role.Receiver)
+				|| conformanceProfile.getRole().equals(Role.Sender)
+				|| conformanceProfile.getRole().equals(Role.SenderAndReceiver))) {
 			Location location = new Location();
 			location.setName(conformanceProfile.getName());
 			LocationInfo info = new LocationInfo();
 			info.setType(Type.PROFILE);
 			info.setName(conformanceProfile.getName());
 			location.setInfo(info);
-			
-			if(this.IXUsageExist) {
-				result.getErrors().add(this.verificationEntryService.Required_ProfileRole_Error(location, conformanceProfile.getId(), Type.PROFILE));	
-			}else {
-				result.getErrors().add(this.verificationEntryService.Required_ProfileRole_Warning(location, conformanceProfile.getId(), Type.PROFILE));	
+
+			if (this.IXUsageExist) {
+				result.getErrors().add(this.verificationEntryService.Required_ProfileRole_Error(location,
+						conformanceProfile.getId(), Type.PROFILE));
+			} else {
+				result.getErrors().add(this.verificationEntryService.Required_ProfileRole_Warning(location,
+						conformanceProfile.getId(), Type.PROFILE));
 			}
-			
+
 		}
 	}
 
@@ -931,7 +1023,7 @@ public class VerificationServiceImpl implements VerificationService {
 	private boolean isNotNullNotEmpty(final String string) {
 		return string != null && !string.isEmpty();
 	}
-	
+
 	private boolean containWhiteSpace(final String string) {
 		return string != null && !string.matches("\\S+");
 	}
@@ -972,21 +1064,20 @@ public class VerificationServiceImpl implements VerificationService {
 
 		// 3. DynamicMapping Checking
 		this.checkingDynamicMapping(segment, result);
-		
+
 		// 4. Binding Checking
 		this.checkingBindingMapping(segment, result);
-		
+
 		this.countErrors(result);
-		
 
 		return result;
 	}
 
 	private void checkingBindingMapping(Segment segment, DTSegVerificationResult result) {
 		List<IgamtObjectError> bindingErrors = this.resourceBindingVerificationService.verifySegmentBindings(segment);
-		if(bindingErrors != null) {
-			for(IgamtObjectError e : bindingErrors) {
-				if(e.getTargetMeta() == null) {
+		if (bindingErrors != null) {
+			for (IgamtObjectError e : bindingErrors) {
+				if (e.getTargetMeta() == null) {
 					e.setTargetMeta(new DTSegMetadata(segment));
 				}
 			}
@@ -1001,22 +1092,21 @@ public class VerificationServiceImpl implements VerificationService {
 	private void checkingDynamicMapping(Segment segment, DTSegVerificationResult result) {
 	}
 
-	
 	@Override
 	public CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile) {
 		CPVerificationResult result = new CPVerificationResult(conformanceProfile);
-		
-		this.IXUsageExist  = false;
+
+		this.IXUsageExist = false;
 
 		// 2. Structure Checking
 		this.checkingStructureForConformanceProfile(conformanceProfile, result);
-		
+
 		// 1. Metadata checking
 		this.checkingMetadataForConformanceProfile(conformanceProfile, result);
-		
+
 		// 3. Binding Checking
 		this.checkingBindingForConformanceProfile(conformanceProfile, result);
-		
+
 		this.countErrors(result);
 
 		return result;
@@ -1024,8 +1114,9 @@ public class VerificationServiceImpl implements VerificationService {
 
 	private void checkingBindingForConformanceProfile(ConformanceProfile conformanceProfile,
 			CPVerificationResult result) {
-		result.getErrors().addAll(this.resourceBindingVerificationService.verifyConformanceProfileBindings(conformanceProfile));
-		
+		result.getErrors()
+				.addAll(this.resourceBindingVerificationService.verifyConformanceProfileBindings(conformanceProfile));
+
 	}
 
 	@Override
@@ -1044,11 +1135,11 @@ public class VerificationServiceImpl implements VerificationService {
 			for (Link l : valueSetRegistry.getChildren()) {
 				String id = l.getId();
 				Valueset vs = this.valuesetService.findById(id);
-				if (vs == null) {}
-				else {
+				if (vs == null) {
+				} else {
 					VSVerificationResult vsVerificationResult = this.verifyValueset(vs);
-					if(vsVerificationResult.getStats().getTotal() > 0) {
-						report.addValuesetVerificationResult(vsVerificationResult);	
+					if (vsVerificationResult.getStats().getTotal() > 0) {
+						report.addValuesetVerificationResult(vsVerificationResult);
 						report.addStats(vsVerificationResult.getStats());
 					}
 				}
@@ -1060,12 +1151,13 @@ public class VerificationServiceImpl implements VerificationService {
 			for (Link l : datatypeRegistry.getChildren()) {
 				String id = l.getId();
 				Datatype dt = this.datatypeService.findById(id);
-				if (dt == null) dt = inMemoryDomainExtensionService.findById(id, ComplexDatatype.class);
+				if (dt == null)
+					dt = inMemoryDomainExtensionService.findById(id, ComplexDatatype.class);
 				if (dt == null) {
 				} else {
 					DTSegVerificationResult dtSegVerificationResult = this.verifyDatatype(dt);
-					if(dtSegVerificationResult.getStats().getTotal() > 0) {
-						report.addDatatypeVerificationResult(dtSegVerificationResult);	
+					if (dtSegVerificationResult.getStats().getTotal() > 0) {
+						report.addDatatypeVerificationResult(dtSegVerificationResult);
 						report.addStats(dtSegVerificationResult.getStats());
 					}
 				}
@@ -1077,12 +1169,13 @@ public class VerificationServiceImpl implements VerificationService {
 			for (Link l : segmentRegistry.getChildren()) {
 				String id = l.getId();
 				Segment s = this.segmentService.findById(id);
-				if (s == null) s = inMemoryDomainExtensionService.findById(id, Segment.class);
+				if (s == null)
+					s = inMemoryDomainExtensionService.findById(id, Segment.class);
 				if (s == null) {
-				}else {
+				} else {
 					DTSegVerificationResult dtSegVerificationResult = this.verifySegment(s);
-					if(dtSegVerificationResult.getStats().getTotal() > 0) {
-						report.addSegmentVerificationResult(dtSegVerificationResult);		
+					if (dtSegVerificationResult.getStats().getTotal() > 0) {
+						report.addSegmentVerificationResult(dtSegVerificationResult);
 						report.addStats(dtSegVerificationResult.getStats());
 					}
 				}
@@ -1094,11 +1187,12 @@ public class VerificationServiceImpl implements VerificationService {
 			for (Link l : conformanceProfileRegistry.getChildren()) {
 				String id = l.getId();
 				ConformanceProfile cp = this.conformanceProfileService.findById(id);
-				if (cp == null) cp = inMemoryDomainExtensionService.findById(id, ConformanceProfile.class);
-				if (cp == null) {}
-				else {
+				if (cp == null)
+					cp = inMemoryDomainExtensionService.findById(id, ConformanceProfile.class);
+				if (cp == null) {
+				} else {
 					CPVerificationResult cpVerificationResult = this.verifyConformanceProfile(cp);
-					if(cpVerificationResult.getStats().getTotal() > 0) {
+					if (cpVerificationResult.getStats().getTotal() > 0) {
 						report.addConformanceProfileVerificationResult(cpVerificationResult);
 						report.addStats(cpVerificationResult.getStats());
 					}

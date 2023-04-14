@@ -5,6 +5,7 @@ import java.util.Set;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintUsage;
 import gov.nist.hit.hl7.igamt.coconstraints.model.ColumnType;
 import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
@@ -97,8 +98,14 @@ public interface VerificationEntryService {
     IgamtObjectError Length_INVALID_MinLength(Location info, String id, Type type, String minLength);
     IgamtObjectError Length_INVALID_Range(Location info, String id, Type type, String minLength, String maxLength);
     
-	IgamtObjectError Usage_NOTAllowed_IXUsage_SenderProfile(Location info, String id, Type type);
-	IgamtObjectError Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(Location l, String id, Type type);
-	IgamtObjectError Required_ProfileRole_Error(Location l, String id, Type type);
-	IgamtObjectError Required_ProfileRole_Warning(Location l, String id, Type type);
+    IgamtObjectError Usage_NOTAllowed_IXUsage_SenderProfile(Location info, String id, Type type);
+    IgamtObjectError Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(Location l, String id, Type type);
+    IgamtObjectError Required_ProfileRole_Error(Location l, String id, Type type);
+    IgamtObjectError Required_ProfileRole_Warning(Location l, String id, Type type);
+    
+    IgamtObjectError Constant_INVALID_Datatype(Location location, String id, Type type, SubStructElement e);
+    IgamtObjectError Constant_INVALID_Usage(Location location, String id, Type type);
+    IgamtObjectError Constant_INVALID_LengthRange(Location location, String id, Type type, String minLength,
+            String maxLength, String constantValue);
 }
+
