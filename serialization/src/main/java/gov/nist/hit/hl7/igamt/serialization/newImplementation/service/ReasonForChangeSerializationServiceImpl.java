@@ -90,7 +90,7 @@ public class ReasonForChangeSerializationServiceImpl implements ReasonForChangeS
       SegmentRefOrGroup child) throws SerializationException {
 
     if(child.getChangeLog() != null) {
-      child.getChangeLog().forEach( (p, r) -> reasons.appendChild(this.createReasonElement(label + "." + ((SegmentRef)child).getPosition() , p, r)));
+      child.getChangeLog().forEach( (p, r) -> reasons.appendChild(this.createReasonElement(label + "." + ((SegmentRefOrGroup)child).getPosition() , p, r)));
     }
     if(child instanceof Group) {
       Group grp = (Group)child;

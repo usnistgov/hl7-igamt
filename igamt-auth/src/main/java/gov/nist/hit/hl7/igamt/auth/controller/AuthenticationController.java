@@ -104,7 +104,7 @@ public class AuthenticationController {
   public UserListResponse getAllUserList(HttpServletRequest req,
           HttpServletResponse res, Authentication authentication)
       throws IOException {
-
+	  System.out.println("======================TEST users================");
     return authService.getAllUsers(req);
   }
 

@@ -21,6 +21,12 @@ logging:
   file: hl7-igamt.log
   path: /var/log/hl7-igamt/
   exception-conversion-word: '%wEx'
+  level:
+    org:
+      apache:
+        http: DEBUG
+    httpclient:
+        wire: DEBUG
   
 db:
   name: igamt-hl7

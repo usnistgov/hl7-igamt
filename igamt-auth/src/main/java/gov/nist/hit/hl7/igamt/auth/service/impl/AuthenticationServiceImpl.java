@@ -334,6 +334,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Override
 	public UserListResponse getAllUsers(HttpServletRequest req) {
+		System.out.println("CALLING");
+		System.out.println(env.getProperty(AUTH_URL));
 		ResponseEntity<UserListResponse> response = restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/users",
 				HttpMethod.GET, new HttpEntity<String>(this.getCookiesHeaders(req)), UserListResponse.class);
 		return response.getBody();
@@ -410,16 +412,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	
 	private HttpHeaders getCookiesHeaders(HttpServletRequest req){
 		Cookie cookies[] = req.getCookies();
-
+		
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-type", "application/json");
 
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
+				System.out.println("==========================================");
+
+				System.out.println(cookie.getName() + " ==" + cookie.getValue() );
 				if (cookie.getName().equals("authCookie")) {
+					System.out.println("Found Cookie");
+					System.out.println(cookie.getValue());
+
 					headers.add("Cookie", "authCookie=" + cookie.getValue());
 				}
 			}
+		} else {
+			System.out.println("++++++++++++NO COOKIES++++++++++++++++++");
+
 		}
 		return headers;
 		

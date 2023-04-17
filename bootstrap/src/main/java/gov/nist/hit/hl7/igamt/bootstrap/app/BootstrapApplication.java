@@ -825,6 +825,10 @@ public class BootstrapApplication implements CommandLineRunner {
 		this.dataFixer.removeBindingsV2_9();
 	}
 	
+	@PostConstruct
+	void print() {
+		System.out.println("==============================Checking print==================================================");
+	}
 	
 
 }
