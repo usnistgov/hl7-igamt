@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -11,10 +12,9 @@ import { IDocumentCreationWrapper } from '../../../document/models/document/docu
 import { MessageEventTreeNode } from '../../../document/models/message-event/message-event.class';
 import { Scope } from '../../../shared/constants/scope.enum';
 import { IAddingInfo } from '../../../shared/models/adding-info';
-import { IgCreateContextType, IIgCreateContext } from './../../services/ig-create-context.guard';
 import { ClearResource } from './../../../../root-store/resource-loader/resource-loader.actions';
 import { IMessagePickerContext, IMessagePickerData, MessagePickerComponent } from './../../../shared/components/message-picker/message-picker.component';
-import { MatDialog } from '@angular/material';
+import { IgCreateContextType, IIgCreateContext } from './../../services/ig-create-context.guard';
 
 @Component({
   selector: 'app-create-ig',

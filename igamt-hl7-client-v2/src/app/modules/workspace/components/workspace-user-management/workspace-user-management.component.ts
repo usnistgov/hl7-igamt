@@ -5,6 +5,7 @@ import { Action, Store } from '@ngrx/store';
 import { BehaviorSubject, combineLatest, Observable, of, throwError } from 'rxjs';
 import { catchError, flatMap, map, switchMap, take, tap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
+import { IMessage } from 'src/app/modules/dam-framework/models/messages/message.class';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { EditorSave } from 'src/app/modules/dam-framework/store';
 import { selectUsername } from 'src/app/modules/dam-framework/store/authentication';
@@ -166,15 +167,19 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
     this.status$.next(status);
   }
 
+  notifyAndRefreshUsersState(message: IMessage<any>) {
+    this.store.dispatch(this.messageService.messageToAction(message));
+    this.reloadWorkspaceUsers();
+    this.reloadWorkspace();
+  }
+
   removeUser(user: IWorkspaceUser) {
     this.elementId$.pipe(
       take(1),
       switchMap((id) => {
         return this.workspaceService.removeUser(id, user.username).pipe(
           map((response) => {
-            this.store.dispatch(this.messageService.messageToAction(response));
-            this.reloadWorkspaceUsers();
-            this.reloadWorkspace();
+            this.notifyAndRefreshUsersState(response);
           }),
           catchError((err) => {
             this.store.dispatch(this.messageService.actionFromError(err));
@@ -199,9 +204,7 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
             if (answer) {
               return this.workspaceService.makeOwner(id, user.username).pipe(
                 map((response) => {
-                  this.store.dispatch(this.messageService.messageToAction(response));
-                  this.reloadWorkspaceUsers();
-                  this.reloadWorkspace();
+                  this.notifyAndRefreshUsersState(response);
                 }),
                 catchError((err) => {
                   this.store.dispatch(this.messageService.actionFromError(err));
@@ -237,9 +240,7 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
                 switchMap((id) => {
                   return this.workspaceService.updateUser(id, user.username, updated.permissions).pipe(
                     map((response) => {
-                      this.store.dispatch(this.messageService.messageToAction(response));
-                      this.reloadWorkspaceUsers();
-                      this.reloadWorkspace();
+                      this.notifyAndRefreshUsersState(response);
                     }),
                     catchError((err) => {
                       this.store.dispatch(this.messageService.actionFromError(err));
@@ -263,8 +264,7 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
       switchMap((id) => {
         return this.workspaceService.addWorkspaceUser(id, false, user.username, user.permissions).pipe(
           map((response) => {
-            this.store.dispatch(this.messageService.messageToAction(response));
-            this.reloadWorkspaceUsers();
+            this.notifyAndRefreshUsersState(response);
           }),
           catchError((err) => {
             this.store.dispatch(this.messageService.actionFromError(err));
@@ -293,8 +293,7 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
                 switchMap((id) => {
                   return this.workspaceService.addWorkspaceUser(id, false, invite.username, invite.permissions).pipe(
                     map((response) => {
-                      this.store.dispatch(this.messageService.messageToAction(response));
-                      this.reloadWorkspaceUsers();
+                      this.notifyAndRefreshUsersState(response);
                     }),
                     catchError((err) => {
                       this.store.dispatch(this.messageService.actionFromError(err));

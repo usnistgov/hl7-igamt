@@ -127,6 +127,7 @@ export class WorkspaceService {
     });
   }
 
+  // tslint:disable-next-line: no-identical-functions
   removeUser(id: string, username: string): Observable<Message<IWorkspaceUser>> {
     return this.http.post<Message<IWorkspaceUser>>(this.WORKSPACE_END_POINT + id + '/users/delete', {
       username,

@@ -1,4 +1,4 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild, ViewRef } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild, ViewRef } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 
 @Component({
@@ -6,7 +6,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
   templateUrl: './delete-workspace-dialog.component.html',
   styleUrls: ['./delete-workspace-dialog.component.scss'],
 })
-export class DeleteWorkspaceDialogComponent implements OnInit {
+export class DeleteWorkspaceDialogComponent implements OnInit, AfterViewInit {
 
   name: string;
   confirmation: string;
