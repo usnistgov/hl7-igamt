@@ -5,6 +5,7 @@ import { Table } from 'primeng/table';
 import { Scope } from '../../constants/scope.enum';
 import { Type } from '../../constants/type.enum';
 import { IAddingInfo } from '../../models/adding-info';
+import { ProfileType, Role } from '../../models/conformance-profile.interface';
 import { IDisplayElement } from '../../models/display-element.interface';
 @Component({
   selector: 'app-select-messages',
@@ -92,6 +93,8 @@ export class SelectMessagesComponent implements OnInit {
       structId: obj.parentStructId,
       ext: '',
       description: obj.description,
+      role: Role.SenderAndReceiver,
+      profileType: ProfileType.Constrainable,
       domainInfo: { version: obj.hl7Version, scope: Scope.USER },
       flavor: true,
     };

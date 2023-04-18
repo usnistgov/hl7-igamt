@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintUsage;
 import gov.nist.hit.hl7.igamt.coconstraints.model.ColumnType;
 import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
@@ -789,7 +790,20 @@ public class DefaultVerificationEntryService implements VerificationEntryService
 	}
 
 	@Override
-	public IgamtObjectError Usage_NOTAllowed_IXUsage(Location l, String id, Type type) {
+	public IgamtObjectError Usage_NOTAllowed_IXUsage_SenderProfile(Location l, String id, Type type) {
+		Location location = l.clone();
+		location.setProperty(PropertyType.USAGE);
+		return new IgamtVerificationEntryBuilder("Usage_NOTAllowed_IXUsage")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message(String.format("IX usage could be used only in profiles with role \"Receiver\". The IX usage is used on %s.", location.getInfo().getType().toString() + ' ' + location.getName() + "(Position:  " + location.getInfo().getPositionalPath() + ')'))
+                .entry();
+	}
+	
+	@Override
+	public IgamtObjectError Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(Location l, String id, Type type) {
 		Location location = l.clone();
 		location.setProperty(PropertyType.USAGE);
 		return new IgamtVerificationEntryBuilder("Usage_NOTAllowed_IXUsage")
@@ -797,7 +811,73 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(location)
-                .message(String.format("At %s, Receiver Conformance profile does not allow IX usage.", location.getInfo().getType().toString() + ' ' + location.getName() + "(Position:  " + location.getInfo().getPositionalPath() + ')'))
+                .message(String.format("IX usage could be used only in profiles with role \"Receiver\". The IX usage is used on %s.", location.getInfo().getType().toString() + ' ' + location.getName() + "(Position:  " + location.getInfo().getPositionalPath() + ')'))
                 .entry();
 	}
+	
+	@Override
+	public IgamtObjectError Required_ProfileRole_Error(Location l, String id, Type type) {
+		Location location = l.clone();
+		location.setProperty(PropertyType.ROLE);
+		return new IgamtVerificationEntryBuilder("Usage_NOTAllowed_IXUsage")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message(String.format("Profile Role must be specified"))
+                .entry();
+	}
+	
+	@Override
+	public IgamtObjectError Required_ProfileRole_Warning(Location l, String id, Type type) {
+		Location location = l.clone();
+		location.setProperty(PropertyType.ROLE);
+		return new IgamtVerificationEntryBuilder("Usage_NOTAllowed_IXUsage")
+                .warning()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message(String.format("Profile Role must be specified"))
+                .entry();
+	}
+	
+	@Override
+    public IgamtObjectError Constant_INVALID_Datatype(Location l, String id, Type type, SubStructElement e) {
+            Location location = l.clone();
+            location.setProperty(PropertyType.CONSTANTVALUE);
+            return new IgamtVerificationEntryBuilder("ConstantValue_NOTAllowed_NonPrimitiveDatetype")
+            .error()
+            .handleByUser()
+            .target(id, type)
+            .locationInfo(location)
+            .message(String.format("ConstantValue must be used for the primitive datatype"))
+            .entry();
+    }
+
+    @Override
+    public IgamtObjectError Constant_INVALID_Usage(Location l, String id, Type type) {
+            Location location = l.clone();
+            location.setProperty(PropertyType.CONSTANTVALUE);
+            return new IgamtVerificationEntryBuilder("ConstantValue_NOTAllowed_XUsage")
+            .warning()
+            .handleByUser()
+            .target(id, type)
+            .locationInfo(location)
+            .message(String.format("ConstantValue cannot be used with X usage"))
+            .entry();
+    }
+
+    @Override
+    public IgamtObjectError Constant_INVALID_LengthRange(Location l, String id, Type type, String minLength,
+                    String maxLength, String constantValue) {
+            Location location = l.clone();
+            location.setProperty(PropertyType.CONSTANTVALUE);
+            return new IgamtVerificationEntryBuilder("ConstantValue_LengthInvalid")
+            .error()
+            .handleByUser()
+            .target(id, type)
+            .locationInfo(location)
+            .message(String.format("The length of constantValue: '" + constantValue + "' is not within [" + minLength + "..." + maxLength + "]"))
+            .entry();
+    }
 }

@@ -19,6 +19,7 @@ import { PathService } from 'src/app/modules/shared/services/path.service';
 import { AResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import { IBinding, IBindingContext, StructureElementBindingService } from 'src/app/modules/shared/services/structure-element-binding.service';
 import { PPColumn } from '../pp-column.component';
+import { IUserConfig } from './../../../../../shared/models/config.class';
 
 export interface IUsageAndPredicate {
   usage: IStringValue;
@@ -60,10 +61,10 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
   }
 
   @Input()
-  set usages({ original, config }: { original: Usage, config: Hl7Config }) {
+  set usages({ original, config, userConfig }: { original: Usage, config: Hl7Config,  userConfig: IUserConfig}) {
     const includeW = original === 'W';
     const includeB = original === 'B';
-    const includeIX = original === 'IX';
+    const includeIX = (this.usage && this.usage.value === 'IX' || userConfig.includeIX);
 
     this.options = Hl7Config.getUsageOptions(config.usages, includeW, includeB, includeIX);
   }

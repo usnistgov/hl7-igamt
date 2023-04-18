@@ -84,6 +84,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @Output()
   addCustom = new EventEmitter<IAddWrapper>();
   @Output()
+  addMessages = new EventEmitter<IAddWrapper>();
+  @Output()
   addChild = new EventEmitter<IAddNewWrapper>();
   @Output()
   addVSFromCSV = new EventEmitter<any>();
@@ -204,6 +206,9 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
   importCustom(node, type: Type, scope: Scope) {
     this.addCustom.emit({ node, type, scope });
+  }
+  importMessages(node, type: Type, scope: Scope) {
+    this.addMessages.emit({ node, type, scope });
   }
   importCSV(node, type: Type, scope: Scope) {
     this.addVSFromCSV.emit({ node, type, scope });

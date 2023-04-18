@@ -92,5 +92,5 @@
 
 
 <div class="sidebar-content" id="sidebar-content">
-  <app-ig-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)" (addCustom)="addStructure($event)" (addChild)="addChild($event)" (copy)="copy($event)" (delete)="delete($event)" (addVSFromCSV)="addVSFromCSV($event)"  [delta]="deltaMode$ | async" [viewOnly]="viewOnly$ | async" (deleteNarrative)="checkDeleteNarrative($event)" (addPcChildren)="onAddPcChildren($event)" (deleteContext)="deleteOneChild($event)" [ig]="ig$ | async" (manageProfileStructure)="manageProfileStructure($event)" (checkUnused)="cleanUnused($event)" [verification]="verification$ |async"></app-ig-toc>
+  <app-ig-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)" (addCustom)="addStructure($event)" (addMessages)="addMessages($event)" (addChild)="addChild($event)" (copy)="copy($event)" (delete)="delete($event)" (addVSFromCSV)="addVSFromCSV($event)"  [delta]="deltaMode$ | async" [viewOnly]="viewOnly$ | async" (deleteNarrative)="checkDeleteNarrative($event)" (addPcChildren)="onAddPcChildren($event)" (deleteContext)="deleteOneChild($event)" [ig]="ig$ | async" (manageProfileStructure)="manageProfileStructure($event)" (checkUnused)="cleanUnused($event)" [verification]="verification$ |async"></app-ig-toc>
 </div>

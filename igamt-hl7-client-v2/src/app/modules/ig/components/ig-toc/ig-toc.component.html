@@ -54,7 +54,7 @@
           <div #cpLib>
             <span [contextMenu]="conformanceProfilesContextMenu"> {{node.data.path}} {{node.data.variableName}} {{elementNumbers?elementNumbers.conformanceProfiles: node.children.length}} / {{node.children.length}}</span>
             <context-menu #conformanceProfilesContextMenu [disabled]="viewOnly||delta">
-              <ng-template (execute)="import(node.data, 'EVENTS', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <ng-template (execute)="importMessages(node.data, 'EVENTS', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i>Add HL7 Conformance Profiles
               </ng-template>
 
@@ -262,7 +262,7 @@
               <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
             </span>
           </div>
-          
+
           <app-display-section  [contextMenu]='valueSetContextMenu' [element]="node.data" #rla="routerLinkActive"
                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" ></app-display-section>
           </div>

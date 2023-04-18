@@ -110,7 +110,8 @@
               }"
               [usages]="{
                 original : rowData.oldUsage,
-                config: config
+                config: config,
+                userConfig: userConfig | async
               }"
               [tree]="tree"
               [elementId]="rowData.id"

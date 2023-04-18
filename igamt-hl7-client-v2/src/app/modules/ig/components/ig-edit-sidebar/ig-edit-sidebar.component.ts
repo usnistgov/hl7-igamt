@@ -73,6 +73,7 @@ import { IgTocFilterService, IIgTocFilterConfiguration, selectIgTocFilter } from
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
 import { selectVerificationResult } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
 import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
+import { IMessagePickerContext, IMessagePickerData, MessagePickerComponent } from './../../../shared/components/message-picker/message-picker.component';
 import { UnusedElementsComponent } from './../../../shared/components/unused-elements/unused-elements.component';
 import { VerificationService } from './../../../shared/services/verification.service';
 import { ITypedSection } from './../ig-toc/ig-toc.component';
@@ -84,34 +85,6 @@ import { ManageProfileStructureComponent } from './../manage-profile-structure/m
   styleUrls: ['./ig-edit-sidebar.component.scss'],
 })
 export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit {
-
-  nodes$: Observable<any[]>;
-
-  verification$: Observable<Dictionary<IVerificationEnty[]>>;
-  hl7Version$: Observable<string[]>;
-  documentRef$: Observable<IDocumentRef>;
-  conformanceProfiles$: Observable<IDisplayElement[]>;
-  config$: Observable<Hl7Config>;
-  version$: Observable<string>;
-  delta: boolean;
-  viewOnly$: Observable<boolean>;
-  @Input()
-  deltaMode = false;
-  @ViewChild(IgTocComponent) toc: IgTocComponent;
-  @ViewChild('triggerPopOver') triggerPopOver: NgbPopover;
-  optionsToDisplay: any;
-  deltaOptions: SelectItem[] = [{ label: 'CHANGED', value: 'UPDATED' }, { label: 'DELETED', value: 'DELETED' }, { label: 'ADDED', value: 'ADDED' }];
-  selectedValues = ['UPDATED', 'DELETED', 'ADDED', 'UNCHANGED'];
-  deltaMode$: Observable<boolean> = of(false);
-  selectedTargetId = 'IG';
-  derived: boolean;
-  ig$: Observable<IgDocument>;
-  selectedSubscription: Subscription;
-  tocFilterSubscription: Subscription;
-  saveSuccessSubscription: Subscription;
-  filterActive$: Observable<boolean>;
-
-  @BlockUI('toc') blockUIView: NgBlockUI;
 
   constructor(
     private store: Store<IDocumentDisplayInfo<IgDocument>>,
@@ -155,6 +128,36 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
         }
       })).subscribe();
   }
+
+  nodes$: Observable<any[]>;
+
+  verification$: Observable<Dictionary<IVerificationEnty[]>>;
+  hl7Version$: Observable<string[]>;
+  documentRef$: Observable<IDocumentRef>;
+  conformanceProfiles$: Observable<IDisplayElement[]>;
+  config$: Observable<Hl7Config>;
+  version$: Observable<string>;
+  delta: boolean;
+  viewOnly$: Observable<boolean>;
+  @Input()
+  deltaMode = false;
+  @ViewChild(IgTocComponent) toc: IgTocComponent;
+  @ViewChild('triggerPopOver') triggerPopOver: NgbPopover;
+  optionsToDisplay: any;
+  deltaOptions: SelectItem[] = [{ label: 'CHANGED', value: 'UPDATED' }, { label: 'DELETED', value: 'DELETED' }, { label: 'ADDED', value: 'ADDED' }];
+  selectedValues = ['UPDATED', 'DELETED', 'ADDED', 'UNCHANGED'];
+  deltaMode$: Observable<boolean> = of(false);
+  selectedTargetId = 'IG';
+  derived: boolean;
+  ig$: Observable<IgDocument>;
+  selectedSubscription: Subscription;
+  tocFilterSubscription: Subscription;
+  saveSuccessSubscription: Subscription;
+  filterActive$: Observable<boolean>;
+
+  @BlockUI('toc') blockUIView: NgBlockUI;
+
+  MessagePickerComponent;
 
   updateTocFilter(tocFilter: IIgTocFilterConfiguration) {
     this.igTocFilterService.setFilter(tocFilter);
@@ -221,6 +224,38 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
           type: event.type,
         };
         const dialogRef = this.dialog.open(ResourcePickerComponent, {
+          data: dialogData,
+        });
+        dialogRef.afterClosed().pipe(
+          map((result) => {
+            this.store.dispatch(new ClearResource());
+            return result;
+          }),
+          filter((x) => x !== undefined),
+          withLatestFrom(this.documentRef$),
+          take(1),
+          map(([result, documentRef]) => {
+            this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type }));
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
+    subscription.unsubscribe();
+  }
+
+  addMessages(event: IAddWrapper) {
+    const subscription = this.hl7Version$.pipe(
+      withLatestFrom(this.version$),
+      take(1),
+      map(([versions, selectedVersion]) => {
+        const dialogData: IMessagePickerData = {
+          hl7Versions: versions,
+          existing: event.node.children,
+          version: selectedVersion,
+          scope: event.scope,
+          context: IMessagePickerContext.ADD,
+        };
+        const dialogRef = this.dialog.open(MessagePickerComponent, {
           data: dialogData,
         });
         dialogRef.afterClosed().pipe(

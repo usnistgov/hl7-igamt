@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Store } from '@ngrx/store';
 import * as _ from 'lodash';
 import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import { IPathInfo } from 'src/app/modules/shared/services/element-naming.service';
 import { Hl7V2TreeService } from 'src/app/modules/shared/services/hl7-v2-tree.service';
@@ -21,6 +22,8 @@ import { AResourceRepositoryService } from '../../../shared/services/resource-re
 import { IBindingContext } from '../../../shared/services/structure-element-binding.service';
 import { ProfileComponentRefChange } from '../../services/profile-component-ref-change.object';
 import { ProfileComponentStructureTreeItemMap } from '../../services/profile-component-structure-tree-item-map.object';
+import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
+import { IUserConfig } from './../../../shared/models/config.class';
 
 export interface IItemLocation {
   path: string;
@@ -77,6 +80,7 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   @Input()
   config: Hl7Config;
   treeExpandedNodes: string[];
+  public userConfig: Observable<IUserConfig>;
 
   @Input()
   set columns(cols: HL7v2TreeColumnType[]) {
@@ -167,7 +171,7 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   }
 
   constructor(
-    private treeService: Hl7V2TreeService,
+    private treeService: Hl7V2TreeService, private store: Store<any>,
   ) {
     this.treeSubscriptions = [];
     this.treeExpandedNodes = [];
@@ -177,6 +181,10 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
     this.nodes$ = new BehaviorSubject([]);
     this.tree$ = new BehaviorSubject([]);
     this.treeView$ = new BehaviorSubject(false);
+
+    this.userConfig = this.store.select(getUserConfigState).pipe(
+      filter((config) => !!config),
+    );
 
     this.activeNodes$ = combineLatest([
       this.treeView$,

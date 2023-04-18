@@ -1,3 +1,5 @@
+import { IUserConfig } from './../../../shared/models/config.class';
+import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
@@ -61,6 +63,8 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
   selected: IResourceAndDisplay<any>;
   activeTab: GeneratedFlavorTabs;
   tabs: GeneratedFlavorTabs[] = [];
+  public userConfig: Observable<IUserConfig>;
+
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -124,6 +128,10 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
     this.username = this.store.select(selectUsername);
     this.bindingConfig = this.store.select(selectBindingConfig);
     this.bindingConfig.subscribe();
+
+    this.userConfig = this.store.select(getUserConfigState).pipe(
+      filter((config) => !!config),
+    );
 
     this.resourceSubject = new ReplaySubject<GroupOptions>(1);
 

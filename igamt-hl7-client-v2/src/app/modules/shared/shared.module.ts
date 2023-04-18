@@ -97,6 +97,7 @@ import { IgTypeComponent } from './components/ig-type/ig-type.component';
 import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
 import { ImportStructureComponent } from './components/import-structure/import-structure.component';
 import { IssueBadgeComponent } from './components/issue-badge/issue-badge.component';
+import { MessagePickerComponent } from './components/message-picker/message-picker.component';
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
 import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';
 import { NewPasswordFromComponent } from './components/new-password-from/new-password-from.component';
@@ -121,6 +122,7 @@ import { SelectSegmentsComponent } from './components/select-segments/select-seg
 import { SelectSlicingContextComponent } from './components/select-sling-context/select-slicing-context.component';
 import { SelectValueSetsComponent } from './components/select-value-sets/select-value-sets.component';
 import { SelectVersionsComponent } from './components/select-versions/select-versions.component';
+import { SelectedMessagesComponent } from './components/selected-messages/selected-messages.component';
 import { SharingDialogComponent } from './components/sharing-dialog/sharing-dialog.component';
 import { SlicingRowComponent } from './components/slicing-editor/slicing-row.component';
 import { SlicingViewerComponent } from './components/slicing-viewer/slicing-viewer.component';
@@ -253,6 +255,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     IgTypeComponent,
     ActiveUsersListComponent,
     FirstLetterPipe,
+    MessagePickerComponent,
+    SelectedMessagesComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -448,6 +452,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DeriveDialogComponent,
     VerificationBadgeComponent,
     IgTypeComponent,
+    MessagePickerComponent,
+    SelectedMessagesComponent,
     ActiveUsersListComponent,
     FirstLetterPipe,
   ],
@@ -486,6 +492,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     UnusedElementsComponent,
     DeleteListConfirmationComponent,
     RefreshDialogComponent,
+    MessagePickerComponent,
   ],
 })
 export class SharedModule {
