@@ -100,7 +100,6 @@ public class SegmentDataModel implements Serializable, Comparable {
 	 */
 	public void putModel(Segment s, DatatypeService datatypeService, InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService,  Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
 		this.model = s;
-
 		if (s.getBinding() != null){
 			if(s.getBinding().getConformanceStatements() != null){
 				for(ConformanceStatement cs: s.getBinding().getConformanceStatements()){
@@ -144,48 +143,51 @@ public class SegmentDataModel implements Serializable, Comparable {
 		for (StructureElementBinding seb : sebs) {
 			String key;
 			String localPath;
-			if(path == null){
-				key = seb.getLocationInfo().getPosition() + "";
-				localPath = readablePath + "-" + seb.getLocationInfo().getPosition();
-			}else {
-				key = path + "." + seb.getLocationInfo().getPosition();
-				localPath = readablePath + "." + seb.getLocationInfo().getPosition();
-			}
+			if(seb.getLocationInfo() != null) {
+				if(path == null){
+					key = seb.getLocationInfo().getPosition() + "";
+					localPath = readablePath + "-" + seb.getLocationInfo().getPosition();
+				}else {
+					key = path + "." + seb.getLocationInfo().getPosition();
+					localPath = readablePath + "." + seb.getLocationInfo().getPosition();
+				}
 
-			if(seb.getPredicate() != null){
-				Predicate p = seb.getPredicate();
-				p.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
-				this.predicateMap.put(key, p); 
-			}
+				if(seb.getPredicate() != null){
+					Predicate p = seb.getPredicate();
+					p.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
+					this.predicateMap.put(key, p); 
+				}
 
-			//Fixed SingleCode_20220625
-			if(seb.getSingleCodeBindings() != null) {
-				this.singleCodeMap.put(key, seb.getSingleCodeBindings());
-				
-			}
+				//Fixed SingleCode_20220625
+				if(seb.getSingleCodeBindings() != null) {
+					this.singleCodeMap.put(key, seb.getSingleCodeBindings());
+					
+				}
 
-			if(seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0){
-				Set<ValuesetBindingDataModel> vbdm = new HashSet<ValuesetBindingDataModel>();
-				for(ValuesetBinding vb : seb.getValuesetBindings()) {
-					if(vb.getValueSets() !=null) {
-						for(String s: vb.getValueSets()) {
-							ValuesetBindingDataModel valuesetBindingDataModel = valuesetBindingDataModelMap.get(s);
-							if(valuesetBindingDataModel != null) {
-								valuesetBindingDataModel.setValuesetBinding(vb);
-								vbdm.add(valuesetBindingDataModel);
+				if(seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0){
+					Set<ValuesetBindingDataModel> vbdm = new HashSet<ValuesetBindingDataModel>();
+					for(ValuesetBinding vb : seb.getValuesetBindings()) {
+						if(vb.getValueSets() !=null) {
+							for(String s: vb.getValueSets()) {
+								ValuesetBindingDataModel valuesetBindingDataModel = valuesetBindingDataModelMap.get(s);
+								if(valuesetBindingDataModel != null) {
+									valuesetBindingDataModel.setValuesetBinding(vb);
+									vbdm.add(valuesetBindingDataModel);
+								}
 							}
+						}
+
+						if(vbdm != null && vbdm.size() > 0) {
+							this.valuesetMap.put(key, vbdm);          
 						}
 					}
 
-					if(vbdm != null && vbdm.size() > 0) {
-						this.valuesetMap.put(key, vbdm);          
+					if (seb.getChildren() != null) {
+						this.popPathBinding(localPath, seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
 					}
 				}
-
-				if (seb.getChildren() != null) {
-					this.popPathBinding(localPath, seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
-				}
 			}
+			
 
 		}
 	}
