@@ -47,6 +47,8 @@ import gov.nist.hit.hl7.auth.util.requests.AdminUserRequest;
 import gov.nist.hit.hl7.auth.util.requests.ChangePasswordConfirmRequest;
 import gov.nist.hit.hl7.auth.util.requests.ChangePasswordRequest;
 import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage;
+import gov.nist.hit.hl7.auth.util.requests.FindUserRequest;
+import gov.nist.hit.hl7.auth.util.requests.FindUserResponse;
 import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
 import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
@@ -334,8 +336,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Override
 	public UserListResponse getAllUsers(HttpServletRequest req) {
-		System.out.println("CALLING");
-		System.out.println(env.getProperty(AUTH_URL));
+
 		ResponseEntity<UserListResponse> response = restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/users",
 				HttpMethod.GET, new HttpEntity<String>(this.getCookiesHeaders(req)), UserListResponse.class);
 		return response.getBody();
@@ -417,23 +418,41 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
-				System.out.println("==========================================");
-
-				System.out.println(cookie.getName() + " ==" + cookie.getValue() );
 				if (cookie.getName().equals("authCookie")) {
-					System.out.println("Found Cookie");
-					System.out.println(cookie.getValue());
-
 					headers.add("Cookie", "authCookie=" + cookie.getValue());
 				}
 			}
-		} else {
-			System.out.println("++++++++++++NO COOKIES++++++++++++++++++");
-
-		}
+		} 
 		return headers;
 		
 	}
 	
+	@Override
+	public FindUserResponse findUser(HttpServletRequest req, FindUserRequest user) throws AuthenticationException {
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-type", "application/json");
+			RestTemplate restTemplate = new RestTemplate();
+			restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+			HttpEntity<FindUserRequest> request = new HttpEntity<>(user, this.getCookiesHeaders(req));
+
+
+			ResponseEntity<FindUserResponse> response =
+					restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/find", HttpMethod.POST, request,
+							new ParameterizedTypeReference<FindUserResponse>() {});
+
+
+
+			return response.getBody();
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
+			String message = e.getResponseBodyAsString();
+
+			throw new AuthenticationException(getMessageString(message));
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new AuthenticationException(e.getMessage());
+		}
+	}
+
 
 }

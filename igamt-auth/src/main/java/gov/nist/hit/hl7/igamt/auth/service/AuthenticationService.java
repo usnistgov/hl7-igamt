@@ -19,6 +19,8 @@ import org.springframework.security.core.Authentication;
 import gov.nist.hit.hl7.auth.util.requests.AdminUserRequest;
 import gov.nist.hit.hl7.auth.util.requests.ChangePasswordConfirmRequest;
 import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage;
+import gov.nist.hit.hl7.auth.util.requests.FindUserRequest;
+import gov.nist.hit.hl7.auth.util.requests.FindUserResponse;
 import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
 import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
@@ -53,6 +55,14 @@ public interface AuthenticationService {
   public ConnectionResponseMessage<UserResponse> update(RegistrationRequest user, HttpServletRequest req)
       throws AuthenticationException;
 
-	public ConnectionResponseMessage<UserResponse>  updatePendingAdmin(AdminUserRequest requestPara, HttpServletRequest req) throws AuthenticationException;
+  public ConnectionResponseMessage<UserResponse>  updatePendingAdmin(AdminUserRequest requestPara, HttpServletRequest req) throws AuthenticationException;
+
+  public FindUserResponse findUser(HttpServletRequest req, FindUserRequest user) throws AuthenticationException;
+
+
+
+
+
+
 
 }

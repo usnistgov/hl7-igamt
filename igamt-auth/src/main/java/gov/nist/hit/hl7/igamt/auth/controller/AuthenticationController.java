@@ -23,6 +23,8 @@ import gov.nist.hit.hl7.auth.util.requests.AdminUserRequest;
 import gov.nist.hit.hl7.auth.util.requests.ChangePasswordConfirmRequest;
 import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage;
 import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage.Status;
+import gov.nist.hit.hl7.auth.util.requests.FindUserRequest;
+import gov.nist.hit.hl7.auth.util.requests.FindUserResponse;
 import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
 import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
@@ -104,7 +106,6 @@ public class AuthenticationController {
   public UserListResponse getAllUserList(HttpServletRequest req,
           HttpServletResponse res, Authentication authentication)
       throws IOException {
-	  System.out.println("======================TEST users================");
     return authService.getAllUsers(req);
   }
 
@@ -208,7 +209,6 @@ public class AuthenticationController {
 	String baseUrl = env.getProperty("host.url");
     return baseUrl  + "/reset-password-confirm/" + token;
   }
-
 
 
 }
