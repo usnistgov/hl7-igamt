@@ -992,7 +992,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 				for (int i = 1; i < components.size() + 1; i++) {
 					ComponentDataModel c = components.get(i);
 					Element elmComponent = new Element("Component");
-					Datatype childDT = igModel.findDatatype(c.getDatatype().getId()).getModel();
+					DatatypeDataModel childDTModel = igModel.findDatatype(c.getModel().getRef().getId());
+					Datatype childDT = null;
+					if(childDTModel == null) childDT = this.datatypeService.findById(c.getModel().getRef().getId());
+					else childDT = childDTModel.getModel();
 
 					elmComponent.addAttribute(new Attribute("Name", this.str(c.getModel().getName())));
 					elmComponent.addAttribute(
