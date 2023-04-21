@@ -1,5 +1,3 @@
-import { IUserConfig } from './../../../shared/models/config.class';
-import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
@@ -15,7 +13,7 @@ import { HL7v2TreeColumnType } from 'src/app/modules/shared/components/hl7-v2-tr
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { IDocumentRef } from 'src/app/modules/shared/models/abstract-domain.interface';
 import { ICompositeProfileState, IResourceAndDisplay } from 'src/app/modules/shared/models/composite-profile';
-import { Hl7Config, IValueSetBindingConfigMap } from 'src/app/modules/shared/models/config.class';
+import { Hl7Config, IUserConfig, IValueSetBindingConfigMap } from 'src/app/modules/shared/models/config.class';
 import { ConstraintType } from 'src/app/modules/shared/models/cs.interface';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
@@ -24,8 +22,7 @@ import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/
 import { getHl7ConfigState, selectBindingConfig } from 'src/app/root-store/config/config.reducer';
 import { selectAllDatatypes, selectAllSegments, selectCompositeProfileById } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { selectValueSetsNodes } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
-import { IUserConfig } from './../../../shared/models/config.class';
+import { getUserConfigState } from 'src/app/root-store/user-config/user-config.reducer';
 
 export type GroupOptions = Array<{
   label: string,
@@ -66,7 +63,6 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
   activeTab: GeneratedFlavorTabs;
   tabs: GeneratedFlavorTabs[] = [];
   public userConfig: Observable<IUserConfig>;
-
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -192,7 +188,7 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
     switch (elm.display.type) {
       case Type.DATATYPE:
       case Type.SEGMENT:
-        this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS ];
+        this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS];
         if (elm.resource.name === 'OBX') {
           this.tabs.push(GeneratedFlavorTabs.DYNAMIC_MAPPING);
         }

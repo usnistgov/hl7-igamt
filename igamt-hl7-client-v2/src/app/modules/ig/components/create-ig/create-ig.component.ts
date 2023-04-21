@@ -47,15 +47,7 @@ export class CreateIGComponent implements OnInit {
   }
 
   setSelected($event: IAddingInfo[]) {
-    console.log($event);
     this.selectedEvents = $event;
-  }
-  next($event: IAddingInfo[]) {
-    this.step = 1;
-  }
-
-  previous($event: IAddingInfo[]) {
-    this.step = 0;
   }
 
   submit() {

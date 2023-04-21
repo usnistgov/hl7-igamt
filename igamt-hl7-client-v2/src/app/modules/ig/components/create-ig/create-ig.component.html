@@ -23,8 +23,6 @@
 
   <div class="messages">
 
-    <!-- <span class="form-label-lg" style="margin-right: 5px;">Conformance Profiles</span> <button class="btn btn-primary" (click)="pickMessages(version)"><i class="fa fa-plus"></i></button> -->
-
     <app-selected-messages (messages)="setSelected($event)" #child style="height:100%; background-color: black;"
                          [selectedData]="selectedEvents"></app-selected-messages>
   </div>
