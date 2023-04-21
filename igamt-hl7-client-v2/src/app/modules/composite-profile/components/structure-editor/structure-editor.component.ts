@@ -1,3 +1,5 @@
+import { IUserConfig } from './../../../shared/models/config.class';
+import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
@@ -64,6 +66,7 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
   activeTab: GeneratedFlavorTabs;
   tabs: GeneratedFlavorTabs[] = [];
   public userConfig: Observable<IUserConfig>;
+
 
   constructor(
     readonly repository: StoreResourceRepositoryService,

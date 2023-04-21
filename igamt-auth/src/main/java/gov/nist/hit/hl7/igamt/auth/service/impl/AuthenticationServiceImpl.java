@@ -17,7 +17,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import gov.nist.hit.hl7.auth.util.requests.*;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -44,6 +43,17 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.auth.util.crypto.SecurityConstants;
+import gov.nist.hit.hl7.auth.util.requests.AdminUserRequest;
+import gov.nist.hit.hl7.auth.util.requests.ChangePasswordConfirmRequest;
+import gov.nist.hit.hl7.auth.util.requests.ChangePasswordRequest;
+import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage;
+import gov.nist.hit.hl7.auth.util.requests.FindUserRequest;
+import gov.nist.hit.hl7.auth.util.requests.FindUserResponse;
+import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
+import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
+import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
+import gov.nist.hit.hl7.auth.util.requests.UserListResponse;
+import gov.nist.hit.hl7.auth.util.requests.UserResponse;
 import gov.nist.hit.hl7.igamt.auth.exception.AuthenticationException;
 import gov.nist.hit.hl7.igamt.auth.service.AuthenticationService;
 
@@ -353,6 +363,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Override
 	public UserListResponse getAllUsers(HttpServletRequest req) {
+
 		ResponseEntity<UserListResponse> response = restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/users",
 				HttpMethod.GET, new HttpEntity<String>(this.getCookiesHeaders(req)), UserListResponse.class);
 		return response.getBody();
@@ -429,9 +440,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	
 	private HttpHeaders getCookiesHeaders(HttpServletRequest req){
 		Cookie cookies[] = req.getCookies();
-
+		
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-type", "application/json");
 
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
@@ -439,10 +449,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 					headers.add("Cookie", "authCookie=" + cookie.getValue());
 				}
 			}
-		}
+		} 
 		return headers;
 		
 	}
-	
 
 }

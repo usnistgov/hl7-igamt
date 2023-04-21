@@ -825,6 +825,5 @@ public class BootstrapApplication implements CommandLineRunner {
 		this.dataFixer.removeBindingsV2_9();
 	}
 	
-	
 
 }
