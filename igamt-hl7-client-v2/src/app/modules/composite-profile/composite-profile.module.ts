@@ -26,6 +26,6 @@ import { CompositeProfileService } from './services/composite-profile.service';
   ],
   providers: [
     CompositeProfileService,
-  ]
+  ],
 })
 export class CompositeProfileModule { }

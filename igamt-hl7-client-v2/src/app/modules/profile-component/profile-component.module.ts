@@ -60,7 +60,7 @@ import { ProfileComponentService } from './services/profile-component.service';
     SharedModule,
   ],
   providers: [
-    ProfileComponentService
+    ProfileComponentService,
   ],
   entryComponents: [AddProfileComponentItemComponent, CoConstraintsEditorComponent],
 })
