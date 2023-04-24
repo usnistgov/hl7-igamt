@@ -26,6 +26,7 @@ import { SegmentConformanceStatementEditorComponent } from './components/segment
 import { SegmentContextDynamicMappingComponent } from './components/segment-context-dynamic-mapping/segment-context-dynamic-mapping.component';
 import { SegmentContextStructureEditorComponent } from './components/segment-context-structure-editor/segment-context-structure-editor.component';
 import { ProfileComponentRoutingModule } from './profile-component-routing.module';
+import { ProfileComponentService } from './services/profile-component.service';
 
 @NgModule({
   declarations: [
@@ -57,6 +58,9 @@ import { ProfileComponentRoutingModule } from './profile-component-routing.modul
     CoConstraintsModule,
     EffectsModule.forFeature([ProfileComponentEffects]),
     SharedModule,
+  ],
+  providers: [
+    ProfileComponentService
   ],
   entryComponents: [AddProfileComponentItemComponent, CoConstraintsEditorComponent],
 })

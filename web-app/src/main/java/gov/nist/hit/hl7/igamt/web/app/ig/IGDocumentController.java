@@ -1240,7 +1240,7 @@ public class IGDocumentController extends BaseController {
   @RequestMapping(value = "/api/igdocuments/{id}/publish", method = RequestMethod.POST, produces = {
   "application/json" })
   @NotifySave(id = "#id", type = "'IGDOCUMENT'")
-  @PreAuthorize("CanPublish() && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
+  @PreAuthorize("CanPublish() && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_LENIENT)")
   public @ResponseBody ResponseMessage<String> publish(@PathVariable("id") String id, @RequestBody PublishingInfo info,  Authentication authentication)
       throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);
@@ -1258,7 +1258,7 @@ public class IGDocumentController extends BaseController {
   public @ResponseBody ResponseMessage<String> lockIg(@PathVariable("id") String id,  Authentication authentication)
       throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     
     this.igService.lockIg(ig);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Locked Successfully", id, false,
@@ -1278,7 +1278,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}", method = RequestMethod.DELETE, produces = { "application/json" })
   @NotifySave(id = "#id", type = "'IGDOCUMENT'")
-  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_LENIENT)")
   public @ResponseBody ResponseMessage<String> archive(@PathVariable("id") String id, Authentication authentication)
       throws IGNotFoundException, ForbiddenOperationException {
 

@@ -54,8 +54,11 @@ public class AccessControlService {
             return L(AccessLevel.READ);
         }
 
+        boolean statusIsArchived = (document.getStatus() != null && document.getStatus().equals(Status.ARCHIVED));
+        boolean scopeIsArchived = (document.getDomainInfo() != null && document.getDomainInfo().getScope() != null && document.getDomainInfo().getScope().equals(Scope.ARCHIVED));
+
         // If document is archived
-        if(document.getStatus() != null && document.getStatus().equals(Status.ARCHIVED)) {
+        if(statusIsArchived || scopeIsArchived) {
             // Grant No access
             return null;
         }
@@ -162,10 +165,6 @@ public class AccessControlService {
                 case VIEW:
                     return L(AccessLevel.READ);
             }
-        }
-
-        if(isAdmin(user)) {
-            return L(AccessLevel.READ);
         }
 
         return null;

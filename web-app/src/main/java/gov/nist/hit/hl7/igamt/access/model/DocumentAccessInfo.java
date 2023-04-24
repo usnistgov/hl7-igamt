@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.access.model;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Audience;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 
@@ -13,6 +14,7 @@ public class DocumentAccessInfo {
     private Status status;
     private Audience audience;
     private Date updateDate;
+    private DomainInfo domainInfo;
 
     public DocumentAccessInfo() {
     }
@@ -63,5 +65,13 @@ public class DocumentAccessInfo {
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public DomainInfo getDomainInfo() {
+        return domainInfo;
+    }
+
+    public void setDomainInfo(DomainInfo domainInfo) {
+        this.domainInfo = domainInfo;
     }
 }

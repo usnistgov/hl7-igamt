@@ -153,7 +153,11 @@ export class IgEditEffects extends DamWidgetEffect {
       IgEditActionTypes.CopyResourceSuccess,
       IgEditActionTypes.AddResourceSuccess,
       IgEditActionTypes.DeleteResourceSuccess,
-      IgEditActionTypes.ImportResourceFromFileSuccess),
+      IgEditActionTypes.CreateProfileComponentSuccess,
+      IgEditActionTypes.ImportResourceFromFileSuccess,
+      IgEditActionTypes.DeleteResourcesSuccess,
+      IgEditActionTypes.CreateCoConstraintGroupSuccess,
+      IgEditActionTypes.AddProfileComponentContextSuccess),
     flatMap((action) => {
       return this.store.select(selectLoadedDocumentInfo).pipe(
         take(1),
@@ -798,9 +802,6 @@ export class IgEditEffects extends DamWidgetEffect {
         this.store.select(selectIgDocument).pipe(take(1))).pipe(
           take(1),
           flatMap(([response, selected, ig]) => {
-            console.log('response');
-            console.log(response);
-
             const url = '/' + 'ig/' + ig.id;
 
             const redirect: boolean = selected && selected.display && action.payload.ids.indexOf(selected.display.id) > -1;

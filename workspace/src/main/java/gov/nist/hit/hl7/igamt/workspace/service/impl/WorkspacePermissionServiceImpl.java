@@ -59,11 +59,11 @@ public class WorkspacePermissionServiceImpl implements WorkspacePermissionServic
             if (user.getPermissions().isAdmin()) {
                 return WorkspacePermissionType.EDIT;
             }
+            if (user.getPermissions().getByFolder() != null && user.getPermissions().getByFolder().containsKey(folderId)) {
+                return user.getPermissions().getByFolder().get(folderId);
+            }
             if (user.getPermissions().getGlobal() != null) {
                 return user.getPermissions().getGlobal();
-            }
-            if (user.getPermissions().getByFolder() != null) {
-                return user.getPermissions().getByFolder().get(folderId);
             }
         }
         return null;
