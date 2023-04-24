@@ -1007,10 +1007,10 @@ public class VerificationServiceImpl implements VerificationService {
 
 			if (this.IXUsageExist) {
 				result.getErrors().add(this.verificationEntryService.Required_ProfileRole_Error(location,
-						conformanceProfile.getId(), Type.PROFILE));
+						conformanceProfile.getId(), Type.CONFORMANCEPROFILE));
 			} else {
 				result.getErrors().add(this.verificationEntryService.Required_ProfileRole_Warning(location,
-						conformanceProfile.getId(), Type.PROFILE));
+						conformanceProfile.getId(), Type.CONFORMANCEPROFILE));
 			}
 
 		}

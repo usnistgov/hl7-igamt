@@ -142,6 +142,7 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { DocumentConfigComponent } from './components/document-config/document-config.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -244,6 +245,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     IgTypeComponent,
     MessagePickerComponent,
     SelectedMessagesComponent,
+    DocumentConfigComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -434,6 +436,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     IgTypeComponent,
     MessagePickerComponent,
     SelectedMessagesComponent,
+    DocumentConfigComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -468,6 +471,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     UnusedElementsComponent,
     DeleteListConfirmationComponent,
     MessagePickerComponent,
+    DocumentConfigComponent,
   ],
 })
 export class SharedModule {

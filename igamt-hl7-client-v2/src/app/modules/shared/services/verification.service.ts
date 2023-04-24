@@ -186,6 +186,11 @@ export class VerificationService {
   }
 
   getVerificationEntryTable(entries: IVerificationEnty[], repository: AResourceRepositoryService): Observable<IVerificationEntryTable> {
+
+    console.log("entries");
+    console.log(entries);
+
+    console.log(repository);
     if (!entries || entries.length === 0) {
       return of({
         valid: true,
@@ -231,6 +236,7 @@ export class VerificationService {
 
     ).pipe(
       map((resources) => {
+        console.log(resources);
         const grouped = entries.reduce((acc, entry) => {
           const key: IResourceKey = {
             id: entry.targetId,

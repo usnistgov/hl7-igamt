@@ -22,6 +22,7 @@ import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.cl
 import { IgService } from '../../services/ig.service';
 import { selectVerificationResult, selectVerificationStatus } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
 import { VerifyIg } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { DocumentConfigComponent } from 'src/app/modules/shared/components/document-config/document-config.component';
 
 @Component({
   selector: 'app-ig-edit-toolbar',
@@ -154,6 +155,23 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       }),
     ).subscribe();
   }
+
+  openConfig() {
+    combineLatest(this.getIgId()).pipe(
+      take(1),
+      map(([igId]) => {
+        const dialogRef = this.dialog.open(DocumentConfigComponent, {
+          data: {id : igId}
+        });
+        dialogRef.afterClosed().pipe(
+        ).subscribe();
+      }),
+    ).subscribe();
+  }
+
+
+
+  DocumentConfigComponent
 
   getIgId(): Observable<string> {
     return this.store.select(fromIgDocumentEdit.selectIgId);

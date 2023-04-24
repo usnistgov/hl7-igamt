@@ -26,10 +26,16 @@
 </div>
 <div>
 
+  <button class="btn btn-sm toolbar-button" type="button" (click)="openConfig()">
+    <i class="fa fa-cog"></i>
+    Configuration
+  </button>
+
   <button class="btn btn-info btn-sm toolbar-button" type="button" (click)="exportTool()">
     <i class="fa fa-plug"></i>
     Connect
   </button>
+
   <div ngbDropdown class="d-inline-block">
     <button class="btn btn-secondary btn-sm toolbar-button" id="differentialExport" ngbDropdownToggle>Export</button>
     <div ngbDropdownMenu aria-labelledby="exportDropDown">
