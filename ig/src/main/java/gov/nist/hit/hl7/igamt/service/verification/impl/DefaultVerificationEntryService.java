@@ -819,7 +819,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
 	public IgamtObjectError Required_ProfileRole_Error(Location l, String id, Type type) {
 		Location location = l.clone();
 		location.setProperty(PropertyType.ROLE);
-		return new IgamtVerificationEntryBuilder("Usage_NOTAllowed_IXUsage")
+		return new IgamtVerificationEntryBuilder("ProfileRole_MissingOrInValid")
                 .error()
                 .handleByUser()
                 .target(id, type)
@@ -832,7 +832,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
 	public IgamtObjectError Required_ProfileRole_Warning(Location l, String id, Type type) {
 		Location location = l.clone();
 		location.setProperty(PropertyType.ROLE);
-		return new IgamtVerificationEntryBuilder("Usage_NOTAllowed_IXUsage")
+		return new IgamtVerificationEntryBuilder("ProfileRole_MissingOrInValid")
                 .warning()
                 .handleByUser()
                 .target(id, type)
