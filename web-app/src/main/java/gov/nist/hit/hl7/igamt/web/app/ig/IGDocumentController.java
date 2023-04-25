@@ -1544,17 +1544,23 @@ public class IGDocumentController extends BaseController {
   @PreAuthorize("AccessResource('IGDOCUMENT', #igid, READ)")
   public @ResponseBody VerificationReport verificationIGById(@PathVariable("igid") String igid, Authentication authentication) {
     Ig ig = this.igService.findById(igid);
+    Map<String, String> map = new HashMap<>();
     if (ig != null) {
     	for(Link l : ig.getCompositeProfileRegistry().getChildren()) {
         	
         	if(l != null) {
         		CompositeProfileState cps = this.eval(l.getId());
                 Link newLink = new Link(cps.getConformanceProfile().getResource());
+                System.out.println(l.getId() + "--->" + newLink.getId());
+                
+                map.put(newLink.getId(), l.getId());
+                
+      
                 ig.getConformanceProfileRegistry().getChildren().add(newLink);
         	}
         }
         
-    	VerificationReport report =  this.verificationService.verifyIg(ig);	
+    	VerificationReport report =  this.verificationService.verifyIg(ig,map);	
         this.inMemoryDomainExtensionService.clear(this.token);
         return report;
     }

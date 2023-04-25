@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.ig.service;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -27,6 +29,8 @@ public interface VerificationService {
   CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile);
   
   VerificationReport verifyIg(String documentId);
-  
+ 
   VerificationReport verifyIg(Ig ig);
+  
+  VerificationReport verifyIg(Ig ig, Map<String, String> map);
 }
