@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.common.base.model;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
@@ -22,7 +23,7 @@ public class DocumentSummary {
 	private Status status;
 	private List<String> elements;
 	private SharePermission sharePermission;
-	private List<String> sharedUsers;
+	private Set<String> sharedUsers;
 	private String currentAuthor;
 	private Boolean draft;
 	private Type resourceType;
@@ -146,11 +147,11 @@ public class DocumentSummary {
 		this.sharePermission = sharePermission;
 	}
 
-	public List<String> getSharedUsers() {
+	public Set<String> getSharedUsers() {
 		return sharedUsers;
 	}
 
-	public void setSharedUsers(List<String> sharedUsers) {
+	public void setSharedUsers(Set<String> sharedUsers) {
 		this.sharedUsers = sharedUsers;
 	}
 

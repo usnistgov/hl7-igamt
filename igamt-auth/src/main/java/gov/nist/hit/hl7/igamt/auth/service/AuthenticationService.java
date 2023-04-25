@@ -28,6 +28,8 @@ import gov.nist.hit.hl7.auth.util.requests.UserListResponse;
 import gov.nist.hit.hl7.auth.util.requests.UserResponse;
 import gov.nist.hit.hl7.igamt.auth.exception.AuthenticationException;
 
+import java.util.ArrayList;
+
 /**
  * @author ena3
  *
@@ -50,6 +52,9 @@ public interface AuthenticationService {
   public UserResponse getAuthentication(Authentication authentiction);
   
   public UserListResponse getAllUsers(HttpServletRequest req);
+
+  public ArrayList<String> getAllUsernames(HttpServletRequest req);
+
   public UserResponse getCurrentUser(String username, HttpServletRequest req);
 
   public ConnectionResponseMessage<UserResponse> update(RegistrationRequest user, HttpServletRequest req)

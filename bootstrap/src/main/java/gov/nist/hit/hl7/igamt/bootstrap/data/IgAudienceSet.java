@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class IgAudienceSet {
@@ -31,10 +32,19 @@ public class IgAudienceSet {
                 } else if(Scope.USER.equals(ig.getDomainInfo().getScope())) {
                     PrivateAudience privateAudience = new PrivateAudience();
                     privateAudience.setEditor(ig.getUsername());
-                    privateAudience.setViewers(ig.getSharedUsers() != null ? new HashSet<>(ig.getSharedUsers()) : new HashSet<>());
+                    privateAudience.setViewers(ig.getSharedUsers() != null ? ig.getSharedUsers().stream().filter(u -> u.equals(ig.getUsername())).collect(Collectors.toSet()) : new HashSet<>());
                     ig.setAudience(privateAudience);
                 }
                 this.igRepository.save(ig);
+            } else {
+                if(ig.getAudience() instanceof PrivateAudience) {
+                    PrivateAudience audience = ((PrivateAudience) ig.getAudience());
+                    if(audience.getViewers() != null && audience.getViewers().contains(ig.getUsername())) {
+                        audience.getViewers().remove(ig.getUsername());
+                        audience.setEditor(ig.getUsername());
+                        this.igRepository.save(ig);
+                    }
+                }
             }
         }
     }

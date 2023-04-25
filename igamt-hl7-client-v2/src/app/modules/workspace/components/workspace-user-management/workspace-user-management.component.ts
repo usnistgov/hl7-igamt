@@ -15,7 +15,7 @@ import { EditorID } from '../../../shared/models/editor.enum';
 import { AbstractWorkspaceEditorComponent } from '../../services/abstract-workspace-editor';
 import { WorkspaceService } from '../../services/workspace.service';
 import { AddUserDialogComponent } from '../add-user-dialog/add-user-dialog.component';
-import { selectIsWorkspaceAdmin, selectIsWorkspaceOwner, selectWorkspaceOwner } from './../../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
+import { selectIsWorkspaceOwner, selectWorkspaceOwner } from './../../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
 import { EditorUpdate } from './../../../dam-framework/store/data/dam.actions';
 import { IFolderInfo, InvitationStatus, IWorkspacePermissions, IWorkspaceUser, WorkspacePermissionType } from './../../models/models';
 
@@ -225,6 +225,7 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
     ).pipe(
       take(1),
       flatMap(([folders]) => {
+
         return this.dialog.open(AddUserDialogComponent, {
           data: {
             folders,

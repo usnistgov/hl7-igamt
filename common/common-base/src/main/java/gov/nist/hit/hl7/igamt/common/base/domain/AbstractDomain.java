@@ -30,14 +30,16 @@ public abstract class AbstractDomain implements Serializable{
   private String authorNotes;
   private String usageNotes;
   private String organization;
-  private List<String> authors; //Q
+  private List<String> authors;
   private Status status;
   private String from;
   private boolean derived;
+  @Deprecated
   private List<String> sharedUsers;
   private String currentAuthor;
 
   @Transient
+  @Deprecated
   private SharePermission sharePermission;
 
   @Version
@@ -48,10 +50,12 @@ public abstract class AbstractDomain implements Serializable{
     // TODO Auto-generated constructor stub
   }
 
+  @Deprecated
   public SharePermission getSharePermission() {
     return sharePermission;
   }
 
+  @Deprecated
   public void setSharePermission(SharePermission sharePermission) {
     this.sharePermission = sharePermission;
   }
@@ -257,10 +261,12 @@ public abstract class AbstractDomain implements Serializable{
     this.derived = derived;
   }
 
+  @Deprecated
   public List<String> getSharedUsers() {
     return sharedUsers;
   }
 
+  @Deprecated
   public void setSharedUsers(List<String> sharedUsers) {
     this.sharedUsers = sharedUsers;
   }

@@ -204,8 +204,8 @@ export class IgService {
     return this.http.post<Message<string>>(this.IG_END_POINT + id + '/publish', publicationInfo).pipe();
   }
 
-  updateSharedUsers(sharedUsers: any, id: string): Observable<Message<string>> {
-    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/updateSharedUser', sharedUsers).pipe();
+  updateViewers(viewers: string[], id: string): Observable<Message<string>> {
+    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/updateViewers', viewers).pipe();
   }
 
   getMessagesByVersionAndScope(hl7Version: string, scope: Scope): Observable<Message<MessageEventTreeNode[]>> {

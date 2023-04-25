@@ -412,7 +412,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       element.setUsername(lib.getUsername());
       element.setStatus(lib.getStatus());
       element.setSharePermission(lib.getSharePermission());
-      element.setSharedUsers(lib.getSharedUsers());
+      element.setSharedUsers(new HashSet<>(lib.getSharedUsers()));
       element.setCurrentAuthor(lib.getCurrentAuthor());
       List<String> datatypesNames = new ArrayList<String>();
       DatatypeRegistry datatypeRegistry = lib.getDatatypeRegistry();

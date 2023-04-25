@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.auth.controller;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.servlet.http.Cookie;
@@ -17,14 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import gov.nist.hit.hl7.auth.util.requests.AdminUserRequest;
 import gov.nist.hit.hl7.auth.util.requests.ChangePasswordConfirmRequest;
 import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage;
 import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage.Status;
-import gov.nist.hit.hl7.auth.util.requests.FindUserRequest;
-import gov.nist.hit.hl7.auth.util.requests.FindUserResponse;
 import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
 import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
@@ -109,13 +107,18 @@ public class AuthenticationController {
     return authService.getAllUsers(req);
   }
 
+  @RequestMapping(value = "api/usernames", method = RequestMethod.GET)
+  @ResponseBody
+  public ArrayList<String> getAllUsernames(HttpServletRequest req) {
+    return authService.getAllUsernames(req);
+  }
+
   @RequestMapping(value = "api/user/{username}", method = RequestMethod.GET)
   @ResponseBody
   public UserResponse getCurrentUser(@PathVariable("username") String username,
           HttpServletRequest req, HttpServletResponse res,
           Authentication authentication)
       throws IOException {
-
     return authService.getCurrentUser(username, req);
   }
   

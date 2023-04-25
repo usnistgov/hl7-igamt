@@ -76,7 +76,6 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.AddResourceResponse;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
-import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
@@ -121,7 +120,6 @@ import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.verification.ComplianceReport;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationReport;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.CloneException;
@@ -1264,16 +1262,11 @@ public class IGDocumentController extends BaseController {
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Locked Successfully", id, false,
         new Date(), id);
   }
-  @RequestMapping(value = "/api/igdocuments/{id}/updateSharedUser", method = RequestMethod.POST, produces = {
-  "application/json" })
-  // TODO
-  public @ResponseBody ResponseMessage<String> updateSharedUser(@PathVariable("id") String id, @RequestBody SharedUsersInfo sharedUsersInfo, Authentication authentication)
-      throws IGNotFoundException, IGUpdateException, ResourceNotFoundException, ForbiddenOperationException {
-    Ig ig = findIgById(id);
-//    commonService.checkRight(authentication, ig.getUsername(), ig.getUsername());
-    this.sharingService.shareIg(id, sharedUsersInfo);
-    return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Shared Users Successfully Updated", id, false,
-        new Date(), id);
+  @RequestMapping(value = "/api/igdocuments/{id}/updateViewers", method = RequestMethod.POST, produces = { "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+  public @ResponseBody ResponseMessage<String> updateViewers(@PathVariable("id") String id, @RequestBody List<String> viewers, Authentication authentication) throws Exception {
+    this.sharingService.updateIgViewers(id, viewers, authentication.getName());
+    return new ResponseMessage<>(Status.SUCCESS, "", "Ig Shared Users Successfully Updated", id, false, new Date(), id);
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}", method = RequestMethod.DELETE, produces = { "application/json" })

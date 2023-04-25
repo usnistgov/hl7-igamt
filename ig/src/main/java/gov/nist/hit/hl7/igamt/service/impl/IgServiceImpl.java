@@ -48,7 +48,6 @@ import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.UsageFilter;
-import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
@@ -259,16 +258,18 @@ public class IgServiceImpl implements IgService {
 			element.setDateUpdated(ig.getUpdateDate());
 			element.setTitle(ig.getMetadata().getTitle());
 			element.setSubtitle(ig.getMetadata().getSubTitle());
-			// element.setConfrmanceProfiles(confrmanceProfiles);
 			element.setCoverpage(ig.getMetadata().getCoverPicture());
 			element.setId(ig.getId());
 			element.setDerived(ig.isDerived());
 			element.setUsername(ig.getUsername());
 			element.setStatus(ig.getStatus());
-			element.setSharePermission(ig.getSharePermission());
-			element.setSharedUsers(ig.getSharedUsers());
-			element.setCurrentAuthor(ig.getCurrentAuthor());
+			element.setCurrentAuthor(ig.getUsername());
 			element.setPublicationInfo(ig.getPublicationInfo());
+
+			if(ig.getAudience() != null && ig.getAudience() instanceof PrivateAudience) {
+				element.setSharedUsers(((PrivateAudience) ig.getAudience()).getViewers());
+			}
+
 			List<String> conformanceProfileNames = new ArrayList<String>();
 			ConformanceProfileRegistry conformanceProfileRegistry = ig.getConformanceProfileRegistry();
 			if (conformanceProfileRegistry != null) {
@@ -420,7 +421,7 @@ public class IgServiceImpl implements IgService {
 		qry.fields().include("status");
 		qry.fields().include("derived");
 
-		
+
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		return igs;
 	}
@@ -1445,18 +1446,6 @@ public class IgServiceImpl implements IgService {
 		}
 
 		return ret;
-	}
-
-	@Override
-	public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo) {
-		if (id != null && sharedUsersInfo != null) {
-			Ig ig = this.findById(id);
-			if (ig != null) {
-				ig.setCurrentAuthor(sharedUsersInfo.getCurrentAuthor());
-				ig.setSharedUsers(sharedUsersInfo.getSharedUsers());
-			}
-			this.save(ig);
-		}
 	}
 
 	@Override

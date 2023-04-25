@@ -125,7 +125,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   return username !== item.username || item.type === 'PUBLISHED';
                 },
                 hide: (item: IgListItem): boolean => {
-                  return item.type === 'PUBLISHED' || item.type === 'SHARED';
+                  return item.type === 'PUBLISHED' || item.type === 'SHARED' || username !== item.username;
                 },
               },
               {
@@ -207,7 +207,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   return !admin || item.type === 'PUBLISHED';
                 },
                 hide: (item: IgListItem): boolean => {
-                  return item.type === 'PUBLISHED' || item.type === 'SHARED';
+                  return !admin || item.type === 'PUBLISHED' || item.type === 'SHARED';
                 },
               },
               {
@@ -258,7 +258,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   return false;
                 },
                 hide: (item: IgListItem): boolean => {
-                  return item.type === 'SHARED';
+                  return false;
                 },
               },
               {
@@ -274,21 +274,6 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                 },
                 hide: (item: IgListItem): boolean => {
                   return this.hideForShared('View', item.type, item.sharePermission);
-                },
-              },
-              {
-                label: 'Edit',
-                class: 'btn-info',
-                icon: 'fa-pencil',
-                default: true,
-                action: (item: IgListItem) => {
-                  this.router.navigate(['ig', item.id]);
-                },
-                disabled: (item: IgListItem): boolean => {
-                  return false;
-                },
-                hide: (item: IgListItem): boolean => {
-                  return this.hideForShared('Edit', item.type, item.sharePermission);
                 },
               },
             ];
@@ -335,10 +320,9 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.ig.updateSharedUsers(result, item.id).subscribe(
+        this.ig.updateViewers(result, item.id).subscribe(
           (response: Message<string>) => {
-            item.sharedUsers = result.sharedUsers;
-            item.currentAuthor = result.currentAuthor;
+            item.sharedUsers = result;
             this.store.dispatch(this.message.messageToAction(response));
             this.router.navigateByUrl('/ig/list?type=USER');
           },
