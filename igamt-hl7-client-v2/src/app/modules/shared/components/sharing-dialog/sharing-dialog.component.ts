@@ -20,10 +20,10 @@ export class SharingDialogComponent implements OnInit {
   changed = false;
 
   constructor(public dialogRef: MatDialogRef<SharingDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: IShareDialogData,
-    private usersService: UsersService) {
-    this.fetchUsers().subscribe((data: any) => {
-      this.users = data;
+              @Inject(MAT_DIALOG_DATA) public data: IShareDialogData,
+              private usersService: UsersService) {
+    this.fetchUsers().subscribe((usernames: any) => {
+      this.users = usernames;
     });
 
     if (this.data && this.data.item) {
@@ -38,14 +38,13 @@ export class SharingDialogComponent implements OnInit {
     }
   }
 
-
   fetchUsers(): Observable<string[]> {
     return this.usersService.getUsernames();
   }
 
   filterUsersSingle(event: any) {
     const query = event.query;
-    this.filteredUsersSingle = this.users.filter((u) => u.toLowerCase().indexOf(query.toLowerCase()) !== -1 && u.toLowerCase() !== this.owner)
+    this.filteredUsersSingle = this.users.filter((u) => u.toLowerCase().indexOf(query.toLowerCase()) !== -1 && u.toLowerCase() !== this.owner);
   }
 
   addUser(username: string) {
@@ -79,7 +78,6 @@ export class SharingDialogComponent implements OnInit {
       ...this.sharedUsers,
     ];
   }
-
 
   ngOnInit() { }
 
