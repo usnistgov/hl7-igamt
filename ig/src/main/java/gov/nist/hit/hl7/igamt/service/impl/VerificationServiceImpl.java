@@ -17,6 +17,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.XMLConstants;
@@ -551,7 +552,7 @@ public class VerificationServiceImpl implements VerificationService {
 			String minLength, String maxLength, Usage usage, String constantValue) {
 		List<IgamtObjectError> results = new ArrayList<IgamtObjectError>();
 
-		if (constantValue != null) {
+		if (!(constantValue == null || constantValue.equals(""))) {
 			int lengthofConstant = constantValue.length();
 			if (!this.isPrimitiveDatatype(e))
 				results.add(this.verificationEntryService.Constant_INVALID_Datatype(location, id, type, e));
@@ -1192,6 +1193,102 @@ public class VerificationServiceImpl implements VerificationService {
 				if (cp == null) {
 				} else {
 					CPVerificationResult cpVerificationResult = this.verifyConformanceProfile(cp);
+					if (cpVerificationResult.getStats().getTotal() > 0) {
+						report.addConformanceProfileVerificationResult(cpVerificationResult);
+						report.addStats(cpVerificationResult.getStats());
+					}
+				}
+
+			}
+		}
+
+		report.setIgVerificationResult(result);
+		return report;
+	}
+
+	@Override
+	public VerificationReport verifyIg(Ig ig, Map<String, String> map) {
+		VerificationReport report = new VerificationReport();
+		IgVerificationResult result = new IgVerificationResult(ig);
+
+		ValueSetRegistry valueSetRegistry = ig.getValueSetRegistry();
+
+		if (valueSetRegistry.getChildren() != null) {
+			for (Link l : valueSetRegistry.getChildren()) {
+				String id = l.getId();
+				Valueset vs = this.valuesetService.findById(id);
+				if (vs == null) {
+				} else {
+					VSVerificationResult vsVerificationResult = this.verifyValueset(vs);
+					if (vsVerificationResult.getStats().getTotal() > 0) {
+						report.addValuesetVerificationResult(vsVerificationResult);
+						report.addStats(vsVerificationResult.getStats());
+					}
+				}
+			}
+		}
+
+		DatatypeRegistry datatypeRegistry = ig.getDatatypeRegistry();
+		if (datatypeRegistry.getChildren() != null) {
+			for (Link l : datatypeRegistry.getChildren()) {
+				String id = l.getId();
+				Datatype dt = this.datatypeService.findById(id);
+				if (dt == null)
+					dt = inMemoryDomainExtensionService.findById(id, ComplexDatatype.class);
+				if (dt == null) {
+				} else {
+					DTSegVerificationResult dtSegVerificationResult = this.verifyDatatype(dt);
+					if (dtSegVerificationResult.getStats().getTotal() > 0) {
+						report.addDatatypeVerificationResult(dtSegVerificationResult);
+						report.addStats(dtSegVerificationResult.getStats());
+					}
+				}
+			}
+		}
+
+		SegmentRegistry segmentRegistry = ig.getSegmentRegistry();
+		if (segmentRegistry.getChildren() != null) {
+			for (Link l : segmentRegistry.getChildren()) {
+				String id = l.getId();
+				Segment s = this.segmentService.findById(id);
+				if (s == null)
+					s = inMemoryDomainExtensionService.findById(id, Segment.class);
+				if (s == null) {
+				} else {
+					DTSegVerificationResult dtSegVerificationResult = this.verifySegment(s);
+					if (dtSegVerificationResult.getStats().getTotal() > 0) {
+						report.addSegmentVerificationResult(dtSegVerificationResult);
+						report.addStats(dtSegVerificationResult.getStats());
+					}
+				}
+			}
+		}
+
+		ConformanceProfileRegistry conformanceProfileRegistry = ig.getConformanceProfileRegistry();
+		if (conformanceProfileRegistry.getChildren() != null) {
+			for (Link l : conformanceProfileRegistry.getChildren()) {
+				String id = l.getId();
+				ConformanceProfile cp = this.conformanceProfileService.findById(id);
+				if (cp == null)
+					cp = inMemoryDomainExtensionService.findById(id, ConformanceProfile.class);
+				if (cp == null) {
+				} else {
+					CPVerificationResult cpVerificationResult = this.verifyConformanceProfile(cp);
+					
+					
+					if(map.get(cpVerificationResult.getResourceId()) != null) {
+						cpVerificationResult.setResourceId(map.get(cpVerificationResult.getResourceId()));
+						cpVerificationResult.setResourceType(Type.COMPOSITEPROFILE);
+						
+						if(cpVerificationResult.getErrors()  != null) {
+							for(IgamtObjectError item : cpVerificationResult.getErrors() ) {
+								if(map.get(item.getTarget()) != null) {
+									item.setTarget(map.get(item.getTarget()));
+								}
+							}
+						}
+					}
+					
 					if (cpVerificationResult.getStats().getTotal() > 0) {
 						report.addConformanceProfileVerificationResult(cpVerificationResult);
 						report.addStats(cpVerificationResult.getStats());
