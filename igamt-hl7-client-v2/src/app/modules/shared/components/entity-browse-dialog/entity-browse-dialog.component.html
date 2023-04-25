@@ -22,6 +22,15 @@
     </div>
     <div  style="padding-left: 20px;">
       <div style="color: #9b9898; margin-bottom: 15px; text-align: center;">Pick an Implementation Guide</div>
+      <div class="input-group" style="margin-bottom: 10px;">
+        <div class="input-group-prepend" style="height: 35px;">
+          <span class="input-group-text" id="inputGroupPrepend3"><i [ngStyle]="{'color': filterText && filterText !== '' ? '#00c31b' : ''}"
+                                                                    class="fa fa-search"></i></span>
+        </div>
+        <input (ngModelChange)="filterTextChanged($event)" [(ngModel)]="filterText" class="form-control"
+               id="filter" placeholder="Search" required
+               style="background-color: #fbfbfb; height: 35px;" type="text">
+      </div>
       <p-checkbox
         *ngIf="scope === BrowserScope.PUBLIC_IG_LIST"
         [(ngModel)]="showDeprecated"
@@ -100,7 +109,7 @@
           </div>
           <div>
             <button (click)="clear()" class="btn btn-sm btn-danger">
-              <i class="fa fa-trash"></i>
+              <i class="fa fa-times"></i>
             </button>
           </div>
         </li>

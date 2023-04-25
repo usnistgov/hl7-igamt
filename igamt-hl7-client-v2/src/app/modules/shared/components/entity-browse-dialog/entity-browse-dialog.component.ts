@@ -94,6 +94,7 @@ export class EntityBrowseDialogComponent implements OnInit {
   name: string;
   showDeprecated = false;
   @ViewChild('tt') treeTable: TreeTable;
+  filterText: string;
 
   constructor(
     public dialogRef: MatDialogRef<EntityBrowseDialogComponent>,
@@ -128,6 +129,10 @@ export class EntityBrowseDialogComponent implements OnInit {
         });
       }),
     ).subscribe();
+  }
+
+  filterTextChanged(text: string) {
+    this.treeTable.filter(text, 'label', 'contains');
   }
 
   filter(showDeprecated: boolean) {
