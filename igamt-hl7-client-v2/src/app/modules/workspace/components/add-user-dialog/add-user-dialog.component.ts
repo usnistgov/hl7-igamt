@@ -14,6 +14,8 @@ export class AddUserDialogComponent implements OnInit {
   username: string;
   permissions: IWorkspacePermissions;
   edit: boolean;
+  usernames: string[] = [];
+  filteredUsernames: string[];
 
   constructor(
     public dialogRef: MatDialogRef<AddUserDialogComponent>,
@@ -24,6 +26,13 @@ export class AddUserDialogComponent implements OnInit {
     this.username = data.username;
     this.edit = data.edit;
     this.permissions = data.permissions || {};
+    this.usernames = data.usernames;
+    console.log(this.usernames);
+  }
+
+  filterUsernames(event: any) {
+    const query: string = event.query;
+    this.filteredUsernames = this.usernames.filter((u) => u.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
 
   create() {

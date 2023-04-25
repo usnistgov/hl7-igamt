@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { AutoCompleteModule } from 'primeng/primeng';
 import { WorkspaceListEffects } from 'src/app/root-store/workspace/workspace-list/workspace-list.effects';
 import * as fromWorkspace from '../../root-store/workspace/workspace.reducer';
 import { WorkspaceEditEffects } from './../../root-store/workspace/workspace-edit/workspace-edit.effects';
@@ -53,6 +54,7 @@ import { WorkspaceRoutingModule } from './workspace-routing.module';
     EffectsModule.forFeature([WorkspaceListEffects, WorkspaceEditEffects]),
     StoreModule.forFeature(fromWorkspace.featureName, fromWorkspace.reducers),
     CoreModule,
+    AutoCompleteModule,
     SharedModule,
   ],
   entryComponents: [

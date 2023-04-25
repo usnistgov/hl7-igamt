@@ -10,6 +10,7 @@ import { MessageService } from 'src/app/modules/dam-framework/services/message.s
 import { EditorSave } from 'src/app/modules/dam-framework/store';
 import { selectUsername } from 'src/app/modules/dam-framework/store/authentication';
 import { FroalaService } from 'src/app/modules/shared/services/froala.service';
+import { UsersService } from 'src/app/modules/shared/services/users.service';
 import { selectAllFolders } from '../../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { AbstractWorkspaceEditorComponent } from '../../services/abstract-workspace-editor';
@@ -126,8 +127,7 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
     private workspaceService: WorkspaceService,
     protected messageService: MessageService,
     private dialog: MatDialog,
-    protected froalaService: FroalaService,
-  ) {
+    private usersService: UsersService) {
     super({
       id: EditorID.WORKSPACE_USERS,
       title: 'Manage Access',
@@ -282,30 +282,35 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
     ).pipe(
       take(1),
       flatMap(([folders]) => {
-        return this.dialog.open(AddUserDialogComponent, {
-          data: {
-            folders,
-          },
-        }).afterClosed().pipe(
-          flatMap((invite) => {
-            if (invite) {
-              return this.elementId$.pipe(
-                take(1),
-                switchMap((id) => {
-                  return this.workspaceService.addWorkspaceUser(id, false, invite.username, invite.permissions).pipe(
-                    map((response) => {
-                      this.notifyAndRefreshUsersState(response);
-                    }),
-                    catchError((err) => {
-                      this.store.dispatch(this.messageService.actionFromError(err));
-                      return throwError(err);
+        return this.usersService.getUsernames().pipe(
+          flatMap((usernames) => {
+            return this.dialog.open(AddUserDialogComponent, {
+              data: {
+                folders,
+                usernames,
+              },
+            }).afterClosed().pipe(
+              flatMap((invite) => {
+                if (invite) {
+                  return this.elementId$.pipe(
+                    take(1),
+                    switchMap((id) => {
+                      return this.workspaceService.addWorkspaceUser(id, false, invite.username, invite.permissions).pipe(
+                        map((response) => {
+                          this.notifyAndRefreshUsersState(response);
+                        }),
+                        catchError((err) => {
+                          this.store.dispatch(this.messageService.actionFromError(err));
+                          return throwError(err);
+                        }),
+                      );
                     }),
                   );
-                }),
-              );
-            } else {
-              return of();
-            }
+                } else {
+                  return of();
+                }
+              }),
+            );
           }),
         );
       }),
