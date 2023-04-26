@@ -1004,7 +1004,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					elmComponent.addAttribute(new Attribute("Datatype",
 							"" + this.datatypeService.findXMLRefIdById(childDT, defaultHL7Version)));
 
-					if (c.getModel().getConstantValue() != null && this.isPrimitiveDatatype(childDT.getName())) {
+					if (!(c.getModel().getConstantValue() == null || c.getModel().getConstantValue().trim().equals("")) & this.isPrimitiveDatatype(childDT.getName())) {
 						elmComponent.addAttribute(
 								new Attribute("ConstantValue", this.str(c.getModel().getConstantValue())));
 					}
@@ -1280,7 +1280,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 						elmField.addAttribute(new Attribute("Datatype",
 								"" + this.datatypeService.findXMLRefIdById(childDT, defaultHL7Version)));
 
-						if (f.getModel().getConstantValue() != null && this.isPrimitiveDatatype(childDT.getName())) {
+						if (!(f.getModel().getConstantValue() == null || f.getModel().getConstantValue().trim().equals("")) && this.isPrimitiveDatatype(childDT.getName())) {
 							elmField.addAttribute(
 									new Attribute("ConstantValue", this.str(f.getModel().getConstantValue())));
 						}
