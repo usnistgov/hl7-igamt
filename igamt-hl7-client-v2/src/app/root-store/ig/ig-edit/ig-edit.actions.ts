@@ -18,6 +18,7 @@ import { IDisplayElement } from '../../../modules/shared/models/display-element.
 import { IHL7EditorMetadata } from '../../../modules/shared/models/editor.enum';
 import { IDeleteNodes } from './../../../modules/document/models/toc/toc-operation.class';
 import { IVerificationRequest } from './../../../modules/shared/models/verification.interface';
+import { IDocumentConfig } from 'src/app/modules/document/models/document/IDocument.interface';
 
 export enum IgEditActionTypes {
   IgEditResolverLoad = '[Ig Edit Resolver] Load Ig',
@@ -85,6 +86,12 @@ export enum IgEditActionTypes {
   VerifiyIg = '[Ig Edit TOC] Verify IG',
   VerifyIgSuccess = '[Ig Edit TOC] Verify Ig Success',
   VerifyIgFailure = '[Ig Edit TOC] Verify Ig Failure',
+
+  UpdateDocumentConfig =  '[DOC Edit] Update Config',
+  UpdateDocumentConfigSuccess =  '[DOC Edit] Update Config Success',
+  UpdateDocumentConfigFailure =  '[DOC Edit] Update Config Failure',
+
+
 
 }
 
@@ -411,6 +418,24 @@ export class VerifyIg implements Action {
   }
 }
 
+export class UpdateDocumentConfig implements Action {
+  readonly type = IgEditActionTypes.UpdateDocumentConfig;
+  constructor(readonly payload: {id: string, config: IDocumentConfig} ) {
+  }
+}
+
+export class UpdateDocumentConfigSuccess implements Action {
+  readonly type = IgEditActionTypes.UpdateDocumentConfigSuccess;
+  constructor(readonly payload: IDocumentConfig ) {
+  }
+}
+
+export class UpdateDocumentConfigFailure implements Action {
+  readonly type = IgEditActionTypes.UpdateDocumentConfigFailure;
+  constructor(readonly error: HttpErrorResponse) {
+  }
+}
+
 export type IgEditActions =
   IgEditResolverLoad
   | IgEditResolverLoadSuccess
@@ -454,4 +479,5 @@ export type IgEditActions =
   | DeleteResourcesFailure
   | VerifyIg
   | VerifyIgSuccess
-  | VerifyIgFailure;
+  | VerifyIgFailure
+  | UpdateDocumentConfig;

@@ -25,6 +25,13 @@ export const selectIgId = createSelector(
   },
 );
 
+export const selectIgConfig = createSelector(
+  selectIgDocument,
+  (state: IgDocument) => {
+    return state.documentConfig;
+  },
+);
+
 export const selectDerived = createSelector(
   selectIgDocument,
   (state: IgDocument) => {

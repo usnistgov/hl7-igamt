@@ -49,6 +49,9 @@ import {
   DeleteResourcesSuccess,
   OpenConformanceStatementSummaryEditorNode,
   OpenIgVerificationEditor,
+  UpdateDocumentConfig,
+  UpdateDocumentConfigFailure,
+  UpdateDocumentConfigSuccess,
   UpdateSections,
   VerifyIg,
 } from './ig-edit.actions';
@@ -83,6 +86,7 @@ import {
   selectSectionFromIgById,
   selectTableOfContentChanged,
 } from './ig-edit.selectors';
+import { IDocumentConfig } from 'src/app/modules/document/models/document/IDocument.interface';
 
 @Injectable()
 export class IgEditEffects extends DamWidgetEffect {
@@ -922,4 +926,34 @@ export class IgEditEffects extends DamWidgetEffect {
       }),
     );
   }
+
+
+  @Effect()
+  UpdateConfig$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.UpdateDocumentConfig),
+    switchMap((action: UpdateDocumentConfig) => {
+      this.store.dispatch(new fromDAM.TurnOnLoader({
+        blockUI: true,
+      }));
+
+      return this.igService.updateConfig(action.payload.id, action.payload.config).pipe(
+        take(1),
+        flatMap((config: IDocumentConfig) => {
+          return [
+            new fromDAM.TurnOffLoader(),
+            new UpdateDocumentConfigSuccess(config),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          console.log(error);
+          return of(
+            new fromDAM.TurnOffLoader(),
+            new UpdateDocumentConfigFailure(error),
+          );
+        }),
+      );
+    }),
+  );
+
+
 }

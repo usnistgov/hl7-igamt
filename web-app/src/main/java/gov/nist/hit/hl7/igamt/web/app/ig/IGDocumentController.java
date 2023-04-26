@@ -41,6 +41,7 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.impl.SimpleCoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentConfig;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
@@ -1884,6 +1885,21 @@ private void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all)
       return report;
     }
     return null;
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{igId}/update-config", method = RequestMethod.POST, produces = {
+  "application/json" })
+  @PreAuthorize("AccessResource('IGDOCUMENT', #igId, WRITE)")
+  public @ResponseBody DocumentConfig deleteUnused(@PathVariable("igId") String igId, @RequestBody DocumentConfig config,
+    Authentication authentication) throws IGNotFoundException, EntityNotFound, ForbiddenOperationException, IGUpdateException {
+    Ig ig = findIgById(igId);
+    
+	UpdateResult updateResult =igService.updateAttribute(igId, "documentConfig", config, DocumentConfig.class, true);
+	if (!updateResult.wasAcknowledged()) {
+		throw new IGUpdateException("Could not Update Config for IG with id" + ig.getId());
+	} 
+
+    return ig.getDocumentConfig();
   }
 
 }

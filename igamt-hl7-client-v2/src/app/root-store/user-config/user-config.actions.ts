@@ -7,7 +7,7 @@ export enum UserConfigActionTypes {
   LoadUserConfig = '[Main Page] Load User Config',
   LoadUserConfigSuccess = '[Main Page] Load  User Config Success',
   LoadUserConfigFailure = '[Main Page] Load  User Config Failure',
-  SaveUserConfig = '[Main Page] Save User Config Failure',
+  SaveUserConfig = '[Main Page] Save User Config',
   SaveUserConfigSuccess = '[Main Page] Save User Config Success',
   SaveUserConfigFailure = '[Main Page] Save User Config Failure',
 

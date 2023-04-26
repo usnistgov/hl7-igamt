@@ -1,3 +1,4 @@
+import { selectIgConfig } from './../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
@@ -157,16 +158,18 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   openConfig() {
-    combineLatest(this.getIgId()).pipe(
+    combineLatest(this.store.select(selectIgConfig)).pipe(
       take(1),
-      map(([igId]) => {
+      map(([config]) => {
         const dialogRef = this.dialog.open(DocumentConfigComponent, {
-          data: {id : igId}
+          data: {config : config}
         });
         dialogRef.afterClosed().pipe(
+          this.store.dispatch(u)
         ).subscribe();
       }),
     ).subscribe();
+
   }
 
 

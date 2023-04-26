@@ -32,6 +32,7 @@ import { INarrative } from '../components/ig-section-editor/ig-section-editor.co
 import { IDocumentDisplayInfo } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
+import { IDocumentConfig } from '../../document/models/document/IDocument.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -473,5 +474,9 @@ export class IgService {
 
   verify(payload: IVerificationRequest): Observable<any> {
     return this.http.get<any>(this.IG_END_POINT + payload.id + '/verification');
+  }
+
+  updateConfig(id : string, config: IDocumentConfig): Observable<any> {
+    return this.http.post<IDocumentConfig>(this.IG_END_POINT + id + '/update-config', config);
   }
 }
