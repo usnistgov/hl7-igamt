@@ -551,7 +551,7 @@ public class VerificationServiceImpl implements VerificationService {
 			String minLength, String maxLength, Usage usage, String constantValue) {
 		List<IgamtObjectError> results = new ArrayList<IgamtObjectError>();
 
-		if (!(constantValue == null || constantValue.equals(""))) {
+		if (!(constantValue == null || constantValue.trim().equals(""))) {
 			int lengthofConstant = constantValue.length();
 			if (!this.isPrimitiveDatatype(e))
 				results.add(this.verificationEntryService.Constant_INVALID_Datatype(location, id, type, e));
