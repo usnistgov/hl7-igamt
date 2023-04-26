@@ -158,23 +158,21 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   openConfig() {
-    combineLatest(this.store.select(selectIgConfig)).pipe(
+    combineLatest( this.getIgId(),this.store.select(selectIgConfig)).pipe(
       take(1),
-      map(([config]) => {
+      map(([id, config]) => {
         const dialogRef = this.dialog.open(DocumentConfigComponent, {
           data: {config : config}
         });
         dialogRef.afterClosed().pipe(
-          this.store.dispatch(u)
+          map((x) => {
+            this.store.dispatch(new fromIgDocumentEdit.UpdateDocumentConfig({id: id, config: x}));
+          })
         ).subscribe();
       }),
     ).subscribe();
 
   }
-
-
-
-  DocumentConfigComponent
 
   getIgId(): Observable<string> {
     return this.store.select(fromIgDocumentEdit.selectIgId);
