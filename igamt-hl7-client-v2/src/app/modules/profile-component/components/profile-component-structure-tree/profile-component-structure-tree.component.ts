@@ -22,8 +22,8 @@ import { AResourceRepositoryService } from '../../../shared/services/resource-re
 import { IBindingContext } from '../../../shared/services/structure-element-binding.service';
 import { ProfileComponentRefChange } from '../../services/profile-component-ref-change.object';
 import { ProfileComponentStructureTreeItemMap } from '../../services/profile-component-structure-tree-item-map.object';
-import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
 import { IUserConfig } from './../../../shared/models/config.class';
+import { selectIgConfig } from 'src/app/root-store/ig/ig-edit/ig-edit.selectors';
 
 export interface IItemLocation {
   path: string;
@@ -182,7 +182,7 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
     this.tree$ = new BehaviorSubject([]);
     this.treeView$ = new BehaviorSubject(false);
 
-    this.userConfig = this.store.select(getUserConfigState).pipe(
+    this.userConfig = this.store.select(selectIgConfig).pipe(
       filter((config) => !!config),
     );
 

@@ -165,6 +165,8 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
           data: {config : config}
         });
         dialogRef.afterClosed().pipe(
+          filter((res) => res !== undefined),
+          take(1),
           map((x) => {
             this.store.dispatch(new fromIgDocumentEdit.UpdateDocumentConfig({id: id, config: x}));
           })

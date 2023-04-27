@@ -480,4 +480,6 @@ export type IgEditActions =
   | VerifyIg
   | VerifyIgSuccess
   | VerifyIgFailure
-  | UpdateDocumentConfig;
+  | UpdateDocumentConfig
+  | UpdateDocumentConfigSuccess
+  | UpdateDocumentConfigFailure

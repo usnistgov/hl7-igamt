@@ -34,6 +34,7 @@ public class DocumentStructure extends AbstractDomain {
 	
 	public DocumentStructure() {
 	    super();
+	    documentConfig = new DocumentConfig();
 	}
 	  
 	public DocumentMetadata getMetadata() {

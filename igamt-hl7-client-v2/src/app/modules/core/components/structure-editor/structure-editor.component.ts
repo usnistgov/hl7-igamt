@@ -9,7 +9,7 @@ import { VerificationType } from 'src/app/modules/shared/models/verification.int
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { getHl7ConfigState, selectBindingConfig } from '../../../../root-store/config/config.reducer';
-import { selectDerived, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectDerived, selectIgConfig, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { IStructureChanges } from '../../../segment/components/segment-structure-editor/segment-structure-editor.component';
@@ -25,8 +25,7 @@ import { StoreResourceRepositoryService } from '../../../shared/services/resourc
 import { IBindingContext } from '../../../shared/services/structure-element-binding.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
 import { VerifyIg } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
-import { IUserConfig } from './../../../shared/models/config.class';
+import { IDocumentConfig } from 'src/app/modules/document/models/document/IDocument.interface';
 
 export type BindingLegend = Array<{
   label: string,
@@ -42,7 +41,7 @@ export abstract class StructureEditorComponent<T extends IResource> extends Abst
   public valueSets: Observable<IDisplayElement[]>;
   public bindingConfig: Observable<IValueSetBindingConfigMap>;
   public config: Observable<Hl7Config>;
-  public userConfig: Observable<IUserConfig>;
+  public documentConfig: Observable<IDocumentConfig>;
   changes: ReplaySubject<IStructureChanges>;
   username: Observable<string>;
   resource$: Observable<T>;
@@ -66,7 +65,7 @@ export abstract class StructureEditorComponent<T extends IResource> extends Abst
     this.config = this.store.select(getHl7ConfigState).pipe(
       filter((config) => !!config),
     );
-    this.userConfig = this.store.select(getUserConfigState).pipe(
+    this.documentConfig = this.store.select(selectIgConfig).pipe(
       filter((config) => !!config),
     );
     this.datatypes = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes);

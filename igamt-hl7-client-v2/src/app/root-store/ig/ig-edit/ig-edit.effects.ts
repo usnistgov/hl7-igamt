@@ -958,18 +958,15 @@ export class IgEditEffects extends DamWidgetEffect {
   @Effect()
   UpdateDocumentConfigSuccess$ = this.actions$.pipe(
     ofType(IgEditActionTypes.UpdateDocumentConfigSuccess),
-      map((action: UpdateDocumentConfigSuccess) => {
-        this.store.select(fromDam.selectPayloadData).pipe(
-        take(1),
-        map((ig) => {
-          this.store.dispatch(new fromDam.LoadPayloadData({
-            ...ig,
-            documentConfig: action.payload,
-          }));
-        })
-      )
-     }),
-  );
+      mergeMap((action: UpdateDocumentConfigSuccess) => {
+       return  this.store.select(fromDAM.selectPayloadData).pipe(
+              take(1),
+              map((ig) => {
+                return new LoadPayloadData({...ig, documentConfig: action.payload});
+              }),
+            );
+        }),
+    );
 
 
 }

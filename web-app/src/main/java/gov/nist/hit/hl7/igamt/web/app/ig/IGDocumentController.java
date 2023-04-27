@@ -1894,12 +1894,12 @@ private void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all)
     Authentication authentication) throws IGNotFoundException, EntityNotFound, ForbiddenOperationException, IGUpdateException {
     Ig ig = findIgById(igId);
     
-	UpdateResult updateResult =igService.updateAttribute(igId, "documentConfig", config, DocumentConfig.class, true);
+	UpdateResult updateResult =igService.updateAttribute(igId, "documentConfig", config, Ig.class, true);
 	if (!updateResult.wasAcknowledged()) {
 		throw new IGUpdateException("Could not Update Config for IG with id" + ig.getId());
 	} 
-
-    return ig.getDocumentConfig();
+	
+    return config;
   }
 
 }
