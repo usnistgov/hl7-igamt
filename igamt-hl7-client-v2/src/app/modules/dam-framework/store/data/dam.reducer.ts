@@ -1,4 +1,5 @@
 import { createEntityAdapter } from '@ngrx/entity';
+import * as _ from 'lodash';
 import { emptyRepository, ICollections, IDamResource } from '../../models/data/repository';
 import { emptyDataModel, IDamDataModel } from '../../models/data/state';
 import { emptyWorkspace } from '../../models/data/workspace';
@@ -83,7 +84,7 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
             ...action.payload.initial,
           },
           current: {
-            ...action.payload.initial,
+            ..._.cloneDeep(action.payload.initial),
           },
           verification: {
             ...emptyWorkspace.verification,
@@ -120,7 +121,7 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
           ...state.workspace,
           changeTime: new Date(),
           current: {
-            ...state.workspace.initial,
+            ..._.cloneDeep(state.workspace.initial),
           },
           flags: {
             ...state.workspace.flags,
@@ -135,11 +136,8 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
         ...state,
         workspace: {
           ...state.workspace,
-          current: {
-            ...(action.current ? action.current : state.workspace.current),
-          },
           initial: {
-            ...(action.current ? action.current : state.workspace.current),
+            ..._.cloneDeep(state.workspace.current),
           },
           flags: {
             ...state.workspace.flags,
@@ -149,17 +147,15 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
       };
 
     case DamActionTypes.EditorUpdate:
+      const currentWs = (action.payload.value ? action.payload.value : state.workspace.current);
+      const initialWs = _.cloneDeep(currentWs);
       return {
         ...state,
         workspace: {
           ...state.workspace,
           changeTime: action.payload.updateDate ? new Date() : state.workspace.changeTime,
-          current: {
-            ...(action.payload.value ? action.payload.value : state.workspace.current),
-          },
-          initial: {
-            ...(action.payload.value ? action.payload.value : state.workspace.current),
-          },
+          current: currentWs,
+          initial: initialWs,
         },
       };
 

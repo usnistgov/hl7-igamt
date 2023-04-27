@@ -1,5 +1,3 @@
-import { IUserConfig } from './../../../shared/models/config.class';
-import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
@@ -24,6 +22,8 @@ import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/
 import { getHl7ConfigState, selectBindingConfig } from 'src/app/root-store/config/config.reducer';
 import { selectAllDatatypes, selectAllSegments, selectCompositeProfileById } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { selectValueSetsNodes } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
+import { IUserConfig } from './../../../shared/models/config.class';
 
 export type GroupOptions = Array<{
   label: string,
@@ -64,7 +64,6 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
   activeTab: GeneratedFlavorTabs;
   tabs: GeneratedFlavorTabs[] = [];
   public userConfig: Observable<IUserConfig>;
-
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
