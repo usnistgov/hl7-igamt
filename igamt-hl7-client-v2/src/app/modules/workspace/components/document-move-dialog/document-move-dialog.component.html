@@ -61,7 +61,7 @@
         [(ngModel)]="clone"
         [label]="'Clone Document and Move'"
         [binary]="true"
-        [disabled]="scope === BrowserScope.PRIVATE_IG_LIST"
+        [disabled]="scope === BrowserScope.PRIVATE_IG_LIST || folderViewOnly"
       ></p-checkbox>
     </div>
     <div *ngIf="clone">

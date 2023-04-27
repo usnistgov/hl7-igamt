@@ -36,6 +36,27 @@ public abstract class CustomSecurityExpressionRoot extends SecurityExpressionRoo
         return (UsernamePasswordAuthenticationToken) this.authentication;
     }
 
+    public boolean AccessWorkspace(String id, AccessLevel level)  throws ResourceNotFoundException, ResourceAccessDeniedException {
+        return allowOrException(this.accessControlService.checkWorkspaceAccessPermission(id, getAuthToken(), level),
+                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action"));
+    }
+
+    public boolean IsWorkspaceAdmin(String id)  throws ResourceNotFoundException, ResourceAccessDeniedException {
+        return allowOrException(this.accessControlService.isWorkspaceAdmin(id, getAuthToken()),
+                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action"));
+    }
+
+    public boolean IsWorkspaceOwner(String id)  throws ResourceNotFoundException, ResourceAccessDeniedException {
+        return allowOrException(this.accessControlService.isWorkspaceOwner(id, getAuthToken()),
+                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action"));
+    }
+
+    public boolean AccessWorkspaceFolder(String id, String folderId, AccessLevel level)  throws ResourceNotFoundException, ResourceAccessDeniedException {
+        return allowOrException(this.accessControlService.checkWorkspaceFolderAccessPermission(id, folderId, getAuthToken(), level),
+                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action"));
+    }
+
+
     public boolean ConcurrentSync(String type, String id, OpSyncType ...allow) throws ResourceNotFoundException, EditNotSyncException {
         OpSyncType opSyncType = this.synchronizedAccessService.getOperationSyncType(getType(type), id);
         return allowOrException(Arrays.asList(allow).contains(opSyncType),

@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { BrowserColumn, BrowserScope, IBrowserTreeNode } from './../../../shared/components/entity-browse-dialog/entity-browse-dialog.component';
-import { IWorkspaceInfo, WorkspacePermissionType } from './../../models/models';
+import { IFolderInfo, IWorkspaceInfo, WorkspacePermissionType } from './../../models/models';
 
 @Component({
   selector: 'app-document-move-dialog',
@@ -23,12 +23,16 @@ export class DocumentMoveDialogComponent implements OnInit {
   ];
   colType = BrowserColumn;
   title: string;
+  folder: IFolderInfo;
+  folderViewOnly: boolean;
 
   constructor(
     public dialogRef: MatDialogRef<DocumentMoveDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     const workspaceInfo: IWorkspaceInfo = data.workspace;
+    this.folder = data.folder;
+    this.folderViewOnly = this.folder.permissionType === WorkspacePermissionType.VIEW;
     this.workspaceTree = workspaceInfo.folders.map((f) => ({
       data: {
         id: f.id,
@@ -37,7 +41,7 @@ export class DocumentMoveDialogComponent implements OnInit {
         dateUpdated: null,
         readOnly: f.permissionType === WorkspacePermissionType.VIEW,
       },
-      selectable: f.permissionType === WorkspacePermissionType.EDIT && f.id !== data.id,
+      selectable: f.permissionType === WorkspacePermissionType.EDIT && f.id !== this.folder.id,
     } as IBrowserTreeNode));
     this.title = data.name;
     this.selectScope(BrowserScope.PRIVATE_IG_LIST);
@@ -45,7 +49,7 @@ export class DocumentMoveDialogComponent implements OnInit {
 
   selectScope(scope: BrowserScope) {
     this.scope = scope;
-    this.clone = scope === BrowserScope.PRIVATE_IG_LIST;
+    this.clone = scope === BrowserScope.PRIVATE_IG_LIST || this.folderViewOnly;
     this.name = this.title;
   }
 

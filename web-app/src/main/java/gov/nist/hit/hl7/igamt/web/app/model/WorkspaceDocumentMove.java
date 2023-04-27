@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.web.app.model;
 
+import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class WorkspaceDocumentMove {
@@ -13,6 +14,10 @@ public class WorkspaceDocumentMove {
 
     public String getWorkspaceId() {
         return workspaceId;
+    }
+
+    public boolean isMoveToFolder() {
+        return !Strings.isNullOrEmpty(folderId);
     }
 
     public void setWorkspaceId(String workspaceId) {

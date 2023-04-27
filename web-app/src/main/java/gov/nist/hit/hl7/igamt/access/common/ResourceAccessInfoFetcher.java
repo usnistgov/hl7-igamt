@@ -17,6 +17,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.workspace.domain.Workspace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -67,6 +68,17 @@ public class ResourceAccessInfoFetcher {
             return resource;
         } else {
             throw new ResourceNotFoundException(id, type);
+        }
+    }
+
+    public Workspace getWorkspace(String id) throws ResourceNotFoundException {
+        Query query = Query.query(Criteria.where("_id").is(id));
+        Workspace resource = this.mongoTemplate.findOne(query, Workspace.class, "workspace");
+
+        if(resource != null) {
+            return resource;
+        } else {
+            throw new ResourceNotFoundException(id, Type.WORKSPACE);
         }
     }
 

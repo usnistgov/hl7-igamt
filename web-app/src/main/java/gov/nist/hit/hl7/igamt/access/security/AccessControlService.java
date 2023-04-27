@@ -7,6 +7,7 @@ import gov.nist.hit.hl7.igamt.access.model.ExportConfigurationInfo;
 import gov.nist.hit.hl7.igamt.access.model.ResourceInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.workspace.domain.Workspace;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissionType;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspacePermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +33,53 @@ public class AccessControlService {
         if(granted.contains(requested) || granted.contains(AccessLevel.ALL)) {
             return true;
         }
+        if(requested.equals(AccessLevel.READ) && granted.contains(AccessLevel.WRITE)) {
+            return true;
+        }
         return false;
     }
 
     public Set<AccessLevel> getDocumentAccessPermission(Type type, String id, UsernamePasswordAuthenticationToken user) throws ResourceNotFoundException {
         return this.checkDocumentAccessPermission(resourceAccessInfoFetcher.getDocument(type, id), user);
     }
+
+    public boolean checkWorkspaceAccessPermission(String id, UsernamePasswordAuthenticationToken user, AccessLevel requested) throws ResourceNotFoundException {
+        Workspace workspace = this.resourceAccessInfoFetcher.getWorkspace(id);
+        if(this.workspacePermissionService.hasAccessTo(workspace, user.getName())) {
+            if(this.workspacePermissionService.isAdmin(workspace, user.getName())) {
+                return this.evaluateAccessLevel(L(AccessLevel.ALL), requested);
+            } else {
+                return this.evaluateAccessLevel(L(AccessLevel.READ), requested);
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public boolean checkWorkspaceFolderAccessPermission(String id, String folderId, UsernamePasswordAuthenticationToken user, AccessLevel requested) throws ResourceNotFoundException {
+        Workspace workspace = this.resourceAccessInfoFetcher.getWorkspace(id);
+        WorkspacePermissionType workspacePermissionType = this.workspacePermissionService.getWorkspacePermissionTypeByFolder(workspace, user.getName(), folderId);
+        if(workspacePermissionType != null) {
+            switch (workspacePermissionType) {
+                case EDIT:
+                    return this.evaluateAccessLevel(L(AccessLevel.WRITE), requested);
+                case VIEW:
+                    return this.evaluateAccessLevel(L(AccessLevel.READ), requested);
+            }
+        }
+        return false;
+    }
+
+    public boolean isWorkspaceAdmin(String id, UsernamePasswordAuthenticationToken user) throws ResourceNotFoundException {
+        Workspace workspace = this.resourceAccessInfoFetcher.getWorkspace(id);
+        return this.workspacePermissionService.isAdmin(workspace, user.getName());
+    }
+
+    public boolean isWorkspaceOwner(String id, UsernamePasswordAuthenticationToken user) throws ResourceNotFoundException {
+        Workspace workspace = this.resourceAccessInfoFetcher.getWorkspace(id);
+        return this.workspacePermissionService.isOwner(workspace, user.getName());
+    }
+
 
     public boolean checkResourceAccessPermission(Type type, String id, UsernamePasswordAuthenticationToken user, AccessLevel requested) throws ResourceNotFoundException {
         if(resourceAccessInfoFetcher.isDocument(type)) {

@@ -41,8 +41,7 @@ public class WorkspaceController {
 	@Autowired
 	CommonService commonService;
 
-	@RequestMapping(value = "/api/workspace/create", method = RequestMethod.POST, produces = {
-	"application/json" })
+	@RequestMapping(value = "/api/workspace/create", method = RequestMethod.POST, produces = { "application/json" })
 	public ResponseMessage<String> createWorkspace(
 			@RequestBody WorkspaceCreateRequest workspaceCreateRequest,
 			Authentication authentication
@@ -51,8 +50,8 @@ public class WorkspaceController {
 		return new ResponseMessage<>(ResponseMessage.Status.SUCCESS, "Workspace Created Successfully",  ws.getId(), ws.getId(), new Date());
 	}
 
-	@RequestMapping(value = "/api/workspace/{id}", method = RequestMethod.DELETE, produces = {
-			"application/json" })
+	@RequestMapping(value = "/api/workspace/{id}", method = RequestMethod.DELETE, produces = { "application/json" })
+	@PreAuthorize("IsWorkspaceOwner(#id)")
 	public ResponseMessage<String> deleteWorkspace(
 			Authentication authentication,
 			@PathVariable("id") String id
@@ -64,23 +63,25 @@ public class WorkspaceController {
 	}
 
 	@RequestMapping(value = "/api/workspaces", method = RequestMethod.GET, produces = { "application/json" })
-	public @ResponseBody List<WorkspaceListItem> getUserIG(Authentication authentication,
-			@RequestParam("type") WorkspaceListType type) throws ForbiddenOperationException {
+	public @ResponseBody List<WorkspaceListItem> getUserWorkspaces(
+			Authentication authentication,
+			@RequestParam("type") WorkspaceListType type
+	) throws ForbiddenOperationException {
 		String username = authentication.getPrincipal().toString();
 		List<Workspace> workspaces = new ArrayList<>();
 		if (type == null || type.equals(WorkspaceListType.MEMBER)) {
 			workspaces = workspaceService.findByMember(username);
-		} if (type.equals(WorkspaceListType.PENDING)) {
+		} else if (type.equals(WorkspaceListType.PENDING)) {
 			workspaces = workspaceUserManagementService.getUserInvitations(username);
 		} else if (type.equals(WorkspaceListType.ALL)) {
 			commonService.checkAuthority(authentication, "ADMIN");
 			workspaces = workspaceService.findAll();
 		}
-		return workspaceService.convertToDisplayList(workspaces, type.equals(WorkspaceListType.PENDING));
+		return workspaceService.convertToDisplayList(workspaces, type != null && type.equals(WorkspaceListType.PENDING));
 	}
 
 	@RequestMapping(value = "/api/workspace/pending-count", method = RequestMethod.GET, produces = { "application/json" })
-	public @ResponseBody WorkspacePendingNumber getWorkspacePendingCount(Authentication authentication) throws ForbiddenOperationException {
+	public @ResponseBody WorkspacePendingNumber getWorkspacePendingCount(Authentication authentication) {
 		String username = authentication.getPrincipal().toString();
 		List<Workspace> workspaces = workspaceUserManagementService.getUserInvitations(username);
 		WorkspacePendingNumber workspacePendingNumber = new WorkspacePendingNumber();
@@ -90,6 +91,7 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/{id}/state", method = RequestMethod.GET, produces = { "application/json" })
 	@ResponseBody
+	@PreAuthorize("AccessWorkspace(#id, READ)")
 	public WorkspaceInfo getWorkspaceInfo(
 			Authentication authentication,
 			@PathVariable("id") String id
@@ -100,7 +102,8 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/{id}/add-folder", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
-	public ResponseMessage<String> getWorkspaceInfo(
+	@PreAuthorize("IsWorkspaceAdmin(#id)")
+	public ResponseMessage<String> addFolder(
 			Authentication authentication,
 			@PathVariable("id") String id,
 			@RequestBody AddFolderRequest addFolderRequest
@@ -112,7 +115,8 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/{id}/folder/{folderId}", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
-	public ResponseMessage<String> getWorkspaceInfo(
+	@PreAuthorize("IsWorkspaceAdmin(#id)")
+	public ResponseMessage<String> editFolder(
 			Authentication authentication,
 			@PathVariable("id") String id,
 			@PathVariable("folderId") String folderId,
@@ -125,6 +129,7 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/{id}/folder/{folderId}", method = RequestMethod.GET, produces = { "application/json" })
 	@ResponseBody
+	@PreAuthorize("AccessWorkspaceFolder(#id, #folderId, READ)")
 	public FolderContent getFolderContent(
 			Authentication authentication,
 			@PathVariable("id") String id,
@@ -136,7 +141,8 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/{id}/folder/{folderId}", method = RequestMethod.DELETE, produces = { "application/json" })
 	@ResponseBody
-	public ResponseMessage<String> deleteFolderContent(
+	@PreAuthorize("IsWorkspaceAdmin(#id)")
+	public ResponseMessage<String> deleteFolder(
 			Authentication authentication,
 			@PathVariable("id") String id,
 			@PathVariable("folderId") String folderId
@@ -149,6 +155,7 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/{id}/home", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
+	@PreAuthorize("IsWorkspaceAdmin(#id)")
 	public ResponseMessage<String> saveHomeContent(
 			Authentication authentication,
 			@PathVariable("id") String id,
@@ -161,6 +168,7 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/{id}/metadata", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
+	@PreAuthorize("IsWorkspaceAdmin(#id)")
 	public ResponseMessage<WorkspaceMetadata> saveMetadata(
 			Authentication authentication,
 			@PathVariable("id") String id,
@@ -173,6 +181,7 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/{id}/users", method = RequestMethod.GET, produces = { "application/json" })
 	@ResponseBody
+	@PreAuthorize("IsWorkspaceAdmin(#id)")
 	public Set<WorkspaceUser> getUsers(
 			@PathVariable("id") String id
 	) throws Exception {
@@ -191,6 +200,7 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/{id}/users/add", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
+	@PreAuthorize("IsWorkspaceAdmin(#id)")
 	public ResponseMessage<WorkspaceUser> addUser(
 			Authentication authentication,
 			@PathVariable("id") String id,
@@ -231,6 +241,7 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/{id}/users/change-owner", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
+	@PreAuthorize("IsWorkspaceOwner(#id)")
 	public ResponseMessage<WorkspaceUser> changeOwner(
 			Authentication authentication,
 			@PathVariable("id") String id,
@@ -244,6 +255,7 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/{id}/users/update", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
+	@PreAuthorize("IsWorkspaceAdmin(#id)")
 	public ResponseMessage<WorkspaceUser> updateUser(
 			Authentication authentication,
 			@PathVariable("id") String id,
@@ -257,6 +269,7 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/{id}/users/delete", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
+	@PreAuthorize("IsWorkspaceAdmin(#id)")
 	public ResponseMessage<WorkspaceUser> deleteUser(
 			Authentication authentication,
 			@PathVariable("id") String id,
@@ -288,7 +301,10 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/move", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
-	@PreAuthorize("AccessResource(#workspaceDocumentMove.getDocumentType().toString(), #workspaceDocumentMove.getDocumentId(), WRITE)")
+	@PreAuthorize(
+			"AccessResource(#workspaceDocumentMove.getDocumentType().toString(), #workspaceDocumentMove.getDocumentId(), #workspaceDocumentMove.isClone() ? READ : WRITE) &&" +
+			"AccessWorkspaceFolder(#workspaceDocumentMove.getWorkspaceId(), #workspaceDocumentMove.getSourceFolderId(), READ) && " +
+			"#workspaceDocumentMove.isMoveToFolder() ? AccessWorkspaceFolder(#workspaceDocumentMove.getWorkspaceId(), #workspaceDocumentMove.getFolderId(), WRITE) : true ")
 	public WorkspaceInfo clone(
 			@RequestBody WorkspaceDocumentMove workspaceDocumentMove,
 			Authentication authentication
@@ -307,7 +323,7 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/publish", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
-	@PreAuthorize("AccessResource(#workspaceDocumentPublish.getDocumentType().toString(), #workspaceDocumentPublish.getDocumentId(), WRITE)")
+	@PreAuthorize("IsAdmin() && IsWorkspaceAdmin(#workspaceDocumentPublish.getWorkspaceId()) && AccessResource(#workspaceDocumentPublish.getDocumentType().toString(), #workspaceDocumentPublish.getDocumentId(), WRITE)")
 	public WorkspaceInfo publish(
 			@RequestBody WorkspaceDocumentPublish workspaceDocumentPublish,
 			Authentication authentication
@@ -324,7 +340,7 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/{wsId}/folder/{folderId}/document/{documentType}/{documentId}", method = RequestMethod.DELETE, produces = { "application/json" })
 	@ResponseBody
-	@PreAuthorize("AccessResource(#documentType, #documentId, WRITE)")
+	@PreAuthorize("AccessWorkspaceFolder(workspaceId, folderId, WRITE) && AccessResource(#documentType, #documentId, WRITE)")
 	public WorkspaceInfo deleteDocument(
 			@PathVariable("wsId") String workspaceId,
 			@PathVariable("folderId") String folderId,

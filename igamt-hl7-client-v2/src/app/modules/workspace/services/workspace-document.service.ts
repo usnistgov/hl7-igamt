@@ -156,7 +156,7 @@ export class WorkspaceDocumentService {
           minWidth: '900px',
           data: {
             workspace,
-            id: folder.id,
+            folder,
             name: item.title,
           },
         }).afterClosed().pipe(
