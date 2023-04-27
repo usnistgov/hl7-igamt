@@ -16,7 +16,7 @@ export class SelectedMessagesComponent implements OnInit {
   messages = new EventEmitter<IAddingInfo[]>();
   @ViewChild(NgForm) form;
 
-  roles =  [{label: 'RECEIVER', value: Role.Receiver}, {label: 'SENDER', value: Role.Sender}, {label: 'SENDER And Receiver', value: Role.SenderAndReceiver}];
+  roles =  [{label: 'RECEIVER', value: Role.Receiver}, {label: 'SENDER', value: Role.Sender}, {label: 'SENDER and Receiver', value: Role.SenderAndReceiver}];
   profileTypes = [{label: 'Constrainable', value: ProfileType.Constrainable}, {label: 'Implementation', value: ProfileType.Implementation}];
 
   constructor() { }
