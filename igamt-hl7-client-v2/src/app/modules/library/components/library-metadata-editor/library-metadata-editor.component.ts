@@ -7,16 +7,16 @@ import { catchError, flatMap, map, pluck, take, tap } from 'rxjs/operators';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
-import {LibraryEditResolverLoad} from '../../../../root-store/library/library-edit/library-edit.actions';
-import {selectLibraryVersions} from '../../../../root-store/library/library-edit/library-edit.selectors';
+import { LibraryEditResolverLoad } from '../../../../root-store/library/library-edit/library-edit.actions';
+import { selectLibraryVersions } from '../../../../root-store/library/library-edit/library-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { FieldType, IMetadataFormInput } from '../../../shared/components/metadata-form/metadata-form.component';
 import { Status } from '../../../shared/models/abstract-domain.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { FroalaService } from '../../../shared/services/froala.service';
-import {ILibrary} from '../../models/library.class';
-import {LibraryService} from '../../services/library.service';
+import { ILibrary } from '../../models/library.class';
+import { LibraryService } from '../../services/library.service';
 
 export interface IIgEditMetadata {
   coverPicture: string;
@@ -178,9 +178,12 @@ export class LibraryMetadataEditorComponent extends AbstractEditorComponent impl
               flatMap((response) => {
                 return [
                   new LibraryEditResolverLoad(id),
-                  new fromDam.EditorSaveSuccess({
-                    ...current.data,
-                    coverPicture: pictureName ? pictureName : current.data.coverPicture,
+                  new fromDam.EditorUpdate({
+                    value: {
+                      ...current.data,
+                      coverPicture: pictureName ? pictureName : current.data.coverPicture,
+                    },
+                    updateDate: false,
                   }),
                   this.messageService.messageToAction(response),
                 ];

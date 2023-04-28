@@ -1004,7 +1004,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					elmComponent.addAttribute(new Attribute("Datatype",
 							"" + this.datatypeService.findXMLRefIdById(childDT, defaultHL7Version)));
 
-					if (c.getModel().getConstantValue() != null && this.isPrimitiveDatatype(childDT.getName())) {
+					if (!(c.getModel().getConstantValue() == null || c.getModel().getConstantValue().trim().equals("")) & this.isPrimitiveDatatype(childDT.getName())) {
 						elmComponent.addAttribute(
 								new Attribute("ConstantValue", this.str(c.getModel().getConstantValue())));
 					}
@@ -1280,7 +1280,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 						elmField.addAttribute(new Attribute("Datatype",
 								"" + this.datatypeService.findXMLRefIdById(childDT, defaultHL7Version)));
 
-						if (f.getModel().getConstantValue() != null && this.isPrimitiveDatatype(childDT.getName())) {
+						if (!(f.getModel().getConstantValue() == null || f.getModel().getConstantValue().trim().equals("")) && this.isPrimitiveDatatype(childDT.getName())) {
 							elmField.addAttribute(
 									new Attribute("ConstantValue", this.str(f.getModel().getConstantValue())));
 						}
@@ -1822,13 +1822,15 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 			if (cp.getSlicings() != null) {
 				cp.getSlicings().forEach(item -> {
 					String[] pathArray = item.getPath().split("\\-");
-					Element elmGroupContext = new Element("GroupContext");
+					
+					String groupContextId = "";
 					if (pathArray.length > 1) {
-						elmGroupContext.addAttribute(
-								new Attribute("ID", this.str(cp.getId()) + "-" + pathArray[pathArray.length - 2]));
+						groupContextId = this.str(cp.getId()) + "-" + pathArray[pathArray.length - 2];
 					} else {
-						elmGroupContext.addAttribute(new Attribute("ID", this.str(cp.getId())));
+						groupContextId = this.str(cp.getId());
 					}
+					
+					Element elmGroupContext = this.findGroupContextElm(elmMessage, groupContextId);
 
 					if (item.getType().equals(SlicingMethod.OCCURRENCE)) {
 						OrderedSlicing orderedSlicing = (OrderedSlicing) item;
@@ -1893,7 +1895,11 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 						}
 					}
 					if (elmGroupContext.getChildElements().size() > 0) {
-						elmMessage.appendChild(elmGroupContext);
+						try {
+							elmMessage.appendChild(elmGroupContext);
+						} catch (Exception er) {
+							
+						}
 					}
 				});
 			}
@@ -1978,6 +1984,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 				elmFieldSlicing.appendChild(elmSegmentContext);
 			}
 		}
+		
+		
 		if (elmSegmentSlicing.getChildElements().size() > 0) {
 			e.appendChild(elmSegmentSlicing);
 		}
@@ -1985,6 +1993,22 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 			e.appendChild(elmFieldSlicing);
 		}
 		return e;
+	}
+
+	private Element findGroupContextElm(Element elmMessage, String groupContextId) {
+		if(elmMessage.getChildElements() != null ) {
+			for (int i = 0; i < elmMessage.getChildElements().size(); i++) {
+				Element e = elmMessage.getChildElements().get(i);
+
+				if (e.getLocalName() != null && e.getLocalName().equals("GroupContext"))
+					if (e.getAttribute("ID") != null && e.getAttribute("ID").getValue().equals(groupContextId))
+						return e;
+			}	
+		}
+
+		Element elmGroupContext = new Element("GroupContext");
+		elmGroupContext.addAttribute(new Attribute("ID", groupContextId));
+		return elmGroupContext;
 	}
 
 	@Override

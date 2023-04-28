@@ -2,7 +2,7 @@ import { createEntityAdapter, Dictionary } from '@ngrx/entity';
 import { createSelector } from '@ngrx/store';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { Type } from '../../modules/shared/constants/type.enum';
-import {IConformanceProfile} from '../../modules/shared/models/conformance-profile.interface';
+import { IConformanceProfile } from '../../modules/shared/models/conformance-profile.interface';
 import { IDatatype } from '../../modules/shared/models/datatype.interface';
 import { IResource } from '../../modules/shared/models/resource.interface';
 import { ISegment } from '../../modules/shared/models/segment.interface';
