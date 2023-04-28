@@ -13,7 +13,7 @@ import { HL7v2TreeColumnType } from 'src/app/modules/shared/components/hl7-v2-tr
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { IDocumentRef } from 'src/app/modules/shared/models/abstract-domain.interface';
 import { ICompositeProfileState, IResourceAndDisplay } from 'src/app/modules/shared/models/composite-profile';
-import { Hl7Config, IUserConfig, IValueSetBindingConfigMap } from 'src/app/modules/shared/models/config.class';
+import { Hl7Config, IValueSetBindingConfigMap } from 'src/app/modules/shared/models/config.class';
 import { ConstraintType } from 'src/app/modules/shared/models/cs.interface';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
