@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { combineLatest, Observable, throwError } from 'rxjs';
+import { combineLatest, Observable, Subscription, throwError } from 'rxjs';
 import { catchError, flatMap, map, tap } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import { WorkspaceListService } from 'src/app/modules/workspace/services/workspace-list.service';
@@ -52,6 +52,8 @@ export class WorkspaceListComponent implements OnInit, OnDestroy {
     ascending: boolean,
   };
   pendingCount: Observable<number>;
+  sortOptionsSubs: Subscription;
+  routeParamsSubs: Subscription;
 
   storeSelectors() {
     this.listItems = this.store.select(fromWorkspaceList.selectWorkspaceListViewFilteredAndSorted, { filter: this.filter });
@@ -59,7 +61,7 @@ export class WorkspaceListComponent implements OnInit, OnDestroy {
     this.isAdmin = this.store.select(fromAuth.selectIsAdmin);
     this.username = this.store.select(fromAuth.selectUsername);
     this.pendingCount = this.store.select(selectWorkspacePendingInvitations);
-    this.store.select(fromWorkspaceList.selectSortOptions).subscribe(
+    this.sortOptionsSubs = this.store.select(fromWorkspaceList.selectSortOptions).subscribe(
       (next) => {
         this.sortOrder = {
           ascending: next.ascending,
@@ -224,7 +226,7 @@ export class WorkspaceListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.dispatch(new ClearAll());
-    this.route.queryParams.subscribe((params) => {
+    this.routeParamsSubs = this.route.queryParams.subscribe((params) => {
       if (params['type']) {
         this.selectViewType(params['type']);
       } else {
@@ -239,6 +241,12 @@ export class WorkspaceListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.routeParamsSubs) {
+      this.routeParamsSubs.unsubscribe();
+    }
+    if (this.sortOptionsSubs) {
+      this.sortOptionsSubs.unsubscribe();
+    }
     this.store.dispatch(new ClearWorkspaceList());
   }
 

@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, Pipe, PipeTransform } from '@angular/core
 import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { BehaviorSubject, combineLatest, Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, Subscription, throwError } from 'rxjs';
 import { catchError, flatMap, map, switchMap, take, tap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { IMessage } from 'src/app/modules/dam-framework/models/messages/message.class';
@@ -120,6 +120,7 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
     UserTableColumn.ADDEDBY,
     UserTableColumn.PERMISSIONS,
   ];
+  subs: Subscription;
 
   constructor(
     actions$: Actions,
@@ -138,7 +139,7 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
     this.owner$ = this.store.select(selectWorkspaceOwner);
     this.isOwner$ = this.store.select(selectIsWorkspaceOwner);
     this.username$ = this.store.select(selectUsername);
-    this.currentSynchronized$.pipe(
+    this.subs = this.currentSynchronized$.pipe(
       tap((current) => {
         this.workspaceUsers$.next([...(current.users || [])]);
       }),
@@ -351,18 +352,10 @@ export class WorkspaceUserManagementComponent extends AbstractWorkspaceEditorCom
     return of();
   }
 
-  onOpenChange(state) {
-
-  }
-
-  apply() {
-
-  }
-
-  clear() {
-
-  }
   ngOnDestroy(): void {
+    if (this.subs) {
+      this.subs.unsubscribe();
+    }
   }
 
   ngOnInit() {
