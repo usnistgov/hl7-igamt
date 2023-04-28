@@ -336,6 +336,47 @@ export class OpenEditorService {
     );
   }
 
+  openConformanceStatementProfileComponentEditor<T, A extends OpenEditorBase>(
+    _action: string,
+    type: Type,
+    displayElement$: MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement>,
+    resource$: (action: A) => Observable<T>,
+    context$: Observable<IProfileComponentContext>,
+    notFoundMessage: string,
+  ): Observable<Action> {
+    return this.openEditor<T, A>(
+      _action,
+      displayElement$,
+      resource$,
+      notFoundMessage,
+      (action: A, resource: T, display: IDisplayElement) => {
+        return context$.pipe(
+          flatMap((ctx) => {
+            const openEditor = new OpenEditor({
+              id: action.payload.id,
+              display,
+              editor: action.payload.editor,
+              initial: resource,
+            });
+            this.store.dispatch(new LoadResourceReferences({ resourceType: ctx.level, id: ctx.sourceId }));
+            return RxjsStoreHelperService.listenAndReact(this.actions$, {
+              [IgamtLoadedResourcesActionTypes.LoadResourceReferencesSuccess]: {
+                do: (loadSuccess: LoadResourceReferencesSuccess) => {
+                  return of(openEditor);
+                },
+              },
+              [IgamtLoadedResourcesActionTypes.LoadResourceReferencesFailure]: {
+                do: (loadFailure: LoadResourceReferencesFailure) => {
+                  return of(new OpenEditorFailure({ id: action.payload.id }));
+                },
+              },
+            });
+          }),
+        );
+      },
+    );
+  }
+
   openDeltaEditor<A extends OpenEditorBase>(
     _action: string,
     type: Type,
