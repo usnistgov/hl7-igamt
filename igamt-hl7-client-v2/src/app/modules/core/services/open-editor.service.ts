@@ -351,6 +351,7 @@ export class OpenEditorService {
       notFoundMessage,
       (action: A, resource: T, display: IDisplayElement) => {
         return context$.pipe(
+          take(1),
           flatMap((ctx) => {
             const openEditor = new OpenEditor({
               id: action.payload.id,
