@@ -117,6 +117,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
         if (coConstraintTable) {
           this.store.dispatch(this.messageService.userMessageToAction(new UserMessage<never>(MessageType.SUCCESS, 'TABLE SAVED SUCCESSFULLY')));
           this.binding.tables.push({ id: '', delta: undefined, value: coConstraintTable, condition: undefined });
+          this.triggerChange();
         }
       },
     );

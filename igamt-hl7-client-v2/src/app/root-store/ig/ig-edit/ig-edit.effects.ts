@@ -157,13 +157,19 @@ export class IgEditEffects extends DamWidgetEffect {
       IgEditActionTypes.ImportResourceFromFileSuccess,
       IgEditActionTypes.DeleteResourcesSuccess,
       IgEditActionTypes.CreateCoConstraintGroupSuccess,
-      IgEditActionTypes.AddProfileComponentContextSuccess),
+      IgEditActionTypes.AddProfileComponentContextSuccess,
+      IgEditActionTypes.CreateCompositeProfileSuccess),
     flatMap((action) => {
       return this.store.select(selectLoadedDocumentInfo).pipe(
         take(1),
         flatMap((doc) => {
           return this.igService.getUpdateInfo(doc.documentId).pipe(
-            map((v) => new RefreshUpdateInfo(v)),
+            flatMap((v) => {
+              return [
+                new RefreshUpdateInfo(v),
+                new VerifyIg({ id: doc.documentId, resourceType: Type.IGDOCUMENT, verificationType: VerificationType.VERIFICATION })
+              ];
+            } ),
           );
         }),
       );
@@ -906,18 +912,18 @@ export class IgEditEffects extends DamWidgetEffect {
     }),
   );
 
-  @Effect()
-  EditorSaveSuccess$ = this.actions$.pipe(
-    ofType(DamActionTypes.EditorSaveSuccess, IgEditActionTypes.AddResourceSuccess),
-    mergeMap((action: EditorSaveSuccess) => {
-      return this.store.select(selectIgDocument).pipe(
-        take(1),
-        map((ig) => {
-          return new VerifyIg({ id: ig.id, resourceType: Type.IGDOCUMENT, verificationType: VerificationType.VERIFICATION });
-        }),
-      );
-    }),
-  );
+  // @Effect()
+  // EditorSaveSuccess$ = this.actions$.pipe(
+  //   ofType(DamActionTypes.EditorSaveSuccess, IgEditActionTypes.AddResourceSuccess),
+  //   mergeMap((action: EditorSaveSuccess) => {
+  //     return this.store.select(selectIgDocument).pipe(
+  //       take(1),
+  //       map((ig) => {
+  //         return new VerifyIg({ id: ig.id, resourceType: Type.IGDOCUMENT, verificationType: VerificationType.VERIFICATION });
+  //       }),
+  //     );
+  //   }),
+  // );
 
   finalizeAdd(toDoo: Observable<Action>) {
     return combineLatest(
