@@ -1169,8 +1169,7 @@ public class IgServiceImpl implements IgService {
 		for (Link l : ig.getValueSetRegistry().getChildren()) {
 			if (l.getId() != null) {
 				Valueset vs = this.valueSetService.findById(l.getId());
-
-				if (vs.getBindingIdentifier().equals(bId))
+				if (vs != null && vs.getBindingIdentifier() != null &&  vs.getBindingIdentifier().equals(bId))
 					return vs;
 			}
 		}
