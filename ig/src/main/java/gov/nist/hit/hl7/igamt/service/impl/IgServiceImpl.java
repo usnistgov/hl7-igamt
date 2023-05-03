@@ -1086,11 +1086,14 @@ public class IgServiceImpl implements IgService {
 	}
 
 	private String addValuesetsFromConstraints(String constraintXMLStr, IgDataModel igModel, int fromIndex) {
+		
+		System.out.println(constraintXMLStr);
 		int beginIndex = constraintXMLStr.indexOf("ValueSetID=\"", fromIndex);
 		int endIndex = constraintXMLStr.indexOf("\"", beginIndex + "ValueSetID=\"".length());
 		if (beginIndex < 0 || endIndex < 0 || endIndex < beginIndex) {
 		} else {
 			String bId = constraintXMLStr.substring(beginIndex + "ValueSetID=\"".length(), endIndex);
+			System.out.println("###### Detected :: " + bId);
 			ValuesetDataModel vdm = igModel.findValuesetByBId(bId);
 
 			if (vdm == null) {
@@ -1120,6 +1123,8 @@ public class IgServiceImpl implements IgService {
 
 					return addValuesetsFromConstraints(constraintXMLStr.substring(0, beginIndex) + " ValueSetID=\""
 							+ modifiedBId + constraintXMLStr.substring(endIndex), igModel, endIndex);
+				} else {
+					return addValuesetsFromConstraints(constraintXMLStr, igModel, endIndex);
 				}
 			} else {
 				String defaultHL7Version = this.findDefaultHL7Version(igModel);
@@ -1169,7 +1174,6 @@ public class IgServiceImpl implements IgService {
 		for (Link l : ig.getValueSetRegistry().getChildren()) {
 			if (l.getId() != null) {
 				Valueset vs = this.valueSetService.findById(l.getId());
-
 				if (vs.getBindingIdentifier().equals(bId))
 					return vs;
 			}
