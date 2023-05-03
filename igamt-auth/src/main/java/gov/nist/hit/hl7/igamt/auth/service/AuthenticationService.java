@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.auth.service;
 
+import java.util.ArrayList;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -59,6 +61,7 @@ public interface AuthenticationService {
 
   public FindUserResponse findUser(HttpServletRequest req, FindUserRequest user) throws AuthenticationException;
 
+  public ArrayList<String> getAllUsernames(HttpServletRequest req);
 
 
 

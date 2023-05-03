@@ -5,6 +5,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
 import javax.net.ssl.HostnameVerifier;
@@ -427,6 +428,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		
 	}
 	
+	
 	@Override
 	public FindUserResponse findUser(HttpServletRequest req, FindUserRequest user) throws AuthenticationException {
 		try {
@@ -452,6 +454,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			e.printStackTrace();
 			throw new AuthenticationException(e.getMessage());
 		}
+	}
+	
+	@Override
+	public ArrayList<String> getAllUsernames(HttpServletRequest req) {
+		ResponseEntity<ArrayList<String>> response = restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/usernames",
+				HttpMethod.GET, new HttpEntity<String>(this.getCookiesHeaders(req)), new ParameterizedTypeReference<ArrayList<String>>() {});
+		return response.getBody();
 	}
 
 
