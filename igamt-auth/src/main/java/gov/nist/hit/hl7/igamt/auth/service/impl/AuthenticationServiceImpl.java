@@ -438,12 +438,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 			HttpEntity<FindUserRequest> request = new HttpEntity<>(user, this.getCookiesHeaders(req));
 
-
 			ResponseEntity<FindUserResponse> response =
 					restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/find", HttpMethod.POST, request,
 							new ParameterizedTypeReference<FindUserResponse>() {});
-
-
 
 			return response.getBody();
 		} catch (HttpClientErrorException | HttpServerErrorException e) {
