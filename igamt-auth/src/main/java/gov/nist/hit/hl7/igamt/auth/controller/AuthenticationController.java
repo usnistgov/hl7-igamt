@@ -213,11 +213,6 @@ public class AuthenticationController {
     return baseUrl  + "/reset-password-confirm/" + token;
   }
   
-  @RequestMapping(value = "api/usernames", method = RequestMethod.GET)
-  @ResponseBody
-  public ArrayList<String> getAllUsernames(HttpServletRequest req) {
-    return authService.getAllUsernames(req);
-  }
 
 
 }
