@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.auth.service;
 
+import java.util.ArrayList;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 

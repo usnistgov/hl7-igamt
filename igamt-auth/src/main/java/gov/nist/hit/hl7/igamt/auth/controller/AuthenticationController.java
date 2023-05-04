@@ -212,6 +212,12 @@ public class AuthenticationController {
 	String baseUrl = env.getProperty("host.url");
     return baseUrl  + "/reset-password-confirm/" + token;
   }
+  
+  @RequestMapping(value = "api/usernames", method = RequestMethod.GET)
+  @ResponseBody
+  public ArrayList<String> getAllUsernames(HttpServletRequest req) {
+    return authService.getAllUsernames(req);
+  }
 
 
 }
