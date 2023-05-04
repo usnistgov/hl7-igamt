@@ -193,9 +193,6 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
               }),
             );
           }),
-          catchError((error) => {
-            return throwError(this.messageService.actionFromError(error));
-          }),
         );
       }),
     );

@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.access.security;
 
+import gov.nist.hit.hl7.igamt.access.concurrent.SynchronizedAccessService;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
 
@@ -7,8 +8,8 @@ public class CustomMethodSecurityExpressionRoot extends CustomSecurityExpression
     private Object filterObject;
     private Object returnObject;
 
-    public CustomMethodSecurityExpressionRoot(Authentication authentication, AccessControlService accessControlService) {
-        super(authentication, accessControlService);
+    public CustomMethodSecurityExpressionRoot(Authentication authentication, AccessControlService accessControlService, SynchronizedAccessService synchronizedAccessService) {
+        super(authentication, accessControlService, synchronizedAccessService);
     }
 
     @Override

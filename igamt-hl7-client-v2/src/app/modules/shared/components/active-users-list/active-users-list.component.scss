@@ -1,0 +1,27 @@
+:host {
+    margin-right: 20px;
+}
+
+.user {
+    border: 2px solid black;
+    border-radius: 20px;
+    height: 30px;
+    width: 30px;
+    text-align: center;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 5px;
+}
+
+.icon {
+    position: absolute;
+    margin-bottom: -20px;
+    margin-right: -20px;
+    font-size: 10px;
+    border: 1px solid;
+    border-radius: 10px;
+    background-color: white;
+    padding: 2px;
+}

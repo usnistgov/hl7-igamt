@@ -71,6 +71,8 @@ const routes: Routes = [
     path: 'structure-editor',
     loadChildren: './modules/structure-editor/structure-editor.module#StructureEditorModule',
   },
+  {path: 'workspace',
+  loadChildren: './modules/workspace/workspace.module#WorkspaceModule'},
   {
     path: '**', component: ErrorPageComponent,
   },

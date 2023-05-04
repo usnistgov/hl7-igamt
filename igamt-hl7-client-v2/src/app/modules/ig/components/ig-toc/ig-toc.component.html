@@ -117,10 +117,10 @@
             <context-menu #valueSetsContextMenu [disabled]="viewOnly||delta">
 
               <ng-template (execute)="createNew(node.data, 'VALUESET')" contextMenuItem [enabled]="!viewOnly&&!delta">
-                <i class="fa fa-plus"></i> Create new value set
+                <i class="fa fa-plus"></i> Create new Value Set
               </ng-template>
               <ng-template (execute)="import(node.data, 'VALUESET', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
-                <i class="fa fa-plus"></i> Add Hl7 Value Sets
+                <i class="fa fa-plus"></i> Add HL7 Value Sets
               </ng-template>
               <ng-template (execute)="import(node.data, 'VALUESET', 'PHINVADS')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Add PHINVADS Value Sets
@@ -215,9 +215,6 @@
               {{node.data.variableName}}
           </span>
           <context-menu #cp [disabled]="viewOnly||delta">
-            <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
-              <i class="fa fa-copy"></i> Create Flavor
-            </ng-template>
             <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-remove"></i> Delete
             </ng-template>

@@ -1,0 +1,75 @@
+<div class="side-bar">
+  <ul class="list-group editors">
+    <li class="list-group-item cursor-pointer" routerLink="home" routerLinkActive="nav-active-link" >
+      <i class="fa fa-home" style="font-size: larger; margin-right: 5px;"></i>
+      Home
+    </li>
+    <li class="list-group-item cursor-pointer" routerLink="metadata" routerLinkActive="nav-active-link" *ngIf="isAdmin$ | async">
+      <i class="fa fa-file-text" style="font-size: larger; margin-right: 5px;"></i>
+      Metadata
+    </li>
+    <li class="list-group-item cursor-pointer" routerLink="users" routerLinkActive="nav-active-link" *ngIf="isAdmin$ | async" >
+      <i class="fa fa-users" style="font-size: larger; margin-right: 5px;"></i>
+      Manage Access
+    </li>
+    <li class="list-group-item" style="background-color: #f3f3f3; display: flex; justify-content: space-between; align-items: center;">
+      Folders
+      <button class="btn btn-sm btn-primary" (click)="createFolder()" *ngIf="isAdmin$ | async">
+        <i class="fa fa-plus"></i>
+      </button>
+    </li>
+  </ul>
+  <div class="filter">
+    <div class="input-group" style="margin-left: 5px; min-width: 300px;">
+      <div class="input-group-prepend">
+        <span class="input-group-text"><i class="fa fa-filter"></i></span>
+      </div>
+      <input type="text" class="form-control" placeholder="filter" aria-label="filter">
+    </div>
+  </div>
+  <div class="list">
+    <div style="background-color: #f3f3f3; flex-grow: 1;">
+      <ul class="list-group">
+        <li [contextMenu]="folderMenu" *ngFor="let folder of folders$ | async" [routerLink]="['folder', folder.id]" class="list-group-item folder-list-item cursor-pointer" routerLinkActive="nav-active-link" >
+          <span>
+            <i class="fa fa-folder" style="font-size: larger; margin-right: 5px;"></i>
+            {{folder.metadata.title}}
+          </span>
+          <context-menu #folderMenu [disabled]="!(isAdmin$ | async)">
+            <ng-template (execute)="editFolder(folder)" contextMenuItem>
+              <i class="fa fa-pencil"></i> Edit Folder
+            </ng-template>
+            <ng-template (execute)="deleteFolder(folder)" contextMenuItem>
+              <i class="fa fa-trash"></i> Delete Folder
+            </ng-template>
+          </context-menu>
+          <span style="display: flex;">
+            <ng-container style="margin-left: 5px;" [ngSwitch]="folder.permissionType">
+              <span *ngSwitchCase="'VIEW'" [ngbPopover]="viewPopContent" triggers="mouseenter:mouseleave" container="body" placement="bottom" tr  class="badge" style="background-color: green; color: white; font-weight: bold;">V</span>
+              <span *ngSwitchCase="'EDIT'" [ngbPopover]="editPopContent" triggers="mouseenter:mouseleave" container="body" placement="bottom" class="badge" style="background-color: #007bff; color: white; font-weight: bold;">E</span>
+            </ng-container>
+            <span style="margin-left: 5px;" class="badge badge-dark">{{(folder.children || []).length}}</span>
+            <ng-template #viewPopContent >
+              <span>You can view the content of this folder.</span>
+            </ng-template>
+            <ng-template #editPopContent >
+              <span>You can edit the content of this folder.</span>
+              <table class="table table-sm table-striped table-bordered" style="margin-top: 5px;">
+                <tr>
+                  <th>Editors</th>
+                </tr>
+                <tr *ngFor="let editor of folder.editors">
+                  <td>
+                    <i class="fa fa-user" style="margin-right: 5px;"></i>
+                    {{editor}}
+                  </td>
+                </tr>
+              </table>
+            </ng-template>
+          </span>
+
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

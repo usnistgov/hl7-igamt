@@ -4,14 +4,13 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import { IUserConfig } from 'src/app/modules/shared/models/config.class';
+import { LoadUserConfig, SaveUserConfig } from 'src/app/root-store/user-config/user-config.actions';
 import { getUserConfigState } from 'src/app/root-store/user-config/user-config.reducer';
 import * as fromAuth from '../../../dam-framework/store/authentication/index';
 import { LogoutRequest } from '../../../dam-framework/store/authentication/index';
+import { ConfigurationDialogComponent } from '../configuration-dialog/configuration-dialog.component';
 import * as fromRoot from './../../../../root-store/index';
-import { LoadUserConfig, SaveUserConfig } from './../../../../root-store/user-config/user-config.actions';
-import { IUserConfig } from './../../../shared/models/config.class';
-import { ConfigurationDialogComponent } from './../configuration-dialog/configuration-dialog.component';
-
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -22,6 +21,7 @@ export class HeaderComponent implements OnInit {
   isLoading: Observable<boolean>;
   isAdmin: Observable<boolean>;
   isIG: Observable<boolean>;
+  isWorkspace: Observable<boolean>;
   isDtLib: Observable<boolean>;
   isConfig: Observable<boolean>;
   isLoggedIn: Observable<boolean>;
@@ -49,6 +49,13 @@ export class HeaderComponent implements OnInit {
       map(
         (url: string) => {
           return url.startsWith('/configuration');
+        },
+      ),
+    );
+    this.isWorkspace = store.select(fromDAM.selectRouterURL).pipe(
+      map(
+        (url: string) => {
+          return url.startsWith('/workspace');
         },
       ),
     );

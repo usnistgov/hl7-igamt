@@ -189,7 +189,7 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
     switch (elm.display.type) {
       case Type.DATATYPE:
       case Type.SEGMENT:
-        this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS ];
+        this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS];
         if (elm.resource.name === 'OBX') {
           this.tabs.push(GeneratedFlavorTabs.DYNAMIC_MAPPING);
         }

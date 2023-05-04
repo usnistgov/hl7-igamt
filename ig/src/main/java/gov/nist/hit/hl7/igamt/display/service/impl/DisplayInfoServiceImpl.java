@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupRegistry;
 import gov.nist.hit.hl7.igamt.coconstraints.service.impl.SimpleCoConstraintService;
+import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,6 +71,9 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
   @Autowired
   CompositeProfileStructureService compositeProfileService;
 
+  @Autowired
+  IgService igService;
+
   @Override
   public IGDisplayInfo covertIgToDisplay(Ig ig) {
     IGDisplayInfo ret = new IGDisplayInfo();
@@ -81,6 +85,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     ret.setCoConstraintGroups(convertCoConstraintGroupRegistry(ig.getCoConstraintGroupRegistry()));
     ret.setProfileComponents(convertPofileComponentRegistry(ig.getProfileComponentRegistry()));
     ret.setCompositeProfiles(convertCompositeProfileRegistry(ig.getCompositeProfileRegistry()));
+    ret.setResourceVersionSyncToken(igService.getResourceVersionSyncToken(ig.getUpdateDate()));
     return ret;
   }
 

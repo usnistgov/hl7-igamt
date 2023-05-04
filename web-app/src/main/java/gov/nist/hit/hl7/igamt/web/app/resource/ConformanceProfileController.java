@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,7 +124,8 @@ public class ConformanceProfileController extends BaseController {
     @SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/api/conformanceprofiles/{id}", method = RequestMethod.POST, produces = {
             "application/json" })
-    @PreAuthorize("AccessResource('CONFORMANCEPROFILE', #id, WRITE)")
+    @NotifySave(id = "#id", type = "'CONFORMANCEPROFILE'")
+    @PreAuthorize("AccessResource('CONFORMANCEPROFILE', #id, WRITE) && ConcurrentSync('CONFORMANCEPROFILE', #id, ALLOW_SYNC_STRICT)")
     @ResponseBody
     public ResponseMessage<?> applyChanges(@PathVariable("id") String id, @RequestBody List<ChangeItemDomain> cItems,
                                            Authentication authentication) throws Exception {

@@ -3,9 +3,11 @@ package gov.nist.hit.hl7.igamt.ig.service;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
@@ -18,7 +20,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.client.result.UpdateResult;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -27,7 +28,6 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
-import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.display.model.PublishingInfo;
@@ -64,6 +64,8 @@ public interface IgService {
   public List<Ig> finByScope(String string);
 
   public Ig createEmptyIg() throws JsonParseException, JsonMappingException, FileNotFoundException, IOException;
+
+  public Ig createIg(CreationWrapper wrapper, String username) throws Exception;
 
   public List<Ig> findIgIdsForUser(String username);
 
@@ -103,7 +105,6 @@ public interface IgService {
     
   UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass, boolean updateDate);
   
-  public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo);
   public Ig makeSelectedIg(Ig ig, ReqId reqIds);
   public void visitSegmentRefOrGroup(Set<SegmentRefOrGroup> srgs, Ig selectedIg, Ig all);
   public void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all);
@@ -133,6 +134,12 @@ public interface IgService {
 
   void lockIg(Ig ig) throws IGNotFoundException, IGUpdateException;
 
+  String getResourceVersionSyncToken(Date updateDate);
 
+  List<Ig> findByIdIn(List<String> ids);
+  
+  List<Ig> findByPrivateAudienceEditor(String username);
+  List<Ig> findByPrivateAudienceViewer(String username);
+  List<Ig> findByPublicAudienceAndStatusPublished();
 
 }

@@ -4,11 +4,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.model.EntityLocation;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 
 public class IGDisplayInfo {
 
 	private Ig ig;
+	private String resourceVersionSyncToken;
 	private Set<DisplayElement> messages = new HashSet<DisplayElement>();
 	private Set<DisplayElement> segments = new HashSet<DisplayElement>();
 	private Set<DisplayElement> datatypes = new HashSet<DisplayElement>();
@@ -17,6 +19,7 @@ public class IGDisplayInfo {
 	private Set<DisplayElement> profileComponents = new HashSet<DisplayElement>();
 	private Set<DisplayElement> compositeProfiles = new HashSet<DisplayElement>();
 	private String targetResourceId;
+	private Set<EntityLocation> documentLocation;
 	public Ig getIg() {
 		return ig;
 	}
@@ -71,4 +74,20 @@ public class IGDisplayInfo {
   public void setTargetResourceId(String targetResourceId) {
     this.targetResourceId = targetResourceId;
   }
+
+	public Set<EntityLocation> getDocumentLocation() {
+		return documentLocation;
+	}
+
+	public void setDocumentLocation(Set<EntityLocation> documentLocation) {
+		this.documentLocation = documentLocation;
+	}
+
+	public String getResourceVersionSyncToken() {
+		return resourceVersionSyncToken;
+	}
+
+	public void setResourceVersionSyncToken(String resourceVersionSyncToken) {
+		this.resourceVersionSyncToken = resourceVersionSyncToken;
+	}
 }

@@ -9,23 +9,14 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice 
  * that they have been modified. 
  */ 
-package gov.nist.hit.hl7.igamt.ig.service; 
- 
-import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException; 
-import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException; 
-import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo; 
- 
+package gov.nist.hit.hl7.igamt.ig.service;
+
+import java.util.List;
+
 /** 
  * @author Abdelghani El Ouakili 
  * 
  */ 
-public interface SharingService { 
- 
-  public void shareIg(String id, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException, ForbiddenOperationException; 
-  public void shareDatatype(String id, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException, ForbiddenOperationException; 
-  public void shareSegment(String id, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException, ForbiddenOperationException; 
-  public void shareValueset(String id, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException, ForbiddenOperationException; 
-  public void shareConformanceProfile(String id, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException; 
-  public void shareCoConstraintGroup(String elm, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException; 
- 
+public interface SharingService {
+	void updateIgViewers(String id, List<String> viewers, String username) throws Exception;
 } 

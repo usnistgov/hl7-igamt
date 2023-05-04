@@ -1,14 +1,20 @@
+
 <div class="create-ig-layout">
-  <div class="title">
-    <h5>Create new IG Document</h5>
+  <div class="context">
+    <app-document-breadcrumbs [locationInfo]="context.location"></app-document-breadcrumbs>
   </div>
   <div class="alerts">
     <app-dam-alerts-container></app-dam-alerts-container>
   </div>
+
+  <div class="title">
+    <h3>Create Implementation Guide</h3>
+  </div>
+
   <div class="metadata">
     <form [formGroup]="metaDataForm">
-      <app-form-input formControlName="title" id="title" label="IG Document Title*" name="Title"
-                      placeholder="IG Document Title" type="text">
+      <app-form-input formControlName="title" id="title" label="Document Title" name="Title"
+                      placeholder="Title" type="text">
       </app-form-input>
     </form>
     <span class="form-label-lg" style="margin-right: 5px;">Conformance Profiles</span> <button class="btn btn-primary" (click)="pickMessages()"><i class="fa fa-plus"></i></button>
@@ -16,8 +22,6 @@
   </div>
 
   <div class="messages">
-
-    <!-- <span class="form-label-lg" style="margin-right: 5px;">Conformance Profiles</span> <button class="btn btn-primary" (click)="pickMessages(version)"><i class="fa fa-plus"></i></button> -->
 
     <app-selected-messages (messages)="setSelected($event)" #child style="height:100%; background-color: black;"
                          [selectedData]="selectedEvents"></app-selected-messages>

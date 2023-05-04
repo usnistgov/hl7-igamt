@@ -12,6 +12,7 @@ import {
 import { IHL7WorkspaceActive } from '../../modules/shared/models/editor.class';
 import { VerificationTab } from '../../modules/shared/services/verification.service';
 import { selectIgDocument } from '../ig/ig-edit/ig-edit.selectors';
+import { IAudience } from './../../modules/ig/models/ig/ig-document.class';
 
 export const selectWorkspaceActive = createSelector(
   fromDAM.selectWorkspace,
@@ -34,6 +35,13 @@ export const selectLoadedDocumentInfo = createSelector(
       documentId: state.id,
       type: state.type,
     };
+  },
+);
+
+export const selectAudience = createSelector(
+  selectIgDocument,
+  (document: IgDocument): IAudience => {
+    return document.audience;
   },
 );
 

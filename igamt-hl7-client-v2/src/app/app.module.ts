@@ -11,6 +11,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './modules/core/core.module';
 import { DamRoutingModule } from './modules/dam-framework/dam-framework.module';
+import { WorkspaceModule } from './modules/workspace/workspace.module';
 import { reducers } from './root-store';
 import { ConfigEffects } from './root-store/config/config.effects';
 import {LoadedResourcesEffects} from './root-store/dam-igamt/igamt.loaded-resources.effects';
@@ -34,6 +35,7 @@ import { UserConfigEffects } from './root-store/user-config/user-config.effects'
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     CoreModule,
     BlockUIModule.forRoot(),
+    WorkspaceModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

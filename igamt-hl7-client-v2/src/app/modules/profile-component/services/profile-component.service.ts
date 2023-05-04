@@ -53,9 +53,7 @@ export interface IProfileComponentItemLocation {
   pathInfo: IPathInfo;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class ProfileComponentService {
 
   readonly URL = 'api/profile-component/';

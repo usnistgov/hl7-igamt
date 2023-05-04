@@ -20,7 +20,7 @@ import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
-import { ConfirmationService, ConfirmDialogModule, ListboxModule, OverlayPanelModule } from 'primeng/primeng';
+import { BreadcrumbModule, ConfirmationService, ConfirmDialogModule, ListboxModule, OverlayPanelModule } from 'primeng/primeng';
 import {
   AccordionModule,
   AutoCompleteModule,
@@ -41,6 +41,8 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
 import { DamComponentsModule, DamLoaderModule, DamMessagesModule } from '../dam-framework/dam-framework.module';
+import { IgListItemCardComponent } from '../ig/components/ig-list-item-card/ig-list-item-card.component';
+import { ActiveUsersListComponent, FirstLetterPipe } from './components/active-users-list/active-users-list.component';
 import { AddCoConstraintGroupComponent } from './components/add-co-constraint-group/add-co-constraint-group.component';
 import { AddCompositeComponent } from './components/add-composite/add-composite.component';
 import { AddProfileComponentContextComponent } from './components/add-profile-component-context/add-profile-component-context.component';
@@ -65,10 +67,13 @@ import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component
 import { DeriveDialogComponent } from './components/derive-dialog/derive-dialog.component';
 import { DisplayRefComponent } from './components/display-ref/display-ref.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
+import { DocumentBreadcrumbsComponent } from './components/document-breadcrumbs/document-breadcrumbs.component';
+import { DocumentBrowserComponent } from './components/document-browser/document-browser.component';
 import { DtmStructureComponent } from './components/dtm-stucture/dtm-structure.component';
 import { AddMappingDialgComponent } from './components/dynamic-mapping/add-mapping-dialg/add-mapping-dialg.component';
 import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-mapping.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
+import { EntityBrowseDialogComponent } from './components/entity-browse-dialog/entity-browse-dialog.component';
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
 import { FieldAddDialogComponent } from './components/field-add-dialog/field-add-dialog.component';
@@ -99,6 +104,7 @@ import { NewPasswordFromComponent } from './components/new-password-from/new-pas
 import { NgxDropdownComponent } from './components/ngx-dropdown/ngx-dropdown.component';
 import { PatternDialogComponent } from './components/pattern-dialog/pattern-dialog.component';
 import { AddPcToList } from './components/pc-list/add-profile-component/add-pc-to-list.component';
+import { RefreshDialogComponent } from './components/refresh-dialog/refresh-dialog.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { ResetPasswordRequestFormComponent } from './components/reset-password-request-form/reset-password-request-form.component';
 import { ResourceDropdownComponent } from './components/resource-dropdown/resource-dropdown.component';
@@ -236,12 +242,19 @@ import { MinNumberDirective } from './validators/min-number.directive';
     SelectSlicingContextComponent,
     SlicingRowComponent,
     SlicingViewerComponent,
+    DocumentBrowserComponent,
+    EntityBrowseDialogComponent,
+    IgListItemCardComponent,
     VsCodePickerComponent,
     IgPublisherComponent,
+    DocumentBreadcrumbsComponent,
     UnusedElementsComponent,
     DeleteListConfirmationComponent,
+    RefreshDialogComponent,
     VerificationBadgeComponent,
     IgTypeComponent,
+    ActiveUsersListComponent,
+    FirstLetterPipe,
     MessagePickerComponent,
     SelectedMessagesComponent,
   ],
@@ -305,6 +318,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     PickListModule,
     MatExpansionModule,
     MatTooltipModule,
+    BreadcrumbModule,
     ConfirmDialogModule,
   ],
   exports: [
@@ -426,14 +440,22 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ChangeReasonListDialogComponent,
     SelectSlicingContextComponent,
     SlicingRowComponent,
+    DocumentBrowserComponent,
+    IgListItemCardComponent,
     VsCodePickerComponent,
     IgPublisherComponent,
+    BreadcrumbModule,
+    DocumentBreadcrumbsComponent,
     UnusedElementsComponent,
     DeleteListConfirmationComponent,
+    RefreshDialogComponent,
+    DeriveDialogComponent,
     VerificationBadgeComponent,
     IgTypeComponent,
     MessagePickerComponent,
     SelectedMessagesComponent,
+    ActiveUsersListComponent,
+    FirstLetterPipe,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -463,10 +485,13 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ImportStructureComponent,
     ChangeReasonListDialogComponent,
     SelectSlicingContextComponent,
+    DocumentBrowserComponent,
+    EntityBrowseDialogComponent,
     VsCodePickerComponent,
     IgPublisherComponent,
     UnusedElementsComponent,
     DeleteListConfirmationComponent,
+    RefreshDialogComponent,
     MessagePickerComponent,
   ],
 })

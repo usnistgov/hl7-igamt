@@ -16,20 +16,18 @@ import {
 import * as fromIgList from 'src/app/root-store/ig/ig-list/ig-list.index';
 import * as fromRoot from 'src/app/root-store/index';
 import { ClearIgList } from '../../../../root-store/ig/ig-list/ig-list.actions';
-import { LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
-import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
 import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { ClearAll } from '../../../dam-framework/store/messages/messages.actions';
 import { IgListItem } from '../../../document/models/document/ig-list-item.class';
+import { DeriveDialogComponent, IDeriveDialogData } from '../../../shared/components/derive-dialog/derive-dialog.component';
 import { IgService } from '../../services/ig.service';
-import { DeriveDialogComponent, IDeriveDialogData, IgTemplate } from '../derive-dialog/derive-dialog.component';
+import { IgListItemControl } from '../ig-list-item-card/ig-list-item-card.component';
 import { LockIG } from './../../../../root-store/ig/ig-list/ig-list.actions';
 import { IgPublisherComponent } from './../../../shared/components/ig-publisher/ig-publisher.component';
 import { SharingDialogComponent } from './../../../shared/components/sharing-dialog/sharing-dialog.component';
 import { CloneModeEnum } from './../../../shared/constants/clone-mode.enum';
-import { IgListItemControl } from './../ig-list-item-card/ig-list-item-card.component';
 
 @Component({
   selector: 'app-ig-list-container',
@@ -127,7 +125,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   return username !== item.username || item.type === 'PUBLISHED';
                 },
                 hide: (item: IgListItem): boolean => {
-                  return item.type === 'PUBLISHED' || item.type === 'SHARED';
+                  return item.type === 'PUBLISHED' || item.type === 'SHARED' || username !== item.username;
                 },
               },
               {
@@ -209,12 +207,12 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   return !admin || item.type === 'PUBLISHED';
                 },
                 hide: (item: IgListItem): boolean => {
-                  return item.type === 'PUBLISHED' || item.type === 'SHARED';
+                  return !admin || item.type === 'PUBLISHED' || item.type === 'SHARED';
                 },
               },
               {
-                label: 'Derive from',
-                class: 'btn-secondary',
+                label: 'Derive From',
+                class: 'btn-warning',
                 icon: 'fa fa-code-fork',
                 action: (item: IgListItem) => {
 
@@ -260,7 +258,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   return false;
                 },
                 hide: (item: IgListItem): boolean => {
-                  return item.type === 'SHARED';
+                  return false;
                 },
               },
               {
@@ -276,21 +274,6 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                 },
                 hide: (item: IgListItem): boolean => {
                   return this.hideForShared('View', item.type, item.sharePermission);
-                },
-              },
-              {
-                label: 'Edit',
-                class: 'btn-info',
-                icon: 'fa-pencil',
-                default: true,
-                action: (item: IgListItem) => {
-                  this.router.navigate(['ig', item.id]);
-                },
-                disabled: (item: IgListItem): boolean => {
-                  return false;
-                },
-                hide: (item: IgListItem): boolean => {
-                  return this.hideForShared('Edit', item.type, item.sharePermission);
                 },
               },
             ];
@@ -337,10 +320,9 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.ig.updateSharedUsers(result, item.id).subscribe(
+        this.ig.updateViewers(result, item.id).subscribe(
           (response: Message<string>) => {
-            item.sharedUsers = result.sharedUsers;
-            item.currentAuthor = result.currentAuthor;
+            item.sharedUsers = result;
             this.store.dispatch(this.message.messageToAction(response));
             this.router.navigateByUrl('/ig/list?type=USER');
           },
@@ -406,9 +388,6 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(
       (answer) => {
         if (answer) {
-          console.log(answer);
-          console.log(answer);
-
           this.ig.publish(item.id, { draft: answer.draft, info: answer.info }).subscribe(
             (response: Message<string>) => {
               this.store.dispatch(this.message.messageToAction(response));

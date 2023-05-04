@@ -14,6 +14,8 @@ package gov.nist.hit.hl7.igamt.web.app.resource;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
+import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyCoConstraintBindings;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyConformanceStatement;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyDynamicMapping;
@@ -102,7 +104,8 @@ public class ProfileComponentController extends BaseController {
   
   
   @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/update", method = RequestMethod.POST, produces = {"application/json"})
-  @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE)")
+  @NotifySave(id = "#pcId", type = "'PROFILECOMPONENT'")
+  @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE) && ConcurrentSync('PROFILECOMPONENT', #pcId, ALLOW_SYNC_STRICT)")
   @ResponseBody
   public ProfileComponentContext updateContext(
           @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody ProfileComponentContext ctx,
@@ -115,7 +118,8 @@ public class ProfileComponentController extends BaseController {
   }
 
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/conformance-statements", method = RequestMethod.POST, produces = {"application/json"})
-    @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE)")
+    @NotifySave(id = "#pcId", type = "'PROFILECOMPONENT'")
+    @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE) && ConcurrentSync('PROFILECOMPONENT', #pcId, ALLOW_SYNC_STRICT)")
     @ResponseBody
     public List<PropertyConformanceStatement> updateContextConformanceStatements(
             @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody List<PropertyConformanceStatement> conformanceStatements,
@@ -124,7 +128,8 @@ public class ProfileComponentController extends BaseController {
     }
 
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/co-constraints", method = RequestMethod.POST, produces = {"application/json"})
-    @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE)")
+    @NotifySave(id = "#pcId", type = "'PROFILECOMPONENT'")
+    @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE) && ConcurrentSync('PROFILECOMPONENT', #pcId, ALLOW_SYNC_STRICT)")
     @ResponseBody
     public ProfileComponentContext updateContextCoConstraints(
             @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody PropertyCoConstraintBindings coConstraintBindings,
@@ -136,7 +141,8 @@ public class ProfileComponentController extends BaseController {
     }
 
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/co-constraints", method = RequestMethod.DELETE, produces = {"application/json"})
-    @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE)")
+    @NotifySave(id = "#pcId", type = "'PROFILECOMPONENT'")
+    @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE) && ConcurrentSync('PROFILECOMPONENT', #pcId, ALLOW_SYNC_STRICT)")
     @ResponseBody
     public ProfileComponentContext removeContextCoConstraints(
             @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId,
@@ -149,7 +155,8 @@ public class ProfileComponentController extends BaseController {
     }
   
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/dynamic-mapping", method = RequestMethod.POST, produces = {"application/json"})
-    @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE)")
+    @NotifySave(id = "#pcId", type = "'PROFILECOMPONENT'")
+    @PreAuthorize("AccessResource('PROFILECOMPONENT', #pcId, WRITE) && ConcurrentSync('PROFILECOMPONENT', #pcId, ALLOW_SYNC_STRICT)")
     @ResponseBody
     public PropertyDynamicMapping updateDynamicMapping(
             @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody PropertyDynamicMapping dynamicMapping,
@@ -162,7 +169,8 @@ public class ProfileComponentController extends BaseController {
 
   @RequestMapping(value = "/api/profile-component/{id}", method = RequestMethod.POST, produces = {
           "application/json" })
-  @PreAuthorize("AccessResource('PROFILECOMPONENT', #id, WRITE)")
+  @NotifySave(id = "#id", type = "'PROFILECOMPONENT'")
+  @PreAuthorize("AccessResource('PROFILECOMPONENT', #id, WRITE) && ConcurrentSync('PROFILECOMPONENT', #id, ALLOW_SYNC_STRICT)")
   @ResponseBody
   public ResponseMessage<?> applyChanges(@PathVariable("id") String id, @RequestBody List<ChangeItemDomain> cItems,
                                          Authentication authentication) throws Exception {
