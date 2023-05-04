@@ -1847,8 +1847,12 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 									elmSlice.addAttribute(new Attribute("Occurrence", "" + slice.getPosition()));
 									elmSlice.addAttribute(new Attribute("Ref",
 											"" + this.segmentService.findXMLRefIdById(
-													igModel.findSegment(slice.getFlavorId()).getModel(),
+													this.segmentService.findById(slice.getFlavorId()),
 													defaultHL7Version)));
+//									elmSlice.addAttribute(new Attribute("Ref",
+//											"" + this.segmentService.findXMLRefIdById(
+//													igModel.findSegment(slice.getFlavorId()).getModel(),
+//													defaultHL7Version)));
 									elmOccurrenceSlicing.appendChild(elmSlice);
 								}
 
@@ -1869,8 +1873,14 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 							if (slice.getFlavorId() != null) {
 								elmSlice.addAttribute(new Attribute("Ref",
 										"" + this.segmentService.findXMLRefIdById(
-												igModel.findSegment(slice.getFlavorId()).getModel(),
+												this.segmentService.findById(slice.getFlavorId()),
 												defaultHL7Version)));
+								
+								
+//								elmSlice.addAttribute(new Attribute("Ref",
+//										"" + this.segmentService.findXMLRefIdById(
+//												igModel.findSegment(slice.getFlavorId()).getModel(),
+//												defaultHL7Version)));
 							}
 
 							Element elmDescription = new Element("Description");
