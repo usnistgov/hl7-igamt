@@ -8,6 +8,7 @@ import { IgDocumentStatusInfo } from './../../models/ig/ig-document.class';
   templateUrl: './ig-list-item-card.component.html',
   styleUrls: ['./ig-list-item-card.component.scss'],
 })
+
 export class IgListItemCardComponent implements OnInit {
 
   @Input()

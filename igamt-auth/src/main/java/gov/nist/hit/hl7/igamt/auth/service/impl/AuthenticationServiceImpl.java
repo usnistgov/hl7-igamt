@@ -5,6 +5,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
 import javax.net.ssl.HostnameVerifier;
@@ -129,6 +130,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public FindUserResponse findUser(HttpServletRequest req, FindUserRequest user) throws AuthenticationException {
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-type", "application/json");
+			RestTemplate restTemplate = new RestTemplate();
+			HttpEntity<FindUserRequest> request = new HttpEntity<>(user, this.getCookiesHeaders(req));
+
+
+			ResponseEntity<FindUserResponse> response =
+					restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/find", HttpMethod.POST, request,
+							new ParameterizedTypeReference<FindUserResponse>() {});
+
+
+
+			return response.getBody();
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
+			String message = e.getResponseBodyAsString();
+
+			throw new AuthenticationException(getMessageString(message));
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new AuthenticationException(e.getMessage());
 		}
 	}
 
@@ -330,6 +357,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			return obj.getText();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
 			throw new AuthenticationException("Could not parse the error response");
 		}
 	}
@@ -341,6 +369,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				HttpMethod.GET, new HttpEntity<String>(this.getCookiesHeaders(req)), UserListResponse.class);
 		return response.getBody();
 	}
+
+	@Override
+	public ArrayList<String> getAllUsernames(HttpServletRequest req) {
+		ResponseEntity<ArrayList<String>> response = restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/usernames",
+				HttpMethod.GET, new HttpEntity<String>(this.getCookiesHeaders(req)), new ParameterizedTypeReference<ArrayList<String>>() {});
+		return response.getBody();
+	}
+
 
 	@Override
 	public UserResponse getCurrentUser(String username, HttpServletRequest req) {
@@ -426,33 +462,5 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		return headers;
 		
 	}
-	
-	@Override
-	public FindUserResponse findUser(HttpServletRequest req, FindUserRequest user) throws AuthenticationException {
-		try {
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-type", "application/json");
-			RestTemplate restTemplate = new RestTemplate();
-			restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-			HttpEntity<FindUserRequest> request = new HttpEntity<>(user, this.getCookiesHeaders(req));
-
-
-			ResponseEntity<FindUserResponse> response =
-					restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/find", HttpMethod.POST, request,
-							new ParameterizedTypeReference<FindUserResponse>() {});
-
-
-
-			return response.getBody();
-		} catch (HttpClientErrorException | HttpServerErrorException e) {
-			String message = e.getResponseBodyAsString();
-
-			throw new AuthenticationException(getMessageString(message));
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new AuthenticationException(e.getMessage());
-		}
-	}
-
 
 }

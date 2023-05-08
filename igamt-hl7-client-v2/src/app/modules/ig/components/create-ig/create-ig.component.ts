@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material';
+import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import {  filter, map, take, withLatestFrom } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 import * as config from '../../../../root-store/config/config.reducer';
 import { CreateIg, LoadMessageEvents } from '../../../../root-store/create-ig/create-ig.actions';
 import * as fromCreateIg from '../../../../root-store/create-ig/create-ig.reducer';
@@ -13,6 +14,7 @@ import { Scope } from '../../../shared/constants/scope.enum';
 import { IAddingInfo } from '../../../shared/models/adding-info';
 import { ClearResource } from './../../../../root-store/resource-loader/resource-loader.actions';
 import { IMessagePickerContext, IMessagePickerData, MessagePickerComponent } from './../../../shared/components/message-picker/message-picker.component';
+import { IgCreateContextType, IIgCreateContext } from './../../services/ig-create-context.guard';
 
 @Component({
   selector: 'app-create-ig',
@@ -25,9 +27,10 @@ export class CreateIGComponent implements OnInit {
   hl7Version$: Observable<string[]>;
   metaDataForm: FormGroup;
   selectedEvents: IAddingInfo[] = [];
+  context: IIgCreateContext;
   step = 0;
 
-  constructor(private store: Store<any>, private dialog: MatDialog) {
+  constructor(private store: Store<any>, private dialog: MatDialog, private route: ActivatedRoute) {
     this.table$ = this.store.select(fromCreateIg.getLoadedMessageEventsState);
     this.hl7Version$ = this.store.select(config.getHl7Versions);
     this.metaDataForm = new FormGroup({
@@ -36,6 +39,7 @@ export class CreateIGComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.context = this.route.snapshot.data['context'];
   }
 
   getVersion({ version, scope }) {
@@ -43,21 +47,17 @@ export class CreateIGComponent implements OnInit {
   }
 
   setSelected($event: IAddingInfo[]) {
-    console.log($event);
     this.selectedEvents = $event;
-  }
-  next($event: IAddingInfo[]) {
-   this.step = 1;
-  }
-
-  previous($event: IAddingInfo[]) {
-    this.step = 0;
   }
 
   submit() {
     const model: IDocumentCreationWrapper = {
       metadata: this.metaDataForm.getRawValue(), scope: Scope.USER,
       selected: this.selectedEvents,
+      workspace: this.context.scope === IgCreateContextType.WORKSPACE ? {
+        id: this.context.location[0].id,
+        folderId: this.context.location[1].id,
+      } : undefined,
     };
     this.store.dispatch(new CreateIg(model));
   }

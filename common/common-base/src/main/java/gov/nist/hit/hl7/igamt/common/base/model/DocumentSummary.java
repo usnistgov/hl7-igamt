@@ -2,10 +2,12 @@ package gov.nist.hit.hl7.igamt.common.base.model;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class DocumentSummary {
 
@@ -21,9 +23,10 @@ public class DocumentSummary {
 	private Status status;
 	private List<String> elements;
 	private SharePermission sharePermission;
-	private List<String> sharedUsers;
+	private Set<String> sharedUsers;
 	private String currentAuthor;
 	private Boolean draft;
+	private Type resourceType;
 	private PublicationInfo publicationInfo;
 	private Boolean deprecated;
 
@@ -144,11 +147,11 @@ public class DocumentSummary {
 		this.sharePermission = sharePermission;
 	}
 
-	public List<String> getSharedUsers() {
+	public Set<String> getSharedUsers() {
 		return sharedUsers;
 	}
 
-	public void setSharedUsers(List<String> sharedUsers) {
+	public void setSharedUsers(Set<String> sharedUsers) {
 		this.sharedUsers = sharedUsers;
 	}
 
@@ -160,6 +163,14 @@ public class DocumentSummary {
 		this.currentAuthor = currentAuthor;
 	}
 
+	public Type getResourceType() {
+		return resourceType;
+	}
+
+	public void setResourceType(Type resourceType) {
+		this.resourceType = resourceType;
+	}
+
 	public PublicationInfo getPublicationInfo() {
 		return publicationInfo;
 	}
@@ -167,7 +178,5 @@ public class DocumentSummary {
 	public void setPublicationInfo(PublicationInfo publicationInfo) {
 		this.publicationInfo = publicationInfo;
 	}
-
-
 
 }

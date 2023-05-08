@@ -1,0 +1,65 @@
+<ng-template #headerControls>
+  <ng-container *ngIf="isEditor$ | async" >
+    <div style="display: flex; align-items: flex-start; justify-content: flex-end;" ngbDropdown display="dynamic" placement="bottom-right">
+      <button class="btn btn-sm btn-primary" ngbDropdownToggle >
+        <i class="fa fa-fw fa-list"></i> Implementation Guides
+      </button>
+      <div ngbDropdownMenu>
+        <button ngbDropdownItem class="btn btn-sm" (click)="addNewIg()" >
+          <i class="fa fa-plus"></i>
+          Create new Implementation Guide
+        </button>
+        <button ngbDropdownItem class="btn btn-sm" (click)="importIg()" >
+          <i class="fa fa-clone" aria-hidden="true"></i>
+          Copy Implementation Guide to Workspace
+        </button>
+      </div>
+    </div>
+  </ng-container>
+</ng-template>
+<ng-container *ngIf="folderMeta$ | async as folder">
+  <ng-template #headerTitle>
+    <h5 style="margin: 0;">
+      <i class="fa fa-folder" style="margin-right: 5px;"></i>
+      {{folder.title}}
+    </h5>
+  </ng-template>
+</ng-container>
+<div style="overflow: hidden;">
+
+  <ng-container *ngIf="folderMeta$ | async as folder">
+    <div style="padding-top: 10px; padding-bottom: 20px;" *ngIf="folder && folder.description">
+      <span >
+        {{folder.description}}
+      </span>
+    </div>
+  </ng-container>
+
+  <div class="search-bar" >
+    <p-dropdown *ngIf="sortProperty$ | async as sp" (ngModelChange)="sortPropertyChanged($event)" [ngModel]="sp" [autoDisplayFirst]="false"
+                [options]="sortOptions" [placeholder]="'Sort Criterion'">
+    </p-dropdown>
+    <button *ngIf="sortOrder$ | async as so" (click)="sortOrderChanged(!so.ascending)" class="btn btn-sm btn-primary" style="height: 35px;">
+      <i [class]="'fa ' + (so.ascending ? 'fa-arrow-down' : 'fa-arrow-up')"></i>
+    </button>
+
+    <div class="input-group" style="margin-left: 10px;">
+      <div class="input-group-prepend" style="height: 35px;">
+        <span class="input-group-text" id="inputGroupPrepend3"><i [ngStyle]="{'color': filter && filter !== '' ? '#00c31b' : ''}"
+                                                                  class="fa fa-search"></i></span>
+      </div>
+      <input (ngModelChange)="filterTextChanged($event)" [(ngModel)]="filter" class="form-control"
+             id="filter" placeholder="Search" required
+             style="background-color: #fbfbfb; height: 35px;" type="text">
+    </div>
+  </div>
+
+  <!-- IG LIST -->
+  <div class="ig-list" *ngIf="documents$ | async as documents">
+    <div>
+      <div *ngFor="let item of documents" class="spacer">
+        <app-ig-list-item-card [controls]="listControls | async" [igListItem]="item"></app-ig-list-item-card>
+      </div>
+    </div>
+  </div>
+</div>

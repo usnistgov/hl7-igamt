@@ -34,7 +34,7 @@ export interface IAbstractDomain {
 }
 export enum Status {
   DRAFT = 'DRAFT',
-  LOCKED= 'LOCKED',
+  LOCKED = 'LOCKED',
   PUBLISHED = 'PUBLISHED',
   SUPERSEDED = 'SUPERSEDED',
   WITHDRAWN = 'WITHDRAWN',

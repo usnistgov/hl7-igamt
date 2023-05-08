@@ -16,6 +16,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipOutputStream;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
+import gov.nist.hit.hl7.igamt.ig.service.AddService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -35,22 +38,6 @@ import com.mongodb.client.result.UpdateResult;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintDependencyService;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.Level;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
-import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
-import gov.nist.hit.hl7.igamt.common.base.domain.Status;
-import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
@@ -61,7 +48,6 @@ import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.UsageFilter;
-import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
@@ -131,7 +117,6 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentLabel;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItem;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentDependencyService;
-//import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.exception.CoConstraintXMLSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
@@ -149,6 +134,9 @@ public class IgServiceImpl implements IgService {
 
 	@Autowired
 	IgRepository igRepository;
+
+	@Autowired
+	AddService addService;
 
 	@Autowired
 	MongoTemplate mongoTemplate;
@@ -270,16 +258,18 @@ public class IgServiceImpl implements IgService {
 			element.setDateUpdated(ig.getUpdateDate());
 			element.setTitle(ig.getMetadata().getTitle());
 			element.setSubtitle(ig.getMetadata().getSubTitle());
-			// element.setConfrmanceProfiles(confrmanceProfiles);
 			element.setCoverpage(ig.getMetadata().getCoverPicture());
 			element.setId(ig.getId());
 			element.setDerived(ig.isDerived());
 			element.setUsername(ig.getUsername());
 			element.setStatus(ig.getStatus());
-			element.setSharePermission(ig.getSharePermission());
-			element.setSharedUsers(ig.getSharedUsers());
-			element.setCurrentAuthor(ig.getCurrentAuthor());
+			element.setCurrentAuthor(ig.getUsername());
 			element.setPublicationInfo(ig.getPublicationInfo());
+
+			if(ig.getAudience() != null && ig.getAudience() instanceof PrivateAudience) {
+				element.setSharedUsers(((PrivateAudience) ig.getAudience()).getViewers());
+			}
+
 			List<String> conformanceProfileNames = new ArrayList<String>();
 			ConformanceProfileRegistry conformanceProfileRegistry = ig.getConformanceProfileRegistry();
 			if (conformanceProfileRegistry != null) {
@@ -321,6 +311,29 @@ public class IgServiceImpl implements IgService {
 		emptyIg.setContent(content);
 		return emptyIg;
 	}
+
+	@Override
+	public Ig createIg(CreationWrapper wrapper, String username) throws Exception {
+		try {
+			Ig empty = this.createEmptyIg();
+			empty.setUsername(username);
+			DomainInfo info = new DomainInfo();
+			info.setScope(Scope.USER);
+			empty.setDomainInfo(info);
+			empty.setMetadata(wrapper.getMetadata());
+			empty.setCreationDate(new Date());
+			empty.setId(new ObjectId().toString());
+			this.addService.addConformanceProfiles(empty, wrapper.getSelected(), username);
+			PrivateAudience privateAudience = new PrivateAudience();
+			privateAudience.setEditor(username);
+			privateAudience.setViewers(new HashSet<>());
+			empty.setAudience(privateAudience);
+			return this.save(empty);
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
 
 	private TextSection createSectionContent(SectionTemplate template) {
 		TextSection section = new TextSection();
@@ -408,7 +421,7 @@ public class IgServiceImpl implements IgService {
 		qry.fields().include("status");
 		qry.fields().include("derived");
 
-		
+
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		return igs;
 	}
@@ -1086,11 +1099,14 @@ public class IgServiceImpl implements IgService {
 	}
 
 	private String addValuesetsFromConstraints(String constraintXMLStr, IgDataModel igModel, int fromIndex) {
+		
+		System.out.println(constraintXMLStr);
 		int beginIndex = constraintXMLStr.indexOf("ValueSetID=\"", fromIndex);
 		int endIndex = constraintXMLStr.indexOf("\"", beginIndex + "ValueSetID=\"".length());
 		if (beginIndex < 0 || endIndex < 0 || endIndex < beginIndex) {
 		} else {
 			String bId = constraintXMLStr.substring(beginIndex + "ValueSetID=\"".length(), endIndex);
+			System.out.println("###### Detected :: " + bId);
 			ValuesetDataModel vdm = igModel.findValuesetByBId(bId);
 
 			if (vdm == null) {
@@ -1120,6 +1136,8 @@ public class IgServiceImpl implements IgService {
 
 					return addValuesetsFromConstraints(constraintXMLStr.substring(0, beginIndex) + " ValueSetID=\""
 							+ modifiedBId + constraintXMLStr.substring(endIndex), igModel, endIndex);
+				} else {
+					return addValuesetsFromConstraints(constraintXMLStr, igModel, endIndex);
 				}
 			} else {
 				String defaultHL7Version = this.findDefaultHL7Version(igModel);
@@ -1169,7 +1187,6 @@ public class IgServiceImpl implements IgService {
 		for (Link l : ig.getValueSetRegistry().getChildren()) {
 			if (l.getId() != null) {
 				Valueset vs = this.valueSetService.findById(l.getId());
-
 				if (vs.getBindingIdentifier().equals(bId))
 					return vs;
 			}
@@ -1385,7 +1402,8 @@ public class IgServiceImpl implements IgService {
 			pubInfo.setPublicationDate(new Date());
 		}
 		ig.setPublicationInfo(pubInfo);
-
+		Audience audience = new PublicAudience();
+		ig.setAudience(audience);
 		this.save(ig);
 
 	}
@@ -1432,18 +1450,6 @@ public class IgServiceImpl implements IgService {
 		}
 
 		return ret;
-	}
-
-	@Override
-	public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo) {
-		if (id != null && sharedUsersInfo != null) {
-			Ig ig = this.findById(id);
-			if (ig != null) {
-				ig.setCurrentAuthor(sharedUsersInfo.getCurrentAuthor());
-				ig.setSharedUsers(sharedUsersInfo.getSharedUsers());
-			}
-			this.save(ig);
-		}
 	}
 
 	@Override
@@ -1878,6 +1884,11 @@ public class IgServiceImpl implements IgService {
 
 	}
 
+	@Override
+	public List<Ig> findByIdIn(List<String> ids) {
+		return this.igRepository.findByIdIn(ids);
+	}
+
 	private Link findLinkById(String id, Set<Link> links) {
 		for (Link link : links) {
 			if (link.getId().equals(id)) {
@@ -1950,6 +1961,30 @@ public class IgServiceImpl implements IgService {
 
 		this.save(ig);
 
+	}
+
+	@Override
+	public String getResourceVersionSyncToken(Date updateDate) {
+		if(updateDate == null) {
+			return "0.RVST";
+		} else {
+			return updateDate.getTime() + ".RVST";
+		}
+	}
+
+	@Override
+	public List<Ig> findByPrivateAudienceEditor(String username) {
+		return this.igRepository.findByPrivateAudienceEditor(username);
+	}
+
+	@Override
+	public List<Ig> findByPrivateAudienceViewer(String username) {
+		return this.igRepository.findByPrivateAudienceViewer(username);
+	}
+
+	@Override
+	public List<Ig> findByPublicAudienceAndStatusPublished() {
+		return this.igRepository.findByPublicAudienceAndStatusPublished();
 	}
 
 	@Override

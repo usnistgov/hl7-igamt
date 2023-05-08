@@ -13,7 +13,7 @@ export enum IgListActionTypes {
   LockIGSuccess = '[IgList] Lock Ig Success',
 }
 
-export type IgListLoad = 'USER' | 'PUBLISHED' | 'SHARED' |'ALL';
+export type IgListLoad = 'USER' | 'PUBLISHED' | 'SHARED' | 'ALL';
 
 export class LoadIgList implements Action {
   readonly type = IgListActionTypes.LoadIgList;

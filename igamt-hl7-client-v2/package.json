@@ -35,6 +35,7 @@
     "@ngrx/schematics": "^7.3.0",
     "@ngrx/store": "^7.4.0",
     "@ngrx/store-devtools": "^7.4.0",
+    "@stomp/stompjs": "^6.1.2",
     "angular-froala-wysiwyg": "2.9.5",
     "angular-tree-component": "7.2.0",
     "bootstrap": "^4.3.1",
@@ -55,6 +56,7 @@
     "primeng": "^7.1.0",
     "rxjs": "~6.3.3",
     "rxjs-compat": "^6.4.0",
+    "sockjs-client": "^1.6.1",
     "vkbeautify": "^0.99.3",
     "zone.js": "~0.8.26"
   },
@@ -67,6 +69,7 @@
     "@types/lodash": "^4.14.123",
     "@types/node": "~8.9.4",
     "@types/vkbeautify": "^0.99.2",
+    "@types/sockjs-client": "^1.5.1",
     "codelyzer": "~4.5.0",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",

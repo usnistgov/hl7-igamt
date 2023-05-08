@@ -1,0 +1,129 @@
+<div mat-dialog-body>
+  <div style="display: flex;">
+    <div style="border-right: 1px solid lightgray; padding-right: 20px; text-align: center;">
+      <span style="color: #9b9898;">Scope</span>
+      <ul class="list-group" style="margin-top: 15px; margin-bottom: 15px;" >
+        <li (click)="getTreeByScope(BrowserScope.PRIVATE_IG_LIST)" [ngClass]="{'nav-active-link': scope === BrowserScope.PRIVATE_IG_LIST}" class="list-group-item list-item cursor-pointer" *ngIf="browser?.scope?.privateIgList">
+          <span>
+            <i class="fa fa-lock" style="margin-right: 5px;"></i> Private Ig List
+          </span>
+        </li>
+        <li (click)="getTreeByScope(BrowserScope.PUBLIC_IG_LIST)" [ngClass]="{'nav-active-link': scope === BrowserScope.PUBLIC_IG_LIST}" class="list-group-item list-item cursor-pointer" *ngIf="browser?.scope?.publicIgList">
+          <span>
+            <i class="fa fa-globe" style="margin-right: 5px;"></i> Public Ig List
+          </span>
+        </li>
+        <li (click)="getTreeByScope(BrowserScope.WORKSPACES)" [ngClass]="{'nav-active-link': scope === BrowserScope.WORKSPACES}" class="list-group-item list-item cursor-pointer" *ngIf="browser?.scope?.workspaces">
+          <span>
+            <i class="fa fa-briefcase" style="margin-right: 5px;"></i> Workspaces
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div  style="padding-left: 20px;">
+      <div style="color: #9b9898; margin-bottom: 15px; text-align: center;">Pick an Implementation Guide</div>
+      <div class="input-group" style="margin-bottom: 10px;">
+        <div class="input-group-prepend" style="height: 35px;">
+          <span class="input-group-text" id="inputGroupPrepend3"><i [ngStyle]="{'color': filterText && filterText !== '' ? '#00c31b' : ''}"
+                                                                    class="fa fa-search"></i></span>
+        </div>
+        <input (ngModelChange)="filterTextChanged($event)" [(ngModel)]="filterText" class="form-control"
+               id="filter" placeholder="Search" required
+               style="background-color: #fbfbfb; height: 35px;" type="text">
+      </div>
+      <p-checkbox
+        *ngIf="scope === BrowserScope.PUBLIC_IG_LIST"
+        [(ngModel)]="showDeprecated"
+        (ngModelChange)="filter($event)"
+        [binary]="true"
+        label="Show Deprecated"
+      ></p-checkbox>
+      <p-treeTable *ngIf="scope" #tt [value]="browserTree" [columns]="columns" [paginator]="true" [rows]="5" [reorderableColumns]="true" [resizableColumns]="true" selectionMode="single"
+      (onNodeSelect)="nodeUpdate($event)"
+      [(selection)]="selected"
+      dataKey="id" >
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+              <ng-container *ngFor="let col of columns" [ngSwitch]="col">
+                <th *ngSwitchCase="colType.NAME" style="width: 700px;" ttReorderableColumn ttResizableColumn>
+                  Name
+                </th>
+                <th *ngSwitchCase="colType.TYPE" ttReorderableColumn ttResizableColumn>
+                  Type
+                </th>
+                <th *ngSwitchCase="colType.DATE" ttReorderableColumn ttResizableColumn>
+                  Date
+                </th>
+              </ng-container>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+            <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode" [ttSelectableRowDisabled]="!rowNode.node.selectable">
+                <td [ngSwitch]="col" class="text-cell" *ngFor="let col of columns; let i = index" >
+                  <ng-container *ngSwitchCase="colType.NAME">
+                    <tbody>
+                      <tr>
+                        <td style="width: 30px;">
+                          <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
+                        </td>
+                        <td style="white-space: normal;">
+                          <app-entity-bagde [type]="rowData.type"></app-entity-bagde>
+                          <app-scope-badge *ngIf="rowData.domainInfo" [scope]="rowData.domainInfo.scope" [version]="rowData.domainInfo.version"></app-scope-badge>
+                          
+                          <span style="margin-left: 3px;" *ngIf="rowData.locked" class="badge badge-secondary">
+                            <i class="fa fa-lock"></i>
+                          </span>
+              
+                          <span class="badge badge-danger" *ngIf="rowData.draft" style="margin-left: 3px;">
+                            Draft
+                          </span>
+              
+                          <span style="margin-left: 3px;" *ngIf="rowData.deprecated" class="badge badge-warning">
+                            <i class="fa fa-times-circle"></i>
+                            Deprecated
+                          </span>
+
+                          <strong [ngStyle]="{ 'color': rowNode.node.selectable ? 'black' : '#b1b1b1'}" style="margin-left: 10px">{{rowData.label}}</strong>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="colType.TYPE">
+                    {{rowData.type}}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="colType.DATE">
+                    {{rowData.dateUpdated | date}}
+                  </ng-container>
+                </td>
+            </tr>
+        </ng-template>
+    </p-treeTable>
+    <ng-container *ngIf="selected" >
+      <div style="color: #9b9898; margin: 15px; text-align: center;">Selection</div>
+      <ul class="list-group">
+        <li class="list-group-item list-item" >
+          <div>
+            <app-entity-bagde [type]="selected.data.type"></app-entity-bagde>
+            <app-scope-badge *ngIf="selected.data.domainInfo" [scope]="selected.data.domainInfo.scope" [version]="selected.data.domainInfo.version"></app-scope-badge>
+            <strong style="margin-left: 10px">{{selected.data.label}}</strong>
+          </div>
+          <div>
+            <button (click)="clear()" class="btn btn-sm btn-danger">
+              <i class="fa fa-times"></i>
+            </button>
+          </div>
+        </li>
+      </ul>
+      <div>
+        <label style="font-weight: bold; margin: 10px;">Clone As</label>
+        <input type="text" class="form-control" [(ngModel)]="name">
+      </div>
+    </ng-container>
+    </div>
+  </div>
+
+</div>
+<mat-dialog-actions style="justify-content: flex-end; margin-top: 10px;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="done()" [disabled]="!selected || !name" class="btn btn-sm btn-success">Done</button>
+</mat-dialog-actions>

@@ -1,30 +1,67 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {Type} from '../../constants/type.enum';
+import { AfterViewInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-derive-dialog',
   templateUrl: './derive-dialog.component.html',
   styleUrls: ['./derive-dialog.component.css'],
 })
-export class DeriveDialogComponent implements OnInit {
-  customizeNarratives = false;
-  metaDataForm: FormGroup;
+export class DeriveDialogComponent implements OnInit, AfterViewInit {
+  inherit = true;
+  selectedTemplate: IgTemplate;
+  @ViewChild('tree') tree;
 
-  constructor(  public dialogRef: MatDialogRef<DeriveDialogComponent>,
-                @Inject(MAT_DIALOG_DATA) public data: {id: string, documentType: Type}) { }
+  constructor(public dialogRef: MatDialogRef<DeriveDialogComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: IDeriveDialogData) {
 
-  ngOnInit() {
-    this.metaDataForm = new FormGroup({
-      title: new FormControl('', [Validators.required]),
+  }
+
+  select($event: IgTemplate) {
+    this.selectedTemplate = $event;
+  }
+  submit() {
+    this.dialogRef.close({
+      inherit: this.inherit, template: this.selectedTemplate,
     });
   }
-
-  submit() {
+  getPath(node) {
+    if (this.isOrphan(node)) {
+      return node.data.position;
+    } else {
+      return this.getPath(node.parent) + '.' + node.data.position;
+    }
   }
 
-  cancel() {
+  isOrphan(node: any) {
+    return node && node.parent && !node.parent.parent;
   }
 
+  close() {
+    this.dialogRef.close();
+  }
+
+  ngOnInit() {
+  }
+
+  ngAfterViewInit() {
+  }
+}
+
+export interface IDeriveDialogData {
+  origin: string;
+  templates: IgTemplate[];
+}
+export interface IgTemplate {
+  id: string;
+  name: string;
+  domain: string;
+  children: ISectionTemplate[];
+}
+
+export class ISectionTemplate {
+  label: string;
+  type: string;
+  position: number;
+  isExpanded = true;
+  children: ISectionTemplate[];
 }

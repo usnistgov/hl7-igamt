@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,7 +156,8 @@ public class DatatypeController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/api/datatypes/{id}", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
-	@PreAuthorize("AccessResource('DATATYPE', #id, WRITE)")
+	@NotifySave(id = "#id", type = "'DATATYPE'")
+	@PreAuthorize("AccessResource('DATATYPE', #id, WRITE) && ConcurrentSync('DATATYPE', #id, ALLOW_SYNC_STRICT)")
 	public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
 			@RequestBody List<ChangeItemDomain> cItems,
 			Authentication authentication) throws DatatypeException, IOException, ForbiddenOperationException, ApplyChangeException {

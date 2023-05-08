@@ -11,12 +11,12 @@ import {
   IDeleteNode,
 } from '../../../modules/document/models/toc/toc-operation.class';
 import { IDocumentDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
-import { IIgTocFilter } from '../../../modules/ig/services/ig-toc-filter.service';
 import { Type } from '../../../modules/shared/constants/type.enum';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
 import { IHL7EditorMetadata } from '../../../modules/shared/models/editor.enum';
 import { IDeleteNodes } from './../../../modules/document/models/toc/toc-operation.class';
+import { IIgUpdateInfo } from './../../../modules/ig/models/ig/ig-document.class';
 import { IVerificationRequest } from './../../../modules/shared/models/verification.interface';
 import { IDocumentConfig } from 'src/app/modules/document/models/document/IDocument.interface';
 
@@ -82,6 +82,8 @@ export enum IgEditActionTypes {
   CreateCompositeProfile = '[Ig Edit TOC] Create Composite Profile',
   CreateCompositeProfileSuccess = '[Ig Edit TOC] Create Create Composite Profile Success',
   CreateCompositeProfileFailure = '[Ig Edit TOC] Create Create Composite Profile Failure',
+
+  RefreshUpdateInfo = '[Ig Edit] Refresh Document Update Info',
 
   VerifiyIg = '[Ig Edit TOC] Verify IG',
   VerifyIgSuccess = '[Ig Edit TOC] Verify Ig Success',
@@ -392,7 +394,7 @@ export class DeleteResources implements Action {
 }
 export class DeleteResourcesSuccess implements Action {
   readonly type = IgEditActionTypes.DeleteResourcesSuccess;
-  constructor(readonly ids: string [], readonly redirect: boolean, readonly url) {
+  constructor(readonly ids: string[], readonly redirect: boolean, readonly url) {
   }
 }
 export class DeleteResourcesFailure implements Action {
@@ -414,7 +416,13 @@ export class VerifyIgSuccess implements Action {
 
 export class VerifyIg implements Action {
   readonly type = IgEditActionTypes.VerifiyIg;
-  constructor(readonly payload: IVerificationRequest ) {
+  constructor(readonly payload: IVerificationRequest) {
+  }
+}
+
+export class RefreshUpdateInfo implements Action {
+  readonly type = IgEditActionTypes.RefreshUpdateInfo;
+  constructor(readonly payload: IIgUpdateInfo) {
   }
 }
 
@@ -480,6 +488,4 @@ export type IgEditActions =
   | VerifyIg
   | VerifyIgSuccess
   | VerifyIgFailure
-  | UpdateDocumentConfig
-  | UpdateDocumentConfigSuccess
-  | UpdateDocumentConfigFailure
+  | RefreshUpdateInfo;

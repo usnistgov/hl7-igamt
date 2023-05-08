@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.auth.service;
 
+import java.util.ArrayList;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -27,6 +29,8 @@ import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
 import gov.nist.hit.hl7.auth.util.requests.UserListResponse;
 import gov.nist.hit.hl7.auth.util.requests.UserResponse;
 import gov.nist.hit.hl7.igamt.auth.exception.AuthenticationException;
+
+import java.util.ArrayList;
 
 /**
  * @author ena3
@@ -50,6 +54,9 @@ public interface AuthenticationService {
   public UserResponse getAuthentication(Authentication authentiction);
   
   public UserListResponse getAllUsers(HttpServletRequest req);
+
+  public ArrayList<String> getAllUsernames(HttpServletRequest req);
+
   public UserResponse getCurrentUser(String username, HttpServletRequest req);
 
   public ConnectionResponseMessage<UserResponse> update(RegistrationRequest user, HttpServletRequest req)
@@ -58,11 +65,5 @@ public interface AuthenticationService {
   public ConnectionResponseMessage<UserResponse>  updatePendingAdmin(AdminUserRequest requestPara, HttpServletRequest req) throws AuthenticationException;
 
   public FindUserResponse findUser(HttpServletRequest req, FindUserRequest user) throws AuthenticationException;
-
-
-
-
-
-
 
 }

@@ -38,7 +38,6 @@ export class UserManagementComponent implements OnInit {
     requestPara.pending = user.pending;
     requestPara.admin = user.admin;
     this.http.post<any>('api/adminUpdate', requestPara).subscribe((data) => {
-      console.log(data);
     });
   }
 

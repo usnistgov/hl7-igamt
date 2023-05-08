@@ -25,6 +25,7 @@ import { selectContextById } from '../../../../root-store/dam-igamt/igamt.resour
 import {
   selectSelectedProfileComponent,
 } from '../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
+import { selectProfileComponentContext } from '../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
 import { MessageType } from '../../../dam-framework/models/messages/message.class';
 import { IPath } from '../../../shared/models/cs.interface';
 import { PathService } from '../../../shared/services/path.service';
@@ -85,9 +86,9 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     resource$: MemoizedSelectorWithProps<object, { id: string; }, IResource>,
   ) {
     super(editorMetadata, actions$, store);
-    this.selectedResource$ = this.elementId$.pipe(
-      flatMap((id) => {
-        return this.store.select(resource$, { id });
+    this.selectedResource$ = this.store.select(selectProfileComponentContext).pipe(
+      flatMap((context) => {
+        return this.store.select(resource$, { id: context.sourceId });
       }),
     );
 

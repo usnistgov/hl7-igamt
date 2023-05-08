@@ -1,0 +1,13 @@
+<div style="display: flex; justify-content: center; align-items: center;">
+  <ng-container *ngFor="let item of users; let i = index " >
+    <ng-template *ngTemplateOutlet="userBadge; context: { $implicit: item, i : i }" ></ng-template>
+  </ng-container>
+  
+</div>
+<ng-template #userBadge let-user let-i="i" >
+  <div *ngIf="user.id !== active" class="user" [pTooltip]="user.username + ' (' + user.mode + ')'" tooltipPosition="bottom" [ngStyle]="{'background-color': colors[i % colors.length]}">
+    {{ user.username | firstLetter }}
+    <i *ngIf="user.mode === 'WRITE'" class="fa fa-pencil icon" style="color: blue;"></i>
+    <i *ngIf="user.mode === 'READ'" class="fa fa-eye icon" style="color: green;"></i>
+  </div>
+</ng-template>

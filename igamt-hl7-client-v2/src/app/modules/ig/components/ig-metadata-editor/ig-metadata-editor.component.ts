@@ -178,9 +178,12 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
               flatMap((response) => {
                 return [
                   new IgEditResolverLoad(id),
-                  new fromDam.EditorSaveSuccess({
-                    ...current.data,
-                    coverPicture: pictureName ? pictureName : current.data.coverPicture,
+                  new fromDam.EditorUpdate({
+                    value: {
+                      ...current.data,
+                      coverPicture: pictureName ? pictureName : current.data.coverPicture,
+                    },
+                    updateDate: false,
                   }),
                   this.messageService.messageToAction(response),
                 ];
@@ -189,9 +192,6 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
                 return throwError(this.messageService.actionFromError(error));
               }),
             );
-          }),
-          catchError((error) => {
-            return throwError(this.messageService.actionFromError(error));
           }),
         );
       }),

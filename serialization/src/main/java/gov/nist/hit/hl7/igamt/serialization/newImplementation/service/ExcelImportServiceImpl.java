@@ -117,7 +117,7 @@ public class ExcelImportServiceImpl implements ExcelImportService {
                 }
             }
         }
-        conformanceProfileService.save(cs);
+        //conformanceProfileService.save(cs);
         System.out.println("SAVED");
 
         return parserResults;

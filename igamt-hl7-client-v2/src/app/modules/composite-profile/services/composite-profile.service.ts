@@ -3,17 +3,15 @@ import { Injectable } from '@angular/core';
 import { ITreeNode } from 'angular-tree-component/dist/defs/api';
 import { TreeNode } from 'primeng/api';
 import { Observable } from 'rxjs';
-import {Message} from '../../dam-framework/models/messages/message.class';
+import { Message } from '../../dam-framework/models/messages/message.class';
 import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
 import { ICompositeProfile, ICompositeProfileState, IOrderedProfileComponentLink } from '../../shared/models/composite-profile';
 import { ICPConformanceStatementList } from '../../shared/models/cs-list.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
-import {IChange} from '../../shared/models/save-change';
-import {ICompositeProfileMetadata} from '../components/composite-profile-metadata-editor/composite-profile-metadata-editor.component';
+import { IChange } from '../../shared/models/save-change';
+import { ICompositeProfileMetadata } from '../components/composite-profile-metadata-editor/composite-profile-metadata-editor.component';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class CompositeProfileService {
   readonly URL = 'api/composite-profile/';
 
@@ -98,7 +96,7 @@ export class CompositeProfileService {
       name: compositeProfile.name,
       description: compositeProfile.description,
       flavorsExtension: compositeProfile.flavorsExtension,
-      profileIdentifier:  compositeProfile.preCoordinatedMessageIdentifier ? compositeProfile.preCoordinatedMessageIdentifier : {},
+      profileIdentifier: compositeProfile.preCoordinatedMessageIdentifier ? compositeProfile.preCoordinatedMessageIdentifier : {},
     };
   }
 }

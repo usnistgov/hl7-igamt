@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,7 +140,8 @@ public class SegmentController extends BaseController {
 
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/api/segments/{id}", method = RequestMethod.POST, produces = { "application/json" })
-	@PreAuthorize("AccessResource('SEGMENT', #id, WRITE)")
+	@NotifySave(id = "#id", type = "'SEGMENT'")
+	@PreAuthorize("AccessResource('SEGMENT', #id, WRITE) && ConcurrentSync('SEGMENT', #id, ALLOW_SYNC_STRICT)")
 	@ResponseBody
 	public ResponseMessage<?> applyStructureChanges(@PathVariable("id") String id, @RequestBody List<ChangeItemDomain> cItems,
 			Authentication authentication) throws Exception {
