@@ -22,7 +22,7 @@ public class IgAudienceSet {
     @Autowired
     IgRepository igRepository;
 
-    @PostConstruct
+    //@PostConstruct
     void fix() {
         List<Ig> igs = this.igService.findAll();
         for(Ig ig: igs) {
