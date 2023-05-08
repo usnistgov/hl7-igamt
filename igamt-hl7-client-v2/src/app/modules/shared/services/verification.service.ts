@@ -187,7 +187,7 @@ export class VerificationService {
 
   getVerificationEntryTable(entries: IVerificationEnty[], repository: AResourceRepositoryService): Observable<IVerificationEntryTable> {
 
-    console.log("entries");
+    console.log('entries');
     console.log(entries);
 
     console.log(repository);

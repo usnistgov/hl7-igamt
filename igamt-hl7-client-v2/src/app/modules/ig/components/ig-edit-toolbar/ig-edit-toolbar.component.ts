@@ -1,10 +1,10 @@
-import { selectIgConfig } from './../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import { filter, map, take, withLatestFrom } from 'rxjs/operators';
+import { DocumentConfigComponent } from 'src/app/modules/shared/components/document-config/document-config.component';
 import { VerificationType } from 'src/app/modules/shared/models/verification.interface';
 import { selectDelta, selectViewOnly } from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { selectDerived } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
@@ -23,7 +23,7 @@ import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.cl
 import { IgService } from '../../services/ig.service';
 import { selectVerificationResult, selectVerificationStatus } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
 import { VerifyIg } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { DocumentConfigComponent } from 'src/app/modules/shared/components/document-config/document-config.component';
+import { selectIgConfig } from './../../../../root-store/ig/ig-edit/ig-edit.selectors';
 
 @Component({
   selector: 'app-ig-edit-toolbar',
@@ -158,18 +158,18 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   openConfig() {
-    combineLatest( this.getIgId(),this.store.select(selectIgConfig)).pipe(
+    combineLatest( this.getIgId(), this.store.select(selectIgConfig)).pipe(
       take(1),
       map(([id, config]) => {
         const dialogRef = this.dialog.open(DocumentConfigComponent, {
-          data: {config : config}
+          data: {config},
         });
         dialogRef.afterClosed().pipe(
           filter((res) => res !== undefined),
           take(1),
           map((x) => {
-            this.store.dispatch(new fromIgDocumentEdit.UpdateDocumentConfig({id: id, config: x}));
-          })
+            this.store.dispatch(new fromIgDocumentEdit.UpdateDocumentConfig({id, config: x}));
+          }),
         ).subscribe();
       }),
     ).subscribe();

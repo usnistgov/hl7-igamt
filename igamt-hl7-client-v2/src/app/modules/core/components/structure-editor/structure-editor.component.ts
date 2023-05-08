@@ -5,6 +5,7 @@ import { combineLatest, Observable, of, ReplaySubject, Subscription, throwError 
 import { catchError, concatMap, filter, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { IDocumentConfig } from 'src/app/modules/document/models/document/IDocument.interface';
 import { VerificationType } from 'src/app/modules/shared/models/verification.interface';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
@@ -25,7 +26,6 @@ import { StoreResourceRepositoryService } from '../../../shared/services/resourc
 import { IBindingContext } from '../../../shared/services/structure-element-binding.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
 import { VerifyIg } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { IDocumentConfig } from 'src/app/modules/document/models/document/IDocument.interface';
 
 export type BindingLegend = Array<{
   label: string,

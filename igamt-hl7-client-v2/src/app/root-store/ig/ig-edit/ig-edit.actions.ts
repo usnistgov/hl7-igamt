@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
+import { IDocumentConfig } from 'src/app/modules/document/models/document/IDocument.interface';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import {
   IAddNodes, IAddProfileComponentContext,
@@ -18,7 +19,6 @@ import { IHL7EditorMetadata } from '../../../modules/shared/models/editor.enum';
 import { IDeleteNodes } from './../../../modules/document/models/toc/toc-operation.class';
 import { IIgUpdateInfo } from './../../../modules/ig/models/ig/ig-document.class';
 import { IVerificationRequest } from './../../../modules/shared/models/verification.interface';
-import { IDocumentConfig } from 'src/app/modules/document/models/document/IDocument.interface';
 
 export enum IgEditActionTypes {
   IgEditResolverLoad = '[Ig Edit Resolver] Load Ig',
@@ -92,8 +92,6 @@ export enum IgEditActionTypes {
   UpdateDocumentConfig =  '[DOC Edit] Update Config',
   UpdateDocumentConfigSuccess =  '[DOC Edit] Update Config Success',
   UpdateDocumentConfigFailure =  '[DOC Edit] Update Config Failure',
-
-
 
 }
 

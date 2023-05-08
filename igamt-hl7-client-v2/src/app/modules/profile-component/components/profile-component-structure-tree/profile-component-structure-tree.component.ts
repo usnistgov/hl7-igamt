@@ -6,6 +6,7 @@ import { filter, map, take } from 'rxjs/operators';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import { IPathInfo } from 'src/app/modules/shared/services/element-naming.service';
 import { Hl7V2TreeService } from 'src/app/modules/shared/services/hl7-v2-tree.service';
+import { selectIgConfig } from 'src/app/root-store/ig/ig-edit/ig-edit.selectors';
 import {
   ColumnOptions,
   HL7v2TreeColumnType,
@@ -23,7 +24,6 @@ import { IBindingContext } from '../../../shared/services/structure-element-bind
 import { ProfileComponentRefChange } from '../../services/profile-component-ref-change.object';
 import { ProfileComponentStructureTreeItemMap } from '../../services/profile-component-structure-tree-item-map.object';
 import { IUserConfig } from './../../../shared/models/config.class';
-import { selectIgConfig } from 'src/app/root-store/ig/ig-edit/ig-edit.selectors';
 
 export interface IItemLocation {
   path: string;
