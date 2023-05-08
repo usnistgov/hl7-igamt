@@ -69,6 +69,7 @@ import { DisplayRefComponent } from './components/display-ref/display-ref.compon
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
 import { DocumentBreadcrumbsComponent } from './components/document-breadcrumbs/document-breadcrumbs.component';
 import { DocumentBrowserComponent } from './components/document-browser/document-browser.component';
+import { DocumentConfigComponent } from './components/document-config/document-config.component';
 import { DtmStructureComponent } from './components/dtm-stucture/dtm-structure.component';
 import { AddMappingDialgComponent } from './components/dynamic-mapping/add-mapping-dialg/add-mapping-dialg.component';
 import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-mapping.component';
@@ -257,6 +258,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     FirstLetterPipe,
     MessagePickerComponent,
     SelectedMessagesComponent,
+    DocumentConfigComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -454,6 +456,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     IgTypeComponent,
     MessagePickerComponent,
     SelectedMessagesComponent,
+    DocumentConfigComponent,
     ActiveUsersListComponent,
     FirstLetterPipe,
   ],
@@ -493,6 +496,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DeleteListConfirmationComponent,
     RefreshDialogComponent,
     MessagePickerComponent,
+    DocumentConfigComponent,
   ],
 })
 export class SharedModule {

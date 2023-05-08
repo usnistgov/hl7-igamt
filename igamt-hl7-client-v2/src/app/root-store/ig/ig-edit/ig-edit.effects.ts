@@ -8,6 +8,7 @@ import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take, withLat
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { EditorReset } from 'src/app/modules/dam-framework/store/index';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import { IDocumentConfig } from 'src/app/modules/document/models/document/IDocument.interface';
 import { IgService } from 'src/app/modules/ig/services/ig.service';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { VerificationType } from 'src/app/modules/shared/models/verification.interface';
@@ -38,6 +39,9 @@ import {
   OpenConformanceStatementSummaryEditorNode,
   OpenIgVerificationEditor,
   RefreshUpdateInfo,
+  UpdateDocumentConfig,
+  UpdateDocumentConfigFailure,
+  UpdateDocumentConfigSuccess,
   UpdateSections,
   VerifyIg,
 } from './ig-edit.actions';
@@ -158,7 +162,8 @@ export class IgEditEffects extends DamWidgetEffect {
       IgEditActionTypes.DeleteResourcesSuccess,
       IgEditActionTypes.CreateCoConstraintGroupSuccess,
       IgEditActionTypes.AddProfileComponentContextSuccess,
-      IgEditActionTypes.CreateCompositeProfileSuccess),
+      IgEditActionTypes.CreateCompositeProfileSuccess,
+      IgEditActionTypes.UpdateDocumentConfigSuccess),
     flatMap((action) => {
       return this.store.select(selectLoadedDocumentInfo).pipe(
         take(1),
@@ -167,7 +172,7 @@ export class IgEditEffects extends DamWidgetEffect {
             flatMap((v) => {
               return [
                 new RefreshUpdateInfo(v),
-                new VerifyIg({ id: doc.documentId, resourceType: Type.IGDOCUMENT, verificationType: VerificationType.VERIFICATION })
+                new VerifyIg({ id: doc.documentId, resourceType: Type.IGDOCUMENT, verificationType: VerificationType.VERIFICATION }),
               ];
             } ),
           );
@@ -912,6 +917,46 @@ export class IgEditEffects extends DamWidgetEffect {
     }),
   );
 
+  @Effect()
+  UpdateConfig$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.UpdateDocumentConfig),
+    switchMap((action: UpdateDocumentConfig) => {
+      this.store.dispatch(new fromDAM.TurnOnLoader({
+        blockUI: true,
+      }));
+
+      return this.igService.updateConfig(action.payload.id, action.payload.config).pipe(
+        take(1),
+        flatMap((config: IDocumentConfig) => {
+          return [
+            new fromDAM.TurnOffLoader(),
+            new UpdateDocumentConfigSuccess(config),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          console.log(error);
+          return of(
+            new fromDAM.TurnOffLoader(),
+            new UpdateDocumentConfigFailure(error),
+          );
+        }),
+      );
+    }),
+  );
+
+  @Effect()
+  UpdateDocumentConfigSuccess$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.UpdateDocumentConfigSuccess),
+      mergeMap((action: UpdateDocumentConfigSuccess) => {
+       return  this.store.select(fromDAM.selectPayloadData).pipe(
+              take(1),
+              map((ig) => {
+                return new LoadPayloadData({...ig, documentConfig: action.payload});
+              }),
+            );
+        }),
+    );
+
   // @Effect()
   // EditorSaveSuccess$ = this.actions$.pipe(
   //   ofType(DamActionTypes.EditorSaveSuccess, IgEditActionTypes.AddResourceSuccess),
@@ -964,4 +1009,5 @@ export class IgEditEffects extends DamWidgetEffect {
         }),
       );
   }
+
 }

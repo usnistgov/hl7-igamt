@@ -7,6 +7,7 @@ import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { TableOfContentSave } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { IDocumentCreationWrapper } from '../../document/models/document/document-creation.interface';
+import { IDocumentConfig } from '../../document/models/document/IDocument.interface';
 import { MessageEventTreeNode } from '../../document/models/message-event/message-event.class';
 import {
   IAddNodes, IAddProfileComponentContext, IAddResourceFromFile, ICopyNode, ICopyResourceResponse,
@@ -477,4 +478,7 @@ export class IgService {
     return this.http.get<IIgUpdateInfo>(this.IG_END_POINT + igId + '/update-info');
   }
 
+  updateConfig(id: string, config: IDocumentConfig): Observable<any> {
+    return this.http.post<IDocumentConfig>(this.IG_END_POINT + id + '/update-config', config);
+  }
 }

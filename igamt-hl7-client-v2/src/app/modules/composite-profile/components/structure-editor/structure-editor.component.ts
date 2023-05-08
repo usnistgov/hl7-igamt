@@ -21,7 +21,7 @@ import { IChange } from 'src/app/modules/shared/models/save-change';
 import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import { getHl7ConfigState, selectBindingConfig } from 'src/app/root-store/config/config.reducer';
 import { selectAllDatatypes, selectAllSegments, selectCompositeProfileById } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
-import { selectValueSetsNodes } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { selectIgConfig, selectValueSetsNodes } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
 import { IUserConfig } from './../../../shared/models/config.class';
 
@@ -128,7 +128,7 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
     this.bindingConfig = this.store.select(selectBindingConfig);
     this.bindingConfig.subscribe();
 
-    this.userConfig = this.store.select(getUserConfigState).pipe(
+    this.userConfig = this.store.select(selectIgConfig).pipe(
       filter((config) => !!config),
     );
 

@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
+import { IDocumentConfig } from 'src/app/modules/document/models/document/IDocument.interface';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import {
   IAddNodes, IAddProfileComponentContext,
@@ -87,6 +88,10 @@ export enum IgEditActionTypes {
   VerifiyIg = '[Ig Edit TOC] Verify IG',
   VerifyIgSuccess = '[Ig Edit TOC] Verify Ig Success',
   VerifyIgFailure = '[Ig Edit TOC] Verify Ig Failure',
+
+  UpdateDocumentConfig =  '[DOC Edit] Update Config',
+  UpdateDocumentConfigSuccess =  '[DOC Edit] Update Config Success',
+  UpdateDocumentConfigFailure =  '[DOC Edit] Update Config Failure',
 
 }
 
@@ -416,6 +421,24 @@ export class VerifyIg implements Action {
 export class RefreshUpdateInfo implements Action {
   readonly type = IgEditActionTypes.RefreshUpdateInfo;
   constructor(readonly payload: IIgUpdateInfo) {
+  }
+}
+
+export class UpdateDocumentConfig implements Action {
+  readonly type = IgEditActionTypes.UpdateDocumentConfig;
+  constructor(readonly payload: {id: string, config: IDocumentConfig} ) {
+  }
+}
+
+export class UpdateDocumentConfigSuccess implements Action {
+  readonly type = IgEditActionTypes.UpdateDocumentConfigSuccess;
+  constructor(readonly payload: IDocumentConfig ) {
+  }
+}
+
+export class UpdateDocumentConfigFailure implements Action {
+  readonly type = IgEditActionTypes.UpdateDocumentConfigFailure;
+  constructor(readonly error: HttpErrorResponse) {
   }
 }
 

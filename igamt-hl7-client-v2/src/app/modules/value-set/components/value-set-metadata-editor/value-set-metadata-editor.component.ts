@@ -1,5 +1,5 @@
-import { Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
+import { Validators } from '@angular/forms';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
@@ -60,7 +60,7 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
             bindingIdentifier: {
               label: 'Binding identifier',
               placeholder: 'Binding Identifier',
-              validators: [Validators.required,validateUnity(existing, null, domainInfo)],
+              validators: [Validators.required, validateUnity(existing, null, domainInfo)],
               type: FieldType.TEXT,
               id: 'bindingIdentifier',
               disabled: false,

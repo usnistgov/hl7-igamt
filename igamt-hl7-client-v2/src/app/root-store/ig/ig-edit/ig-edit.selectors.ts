@@ -28,6 +28,13 @@ export const selectIgId = createSelector(
   },
 );
 
+export const selectIgConfig = createSelector(
+  selectIgDocument,
+  (state: IgDocument) => {
+    return state.documentConfig;
+  },
+);
+
 export const selectIgDocumentLocation = selectValue<IIgLocationValue>('igLocation');
 export const selectDocumentVersionSyncToken = selectValue<string>('documentVersionSyncToken');
 export const selectDocumentSessionId = selectValue<IDocumentSessionId>('documentSessionId');

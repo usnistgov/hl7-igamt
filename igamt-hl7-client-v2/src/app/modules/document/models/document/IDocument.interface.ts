@@ -8,4 +8,9 @@ export interface IDocument extends IAbstractDomain {
   content: IContent[];
   draft?: boolean;
   deprecated?: boolean;
+  documentConfig?: IDocumentConfig;
+}
+
+export interface IDocumentConfig {
+  includeIX?: true;
 }
