@@ -162,7 +162,8 @@ export class IgEditEffects extends DamWidgetEffect {
       IgEditActionTypes.DeleteResourcesSuccess,
       IgEditActionTypes.CreateCoConstraintGroupSuccess,
       IgEditActionTypes.AddProfileComponentContextSuccess,
-      IgEditActionTypes.CreateCompositeProfileSuccess),
+      IgEditActionTypes.CreateCompositeProfileSuccess,
+      IgEditActionTypes.UpdateDocumentConfigSuccess),
     flatMap((action) => {
       return this.store.select(selectLoadedDocumentInfo).pipe(
         take(1),

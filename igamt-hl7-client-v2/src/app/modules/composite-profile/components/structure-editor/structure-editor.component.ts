@@ -1,5 +1,3 @@
-import { IUserConfig } from './../../../shared/models/config.class';
-import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
@@ -25,7 +23,7 @@ import { getHl7ConfigState, selectBindingConfig } from 'src/app/root-store/confi
 import { selectAllDatatypes, selectAllSegments, selectCompositeProfileById } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { IUserConfig } from './../../../shared/models/config.class';
 import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
-import { selectValueSetsNodes } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { selectIgConfig, selectValueSetsNodes } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 
 export type GroupOptions = Array<{
   label: string,

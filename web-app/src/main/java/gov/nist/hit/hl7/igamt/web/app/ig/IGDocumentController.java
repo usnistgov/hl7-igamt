@@ -1901,7 +1901,7 @@ public class IGDocumentController extends BaseController {
 
 	  @RequestMapping(value = "/api/igdocuments/{igId}/update-config", method = RequestMethod.POST, produces = {
 	  "application/json" })
-	  @PreAuthorize("AccessResource('IGDOCUMENT', #igId, WRITE)")
+	  @PreAuthorize("AccessResource('IGDOCUMENT', #igId, WRITE) && ConcurrentSync('IGDOCUMENT', #igId, ALLOW_SYNC_STRICT)")
 	  public @ResponseBody DocumentConfig deleteUnused(@PathVariable("igId") String igId, @RequestBody DocumentConfig config,
 	    Authentication authentication) throws IGNotFoundException, EntityNotFound, ForbiddenOperationException, IGUpdateException {
 	    Ig ig = findIgById(igId);
