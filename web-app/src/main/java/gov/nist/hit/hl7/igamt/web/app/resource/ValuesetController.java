@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
@@ -34,10 +36,14 @@ import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
+import gov.nist.hit.hl7.igamt.common.config.domain.Config;
+import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VSVerificationResult;
 import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.exception.ValuesetException;
+import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.valueset.service.impl.TableCSVGenerator;
 import gov.nist.hit.hl7.igamt.web.app.service.DateUpdateService;
@@ -57,6 +63,12 @@ public class ValuesetController extends BaseController {
 	DateUpdateService dateUpdateService;
 	@Autowired
 	VerificationService verificationService;
+	
+	@Autowired
+	ConfigService configService;
+	
+	@Autowired
+	FhirHandlerService fhirHandlerService;
 
 	private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
 
@@ -103,7 +115,28 @@ public class ValuesetController extends BaseController {
 			HttpServletResponse response) throws IOException, ValuesetNotFoundException {
 		log.info("Export table " + tableId);
 		Valueset valueset = findById(tableId);
+		
+		if (valueset == null) {
+			throw new ValuesetNotFoundException(tableId);
+		}
+		
+		if (valueset.getBindingIdentifier().equals("HL70396") && valueset.getSourceType().equals(SourceType.EXTERNAL)) {
+			valueset.setCodes(fhirHandlerService.getValusetCodeForDynamicTable());
 
+		}
+		
+		if (valueset.getDomainInfo() != null && valueset.getDomainInfo().getScope() != null) {
+			if (valueset.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+				Config conf = this.configService.findOne();
+				if (conf != null) {
+					valueset.setUrl(conf.getPhinvadsUrl() + valueset.getOid());
+				}
+			}
+		}
+
+		valueset.getCodes().removeIf((x) -> x.isDeprecated());
+		
+		
 		InputStream content = IOUtils.toInputStream(new TableCSVGenerator().generate(valueset), "UTF-8");
 		response.setContentType("text/xml");
 		response.setHeader("Content-disposition", "attachment;filename=" + valueset.getBindingIdentifier()
