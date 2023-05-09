@@ -209,6 +209,10 @@ public class AccessControlService {
             }
         }
 
+        if(isAdmin(user)) {
+            return L(AccessLevel.READ);
+        }
+        
         return null;
     }
 
