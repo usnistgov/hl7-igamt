@@ -207,12 +207,7 @@ public class AccessControlService {
                 case VIEW:
                     return L(AccessLevel.READ);
             }
-        }
-
-        if(isAdmin(user)) {
-            return L(AccessLevel.READ);
-        }
-        
+        }        
         return null;
     }
 

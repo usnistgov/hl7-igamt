@@ -20,7 +20,8 @@ public interface IgRepository extends MongoRepository<Ig, String> {
   List<Ig> findByPrivateAudienceViewer(String username);
   @Query(value = "{ $and :  [{ 'audience.type' : 'PUBLIC' }, { status : 'PUBLISHED' }] }")
   List<Ig> findByPublicAudienceAndStatusPublished();
-
+  @Query(value = "{ 'audience.type' : 'PRIVATE'}")
+  List<Ig> findAllPrivateIGs();
 
   @Query(value = "{ '_id._id' : ?0 }")
   List<Ig> findLatestById(ObjectId id, Sort sort);

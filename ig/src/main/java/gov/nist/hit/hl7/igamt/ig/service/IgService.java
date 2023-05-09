@@ -141,5 +141,6 @@ public interface IgService {
   List<Ig> findByPrivateAudienceEditor(String username);
   List<Ig> findByPrivateAudienceViewer(String username);
   List<Ig> findByPublicAudienceAndStatusPublished();
+  List<Ig> findAllPrivateIGs();
 
 }

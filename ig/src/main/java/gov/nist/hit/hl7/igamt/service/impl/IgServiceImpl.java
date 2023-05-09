@@ -2006,4 +2006,9 @@ public class IgServiceImpl implements IgService {
 		return "NOTFOUND";
 	}
 
+	@Override
+	public List<Ig> findAllPrivateIGs() {
+		return this.igRepository.findAllPrivateIGs();
+	}
+
 }

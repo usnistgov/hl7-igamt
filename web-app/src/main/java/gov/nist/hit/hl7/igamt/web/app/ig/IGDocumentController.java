@@ -387,7 +387,7 @@ public class IGDocumentController extends BaseController {
 			} else if (type.equals(AccessType.ALL)) {
 
 				commonService.checkAuthority(authentication, "ADMIN");
-				igDocuments = igService.findAllUsersIG();
+				igDocuments = igService.findAllPrivateIGs();
 
 			} else if (type.equals(AccessType.SHARED)) {
 
