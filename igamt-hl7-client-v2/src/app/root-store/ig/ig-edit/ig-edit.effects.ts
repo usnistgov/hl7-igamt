@@ -323,7 +323,7 @@ export class IgEditEffects extends DamWidgetEffect {
       return this.store.select(selectIgDocument)
         .pipe(
           take(1),
-          map((ig) => {
+          map((ig: IgDocument) => {
             return new fromDAM.OpenEditor({
               id: action.payload.id,
               display: this.igService.igToIDisplayElement(ig),
@@ -338,6 +338,7 @@ export class IgEditEffects extends DamWidgetEffect {
                 hl7Versions: ig.metadata.hl7Versions,
                 status: ig.status,
                 authorNotes: ig.authorNotes,
+                customAttributes: ig.metadata.customAttributes? ig.metadata.customAttributes: [],
               },
             });
           }),

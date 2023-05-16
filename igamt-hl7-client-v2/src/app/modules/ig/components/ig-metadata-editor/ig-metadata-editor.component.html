@@ -1,1 +1,84 @@
-<app-metadata-form [metadataFormInput]="metadataFormInput" (dataChange)="dataChange($event)" [froalaConfig]="froalaConfig$ |async"></app-metadata-form>
+<form [formGroup]="formGroup" style="display: flex; flex-direction: column; height: 100%;">
+
+  <ng-container>
+    <div class="form-group">
+      <label for="Cover picture" class="form-label-lg">Cover Picture</label>
+      <div>
+        <app-file-select-input [formControlName]="picture" [viewOnly]="viewOnly$ | async"></app-file-select-input>
+      </div>
+    </div>
+  </ng-container>
+
+
+  <app-form-input formControlName="title" id="title" name="title"
+    placeholder="Title" label="Title" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
+  <app-form-input formControlName="subTitle" id="subTitle" name="subtitle"
+                  placeholder="Subtitle" label="Subtitle" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
+  <app-form-input formControlName="version" id="version" name="version"
+                  placeholder="Version" label="Version" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
+  <app-form-input formControlName="organization" id="organization" name="version"
+                  placeholder="Organization" label="Organization" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
+
+  <div class="form-group">
+    <label for="authors" class="form-label-lg"> Authors </label>
+    <p-chips *ngIf="!(viewOnly$ | async)" [styleClass]="'string-list'" formControlName="authors" [placeholder]="'Authors'"></p-chips>
+    <span *ngIf="viewOnly$ | async">
+      <br>
+      <span *ngFor="let item of formGroup.controls.authors.value" class="badge badge-secondary">
+        {{item}}
+      </span>
+    </span>
+  </div>
+
+
+  <table style="background-color: #efefef" class="table table-bordered">
+    <thead>
+      <th>
+        Custom Attributes
+      </th>
+      <th width="50px">
+        <button (click)="openCustomAttributeDialog()" class="btn-sm btn-primary">
+          <i class="fa fa-plus"> </i>
+        </button>
+      </th>
+
+    </thead>
+    <tbody formArrayName="customAttributes">
+
+
+
+        <tr *ngFor="let field of getCustoms().controls; let i = index" [formGroupName]="i" cdkDropList (cdkDropListDropped)="drop($event)" class="doc-list" [cdkDropListDisabled]="false">
+          <td>
+            <app-form-input [formControlName]="getNameControlName(i)" [id]="getNameControlName(i)" [name]="getNameControlName(i)"
+            [placeholder]="getNameControlName(i)" [label]="getNameControlName(i)" [viewOnly]="viewOnly$ | async">
+              </app-form-input>
+          </td>
+
+          <td>
+            <button type="button" (click)="removeItem(i)" class="btn-sm btn-danger"><i class="fa fa-remove"></i></button>
+          </td>
+
+        </tr>
+    </tbody>
+
+  </table>
+
+  <ng-container>
+    <label><strong>Author Notes </strong></label>
+    <div *ngIf="!(viewOnly$ | async)" [id]="authorNotes" [froalaEditor]="froalaConfig$ |async" [formControlName]="authorNotes" style="flex-grow: 1; display: flex; flex-direction: column;" name="authorNotes"></div>
+    <!-- <div *ngIf="(viewOnly || field.data.disabled) && metadataForm[field.key]" [froalaView]="metadataForm[field.key]" [froalaEditor]="froalaConfig" ></div> -->
+  </ng-container>
+
+
+
+
+</form>
+<!-- <app-metadata-form [metadataFormInput]="metadataFormInput" (dataChange)="dataChange($event)" [froalaConfig]="froalaConfig$ |async" (modelChange)="modelChange($event)"></app-metadata-form> -->

@@ -587,6 +587,7 @@ public class IGDocumentController extends BaseController {
 		ig.getMetadata().setVersion(metadata.getVersion());
 		ig.getMetadata().setHl7Versions(metadata.getHl7Versions());
 		ig.setAuthorNotes(metadata.getAuthorNotes());
+		ig.getMetadata().setCustomAttributes(metadata.getCustomAttributes());
 		ig.setAuthors(metadata.getAuthors());
 		this.igService.save(ig);
 

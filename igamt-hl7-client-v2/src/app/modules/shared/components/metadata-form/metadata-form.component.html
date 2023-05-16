@@ -7,6 +7,7 @@
         </app-form-input>
       </ng-container>
       <ng-container *ngSwitchCase="'RICH'">
+        <button *ngIf="field.data.addBefore" (click)="openCustomAttributeDialog(model)">More Attributes</button>
         <label [for]="field.data.id"><strong>{{field.data.label}}</strong></label>
         <div *ngIf="!viewOnly && !field.data.disabled" [id]="field.data.id" [froalaEditor]="froalaConfig" [formControlName]="field.key" style="flex-grow: 1; display: flex; flex-direction: column;"></div>
         <div *ngIf="(viewOnly || field.data.disabled) && metadataForm[field.key]" [froalaView]="metadataForm[field.key]" [froalaEditor]="froalaConfig" ></div>
@@ -19,7 +20,6 @@
             [placeholder]="field.data.placeholder"></p-dropdown>
           <span *ngIf="viewOnly || field.data.disabled">{{field.data.value}}</span>
         </div>
-
       </ng-container>
       <ng-container *ngSwitchCase="'STRING_LIST'">
         <div class="form-group">
