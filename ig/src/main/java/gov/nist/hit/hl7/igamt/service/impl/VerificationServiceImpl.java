@@ -16,6 +16,7 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -374,29 +375,29 @@ public class VerificationServiceImpl implements VerificationService {
 	}
 
 	private void checkingStructureForConformanceProfile(ConformanceProfile conformanceProfile,
-			CPVerificationResult result) {
-		this.checkingSegmentRefOrGroups(conformanceProfile, conformanceProfile.getChildren(), result, null, null);
+			CPVerificationResult result, HashSet<String> datatypeIdset, HashSet<String> segmentIdset) {
+		this.checkingSegmentRefOrGroups(conformanceProfile, conformanceProfile.getChildren(), result, null, null, datatypeIdset, segmentIdset);
 	}
 
 	private void checkingSegmentRefOrGroups(ConformanceProfile conformanceProfile,
-			Set<SegmentRefOrGroup> segmentRefOrGroups, CPVerificationResult result, String positionPath, String path) {
+			Set<SegmentRefOrGroup> segmentRefOrGroups, CPVerificationResult result, String positionPath, String path, HashSet<String> datatypeIdset, HashSet<String> segmentIdset) {
 		if (segmentRefOrGroups != null) {
 			segmentRefOrGroups.forEach(
-					srog -> this.checkingSegmentRefOrGroup(conformanceProfile, srog, result, positionPath, path));
+					srog -> this.checkingSegmentRefOrGroup(conformanceProfile, srog, result, positionPath, path, datatypeIdset, segmentIdset));
 		}
 	}
 
 	private void checkingSegmentRefOrGroup(ConformanceProfile conformanceProfile, SegmentRefOrGroup srog,
-			CPVerificationResult result, String positionPath, String path) {
+			CPVerificationResult result, String positionPath, String path, HashSet<String> datatypeIdset, HashSet<String> segmentIdset) {
 		if (srog instanceof SegmentRef) {
-			this.chekcingSegmentRef(conformanceProfile, (SegmentRef) srog, result, positionPath, path);
+			this.chekcingSegmentRef(conformanceProfile, (SegmentRef) srog, result, positionPath, path, datatypeIdset, segmentIdset);
 		} else if (srog instanceof Group) {
-			this.checkingGroup(conformanceProfile, (Group) srog, result, positionPath, path);
+			this.checkingGroup(conformanceProfile, (Group) srog, result, positionPath, path, datatypeIdset, segmentIdset);
 		}
 	}
 
 	private void chekcingSegmentRef(ConformanceProfile conformanceProfile, SegmentRef sr, CPVerificationResult result,
-			String positionPath, String path) {
+			String positionPath, String path, HashSet<String> datatypeIdset, HashSet<String> segmentIdset) {
 		int position = sr.getPosition();
 		Usage usage = sr.getUsage();
 		int min = sr.getMin();
@@ -412,100 +413,111 @@ public class VerificationServiceImpl implements VerificationService {
 
 		if (ref == null || ref.getId() == null) {
 		} else {
-			segment = this.segmentService.findById(ref.getId());
-			if (segment == null)
-				segment = this.inMemoryDomainExtensionService.findById(ref.getId(), Segment.class);
-			if (segment == null) {
+			
+			if(segmentIdset.contains(ref.getId())) {
+				System.out.println("SKIP Segment: " + ref.getId());
 			} else {
-				if (path == null) {
-					path = segment.getId();
+				segmentIdset.add(ref.getId());
+				segment = this.segmentService.findById(ref.getId());
+				if (segment == null)
+					segment = this.inMemoryDomainExtensionService.findById(ref.getId(), Segment.class);
+				if (segment == null) {
 				} else {
-					path = path + "." + segment.getId();
-				}
-
-				Location location = new Location();
-				location.setPathId(path);
-				location.setName(segment.getLabel());
-				LocationInfo info = new LocationInfo();
-				info.setType(Type.SEGMENT);
-				info.setName(segment.getLabel());
-				info.setPathId(path);
-				info.setPositionalPath(positionPath);
-				location.setInfo(info);
-
-				if (usage.equals(Usage.IX)) {
-
-					this.IXUsageExist = true;
-
-					if (conformanceProfile.getRole() != null) {
-						if (conformanceProfile.getRole().equals(Role.Sender))
-							result.getErrors().add(this.verificationEntryService
-									.Usage_NOTAllowed_IXUsage_SenderProfile(location, segment.getId(), Type.SEGMENT));
-						else if (conformanceProfile.getRole().equals(Role.SenderAndReceiver))
-							result.getErrors()
-									.add(this.verificationEntryService
-											.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(location,
-													segment.getId(), Type.SEGMENT));
+					if (path == null) {
+						path = segment.getId();
+					} else {
+						path = path + "." + segment.getId();
 					}
 
-				}
+					Location location = new Location();
+					location.setPathId(path);
+					location.setName(segment.getLabel());
+					LocationInfo info = new LocationInfo();
+					info.setType(Type.SEGMENT);
+					info.setName(segment.getLabel());
+					info.setPathId(path);
+					info.setPositionalPath(positionPath);
+					location.setInfo(info);
 
-				result.getErrors().addAll(
-						checkCardinalityVerificationErr(location, segment.getId(), Type.SEGMENT, usage, min, max));
+					if (usage.equals(Usage.IX)) {
 
-				if (segment.getChildren() != null) {
-					segment.getChildren().forEach(field -> {
-						String fieldPositionPath = location.getInfo().getPositionalPath() + "." + field.getPosition();
-						String fieldPath = location.getInfo().getPathId() + "." + field.getId();
-						Location fieldLocation = new Location();
-						fieldLocation.setPathId(fieldPath);
-						fieldLocation.setName(field.getName());
-						LocationInfo fieldInfo = new LocationInfo();
-						fieldInfo.setType(Type.FIELD);
-						fieldInfo.setName(field.getName());
-						fieldInfo.setPathId(fieldPath);
-						fieldInfo.setPositionalPath(fieldPositionPath);
-						fieldLocation.setInfo(fieldInfo);
+						this.IXUsageExist = true;
 
-						if (field.getUsage().equals(Usage.IX)) {
-
-							this.IXUsageExist = true;
-
-							if (conformanceProfile.getRole() != null) {
-								if (conformanceProfile.getRole().equals(Role.Sender))
-									result.getErrors()
-											.add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderProfile(
-													fieldLocation, field.getId(), Type.FIELD));
-								else if (conformanceProfile.getRole().equals(Role.SenderAndReceiver))
-									result.getErrors()
-											.add(this.verificationEntryService
-													.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(fieldLocation,
-															field.getId(), Type.FIELD));
-							}
-
+						if (conformanceProfile.getRole() != null) {
+							if (conformanceProfile.getRole().equals(Role.Sender))
+								result.getErrors().add(this.verificationEntryService
+										.Usage_NOTAllowed_IXUsage_SenderProfile(location, segment.getId(), Type.SEGMENT));
+							else if (conformanceProfile.getRole().equals(Role.SenderAndReceiver))
+								result.getErrors()
+										.add(this.verificationEntryService
+												.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(location,
+														segment.getId(), Type.SEGMENT));
 						}
 
-						Datatype childDT = this.datatypeService.findById(field.getRef().getId());
-						if (childDT == null)
-							childDT = this.inMemoryDomainExtensionService.findById(ref.getId(), Datatype.class);
-						if (childDT == null) {
-						} else {
-							if (childDT instanceof ComplexDatatype) {
-								ComplexDatatype complexChildDT = (ComplexDatatype) childDT;
-								if (complexChildDT.getComponents() != null) {
-									complexChildDT.getComponents().forEach(component -> {
-										this.travelComponent(result, conformanceProfile, fieldLocation, component);
-									});
+					}
+
+					result.getErrors().addAll(
+							checkCardinalityVerificationErr(location, segment.getId(), Type.SEGMENT, usage, min, max));
+
+					if (segment.getChildren() != null) {
+						segment.getChildren().forEach(field -> {
+							String fieldPositionPath = location.getInfo().getPositionalPath() + "." + field.getPosition();
+							String fieldPath = location.getInfo().getPathId() + "." + field.getId();
+							Location fieldLocation = new Location();
+							fieldLocation.setPathId(fieldPath);
+							fieldLocation.setName(field.getName());
+							LocationInfo fieldInfo = new LocationInfo();
+							fieldInfo.setType(Type.FIELD);
+							fieldInfo.setName(field.getName());
+							fieldInfo.setPathId(fieldPath);
+							fieldInfo.setPositionalPath(fieldPositionPath);
+							fieldLocation.setInfo(fieldInfo);
+
+							if (field.getUsage().equals(Usage.IX)) {
+
+								this.IXUsageExist = true;
+
+								if (conformanceProfile.getRole() != null) {
+									if (conformanceProfile.getRole().equals(Role.Sender))
+										result.getErrors()
+												.add(this.verificationEntryService.Usage_NOTAllowed_IXUsage_SenderProfile(
+														fieldLocation, field.getId(), Type.FIELD));
+									else if (conformanceProfile.getRole().equals(Role.SenderAndReceiver))
+										result.getErrors()
+												.add(this.verificationEntryService
+														.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(fieldLocation,
+																field.getId(), Type.FIELD));
 								}
+
 							}
-						}
-					});
+							
+							if(datatypeIdset.contains(field.getRef().getId())) {
+								System.out.println("SKIP Datatype: " + field.getRef().getId());
+							} else {
+								datatypeIdset.add(field.getRef().getId());
+								Datatype childDT = this.datatypeService.findById(field.getRef().getId());
+								if (childDT == null)
+									childDT = this.inMemoryDomainExtensionService.findById(ref.getId(), Datatype.class);
+								if (childDT == null) {
+								} else {
+									if (childDT instanceof ComplexDatatype) {
+										ComplexDatatype complexChildDT = (ComplexDatatype) childDT;
+										if (complexChildDT.getComponents() != null) {
+											complexChildDT.getComponents().forEach(component -> {
+												this.travelComponent(result, conformanceProfile, fieldLocation, component, datatypeIdset);
+											});
+										}
+									}
+								}	
+							}
+						});
+					}
 				}
 			}
 		}
 	}
 
-	private void travelComponent(CPVerificationResult result, ConformanceProfile cp, Location l, Component component) {
+	private void travelComponent(CPVerificationResult result, ConformanceProfile cp, Location l, Component component, HashSet<String> datatypeIdset) {
 		if (component.getUsage().equals(Usage.IX)) {
 			this.IXUsageExist = true;
 			if (cp.getRole() != null) {
@@ -530,22 +542,26 @@ public class VerificationServiceImpl implements VerificationService {
 									component.getId(), Type.COMPONENT));
 			}
 		}
-
-		Datatype childDT = this.datatypeService.findById(component.getRef().getId());
-		if (childDT == null)
-			childDT = this.inMemoryDomainExtensionService.findById(component.getRef().getId(), Datatype.class);
-		if (childDT == null) {
+		
+		if(datatypeIdset.contains(component.getRef().getId())) {
+			System.out.println("SKIP Datatype: " + component.getRef().getId());
 		} else {
-			if (childDT instanceof ComplexDatatype) {
-				ComplexDatatype complexChildDT = (ComplexDatatype) childDT;
-				if (complexChildDT.getComponents() != null) {
-					complexChildDT.getComponents().forEach(childComponent -> {
-						this.travelComponent(result, cp, l, childComponent);
-					});
+			datatypeIdset.add(component.getRef().getId());
+			Datatype childDT = this.datatypeService.findById(component.getRef().getId());
+			if (childDT == null)
+				childDT = this.inMemoryDomainExtensionService.findById(component.getRef().getId(), Datatype.class);
+			if (childDT == null) {
+			} else {
+				if (childDT instanceof ComplexDatatype) {
+					ComplexDatatype complexChildDT = (ComplexDatatype) childDT;
+					if (complexChildDT.getComponents() != null) {
+						complexChildDT.getComponents().forEach(childComponent -> {
+							this.travelComponent(result, cp, l, childComponent, datatypeIdset);
+						});
+					}
 				}
 			}
 		}
-
 	}
 
 	private List<IgamtObjectError> checkConstantErr(SubStructElement e, Location location, String id, Type type,
@@ -710,7 +726,7 @@ public class VerificationServiceImpl implements VerificationService {
 	}
 
 	private void checkingGroup(ConformanceProfile conformanceProfile, Group group, CPVerificationResult result,
-			String positionPath, String path) {
+			String positionPath, String path, HashSet<String> datatypeIdset, HashSet<String> segmentIdset) {
 		String name = group.getName();
 		int position = group.getPosition();
 		Usage usage = group.getUsage();
@@ -760,7 +776,7 @@ public class VerificationServiceImpl implements VerificationService {
 
 			if (group.getChildren() != null && group.getChildren().size() > 0) {
 				for (SegmentRefOrGroup child : group.getChildren()) {
-					this.checkingSegmentRefOrGroup(conformanceProfile, child, result, positionPath, path);
+					this.checkingSegmentRefOrGroup(conformanceProfile, child, result, positionPath, path, datatypeIdset, segmentIdset);
 				}
 			}
 		}
@@ -1100,7 +1116,9 @@ public class VerificationServiceImpl implements VerificationService {
 		this.IXUsageExist = false;
 
 		// 2. Structure Checking
-		this.checkingStructureForConformanceProfile(conformanceProfile, result);
+		HashSet<String> datatypeIdset = new HashSet<String>();
+		HashSet<String> segmentIdset = new HashSet<String>();
+		this.checkingStructureForConformanceProfile(conformanceProfile, result, datatypeIdset, segmentIdset);
 
 		// 1. Metadata checking
 		this.checkingMetadataForConformanceProfile(conformanceProfile, result);
