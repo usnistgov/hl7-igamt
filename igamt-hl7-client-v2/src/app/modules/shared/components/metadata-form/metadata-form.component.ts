@@ -89,22 +89,6 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
   }
-  addAttribute(model){
-    this.metadataForm.addControl("field", new FormControl('', []));
-    this.model.push({
-      key: "field",
-      data: {     label: 'mmmm',
-      addBefore: true,
-      placeholder: 'mmmm',
-      validators: [],
-      enum: [],
-      type: FieldType.TEXT,
-      id: 'iiiii',
-      name: 'iiiiii',},
-    });
-
-  }
-
 
   openCustomAttributeDialog(){
     console.log(this.model );

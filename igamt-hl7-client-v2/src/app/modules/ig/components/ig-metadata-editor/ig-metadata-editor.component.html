@@ -4,7 +4,7 @@
     <div class="form-group">
       <label for="Cover picture" class="form-label-lg">Cover Picture</label>
       <div>
-        <app-file-select-input [formControlName]="picture" [viewOnly]="viewOnly$ | async"></app-file-select-input>
+        <app-file-select-input formControlName="pictureFile" [viewOnly]="viewOnly$ | async"></app-file-select-input>
       </div>
     </div>
   </ng-container>
@@ -38,43 +38,46 @@
     </span>
   </div>
 
-
-  <table style="background-color: #efefef" class="table table-bordered">
-    <thead>
-      <th>
-        Custom Attributes
-      </th>
-      <th width="50px">
-        <button (click)="openCustomAttributeDialog()" class="btn-sm btn-primary">
-          <i class="fa fa-plus"> </i>
-        </button>
-      </th>
-
-    </thead>
-    <tbody formArrayName="customAttributes">
-
-
-
-        <tr *ngFor="let field of getCustoms().controls; let i = index" [formGroupName]="i" cdkDropList (cdkDropListDropped)="drop($event)" class="doc-list" [cdkDropListDisabled]="false">
+<ng-container >
+  <form>
+<p-table [columns]="cols" [value]= "customAttributes$ | async" [reorderableColumns]="true" (onRowReorder)="dataChange()">
+  <ng-template pTemplate="header" let-columns>
+      <tr>
+          <th style="width:2.5em"></th>
+           <th> Custom Attributes</th>
+           <th width="50px">
+            <button (click)="openCustomAttributeDialog()" class="btn-sm btn-primary">
+              <i class="fa fa-plus"> </i>
+            </button>
+          </th>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+      <tr [pReorderableRow]="index">
           <td>
-            <app-form-input [formControlName]="getNameControlName(i)" [id]="getNameControlName(i)" [name]="getNameControlName(i)"
-            [placeholder]="getNameControlName(i)" [label]="getNameControlName(i)" [viewOnly]="viewOnly$ | async">
-              </app-form-input>
+              <i class="fa fa-bars" pReorderableRowHandle></i>
           </td>
-
           <td>
-            <button type="button" (click)="removeItem(i)" class="btn-sm btn-danger"><i class="fa fa-remove"></i></button>
+            <div class="form-group">
+              <label class="form-label-lg">{{rowData.name}}</label>
+              <input [type]="type" class="form-control" [id]="rowData.name" [name]="rowData.name" placeholder="" [(ngModel)]="rowData.value" (ngModelChange)="dataChange()" [disabled]="viewOnly$ | async">
+            </div>
           </td>
-
-        </tr>
-    </tbody>
-
-  </table>
-
-  <ng-container>
+          <td>
+            <button type="button" (click)="removeItem(i)" class="btn-sm btn-danger" [disabled]="viewOnly$ | async"><i class="fa fa-remove"></i></button>
+          </td>
+      </tr>
+  </ng-template>
+</p-table>
+</form>
+</ng-container>
+<ng-container>
     <label><strong>Author Notes </strong></label>
-    <div *ngIf="!(viewOnly$ | async)" [id]="authorNotes" [froalaEditor]="froalaConfig$ |async" [formControlName]="authorNotes" style="flex-grow: 1; display: flex; flex-direction: column;" name="authorNotes"></div>
-    <!-- <div *ngIf="(viewOnly || field.data.disabled) && metadataForm[field.key]" [froalaView]="metadataForm[field.key]" [froalaEditor]="froalaConfig" ></div> -->
+    <div *ngIf="!(viewOnly$ | async)" id="authorNotes" [froalaEditor]="froalaConfig$ |async" formControlName="authorNotes" style="flex-grow: 1; display: flex; flex-direction: column;" name="authorNotes"></div>
+    <!-- <div *ngIf="(viewOnly ||  !metadataForm['authorNotes'])" [froalaView]="form['authorNotes']" [froalaEditor]="froalaConfig" ></div> -->
+
+    <div *ngIf="(viewOnly$ | async) || !formGroup.get('authorNotes').value" id="authorNotesView" [froalaEditor]="froalaConfig$ |async" [froalaView]="formGroup.get('authorNotes').value"></div>
+
   </ng-container>
 
 
@@ -82,3 +85,5 @@
 
 </form>
 <!-- <app-metadata-form [metadataFormInput]="metadataFormInput" (dataChange)="dataChange($event)" [froalaConfig]="froalaConfig$ |async" (modelChange)="modelChange($event)"></app-metadata-form> -->
+
+

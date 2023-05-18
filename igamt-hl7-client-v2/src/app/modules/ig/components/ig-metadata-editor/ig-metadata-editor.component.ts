@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { BehaviorSubject, combineLatest, Observable, of, throwError } from 'rxjs';
-import { catchError, filter, flatMap, map, pluck, take, tap } from 'rxjs/operators';
+import { catchError, filter, flatMap, map, pluck, take, tap, withLatestFrom } from 'rxjs/operators';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
@@ -29,6 +29,7 @@ export interface IIgEditMetadata {
   authors: string[];
   status: Status;
   implementationNotes?: any;
+  authorNotes: any;
   customAttributes?: ICoustomAttribute[];
 }
 
@@ -43,6 +44,12 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
   metadataFormInput: IMetadataFormInput<IIgEditMetadata>;
   froalaConfig$: Observable<any>;
   metadataForm: FormGroup;
+  customAttributes$: BehaviorSubject<ICoustomAttribute[]>;
+
+  cols = [
+    { field: 'Cutom Attrinutes', header: 'Value' },
+    { field: 'action', header: '' },
+   ];
 
   formGroup: FormGroup;
 
@@ -65,11 +72,15 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
     );
 
     this.coverPictureFile$ = new BehaviorSubject<File>(null);
+    this.customAttributes$ = new BehaviorSubject<ICoustomAttribute[]>(null);
      this.currentSynchronized$.pipe(
         flatMap((metadata) => {
           console.log("metadata");
 
           console.log(metadata);
+
+          this.customAttributes$.next(metadata.customAttributes)
+
           return this.store.select(selectIgVersions).pipe(
             take(1),
             tap((versions) => {
@@ -84,7 +95,7 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
               this.initFormGroup(ret);
               this.formGroup.valueChanges.subscribe((changed) => {
 
-                this.dataChange(this.formGroup);
+                this.dataChange();
               });
 
             }),
@@ -105,7 +116,7 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
       organization: [''],
       authors: [''],
       authorNotes: [''],
-      customAttributes: this.initCustomAttributes(metadata.customAttributes),
+      // customAttributes: this.initCustomAttributes(metadata.customAttributes),
     });
 
 
@@ -143,11 +154,9 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
   }
 
   click(field){
-    console.log(this.formGroup.getRawValue());
-    // console.log(this.getCustoms());
 
-    // console.log( this.getNameControlName(1))
-
+    console.log(field);
+    this.customAttributes$.subscribe((x) => console.log(x));
   }
 
 
@@ -162,38 +171,38 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
   }
 
   removeItem(index: number) {
-    this.getCustoms().removeAt(index);
+    this.customAttributes$.pipe(map((x: ICoustomAttribute[] ) => x.splice(index,1))).subscribe();
+    this.dataChange();
   }
 
 
   openCustomAttributeDialog(){
 
-          const dialogRef = this.dialog.open(MetadataAttributeConfigComponent, {
-            data: { form: this.metadataFormInput },
-          });
-          dialogRef.afterClosed().pipe(
-            filter((res) => res !== undefined),
-            take(1),
-            map((result: string) => {
-
-
-              console.log(result);
-              this.addAttr(this.getCustoms(), result);
-              console.log(this.getCustoms());
-            }),
-          ).subscribe();
+   const dialogRef = this.dialog.open(MetadataAttributeConfigComponent, {
+      data: { form: this.metadataFormInput },
+      });
+     dialogRef.afterClosed().pipe(
+      filter((res) => res !== undefined),
+        take(1),
+        map((result: string) => {
+          this.customAttributes$.pipe(map(x => x.push( { name: result, value: ""}))).subscribe();
+          this.dataChange();
+        }),
+    ).subscribe();
 
 
   }
 
 
-  dataChange(form: FormGroup) {
+  dataChange() {
 
     this.current$.pipe(
       take(1),
-      tap((current) => {
-        this.coverPictureFile$.next(form.getRawValue().pictureFile);
-        this.editorChange(Object.assign(current.data, this.convert()), form.valid);
+      withLatestFrom(this.customAttributes$),
+      tap(([current, custom]) => {
+        console.log(current);
+        this.coverPictureFile$.next(this.formGroup.getRawValue().pictureFile);
+        this.editorChange(Object.assign(current.data, {...this.formGroup.getRawValue(), customAttributes: custom }) , this.formGroup.valid );
       }),
     ).subscribe();
   }
@@ -211,8 +220,8 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
 
 
 
-  modelChange(event: Array<{ key: string; data: IMetadataField}>){
-    console.log(event);
+  modelChange(){
+     this.dataChange();
   }
 
   onEditorSave(action: fromDam.EditorSave): Observable<Action> {
@@ -351,6 +360,6 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
 export interface ICoustomAttribute {
   name: string,
   value: string,
-  position: number,
-  type: FieldType,
+  position?: number,
+  type?: FieldType,
 }
