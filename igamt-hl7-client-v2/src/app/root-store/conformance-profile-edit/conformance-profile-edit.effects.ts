@@ -7,6 +7,8 @@ import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take, tap } f
 import * as fromDamActions from 'src/app/modules/dam-framework/store/data/dam.actions';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IConformanceProfile } from 'src/app/modules/shared/models/conformance-profile.interface';
+import { IUsages } from 'src/app/modules/shared/models/cross-reference';
+import { CrossReferencesService } from 'src/app/modules/shared/services/cross-references.service';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
@@ -26,7 +28,7 @@ import {
   LoadConformanceProfileFailure,
   LoadConformanceProfileSuccess,
   OpenConformanceProfilePostDefEditor,
-  OpenConformanceProfilePreDefEditor, OpenConformanceProfileSlicingEditor,
+  OpenConformanceProfilePreDefEditor, OpenConformanceProfileSlicingEditor, OpenMessageCrossRefEditor,
 } from './conformance-profile-edit.actions';
 import { OpenConformanceProfileBindingsEditor, OpenConformanceProfileCoConstraintBindingsEditor, OpenConformanceProfileDeltaEditor, OpenConformanceProfileMetadataEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from './conformance-profile-edit.actions';
 import { IState } from './conformance-profile-edit.reducer';
@@ -177,6 +179,17 @@ export class ConformanceProfileEditEffects {
     this.ConfPNotFound,
   );
 
+  @Effect()
+  openMessageCrossRefEditor$ = this.editorHelper.openCrossRefEditor<IUsages[], OpenMessageCrossRefEditor>(
+    ConformanceProfileEditActionTypes.OpenMessageCrossRefEditor,
+    fromIgamtDisplaySelectors.selectMessagesById,
+    Type.IGDOCUMENT,
+    Type.CONFORMANCEPROFILE,
+    fromIgamtSelectors.selectLoadedDocumentInfo,
+    this.crossReferenceService.findUsagesDisplay,
+    this.ConfPNotFound,
+  );
+
   constructor(
     private actions$: Actions<ConformanceProfileEditActions>,
     private store: Store<IState>,
@@ -185,6 +198,7 @@ export class ConformanceProfileEditEffects {
     private bindingService: BindingService,
     private conformanceProfileService: ConformanceProfileService,
     private editorHelper: OpenEditorService,
+    private crossReferenceService: CrossReferencesService,
     private slicingService: SlicingService) { }
 
 }
