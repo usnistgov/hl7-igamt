@@ -186,6 +186,8 @@ public class ExportConfiguration {
     displaySelectives.setCab(true);
     displaySelectives.setB(setAllTrue);
     displaySelectives.setW(setAllTrue);
+    displaySelectives.setIx(setAllTrue);
+
     CodeUsageConfiguration codeUsageExport = new CodeUsageConfiguration();
     codeUsageExport.setE(setAllTrue);
     codeUsageExport.setP(true);
