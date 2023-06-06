@@ -118,10 +118,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
   private void applyFlavorInfo(Resource resource, AddingInfo addingInfo) {
 
     if(resource instanceof Datatype) {
-      ((Datatype) resource).setExt(addingInfo.getExt());
       if(resource.getDomainInfo().getScope().equals(Scope.SDTF)) {
         ((Datatype) resource).setFixedExtension(((Datatype) resource).getExt());
       }
+      ((Datatype) resource).setExt(addingInfo.getExt());
+
     }else if(resource instanceof Segment ) {
       ((Segment) resource).setExt(addingInfo.getExt());
     }else if(resource instanceof Valueset) {

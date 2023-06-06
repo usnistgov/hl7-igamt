@@ -39,9 +39,11 @@ import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ActiveInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.ActiveStatus;
+import gov.nist.hit.hl7.igamt.common.base.domain.Audience;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicAudience;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
@@ -411,8 +413,6 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       element.setDerived(lib.isDerived());
       element.setUsername(lib.getUsername());
       element.setStatus(lib.getStatus());
-      element.setSharePermission(lib.getSharePermission());
-      element.setSharedUsers(new HashSet<>(lib.getSharedUsers()));
       element.setCurrentAuthor(lib.getCurrentAuthor());
       List<String> datatypesNames = new ArrayList<String>();
       DatatypeRegistry datatypeRegistry = lib.getDatatypeRegistry();
@@ -575,6 +575,8 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
         }
       }
     }
+	Audience audience = new PublicAudience();
+	lib.setAudience(audience);
     lib.setPublicationInfo(info);
     this.save(lib);
     return lib.getId();
