@@ -382,6 +382,8 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     qry.fields().include("updateDate");
     qry.fields().include("sharedUsers");
     qry.fields().include("currentAuthor");
+    qry.fields().include("status");
+
 
     List<DatatypeLibrary> igs = mongoTemplate.find(qry, DatatypeLibrary.class);
     return igs;
