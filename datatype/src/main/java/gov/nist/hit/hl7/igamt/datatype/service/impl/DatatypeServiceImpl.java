@@ -118,8 +118,20 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 	@Override
 	public Datatype findById(String key) {
-		Datatype dt = this.domainExtention.findById(key, Datatype.class);
-		return dt == null ? datatypeRepository.findById(key).orElse(null) : dt;
+		Datatype inMemory = findByIdInMemory(key);
+		return inMemory == null ?  datatypeRepository.findById(key).orElse(null) : inMemory;
+	}
+
+	public Datatype findByIdInMemory(String key) {
+		Datatype complex = this.domainExtention.findById(key, ComplexDatatype.class);
+		if(complex == null) {
+			Datatype primitive = this.domainExtention.findById(key, Datatype.class);
+			if(primitive == null) {
+				return this.domainExtention.findById(key, DateTimeDatatype.class);
+			}
+			return primitive;
+		}
+		return complex;
 	}
 
 	@Override
