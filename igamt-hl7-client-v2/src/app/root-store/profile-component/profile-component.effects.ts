@@ -245,32 +245,35 @@ export class ProfileComponentEffects {
 
   conformanceStatementEditor(getter: (string, IDocumentRef) => Observable<IConformanceStatementList>) {
     return (action: fromDamActions.OpenEditorBase) => {
-      return this.store.select(fromIgamtSelectors.selectLoadedDocumentInfo).pipe(
-        take(1),
-        mergeMap((documentInfo) => {
-          return getter(action.payload.id, documentInfo);
-        }),
-        flatMap((data) => {
-          return this.store.select(fromRouterSelector.selectRouteParams).pipe(
-            take(1),
-            pluck('pcId'),
-            flatMap((pcId) => {
-              return this.profileComponentService.getChildById(pcId as string, action.payload.id).pipe(
-                map((ctx) => {
-                  return {
-                    conformanceStatements: data.conformanceStatements || [],
-                    items: ctx.profileComponentBindings ?
-                      (ctx.profileComponentBindings.contextBindings || [])
-                        .filter((elm) => elm.propertyKey === PropertyType.STATEMENT)
-                        .map((elm) => elm as IPropertyConformanceStatement) :
-                      [],
-                  };
-                }),
-              );
-            }),
-          );
-        }),
-      );
+      return combineLatest(
+        this.store.select(fromIgamtSelectors.selectLoadedDocumentInfo),
+        this.store.select(fromIgamtSelectedSelectors.selectProfileComponentContext))
+        .pipe(
+          take(1),
+          mergeMap(([documentInfo, context]) => {
+            return getter(context.sourceId, documentInfo);
+          }),
+          flatMap((data) => {
+            return this.store.select(fromRouterSelector.selectRouteParams).pipe(
+              take(1),
+              pluck('pcId'),
+              flatMap((pcId) => {
+                return this.profileComponentService.getChildById(pcId as string, action.payload.id).pipe(
+                  map((ctx) => {
+                    return {
+                      conformanceStatements: data.conformanceStatements || [],
+                      items: ctx.profileComponentBindings ?
+                        (ctx.profileComponentBindings.contextBindings || [])
+                          .filter((elm) => elm.propertyKey === PropertyType.STATEMENT)
+                          .map((elm) => elm as IPropertyConformanceStatement) :
+                        [],
+                    };
+                  }),
+                );
+              }),
+            );
+          }),
+        );
     };
   }
 }
