@@ -503,16 +503,15 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    * @see gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#getPublicationSummary()
    */
   @Override
-  public PublicationSummary getPublicationSummary(String id) {
+  public PublicationSummary getPublicationSummary(String id, Scope scope) {
     // TODO Auto-generated method stub
     PublicationSummary summary= new PublicationSummary();
+    summary.scope = scope;
     summary.entries= new ArrayList<PublicationEntry>();
     List<Datatype> toPublish = this.datatypeService.findByParentId(id);
     
-    System.out.println(toPublish.size());
-
     for(Datatype d : toPublish) {
-      summary.entries.add(getPublicationEntry(d));
+      summary.entries.add(getPublicationEntry(d, scope));
     }
     return summary;
   }
@@ -521,15 +520,16 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    * @param d
    * @return
    */
-  private PublicationEntry getPublicationEntry(Datatype d) {
+  private PublicationEntry getPublicationEntry(Datatype d, Scope scope) {
     // TODO Auto-generated method stub
     PublicationEntry entry = new PublicationEntry();
     List<String> availableExtensions = new ArrayList<String>();
 
     entry.display = display.convertDatatype(d);
     entry.suggested = d.getExt();
+    if(scope.equals(Scope.SDTF)) {
     Criteria where = Criteria.where("name").is(d.getName())
-        .andOperator(Criteria.where("domainInfo.scope").is(Scope.SDTF.toString()));
+        .andOperator(Criteria.where("domainInfo.scope").is(scope.toString()));
     Query qry = Query.query(where);
     List<String> used=  this.mongoTemplate.findDistinct(qry, "ext", "datatype", Datatype.class, String.class);
     Map<String, Boolean> map = used.stream().collect(Collectors.toMap(x ->  x, x->true));
@@ -547,6 +547,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       entry.suggested= availableExtensions.get(0);
     }
     entry.availableExtensions = availableExtensions;
+    }
     return entry;
   }
 
@@ -557,7 +558,15 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   public String publishLibray(String id, PublicationResult publicationResult) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     DatatypeLibrary lib = this.findById(id);
-    lib.setStatus(Status.PUBLISHED);
+    Status status; 
+    if(publicationResult.getScope().equals(Scope.SDTF)) {
+    	status = Status.PUBLISHED;
+    }else {
+         status = Status.LOCKED;
+
+    }
+    lib.setStatus(status);
+
     PublicationInfo info = new PublicationInfo();
     info.setPublicationDate(new Date());
     info.setPublicationVersion(publicationResult.getVersion());
@@ -569,7 +578,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
           d.getDomainInfo().setScope(publsihed.get(l.getId()).getScope());
           d.setExt(publsihed.get(l.getId()).getExt());
           d.setPublicationInfo(info);
-          d.setStatus(Status.PUBLISHED);
+          d.setStatus(status);
           l.setDomainInfo(d.getDomainInfo());
           datatypeService.save(d);
         }

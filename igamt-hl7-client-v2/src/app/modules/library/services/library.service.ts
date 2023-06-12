@@ -25,6 +25,7 @@ import {
 import {ILibrary} from '../models/library.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
 import { IgTOCNodeHelper } from './library-toc-node-helper.service';
+import { Scope } from 'src/app/modules/shared/constants/scope.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -162,8 +163,8 @@ export class LibraryService {
     return this.http.post<Message<string>>(this.LIBRARY_END_POINT + id + '/publish', publicationResult).pipe();
   }
 
-  getPublicationSummary(id: string): Observable<IPublicationSummary> {
-    return this.http.get<IPublicationSummary>(this.LIBRARY_END_POINT + id + '/publicationSummary', {}).pipe();
+  getPublicationSummary(id: string, scope: Scope): Observable<IPublicationSummary> {
+    return this.http.get<IPublicationSummary>(this.LIBRARY_END_POINT + id + '/publicationSummary/'+scope.toString(), {}).pipe();
   }
 
   updateSharedUsers(sharedUsers: any, id: string): Observable<Message<string>> {

@@ -33,6 +33,7 @@ import {
   PublishLibraryDialogComponent,
 } from '../publish-library-dialog/publish-library-dialog.component';
 import { SharingDialogComponent } from './../../../shared/components/sharing-dialog/sharing-dialog.component';
+import { Scope } from 'src/app/modules/shared/constants/scope.enum';
 
 @Component({
   selector: 'app-library-list-container',
@@ -246,7 +247,7 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
       (answer) => {
         if (answer) {
 
-          return this.libraryService.getPublicationSummary(item.id).pipe(
+          return this.libraryService.getPublicationSummary(item.id, Scope.SDTF).pipe(
             map((summary: IPublicationSummary) => {
               const newdialogRef = this.dialog.open(PublishLibraryDialogComponent, {
                 data: summary,

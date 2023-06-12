@@ -657,12 +657,12 @@ public class DatatypeLibraryController {
         datatypes);
   }
 
-  @RequestMapping(value = "/api/datatype-library/{id}/publicationSummary", method = RequestMethod.GET,
+  @RequestMapping(value = "/api/datatype-library/{id}/publicationSummary/{scope}", method = RequestMethod.GET,
       produces = {"application/json"})
-  public PublicationSummary publicationSummary(@PathVariable("id") String id,
+  public PublicationSummary publicationSummary(@PathVariable("id") String id,@PathVariable("scope") Scope scope,
       Authentication authentication) {
 
-    return dataypeLibraryService.getPublicationSummary(id);
+    return dataypeLibraryService.getPublicationSummary(id, scope);
   }
 
   @RequestMapping(value = "/api/datatype-library/{id}/publish", method = RequestMethod.POST,
@@ -671,7 +671,7 @@ public class DatatypeLibraryController {
       Authentication authentication) throws ForbiddenOperationException {
 
     return new ResponseMessage<String>(Status.SUCCESS, "", "Publish Library Success", id, false,
-        new Date(), dataypeLibraryService.publishLibray(id, publicationResult));
+        new Date(), dataypeLibraryService.publishLibray(id, publicationResult ));
 
   }
 

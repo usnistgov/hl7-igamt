@@ -80,7 +80,7 @@ public interface DatatypeLibraryService {
 Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException; 
  
  
-  public PublicationSummary getPublicationSummary(String id); 
+  public PublicationSummary getPublicationSummary(String id, Scope scope); 
  
   /** 
    * @param id 
@@ -106,7 +106,8 @@ Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundExceptio
    * @throws DatatypeLibraryNotFoundException  
  * @throws ForbiddenOperationException  
    */ 
-  public DatatypeLibrary clone(String id, String username, CopyInfo info) throws DatatypeLibraryNotFoundException, ForbiddenOperationException; 
+  public DatatypeLibrary clone(String id, String username, CopyInfo info) throws DatatypeLibraryNotFoundException, ForbiddenOperationException;
+
  
  
 } 
