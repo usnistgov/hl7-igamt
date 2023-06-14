@@ -316,4 +316,15 @@ export class LibraryService {
   deactivateElements(documentId: string, elements: string[]): Observable<Message<any>> {
     return this.http.post<Message<string>>(this.LIBRARY_END_POINT + documentId + '/deactivate-children' ,  elements);
   }
+
+  getPublishedLibraries(){
+
+    return this.http.get<ILibraryDisplay>('/api/datatype-library/');
+
+  }
+}
+
+export interface ILibraryDisplay {
+  title?: string;
+  children: IDisplayElement[];
 }

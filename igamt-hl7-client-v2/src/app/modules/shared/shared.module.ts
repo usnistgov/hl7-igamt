@@ -149,6 +149,7 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { ImportFromLibComponent } from './components/import-from-lib/import-from-lib.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -259,6 +260,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MessagePickerComponent,
     SelectedMessagesComponent,
     DocumentConfigComponent,
+    ImportFromLibComponent,
   ],
   providers: [
     StoreResourceRepositoryService,

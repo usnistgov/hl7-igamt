@@ -1,3 +1,4 @@
+import { LibraryService } from './../../../library/services/library.service';
 import { AfterViewInit, Component, Input, OnDestroy, OnInit, SystemJsNgModuleLoader, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, ChildrenOutletContexts, Router } from '@angular/router';
@@ -78,6 +79,7 @@ import { UnusedElementsComponent } from './../../../shared/components/unused-ele
 import { VerificationService } from './../../../shared/services/verification.service';
 import { ITypedSection } from './../ig-toc/ig-toc.component';
 import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
+import { ImportFromLibComponent } from 'src/app/modules/shared/components/import-from-lib/import-from-lib.component';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -94,7 +96,9 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     private activeRoute: ActivatedRoute,
     private igTocFilterService: IgTocFilterService,
     private actions: Actions,
-    private verificationService: VerificationService) {
+    private verificationService: VerificationService,
+
+    private libraryService: LibraryService) {
     this.deltaMode$ = this.store.select(fromIgEdit.selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
     this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
@@ -308,6 +312,38 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     ).subscribe();
     subscription.unsubscribe();
   }
+
+
+
+  addUserDataTaypes(event: IAddWrapper) {
+    const subscription = this.libraryService.getPublishedLibraries().pipe(
+      withLatestFrom(this.version$),
+      take(1),
+      map(([ILibraryDisplay, selectedVersion]) => {
+        const dialogData = {
+          version: selectedVersion,
+          libs: ILibraryDisplay,
+        };
+        const dialogRef = this.dialog.open(ImportFromLibComponent, {
+          data: dialogData,
+        });
+        dialogRef.afterClosed().pipe(
+          map((result) => {
+            return result;
+          }),
+          filter((x) => x !== undefined),
+          withLatestFrom(this.documentRef$),
+          take(1),
+          map(([result, documentRef]) => {
+            this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type }));
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
+    subscription.unsubscribe();
+  }
+
+
 
   addVSFromCSV($event) {
     const dialogRef = this.dialog.open(ImportCsvValuesetComponent, {
