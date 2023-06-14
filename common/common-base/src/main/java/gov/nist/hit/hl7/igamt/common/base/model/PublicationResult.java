@@ -13,32 +13,41 @@ package gov.nist.hit.hl7.igamt.common.base.model;
 
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+
 /**
  * @author Abdelghani El Ouakili
  *
  */
 public class PublicationResult {
 
-  private String version;
-  private String comments;
-  private List<PublishedEntry> elements;
-  public String getVersion() {
-    return version;
-  }
-  public void setVersion(String version) {
-    this.version = version;
-  }
-  public String getComments() {
-    return comments;
-  }
-  public void setComments(String comments) {
-    this.comments = comments;
-  }
-  public List<PublishedEntry> getElements() {
-    return elements;
-  }
-  public void setElements(List<PublishedEntry> elements) {
-    this.elements = elements;
-  }
-  
+	private String version;
+	private String comments;
+	private List<PublishedEntry> elements;
+	private Scope scope; 
+	public String getVersion() {
+		return version;
+	}
+	public void setVersion(String version) {
+		this.version = version;
+	}
+	public String getComments() {
+		return comments;
+	}
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+	public List<PublishedEntry> getElements() {
+		return elements;
+	}
+	public void setElements(List<PublishedEntry> elements) {
+		this.elements = elements;
+	}
+	public Scope getScope() {
+		return scope;
+	}
+	public void setScope(Scope scope) {
+		this.scope = scope;
+	}
+
 }

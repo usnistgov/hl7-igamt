@@ -47,7 +47,7 @@
         <td #td>
           <div style="display: flex; flex-direction: row; justify-content: flex-start" *ngIf="rowData.display.domainInfo.scope!=='SDTF'">
             <div>
-              <app-scope-badge [scope]="'SDTF'" [version]="rowData.display.domainInfo.version">
+              <app-scope-badge [scope]="scope" [version]="rowData.display.domainInfo.version">
               </app-scope-badge>
               <span> {{rowData.display.fixedName}}
             </span>
@@ -55,10 +55,13 @@
             <div>
               <strong>__</strong>
             </div>
-            <div style="width: 50px">
+            <div style="width: 50px" *ngIf="scope ==='SDTF'">
               <mat-select  matNativeControl [(value)]="rowData.suggested" [name]="rowData.display.id" [id]="rowData.display.id" [(ngModel)]="rowData.suggested"  [id]="rowData.display.id">
                 <mat-option *ngFor="let opt of rowData.availableExtensions" [value]="opt">{{opt}}</mat-option>
               </mat-select>
+            </div>
+            <div style="width: 50px" *ngIf="scope ==='USER'">
+              <input  [name]="rowData.display.id" [id]="rowData.display.id" [(ngModel)]="rowData.suggested"  [id]="rowData.display.id" required/>
             </div>
           </div>
           <app-display-section  *ngIf="rowData.display.domainInfo.scope==='SDTF'" [element]="rowData.display" [compatibility]="false" [hideDescription]="true" [hideBadge]="true"></app-display-section>

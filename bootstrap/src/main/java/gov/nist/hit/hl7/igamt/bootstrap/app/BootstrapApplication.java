@@ -404,6 +404,7 @@ public class BootstrapApplication implements CommandLineRunner {
 		criterias1.put(EvolutionPropertie.CPUSAGE, true);
 		criterias1.put(EvolutionPropertie.CPDATATYPE, true);
 		criterias1.put(EvolutionPropertie.CPNUMBER, true);
+//		criterias1.put(EvolutionPropertie.CPDATATYPENAME, true);
 		datatypeClassifier.classify(hl7Versions,criterias1);
 		System.out.println("ENd of Classifying dts");
 
@@ -825,5 +826,10 @@ public class BootstrapApplication implements CommandLineRunner {
 		this.dataFixer.removeBindingsV2_9();
 	}
 	
+	@PostConstruct
+	void setWithDrawn() {
+		this.dataFixer.setWithdrawnV2_9();
+	}
+
 
 }

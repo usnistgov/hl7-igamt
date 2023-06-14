@@ -22,6 +22,7 @@ import {
   IPublicationSummary,
   PublishLibraryDialogComponent,
 } from '../publish-library-dialog/publish-library-dialog.component';
+import { Scope } from 'src/app/modules/shared/constants/scope.enum';
 
 @Component({
   selector: 'app-library-edit-toolbar',
@@ -136,7 +137,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
     this.getLibId().pipe(
       take(1),
       mergeMap((libId) => {
-          return this.libraryService.getPublicationSummary(libId).pipe(
+          return this.libraryService.getPublicationSummary(libId, Scope.SDTF).pipe(
             take(1),
             map((summary: IPublicationSummary) => {
               const dialogRef = this.dialog.open(PublishLibraryDialogComponent, {
@@ -151,5 +152,29 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
         },
       ),
     ).subscribe();
+  }
+
+  publishUser(){
+
+    this.getLibId().pipe(
+      take(1),
+      mergeMap((libId) => {
+          return this.libraryService.getPublicationSummary(libId, Scope.USER).pipe(
+            take(1),
+            map((summary: IPublicationSummary) => {
+              const dialogRef = this.dialog.open(PublishLibraryDialogComponent, {
+                data: summary,
+              });
+              dialogRef.afterClosed().pipe(
+                filter((y) => y !== undefined),
+                map((result: IPublicationResult) => this.store.dispatch(new PublishLibrary(libId, result))),
+              ).subscribe();
+            }),
+          );
+        },
+      ),
+    ).subscribe();
+
+
   }
 }

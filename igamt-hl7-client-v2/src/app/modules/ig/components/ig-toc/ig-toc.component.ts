@@ -120,7 +120,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
           drop: (tree: TreeModel, node: TreeNode, $event: any, { from, to }) => {
 
             console.log(from);
-
             console.log(to);
             if (from.data.type === Type.TEXT && (!this.isOrphan(to) && to.parent.data.type === Type.TEXT || this.isOrphan(to))) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });

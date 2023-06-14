@@ -39,9 +39,11 @@ import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ActiveInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.ActiveStatus;
+import gov.nist.hit.hl7.igamt.common.base.domain.Audience;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicAudience;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
@@ -380,6 +382,8 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     qry.fields().include("updateDate");
     qry.fields().include("sharedUsers");
     qry.fields().include("currentAuthor");
+    qry.fields().include("status");
+
 
     List<DatatypeLibrary> igs = mongoTemplate.find(qry, DatatypeLibrary.class);
     return igs;
@@ -411,8 +415,6 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       element.setDerived(lib.isDerived());
       element.setUsername(lib.getUsername());
       element.setStatus(lib.getStatus());
-      element.setSharePermission(lib.getSharePermission());
-      element.setSharedUsers(new HashSet<>(lib.getSharedUsers()));
       element.setCurrentAuthor(lib.getCurrentAuthor());
       List<String> datatypesNames = new ArrayList<String>();
       DatatypeRegistry datatypeRegistry = lib.getDatatypeRegistry();
@@ -503,16 +505,15 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    * @see gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#getPublicationSummary()
    */
   @Override
-  public PublicationSummary getPublicationSummary(String id) {
+  public PublicationSummary getPublicationSummary(String id, Scope scope) {
     // TODO Auto-generated method stub
     PublicationSummary summary= new PublicationSummary();
+    summary.scope = scope;
     summary.entries= new ArrayList<PublicationEntry>();
     List<Datatype> toPublish = this.datatypeService.findByParentId(id);
     
-    System.out.println(toPublish.size());
-
     for(Datatype d : toPublish) {
-      summary.entries.add(getPublicationEntry(d));
+      summary.entries.add(getPublicationEntry(d, scope));
     }
     return summary;
   }
@@ -521,15 +522,16 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    * @param d
    * @return
    */
-  private PublicationEntry getPublicationEntry(Datatype d) {
+  private PublicationEntry getPublicationEntry(Datatype d, Scope scope) {
     // TODO Auto-generated method stub
     PublicationEntry entry = new PublicationEntry();
     List<String> availableExtensions = new ArrayList<String>();
 
     entry.display = display.convertDatatype(d);
     entry.suggested = d.getExt();
+    if(scope.equals(Scope.SDTF)) {
     Criteria where = Criteria.where("name").is(d.getName())
-        .andOperator(Criteria.where("domainInfo.scope").is(Scope.SDTF.toString()));
+        .andOperator(Criteria.where("domainInfo.scope").is(scope.toString()));
     Query qry = Query.query(where);
     List<String> used=  this.mongoTemplate.findDistinct(qry, "ext", "datatype", Datatype.class, String.class);
     Map<String, Boolean> map = used.stream().collect(Collectors.toMap(x ->  x, x->true));
@@ -547,6 +549,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       entry.suggested= availableExtensions.get(0);
     }
     entry.availableExtensions = availableExtensions;
+    }
     return entry;
   }
 
@@ -557,7 +560,15 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   public String publishLibray(String id, PublicationResult publicationResult) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     DatatypeLibrary lib = this.findById(id);
-    lib.setStatus(Status.PUBLISHED);
+    Status status; 
+    if(publicationResult.getScope().equals(Scope.SDTF)) {
+    	status = Status.PUBLISHED;
+    }else {
+         status = Status.LOCKED;
+
+    }
+    lib.setStatus(status);
+
     PublicationInfo info = new PublicationInfo();
     info.setPublicationDate(new Date());
     info.setPublicationVersion(publicationResult.getVersion());
@@ -569,12 +580,14 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
           d.getDomainInfo().setScope(publsihed.get(l.getId()).getScope());
           d.setExt(publsihed.get(l.getId()).getExt());
           d.setPublicationInfo(info);
-          d.setStatus(Status.PUBLISHED);
+          d.setStatus(status);
           l.setDomainInfo(d.getDomainInfo());
           datatypeService.save(d);
         }
       }
     }
+	Audience audience = new PublicAudience();
+	lib.setAudience(audience);
     lib.setPublicationInfo(info);
     this.save(lib);
     return lib.getId();

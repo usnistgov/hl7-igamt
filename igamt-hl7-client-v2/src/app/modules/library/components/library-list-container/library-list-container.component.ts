@@ -33,6 +33,8 @@ import {
   PublishLibraryDialogComponent,
 } from '../publish-library-dialog/publish-library-dialog.component';
 import { SharingDialogComponent } from './../../../shared/components/sharing-dialog/sharing-dialog.component';
+import { Scope } from 'src/app/modules/shared/constants/scope.enum';
+import { Status } from 'src/app/modules/shared/models/abstract-domain.interface';
 
 @Component({
   selector: 'app-library-list-container',
@@ -59,6 +61,17 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
   isAdmin: Observable<boolean>;
   username: Observable<string>;
   filter: string;
+
+  filterOptions = [{
+    label: 'LOCKED', value: Status.LOCKED,
+    atrribute: 'status',
+  }, {
+    label: 'UNLOCKED', value: null,
+    atrribute: 'status',
+  }];
+  status = [Status.LOCKED, null];
+
+
   _shadowViewType: IgListLoad;
   controls: Observable<IgListItemControl[]>;
   sortOptions: any;
@@ -246,7 +259,7 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
       (answer) => {
         if (answer) {
 
-          return this.libraryService.getPublicationSummary(item.id).pipe(
+          return this.libraryService.getPublicationSummary(item.id, Scope.SDTF).pipe(
             map((summary: IPublicationSummary) => {
               const newdialogRef = this.dialog.open(PublishLibraryDialogComponent, {
                 data: summary,
@@ -300,6 +313,13 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
   sortOrderChanged(value: any) {
     this.sortOrder.ascending = value;
     this.store.dispatch(new SelectLibraryListSortOption(Object.assign(Object.assign({}, this.sortProperty), this.sortOrder)));
+  }
+
+    generalFilter(values: any) {
+    console.log("values");
+    console.log(values);
+
+    this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: this.filter, deprecated: false, status: values });
   }
 
   ngOnInit() {
