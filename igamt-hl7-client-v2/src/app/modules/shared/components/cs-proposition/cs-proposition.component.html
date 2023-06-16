@@ -98,16 +98,20 @@
       <form #statementValues="ngForm">
         <ng-container [ngSwitch]="assertion.complement.complementKey">
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_VALUE">
-            contain the value <input name="value" class="form-control" type="text" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" style="margin-left: 5px; margin-right: 5px;" required>
+            contain the value <input name="value" class="form-control" type="text" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" style="margin-left: 5px; margin-right: 5px;" required> 
+            <ng-container *ngTemplateOutlet="caseSensitive; context : { $implicit : assertion.complement}" ></ng-container>
           </ng-container>
           <ng-container *ngSwitchCase="_propositionType.NOT_CONTAINS_VALUE">
             does not contain the value <input name="value" class="form-control" type="text" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" style="margin-left: 5px; margin-right: 5px;" required>
+            <ng-container *ngTemplateOutlet="caseSensitive; context : { $implicit : assertion.complement}" ></ng-container>
           </ng-container>
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_VALUE_DESC">
             contain the value <input type="text" name="value" class="form-control" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" required style="margin-left: 5px; margin-right: 5px;"> (<input (change)="change()" class="form-control" name="description" type="text" required [(ngModel)]="assertion.complement.desc" placeholder="description" style="margin-left: 5px; margin-right: 5px;">)
+            <ng-container *ngTemplateOutlet="caseSensitive; context : { $implicit : assertion.complement}" ></ng-container>
           </ng-container>
           <ng-container *ngSwitchCase="_propositionType.NOT_CONTAINS_VALUE_DESC">
             does not contain the value <input name="value" class="form-control" type="text" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" required style="margin-left: 5px; margin-right: 5px;"> (<input (change)="change()" class="form-control" name="description" type="text" required [(ngModel)]="assertion.complement.desc" placeholder="description" style="margin-left: 5px; margin-right: 5px;">)
+            <ng-container *ngTemplateOutlet="caseSensitive; context : { $implicit : assertion.complement}" ></ng-container>
           </ng-container>
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_CODE">
             contain the code <input name="code" class="form-control" type="text" [(ngModel)]="assertion.complement.value" (change)="change()" placeholder="code" required style="margin-left: 5px; margin-right: 5px;"> drawn from the code system <input name="codeSys" class="form-control" (change)="change()" type="text" required [(ngModel)]="assertion.complement.codesys" placeholder="code system" style="margin-left: 5px; margin-right: 5px;" >
@@ -118,21 +122,25 @@
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_VALUES">
             <div style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
               <span style="margin-right: 5px;" >contain one of the values in the list </span> <ng-container *ngTemplateOutlet="stringList; context : { $implicit: assertion.complement.values }"></ng-container>
+              <ng-container *ngTemplateOutlet="caseSensitive; context : { $implicit : assertion.complement}" ></ng-container>
             </div>
           </ng-container>
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_VALUES_DESC">
             <div style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
               <span style="margin-right: 5px;" >contain one of the values in the list </span> <ng-container *ngTemplateOutlet="valueStrList; context : { $implicit: assertion.complement.values, descs: assertion.complement.descs }"></ng-container>
+              <ng-container *ngTemplateOutlet="caseSensitive; context : { $implicit : assertion.complement}" ></ng-container>
             </div>
           </ng-container>
           <ng-container *ngSwitchCase="_propositionType.NOT_CONTAINS_VALUES_DESC">
             <div style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
               <span style="margin-right: 5px;" >does not contain one of the values in the list </span> <ng-container *ngTemplateOutlet="valueStrList; context : { $implicit: assertion.complement.values, descs: assertion.complement.descs }"></ng-container>
+              <ng-container *ngTemplateOutlet="caseSensitive; context : { $implicit : assertion.complement}" ></ng-container>
             </div>
           </ng-container>
           <ng-container *ngSwitchCase="_propositionType.NOT_CONTAINS_VALUES">
             <div style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
               <span style="margin-right: 5px;" >does not contain one of the values in the list </span> <ng-container *ngTemplateOutlet="stringList; context : { $implicit: assertion.complement.values }"></ng-container>
+              <ng-container *ngTemplateOutlet="caseSensitive; context : { $implicit : assertion.complement}" ></ng-container>
             </div>
           </ng-container>
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_CODES">
@@ -313,3 +321,6 @@
 </table>
 
 
+<ng-template #caseSensitive let-complement>
+  <div style="display: inline-flex; margin-left: 8px; margin-right: 8px;"> <span> ( </span> <p-inputSwitch name="case" (onChange)="changeCase(complement, $event)" [ngModel]="!complement.ignoreCase"></p-inputSwitch> <span *ngIf="!complement.ignoreCase" style="margin-left: 5px;"> Case Sensitive )</span> <span *ngIf="complement.ignoreCase" style="margin-left: 5px;"> Case Insensitive )</span></div> 
+</ng-template>
