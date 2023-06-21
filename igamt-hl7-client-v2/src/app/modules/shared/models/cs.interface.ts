@@ -95,6 +95,7 @@ export interface IComplement {
   codesyses?: string[];
   desc?: string;
   codesys?: string;
+  ignoreCase?: boolean;
 }
 
 export interface ISubContext {

@@ -229,7 +229,7 @@ public class SimpleCoConstraintSerializationHelper implements CoConstraintSerial
         for(CoConstraint cc: coConstraintList) {
             CoConstraintCell code = cc.getCells().get("3");
             CoConstraintCell datatype = cc.getCells().get("2");
-            if(code != null && datatype != null) {
+            if(code instanceof CodeCell && datatype instanceof DatatypeCell) {
                 CodeCell codeCell = (CodeCell) code;
                 DatatypeCell datatypeCell = (DatatypeCell) datatype;
                 if(!Strings.isNullOrEmpty(codeCell.getCode()) && !Strings.isNullOrEmpty(datatypeCell.getDatatypeId())) {
