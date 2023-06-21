@@ -826,9 +826,10 @@ public class BootstrapApplication implements CommandLineRunner {
 		this.dataFixer.removeBindingsV2_9();
 	}
 	
-	@PostConstruct
-	void setWithDrawn() {
+	//@PostConstruct
+	void setWithDrawn() throws DatatypeNotFoundException {
 		this.dataFixer.setWithdrawnV2_9();
+		this.classifyDatatypes();
 	}
 
 

@@ -583,7 +583,7 @@ public class DatatypeLibraryController {
           clone.getDomainInfo().setScope(Scope.USER);
           clone.setParentId(id);
           ActiveInfo active = new ActiveInfo();
-          active.setStatus(ActiveStatus.ACTIVE);
+          active.setStatus(ActiveStatus.ACTIVE); 
           active.setStart(new Date());
           clone.setActiveInfo(active);
           clone.setDomainInfo(elm.getDomainInfo());

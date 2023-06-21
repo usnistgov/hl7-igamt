@@ -165,7 +165,6 @@ public List<SelectableLibary> covertToSelectableLibrary(List<DatatypeLibrary> li
 				displayLib.children.add(convertDatatype(d));
 
 		}
-		
 		ret.add(displayLib);
 	}
 	
