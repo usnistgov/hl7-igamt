@@ -226,6 +226,11 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     ).subscribe();
   }
 
+  changeCase(complement: IComplement, caseValue) {
+    complement.ignoreCase = !caseValue.checked;
+    this.change();
+  }
+
   map(list: Array<{ label: string, value: string }>) {
     for (const item of list) {
       this.labelsMap[item.value] = item.label;
@@ -302,32 +307,36 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     return index;
   }
 
+  getCaseStr(complement: IComplement): string {
+    return `(${complement.ignoreCase ? 'Case Insensitive' : 'Case Sensitive'})`;
+  }
+
   getStatementLiteral(complement: IComplement): string {
     const add_s = this.csType === LeafStatementType.PROPOSITION ? 's' : '';
     const add_es = this.csType === LeafStatementType.PROPOSITION ? 'es' : '';
     if (complement) {
       switch (complement.complementKey) {
         case DeclarativeType.CONTAINS_VALUE:
-          return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\'.`;
+          return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\' ${this.getCaseStr(complement)}.`;
         case PropositionType.NOT_CONTAINS_VALUE:
-          return `does not contain the value \'${this.valueOrBlank(complement.value)}\'.`;
+          return `does not contain the value \'${this.valueOrBlank(complement.value)}\' ${this.getCaseStr(complement)}.`;
         case DeclarativeType.CONTAINS_VALUE_DESC:
-          return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}).`;
+          return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}) ${this.getCaseStr(complement)}.`;
         case PropositionType.NOT_CONTAINS_VALUE_DESC:
-          return `does not contain the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}).`;
+          return `does not contain the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}) ${this.getCaseStr(complement)}.`;
         case DeclarativeType.CONTAINS_CODE:
           return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\' drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
         case DeclarativeType.CONTAINS_CODE_DESC:
           return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}) drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
         case DeclarativeType.CONTAINS_VALUES:
-          return `contain${add_s} one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}].`;
+          return `contain${add_s} one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}] ${this.getCaseStr(complement)}.`;
         case DeclarativeType.CONTAINS_VALUES_DESC:
           const values = complement.values.map((v) => '\'' + v + '\'').map((val, i) => {
             return `${val} (${complement.descs[i]})`;
           });
-          return `contain${add_s} one of the values in the list: [${this.valueOrBlank(values.join(','))}].`;
+          return `contain${add_s} one of the values in the list: [${this.valueOrBlank(values.join(','))}] ${this.getCaseStr(complement)}.`;
         case PropositionType.NOT_CONTAINS_VALUES:
-          return `does not contain one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}].`;
+          return `does not contain one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}] ${this.getCaseStr(complement)}.`;
         case DeclarativeType.CONTAINS_CODES:
           return `contain${add_s} one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}] drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
         case DeclarativeType.CONTAINS_CODES_DESC:
@@ -341,7 +350,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
           const __values = complement.values.map((v) => `\'${v}\'`).map((val, i) => {
             return `${val} (${complement.descs[i]})`;
           });
-          return `does not contain one of the values in the list: [${this.valueOrBlank(__values.join(','))}].`;
+          return `does not contain one of the values in the list: [${this.valueOrBlank(__values.join(','))}] ${this.getCaseStr(complement)}.`;
         default:
           return this.labelsMap[complement.complementKey];
       }
