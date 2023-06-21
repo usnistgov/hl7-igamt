@@ -13,6 +13,8 @@ import {
   SelectLibraryListViewType,
 } from 'src/app/root-store/library/library-list/library-list.index';
 
+import { Scope } from 'src/app/modules/shared/constants/scope.enum';
+import { Status } from 'src/app/modules/shared/models/abstract-domain.interface';
 import * as fromIgList from 'src/app/root-store/library/library-list/library-list.index';
 import {
   DeleteIgListItemRequest,
@@ -33,8 +35,6 @@ import {
   PublishLibraryDialogComponent,
 } from '../publish-library-dialog/publish-library-dialog.component';
 import { SharingDialogComponent } from './../../../shared/components/sharing-dialog/sharing-dialog.component';
-import { Scope } from 'src/app/modules/shared/constants/scope.enum';
-import { Status } from 'src/app/modules/shared/models/abstract-domain.interface';
 
 @Component({
   selector: 'app-library-list-container',
@@ -70,7 +70,6 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
     atrribute: 'status',
   }];
   status = [Status.LOCKED, null];
-
 
   _shadowViewType: IgListLoad;
   controls: Observable<IgListItemControl[]>;
@@ -181,21 +180,28 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
                 class: 'btn-secondary',
                 icon: 'fa fa-map-marker',
                 action: (item: IgListItem) => {
-                  this.libraryService.clone(item.id, CloneModeEnum.UPGRADE, null).subscribe(
-                    (response: Message<string>) => {
-                      this.store.dispatch(this.message.messageToAction(response));
-                      this.router.navigate([this.DATATYPE_LIBRARY, response.data]);
-                    },
-                    (error) => {
-                      this.store.dispatch(this.message.actionFromError(error));
-                    },
-                  );
+                  this.cloneLib(item, CloneModeEnum.UPGRADE);
                 },
                 disabled: (item: IgListItem): boolean => {
                   return false;
                 },
                 hide: (item: IgListItem): boolean => {
-                  return item.type !== 'PUBLISHED';
+                  return  item.type !== 'PUBLISHED';
+                },
+              },
+
+              {
+                label: 'clone',
+                class: 'btn-secondary',
+                icon: 'fa fa-copy',
+                action: (item: IgListItem) => {
+                    this.cloneLib(item, CloneModeEnum.CLONE);
+                },
+                disabled: (item: IgListItem): boolean => {
+                  return false;
+                },
+                hide: (item: IgListItem): boolean => {
+                  return  item.type === 'PUBLISHED';
                 },
               },
               {
@@ -247,6 +253,19 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
           },
         ),
       );
+  }
+
+  cloneLib(item: IgListItem, mode: CloneModeEnum  ) {
+    this.libraryService.clone(item.id, mode, null).subscribe(
+      (response: Message<string>) => {
+        this.store.dispatch(this.message.messageToAction(response));
+        this.router.navigate([this.DATATYPE_LIBRARY, response.data]);
+      },
+      (error) => {
+        this.store.dispatch(this.message.actionFromError(error));
+      },
+    );
+
   }
   publishDialog(item: IgListItem) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -316,7 +335,7 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
   }
 
     generalFilter(values: any) {
-    console.log("values");
+    console.log('values');
     console.log(values);
 
     this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: this.filter, deprecated: false, status: values });

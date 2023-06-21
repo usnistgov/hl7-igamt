@@ -59,7 +59,7 @@ export const selectTitleBar = createSelector(
 export const selectViewOnly = createSelector(
    selectLibrary,
   (document: ILibrary): boolean => {
-    return document.domainInfo.scope !== Scope.USER || document.status === Status.PUBLISHED || (document.sharePermission && document.sharePermission === SharePermission.READ);
+    return document.domainInfo.scope !== Scope.USER || document.status === Status.PUBLISHED || document.status === Status.LOCKED || (document.sharePermission && document.sharePermission === SharePermission.READ);
   },
 );
 

@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -1190,4 +1191,25 @@ public class DatatypeServiceImpl implements DatatypeService {
 			return dt.getLabel();
 		}
 	}
+	
+	
+	@Override
+	public void processAndSubstitute(Datatype resource, HashMap<RealKey, String> newKeys) {
+
+	    if (resource instanceof ComplexDatatype) {
+	      for (Component c : ((ComplexDatatype) resource).getComponents()) {
+	        if (c.getRef() != null) {
+	          if (c.getRef().getId() != null) {
+	            RealKey key = new RealKey(c.getRef().getId(), Type.DATATYPE);
+	            if (newKeys.containsKey(key)) {
+	              c.getRef().setId(newKeys.get(key));
+	            }
+	          }
+	        }
+	      }
+	    }
+	    if (resource.getBinding() != null) {
+	      this.bindingService.substitute(resource.getBinding(), newKeys);
+	    }
+	  }
 }

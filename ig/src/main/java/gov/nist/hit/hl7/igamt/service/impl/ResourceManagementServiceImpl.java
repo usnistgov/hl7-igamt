@@ -49,7 +49,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepo
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.service.ResourceHelper;
 import gov.nist.hit.hl7.igamt.ig.service.ResourceManagementService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
@@ -83,10 +83,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
   BindingService bindingService;
   @Autowired
   CoConstraintService coConstraintService;
-  
   @Autowired
   SegmentService segmentService;
-
+  @Autowired
+  DatatypeService datatypeService;
+  
   @Override
   public <T extends Resource> T createFlavor(Registry reg, String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected) throws EntityNotFound, ForbiddenOperationException {
 
@@ -101,7 +102,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
   }
 
   @Override
-  public <T extends Resource> T getElmentFormAddingInfo(String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected) throws EntityNotFound {
+  public <T extends Resource> T getElmentFormAddingInfo(String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected) throws EntityNotFound, ForbiddenOperationException {
 
     T resource = this.resourceHelper.getResourceByType(selected.getOriginalId(), resourceType); 
     if(selected.isFlavor()) {
@@ -114,14 +115,24 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
   /**
    * @param resource
    * @param addingInfo
+ * @throws ForbiddenOperationException 
    */
-  private void applyFlavorInfo(Resource resource, AddingInfo addingInfo) {
+  private void applyFlavorInfo(Resource resource, AddingInfo addingInfo) throws ForbiddenOperationException {
 
     if(resource instanceof Datatype) {
       if(resource.getDomainInfo().getScope().equals(Scope.SDTF)) {
         ((Datatype) resource).setFixedExtension(((Datatype) resource).getExt());
       }
       ((Datatype) resource).setExt(addingInfo.getExt());
+      
+      if(addingInfo.getSubstitutes() != null) {
+    	  
+    	  
+    	  this.subsitute((Datatype)resource, addingInfo.getSubstitutes(), resource.getUsername(), resource.getDocumentInfo());
+    	 
+    	  System.out.println(resource.getDocumentInfo().getDocumentId());
+    	  
+      }
 
     }else if(resource instanceof Segment ) {
       ((Segment) resource).setExt(addingInfo.getExt());
@@ -139,7 +150,31 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
   }
 
-  // TODDOO review requirment
+  private void subsitute(Datatype resource, List<Substitue> substitutes, String username, DocumentInfo documentInfo) throws ForbiddenOperationException {
+	
+	    HashMap<RealKey, String> newKeys = new HashMap<RealKey, String>();
+	    for(Substitue sub: substitutes) {
+	      RealKey dtKey= new RealKey(sub.getOriginalId(), Type.DATATYPE);
+	      if(sub.isCreate()) {
+	        Datatype datatype = this.datatypeService.findById(sub.getOriginalId());
+	        if(datatype !=null) {
+	          applyClone.updateResourceAttributes(datatype, this.resourceHelper.generateAbstractDomainId(), username, documentInfo);
+	          datatype.getDomainInfo().setScope(Scope.USER);
+	          datatype.setExt(sub.getExt());
+	  	      this.datatypeService.processAndSubstitute(datatype, newKeys);
+
+	          datatype  = datatypeService.save(datatype);
+	          newKeys.put(dtKey, datatype.getId());
+	        }
+	      }else {
+	        newKeys.put(dtKey, sub.getNewId());
+	      }
+	    }
+	    this.datatypeService.processAndSubstitute(resource, newKeys);
+	  
+  }
+
+// TODDOO review requirment
   private void applyValueSetFlavorInfo(Valueset valueset, AddingInfo addingInfo) {
 
     if(valueset.getBindingIdentifier().equals("HL70396") && valueset.getSourceType().equals(SourceType.EXTERNAL)) {
@@ -178,6 +213,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
   }
 
 
+  
+  
   @Override
   public  void applyCloneResource(Resource resource, String newId, String username, DocumentInfo info , CloneMode mode ) {
     this.applyClone.updateResourceAttributes(resource, newId, username, info);

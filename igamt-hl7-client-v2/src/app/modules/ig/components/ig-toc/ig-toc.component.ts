@@ -96,6 +96,9 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   @Output()
   manageProfileStructure = new EventEmitter<IContent[]>();
+  @Output()
+  addUserDataTypes = new EventEmitter<IAddWrapper>();
+
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
   // tslint:disable-next-line:cognitive-complexity
@@ -206,6 +209,10 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   importCustom(node, type: Type, scope: Scope) {
     this.addCustom.emit({ node, type, scope });
   }
+  importUserLib(node, type: Type, scope: Scope) {
+    this.addUserDataTypes.emit({ node, type, scope });
+  }
+
   importMessages(node, type: Type, scope: Scope) {
     this.addMessages.emit({ node, type, scope });
   }

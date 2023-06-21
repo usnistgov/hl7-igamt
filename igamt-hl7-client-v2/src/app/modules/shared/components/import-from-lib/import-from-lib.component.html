@@ -1,3 +1,220 @@
-<p>
-  import-from-lib works!
-</p>
+<h2 mat-dialog-title> Import From Users libraries</h2>
+<mat-dialog-content style="min-height: 300px !important;">
+<form #addingEditForm="ngForm" class="select-message-container">
+
+<label> <strong> Available Libraries: </strong></label>
+
+<p-dropdown [options]="data.libs" [(ngModel)]="selectedLibrary" placeholder="Select Library" optionLabel="title" name="libs" id="libs"></p-dropdown>
+
+<div *ngIf="step ==1">
+<div *ngIf="selectedLibrary">
+
+
+  <table class="table table-borderd">
+
+    <thead>
+      <tr>
+       <th>
+        Available Data Types
+      </th>
+
+      <th>
+
+      </th>
+
+      </tr>
+
+
+
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let elm  of selectedLibrary.children ">
+        <td>
+          <app-display-section  [element]="elm" [inline]="true" ></app-display-section>
+        </td>
+        <td>
+          <button class="btn btn-sm btn-primary" (click)="selectDataType(elm)"> <i class="fa fa-plus"></i></button>
+        </td>
+      </tr>
+
+    </tbody>
+
+
+  </table>
+
+</div>
+
+</div>
+
+<div *ngIf="step ==2">
+
+
+  <table class="table table-bordered">
+    <thead>
+    <th>
+      Selected Datatype
+    </th>
+    <th>
+      Data type Name
+    </th>
+
+    </thead>
+    <tbody>
+    <tr>
+      <td>
+        <app-display-section [element]="selectedDatatype" [hideDescription]="true"></app-display-section>
+      </td>
+      <td>
+        <div style="display: flex; flex-direction: row">
+          <span>
+               <app-entity-bagde [type]="'DATATYPE'"></app-entity-bagde>
+              <app-scope-badge [scope]="'USER'" [version]="selectedDatatype.domainInfo.version"></app-scope-badge>{{selectedDatatype.fixedName}} _
+          </span>
+
+        <div>
+        <input [(ngModel)]="structure.ext" [documentType]="'IGDOCUMENT'" [domainInfo]="selectedDatatype.domainInfo" [existing]="availables[selectedDatatype.fixedName]" [fixedName]="selectedDatatype.fixedName"
+                 [id]="selectedDatatype.id" [master]="false" placeholder="provide new extension"
+                 [name]="selectedDatatype.id" [scope]="selectedDatatype.domainInfo.scope" [type]="'DATATYPE'"
+                 appNamingConvention appNamingDuplication required style="width: 100%" type="text"/>
+          <div *ngIf="addingEditForm.controls[selectedDatatype.id] && addingEditForm.controls[selectedDatatype.id].errors"
+               style="color:red; font-size: 11px">
+            <div *ngIf="addingEditForm.controls[selectedDatatype.id].errors.required">
+              <span>*extension is required</span>
+            </div>
+            <div *ngIf="addingEditForm.controls[selectedDatatype.id].errors.duplicated">
+              <span> *extension is duplicated</span>
+            </div>
+            <div *ngIf="addingEditForm.controls[selectedDatatype.id].errors.invalidConvention">
+              <span> {{addingEditForm.controls[selectedDatatype.id].errors.invalidConvention}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <ng-container *ngIf="children?.length">
+  <div>
+    <label> Data Type flavors: </label>
+  </div>
+  <table class="table table-bordered">
+    <thead>
+    <th>
+      User Data Type
+    </th>
+    <th>
+      Data type Name
+    </th>
+
+    </thead>
+    <tbody>
+    <tr *ngFor="let child of children">
+      <td>
+        <app-display-section [element]="child" [hideDescription]="true"></app-display-section>
+      </td>
+      <td>
+        <table class="table table-borderless" *ngIf="map[child.id]">
+          <ng-container *ngIf="availables[child.fixedName]" >
+            <td>
+              <p-radioButton  [(ngModel)]="map[child.id].newFlavor" [id]="child.id+1" [value]="false"  label="Select from existing"
+                             name="{{child.id+1}}"></p-radioButton>
+            </td>
+            <td #anchor>
+              <p-dropdown [(ngModel)]="map[child.id].display" [appendTo]="anchor" [optionLabel]="'fixedName'" *ngIf="!(map[child.id].newFlavor)"
+                          [options]="availables[child.fixedName]" [style]="{'minWidth':'100%'}"
+                          [placeholder]="'Select Flavor'" (onChange)="modelChange($event, child.id)" [name]="map[child.id].flavorId" [required]="!map[child.id].newFlavor">
+                <ng-template let-item pTemplate="selectedItem">
+                  <ng-container *ngIf="item.value">
+                    <app-display-section [element]="item.value" [hideDescription]="true"></app-display-section>
+                  </ng-container>
+                </ng-template>
+                <ng-template let-item pTemplate="item">
+                  <app-display-section [element]="item.value" [hideDescription]="true"></app-display-section>
+                </ng-template>
+              </p-dropdown>
+            </td>
+
+          </ng-container>
+          <tr>
+            <td>
+              <p-radioButton [(ngModel)]="map[child.id].newFlavor" [value]="true" [id]="child.id"
+                             name="{{child.id}}" label="Create new flavor"></p-radioButton>
+            </td>
+            <td>
+              <div style="display: flex; flex-direction: row" *ngIf="map[child.id].newFlavor">
+                  <span>
+                       <app-entity-bagde [type]="'DATATYPE'"></app-entity-bagde>
+                      <app-scope-badge [scope]="'USER'" [version]="child.domainInfo.version"></app-scope-badge>{{child.fixedName}} _
+                  </span>
+
+                <div *ngIf="map[child.id].newFlavor">
+                  <input [(ngModel)]="map[child.id].ext" [documentType]="'IGDOCUMENT'" [domainInfo]="child.domainInfo" [existing]="availables[child.fixedName]" [fixedName]="child.fixedName"
+                         [id]="child.id" [master]="false" placeholder="provide new extension"
+                         [name]="child.id" [scope]="child.domainInfo.scope" [type]="'DATATYPE'"
+                         appNamingConvention appNamingDuplication required style="width: 100%" type="text"/>
+                  <div *ngIf="addingEditForm.controls[child.id] && addingEditForm.controls[child.id].errors"
+                       style="color:red; font-size: 11px">
+                    <div *ngIf="addingEditForm.controls[child.id].errors.required">
+                      <span>*extension is required</span>
+                    </div>
+                    <div *ngIf="addingEditForm.controls[child.id].errors.duplicated">
+                      <span> *extension is duplicated</span>
+                    </div>
+                    <div *ngIf="addingEditForm.controls[child.id].errors.invalidConvention">
+                      <span> {{addingEditForm.controls[child.id].errors.invalidConvention}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  </ng-container>
+
+</div>
+
+</form>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="back()" *ngIf="step ===2" style="margin-right: 5px;" class="btn btn-sm btn-secondary"> Back </button>
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;"> Cancel </button>
+  <button (click)="next()" *ngIf="step ===1 && structure" class="btn btn-sm btn-info"> Next</button>
+  <button (click)="submit()" *ngIf="step ===2" [disabled]="!isValid()" class="btn btn-sm btn-success"> Submit</button>
+</mat-dialog-actions>
+
+
+<ng-template #duplicateFound>
+  <div class="alert alert-danger">
+    Your IG already contains customs flavors with the same Datatype Identifier. You must either modify the names of the structure in your sturcture editor, or delete their avaiable flavors from your IG.
+  </div>
+  <table class="table table-bordered table-striped">
+    <thead>
+    <th>
+      Structure
+    </th>
+    <th>
+      Available flavors
+    </th>
+    </thead>
+    <tbody>
+    <tr *ngFor="let child of duplicatedList">
+      <td>
+        <app-display-section [element]="child" [hideDescription]="true"></app-display-section>
+      </td>
+      <td>
+        <div *ngFor="let sub of duplicated[child.fixedName]">
+          <app-display-section [element]="sub" [hideDescription]="true"></app-display-section>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</ng-template>

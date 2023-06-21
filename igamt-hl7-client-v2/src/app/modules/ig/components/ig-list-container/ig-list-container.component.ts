@@ -453,7 +453,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
   }
 
   generalFilter(values: any) {
-    console.log("values");
+    console.log('values');
     console.log(values);
 
     this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: this.filter, deprecated: this.showDeprecated, status: values });

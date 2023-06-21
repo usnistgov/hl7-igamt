@@ -30,7 +30,7 @@ export class DatatypesEvolutionComponent implements OnInit {
     '2.8',
     '2.8.1',
     '2.8.2',
-    '2.9'
+    '2.9',
   ];
 
   criterias = [

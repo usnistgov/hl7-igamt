@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.datatypeLibrary.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hl7.fhir.r4.model.Enumerations.DataType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.DocumentDisplayInfo;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.model.SelectableLibary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.LibraryDisplayInfoService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
@@ -147,6 +150,27 @@ public class LibraryDisplayInfoServiceImpl implements LibraryDisplayInfoService 
     ret.setValueSets(convertValueSetRegistry(lib.getValueSetRegistry()));
     return ret;
   }
+
+@Override
+public List<SelectableLibary> covertToSelectableLibrary(List<DatatypeLibrary> libs) {
+	List<SelectableLibary> ret = new ArrayList<SelectableLibary>();
+	for(DatatypeLibrary lib: libs ) {
+		SelectableLibary displayLib = new SelectableLibary();
+		displayLib.children = new ArrayList<DisplayElement>();
+		displayLib.title= lib.getMetadata().getTitle();
+		
+		for(Link l : lib.getDatatypeRegistry().getChildren()) {
+				Datatype d = datatypeService.findById(l.getId());
+				if(d.getParentId() != null && d.getParentId().equals(lib.getId()))
+				displayLib.children.add(convertDatatype(d));
+
+		}
+		
+		ret.add(displayLib);
+	}
+	
+	return ret;
+}
 
 
 

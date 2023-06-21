@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { Scope } from 'src/app/modules/shared/constants/scope.enum';
 import {TableOfContentSave} from '../../../root-store/library/library-edit/library-edit.actions';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import {IDocumentCreationWrapper} from '../../document/models/document/document-creation.interface';
@@ -25,7 +26,6 @@ import {
 import {ILibrary} from '../models/library.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
 import { IgTOCNodeHelper } from './library-toc-node-helper.service';
-import { Scope } from 'src/app/modules/shared/constants/scope.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -164,7 +164,7 @@ export class LibraryService {
   }
 
   getPublicationSummary(id: string, scope: Scope): Observable<IPublicationSummary> {
-    return this.http.get<IPublicationSummary>(this.LIBRARY_END_POINT + id + '/publicationSummary/'+scope.toString(), {}).pipe();
+    return this.http.get<IPublicationSummary>(this.LIBRARY_END_POINT + id + '/publicationSummary/' + scope.toString(), {}).pipe();
   }
 
   updateSharedUsers(sharedUsers: any, id: string): Observable<Message<string>> {
@@ -318,9 +318,9 @@ export class LibraryService {
     return this.http.post<Message<string>>(this.LIBRARY_END_POINT + documentId + '/deactivate-children' ,  elements);
   }
 
-  getPublishedLibraries(){
+  getPublishedLibraries() {
 
-    return this.http.get<ILibraryDisplay>('/api/datatype-library/');
+    return this.http.get<ILibraryDisplay>('/api/datatype-library/users-lib');
 
   }
 }

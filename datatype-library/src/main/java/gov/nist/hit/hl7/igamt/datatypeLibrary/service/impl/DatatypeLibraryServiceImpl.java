@@ -59,12 +59,14 @@ import gov.nist.hit.hl7.igamt.common.base.model.PublicationResult;
 import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.PublishedEntry;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 //import gov.nist.hit.hl7.igamt.common.base.model.PublicationEntry;
 //import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -78,6 +80,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.DatatypeLibraryNotFoundException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.repository.DatatypeLibraryRepository;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.service.CloneLibService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.LibraryDisplayInfoService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.SectionTemplate;
@@ -132,6 +135,8 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
 
   @Autowired
   InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
+  @Autowired
+  CloneLibService cloneLibService;
 
 
   @Override
@@ -156,7 +161,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     return datatypeLibraryRepository.save(DatatypeLibrary);
   }
 
-
+  @Override
   public List<DatatypeLibrary> findByUsername(String username) {
     return datatypeLibraryRepository.findByUsername(username);
   }
@@ -565,7 +570,6 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     	status = Status.PUBLISHED;
     }else {
          status = Status.LOCKED;
-
     }
     lib.setStatus(status);
 
@@ -697,12 +701,13 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    * @see gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#clone(java.lang.String, java.lang.String, gov.nist.hit.hl7.igamt.display.model.CopyInfo)
    */
   @Override
-  public DatatypeLibrary clone(String id, String username, CopyInfo info) throws DatatypeLibraryNotFoundException, ForbiddenOperationException {
+  public DatatypeLibrary clone(String id, String username, CopyInfo info) throws DatatypeLibraryNotFoundException, ForbiddenOperationException, EntityNotFound {
     // TODO Auto-generated method stub
     DatatypeLibrary lib = this.findById(id);
-  
-    if(lib != null) {
-      DatatypeLibrary newLib = new DatatypeLibrary();
+    DatatypeLibrary newLib = new DatatypeLibrary();
+
+    if(info.getMode().equals(CloneMode.UPGRADE)) {
+
       newLib.setId(new ObjectId().toString());
       newLib.setFrom(lib.getId());
       newLib.setOrigin(lib.getId());
@@ -714,11 +719,10 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       newLib.setStatus(null);
       newLib.setContent(lib.getContent());
       newLib.setValueSetRegistry(lib.getValueSetRegistry());
-      
       for(Link l: lib.getDatatypeRegistry().getChildren()) {
-        if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.SDTF)) {
+        if(l.getDomainInfo().getScope().equals(Scope.SDTF)) {
           Datatype d = this.datatypeService.findById(l.getId());
-          if(d.getLibraryReferences() ==null) {
+          if(d.getLibraryReferences() == null) {
             d.setLibraryReferences(new HashSet<String>());
           }
           d.getLibraryReferences().add(newLib.getId());
@@ -729,9 +733,25 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       newLib.setDatatypeRegistry(lib.getDatatypeRegistry());
       newLib = this.save(newLib);
       return newLib;
+    }else  {
+    	newLib.setFrom(lib.getId());
+        newLib.setOrigin(lib.getId());
+          
+        newLib.setMetadata(lib.getMetadata().clone());
 
-    } else throw new DatatypeLibraryNotFoundException(id);
+        newLib.getMetadata().setTitle(newLib.getMetadata().getTitle() + "[clone]");
+
+    	newLib = this.cloneLibService.clone(lib, username, info);
+    }
+	return newLib;
+
   }
+
+@Override
+public List<DatatypeLibrary> findByUsernameAndStatus(String username, Status locked) {
+	// TODO Auto-generated method stub
+	return datatypeLibraryRepository.findByUsernameAndStatus(username, locked);
+}
 }
 
 

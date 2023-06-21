@@ -55,6 +55,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
@@ -877,27 +878,27 @@ public class IGDocumentController extends BaseController {
 				clone.getId(), false, clone.getUpdateDate(), response);
 	}
 
-//	@RequestMapping(value = "/api/igdocuments/{id}/composite-profile/{compositeProfileId}/clone", method = RequestMethod.POST, produces = {"application/json"})
-//	@NotifySave(id = "#id", type = "'IGDOCUMENT'")
-//	@PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
-//	public ResponseMessage<AddResourceResponse> cloneProfileComposite(@RequestBody CopyWrapper wrapper,
-//			@PathVariable("id") String id, @PathVariable("compositeProfileId") String compositeProfileId,
-//			Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
-//		Ig ig = findIgById(id);
-//		//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
-//		String username = authentication.getName();
-//
-//		CompositeProfileStructure clone =  resourceManagementService.createFlavor(ig.getCompositeProfileRegistry(), username, new DocumentInfo(id, DocumentType.IGDOCUMENT), Type.COMPOSITEPROFILE, wrapper.getSelected());
-//		ig = igService.save(ig);
-//
-//		AddResourceResponse response = new AddResourceResponse();
-//		response.setId(clone.getId());
-//		response.setReg(ig.getConformanceProfileRegistry());
-//		response.setDisplay(displayInfoService.convertCompositeProfile(clone,ig.getConformanceProfileRegistry().getChildren().size()+1));
-//
-//		return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Conformance profile clone Success",
-//				clone.getId(), false, clone.getUpdateDate(), response);
-//	}
+	//	@RequestMapping(value = "/api/igdocuments/{id}/composite-profile/{compositeProfileId}/clone", method = RequestMethod.POST, produces = {"application/json"})
+	//	@NotifySave(id = "#id", type = "'IGDOCUMENT'")
+	//	@PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
+	//	public ResponseMessage<AddResourceResponse> cloneProfileComposite(@RequestBody CopyWrapper wrapper,
+	//			@PathVariable("id") String id, @PathVariable("compositeProfileId") String compositeProfileId,
+	//			Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
+	//		Ig ig = findIgById(id);
+	//		//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+	//		String username = authentication.getName();
+	//
+	//		CompositeProfileStructure clone =  resourceManagementService.createFlavor(ig.getCompositeProfileRegistry(), username, new DocumentInfo(id, DocumentType.IGDOCUMENT), Type.COMPOSITEPROFILE, wrapper.getSelected());
+	//		ig = igService.save(ig);
+	//
+	//		AddResourceResponse response = new AddResourceResponse();
+	//		response.setId(clone.getId());
+	//		response.setReg(ig.getConformanceProfileRegistry());
+	//		response.setDisplay(displayInfoService.convertCompositeProfile(clone,ig.getConformanceProfileRegistry().getChildren().size()+1));
+	//
+	//		return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Conformance profile clone Success",
+	//				clone.getId(), false, clone.getUpdateDate(), response);
+	//	}
 
 
 	@RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/clone", method = RequestMethod.POST, produces = {"application/json"})
@@ -1899,18 +1900,39 @@ public class IGDocumentController extends BaseController {
 		return null;
 	}
 
-	  @RequestMapping(value = "/api/igdocuments/{igId}/update-config", method = RequestMethod.POST, produces = {
-	  "application/json" })
-	  @PreAuthorize("AccessResource('IGDOCUMENT', #igId, WRITE) && ConcurrentSync('IGDOCUMENT', #igId, ALLOW_SYNC_STRICT)")
-	  public @ResponseBody DocumentConfig deleteUnused(@PathVariable("igId") String igId, @RequestBody DocumentConfig config,
-	    Authentication authentication) throws IGNotFoundException, EntityNotFound, ForbiddenOperationException, IGUpdateException {
-	    Ig ig = findIgById(igId);
-	    
+	@RequestMapping(value = "/api/igdocuments/{igId}/update-config", method = RequestMethod.POST, produces = {
+	"application/json" })
+	@PreAuthorize("AccessResource('IGDOCUMENT', #igId, WRITE) && ConcurrentSync('IGDOCUMENT', #igId, ALLOW_SYNC_STRICT)")
+	public @ResponseBody DocumentConfig deleteUnused(@PathVariable("igId") String igId, @RequestBody DocumentConfig config,
+			Authentication authentication) throws IGNotFoundException, EntityNotFound, ForbiddenOperationException, IGUpdateException {
+		Ig ig = findIgById(igId);
+
 		UpdateResult updateResult =igService.updateAttribute(igId, "documentConfig", config, Ig.class, true);
 		if (!updateResult.wasAcknowledged()) {
 			throw new IGUpdateException("Could not Update Config for IG with id" + ig.getId());
 		} 
+
+		return config;
+	}
+	
+	@RequestMapping(value = "/api/datatypes/{dtId}/used-children", method = RequestMethod.GET, produces = {
+	"application/json" })
+	public @ResponseBody List<DisplayElement> findDTChildren(@PathVariable("dtId") String dtId,
+			Authentication authentication) {
+		Datatype dt = this.datatypeService.findById(dtId);
+		List<DisplayElement> ret = new ArrayList<DisplayElement>();
+		Set<Resource> resources = this.datatypeService.getDependencies(dt);
+		if(resources!= null) {
+			for (Resource rs: resources) {
+				if ((rs instanceof Datatype)&& rs.getDomainInfo().getScope().equals(Scope.USER)) {
+				DisplayElement elm = this.displayInfoService.convertDatatype((Datatype)rs);
+				ret.add(elm);
+				}
+			}
+		}
+		return ret;
+	
 		
-	    return config;
-	  }
+
+	}
 }

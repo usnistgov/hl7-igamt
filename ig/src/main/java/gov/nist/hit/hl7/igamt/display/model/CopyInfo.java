@@ -24,6 +24,7 @@ public class CopyInfo {
   private IgTemplate template;
   private boolean inherit;
  
+  
 
   public CopyInfo() {
     super();

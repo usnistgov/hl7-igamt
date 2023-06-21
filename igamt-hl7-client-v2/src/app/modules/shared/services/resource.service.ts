@@ -61,7 +61,7 @@ export class ResourceService {
   }
 
   getDatatypeChildren(id: string): Observable<IDisplayElement[]> {
-    return this.http.get<IDisplayElement[]>('/api/user-lib/' + id + '/ustom-children');
+    return this.http.get<IDisplayElement[]>('/api/datatypes/' + id + '/used-children');
   }
 
   private getResourcesUrl(type: Type, id: string, documentId: string): string {

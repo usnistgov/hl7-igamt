@@ -58,7 +58,7 @@ export class PublishLibraryDialogComponent implements OnInit {
   }
 }
 export interface IPublicationSummary {
-  scope?: Scope,
+  scope?: Scope;
   entries: IPublicationEntry[];
 }
 

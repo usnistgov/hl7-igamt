@@ -1,4 +1,3 @@
-import { LibraryService } from './../../../library/services/library.service';
 import { AfterViewInit, Component, Input, OnDestroy, OnInit, SystemJsNgModuleLoader, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, ChildrenOutletContexts, Router } from '@angular/router';
@@ -10,6 +9,7 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { SelectItem } from 'primeng/api';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import { concatMap, filter, flatMap, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { ImportFromLibComponent } from 'src/app/modules/shared/components/import-from-lib/import-from-lib.component';
 import { Hl7Config } from 'src/app/modules/shared/models/config.class';
 import { IContent } from 'src/app/modules/shared/models/content.interface';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
@@ -74,12 +74,12 @@ import { IgTocFilterService, IIgTocFilterConfiguration, selectIgTocFilter } from
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
 import { selectVerificationResult } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
 import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
+import { LibraryService } from './../../../library/services/library.service';
 import { IMessagePickerContext, IMessagePickerData, MessagePickerComponent } from './../../../shared/components/message-picker/message-picker.component';
 import { UnusedElementsComponent } from './../../../shared/components/unused-elements/unused-elements.component';
 import { VerificationService } from './../../../shared/services/verification.service';
 import { ITypedSection } from './../ig-toc/ig-toc.component';
 import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
-import { ImportFromLibComponent } from 'src/app/modules/shared/components/import-from-lib/import-from-lib.component';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -313,12 +313,10 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     subscription.unsubscribe();
   }
 
-
-
-  addUserDataTaypes(event: IAddWrapper) {
-    const subscription = this.libraryService.getPublishedLibraries().pipe(
+  addUserDataTypes(event: IAddWrapper) {
+     this.libraryService.getPublishedLibraries().pipe(
       withLatestFrom(this.version$),
-      take(1),
+      // take(1),
       map(([ILibraryDisplay, selectedVersion]) => {
         const dialogData = {
           version: selectedVersion,
@@ -340,10 +338,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
         ).subscribe();
       }),
     ).subscribe();
-    subscription.unsubscribe();
   }
-
-
 
   addVSFromCSV($event) {
     const dialogRef = this.dialog.open(ImportCsvValuesetComponent, {

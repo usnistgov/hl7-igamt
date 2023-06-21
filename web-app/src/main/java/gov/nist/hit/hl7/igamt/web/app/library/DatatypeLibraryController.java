@@ -65,6 +65,7 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.AddResourceResponse;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CopyWrapper;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.common.exception.SectionNotFoundException;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -87,6 +88,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.model.AddDatatypeResponseDisplay;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.DatatypeLibraryDisplay;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.DatatypeVersionGroupDisplay;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.DocumentDisplayInfo;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.model.SelectableLibary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryDisplayConverterService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
@@ -671,7 +673,7 @@ public class DatatypeLibraryController {
       Authentication authentication) throws ForbiddenOperationException {
 
     return new ResponseMessage<String>(Status.SUCCESS, "", "Publish Library Success", id, false,
-        new Date(), dataypeLibraryService.publishLibray(id, publicationResult ));
+        new Date(), dataypeLibraryService.publishLibray(id, publicationResult));
 
   }
 
@@ -689,10 +691,21 @@ public class DatatypeLibraryController {
   @RequestMapping(value = "/api/datatype-library/{id}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
   public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id, @RequestBody CopyInfo info,  Authentication authentication)
-      throws IGNotFoundException, DatatypeLibraryNotFoundException, ForbiddenOperationException {
+      throws IGNotFoundException, DatatypeLibraryNotFoundException, ForbiddenOperationException, EntityNotFound {
     String username = authentication.getPrincipal().toString();
     DatatypeLibrary clone = dataypeLibraryService.clone(id, username, info);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Data type Library new version created", clone.getId(), false,
         clone.getUpdateDate(), clone.getId());
+  }
+  
+  
+  @RequestMapping(value = "/api/datatype-library/users-lib", method = RequestMethod.GET, produces = {
+  "application/json" })
+  public @ResponseBody List<SelectableLibary> getUserLibs(Authentication authentication)
+      throws DatatypeLibraryNotFoundException {
+	String username = authentication.getPrincipal().toString();
+
+    List<DatatypeLibrary> libs = dataypeLibraryService.findByUsernameAndStatus(username, gov.nist.hit.hl7.igamt.common.base.domain.Status.LOCKED);    
+    return display.covertToSelectableLibrary(libs);
   }
 }

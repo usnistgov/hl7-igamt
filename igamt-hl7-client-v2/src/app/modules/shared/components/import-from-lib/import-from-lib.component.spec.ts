@@ -8,7 +8,7 @@ describe('ImportFromLibComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ImportFromLibComponent ]
+      declarations: [ ImportFromLibComponent ],
     })
     .compileComponents();
   }));
