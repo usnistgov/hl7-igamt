@@ -157,7 +157,7 @@ export class VerificationService {
   }
 
   isValid(stats: IVerificationStats): boolean {
-    return !stats || !(stats.error || stats.warning || stats.informational || stats.warning);
+    return !stats || !(stats.error || stats.warning || stats.informational || stats.warning || stats.fatal);
   }
 
   getVerificationStats(entry: IVerificationEnty[]): IVerificationStats {
@@ -301,14 +301,14 @@ export class VerificationService {
       prop = 'valuesetVerificationResults';
     }
     if (report && report[prop] && report[prop].length) {
-        report[prop].forEach((element) => {
-          const elementErrors = element.errors.map((error) => {
-            return  {...error, target: element.resourceId, targetType: element.resourceType };
-          });
-          errors = _.union(errors, elementErrors);
+      report[prop].forEach((element) => {
+        const elementErrors = element.errors.map((error) => {
+          return { ...error, target: element.resourceId, targetType: element.resourceType };
         });
-      }
-    return this.getVerificationEntryTable(this.convertErrorsToEntries(errors), repository );
+        errors = _.union(errors, elementErrors);
+      });
+    }
+    return this.getVerificationEntryTable(this.convertErrorsToEntries(errors), repository);
   }
 
   convertErrorsToEntries(errors: any[]): IVerificationEnty[] {
@@ -333,15 +333,15 @@ export class VerificationService {
     let temp: Dictionary<IVerificationEnty[]> = {};
     let errors = [];
     for (const property in report) {
-        if (report && report[property] && report[property].length) {
-          report[property].forEach((element) => {
+      if (report && report[property] && report[property].length) {
+        report[property].forEach((element) => {
 
-            const elementErrors = element.errors.map((error) => {
-              return {...error, targetType: element.resourceType, target: element.resourceId };
-            });
-            errors = _.union(errors, elementErrors);
+          const elementErrors = element.errors.map((error) => {
+            return { ...error, targetType: element.resourceType, target: element.resourceId };
           });
-        }
+          errors = _.union(errors, elementErrors);
+        });
+      }
     }
     temp = _.groupBy(errors, (x) => x.target);
     return temp;
