@@ -11,20 +11,26 @@ import {IDisplayElement} from '../../../shared/models/display-element.interface'
 })
 export class PublishLibraryDialogComponent implements OnInit {
   duplicated: boolean;
-  publicationResult: IPublicationResult = { version: '', elements: [], comments: ''  };
+  scope: Scope;
+  publicationResult: IPublicationResult;
   constructor(
     public dialogRef: MatDialogRef<PublishLibraryDialogComponent>,
     private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: IPublicationSummary,
-  ) { }
+  ) {
+
+    this.scope = data.scope;
+    this.publicationResult = { version: '', elements: [], comments: '', scope: this.scope };
+  }
 
   ngOnInit() {
   }
+
   submit() {
     for (const entry of this.data.entries) {
       this.publicationResult.elements.push(
         {
-          scope: Scope.SDTF,
+          scope: this.scope,
           id: entry.display.id,
           ext: entry.suggested,
         },
@@ -41,7 +47,7 @@ export class PublishLibraryDialogComponent implements OnInit {
   }
   disabled() {
     for (const entry of this.data.entries) {
-      if (this.isDuplicated(entry.display.fixedName, entry.suggested)) {
+      if ( !entry.suggested || this.isDuplicated(entry.display.fixedName, entry.suggested)) {
         return true;
       }
     }
@@ -52,6 +58,7 @@ export class PublishLibraryDialogComponent implements OnInit {
   }
 }
 export interface IPublicationSummary {
+  scope?: Scope;
   entries: IPublicationEntry[];
 }
 
@@ -69,6 +76,7 @@ export interface IPublishedEntry {
 }
 
 export interface IPublicationResult {
+  scope?: Scope;
   version?: string;
   comments?: string;
   elements: IPublishedEntry[];

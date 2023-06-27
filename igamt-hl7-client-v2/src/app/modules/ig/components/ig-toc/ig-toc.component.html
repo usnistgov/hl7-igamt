@@ -84,9 +84,12 @@
               <ng-template (execute)="import(node.data, 'DATATYPE', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Add HL7 Data Types
               </ng-template>
-              <ng-template (execute)="import(node.data, 'DATATYPE', 'SDTF')" contextMenuItem [enabled]="!viewOnly&&!delta">
-                <i class="fa fa-plus"></i> Add Standard Data Types Flavors
+              <ng-template (execute)="importUserLib(node.data, 'DATATYPE', 'USER')" contextMenuItem [enabled]="!viewOnly&&!delta">
+                <i class="fa fa-plus"></i> Import From User Libraries
               </ng-template>
+              <!-- <ng-template (execute)="import(node.data, 'DATATYPE', 'SDTF')" contextMenuItem [enabled]="!viewOnly&&!delta">
+                <i class="fa fa-plus"></i> Add Standard Data Types Flavors
+              </ng-template> -->
               <ng-template (execute)="deleteUnused(node.data)" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-remove"></i> Delete Unreferenced
               </ng-template>

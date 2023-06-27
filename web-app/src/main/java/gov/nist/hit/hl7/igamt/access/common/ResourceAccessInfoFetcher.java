@@ -152,6 +152,7 @@ public class ResourceAccessInfoFetcher {
     public boolean isDocument(Type type) {
         switch (type) {
             case DATATYPELIBRARY:
+                return true;
             case IGDOCUMENT:
                 return true;
             default:

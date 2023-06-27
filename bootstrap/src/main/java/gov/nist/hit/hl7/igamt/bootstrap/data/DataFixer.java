@@ -605,6 +605,23 @@ public class DataFixer {
 
 
 	}
+
+
+	public void setWithdrawnV2_9() {
+
+		Datatype d = this.datatypeService.findById("HL7--V2-8-2");
+		Datatype existing = this.datatypeService.findById("HL7--V2-9");
+		if(existing instanceof ComplexDatatype) {
+		Datatype newWithDrawn = d;
+		newWithDrawn.setId(existing.getId());
+		newWithDrawn.setDomainInfo(existing.getDomainInfo());
+
+		this.datatypeRepo.deleteById("HL7--V2-9");
+		newWithDrawn.setVersion(1L);
+		datatypeRepo.insert(newWithDrawn);
+		}
+		
+	}
   
   
   

@@ -96,6 +96,7 @@ import { Hl7V2TreeComponent } from './components/hl7-v2-tree/hl7-v2-tree.compone
 import { IgPublisherComponent } from './components/ig-publisher/ig-publisher.component';
 import { IgTypeComponent } from './components/ig-type/ig-type.component';
 import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
+import { ImportFromLibComponent } from './components/import-from-lib/import-from-lib.component';
 import { ImportStructureComponent } from './components/import-structure/import-structure.component';
 import { IssueBadgeComponent } from './components/issue-badge/issue-badge.component';
 import { MessagePickerComponent } from './components/message-picker/message-picker.component';
@@ -259,6 +260,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MessagePickerComponent,
     SelectedMessagesComponent,
     DocumentConfigComponent,
+    ImportFromLibComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -459,6 +461,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DocumentConfigComponent,
     ActiveUsersListComponent,
     FirstLetterPipe,
+    ImportFromLibComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -497,6 +500,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     RefreshDialogComponent,
     MessagePickerComponent,
     DocumentConfigComponent,
+    ImportFromLibComponent,
   ],
 })
 export class SharedModule {

@@ -96,6 +96,9 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   @Output()
   manageProfileStructure = new EventEmitter<IContent[]>();
+  @Output()
+  addUserDataTypes = new EventEmitter<IAddWrapper>();
+
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
   // tslint:disable-next-line:cognitive-complexity
@@ -120,7 +123,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
           drop: (tree: TreeModel, node: TreeNode, $event: any, { from, to }) => {
 
             console.log(from);
-
             console.log(to);
             if (from.data.type === Type.TEXT && (!this.isOrphan(to) && to.parent.data.type === Type.TEXT || this.isOrphan(to))) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
@@ -207,6 +209,10 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   importCustom(node, type: Type, scope: Scope) {
     this.addCustom.emit({ node, type, scope });
   }
+  importUserLib(node, type: Type, scope: Scope) {
+    this.addUserDataTypes.emit({ node, type, scope });
+  }
+
   importMessages(node, type: Type, scope: Scope) {
     this.addMessages.emit({ node, type, scope });
   }

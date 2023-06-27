@@ -17,14 +17,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
-import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -121,4 +118,6 @@ public interface DatatypeService {
 
 //	public String findXMLRefIdById(String flavorId, String defaultHL7Version);
 	public String findXMLRefIdById(Datatype dt, String defaultHL7Version);
+
+	void processAndSubstitute(Datatype resource, HashMap<RealKey, String> newKeys);
 }

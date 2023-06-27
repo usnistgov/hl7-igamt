@@ -9,13 +9,15 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException; 
 import com.mongodb.client.result.UpdateResult; 
  
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope; 
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection; 
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException; 
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException; 
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary; 
 import gov.nist.hit.hl7.igamt.common.base.model.PublicationResult; 
-import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary; 
+import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary; 
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibraryDataModel; 
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.AddingException; 
@@ -35,6 +37,7 @@ public interface DatatypeLibraryService {
   public DatatypeLibrary findById(String id); 
  
   public List<DatatypeLibrary> findAll(); 
+  
  
   public void delete(String id); 
  
@@ -80,7 +83,7 @@ public interface DatatypeLibraryService {
 Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException; 
  
  
-  public PublicationSummary getPublicationSummary(String id); 
+  public PublicationSummary getPublicationSummary(String id, Scope scope); 
  
   /** 
    * @param id 
@@ -105,8 +108,16 @@ Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundExceptio
    * @return 
    * @throws DatatypeLibraryNotFoundException  
  * @throws ForbiddenOperationException  
+ * @throws EntityNotFound 
    */ 
-  public DatatypeLibrary clone(String id, String username, CopyInfo info) throws DatatypeLibraryNotFoundException, ForbiddenOperationException; 
+  public DatatypeLibrary clone(String id, String username, CopyInfo info) throws DatatypeLibraryNotFoundException, ForbiddenOperationException, EntityNotFound;
+
+  List<DatatypeLibrary> findByUsername(String username);
+
+  public List<DatatypeLibrary> findByUsernameAndStatus(String username, Status locked);
+  
+  
+
  
  
 } 

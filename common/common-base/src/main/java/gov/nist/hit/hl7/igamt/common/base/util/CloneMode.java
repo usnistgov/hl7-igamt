@@ -16,7 +16,7 @@ package gov.nist.hit.hl7.igamt.common.base.util;
  *
  */
 public enum CloneMode {
-  CLONE("CLONE"), DERIVE ("DERIVE"), UPGRADE ("UPGRADE");
+  CLONE("CLONE"), DERIVE ("DERIVE"), UPGRADE ("UPGRADE"), TEMPLATE("TEMPLATE");
 
   CloneMode(String value) {
     this.value = value;

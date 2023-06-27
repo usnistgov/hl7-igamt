@@ -8,7 +8,7 @@ public abstract class Resource extends AbstractDomain {
 
   private String preDef;
   private String postDef;
-  protected String parentId;
+  protected String parentId;// where the Resource was created or published. The resource can be deprecated from another library but the parent Id remains the same
   protected Set<String> libraryReferences;
   protected Type parentType;
   private String purposeAndUse;
