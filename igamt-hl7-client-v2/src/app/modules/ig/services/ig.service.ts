@@ -197,6 +197,9 @@ export class IgService {
   }
 
   cloneIg(id: string, mode: CloneModeEnum, data: any): Observable<Message<string>> {
+    console.log('data');
+    console.log(data);
+
     return this.http.post<Message<string>>(this.IG_END_POINT + id + '/clone', data).pipe();
   }
 

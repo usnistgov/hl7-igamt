@@ -81,6 +81,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.repository.DatatypeLibraryRepository;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassifier;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
@@ -243,6 +244,9 @@ public class BootstrapApplication implements CommandLineRunner {
 	AddService addingService;
 	private Object StructureElementBinding;
 
+	@Autowired
+	DatatypeLibraryRepository datatypeLibraryRepository;
+
 
 	@Bean
 	public JavaMailSenderImpl mailSender() {
@@ -404,7 +408,7 @@ public class BootstrapApplication implements CommandLineRunner {
 		criterias1.put(EvolutionPropertie.CPUSAGE, true);
 		criterias1.put(EvolutionPropertie.CPDATATYPE, true);
 		criterias1.put(EvolutionPropertie.CPNUMBER, true);
-//		criterias1.put(EvolutionPropertie.CPDATATYPENAME, true);
+		//		criterias1.put(EvolutionPropertie.CPDATATYPENAME, true);
 		datatypeClassifier.classify(hl7Versions,criterias1);
 		System.out.println("ENd of Classifying dts");
 
@@ -754,9 +758,9 @@ public class BootstrapApplication implements CommandLineRunner {
 		}
 
 	}
-//////////////////////
+	//////////////////////
 	//@PostConstruct
-	
+
 	//@PostConstruct
 	void fixSegmentduplicatedBinding() throws ValidationException, ForbiddenOperationException {
 		System.out.println("fixSegmentduplicatedBinding");
@@ -774,7 +778,7 @@ public class BootstrapApplication implements CommandLineRunner {
 		System.out.println("ADD DEFAULT LOCATION");
 
 		this.dataFixer.addDefaultLocation();
-		
+
 	}
 	//@PostConstruct
 	void updateUsage(){
@@ -782,9 +786,9 @@ public class BootstrapApplication implements CommandLineRunner {
 
 		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.3.1", "OBR", "5", Usage.X, Usage.B);
 		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.3.1", "OBR", "6", Usage.X, Usage.B);
-		
+
 		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.7.1", "OBX", "7", Usage.X, Usage.O);
-		
+
 		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.7.1", "OBX", "9", Usage.X, Usage.O);
 
 		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.7.1", "OBX", "12", Usage.X, Usage.O);
@@ -792,13 +796,13 @@ public class BootstrapApplication implements CommandLineRunner {
 		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.7.1", "OBX", "13", Usage.X, Usage.O);
 
 		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.7.1", "OBX", "14", Usage.X, Usage.O);
-		
+
 		this.dataFixer.updateUsage(Scope.HL7STANDARD, "2.7.1", "OBX", "15", Usage.X, Usage.O);
 
 
 
 	}
-	
+
 	//@PostConstruct
 	void updateSCV(){
 		System.out.println("FIX SCV");
@@ -811,7 +815,7 @@ public class BootstrapApplication implements CommandLineRunner {
 
 		this.dataFixer.updateRCD();
 	}
-	
+
 	//@PostConstruct
 	void shiftBindingV2_9() throws ForbiddenOperationException {
 		System.out.println("SHIFT BINDING");
@@ -825,10 +829,11 @@ public class BootstrapApplication implements CommandLineRunner {
 
 		this.dataFixer.removeBindingsV2_9();
 	}
-	
-	//@PostConstruct
+
+	@PostConstruct
 	void setWithDrawn() throws DatatypeNotFoundException {
 		this.dataFixer.setWithdrawnV2_9();
+		this.datatypeLibraryRepository.deleteAll();
 		this.classifyDatatypes();
 	}
 

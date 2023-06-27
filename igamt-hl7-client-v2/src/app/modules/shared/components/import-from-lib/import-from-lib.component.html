@@ -2,12 +2,13 @@
 <mat-dialog-content style="min-height: 300px !important;">
 <form #addingEditForm="ngForm" class="select-message-container">
 
-<label> <strong> Available Libraries: </strong></label>
+<ng-container *ngIf="step ==1">
+<span style="margin: 10px;"> <strong> Available Libraries: </strong></span>
 
 <p-dropdown [options]="data.libs" [(ngModel)]="selectedLibrary" placeholder="Select Library" optionLabel="title" name="libs" id="libs"></p-dropdown>
-
+</ng-container>
 <div *ngIf="step ==1">
-<div *ngIf="selectedLibrary">
+<div *ngIf="selectedLibrary" style="padding: 5px;">
 
 
   <table class="table table-borderd">
