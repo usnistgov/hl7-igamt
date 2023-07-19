@@ -1401,107 +1401,14 @@ public class IGDocumentController extends BaseController {
 	@PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
 	public ResponseMessage<AddResourceResponse> addValuesetFromCSV(@PathVariable("id") String id,
 			@RequestParam("file") MultipartFile csvFile, Authentication authentication) throws ImportValueSetException, IGNotFoundException, ForbiddenOperationException {
-		CSVReader reader = null;
-		Ig ig = findIgById(id);
-		//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
-
-		if (!csvFile.isEmpty()) {
-			try {
-				reader = new CSVReader(new FileReader(this.multipartToFile(csvFile, "CSVFile")));
-				int index = 0;
-				String[] row;
-
-				Valueset newVS = new Valueset();
-				DomainInfo domainInfo = new DomainInfo();
-				domainInfo.setScope(Scope.USER);
-				newVS.setDomainInfo(domainInfo);
-				newVS.setSourceType(SourceType.INTERNAL);
-				while ((row = reader.readNext()) != null) {
-
-					index = index + 1;
-
-					if (index > 1 && index < 11) {
-						if (row.length > 1 && !row[1].isEmpty()) {
-							switch (row[0]) {
-							case "Mapping Identifier":
-								newVS.setBindingIdentifier(row[1]);
-								break;
-							case "Name":
-								newVS.setName(row[1]);
-								break;
-							case "Description":
-								newVS.setDescription(row[1]);
-								break;
-							case "OID":
-								newVS.setOid(row[1]);
-								break;
-							case "Version":
-								newVS.getDomainInfo().setVersion(row[1]);
-								break;
-							case "Extensibility":
-								newVS.setExtensibility(Extensibility.valueOf(row[1]));
-								break;
-							case "Stability":
-								newVS.setStability(Stability.valueOf(row[1]));
-								break;
-							case "Content Definition":
-								newVS.setContentDefinition(ContentDefinition.valueOf(row[1]));
-								break;
-							case "Comment":
-								newVS.setComment(row[1]);
-							}
-						}
-					} else if (index > 13) {
-
-						Code code = new Code();
-						code.setValue(row[0]);
-						code.setDescription(row[1]);
-						code.setCodeSystem(row[2]);
-						code.setUsage(CodeUsage.valueOf(row[3]));
-						code.setComments(row[4]);
-
-						if (code.getCodeSystem() != null && !code.getCodeSystem().isEmpty())
-							newVS.getCodeSystems().add(code.getCodeSystem());
-						if (code.getValue() != null && !code.getValue().isEmpty()) {
-							newVS.getCodes().add(code);
-						}
-					}
-				}
-
-				reader.close();
-				newVS.getDomainInfo().setScope(Scope.USER);
-				newVS.setUsername(ig.getUsername());
-				newVS.setCurrentAuthor(ig.getCurrentAuthor());
-				newVS.setSharedUsers(ig.getSharedUsers());
-				newVS.setSharePermission(ig.getSharePermission());
-				newVS.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
-				newVS.setId(new ObjectId().toString());
-				newVS = this.valuesetService.save(newVS);
-
-
-
-				ig.getValueSetRegistry().getChildren()
-				.add(new Link(newVS.getId(), newVS.getDomainInfo(), ig.getValueSetRegistry().getChildren().size() + 1));
-				ig = igService.save(ig);
-				AddResourceResponse response = new AddResourceResponse();
-				response.setId(newVS.getId());
-				response.setReg(ig.getValueSetRegistry());
-				response.setDisplay(displayInfoService.convertValueSet(newVS));
-				return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Value Set clone Success", newVS.getId(), false,
-						newVS.getUpdateDate(), response);
-			} catch (Exception e) {
-				throw new ImportValueSetException(e.getLocalizedMessage());
-			}
-		}else {
-			throw new ImportValueSetException("File is Empty");
-		}
-	}
-
-	public File multipartToFile(MultipartFile multipart, String fileName)
-			throws IllegalStateException, IOException {
-		File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + fileName);
-		multipart.transferTo(convFile);
-		return convFile;
+		
+		Valueset newVS = this.igService.importValuesetsFromCSV(id, csvFile);
+		AddResourceResponse response = new AddResourceResponse();
+		response.setId(newVS.getId());
+		response.setReg(findIgById(id).getValueSetRegistry());
+		response.setDisplay(displayInfoService.convertValueSet(newVS));
+		return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Value Set clone Success", newVS.getId(), false,
+				newVS.getUpdateDate(), response);
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/grand", method = RequestMethod.GET, produces = {"application/json"})
