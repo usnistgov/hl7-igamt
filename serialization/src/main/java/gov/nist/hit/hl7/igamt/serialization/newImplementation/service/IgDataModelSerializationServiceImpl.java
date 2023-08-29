@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
+import gov.nist.hit.hl7.igamt.common.base.domain.CustomAttribute;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructureDataModel;
@@ -100,6 +101,18 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 		metadataElement.addAttribute(new Attribute("title", metadata.getTitle() != null ? metadata.getTitle() : ""));
 		metadataElement.addAttribute(
 				new Attribute("coverPicture", metadata.getCoverPicture() != null ?  this.saveCoverPicture(metadata.getCoverPicture()) : ""));
+		if(metadata.getCustomAttributes() != null && !metadata.getCustomAttributes().isEmpty()) {
+			List<CustomAttribute> customAttributes = metadata.getCustomAttributes();
+			Element customAttributesElement = new Element("customAttributes");
+			
+			metadataElement.appendChild(customAttributesElement);
+			for(CustomAttribute customAttribute : customAttributes) {
+				Element customAttributeElement = new Element("customAttribute");
+				customAttributesElement.appendChild(customAttributeElement);
+				customAttributeElement.addAttribute(new Attribute("name", customAttribute.getName() != null ? customAttribute.getName() : ""));
+				customAttributeElement.addAttribute(new Attribute("value", customAttribute.getValue() != null ? customAttribute.getValue() : ""));
+			}
+		}
 		metadataElement
 		.addAttribute(new Attribute("subTitle", metadata.getSubTitle() != null ? metadata.getSubTitle() : ""));
 		metadataElement

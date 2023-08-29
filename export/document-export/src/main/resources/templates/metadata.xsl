@@ -72,6 +72,24 @@
                 </xsl:attribute>
                 <xsl:value-of select="@orgName"></xsl:value-of>
             </xsl:element>
+                        <xsl:element name="br"/>
+                        <xsl:element name="br"/>
+            
+            
+<xsl:if test="customAttributes">
+
+<!-- Text title with smaller size and centered -->
+<div style="font-size: 18px; text-align: center;">Custom Metadata</div>
+
+<!-- Iterate over customAttributes -->
+<xsl:for-each select="customAttributes/customAttribute">
+  <!-- Display attribute name and value with centered alignment -->
+  <p style="text-align: center;">
+    <xsl:value-of select="@name" /> : <xsl:value-of select="@value" />
+  </p>
+</xsl:for-each>
+</xsl:if>
+            
             <xsl:element name="p">
             	<xsl:text>Generated with </xsl:text>
             	<xsl:element name="a">
