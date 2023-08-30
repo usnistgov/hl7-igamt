@@ -601,14 +601,12 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 
 					List<SegmentDataModel> segmentDataModelsList = igDataModel.getSegments().stream().collect(Collectors.toList());
 					Collections.sort(segmentDataModelsList);
-					System.out.println("s");
 	
 					if(exportConfiguration.getCompositeProfileExportConfiguration().getGeneratedSegmentsFlavorsConfiguration().equals(GeneratedFlavorsConfiguration.NOEXPORT)) {
 						segmentDataModelsList = segmentDataModelsList.stream().filter((s) -> {
 							return !s.getModel().isGenerated();
 						}).collect(Collectors.toList());
 						Collections.sort(segmentDataModelsList);
-						System.out.println("s");
 					}
 					for(SegmentDataModel segmentDataModel : segmentDataModelsList) {
 							Element segmentElement;
