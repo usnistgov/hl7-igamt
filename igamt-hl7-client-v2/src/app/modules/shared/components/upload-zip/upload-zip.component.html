@@ -1,0 +1,59 @@
+
+<mat-dialog-content class="dialog-content">
+  <!-- Your content here -->
+
+  <!-- <input type="file" class="file-input" (change)="onFileSelected($event)">
+  <span class="upload-span upload-text">CLICK OR DROP HERE</span> -->
+
+  <div class="file-drop" (click)="openFileInput()" *ngIf="!selectedTemplate.length">
+    <ng-container *ngIf="!selectedFile">
+      Click or Drop here
+    </ng-container>
+    <ng-container *ngIf="selectedFile">
+      <div class="selected-file">
+        <span>{{ selectedFile.name }}</span>
+        <button (click)="removeSelectedFile()">
+          <span><i class="fa fa-remove"></i></span>
+        </button>
+      </div>
+    </ng-container>
+    <input #fileInput type="file" accept=".zip" class="file-input" (change)="onFileSelected($event)">
+  </div>
+
+
+
+
+  <!-- <div class="upload-section">
+    <span *ngIf="file" class="upload-span filename">
+      <i class="fa fa-times clear" (click)="clear()"></i>
+      {{file.name}}
+    </span>
+    <span *ngIf="!file" class="upload-span upload-text">CLICK OR DROP HERE</span>
+    <input #fileInput class="upload file-upload" type="file" accept="image/x-png,image/gif,image/jpeg">
+  </div> -->
+
+
+
+  <div class="container" *ngIf="selectedTemplate">
+    <div class="left-column">
+      <tree-root #treeroot [nodes]="selectedTemplate">
+        <ng-template #treeNodeTemplate let-index="index" let-node>
+          <span class="tree-node" (click)="selectNode(node)">{{ getPath(node) }}.{{ node.data.label }}</span>
+        </ng-template>
+      </tree-root>
+    </div>
+
+    <div class="right-column">
+      <div *ngIf="node">
+        <div class="content-view" [froalaView]="node.content" [froalaEditor]="froalaConfig$ | async"></div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions style="width: 100%; display: flex; justify-content: flex-end; margin-top: 5px;">
+  <button mat-button mat-dialog-close class="btn btn-danger" style="margin-right: 5px;">Close</button>
+
+  <button class="upload-button" (click)="uploadFile()" *ngIf="!selectedTemplate.length">Upload and Preview</button>
+
+  <button mat-button (click)="confirm()" class="btn btn-success" *ngIf="selectedTemplate.length">Confirm</button>
+</mat-dialog-actions>

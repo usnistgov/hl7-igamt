@@ -150,6 +150,7 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { UploadZipComponent } from './components/upload-zip/upload-zip.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -261,6 +262,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     SelectedMessagesComponent,
     DocumentConfigComponent,
     ImportFromLibComponent,
+    UploadZipComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -462,6 +464,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ActiveUsersListComponent,
     FirstLetterPipe,
     ImportFromLibComponent,
+    UploadZipComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -501,6 +504,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MessagePickerComponent,
     DocumentConfigComponent,
     ImportFromLibComponent,
+    UploadZipComponent,
   ],
 })
 export class SharedModule {

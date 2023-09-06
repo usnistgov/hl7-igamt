@@ -109,5 +109,6 @@ export class ISectionTemplate {
   type: string;
   position: number;
   isExpanded = true;
+  content?: string;
   children: ISectionTemplate[];
 }

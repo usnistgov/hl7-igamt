@@ -1,3 +1,4 @@
+import { IgService } from 'src/app/modules/ig/services/ig.service';
 import { AfterViewInit, Component, Input, OnDestroy, OnInit, SystemJsNgModuleLoader, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, ChildrenOutletContexts, Router } from '@angular/router';
@@ -8,7 +9,7 @@ import { Store } from '@ngrx/store';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { SelectItem } from 'primeng/api';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
-import { concatMap, filter, flatMap, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, concatMap, filter, flatMap, map, mergeMap, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { ImportFromLibComponent } from 'src/app/modules/shared/components/import-from-lib/import-from-lib.component';
 import { Hl7Config } from 'src/app/modules/shared/models/config.class';
 import { IContent } from 'src/app/modules/shared/models/content.interface';
@@ -80,6 +81,7 @@ import { UnusedElementsComponent } from './../../../shared/components/unused-ele
 import { VerificationService } from './../../../shared/services/verification.service';
 import { ITypedSection } from './../ig-toc/ig-toc.component';
 import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
+import { UploadZipComponent } from 'src/app/modules/shared/components/upload-zip/upload-zip.component';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -98,7 +100,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     private actions: Actions,
     private verificationService: VerificationService,
 
-    private libraryService: LibraryService) {
+    private libraryService: LibraryService, private igService: IgService) {
     this.deltaMode$ = this.store.select(fromIgEdit.selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
     this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
@@ -810,5 +812,33 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
       }),
     ).subscribe();
   }
+  downloadNarratives(){
+    this.documentRef$.pipe(
+      take(1),
+      tap((documentRef) => {
+         this.igService.exportNarratives(documentRef.documentId);
+      })).subscribe();
+  }
+  uploadNarratives(){
+    let sub  = this.store.select(selectIgDocument).pipe(
+      map((document) => {
+        const dialogRef = this.dialog.open(UploadZipComponent, {
+          data: {document: document},
+        });
+        dialogRef.afterClosed().pipe(
+          map( (answer) => {
+            this.igService.saveTextSections(document.id, answer).pipe(
+              map((message) => {
 
+                this.store.dispatch( new fromIgDocumentEdit.IgEditResolverLoad(document.id));
+
+              }),
+
+            ).subscribe();
+          })).subscribe();
+
+        }),).subscribe();
+
+        sub.unsubscribe();
+      }
 }

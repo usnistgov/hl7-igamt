@@ -1,0 +1,80 @@
+.container {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* Adjust column widths as needed */
+  gap: 20px;
+}
+
+.left-column {
+  grid-column: 1;
+  overflow: auto;
+  max-height: 400px !important;
+}
+
+.right-column {
+  grid-column: 2;
+  overflow: auto;
+  max-height: 400px !important;
+}
+
+.file-input {
+  margin-bottom: 10px;
+}
+
+.upload-button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.upload-button:hover {
+  background-color: #0056b3;
+}
+
+.tree-node {
+  cursor: pointer;
+  padding: 4px;
+  display: block;
+}
+
+.tree-node:hover {
+  background-color: #f0f0f0;
+}
+
+.content-view {
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  overflow: auto;
+  max-height: 700px !important;
+}
+.dialog-content {
+  max-height: 700px;
+  overflow: hidden;
+}
+
+.file-drop {
+  border: 2px dashed #ccc;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.file-input {
+  display: none;
+}
+
+.selected-file {
+  display: flex;
+  align-items: center;
+  background-color: #f0f0f0;
+  padding: 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+
+  span {
+    flex-grow: 1;
+    margin-right: 10px;
+  }
+}

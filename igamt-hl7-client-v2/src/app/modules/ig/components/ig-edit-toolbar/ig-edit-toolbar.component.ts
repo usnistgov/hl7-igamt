@@ -141,7 +141,6 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       take(1),
       map((id) => this.igService.exportDiffXML(id)),
     ).subscribe();
-
   }
 
   exportTool() {
@@ -173,7 +172,6 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
         ).subscribe();
       }),
     ).subscribe();
-
   }
 
   getIgId(): Observable<string> {

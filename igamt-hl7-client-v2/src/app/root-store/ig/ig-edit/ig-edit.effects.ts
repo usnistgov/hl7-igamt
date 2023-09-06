@@ -237,7 +237,7 @@ export class IgEditEffects extends DamWidgetEffect {
       return this.store.select(selectIgDocument).pipe(
         take(1),
         mergeMap((ig: IgDocument) => {
-          return this.igService.saveTextSections(ig.id, ig.content).pipe(
+          return this.igService.saveTextSections(ig.id, action.payload.sections).pipe(
             flatMap((message) => {
               return [
                 this.message.messageToAction(message),

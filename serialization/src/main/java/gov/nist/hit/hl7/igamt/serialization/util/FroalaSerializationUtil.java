@@ -53,6 +53,8 @@ public class FroalaSerializationUtil {
     if (input.contains("<pre>")) {
       input = input.replace("\n", "<br/>");
     }
+    
+    //input = input.replace("&nbsp;", " ");
     input = input.replace("<p style=\"\"><br></p>", "");
     input = input.replace("<p><br></p>", "");
     input = input.replace("<br><br><p>", "<p>");
@@ -62,7 +64,7 @@ public class FroalaSerializationUtil {
     input = input.replace("</p>", "</div>");
     // input = input.replace("&reg;","&amp;reg;");
     input = input.replace("&lsquo;", "&#39;");
-    input = input.replaceAll("[^\\p{Print}]", "?");
+    input = input.replaceAll("[^\\p{Print}]", "");
     Document doc = Jsoup.parse(input);
     Elements elements1 = doc.select("h1");
     elements1.tagName("p").attr("style",

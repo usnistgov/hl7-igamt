@@ -1,20 +1,17 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-
-import gov.nist.hit.hl7.igamt.ig.data.fix.PcConformanceStatementsIdFixes;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +34,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import ca.uhn.fhir.context.FhirContext;
 import gov.nist.hit.hl7.igamt.bootstrap.data.CodeFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConfigCreator;
@@ -60,24 +58,20 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
-import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
-import gov.nist.hit.hl7.igamt.common.config.domain.ConnectingInfo;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
-import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -93,6 +87,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfiguratio
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
 import gov.nist.hit.hl7.igamt.ig.data.fix.CoConstraintsFixes;
 import gov.nist.hit.hl7.igamt.ig.data.fix.PathFixes;
+import gov.nist.hit.hl7.igamt.ig.data.fix.PcConformanceStatementsIdFixes;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
@@ -100,7 +95,6 @@ import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.repository.IgTemplateRepository;
 import gov.nist.hit.hl7.igamt.ig.service.AddService;
-import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
@@ -109,7 +103,6 @@ import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.IgServiceImpl;
 import gov.nist.hit.hl7.igamt.service.verification.impl.SimpleResourceBindingVerificationService;
-import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
@@ -724,38 +717,38 @@ public class BootstrapApplication implements CommandLineRunner {
 		return list;
 	}
 
-	//@PostConstruct
+	@PostConstruct
 	void checkUsage() {
-
-		Config config = this.sharedConstantService.findOne();
-		System.out.println("Segment,Version,Field,MinCard,MaxCard");
-
-		for (String v: config.getHl7Versions()) {
-
-			List<Segment> segments = this.segmentService.findByDomainInfoScopeAndDomainInfoVersion(Scope.HL7STANDARD.toString(), v);
-			for(Segment s: segments) {
-
-				for (Field f: s.getChildren()) {
-
-					if(f.getUsage().equals(Usage.X)) {
-
-						if(f.getMin() !=0 || !f.getMax().equals("0") ) {
-							String delimiter = ",";
-							StringJoiner joiner = new StringJoiner(delimiter);
-							joiner.add(s.getName());
-							joiner.add(s.getDomainInfo().getVersion());
-							joiner.add(f.getId());
-							joiner.add(String.valueOf(f.getMin()));
-							joiner.add(f.getMax());
-							System.out.println(joiner.toString());
-
-						}
-					}	
-				}
-
-			}
-
-		}
+//
+//		Config config = this.sharedConstantService.findOne();
+//		System.out.println("Segment,Version,Field,MinCard,MaxCard");
+//
+//		for (String v: config.getHl7Versions()) {
+//
+//			List<Segment> segments = this.segmentService.findByDomainInfoScopeAndDomainInfoVersion(Scope.HL7STANDARD.toString(), v);
+//			for(Segment s: segments) {
+//
+//				for (Field f: s.getChildren()) {
+//
+//					if(f.getUsage().equals(Usage.X)) {
+//
+//						if(f.getMin() !=0 || !f.getMax().equals("0") ) {
+//							String delimiter = ",";
+//							StringJoiner joiner = new StringJoiner(delimiter);
+//							joiner.add(s.getName());
+//							joiner.add(s.getDomainInfo().getVersion());
+//							joiner.add(f.getId());
+//							joiner.add(String.valueOf(f.getMin()));
+//							joiner.add(f.getMax());
+//							System.out.println(joiner.toString());
+//
+//						}
+//					}	
+//				}
+//
+//			}
+//
+//		}
 
 	}
 	//////////////////////
@@ -830,12 +823,23 @@ public class BootstrapApplication implements CommandLineRunner {
 		this.dataFixer.removeBindingsV2_9();
 	}
 
-	@PostConstruct
+	//@PostConstruct
 	void setWithDrawn() throws DatatypeNotFoundException {
 		this.dataFixer.setWithdrawnV2_9();
 		this.datatypeLibraryRepository.deleteAll();
 		this.classifyDatatypes();
 	}
 
+	
 
+
+	
+	   private static String getResourceFolderPath(String basePath) {
+	        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+	        String resourcePath = Paths.get(basePath).toString();
+	        if (!resourcePath.startsWith("/")) {
+	            resourcePath = "/" + resourcePath;
+	        }
+	        return classLoader.getResource("").getPath() + resourcePath;
+	    }
 }

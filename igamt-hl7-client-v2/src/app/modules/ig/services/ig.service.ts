@@ -484,4 +484,22 @@ export class IgService {
   updateConfig(id: string, config: IDocumentConfig): Observable<any> {
     return this.http.post<IDocumentConfig>(this.IG_END_POINT + id + '/update-config', config);
   }
+
+  exportNarratives(id: string){
+      const form = document.createElement('form');
+      form.action = '/api/export-narrative/'+id;
+      form.method = 'GET';
+
+      const dataInput = document.createElement('input');
+      dataInput.type = 'hidden';
+
+      form.appendChild(dataInput);
+
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+
+  }
+
+
 }

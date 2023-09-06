@@ -9,51 +9,60 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class SectionTemplate {
 
 
- 
-  private String label;
-  private String type;
-  private int position;
 
-  private Set<SectionTemplate> children;
+	private String label;
+	private String type;
+	private int position;
+	private String content;
 
-  public String getLabel() {
-    return label;
-  }
+	private Set<SectionTemplate> children;
 
-  public void setLabel(String label) {
-    this.label = label;
-  }
+	public String getLabel() {
+		return label;
+	}
 
-
-  public SectionTemplate() {
-    super();
-    // TODO Auto-generated constructor stub
-  }
+	public void setLabel(String label) {
+		this.label = label;
+	}
 
 
-  public int getPosition() {
-    return position;
-  }
+	public SectionTemplate() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-  public void setPosition(int position) {
-    this.position = position;
-  }
 
-  public Set<SectionTemplate> getChildren() {
-    return children;
-  }
+	public int getPosition() {
+		return position;
+	}
 
-  public void setChildren(Set<SectionTemplate> children) {
-    this.children = children;
-  }
+	public void setPosition(int position) {
+		this.position = position;
+	}
 
-  public String getType() {
-    return type;
-  }
+	public Set<SectionTemplate> getChildren() {
+		return children;
+	}
 
-  public void setType(String type) {
-    this.type = type;
-  }
+	public void setChildren(Set<SectionTemplate> children) {
+		this.children = children;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
 
 
 
