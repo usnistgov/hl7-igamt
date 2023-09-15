@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Pipe, PipeTransform } from '@angular/core';
 import { SharePermission } from './../../models/abstract-domain.interface';
-import { COLORS } from './../pattern-dialog/pattern-dialog.colors';
 
 export interface IActiveUser {
   username: string;

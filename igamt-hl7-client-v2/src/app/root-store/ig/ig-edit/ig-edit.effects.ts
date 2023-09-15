@@ -21,7 +21,6 @@ import { IG_EDIT_WIDGET_ID } from '../../../modules/ig/components/ig-edit-contai
 import { IDocumentDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
 import { selectLoadedDocumentInfo, selectWorkspaceActive } from '../../dam-igamt/igamt.selectors';
 import { SetValue } from './../../../modules/dam-framework/store/data/dam.actions';
-import { DamActionTypes, EditorSaveSuccess } from './../../../modules/dam-framework/store/data/dam.actions';
 import {
   AddProfileComponentContext,
   AddProfileComponentContextFailure,
@@ -174,7 +173,7 @@ export class IgEditEffects extends DamWidgetEffect {
                 new RefreshUpdateInfo(v),
                 new VerifyIg({ id: doc.documentId, resourceType: Type.IGDOCUMENT, verificationType: VerificationType.VERIFICATION }),
               ];
-            } ),
+            }),
           );
         }),
       );
@@ -947,28 +946,15 @@ export class IgEditEffects extends DamWidgetEffect {
   @Effect()
   UpdateDocumentConfigSuccess$ = this.actions$.pipe(
     ofType(IgEditActionTypes.UpdateDocumentConfigSuccess),
-      mergeMap((action: UpdateDocumentConfigSuccess) => {
-       return  this.store.select(fromDAM.selectPayloadData).pipe(
-              take(1),
-              map((ig) => {
-                return new LoadPayloadData({...ig, documentConfig: action.payload});
-              }),
-            );
+    mergeMap((action: UpdateDocumentConfigSuccess) => {
+      return this.store.select(fromDAM.selectPayloadData).pipe(
+        take(1),
+        map((ig) => {
+          return new LoadPayloadData({ ...ig, documentConfig: action.payload });
         }),
-    );
-
-  // @Effect()
-  // EditorSaveSuccess$ = this.actions$.pipe(
-  //   ofType(DamActionTypes.EditorSaveSuccess, IgEditActionTypes.AddResourceSuccess),
-  //   mergeMap((action: EditorSaveSuccess) => {
-  //     return this.store.select(selectIgDocument).pipe(
-  //       take(1),
-  //       map((ig) => {
-  //         return new VerifyIg({ id: ig.id, resourceType: Type.IGDOCUMENT, verificationType: VerificationType.VERIFICATION });
-  //       }),
-  //     );
-  //   }),
-  // );
+      );
+    }),
+  );
 
   finalizeAdd(toDoo: Observable<Action>) {
     return combineLatest(
