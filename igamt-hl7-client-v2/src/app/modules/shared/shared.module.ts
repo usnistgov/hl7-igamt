@@ -96,6 +96,7 @@ import { Hl7V2TreeComponent } from './components/hl7-v2-tree/hl7-v2-tree.compone
 import { IgPublisherComponent } from './components/ig-publisher/ig-publisher.component';
 import { IgTypeComponent } from './components/ig-type/ig-type.component';
 import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
+import { ImportFromLibComponent } from './components/import-from-lib/import-from-lib.component';
 import { ImportStructureComponent } from './components/import-structure/import-structure.component';
 import { IssueBadgeComponent } from './components/issue-badge/issue-badge.component';
 import { MessagePickerComponent } from './components/message-picker/message-picker.component';
@@ -261,6 +262,7 @@ import { MetadataAttributeConfigComponent } from './components/metadata-attribut
     SelectedMessagesComponent,
     DocumentConfigComponent,
     MetadataAttributeConfigComponent,
+    ImportFromLibComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -462,6 +464,7 @@ import { MetadataAttributeConfigComponent } from './components/metadata-attribut
     ActiveUsersListComponent,
     FirstLetterPipe,
     MetadataAttributeConfigComponent,
+    ImportFromLibComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -501,6 +504,7 @@ import { MetadataAttributeConfigComponent } from './components/metadata-attribut
     MessagePickerComponent,
     DocumentConfigComponent,
     MetadataAttributeConfigComponent,
+    ImportFromLibComponent,
   ],
 })
 export class SharedModule {

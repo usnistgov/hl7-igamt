@@ -60,6 +60,10 @@ export class ResourceService {
     return this.http.get<IDisplayElement[]>('/api/structure-editor/structure/' + id + '/custom-children');
   }
 
+  getDatatypeChildren(id: string): Observable<IDisplayElement[]> {
+    return this.http.get<IDisplayElement[]>('/api/datatypes/' + id + '/used-children');
+  }
+
   private getResourcesUrl(type: Type, id: string, documentId: string): string {
     switch (type) {
       case Type.CONFORMANCEPROFILE:

@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -118,8 +119,20 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 	@Override
 	public Datatype findById(String key) {
-		Datatype dt = this.domainExtention.findById(key, Datatype.class);
-		return dt == null ? datatypeRepository.findById(key).orElse(null) : dt;
+		Datatype inMemory = findByIdInMemory(key);
+		return inMemory == null ?  datatypeRepository.findById(key).orElse(null) : inMemory;
+	}
+
+	public Datatype findByIdInMemory(String key) {
+		Datatype complex = this.domainExtention.findById(key, ComplexDatatype.class);
+		if(complex == null) {
+			Datatype primitive = this.domainExtention.findById(key, Datatype.class);
+			if(primitive == null) {
+				return this.domainExtention.findById(key, DateTimeDatatype.class);
+			}
+			return primitive;
+		}
+		return complex;
 	}
 
 	@Override
@@ -1178,4 +1191,25 @@ public class DatatypeServiceImpl implements DatatypeService {
 			return dt.getLabel();
 		}
 	}
+	
+	
+	@Override
+	public void processAndSubstitute(Datatype resource, HashMap<RealKey, String> newKeys) {
+
+	    if (resource instanceof ComplexDatatype) {
+	      for (Component c : ((ComplexDatatype) resource).getComponents()) {
+	        if (c.getRef() != null) {
+	          if (c.getRef().getId() != null) {
+	            RealKey key = new RealKey(c.getRef().getId(), Type.DATATYPE);
+	            if (newKeys.containsKey(key)) {
+	              c.getRef().setId(newKeys.get(key));
+	            }
+	          }
+	        }
+	      }
+	    }
+	    if (resource.getBinding() != null) {
+	      this.bindingService.substitute(resource.getBinding(), newKeys);
+	    }
+	  }
 }

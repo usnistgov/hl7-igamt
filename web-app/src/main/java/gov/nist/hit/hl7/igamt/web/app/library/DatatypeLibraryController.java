@@ -45,6 +45,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.PrivateAudience;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
@@ -64,6 +65,7 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.AddResourceResponse;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CopyWrapper;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.common.exception.SectionNotFoundException;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -86,6 +88,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.model.AddDatatypeResponseDisplay;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.DatatypeLibraryDisplay;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.DatatypeVersionGroupDisplay;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.DocumentDisplayInfo;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.model.SelectableLibary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryDisplayConverterService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
@@ -201,6 +204,10 @@ public class DatatypeLibraryController {
     String username = authentication.getPrincipal().toString();
     DatatypeLibrary empty = dataypeLibraryService.createEmptyDatatypeLibrary();
     empty.setUsername(username);
+	PrivateAudience privateAudience = new PrivateAudience();
+	privateAudience.setEditor(username);
+	privateAudience.setViewers(new HashSet<>());
+	empty.setAudience(privateAudience);
     String id = new ObjectId().toString();
     DomainInfo info = new DomainInfo();
     info.setScope(Scope.USER);
@@ -576,7 +583,7 @@ public class DatatypeLibraryController {
           clone.getDomainInfo().setScope(Scope.USER);
           clone.setParentId(id);
           ActiveInfo active = new ActiveInfo();
-          active.setStatus(ActiveStatus.ACTIVE);
+          active.setStatus(ActiveStatus.ACTIVE); 
           active.setStart(new Date());
           clone.setActiveInfo(active);
           clone.setDomainInfo(elm.getDomainInfo());
@@ -652,12 +659,12 @@ public class DatatypeLibraryController {
         datatypes);
   }
 
-  @RequestMapping(value = "/api/datatype-library/{id}/publicationSummary", method = RequestMethod.GET,
+  @RequestMapping(value = "/api/datatype-library/{id}/publicationSummary/{scope}", method = RequestMethod.GET,
       produces = {"application/json"})
-  public PublicationSummary publicationSummary(@PathVariable("id") String id,
+  public PublicationSummary publicationSummary(@PathVariable("id") String id,@PathVariable("scope") Scope scope,
       Authentication authentication) {
 
-    return dataypeLibraryService.getPublicationSummary(id);
+    return dataypeLibraryService.getPublicationSummary(id, scope);
   }
 
   @RequestMapping(value = "/api/datatype-library/{id}/publish", method = RequestMethod.POST,
@@ -684,10 +691,21 @@ public class DatatypeLibraryController {
   @RequestMapping(value = "/api/datatype-library/{id}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
   public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id, @RequestBody CopyInfo info,  Authentication authentication)
-      throws IGNotFoundException, DatatypeLibraryNotFoundException, ForbiddenOperationException {
+      throws IGNotFoundException, DatatypeLibraryNotFoundException, ForbiddenOperationException, EntityNotFound {
     String username = authentication.getPrincipal().toString();
     DatatypeLibrary clone = dataypeLibraryService.clone(id, username, info);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Data type Library new version created", clone.getId(), false,
         clone.getUpdateDate(), clone.getId());
+  }
+  
+  
+  @RequestMapping(value = "/api/datatype-library/users-lib", method = RequestMethod.GET, produces = {
+  "application/json" })
+  public @ResponseBody List<SelectableLibary> getUserLibs(Authentication authentication)
+      throws DatatypeLibraryNotFoundException {
+	String username = authentication.getPrincipal().toString();
+
+    List<DatatypeLibrary> libs = dataypeLibraryService.findByUsernameAndStatus(username, gov.nist.hit.hl7.igamt.common.base.domain.Status.LOCKED);    
+    return display.covertToSelectableLibrary(libs);
   }
 }

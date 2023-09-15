@@ -8,8 +8,9 @@ public enum Scope {
   PHINVADS("PHINVADS"),
   INTERMASTER("INTERMASTER"),
   USERCUSTOM("USERCUSTOM"),
-  ARCHIVED("ARCHIVED");
-
+  ARCHIVED("ARCHIVED"),
+  USERLIB("USERLIB");
+	
   Scope(String value) {
     this.value = value;
   }

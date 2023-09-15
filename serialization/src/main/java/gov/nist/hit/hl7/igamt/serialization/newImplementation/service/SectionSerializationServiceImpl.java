@@ -376,8 +376,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
     							}
     					}
     				}
-    			}else 
-    			if(documentStructureDataModel instanceof DatatypeLibraryDataModel) {
+    			}else if(documentStructureDataModel instanceof DatatypeLibraryDataModel) {
     			datatypeRegistry = ((DatatypeLibraryDataModel) documentStructureDataModel).getModel().getDatatypeRegistry();
     			if (datatypeRegistry != null) {
     				if (!datatypeRegistry.getChildren().isEmpty()) {					

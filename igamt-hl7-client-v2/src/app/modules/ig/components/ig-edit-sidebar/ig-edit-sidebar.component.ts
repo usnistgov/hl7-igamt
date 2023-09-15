@@ -9,6 +9,7 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { SelectItem } from 'primeng/api';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import { concatMap, filter, flatMap, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { ImportFromLibComponent } from 'src/app/modules/shared/components/import-from-lib/import-from-lib.component';
 import { Hl7Config } from 'src/app/modules/shared/models/config.class';
 import { IContent } from 'src/app/modules/shared/models/content.interface';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
@@ -73,6 +74,7 @@ import { IgTocFilterService, IIgTocFilterConfiguration, selectIgTocFilter } from
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
 import { selectVerificationResult } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
 import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
+import { LibraryService } from './../../../library/services/library.service';
 import { IMessagePickerContext, IMessagePickerData, MessagePickerComponent } from './../../../shared/components/message-picker/message-picker.component';
 import { UnusedElementsComponent } from './../../../shared/components/unused-elements/unused-elements.component';
 import { VerificationService } from './../../../shared/services/verification.service';
@@ -94,7 +96,9 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     private activeRoute: ActivatedRoute,
     private igTocFilterService: IgTocFilterService,
     private actions: Actions,
-    private verificationService: VerificationService) {
+    private verificationService: VerificationService,
+
+    private libraryService: LibraryService) {
     this.deltaMode$ = this.store.select(fromIgEdit.selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
     this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
@@ -307,6 +311,33 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
       }),
     ).subscribe();
     subscription.unsubscribe();
+  }
+
+  addUserDataTypes(event: IAddWrapper) {
+     this.libraryService.getPublishedLibraries().pipe(
+      withLatestFrom(this.version$),
+      // take(1),
+      map(([ILibraryDisplay, selectedVersion]) => {
+        const dialogData = {
+          version: selectedVersion,
+          libs: ILibraryDisplay,
+        };
+        const dialogRef = this.dialog.open(ImportFromLibComponent, {
+          data: dialogData,
+        });
+        dialogRef.afterClosed().pipe(
+          map((result) => {
+            return result;
+          }),
+          filter((x) => x !== undefined),
+          withLatestFrom(this.documentRef$),
+          take(1),
+          map(([result, documentRef]) => {
+            this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type }));
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
   }
 
   addVSFromCSV($event) {

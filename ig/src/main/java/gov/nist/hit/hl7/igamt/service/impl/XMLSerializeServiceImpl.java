@@ -1270,9 +1270,12 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 					if (f != null) {
 						DatatypeBindingDataModel dBindingModel = f.getDatatype();
-
-						Datatype childDT = igModel.findDatatype(dBindingModel.getId()).getModel();
-
+						
+						Datatype childDT = null;
+						DatatypeDataModel found = igModel.findDatatype(dBindingModel.getId());
+						if(found != null) childDT = igModel.findDatatype(dBindingModel.getId()).getModel();
+						else childDT = this.datatypeService.findById(dBindingModel.getId());
+						
 						Element elmField = new Element("Field");
 						elmField.addAttribute(new Attribute("Name", this.str(f.getModel().getName())));
 						elmField.addAttribute(new Attribute("Usage",

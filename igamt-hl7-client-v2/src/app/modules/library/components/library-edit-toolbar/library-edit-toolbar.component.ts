@@ -3,6 +3,8 @@ import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import {filter, map, mergeMap, take, withLatestFrom} from 'rxjs/operators';
+import { selectIsAdmin } from 'src/app/modules/dam-framework/store/authentication';
+import { Scope } from 'src/app/modules/shared/constants/scope.enum';
 import {PublishLibrary, ToggleDeltaFailure} from 'src/app/root-store/library/library-edit/library-edit.index';
 import * as fromLibrayEdit from 'src/app/root-store/library/library-edit/library-edit.index';
 import { selectExternalTools } from '../../../../root-store/config/config.reducer';
@@ -33,7 +35,8 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
   viewOnly: boolean;
   subscription: Subscription;
   toolConfig: Observable<IConnectingInfo[]>;
-
+  master$: Observable<boolean>;
+  viewOnly$: Observable<boolean>;
   constructor(
     private store: Store<IDocumentDisplayInfo<ILibrary>>,
     private exportConfigurationService: ExportConfigurationService,
@@ -42,7 +45,10 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
     this.subscription = this.store.select(fromLibrayEdit.selectViewOnly).subscribe(
       (value) => this.viewOnly = value,
     );
+
+    this.viewOnly$ = this.store.select(fromLibrayEdit.selectViewOnly);
     this.toolConfig = this.store.select(selectExternalTools);
+    this.master$ = this.store.select(selectIsAdmin);
   }
 
   exportWord() {
@@ -133,10 +139,19 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   publish() {
+    this.publishByScope(Scope.SDTF);
+  }
+
+  publishUser() {
+    this.publishByScope(Scope.USER);
+  }
+
+  publishByScope(scope: Scope) {
+
     this.getLibId().pipe(
       take(1),
       mergeMap((libId) => {
-          return this.libraryService.getPublicationSummary(libId).pipe(
+          return this.libraryService.getPublicationSummary(libId, scope).pipe(
             take(1),
             map((summary: IPublicationSummary) => {
               const dialogRef = this.dialog.open(PublishLibraryDialogComponent, {
@@ -151,5 +166,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
         },
       ),
     ).subscribe();
+
   }
+
 }

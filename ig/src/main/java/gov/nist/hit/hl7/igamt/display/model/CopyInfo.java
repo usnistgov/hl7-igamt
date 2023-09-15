@@ -11,7 +11,14 @@
  */
 package gov.nist.hit.hl7.igamt.display.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
 
 /**
@@ -20,37 +27,55 @@ import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
  */
 public class CopyInfo {
 
-  private CloneMode mode; 
-  private IgTemplate template;
-  private boolean inherit;
- 
+	private CloneMode mode; 
+	private IgTemplate template;
+	private boolean inherit;
+	private List<PropertyType> exclude = new ArrayList<PropertyType>();
 
-  public CopyInfo() {
-    super();
-    // TODO Auto-generated constructor stub
-  }
-  
-  public CloneMode getMode() {
-    return mode;
-  }
-  public void setMode(CloneMode mode) {
-    this.mode = mode;
-  }
 
-  public IgTemplate getTemplate() {
-    return template;
-  }
 
-  public void setTemplate(IgTemplate template) {
-    this.template = template;
-  }
-  public boolean isInherit() {
-    return inherit;
-  }
+	public CopyInfo() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-  public void setInherit(boolean inherit) {
-    this.inherit = inherit;
-  }
+	public CloneMode getMode() {
+		return mode;
+	}
+	public void setMode(CloneMode mode) {
+		this.mode = mode;
+	}
 
-  
+	public IgTemplate getTemplate() {
+		return template;
+	}
+
+	public void setTemplate(IgTemplate template) {
+		this.template = template;
+	}
+	public boolean isInherit() {
+		return inherit;
+	}
+
+	public void setInherit(boolean inherit) {
+		this.inherit = inherit;
+	}
+
+	public Map<PropertyType, Boolean> getExcludedAsMap() {
+		Map<PropertyType, Boolean> map = new HashMap<PropertyType, Boolean>();
+		for(PropertyType prop: this.exclude) {
+			map.put(prop, true);
+		}
+		return map;
+	}
+
+	public List<PropertyType> getExclude() {
+		return exclude;
+	}
+
+	public void setExclude(List<PropertyType> exclude) {
+		this.exclude = exclude;
+	}
+
+
 }

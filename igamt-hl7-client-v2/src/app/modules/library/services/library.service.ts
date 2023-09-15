@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { Scope } from 'src/app/modules/shared/constants/scope.enum';
 import {TableOfContentSave} from '../../../root-store/library/library-edit/library-edit.actions';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import {IDocumentCreationWrapper} from '../../document/models/document/document-creation.interface';
@@ -162,8 +163,8 @@ export class LibraryService {
     return this.http.post<Message<string>>(this.LIBRARY_END_POINT + id + '/publish', publicationResult).pipe();
   }
 
-  getPublicationSummary(id: string): Observable<IPublicationSummary> {
-    return this.http.get<IPublicationSummary>(this.LIBRARY_END_POINT + id + '/publicationSummary', {}).pipe();
+  getPublicationSummary(id: string, scope: Scope): Observable<IPublicationSummary> {
+    return this.http.get<IPublicationSummary>(this.LIBRARY_END_POINT + id + '/publicationSummary/' + scope.toString(), {}).pipe();
   }
 
   updateSharedUsers(sharedUsers: any, id: string): Observable<Message<string>> {
@@ -316,4 +317,15 @@ export class LibraryService {
   deactivateElements(documentId: string, elements: string[]): Observable<Message<any>> {
     return this.http.post<Message<string>>(this.LIBRARY_END_POINT + documentId + '/deactivate-children' ,  elements);
   }
+
+  getPublishedLibraries() {
+
+    return this.http.get<ILibraryDisplay>('/api/datatype-library/users-lib');
+
+  }
+}
+
+export interface ILibraryDisplay {
+  title?: string;
+  children: IDisplayElement[];
 }

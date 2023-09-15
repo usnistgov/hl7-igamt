@@ -13,6 +13,8 @@ import {
   SelectLibraryListViewType,
 } from 'src/app/root-store/library/library-list/library-list.index';
 
+import { Scope } from 'src/app/modules/shared/constants/scope.enum';
+import { Status } from 'src/app/modules/shared/models/abstract-domain.interface';
 import * as fromIgList from 'src/app/root-store/library/library-list/library-list.index';
 import {
   DeleteIgListItemRequest,
@@ -59,6 +61,16 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
   isAdmin: Observable<boolean>;
   username: Observable<string>;
   filter: string;
+
+  filterOptions = [{
+    label: 'LOCKED', value: Status.LOCKED,
+    atrribute: 'status',
+  }, {
+    label: 'UNLOCKED', value: null,
+    atrribute: 'status',
+  }];
+  status = [Status.LOCKED, null];
+
   _shadowViewType: IgListLoad;
   controls: Observable<IgListItemControl[]>;
   sortOptions: any;
@@ -168,21 +180,28 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
                 class: 'btn-secondary',
                 icon: 'fa fa-map-marker',
                 action: (item: IgListItem) => {
-                  this.libraryService.clone(item.id, CloneModeEnum.UPGRADE, null).subscribe(
-                    (response: Message<string>) => {
-                      this.store.dispatch(this.message.messageToAction(response));
-                      this.router.navigate([this.DATATYPE_LIBRARY, response.data]);
-                    },
-                    (error) => {
-                      this.store.dispatch(this.message.actionFromError(error));
-                    },
-                  );
+                  this.cloneLib(item, CloneModeEnum.UPGRADE);
                 },
                 disabled: (item: IgListItem): boolean => {
                   return false;
                 },
                 hide: (item: IgListItem): boolean => {
-                  return item.type !== 'PUBLISHED';
+                  return  item.type !== 'PUBLISHED';
+                },
+              },
+
+              {
+                label: 'clone',
+                class: 'btn-secondary',
+                icon: 'fa fa-copy',
+                action: (item: IgListItem) => {
+                    this.cloneLib(item, CloneModeEnum.CLONE);
+                },
+                disabled: (item: IgListItem): boolean => {
+                  return false;
+                },
+                hide: (item: IgListItem): boolean => {
+                  return  item.type === 'PUBLISHED';
                 },
               },
               {
@@ -235,6 +254,19 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
         ),
       );
   }
+
+  cloneLib(item: IgListItem, mode: CloneModeEnum  ) {
+    this.libraryService.clone(item.id, mode, null).subscribe(
+      (response: Message<string>) => {
+        this.store.dispatch(this.message.messageToAction(response));
+        this.router.navigate([this.DATATYPE_LIBRARY, response.data]);
+      },
+      (error) => {
+        this.store.dispatch(this.message.actionFromError(error));
+      },
+    );
+
+  }
   publishDialog(item: IgListItem) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
@@ -246,7 +278,7 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
       (answer) => {
         if (answer) {
 
-          return this.libraryService.getPublicationSummary(item.id).pipe(
+          return this.libraryService.getPublicationSummary(item.id, Scope.SDTF).pipe(
             map((summary: IPublicationSummary) => {
               const newdialogRef = this.dialog.open(PublishLibraryDialogComponent, {
                 data: summary,
@@ -300,6 +332,13 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
   sortOrderChanged(value: any) {
     this.sortOrder.ascending = value;
     this.store.dispatch(new SelectLibraryListSortOption(Object.assign(Object.assign({}, this.sortProperty), this.sortOrder)));
+  }
+
+    generalFilter(values: any) {
+    console.log('values');
+    console.log(values);
+
+    this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: this.filter, deprecated: false, status: values });
   }
 
   ngOnInit() {

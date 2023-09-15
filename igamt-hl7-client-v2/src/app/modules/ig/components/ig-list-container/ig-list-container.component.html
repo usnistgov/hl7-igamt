@@ -1,5 +1,4 @@
 <div class="ig-list-layout">
-
   <!-- ALERTS -->
   <div class="alerts">
     <app-dam-alerts-container></app-dam-alerts-container>
@@ -47,7 +46,7 @@
       <input (ngModelChange)="filterTextChanged($event)" [(ngModel)]="filter" class="form-control"
              id="validationServerUsername" placeholder="Search" required
              style="background-color: #f0f0f0; height: 35px; margin-right: 10px;" type="text">
-      <p-multiSelect [options]="filterOptions" (ngModelChange)="generalFilter($event)" defaultLabel="Status" [filter]="false"></p-multiSelect>
+      <p-multiSelect [options]="filterOptions" [(ngModel)]="status" (ngModelChange)="generalFilter($event)" defaultLabel="Status" [filter]="false"></p-multiSelect>
 
     </div>
   </div>

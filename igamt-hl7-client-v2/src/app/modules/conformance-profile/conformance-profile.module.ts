@@ -12,6 +12,7 @@ import { ConformanceProfileSlicingEditorComponent } from './components/conforman
 import { ConformanceProfileStructureEditorComponent } from './components/conformance-profile-structure-editor/conformance-profile-structure-editor.component';
 import { CPConformanceStatementEditorComponent } from './components/conformance-statement-editor/cp-conformance-statement-editor.component';
 import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
+import { MessageCrossRefsComponent as MessageCrossRefsComponent } from './components/message-cross-refs/message-cross-refs.component';
 import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
@@ -30,6 +31,7 @@ import { ConformanceProfileService } from './services/conformance-profile.servic
     CoConstraintsBindingEditorComponent,
     ConformanceProfileBindingsEditorComponent,
     ConformanceProfileSlicingEditorComponent,
+    MessageCrossRefsComponent,
   ],
   imports: [
     CommonModule,

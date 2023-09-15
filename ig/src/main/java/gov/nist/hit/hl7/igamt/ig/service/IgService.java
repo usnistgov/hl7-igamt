@@ -15,6 +15,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -38,6 +39,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
+import gov.nist.hit.hl7.igamt.ig.exceptions.ImportValueSetException;
 import gov.nist.hit.hl7.igamt.ig.model.FilterIGInput;
 import gov.nist.hit.hl7.igamt.ig.model.FilterResponse;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
@@ -142,5 +144,7 @@ public interface IgService {
   List<Ig> findByPrivateAudienceViewer(String username);
   List<Ig> findByPublicAudienceAndStatusPublished();
   List<Ig> findAllPrivateIGs();
+  
+  public Valueset importValuesetsFromCSV(String igId, MultipartFile csvFile) throws ImportValueSetException;
 
 }

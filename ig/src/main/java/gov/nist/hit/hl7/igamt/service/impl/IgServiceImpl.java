@@ -2,7 +2,9 @@ package gov.nist.hit.hl7.igamt.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -34,6 +37,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.UpdateResult;
+import com.opencsv.CSVReader;
 
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintDependencyService;
@@ -97,6 +101,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
+import gov.nist.hit.hl7.igamt.ig.exceptions.ImportValueSetException;
 import gov.nist.hit.hl7.igamt.ig.model.FilterIGInput;
 import gov.nist.hit.hl7.igamt.ig.model.FilterResponse;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
@@ -122,7 +127,11 @@ import gov.nist.hit.hl7.igamt.service.impl.exception.CoConstraintXMLSerializatio
 import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
@@ -2009,6 +2018,122 @@ public class IgServiceImpl implements IgService {
 	@Override
 	public List<Ig> findAllPrivateIGs() {
 		return this.igRepository.findAllPrivateIGs();
+	}
+
+	@Override
+	public Valueset importValuesetsFromCSV(String igId, MultipartFile csvFile) throws ImportValueSetException {
+		CSVReader reader = null;
+		Ig ig = this.findById(igId);
+		if (!csvFile.isEmpty()) {
+			String[] row = null;
+			try {
+				reader = new CSVReader(new FileReader(this.multipartToFile(csvFile, "CSVFile")));
+				Valueset newVS = null;
+				
+				
+				while ((row = reader.readNext()) != null) {
+					switch (row[0]) {
+					case "Mapping Identifier":
+						if(newVS != null) {
+							newVS.getDomainInfo().setScope(Scope.USER);
+							newVS.setUsername(ig.getUsername());
+							newVS.setCurrentAuthor(ig.getCurrentAuthor());
+							newVS.setSharedUsers(ig.getSharedUsers());
+							newVS.setSharePermission(ig.getSharePermission());
+							newVS.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
+							newVS.setId(new ObjectId().toString());
+							newVS = this.valueSetService.save(newVS);
+							ig.getValueSetRegistry().getChildren()
+							.add(new Link(newVS.getId(), newVS.getDomainInfo(), ig.getValueSetRegistry().getChildren().size() + 1));
+							ig = this.save(ig);
+						}
+						newVS = new Valueset();
+						DomainInfo domainInfo = new DomainInfo();
+						domainInfo.setScope(Scope.USER);
+						newVS.setDomainInfo(domainInfo);
+						newVS.setSourceType(SourceType.INTERNAL);
+						newVS.setBindingIdentifier(row[1]);
+						break;
+					case "Name":
+						if(newVS != null) newVS.setName(row[1]);
+						break;
+					case "Description":
+						if(newVS != null) newVS.setDescription(row[1]);
+						break;
+					case "OID":
+						if(newVS != null) newVS.setOid(row[1]);
+						break;
+					case "Version":
+						if(newVS != null) newVS.getDomainInfo().setVersion(row[1]);
+						break;
+					case "Extensibility":
+						if(newVS != null) newVS.setExtensibility(Extensibility.valueOf(row[1]));
+						break;
+					case "Stability":
+						if(newVS != null) newVS.setStability(Stability.valueOf(row[1]));
+						break;
+					case "Content Definition":
+						if(newVS != null) newVS.setContentDefinition(ContentDefinition.valueOf(row[1]));
+						break;
+					case "Comment":
+						if(newVS != null) newVS.setComment(row[1]);
+						break;
+					default:
+						if(newVS != null) {
+							if(row[0] != null && !row[0].replaceAll("\\s","").equals("") && !row[0].equals("Value")
+									&& row[1] != null && !row[1].replaceAll("\\s","").equals("")
+									&& row[2] != null && !row[2].replaceAll("\\s","").equals("")
+									&& row[3] != null && !row[3].replaceAll("\\s","").equals("")) {
+								Code code = new Code();
+								code.setValue(row[0]);
+								code.setDescription(row[1]);
+								code.setCodeSystem(row[2]);
+								code.setUsage(CodeUsage.valueOf(row[3]));
+								code.setComments(row[4]);
+
+								if (code.getCodeSystem() != null && !code.getCodeSystem().isEmpty())
+									newVS.getCodeSystems().add(code.getCodeSystem());
+								if (code.getValue() != null && !code.getValue().isEmpty()) {
+									newVS.getCodes().add(code);
+								}
+							}	
+						}
+						
+							
+					}
+				}
+				
+				if(newVS != null) {
+					newVS.getDomainInfo().setScope(Scope.USER);
+					newVS.setUsername(ig.getUsername());
+					newVS.setCurrentAuthor(ig.getCurrentAuthor());
+					newVS.setSharedUsers(ig.getSharedUsers());
+					newVS.setSharePermission(ig.getSharePermission());
+					newVS.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
+					newVS.setId(new ObjectId().toString());
+					newVS = this.valueSetService.save(newVS);
+
+					ig.getValueSetRegistry().getChildren()
+					.add(new Link(newVS.getId(), newVS.getDomainInfo(), ig.getValueSetRegistry().getChildren().size() + 1));
+					ig = this.save(ig);
+					
+					return newVS;
+				} else throw new ImportValueSetException("No Valueset info");
+				
+			} catch (Exception e) {
+				throw new ImportValueSetException(e.getLocalizedMessage());
+			}
+		}else {
+			throw new ImportValueSetException("File is Empty");
+		}
+		
+	}
+	
+	private File multipartToFile(MultipartFile multipart, String fileName)
+			throws IllegalStateException, IOException {
+		File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + fileName);
+		multipart.transferTo(convFile);
+		return convFile;
 	}
 
 }

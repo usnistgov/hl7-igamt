@@ -150,7 +150,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
               {
                 label: 'Clone',
                 class: 'btn-success',
-                icon: 'fa-plus',
+                icon: 'fa-file-o',
                 action: (item: IgListItem) => {
 
                   if (item.draft) {
@@ -166,13 +166,13 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                     dialogRef.afterClosed().subscribe(
                       (answer) => {
                         if (answer) {
-                          this.proceedClone(item, CloneModeEnum.CLONE);
+                          this.proceedDerive(item, CloneModeEnum.CLONE);
                         }
                       },
                     );
 
                   } else {
-                    this.proceedClone(item, CloneModeEnum.CLONE);
+                    this.proceedDerive(item, CloneModeEnum.CLONE);
                   }
                 },
                 disabled: (item: IgListItem): boolean => {
@@ -229,15 +229,14 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                     dialogRef.afterClosed().subscribe(
                       (answer) => {
                         if (answer) {
-                          this.proceedDerive(item);
+                          this.proceedDerive(item, CloneModeEnum.DERIVE);
                         }
                       },
                     );
 
                   } else {
-                    this.proceedDerive(item);
+                    this.proceedDerive(item, CloneModeEnum.DERIVE);
                   }
-
                 },
                 disabled: (item: IgListItem): boolean => {
                   return false;
@@ -246,6 +245,23 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   return item.type !== 'PUBLISHED' && item.status !== 'LOCKED';
                 },
               },
+
+              // {
+              //   label: 'Extract Template',
+              //   class: 'btn-warning',
+              //   icon: 'fa-file-o',
+              //   action: (item: IgListItem) => {
+
+              //       this.proceedDerive(item, CloneModeEnum.TEMPLATE);
+
+              //   },
+              //   disabled: (item: IgListItem): boolean => {
+              //     return false;
+              //   },
+              //   hide: (item: IgListItem): boolean => {
+              //     return false
+              //   },
+              // },
               {
                 label: 'Open',
                 class: 'btn-primary',
@@ -348,7 +364,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
 
   }
 
-  proceedDerive(item: IgListItem) {
+  proceedDerive(item: IgListItem, mode: CloneModeEnum ) {
 
     this.ig.loadTemplate().pipe(
       take(1),
@@ -356,14 +372,16 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
         const dialogData: IDeriveDialogData = {
           origin: item.title,
           templates,
+          mode,
         };
         const dialogRef = this.dialog.open(DeriveDialogComponent, {
           data: dialogData,
         });
 
         dialogRef.afterClosed().subscribe((result) => {
+          console.log(result);
           if (result) {
-            this.ig.cloneIg(item.id, CloneModeEnum.DERIVE, { inherit: result['inherit'], mode: CloneModeEnum.DERIVE, template: result.template }).subscribe(
+            this.ig.cloneIg(item.id, mode, { inherit: result['inherit'], mode, template: result.template, exclude: result.exclude }).subscribe(
               (response: Message<string>) => {
                 this.store.dispatch(this.message.messageToAction(response));
                 this.router.navigate(['ig', response.data]);
@@ -453,7 +471,9 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
   }
 
   generalFilter(values: any) {
+    console.log('values');
     console.log(values);
+
     this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: this.filter, deprecated: this.showDeprecated, status: values });
   }
 

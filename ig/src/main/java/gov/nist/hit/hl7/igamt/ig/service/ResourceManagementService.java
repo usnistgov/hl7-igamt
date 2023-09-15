@@ -31,7 +31,7 @@ public interface ResourceManagementService {
       AddingInfo selected) throws EntityNotFound, ForbiddenOperationException;
 
   <T extends Resource> T getElmentFormAddingInfo(String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected)
-      throws EntityNotFound;
+      throws EntityNotFound, ForbiddenOperationException;
 
   /**
    * @param username

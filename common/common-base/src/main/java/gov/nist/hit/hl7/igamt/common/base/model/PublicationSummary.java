@@ -13,10 +13,13 @@ package gov.nist.hit.hl7.igamt.common.base.model;
 
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+
 /**
  * @author Abdelghani El Ouakili
  *
  */
 public class PublicationSummary {
+  public Scope scope;
   public List<PublicationEntry>  entries;
 }

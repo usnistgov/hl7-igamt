@@ -1,14 +1,39 @@
-<h2 mat-dialog-title>Deriving from {{data.origin}}</h2>
+<h2 mat-dialog-title>  {{title}}</h2>
 <form #from="ngForm">
 <mat-dialog-content>
+
+
+  <hr/>
+
+  <div>
+
+    <label><strong> Narrative attributes to Include </strong></label>
+
+    <div style="display: flex; justify-content: space-between;">
+
+      <p-checkbox  [(ngModel)]="map['PREDEF']" [binary]="true" label="Pre Definition" name="PREDEF" [style]="{'margin-left': '8px'}"></p-checkbox>
+      <p-checkbox  [(ngModel)]="map['POSTDEF']" [binary]="true" label="Post Definition"  name="POSTDEF" [style]="{'margin-left': '8px'}"></p-checkbox>
+      <p-checkbox  [(ngModel)]="map['COMMENT']" [binary]="true" label="Comments"  name="COMMENT" [style]="{'margin-left': '8px'}"></p-checkbox>
+      <p-checkbox  [(ngModel)]="map['DEFINITIONTEXT']" [binary]="true" label="Definition Text"  name="DEFINITIONTEXT" [style]="{'margin-left': '8px'}"></p-checkbox>
+      <p-checkbox  [(ngModel)]="map['AUTHORNOTES']" [binary]="true" label="Author Notes" name="AUTHORNOTES" [style]="{'margin-left': '8px'}"></p-checkbox>
+
+    </div>
+
+
+  </div>
+
+  <hr/>
+  <label><strong> IG Structure </strong></label>
+
+<div style="max-height: 500px; overflow: scroll;">
+<div>
+ <div>
   <div style=" display: flex; justify-content: flex-start; padding: 10px">
     <p-radioButton name="gr" [value]="true" label="Keep Original IG Outline and Content" [(ngModel)]="inherit"></p-radioButton>
-
-
     <p-radioButton name="gr" [value]="false" label="Use Local IG Templates" [(ngModel)]="inherit" [style]="{'margin-left': '10px'}" ></p-radioButton>
 
   </div>
-  <div *ngIf="!inherit">
+<div *ngIf="!inherit">
 
  <table class="table table-borderless">
    <thead>
@@ -21,7 +46,7 @@
    </thead>
    <tbody>
 
-   <tr>
+   <tr style="max-height: 400px; overflow: scroll;">
      <td style=" display: flex; flex-direction: column; justify-content: flex-start;">
          <ng-container *ngFor=" let template of data.templates">
 
@@ -41,37 +66,27 @@
    </tbody>
 
  </table>
-<!--    <div style=" display: flex; flex-direction: column; justify-content: flex-start;">-->
-<!--      <Strong> Available Narrative Templates </Strong>-->
 
-<!--      <ng-container *ngFor=" let template of data.templates">-->
-
-<!--        <p-radioButton [(ngModel)]="selectedTemplate" [style]="{'margin-left': '10px'}" [label]="template.name"-->
-<!--                       [value]="template" [name]="template.name" [inputId]="template.id">-->
-<!--        </p-radioButton>-->
-<!--      </ng-container>-->
-<!--    </div>-->
-
-<!--    <p-panel header="Template Overview" *ngIf="selectedTemplate">-->
-<!--      <div style="max-height: 300px; overflow: scroll">-->
-
-
-<!--        <tree-root #treeroot [nodes]="selectedTemplate.children">-->
-<!--          <ng-template #treeNodeTemplate let-index="index" let-node>-->
-<!--            <span> {{node.data.label}}</span>-->
-<!--          </ng-template>-->
-<!--        </tree-root>-->
-<!--      </div>-->
-<!--    </p-panel>-->
-<!--    <div>-->
-
-
-<!--    </div>-->
   </div>
 
+  </div>
+
+</div>
+</div>
+
+
+
+
 </mat-dialog-content>
+
+
+
 <mat-dialog-actions style="justify-content: flex-end;">
   <button class="btn btn-sm btn-danger" style="margin-right: 5px;" (click)="close()">Cancel</button>
+  <!-- <button class="btn btn-sm btn-primary" style="margin-right: 5px;"  *ngIf="step == 2"  (click)="back()">Back</button> -->
+
+  <!-- <button class="btn btn-sm btn-primary" style="margin-right: 5px;" [disabled]="!selectedTemplate && !inherit" *ngIf="step == 1"  (click)="next()"> Exclude Narratives</button> -->
+
   <button class="btn btn-sm btn-success" [disabled]="!selectedTemplate && !inherit" (click)="submit()">Submit</button>
 </mat-dialog-actions>
 </form>

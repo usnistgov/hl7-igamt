@@ -30,14 +30,12 @@ export class DatatypesEvolutionComponent implements OnInit {
     '2.8',
     '2.8.1',
     '2.8.2',
+    '2.9',
   ];
 
   criterias = [
     {label: 'Name' , value: 'CPNAME'},
-    {label: 'Min.Length' , value: 'MINLENGTH'},
     {label: 'Usage' , value: 'CPUSAGE'},
-    {label: 'Max.Length' , value: 'MAXLENGTH'},
-    {label: 'Conf.Length' , value: 'CONFLENGTH'},
     {label: 'DATATYPE' , value: 'CPDATATYPE'},
   ];
 
