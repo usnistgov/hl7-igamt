@@ -73,7 +73,7 @@ public class DatatypeClassifierImpl implements DatatypeClassifier {
 
         }
       }
-      System.out.println("Saving Classe Of Unchanged Datatype");
+//      System.out.println("Saving Classe Of Unchanged Datatype");
       datatypeClassificationService.save(classification);
     }
   }
@@ -125,7 +125,7 @@ public class DatatypeClassifierImpl implements DatatypeClassifier {
             if (deltaService.compareDatatypes(d, dt, criterias)) {
               datatypeMap.get(dt.getName()).get(i).add(version);
 
-              System.out.println("FOUND IDENTIQUE");
+//              System.out.println("FOUND IDENTIQUE");
               visited.put(dt.getName(), 1);
             }
           }

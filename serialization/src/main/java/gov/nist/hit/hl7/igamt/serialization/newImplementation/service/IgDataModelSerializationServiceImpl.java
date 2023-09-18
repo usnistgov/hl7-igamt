@@ -198,12 +198,12 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 	public Element serializeResource(Resource resource, Type type, int position, ResourceExportConfiguration resourceExportConfiguration) {
 		Element element = serializeAbstractDomain(resource,type,position, resource.getName(), resourceExportConfiguration);
 		if (resource != null && element != null) {
-			if(resourceExportConfiguration.isPreDef()) {
+			if(resourceExportConfiguration.isPostDef()) {
 				element.addAttribute(new Attribute("postDef",
 						resource.getPostDef() != null && !resource.getPostDef().isEmpty()
 						? this.formatStringData(resource.getPostDef())
 								: ""));}
-			if(resourceExportConfiguration.isPostDef()) {
+			if(resourceExportConfiguration.isPreDef()) {
 				element.addAttribute(new Attribute("preDef",
 						resource.getPreDef() != null && !resource.getPreDef().isEmpty()
 						? this.formatStringData(resource.getPreDef())
