@@ -12,18 +12,13 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.FileCopyUtils;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -83,7 +78,7 @@ public class ExportNarratives {
 
 
 	private void generateFolderStructure(TextSection treeStructure, ZipOutputStream zos, String currentPath, String tempFolderName) {
-		String node = treeStructure.getLabel();
+		String node = treeStructure.getLabel().replace("/", "-sl");
 		Set<TextSection> children = treeStructure.getChildren();
 		List<TextSection> sortedNumberList = new ArrayList<TextSection>(children);
 
@@ -129,10 +124,10 @@ public class ExportNarratives {
 
 		for (File file : files) {
 			if (file.isDirectory()) {
-				zipFolderContents(file, parentPath + "/" + file.getName(), zos);
+				zipFolderContents(file, parentPath + "/" + file.getName().replace("/", "_"), zos);
 			} else {
 				FileInputStream fis = new FileInputStream(file);
-				zos.putNextEntry(new ZipEntry(parentPath + "/" + file.getName()));
+				zos.putNextEntry(new ZipEntry(parentPath + "/" + file.getName().replace("/", "_")));
 
 				while ((bytesRead = fis.read(buffer)) != -1) {
 					zos.write(buffer, 0, bytesRead);
@@ -158,6 +153,8 @@ public class ExportNarratives {
 
 		Set<SectionTemplate> sections = new HashSet<SectionTemplate>();
 		processUploadedFolder(unzippedFolder.listFiles()[0],sections);
+
+		deleteDirectory(unzippedFolder);
 
 
 		return sections;
@@ -194,6 +191,8 @@ public class ExportNarratives {
 
 	private File unzipFiled(File zipFile) throws IOException {
 		File unzippedFolder = new File(zipFile.getParentFile(), zipFile.getName().replace(".zip", ""));
+		deleteDirectory(zipFile);
+
 		unzippedFolder.mkdirs();
 		try (ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(new FileInputStream(zipFile))) {
 			ZipArchiveEntry zipEntry = zipInputStream.getNextZipEntry();
@@ -243,14 +242,32 @@ public class ExportNarratives {
 						}
 					}
 				}
-				catch (UnsupportedZipFeatureException e) {
+				catch (Exception e) {
 					System.err.println("Unsupported feature in entry: " + zipEntry.getName());
-					// Log or handle the exception as needed
+					deleteDirectory(zipFile);
+
 				}
 			}
 		}
+		deleteDirectory(zipFile);
 
 		return unzippedFolder;
+	}
+	
+	private static void deleteDirectory(File directory) {
+	    if (directory.exists()) {
+	        File[] files = directory.listFiles();
+	        if (files != null) {
+	            for (File file : files) {
+	                if (file.isDirectory()) {
+	                    deleteDirectory(file);
+	                } else {
+	                    file.delete();
+	                }
+	            }
+	        }
+	        directory.delete();
+	    }
 	}
 
 
@@ -273,37 +290,22 @@ public class ExportNarratives {
 					.filter(File::isFile)
 					.toArray(File[]::new);
 
-			for(File file: filesOnly) {
-				System.out.println(file.getName());
-			}
-			for(File file: dirs) {
-				System.out.println(file.getName());
-			}
 
 			if(filesOnly != null) {
-
 				for (File file : filesOnly) {
-
-					//					if(!file.getName().startsWith(".")) {
-
 					SectionTemplate section = processFile(file);
 					sections.add(section);
 
 					map.put(String.valueOf(section.getPosition()) + "." + section.getLabel(), section);
-
-					//					}
 				}
 			}
-
 			if(dirs != null) {
-
 				for (File file : dirs) {
 					if(map.containsKey(file.getName())){
 						SectionTemplate existing = 	map.get(file.getName());
 						existing.setChildren(new HashSet<SectionTemplate>());
 						processUploadedFolder(file, existing.getChildren());
 					}
-
 				}
 			}
 		}
