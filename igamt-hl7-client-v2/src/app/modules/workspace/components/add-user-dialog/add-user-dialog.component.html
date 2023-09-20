@@ -1,18 +1,17 @@
-<h2 mat-dialog-title>Add User to Workspace</h2>
+<h2 mat-dialog-title *ngIf="!edit">Add User to Workspace</h2>
+<h2 mat-dialog-title *ngIf="edit">Edit User</h2>
 <div class="input-group">
   <div class="input-group-prepend" style="height: 35px;">
     <span class="input-group-text" id="inputGroupPrepend3">
       <i class="fa fa-user"></i>
     </span>
   </div>
-  <p-autoComplete *ngIf="!edit" [(ngModel)]="username" [suggestions]="filteredUsernames" (completeMethod)="filterUsernames($event)"      size="100%" 
+  <p-autoComplete *ngIf="!edit" [(ngModel)]="username" [suggestions]="filteredUsernames" (completeMethod)="filterUsernames($event)"  size="52" 
     [minLength]="1" placeholder="Select user by username" [dropdown]="false">
     <ng-template let-username pTemplate="item">
         {{username}}
     </ng-template>
   </p-autoComplete>
-
-
   <input
     *ngIf="edit"
     [(ngModel)]="username"
@@ -24,11 +23,10 @@
     style="background-color: #fbfbfb; height: 35px;"
     type="text">
 </div>
-<div style="display: flex; flex-direction: column; margin-top: 10px;"  #anchor>
+<div style="display: flex; flex-direction: column; margin-top: 15px;"  #anchor>
   <app-permission-selector
     [folders]="data.folders"
-    [(workspacePermissions)]="permissions"
-  >
+    [(workspacePermissions)]="permissions">
   </app-permission-selector>
 </div>
 <mat-dialog-actions style="justify-content: flex-end;">

@@ -9,7 +9,6 @@ import { IMessage } from 'src/app/modules/dam-framework/models/messages/message.
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { EditorSave } from 'src/app/modules/dam-framework/store';
 import { selectUsername } from 'src/app/modules/dam-framework/store/authentication';
-import { FroalaService } from 'src/app/modules/shared/services/froala.service';
 import { UsersService } from 'src/app/modules/shared/services/users.service';
 import { selectAllFolders } from '../../../../root-store/workspace/workspace-edit/workspace-edit.selectors';
 import { EditorID } from '../../../shared/models/editor.enum';
