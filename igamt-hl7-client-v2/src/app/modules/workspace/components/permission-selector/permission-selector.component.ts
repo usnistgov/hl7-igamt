@@ -20,39 +20,32 @@ export interface IOption<T> {
 })
 export class PermissionSelectorComponent implements OnInit {
   folderPermission: WorkspacePermissionType;
-  folderPermissions: Array<IOption<WorkspacePermissionType>> = [{
-    label: 'Edit',
-    value: WorkspacePermissionType.EDIT,
-  }, {
-    label: 'View',
-    value: WorkspacePermissionType.VIEW,
-  }];
-  folder: IFolderInfo;
-  disableFolderPermission: boolean;
-  folderOptions: Array<IOption<IFolderInfo>> = [];
-  filteredFolderOptions: Array<IOption<IFolderInfo>> = [];
-  folderScopes: Array<{
-    permission: WorkspacePermissionType,
-    folder: IFolderInfo,
-    id: string;
-    known: boolean;
-  }> = [];
+  filteredFolders: IFolderInfo[] = [];
   mode: RoleMode;
-  unknownFolderScopes: Array<{
-    id: string,
-    permission: WorkspacePermissionType,
-  }> = [];
-
+  _folders: IFolderInfo[];
+  permissionsByFolder: Record<string, WorkspacePermissionType>;
   @Output()
   workspacePermissionsChange: EventEmitter<IWorkspacePermissions>;
+  filterFoldersActive: boolean;
+  nbCustomPermissions = 0;
+  unknownFolders: string[];
 
   @Input()
   set folders(folders: IFolderInfo[]) {
-    this.folderOptions = folders.map((f) => ({
-      label: f.metadata.title,
-      value: f,
-    }));
-    this.filteredFolderOptions = [...this.folderOptions];
+    this.filteredFolders = [...folders];
+    this._folders = [...folders];
+  }
+
+  get folders() {
+    return this._folders;
+  }
+
+  filterFolders(active: boolean) {
+    if (active) {
+      this.filteredFolders = this.folders.filter((folder) => this.permissionsByFolder[folder.id]);
+    } else {
+      this.filteredFolders = [...this.folders];
+    }
   }
 
   @Input()
@@ -70,16 +63,23 @@ export class PermissionSelectorComponent implements OnInit {
     }
 
     if (wsp.byFolder) {
-      this.folderScopes = Object.keys(wsp.byFolder).map((folderId) => {
-        const folder = this.folderOptions.find((f) => f.value.id === folderId);
-        return {
-          folder: folder.value,
-          permission: wsp.byFolder[folderId],
-          id: folderId,
-          known: !!folder,
-        };
-      });
+      this.permissionsByFolder = {
+        ...wsp.byFolder,
+      };
+      this.nbCustomPermissions = Object.keys(this.permissionsByFolder).length;
     }
+  }
+
+  updateUnknownFolders(permissionsByFolder: Record<string, WorkspacePermissionType>, folders: IFolderInfo[]) {
+    this.unknownFolders = Object.keys(permissionsByFolder || {}).filter((key) => folders.findIndex((folder) => folder.id === key) === -1);
+  }
+
+  clearUnknownFolders() {
+    for (const folderId of this.unknownFolders) {
+      delete this.permissionsByFolder[folderId];
+    }
+    this.updateUnknownFolders(this.permissionsByFolder, this.folders);
+    this.permissionsChange();
   }
 
   constructor() {
@@ -87,63 +87,54 @@ export class PermissionSelectorComponent implements OnInit {
   }
 
   permissionsChange() {
-    this.updateFilteredScopeOptions();
+    this.nbCustomPermissions = Object.keys(this.permissionsByFolder).length;
+    this.updateUnknownFolders(this.permissionsByFolder, this.folders);
     this.workspacePermissionsChange.emit(this.getPermissions());
   }
 
   modeChange(mode: RoleMode) {
-    this.folderScopes = [];
+    this.permissionsByFolder = {};
+    this.permissionsChange();
+  }
+
+  setViewPermission(folderId: string, mode: RoleMode) {
     if (mode === RoleMode.GLOBAL_VIEW) {
-      this.disableFolderPermission = true;
-      this.folderPermission = WorkspacePermissionType.EDIT;
-    } else {
-      this.disableFolderPermission = false;
+      this.removeFolderPermission(folderId);
+      this.filterFolders(this.filterFoldersActive);
+      this.permissionsChange();
+    } else if (mode === RoleMode.CUSTOM) {
+      this.permissionsByFolder[folderId] = WorkspacePermissionType.VIEW;
+      this.filterFolders(this.filterFoldersActive);
+      this.permissionsChange();
     }
-    this.permissionsChange();
   }
 
-  remove(i: number) {
-    this.folderScopes.splice(i, 1);
-    this.permissionsChange();
-  }
-
-  select(folder: IFolderInfo, permission: WorkspacePermissionType) {
-    this.folderScopes = [
-      ...this.folderScopes,
-      {
-        folder,
-        permission,
-        id: folder.id,
-        known: true,
-      },
-    ];
-    this.folder = undefined;
-    if (this.mode !== RoleMode.GLOBAL_VIEW) {
-      this.folderPermission = undefined;
+  setEditPermission(folderId: string, mode: RoleMode) {
+    if (mode === RoleMode.GLOBAL_VIEW || mode === RoleMode.CUSTOM) {
+      this.permissionsByFolder[folderId] = WorkspacePermissionType.EDIT;
+      this.filterFolders(this.filterFoldersActive);
+      this.permissionsChange();
     }
-    this.permissionsChange();
   }
 
-  updateFilteredScopeOptions() {
-    this.filteredFolderOptions = this.folderOptions.filter((fo) => {
-      return this.folderScopes.findIndex((fs) => {
-        return fs.folder.id === fo.value.id;
-      }) === -1;
-    });
+  removeFolderPermission(folderId: string) {
+    delete this.permissionsByFolder[folderId];
+    this.filterFolders(this.filterFoldersActive);
+    this.permissionsChange();
   }
 
   getPermissions(): IWorkspacePermissions {
     return {
       admin: this.mode === RoleMode.ADMIN,
       global: this.mode === RoleMode.GLOBAL_EDIT ? WorkspacePermissionType.EDIT : this.mode === RoleMode.GLOBAL_VIEW ? WorkspacePermissionType.VIEW : undefined,
-      byFolder: this.folderScopes.reduce((acc, fs) => {
-        acc[fs.folder.id] = fs.permission;
-        return acc;
-      }, {}),
+      byFolder: {
+        ...this.permissionsByFolder,
+      },
     };
   }
 
   ngOnInit() {
+    this.updateUnknownFolders(this.permissionsByFolder, this.folders);
   }
 
 }
