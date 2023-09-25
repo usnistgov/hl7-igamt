@@ -875,17 +875,16 @@ export class IgEditEffects extends DamWidgetEffect {
       this.store.dispatch(new fromDAM.SetValue({ verificationStatus: { loading: true } }));
 
       return this.igService.verify(action.payload).pipe(
-
         flatMap((response) => {
           return [
             new fromDAM.SetValue({ verificationResult: response }),
-            new fromDAM.SetValue({ verificationStatus: { loading: false } }),
+            new fromDAM.SetValue({ verificationStatus: { loading: false, failed: false, failure: '' } }),
             new fromDAM.TurnOffLoader(),
           ];
         }),
         catchError((error: HttpErrorResponse) => {
           return of(
-            new fromDAM.SetValue({ verificationStatus: { loading: false } }),
+            new fromDAM.SetValue({ verificationStatus: { loading: false, failed: true, failure: this.message.fromError(error).message } }),
           );
         }),
       );

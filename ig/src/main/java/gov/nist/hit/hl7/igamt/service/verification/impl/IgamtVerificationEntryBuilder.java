@@ -42,7 +42,7 @@ public class IgamtVerificationEntryBuilder {
     }
     
     public IgamtVerificationEntryBuilder informational() {
-        this.error.setSeverity("IMFORMATIONAL");
+        this.error.setSeverity("INFORMATIONAL");
         return this;
     }
 

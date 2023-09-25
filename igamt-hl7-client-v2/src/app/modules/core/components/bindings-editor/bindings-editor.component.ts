@@ -228,6 +228,9 @@ export abstract class BindingsEditorComponent extends AbstractEditorComponent im
               }),
             ];
           }),
+          catchError((e) => {
+            return throwError(this.messageService.fromError(e));
+          }),
         );
       }),
     );

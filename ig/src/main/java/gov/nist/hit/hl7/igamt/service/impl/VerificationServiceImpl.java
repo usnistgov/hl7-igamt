@@ -328,7 +328,7 @@ public class VerificationServiceImpl implements VerificationService {
 					} else if (error.getSeverity().equals("WARNING")) {
 						result.getStats().setWarning(result.getStats().getWarning() + 1);
 						result.getStats().setTotal(result.getStats().getTotal() + 1);
-					} else if (error.getSeverity().equals("IMFORMATIONAL")) {
+					} else if (error.getSeverity().equals("INFORMATIONAL")) {
 						result.getStats().setInformational(result.getStats().getInformational() + 1);
 						result.getStats().setTotal(result.getStats().getTotal() + 1);
 					}

@@ -3,17 +3,14 @@ import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
-import { concatMap, filter, map, mergeMap } from 'rxjs/operators';
+import { concatMap, map } from 'rxjs/operators';
 import { AbstractEditorComponent } from 'src/app/modules/core/components/abstract-editor-component/abstract-editor-component.component';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
-import { AResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import { selectVerificationResult, selectVerificationStatus } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
-import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
 import { IDisplayElement } from './../../../shared/models/display-element.interface';
 import { EditorID } from './../../../shared/models/editor.enum';
 import { StoreResourceRepositoryService } from './../../../shared/services/resource-repository.service';
-import { StatementTarget } from './../../../shared/services/statement.service';
 import { IVerificationEntryTable, VerificationService } from './../../../shared/services/verification.service';
 import { IgDocument } from './../../models/ig/ig-document.class';
 import { IgService } from './../../services/ig.service';
@@ -26,25 +23,19 @@ import { IgService } from './../../services/ig.service';
 export class IgVerificationComponent extends AbstractEditorComponent implements OnInit {
   value$: Observable<IVerificationEntryTable>;
   igVerificationResult$: Observable<IVerificationEntryTable>;
-
   segmentVerificationResults$: Observable<IVerificationEntryTable>;
-
   conformanceProfileVerificationResults$: Observable<IVerificationEntryTable>;
-
   valuesetVerificationResults$: Observable<IVerificationEntryTable>;
-
   datatypeVerificationResults$: Observable<IVerificationEntryTable>;
-
   display$: Observable<IVerificationEntryTable>;
-
-  loading = true;
+  status$: Observable<{ loading: boolean, failed: boolean, failure: string }>;
   type = Type.IGDOCUMENT;
 
   constructor(
     store: Store<any>,
     actions$: Actions,
     private igService: IgService,
-    public repository: StoreResourceRepositoryService, private verificationService:  VerificationService) {
+    public repository: StoreResourceRepositoryService, private verificationService: VerificationService) {
     super(
       {
         id: EditorID.IG_VERIFICATION,
@@ -55,40 +46,36 @@ export class IgVerificationComponent extends AbstractEditorComponent implements 
       store,
     );
 
-    this.valuesetVerificationResults$  = this.store.select(selectVerificationResult).pipe(
+    this.valuesetVerificationResults$ = this.store.select(selectVerificationResult).pipe(
       concatMap((value) => {
-        return this.verificationService.convertValueByType( value, Type.VALUESET, repository);
+        return this.verificationService.convertValueByType(value, Type.VALUESET, repository);
       }),
     );
 
     this.datatypeVerificationResults$ = this.store.select(selectVerificationResult).pipe(
       concatMap((value) => {
-        return this.verificationService.convertValueByType( value, Type.DATATYPE, repository);
+        return this.verificationService.convertValueByType(value, Type.DATATYPE, repository);
       }),
     );
 
     this.segmentVerificationResults$ = this.store.select(selectVerificationResult).pipe(
       concatMap((value) => {
-        return this.verificationService.convertValueByType( value, Type.SEGMENT, repository);
+        return this.verificationService.convertValueByType(value, Type.SEGMENT, repository);
       }),
     );
 
     this.conformanceProfileVerificationResults$ = this.store.select(selectVerificationResult).pipe(
       concatMap((value) => {
-        return this.verificationService.convertValueByType( value, Type.CONFORMANCEPROFILE, repository);
+        return this.verificationService.convertValueByType(value, Type.CONFORMANCEPROFILE, repository);
       }),
     );
     this.igVerificationResult$ = this.store.select(selectVerificationResult).pipe(
       concatMap((value) => {
-        return this.verificationService.convertValueByType( value, Type.IGDOCUMENT, repository);
+        return this.verificationService.convertValueByType(value, Type.IGDOCUMENT, repository);
       }),
     );
 
-    this.store.select(selectVerificationStatus).subscribe((x) => {
-      this.loading = x.loading;
-
-    });
-   // verificationService.getVerificationEntryTable()
+    this.status$ = this.store.select(selectVerificationStatus);
   }
 
   onEditorSave(action: fromDAM.EditorSave): Observable<Action> {
@@ -114,14 +101,14 @@ export class IgVerificationComponent extends AbstractEditorComponent implements 
   }
 
 }
-export  interface IVerificationReport {
+export interface IVerificationReport {
   igVerificationResult?: any;
   segmentVerificationResults?: any;
   conformanceProfileVerificationResults?: any;
   datatypeVerificationResults?: any;
   valuesetVerificationResults?: any;
 }
-export  interface IVerificationReport {
+export interface IVerificationReport {
   ig?: any;
   segment?: any;
   message?: any;

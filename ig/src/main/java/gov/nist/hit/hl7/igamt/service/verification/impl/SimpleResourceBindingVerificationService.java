@@ -8,10 +8,7 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.SingleCodeBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
-import gov.nist.hit.hl7.igamt.constraints.domain.AssertionConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.AssertionPredicate;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
+import gov.nist.hit.hl7.igamt.constraints.domain.*;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.ig.binding.*;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
@@ -24,7 +21,9 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.service.impl.ResourceSkeletonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.xml.sax.SAXException;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -85,6 +84,7 @@ public class SimpleResourceBindingVerificationService extends VerificationUtils 
         issues.addAll(this.checkBindings(flatResourceBindings.getValueSetBindingContainers(), resourceSkeleton, this::verifyValueSetBinding));
         issues.addAll(this.checkBindings(flatResourceBindings.getPredicateBindingContainers(), resourceSkeleton, this::verifyPredicateBinding));
         issues.addAll(this.checkBindings(flatResourceBindings.getConformanceStatementBindingContainers(), resourceSkeleton, this::verifyConformanceStatementBinding));
+        issues.addAll(this.verifyConformanceStatementIdentifiers(resourceSkeleton, flatResourceBindings.getConformanceStatementBindingContainers()));
         return issues;
     }
 
@@ -133,6 +133,20 @@ public class SimpleResourceBindingVerificationService extends VerificationUtils 
                                         ),
                                         ((AssertionPredicate) predicate).getAssertion()
                                 );
+                            } else if(predicate.getType().equals(ConstraintType.FREE)) {
+                                try {
+                                    return this.assertionVerificationService.checkFreeText(
+                                            context,
+                                            new Location(
+                                                    pathId,
+                                                    target.getLocationInfo(),
+                                                    PropertyType.PREDICATE
+                                            ),
+                                            ((FreeTextPredicate) predicate).getAssertionScript()
+                                    );
+                                } catch (IOException | SAXException e) {
+                                    throw new RuntimeException(e);
+                                }
                             } else {
                                 return this.NoErrors();
                             }
@@ -142,6 +156,35 @@ public class SimpleResourceBindingVerificationService extends VerificationUtils 
             entry.setTarget(resourceSkeleton.getResource().getId());
             entry.setTargetType(resourceSkeleton.getResource().getType());
         }).collect(Collectors.toList());
+    }
+
+    public List<IgamtObjectError> verifyConformanceStatementIdentifiers(ResourceSkeleton skeleton, Set<ConformanceStatementBindingContainer> conformanceStatements) {
+        Set<String> seen = new HashSet<>();
+        Set<String> duplicate = new HashSet<>();
+        List<IgamtObjectError> entries = new ArrayList<>();
+        for(ConformanceStatementBindingContainer cs: conformanceStatements) {
+            if(seen.contains(cs.getValue().getIdentifier())) {
+                duplicate.add(cs.getValue().getIdentifier());
+            }
+            seen.add(cs.getValue().getIdentifier());
+        }
+
+        for(ConformanceStatementBindingContainer cs: conformanceStatements) {
+            if(duplicate.contains(cs.getValue().getIdentifier())) {
+                entries.add(this.entry.DuplicateConformanceStatementIdentifier(
+                        new Location(
+                                cs.getValue().getId(),
+                                cs.getValue().getIdentifier(),
+                                PropertyType.STATEMENT
+                        ),
+                        skeleton.getResource().getId(),
+                        skeleton.getResource().getType(),
+                        cs.getValue().getIdentifier()
+                ));
+            }
+        }
+
+        return entries;
     }
 
     @Override
@@ -163,6 +206,20 @@ public class SimpleResourceBindingVerificationService extends VerificationUtils 
                                 ),
                                 ((AssertionConformanceStatement) conformanceStatement).getAssertion()
                         );
+                    } else if(conformanceStatement.getType().equals(ConstraintType.FREE)) {
+                        try {
+                            return this.assertionVerificationService.checkFreeText(
+                                    context,
+                                    new Location(
+                                            csId,
+                                            conformanceStatement.getIdentifier(),
+                                            PropertyType.STATEMENT
+                                    ),
+                                    ((FreeTextConformanceStatement) conformanceStatement).getAssertionScript()
+                            );
+                        } catch (IOException | SAXException e) {
+                            throw new RuntimeException(e);
+                        }
                     } else {
                         return this.NoErrors();
                     }

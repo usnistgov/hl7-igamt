@@ -67,6 +67,9 @@ public interface VerificationEntryService {
     IgamtObjectError AssertionComparisonPathMissing(Location location, String id, Type type);
     IgamtObjectError AssertionComparisonIncompatible(Location location, String id, Type type, LocationInfo path1, String path1ResourceName, LocationInfo path2, String path2ResourceName);
     IgamtObjectError AssertionComparisonDateTimeIncompatible(Location location, String id, Type type, LocationInfo path1, String path1ResourceName, LocationInfo path2, String path2ResourceName);
+    IgamtObjectError FreeTextAssertionScriptMissing(Location location, String id, Type type);
+    IgamtObjectError FreeTextAssertionXMLInvalid(Location location, String id, Type type, String xmlError);
+    IgamtObjectError DuplicateConformanceStatementIdentifier(Location location, String id, Type type, String identifier);
 
     // Value Sets
     IgamtObjectError Valueset_Missing_Code(Location info, String id, Type type);

@@ -12,7 +12,6 @@ import { IResourceKey } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
 import { IDisplayElement } from '../models/display-element.interface';
 import { Severity } from '../models/verification.interface';
-import { ITocVerification } from './../../ig/models/ig/ig-document.class';
 import { AResourceRepositoryService } from './resource-repository.service';
 
 export enum VerificationTab {
@@ -31,6 +30,7 @@ export interface IStatusBarInfo {
   supported: boolean;
   checked: boolean;
   loading: boolean;
+  failed: boolean;
   lastUpdate$?: Observable<string>;
   title: string;
   stats?: IVerificationStats;
@@ -55,6 +55,12 @@ export interface IVerificationEntryList {
   target: IDisplayElement;
   stats: IVerificationStats;
   entries: IVerificationEnty[];
+}
+
+export interface IVerificationTabData {
+  table: IVerificationEntryTable;
+  failed: boolean;
+  failure?: string;
 }
 
 @Injectable({
@@ -107,7 +113,7 @@ export class VerificationService {
     ).pipe(
       map(([activeEditor]) => {
         return [
-          ...(activeEditor && activeEditor.entries && activeEditor.entries.length > 0) ? [VerificationTab.EDITOR] : [],
+          ...(activeEditor && (activeEditor.entries && activeEditor.entries.length > 0) || (activeEditor.failed && activeEditor.failure)) ? [VerificationTab.EDITOR] : [],
         ];
       }),
     );
@@ -138,6 +144,7 @@ export class VerificationService {
           supported,
           checked,
           loading: verification.loading,
+          failed: verification.failed,
           valid: this.isValid(stats),
           stats,
           title: active.editor.title + ' Editor',
@@ -177,6 +184,23 @@ export class VerificationService {
     return of(undefined);
   }
 
+  getVerificationTabData(tab: VerificationTab, repository: AResourceRepositoryService): Observable<IVerificationTabData> {
+    if (tab === VerificationTab.EDITOR) {
+      return combineLatest(
+        this.getEditorVerificationEntryTable(repository),
+        this.store.select(selectWorkspaceVerification),
+      ).pipe(
+        map(([table, verification]) => ({
+          table,
+          failed: verification.failed,
+          failure: verification.failure,
+        })),
+      );
+    }
+
+    return of(undefined);
+  }
+
   getEditorVerificationEntryTable(repository: AResourceRepositoryService): Observable<IVerificationEntryTable> {
     return this.store.select(selectWorkspaceVerification).pipe(
       flatMap((verification) => {
@@ -186,11 +210,6 @@ export class VerificationService {
   }
 
   getVerificationEntryTable(entries: IVerificationEnty[], repository: AResourceRepositoryService): Observable<IVerificationEntryTable> {
-
-    console.log('entries');
-    console.log(entries);
-
-    console.log(repository);
     if (!entries || entries.length === 0) {
       return of({
         valid: true,
@@ -236,7 +255,6 @@ export class VerificationService {
 
     ).pipe(
       map((resources) => {
-        console.log(resources);
         const grouped = entries.reduce((acc, entry) => {
           const key: IResourceKey = {
             id: entry.targetId,

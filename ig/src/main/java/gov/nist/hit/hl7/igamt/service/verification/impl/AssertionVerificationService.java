@@ -9,18 +9,36 @@ import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.Location;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
+import gov.nist.hit.hl7.v2.schemas.utils.HL7v2SchemaResourceResolver;
 import org.springframework.stereotype.Service;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
 public class AssertionVerificationService extends VerificationUtils {
-
     private final Set<String> TEMPORAL_DT = new HashSet<>(Arrays.asList("DT", "DTM", "TM"));
     private final Set<String> NUMERICAL_DT = new HashSet<>(Arrays.asList("NM", "SI"));
     private final Set<String> OCCURRENCE_TYPES = new HashSet<>(Arrays.asList("atLeast", "instance", "exactlyOne", "count", "all"));
+    private final Schema assertionSchema;
+
+    public AssertionVerificationService() throws SAXException {
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        factory.setResourceResolver(new HL7v2SchemaResourceResolver());
+        assertionSchema = factory.newSchema(new StreamSource(AssertionVerificationService.class.getResourceAsStream("/freeTextAssertion.xsd")));
+    }
 
     public List<IgamtObjectError> checkAssertion(ResourceSkeleton skeleton, Location location, Assertion assertion) {
         switch (assertion.getMode()) {
@@ -36,6 +54,57 @@ public class AssertionVerificationService extends VerificationUtils {
                 return this.checkSubContextAssertion(skeleton, location, (SubContextAssertion) assertion);
         }
         return null;
+    }
+
+    public List<IgamtObjectError> checkFreeText(ResourceSkeleton skeleton, Location location, String assertion) throws IOException, SAXException {
+        if(assertion == null || assertion.isEmpty()) {
+            return Arrays.asList(
+                    this.entry.FreeTextAssertionScriptMissing(
+                            location,
+                            skeleton.getResource().getId(),
+                            skeleton.getResource().getType()
+                    )
+            );
+        } else {
+            return checkFreeTextXML(skeleton, location, assertion);
+        }
+    }
+
+    public List<IgamtObjectError> checkFreeTextXML(ResourceSkeleton skeleton, Location location, String xml) throws IOException, SAXException {
+        Validator validator = this.assertionSchema.newValidator();
+        List<IgamtObjectError> entries = new ArrayList<>();
+        List<SAXParseException> xmlValidationErrors = new ArrayList<>();
+        validator.setErrorHandler(new ErrorHandler() {
+            @Override
+            public void warning(SAXParseException exception) {
+                xmlValidationErrors.add(exception);
+            }
+            @Override
+            public void error(SAXParseException exception) {
+                xmlValidationErrors.add(exception);
+            }
+            @Override
+            public void fatalError(SAXParseException exception) {
+                xmlValidationErrors.add(exception);
+            }
+        });
+        try {
+            validator.validate(new StreamSource(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))));
+        } catch (SAXParseException exception) {
+            entries.add(this.entry.FreeTextAssertionXMLInvalid(
+                    location,
+                    skeleton.getResource().getId(),
+                    skeleton.getResource().getType(),
+                    exception.getMessage()
+            ));
+        }
+        xmlValidationErrors.stream().map((error) -> this.entry.FreeTextAssertionXMLInvalid(
+                location,
+                skeleton.getResource().getId(),
+                skeleton.getResource().getType(),
+                error.getMessage()
+        )).forEach(entries::add);
+        return entries;
     }
 
     public List<IgamtObjectError> checkIfThenAssertion(ResourceSkeleton skeleton, Location location, IfThenAssertion assertion) {

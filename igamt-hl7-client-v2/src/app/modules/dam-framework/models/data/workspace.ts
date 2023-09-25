@@ -9,6 +9,8 @@ export interface IWorkspaceVerification {
   endpoint: string;
   verificationTime: Date;
   loading: boolean;
+  failed: boolean;
+  failure?: string;
   entries: IVerificationEnty[];
 }
 
@@ -53,6 +55,7 @@ export const emptyWorkspace: IWorkspace = {
     endpoint: undefined,
     verificationTime: undefined,
     loading: false,
+    failed: false,
     entries: [],
   },
   initial: undefined,

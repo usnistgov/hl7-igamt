@@ -502,6 +502,39 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .entry();
     }
 
+    @Override
+    public IgamtObjectError FreeTextAssertionScriptMissing(Location location, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("FREETEXT_SCRIPT_MISSING")
+                .warning()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Free text assertion XML script is missing (no validation can be performed)")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError FreeTextAssertionXMLInvalid(Location location, String id, Type type, String xmlError) {
+        return new IgamtVerificationEntryBuilder("FREETEXT_SCRIPT_ERROR")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Invalid assertion XML script: "+ xmlError)
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError DuplicateConformanceStatementIdentifier(Location location, String id, Type type, String identifier) {
+        return new IgamtVerificationEntryBuilder("CS_DUPLICATE_IDENTIFIER")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Duplicate conformance statement identifier : '"+identifier+"'")
+                .entry();
+    }
+
 
     @Override
 	public IgamtObjectError Valueset_Missing_Code(Location l, String id, Type type) {

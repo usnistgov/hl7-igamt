@@ -1,99 +1,184 @@
-<div style="display: flex; flex-direction: row;">
-    <app-dam-fullscreen-button></app-dam-fullscreen-button>
-
-<div  [routerLink]="['./verification']" routerLinkActive="verification-active"  class="verification" style="
-  padding: 10px;
-  display: flex;
-  cursor: pointer;
-  justify-content: flex-start;
-  align-items: center;">
-<div style="margin-right: 10px;" *ngIf="verifiying$ | async">
-  <mat-spinner class="verification-progress" diameter="20" ></mat-spinner>
-</div>
-<span style="margin-right: 20px;"> Verification </span>
-<ng-container *ngIf="stats$ | async">
-<ng-container *ngTemplateOutlet="stats; context : {$implicit: stats$ | async}" >
-</ng-container>
-</ng-container>
-<!-- <span style="color: gray; margin-left: 20px;">
-  <i class="fa fa-clock-o"></i>
-  just now
-</span> -->
-<button class="refresh-verify" (click)="refreshVerify()">
-  <i class="fa fa-refresh"></i>
-</button>
-</div>
+<div style="display: flex; flex-direction: row">
+  <app-dam-fullscreen-button></app-dam-fullscreen-button>
+  <div
+    [routerLink]="['./verification']"
+    routerLinkActive="verification-active"
+    class="verification"
+    style="
+      padding: 10px;
+      display: flex;
+      cursor: pointer;
+      justify-content: flex-start;
+      align-items: center;
+    "
+  >
+    <div style="margin-right: 10px" *ngIf="verifiying$ | async">
+      <mat-spinner class="verification-progress" diameter="20"></mat-spinner>
+    </div>
+    <div style="margin-right: 10px" *ngIf="failed$ | async">
+      <span class="badge badge-danger">FAILED</span>
+    </div>
+    <span style="margin-right: 20px"> Verification </span>
+    <ng-container *ngIf="(stats$ | async) && !(failed$ | async)">
+      <ng-container
+        *ngTemplateOutlet="stats; context: { $implicit: stats$ | async }"
+      ></ng-container>
+    </ng-container>
+    <button class="refresh-verify" (click)="refreshVerify()">
+      <i class="fa fa-refresh"></i>
+    </button>
+  </div>
 </div>
 <div>
-
-  <button class="btn btn-sm toolbar-button" type="button" (click)="openConfig()">
+  <button
+    class="btn btn-sm toolbar-button"
+    type="button"
+    (click)="openConfig()"
+  >
     <i class="fa fa-cog"></i>
     Configuration
   </button>
 
-  <button class="btn btn-info btn-sm toolbar-button" type="button" (click)="exportTool()">
+  <button
+    class="btn btn-info btn-sm toolbar-button"
+    type="button"
+    (click)="exportTool()"
+  >
     <i class="fa fa-plug"></i>
     Connect
   </button>
 
   <div ngbDropdown class="d-inline-block">
-    <button class="btn btn-secondary btn-sm toolbar-button" id="differentialExport" ngbDropdownToggle>Export</button>
+    <button
+      class="btn btn-secondary btn-sm toolbar-button"
+      id="differentialExport"
+      ngbDropdownToggle
+    >
+      Export
+    </button>
     <div ngbDropdownMenu aria-labelledby="exportDropDown">
-      <button ngbDropdownItem (click)="export(exportTypes.IGDOCUMENT, 'word')">Word</button>
-      <button ngbDropdownItem (click)="quickExport(exportTypes.IGDOCUMENT, 'word')">WORD (Quick)</button>
-      <button ngbDropdownItem (click)="export(exportTypes.IGDOCUMENT, 'html')">HTML</button>
-      <button ngbDropdownItem (click)="quickExport(exportTypes.IGDOCUMENT, 'html')">HTML (Quick)</button>
+      <button ngbDropdownItem (click)="export(exportTypes.IGDOCUMENT, 'word')">
+        Word
+      </button>
+      <button
+        ngbDropdownItem
+        (click)="quickExport(exportTypes.IGDOCUMENT, 'word')"
+      >
+        WORD (Quick)
+      </button>
+      <button ngbDropdownItem (click)="export(exportTypes.IGDOCUMENT, 'html')">
+        HTML
+      </button>
+      <button
+        ngbDropdownItem
+        (click)="quickExport(exportTypes.IGDOCUMENT, 'html')"
+      >
+        HTML (Quick)
+      </button>
       <button ngbDropdownItem (click)="exportXML()">XML</button>
     </div>
   </div>
   <div ngbDropdown class="d-inline-block" *ngIf="derived$ | async">
-    <button class="btn btn-warning btn-sm toolbar-button" id="exportDropDown" ngbDropdownToggle> Differential Export</button>
+    <button
+      class="btn btn-warning btn-sm toolbar-button"
+      id="exportDropDown"
+      ngbDropdownToggle
+    >
+      Differential Export
+    </button>
     <div ngbDropdownMenu aria-labelledby="exportDropDown">
-      <button ngbDropdownItem (click)="export(exportTypes.DIFFERENTIAL, 'word')">Word</button>
-      <button ngbDropdownItem (click)="quickExport(exportTypes.DIFFERENTIAL, 'word')">WORD (Quick)</button>
-      <button ngbDropdownItem (click)="export(exportTypes.DIFFERENTIAL, 'html')">HTML</button>
-      <button ngbDropdownItem (click)="quickExport(exportTypes.DIFFERENTIAL, 'html')">HTML (Quick)</button>
+      <button
+        ngbDropdownItem
+        (click)="export(exportTypes.DIFFERENTIAL, 'word')"
+      >
+        Word
+      </button>
+      <button
+        ngbDropdownItem
+        (click)="quickExport(exportTypes.DIFFERENTIAL, 'word')"
+      >
+        WORD (Quick)
+      </button>
+      <button
+        ngbDropdownItem
+        (click)="export(exportTypes.DIFFERENTIAL, 'html')"
+      >
+        HTML
+      </button>
+      <button
+        ngbDropdownItem
+        (click)="quickExport(exportTypes.DIFFERENTIAL, 'html')"
+      >
+        HTML (Quick)
+      </button>
     </div>
   </div>
   <app-dam-reset-button *ngIf="!viewOnly"></app-dam-reset-button>
   <app-dam-save-button *ngIf="!viewOnly"></app-dam-save-button>
 </div>
 
-
-
-
-<ng-template #verificationPill let-verification let-active="active" let-type="type" let-refresh="refresh">
-    <div style="margin-right: 10px;" *ngIf="verifiying$ | async">
-      <mat-spinner class="verification-progress" diameter="20" ></mat-spinner>
-    </div>
-    <span style="margin-right: 20px;">{{ verification.title }}</span>
-    <ng-container *ngTemplateOutlet="stats; context : {$implicit: verification.stats}" >
-    </ng-container>
-    <span style="color: gray; margin-left: 20px;" *ngIf="verification.lastUpdate$ | async as lastUpdate">
-      <i class="fa fa-clock-o"></i>
-        {{lastUpdate}}
-    </span>
-    <button class="refresh-btn" (click)="refresh()">
-      <i class="fa fa-refresh"></i>
-    </button>
+<ng-template
+  #verificationPill
+  let-verification
+  let-active="active"
+  let-type="type"
+  let-refresh="refresh"
+>
+  <div style="margin-right: 10px" *ngIf="verifiying$ | async">
+    <mat-spinner class="verification-progress" diameter="20"></mat-spinner>
+  </div>
+  <span style="margin-right: 20px">{{ verification.title }}</span>
+  <ng-container
+    *ngTemplateOutlet="stats; context: { $implicit: verification.stats }"
+  >
+  </ng-container>
+  <span
+    style="color: gray; margin-left: 20px"
+    *ngIf="verification.lastUpdate$ | async as lastUpdate"
+  >
+    <i class="fa fa-clock-o"></i>
+    {{ lastUpdate }}
+  </span>
+  <button class="refresh-btn" (click)="refresh()">
+    <i class="fa fa-refresh"></i>
+  </button>
 </ng-template>
 
 <ng-template #stats let-stats>
-  <div *ngIf="!stats.fatal && !stats.error && !stats.warning && !stats.informational">
-    <i style="color: #1d9f1d;" class="fa fa-check" ></i>
+  <div
+    *ngIf="
+      !stats.fatal && !stats.error && !stats.warning
+    "
+  >
+    <i style="color: #1d9f1d" class="fa fa-check"></i>
   </div>
-  <div *ngIf="stats && !(!stats.fatal && !stats.error && !stats.warning && !stats.informational)" style="display: flex;">
-    <div style="margin-right: 5px;">
-      <app-issue-badge *ngIf="stats.fatal" type="FATAL" [number]="stats.fatal" ></app-issue-badge>
+  <div
+    *ngIf="
+      stats &&
+      !(!stats.fatal && !stats.error && !stats.warning)
+    "
+    style="display: flex"
+  >
+    <div style="margin-right: 5px">
+      <app-issue-badge
+        *ngIf="stats.fatal"
+        type="FATAL"
+        [number]="stats.fatal"
+      ></app-issue-badge>
     </div>
-    <div style="margin-right: 5px;">
-      <app-issue-badge *ngIf="stats.error" type="ERROR" [number]="stats.error" ></app-issue-badge>
+    <div style="margin-right: 5px">
+      <app-issue-badge
+        *ngIf="stats.error"
+        type="ERROR"
+        [number]="stats.error"
+      ></app-issue-badge>
     </div>
-    <div style="margin-right: 5px;">
-      <app-issue-badge *ngIf="stats.warning" type="WARNING" [number]="stats.warning" ></app-issue-badge>
+    <div style="margin-right: 5px">
+      <app-issue-badge
+        *ngIf="stats.warning"
+        type="WARNING"
+        [number]="stats.warning"
+      ></app-issue-badge>
     </div>
-    <!-- <div style="margin-right: 5px;">
-      <app-issue-badge *ngIf="stats.informational" type="INFORMATIONAL" [number]="stats.informational" ></app-issue-badge>
-    </div> -->
   </div>
 </ng-template>

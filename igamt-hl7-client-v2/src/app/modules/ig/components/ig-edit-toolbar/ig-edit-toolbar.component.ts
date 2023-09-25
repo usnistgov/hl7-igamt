@@ -33,6 +33,7 @@ import { selectIgConfig } from './../../../../root-store/ig/ig-edit/ig-edit.sele
 export class IgEditToolbarComponent implements OnInit, OnDestroy {
   exportTypes = ExportTypes;
   verifiying$: Observable<boolean> = of(true);
+  failed$: Observable<boolean>;
   viewOnly: boolean;
   subscription: Subscription;
   toolConfig: Observable<IConnectingInfo[]>;
@@ -50,9 +51,9 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     this.subscription = this.store.select(selectViewOnly).subscribe(
       (value) => this.viewOnly = value,
     );
-    this.verifiying$ = this.store.select(selectVerificationStatus).pipe(map((x) =>  x.loading));
-    this.stats$ = this.store.select(selectVerificationResult).pipe(filter((x) => x), map((x) =>  x.stats));
-
+    this.verifiying$ = this.store.select(selectVerificationStatus).pipe(map((x) => x.loading));
+    this.failed$ = this.store.select(selectVerificationStatus).pipe(map((x) => x.failed));
+    this.stats$ = this.store.select(selectVerificationResult).pipe(filter((x) => x), map((x) => x.stats));
     this.toolConfig = this.store.select(selectExternalTools);
     this.deltaMode$ = this.store.select(selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
@@ -97,18 +98,20 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   verifyIG(type: string) {
-      this.getIgId().pipe().subscribe((igId) => {
-       const url =  '/' + 'ig/' + igId + '/verification?type=' + type;
-       this.router.navigateByUrl(url);
-      });
+    this.getIgId().pipe().subscribe((igId) => {
+      const url = '/' + 'ig/' + igId + '/verification?type=' + type;
+      this.router.navigateByUrl(url);
+    });
   }
 
   refreshVerify() {
     this.getIgId().pipe().subscribe((igId) => {
-      this.store.dispatch(new VerifyIg({  id: igId,
+      this.store.dispatch(new VerifyIg({
+        id: igId,
         resourceType: Type.IGDOCUMENT,
-        verificationType: VerificationType.VERIFICATION}));
-     });
+        verificationType: VerificationType.VERIFICATION,
+      }));
+    });
   }
 
   exportXML() {
@@ -158,17 +161,17 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   openConfig() {
-    combineLatest( this.getIgId(), this.store.select(selectIgConfig)).pipe(
+    combineLatest(this.getIgId(), this.store.select(selectIgConfig)).pipe(
       take(1),
       map(([id, config]) => {
         const dialogRef = this.dialog.open(DocumentConfigComponent, {
-          data: {config},
+          data: { config },
         });
         dialogRef.afterClosed().pipe(
           filter((res) => res !== undefined),
           take(1),
           map((x) => {
-            this.store.dispatch(new fromIgDocumentEdit.UpdateDocumentConfig({id, config: x}));
+            this.store.dispatch(new fromIgDocumentEdit.UpdateDocumentConfig({ id, config: x }));
           }),
         ).subscribe();
       }),

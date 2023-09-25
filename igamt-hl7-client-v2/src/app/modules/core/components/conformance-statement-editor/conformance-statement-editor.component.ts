@@ -4,13 +4,13 @@ import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelector, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Guid } from 'guid-typescript';
 import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, Observable, Subscription, throwError } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, Subscription, throwError } from 'rxjs';
 import { catchError, concatMap, filter, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import { IVerificationEnty } from 'src/app/modules/dam-framework';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { EditorVerificationResult, EditorVerify } from 'src/app/modules/dam-framework/store/index';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
-import { IVerificationIssue } from 'src/app/modules/shared/models/verification.interface';
+import { IVerificationIssue, Severity } from 'src/app/modules/shared/models/verification.interface';
 import { selectedResourceHasOrigin } from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { selectDerived } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { Message } from '../../../dam-framework/models/messages/message.class';
@@ -113,21 +113,23 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       }),
     );
 
-    this.entries$ = this.getGroupedEntries();
+    this.entries$ = this.getGroupedEntries([Severity.FATAL, Severity.ERROR]);
   }
 
-  getGroupedEntries(): Observable<Record<string, IVerificationEnty[]>> {
+  getGroupedEntries(severities?: Severity[]): Observable<Record<string, IVerificationEnty[]>> {
     return this.getEditorVerificationEntries().pipe(
       map((entries) => {
-        return entries.reduce((acc, entry) => {
-          return {
-            ...acc,
-            [entry.pathId]: [
-              ...(acc[entry.pathId] || []),
-              entry,
-            ],
-          };
-        }, {} as Record<string, IVerificationEnty[]>);
+        return entries
+          .filter((entry) => !severities || severities.length === 0 || severities.includes(entry.severity as Severity))
+          .reduce((acc, entry) => {
+            return {
+              ...acc,
+              [entry.pathId]: [
+                ...(acc[entry.pathId] || []),
+                entry,
+              ],
+            };
+          }, {} as Record<string, IVerificationEnty[]>);
       }),
     );
   }
@@ -350,6 +352,9 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
                 }),
               }),
             ];
+          }),
+          catchError((e) => {
+            return throwError(this.messageService.fromError(e));
           }),
         );
       }),
