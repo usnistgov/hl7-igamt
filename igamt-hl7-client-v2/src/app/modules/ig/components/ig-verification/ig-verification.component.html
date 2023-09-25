@@ -94,5 +94,8 @@
     <div style="margin-right: 5px;">
       <app-issue-badge *ngIf="stats.warning" type="WARNING" [number]="stats.warning" ></app-issue-badge>
     </div>
+    <div style="margin-right: 5px;">
+      <app-issue-badge *ngIf="stats.informational" type="INFORMATIONAL" [number]="stats.informational" ></app-issue-badge>
+    </div>
   </div>
 </ng-template>
