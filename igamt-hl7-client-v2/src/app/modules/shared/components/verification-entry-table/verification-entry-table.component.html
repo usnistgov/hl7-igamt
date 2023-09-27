@@ -1,4 +1,5 @@
-<div *ngIf="verification$ | async as verification" style="padding: 20px;">
+<div *ngIf="verification$ | async as verification" class="table-container">
+  <span *ngIf="verification.entries.length === 0" style="color: gray;">No entries.</span>
   <div *ngIf="filter | async as filterValue" style="display: flex;">
     <ng-container *ngFor="let item of severity">
       <div class="severity-filter" *ngIf="verification.stats[item.key]">
@@ -7,27 +8,30 @@
       </div>
     </ng-container>
   </div>
-  <table class="table table-sm table-bordered table-striped" style="margin-top: 10px;">
-    <tbody *ngFor="let item of verification.entries">
-      <tr style="background-color: white;" *ngIf="item.entries?.length">
-        <th colspan="3">
-          <app-display-ref [element]="item.target" [documentId]="documentId" documentType="IGDOCUMENT"></app-display-ref>
-        </th>
-      </tr>
-
-      <tr *ngIf="item.entries?.length">
-        <th>Location</th>
-        <th>Property</th>
-        <th>Message</th>
-      </tr>
-      <tr *ngFor="let entry of item.entries">
-        <td>
-          <app-issue-badge [ngbPopover]="entry.code" triggers="mouseenter:mouseleave" [type]="entry.severity"></app-issue-badge>
-          <span style="margin-left: 5px;"> {{entry.location}} </span>
-        </td>
-        <td>{{entry.property}}</td>
-        <td>{{entry.message}}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div style="overflow: scroll; margin-top: 15px; border-top: 1px solid lightgray; border-bottom: 1px solid lightgray">
+    <table class="table table-sm table-bordered table-striped">
+      <ng-container *ngFor="let item of verification.entries">
+        <tbody *ngIf="item.entries?.length">
+          <tr style="background-color: white;">
+            <th colspan="3">
+              <app-display-ref [element]="item.target" [documentId]="documentId" documentType="IGDOCUMENT"></app-display-ref>
+            </th>
+          </tr>
+          <tr>
+            <th>Location</th>
+            <th>Property</th>
+            <th>Message</th>
+          </tr>
+          <tr *ngFor="let entry of item.entries">
+            <td>
+              <app-issue-badge [ngbPopover]="entry.code" triggers="mouseenter:mouseleave" [type]="entry.severity"></app-issue-badge>
+              <span style="margin-left: 5px;"> {{entry.location}} </span>
+            </td>
+            <td>{{entry.property}}</td>
+            <td>{{entry.message}}</td>
+          </tr>
+        </tbody>
+      </ng-container>
+    </table>
+  </div>
 </div>

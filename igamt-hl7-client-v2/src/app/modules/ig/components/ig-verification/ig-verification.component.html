@@ -1,76 +1,6 @@
 <ng-container *ngIf="status$ | async as status">
   <ng-container *ngIf="!status?.loading && !status?.failure">
-    <ul class="nav nav-pills" style="margin-top: 10px;">
-
-      <li style="cursor: pointer; border: 1px solid lightgray; border-radius: 5px; margin-right: 10px;" class="nav-item"  (click)="selectType('IGDOCUMENT')">
-        <span  class="nav-link" style="display: flex" [ngClass]="{ 'verification-tab-active': type === 'IGDOCUMENT' }">
-          <span style="margin-right: 10px;">IG Document</span>
-          <ng-container *ngIf="igVerificationResult$| async">
-          <ng-container *ngTemplateOutlet="stats; context : {$implicit: (igVerificationResult$| async).stats}" >
-            </ng-container>
-          </ng-container>
-        </span>
-      </li>
-
-      <li style="cursor: pointer; border: 1px solid lightgray; border-radius: 5px; margin-right: 10px;" class="nav-item" (click)="selectType('CONFORMANCEPROFILE')">
-        <span  class="nav-link"  style="display: flex" [ngClass]="{ 'verification-tab-active': type === 'CONFORMANCEPROFILE' }">
-          <span style="margin-right: 10px;">Conformance Profile</span>
-          <ng-container *ngIf="conformanceProfileVerificationResults$| async ">
-          <ng-container *ngTemplateOutlet="stats; context : {$implicit: (conformanceProfileVerificationResults$| async).stats}" >
-            </ng-container>
-          </ng-container>
-        </span>
-      </li>
-
-      <li style="cursor: pointer; border: 1px solid lightgray; border-radius: 5px; margin-right: 10px;" class="nav-item" (click)="selectType('SEGMENT')">
-        <span  class="nav-link"  style="display: flex" [ngClass]="{ 'verification-tab-active': type === 'SEGMENT' }">
-        <span style="margin-right: 10px;">Segments</span>
-        <ng-container *ngIf="segmentVerificationResults$| async ">
-        <ng-container *ngTemplateOutlet="stats; context : {$implicit: (segmentVerificationResults$| async).stats}" >
-          </ng-container>
-        </ng-container>
-        </span>
-      </li>
-
-      <li style="cursor: pointer; border: 1px solid lightgray; border-radius: 5px; margin-right: 10px;" class="nav-item"  (click)="selectType('DATATYPE')">
-        <span  class="nav-link " style="display: flex" [ngClass]="{ 'verification-tab-active': type === 'DATATYPE'}">
-        <span style="margin-right: 10px;">Data types</span>  
-        <ng-container *ngIf="datatypeVerificationResults$| async ">
-          <ng-container *ngTemplateOutlet="stats; context : {$implicit: (datatypeVerificationResults$| async).stats}" >
-            </ng-container>
-          </ng-container>
-        </span>
-      </li>
-
-      <li style="cursor: pointer; border: 1px solid lightgray; border-radius: 5px; margin-right: 10px;" class="nav-item" (click)="selectType('VALUESET')">
-        <span  class="nav-link " style="display: flex" [ngClass]="{ 'verification-tab-active': type === 'VALUESET' }">
-        <span style="margin-right: 10px;">Value Sets</span>
-        <ng-container *ngIf="valuesetVerificationResults$| async ">
-          <ng-container *ngTemplateOutlet="stats; context : {$implicit: (valuesetVerificationResults$| async).stats}" >
-            </ng-container>
-          </ng-container>
-          </span>
-      </li>
-    </ul>
-    <div>
-      <ng-container [ngSwitch]="type">
-        <ng-container *ngSwitchCase="'VALUESET'">
-          <app-verification-entry-table [value]="valuesetVerificationResults$| async" [documentId]="documentId$ |async"> </app-verification-entry-table>
-        </ng-container>
-        <ng-container *ngSwitchCase="'DATATYPE'">
-          <app-verification-entry-table [value]="datatypeVerificationResults$| async" [documentId]="documentId$ |async"> </app-verification-entry-table>
-        </ng-container>
-        <ng-container *ngSwitchCase="'SEGMENT'">
-          <app-verification-entry-table [value]="segmentVerificationResults$| async"  [documentId]="documentId$ |async"> </app-verification-entry-table>
-        </ng-container>
-        <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
-          <app-verification-entry-table [value]="conformanceProfileVerificationResults$| async" [documentId]="documentId$ |async"> </app-verification-entry-table>
-        </ng-container>
-        <ng-container *ngSwitchCase="'IGDOCUMENT'">
-          <app-verification-entry-table [value]="igVerificationResult$| async" [documentId]="documentId$ |async"> </app-verification-entry-table>
-        </ng-container>
-      </ng-container>
-    </div>
+    <app-verification-result-display [verificationResult]="verificationResult$ | async" [documentId]="documentId$ | async" [activeSelector]="activeSelector"></app-verification-result-display>
   </ng-container>
   <div *ngIf="status?.loading" style="display: flex; align-items: center; justify-content: center; height: 100%;">
     <mat-spinner class="verification-progress" diameter="90"></mat-spinner>
@@ -79,23 +9,3 @@
     {{status?.failure}}
   </div>
 </ng-container>
-
-<ng-template #stats let-stats>
-  <div *ngIf="!stats.fatal && !stats.error && !stats.warning && !stats.informational">
-    <i style="color: #1d9f1d;" class="fa fa-check" ></i>
-  </div>
-  <div *ngIf="stats && !(!stats.fatal && !stats.error && !stats.warning && !stats.informational)" style="display: flex;">
-    <div style="margin-right: 5px;">
-      <app-issue-badge *ngIf="stats.fatal" type="FATAL" [number]="stats.fatal" ></app-issue-badge>
-    </div>
-    <div style="margin-right: 5px;">
-      <app-issue-badge *ngIf="stats.error" type="ERROR" [number]="stats.error" ></app-issue-badge>
-    </div>
-    <div style="margin-right: 5px;">
-      <app-issue-badge *ngIf="stats.warning" type="WARNING" [number]="stats.warning" ></app-issue-badge>
-    </div>
-    <div style="margin-right: 5px;">
-      <app-issue-badge *ngIf="stats.informational" type="INFORMATIONAL" [number]="stats.informational" ></app-issue-badge>
-    </div>
-  </div>
-</ng-template>

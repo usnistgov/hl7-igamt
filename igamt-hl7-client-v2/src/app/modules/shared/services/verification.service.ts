@@ -9,6 +9,7 @@ import { flatMap, map, tap } from 'rxjs/operators';
 import { IVerificationEnty } from '../../dam-framework';
 import { selectWorkspaceActive, selectWorkspaceVerification } from '../../dam-framework/store';
 import { IResourceKey } from '../components/hl7-v2-tree/hl7-v2-tree.component';
+import { IVerificationResultDisplay } from '../components/verification-result-display/verification-result-display.component';
 import { Type } from '../constants/type.enum';
 import { IDisplayElement } from '../models/display-element.interface';
 import { Severity } from '../models/verification.interface';
@@ -24,6 +25,7 @@ export interface IVerificationStats {
   error?: number;
   fatal?: number;
   warning?: number;
+  total: number;
 }
 
 export interface IStatusBarInfo {
@@ -168,11 +170,16 @@ export class VerificationService {
   }
 
   getVerificationStats(entry: IVerificationEnty[]): IVerificationStats {
+    const error = entry.filter((e) => e.severity === Severity.ERROR).length;
+    const informational = entry.filter((e) => e.severity === Severity.INFORMATIONAL).length;
+    const fatal = entry.filter((e) => e.severity === Severity.FATAL).length;
+    const warning = entry.filter((e) => e.severity === Severity.WARNING).length;
     return {
-      error: entry.filter((e) => e.severity === Severity.ERROR).length,
-      informational: entry.filter((e) => e.severity === Severity.INFORMATIONAL).length,
-      fatal: entry.filter((e) => e.severity === Severity.FATAL).length,
-      warning: entry.filter((e) => e.severity === Severity.WARNING).length,
+      error,
+      informational,
+      fatal,
+      warning,
+      total: error + informational + fatal + warning,
     };
   }
 
@@ -218,6 +225,7 @@ export class VerificationService {
           error: 0,
           fatal: 0,
           warning: 0,
+          total: 0,
         },
         resources: [],
         codes: [],
@@ -302,6 +310,23 @@ export class VerificationService {
 
   }
 
+  verificationReportToDisplay(report: any, repository: AResourceRepositoryService): Observable<IVerificationResultDisplay> {
+    return combineLatest(
+      this.convertValueByType(report, Type.IGDOCUMENT, repository),
+      this.convertValueByType(report, Type.CONFORMANCEPROFILE, repository),
+      this.convertValueByType(report, Type.SEGMENT, repository),
+      this.convertValueByType(report, Type.DATATYPE, repository),
+      this.convertValueByType(report, Type.SEGMENT, repository),
+    ).pipe(
+      map(([ig, conformanceProfiles, segments, datatypes, valueSets]) => ({
+        ig,
+        conformanceProfiles,
+        segments,
+        datatypes,
+        valueSets,
+      })));
+  }
+
   convertValueByType(report: any, type: Type, repository: AResourceRepositoryService): Observable<IVerificationEntryTable> {
     let errors = [];
     let prop: string;
@@ -341,7 +366,6 @@ export class VerificationService {
         targetType: element.targetType,
         message: element.description,
         severity: element.severity,
-
       });
     });
     return ret;

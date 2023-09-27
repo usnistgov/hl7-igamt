@@ -1,0 +1,56 @@
+<ul class="nav nav-pills" style="margin-top: 10px;">
+  <ng-container *ngTemplateOutlet="tab; context : {$implicit: verificationResult.ig, type: 'IGDOCUMENT', name: 'IG Document'}" ></ng-container>
+  <ng-container *ngTemplateOutlet="tab; context : {$implicit: verificationResult.conformanceProfiles, type: 'CONFORMANCEPROFILE', name: 'Conformance Profile'}" ></ng-container>
+  <ng-container *ngTemplateOutlet="tab; context : {$implicit: verificationResult.segments, type: 'SEGMENT', name: 'Segments'}" ></ng-container>
+  <ng-container *ngTemplateOutlet="tab; context : {$implicit: verificationResult.datatypes, type: 'DATATYPE', name: 'Data types'}" ></ng-container>
+  <ng-container *ngTemplateOutlet="tab; context : {$implicit: verificationResult.valueSets, type: 'VALUESET', name: 'Value Sets'}" ></ng-container>
+</ul>
+<div style="overflow: hidden; margin-top: 15px;">
+  <ng-container [ngSwitch]="active">
+    <ng-container *ngSwitchCase="'VALUESET'">
+      <app-verification-entry-table [value]="verificationResult.valueSets" [documentId]="documentId"> </app-verification-entry-table>
+    </ng-container>
+    <ng-container *ngSwitchCase="'DATATYPE'">
+      <app-verification-entry-table [value]="verificationResult.datatypes" [documentId]="documentId"> </app-verification-entry-table>
+    </ng-container>
+    <ng-container *ngSwitchCase="'SEGMENT'">
+      <app-verification-entry-table [value]="verificationResult.segments"  [documentId]="documentId"> </app-verification-entry-table>
+    </ng-container>
+    <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
+      <app-verification-entry-table [value]="verificationResult.conformanceProfiles" [documentId]="documentId"> </app-verification-entry-table>
+    </ng-container>
+    <ng-container *ngSwitchCase="'IGDOCUMENT'">
+      <app-verification-entry-table [value]="verificationResult.ig" [documentId]="documentId"> </app-verification-entry-table>
+    </ng-container>
+  </ng-container>
+</div>
+
+
+<ng-template #tab let-data let-name="name" let-type="type">
+  <li *ngIf="data && (showEmpty || data.stats?.total > 0)" style="cursor: pointer; border: 1px solid lightgray; border-radius: 5px; margin-right: 10px;" class="nav-item"  (click)="setActive(type)">
+    <span  class="nav-link" style="display: flex" [ngClass]="{ 'verification-tab-active': active === type }">
+      <span style="margin-right: 10px;">{{name}}</span>
+      <ng-container *ngTemplateOutlet="stats; context : {$implicit: data.stats}" ></ng-container>
+    </span>
+  </li>
+</ng-template>
+
+<ng-template #stats let-stats>
+  <div *ngIf="!stats.fatal && !stats.error && !stats.warning && !stats.informational">
+    <i style="color: #1d9f1d;" class="fa fa-check" ></i>
+  </div>
+  <div *ngIf="stats && !(!stats.fatal && !stats.error && !stats.warning && !stats.informational)" style="display: flex;">
+    <div style="margin-right: 5px;">
+      <app-issue-badge *ngIf="stats.fatal" type="FATAL" [number]="stats.fatal" ></app-issue-badge>
+    </div>
+    <div style="margin-right: 5px;">
+      <app-issue-badge *ngIf="stats.error" type="ERROR" [number]="stats.error" ></app-issue-badge>
+    </div>
+    <div style="margin-right: 5px;">
+      <app-issue-badge *ngIf="stats.warning" type="WARNING" [number]="stats.warning" ></app-issue-badge>
+    </div>
+    <div style="margin-right: 5px;">
+      <app-issue-badge *ngIf="stats.informational" type="INFORMATIONAL" [number]="stats.informational" ></app-issue-badge>
+    </div>
+  </div>
+</ng-template>

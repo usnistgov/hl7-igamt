@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { ExtendedModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatExpansionModule, MatFormFieldModule, MatRadioModule, MatSelectModule } from '@angular/material';
+import { MatExpansionModule, MatFormFieldModule, MatProgressSpinnerModule, MatRadioModule, MatSelectModule } from '@angular/material';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatSliderModule } from '@angular/material/slider';
@@ -139,6 +139,7 @@ import { ValueSetStructureComponent } from './components/value-set-structure/val
 import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-delta.component';
 import { VerificationBadgeComponent } from './components/verification-badge/verification-badge.component';
 import { VerificationEntryTableComponent } from './components/verification-entry-table/verification-entry-table.component';
+import { VerificationResultDisplayComponent } from './components/verification-result-display/verification-result-display.component';
 import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
 import { VsCodePickerComponent } from './components/vs-code-picker/vs-code-picker.component';
 import { AddingDuplicationDirective } from './directives/adding-duplication.directive';
@@ -261,6 +262,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     SelectedMessagesComponent,
     DocumentConfigComponent,
     ImportFromLibComponent,
+    VerificationResultDisplayComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -324,6 +326,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MatTooltipModule,
     BreadcrumbModule,
     ConfirmDialogModule,
+    MatProgressSpinnerModule,
   ],
   exports: [
     MatExpansionModule,
@@ -462,6 +465,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ActiveUsersListComponent,
     FirstLetterPipe,
     ImportFromLibComponent,
+    VerificationResultDisplayComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,

@@ -1,0 +1,11 @@
+:host {
+    display: grid;
+    grid-template-rows: min-content 1fr;
+    height: 100%;
+}
+
+.verification-tab-active {
+    color: #000;
+    background-color: #bce6ff;
+    border: 1px solid blue;
+}

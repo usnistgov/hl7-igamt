@@ -1,3 +1,14 @@
+:host {
+  display: contents;
+}
+
+.table-container {
+  display: grid;
+  grid-template-rows: 40px 1fr;
+  overflow: hidden;
+  height: 100%;
+}
+
 .severity-filter {
   display: flex;
   align-items: center;

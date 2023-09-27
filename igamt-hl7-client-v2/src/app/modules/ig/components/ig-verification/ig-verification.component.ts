@@ -2,16 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import * as _ from 'lodash';
-import { Observable } from 'rxjs';
-import { concatMap, map } from 'rxjs/operators';
+import { combineLatest, Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { AbstractEditorComponent } from 'src/app/modules/core/components/abstract-editor-component/abstract-editor-component.component';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import { IVerificationResultDisplay, VerificationDisplayActiveTypeSelector } from 'src/app/modules/shared/components/verification-result-display/verification-result-display.component';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { selectVerificationResult, selectVerificationStatus } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
 import { IDisplayElement } from './../../../shared/models/display-element.interface';
 import { EditorID } from './../../../shared/models/editor.enum';
 import { StoreResourceRepositoryService } from './../../../shared/services/resource-repository.service';
-import { IVerificationEntryTable, VerificationService } from './../../../shared/services/verification.service';
+import { VerificationService } from './../../../shared/services/verification.service';
 import { IgDocument } from './../../models/ig/ig-document.class';
 import { IgService } from './../../services/ig.service';
 
@@ -21,15 +22,11 @@ import { IgService } from './../../services/ig.service';
   styleUrls: ['./ig-verification.component.scss'],
 })
 export class IgVerificationComponent extends AbstractEditorComponent implements OnInit {
-  value$: Observable<IVerificationEntryTable>;
-  igVerificationResult$: Observable<IVerificationEntryTable>;
-  segmentVerificationResults$: Observable<IVerificationEntryTable>;
-  conformanceProfileVerificationResults$: Observable<IVerificationEntryTable>;
-  valuesetVerificationResults$: Observable<IVerificationEntryTable>;
-  datatypeVerificationResults$: Observable<IVerificationEntryTable>;
-  display$: Observable<IVerificationEntryTable>;
   status$: Observable<{ loading: boolean, failed: boolean, failure: string }>;
-  type = Type.IGDOCUMENT;
+  verificationResult$: Observable<IVerificationResultDisplay>;
+  activeSelector: VerificationDisplayActiveTypeSelector = () => {
+    return Type.IGDOCUMENT;
+  }
 
   constructor(
     store: Store<any>,
@@ -46,35 +43,11 @@ export class IgVerificationComponent extends AbstractEditorComponent implements 
       store,
     );
 
-    this.valuesetVerificationResults$ = this.store.select(selectVerificationResult).pipe(
-      concatMap((value) => {
-        return this.verificationService.convertValueByType(value, Type.VALUESET, repository);
+    this.verificationResult$ = this.store.select(selectVerificationResult).pipe(
+      switchMap((value) => {
+        return this.verificationService.verificationReportToDisplay(value, repository);
       }),
     );
-
-    this.datatypeVerificationResults$ = this.store.select(selectVerificationResult).pipe(
-      concatMap((value) => {
-        return this.verificationService.convertValueByType(value, Type.DATATYPE, repository);
-      }),
-    );
-
-    this.segmentVerificationResults$ = this.store.select(selectVerificationResult).pipe(
-      concatMap((value) => {
-        return this.verificationService.convertValueByType(value, Type.SEGMENT, repository);
-      }),
-    );
-
-    this.conformanceProfileVerificationResults$ = this.store.select(selectVerificationResult).pipe(
-      concatMap((value) => {
-        return this.verificationService.convertValueByType(value, Type.CONFORMANCEPROFILE, repository);
-      }),
-    );
-    this.igVerificationResult$ = this.store.select(selectVerificationResult).pipe(
-      concatMap((value) => {
-        return this.verificationService.convertValueByType(value, Type.IGDOCUMENT, repository);
-      }),
-    );
-
     this.status$ = this.store.select(selectVerificationStatus);
   }
 
@@ -88,10 +61,6 @@ export class IgVerificationComponent extends AbstractEditorComponent implements 
         return this.igService.igToIDisplayElement(document as IgDocument);
       }),
     );
-  }
-
-  selectType(type: Type) {
-    this.type = type;
   }
 
   onDeactivate(): void {
