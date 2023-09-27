@@ -52,6 +52,7 @@ export class RegisterFormComponent implements OnInit {
         [
           Validators.required,
           Validators.minLength(6),
+          noSpacesValidator(),
         ],
       ),
       password: new FormControl(
@@ -90,4 +91,13 @@ export class RegisterFormComponent implements OnInit {
 
   ngOnInit() {
   }
+
+
+}
+export function noSpacesValidator(): ValidatorFn {
+  return (control: FormControl) => {
+    const value = control.value;
+    const hasSpaces = /\s/.test(value); // Check for spaces using regex
+    return hasSpaces ? { hasSpaces: "No space allowed" } : null; // Validation error if spaces are found
+  };
 }
