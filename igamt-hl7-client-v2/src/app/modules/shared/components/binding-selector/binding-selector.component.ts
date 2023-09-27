@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
@@ -12,6 +12,7 @@ import { ISingleCodeBinding } from './../../models/binding.interface';
 @Component({
   selector: 'app-binding-selector',
   templateUrl: './binding-selector.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./binding-selector.component.css'],
 })
 export class BindingSelectorComponent<T> implements OnInit {
@@ -127,8 +128,39 @@ export class BindingSelectorComponent<T> implements OnInit {
     this.selectedSingleCodes.splice(index, 1);
   }
 
+
+
   ngOnInit(): void {
   }
+
+  checkNotEmpty(): boolean {
+
+  if(this.selectedBindingType === IBindingType.SINGLECODE){
+
+    return this.selectedSingleCodes != null && this.selectedSingleCodes.length > 0 ;
+
+  } else {
+    if(!this.selectedValueSets || this.selectedValueSets.length === 0){
+      return false;
+    }
+    for (const bindingDisplay of this.selectedValueSets) {
+      if (!bindingDisplay.valueSets || bindingDisplay.valueSets.length === 0) {
+        return false;
+      }
+
+    if (bindingDisplay.valueSets.some(element => element === null)) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
+
+print(){
+  console.log(this.selectedValueSets);
+  console.log(this.checkNotEmpty());
+}
 }
 
 export interface IBindingLocationItem {
