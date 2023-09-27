@@ -465,6 +465,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ActiveUsersListComponent,
     FirstLetterPipe,
     ImportFromLibComponent,
+    MatTooltipModule,
     VerificationResultDisplayComponent,
   ],
   entryComponents: [

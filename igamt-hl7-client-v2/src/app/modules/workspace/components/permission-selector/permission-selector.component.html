@@ -1,51 +1,50 @@
-<p-radioButton [(ngModel)]="mode" (ngModelChange)="modeChange($event)" name="mode" value="ADMIN" label="Admin" ></p-radioButton><br/>
-<p-radioButton [(ngModel)]="mode" (ngModelChange)="modeChange($event)" name="mode" value="GLOBAL_EDIT" label="Global Edit" ></p-radioButton><br/>
-<p-radioButton [(ngModel)]="mode" (ngModelChange)="modeChange($event)" name="mode" value="GLOBAL_VIEW" label="Global View & Edit By Folder" ></p-radioButton><br/>
-<p-radioButton [(ngModel)]="mode" (ngModelChange)="modeChange($event)" name="mode" value="CUSTOM" label="Edit & View By Folder" ></p-radioButton><br/>
-<div *ngIf="mode === 'GLOBAL_VIEW' || mode === 'CUSTOM'" style="margin-top: 10px;">
-  <table class="table table-sm table-bordered" style="margin-bottom: 0px;">
-    <tr>
-      <th colspan="3" style="text-align: center;">Permission By Folder</th>
-    </tr>
-    <tr>
-      <th>Folder</th>
-      <th>Permission</th>
-      <th></th>
-    </tr>
-    <tr *ngFor="let item of folderScopes; let i = index">
-      <td>{{item.folder.metadata.title}}</td>
-      <td>{{item.permission}}</td>
-      <td>
-        <button (click)="remove(i)" class="btn btn-sm btn-danger">
-          <i class="fa fa-trash"></i>
-        </button>
-      </td>
-    </tr>
-    <tr>
-      <td #dvb>
-        <p-dropdown
-          [options]="filteredFolderOptions"
-          [(ngModel)]="folder"
-          placeholder="Folder"
-          [appendTo]="dvb"
-          [autoDisplayFirst]="false"
-        ></p-dropdown>
-      </td>
-      <td #dva>
-        <p-dropdown
-          [options]="folderPermissions"
-          [(ngModel)]="folderPermission"
-          placeholder="Permission"
-          [disabled]="disableFolderPermission"
-          [appendTo]="dva"
-          [autoDisplayFirst]="false"
-        ></p-dropdown>
-      </td>
-      <td>
-        <button (click)="select(folder, folderPermission)" [disabled]="!folder || !folderPermission" class="btn btn-sm btn-primary">
-          <i class="fa fa-plus"></i>
-        </button>
-      </td>
-    </tr>
-  </table>
+<strong style="margin-bottom: 10px; display: block;">User Permissions</strong>
+<div *ngIf="unknownFolders && unknownFolders.length > 0" class="alert alert-warning" style="width: 450px; display: flex; justify-content: center; align-items: center; margin-top: 10px; margin-bottom: 10px; flex-direction: column;">
+  <span style="text-align: center; margin-bottom: 10px;">This user has permissions on <span class="badge badge-warning">{{unknownFolders.length}}</span> folder(s) that has been deleted</span>
+  <button class="btn btn-sm btn-warning" (click)="clearUnknownFolders()" >Clear Unknown Folders Permissions</button>
+</div>
+<p-radioButton [(ngModel)]="mode" (ngModelChange)="modeChange($event)" name="mode" value="ADMIN" label="Admin"></p-radioButton>
+<i class="fa fa-info-circle permission-info" matTooltip="An admin user can create folders and view, edit, delete all the existing and future folders, in addition the admin can manage users and edit the home page and metadata" matTooltipClass="workspace-permission-tt"></i> 
+<br/>
+<p-radioButton [(ngModel)]="mode" (ngModelChange)="modeChange($event)" name="mode" value="GLOBAL_EDIT" label="Global Edit" ></p-radioButton>
+<i class="fa fa-info-circle permission-info" matTooltip="A user with global edit permission can view and edit all existing and future folders" matTooltipClass="workspace-permission-tt"></i> 
+<br/>
+<p-radioButton [(ngModel)]="mode" (ngModelChange)="modeChange($event)" name="mode" value="GLOBAL_VIEW" label="Global View" ></p-radioButton>
+<i class="fa fa-info-circle permission-info" matTooltip="A user with global view permission can view all existing and future folders" matTooltipClass="workspace-permission-tt"></i> 
+<br/>
+<p-radioButton [(ngModel)]="mode" (ngModelChange)="modeChange($event)" name="mode" value="CUSTOM" label="Custom permissions By Folder" ></p-radioButton>
+<i class="fa fa-info-circle permission-info" matTooltip="Select permissions by folder for user" matTooltipClass="workspace-permission-tt"></i> 
+<br/>
+<div *ngIf="mode === 'GLOBAL_VIEW' || mode === 'CUSTOM'" style="margin-top: 15px;">
+  <span *ngIf="mode === 'GLOBAL_VIEW'" style="color: gray;">Set edit permission by folder (optional)</span>
+  <span *ngIf="mode === 'CUSTOM'" style="color: gray;">Set view/edit permission by folder</span>
+  <hr style="margin-top: 8px; margin-bottom: 8px;">
+  <p-checkbox [(ngModel)]="filterFoldersActive" [binary]="true" (onChange)="filterFolders($event)" ></p-checkbox> Show only folders with a set custom permission <span class="badge badge-primary">{{nbCustomPermissions - unknownFolders.length}}</span>
+  <p-table [value]="filteredFolders" [paginator]="true" [rows]="5" [style]="{ width: 'min-content', 'margin-top': '10px'}">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 200px;">Folder</th>
+        <th style="width: 250px;">Permission</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-folder>
+      <tr>
+        <td>{{folder.metadata.title}}</td>
+        <td>
+          <button class="btn btn-sm" (click)="setViewPermission(folder.id, mode)" [ngClass]="permissionsByFolder[folder.id] === 'VIEW' || (mode === 'GLOBAL_VIEW' && !permissionsByFolder[folder.id])  ? 'btn-success permission-selected':'btn-light'">
+            <i class="fa fa-eye"></i>
+            View
+          </button>
+          <button class="btn btn-sm" style="margin-left: 3px;" (click)="setEditPermission(folder.id, mode)" [ngClass]="permissionsByFolder[folder.id] === 'EDIT' ? 'btn-primary permission-selected':'btn-light'">
+            <i class="fa fa-pencil"></i>
+            Edit
+          </button>
+          <button *ngIf="mode === 'CUSTOM'" class="btn btn-sm" style="margin-left: 3px;" (click)="removeFolderPermission(folder.id)" [ngClass]="!permissionsByFolder[folder.id] ? 'btn-danger permission-selected':'btn-light'">
+            <i class="fa fa-times"></i>
+            None
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
