@@ -316,7 +316,7 @@ export class VerificationService {
       this.convertValueByType(report, Type.CONFORMANCEPROFILE, repository),
       this.convertValueByType(report, Type.SEGMENT, repository),
       this.convertValueByType(report, Type.DATATYPE, repository),
-      this.convertValueByType(report, Type.SEGMENT, repository),
+      this.convertValueByType(report, Type.VALUESET, repository),
     ).pipe(
       map(([ig, conformanceProfiles, segments, datatypes, valueSets]) => ({
         ig,
