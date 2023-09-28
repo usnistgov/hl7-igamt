@@ -58,6 +58,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -71,7 +72,9 @@ import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.domain.ConnectingInfo;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
+import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
@@ -200,6 +203,8 @@ public class BootstrapApplication implements CommandLineRunner {
 
 	@Autowired
 	ConformanceProfileService messageService;
+	@Autowired
+	ConformanceProfileRepository messageRepo;
 
 	@Autowired
 	BindingCollector bindingCollector;
@@ -837,5 +842,20 @@ public class BootstrapApplication implements CommandLineRunner {
 		this.classifyDatatypes();
 	}
 
+	//@PostConstruct
+	void setProfileType() {
+		List<ConformanceProfile> profiles= this.messageRepo.findAll();
+		
+		for(ConformanceProfile p: profiles) {
+			if(p.getProfileType().equals(ProfileType.HL7)) {
+				p.setProfileType(ProfileType.Constrainable);
+				System.out.println("changed[ "+p.getId()+"ProfileType");
+				messageRepo.save(p);
+
+			}
+		}
+	}
+	
+	
 
 }
