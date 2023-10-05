@@ -128,19 +128,17 @@ export class BindingSelectorComponent<T> implements OnInit {
     this.selectedSingleCodes.splice(index, 1);
   }
 
-
-
   ngOnInit(): void {
   }
 
   checkNotEmpty(): boolean {
 
-  if(this.selectedBindingType === IBindingType.SINGLECODE){
+  if (this.selectedBindingType === IBindingType.SINGLECODE) {
 
     return this.selectedSingleCodes != null && this.selectedSingleCodes.length > 0 ;
 
   } else {
-    if(!this.selectedValueSets || this.selectedValueSets.length === 0){
+    if (!this.selectedValueSets || this.selectedValueSets.length === 0) {
       return false;
     }
     for (const bindingDisplay of this.selectedValueSets) {
@@ -148,7 +146,7 @@ export class BindingSelectorComponent<T> implements OnInit {
         return false;
       }
 
-    if (bindingDisplay.valueSets.some(element => element === null)) {
+      if (bindingDisplay.valueSets.some((element) => element === null)) {
         return false;
       }
     }
@@ -156,8 +154,7 @@ export class BindingSelectorComponent<T> implements OnInit {
   }
 }
 
-
-print(){
+print() {
   console.log(this.selectedValueSets);
   console.log(this.checkNotEmpty());
 }

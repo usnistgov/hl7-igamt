@@ -245,23 +245,6 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   return item.type !== 'PUBLISHED' && item.status !== 'LOCKED';
                 },
               },
-
-              // {
-              //   label: 'Extract Template',
-              //   class: 'btn-warning',
-              //   icon: 'fa-file-o',
-              //   action: (item: IgListItem) => {
-
-              //       this.proceedDerive(item, CloneModeEnum.TEMPLATE);
-
-              //   },
-              //   disabled: (item: IgListItem): boolean => {
-              //     return false;
-              //   },
-              //   hide: (item: IgListItem): boolean => {
-              //     return false
-              //   },
-              // },
               {
                 label: 'Open',
                 class: 'btn-primary',
