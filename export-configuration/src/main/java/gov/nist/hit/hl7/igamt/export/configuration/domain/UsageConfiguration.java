@@ -158,6 +158,9 @@ public boolean isR() {
 	  if (this.isW()) {
 		  usages.add(Usage.W);
 	  }
+	  if (this.isIx()) {
+		  usages.add(Usage.IX);
+	  }
 	return usages;
   }
 
