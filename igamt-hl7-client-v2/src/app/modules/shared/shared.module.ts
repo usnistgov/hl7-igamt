@@ -465,6 +465,7 @@ import { MetadataAttributeConfigComponent } from './components/metadata-attribut
     FirstLetterPipe,
     MetadataAttributeConfigComponent,
     ImportFromLibComponent,
+    MatTooltipModule,
   ],
   entryComponents: [
     ResourcePickerComponent,

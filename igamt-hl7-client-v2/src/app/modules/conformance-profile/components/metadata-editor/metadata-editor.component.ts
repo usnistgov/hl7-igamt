@@ -51,10 +51,6 @@ export class MetadataEditorComponent extends AbstractEditorComponent implements 
   froalaConfig: Observable<any>;
   typeOptions = [
     {
-      label: 'HL7',
-      value: 'HL7',
-    },
-    {
       label: 'Constrainable',
       value: 'Constrainable',
     },
