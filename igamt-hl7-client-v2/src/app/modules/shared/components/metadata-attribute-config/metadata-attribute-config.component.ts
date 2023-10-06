@@ -28,7 +28,6 @@ export class MetadataAttributeConfigComponent implements OnInit {
     this.customAttr.push({
       label: "TESTING",
       type: FieldType.TEXT,
-
       placeholder: "",
       id: "New Field",
       name: "New Field",
@@ -39,6 +38,8 @@ export class MetadataAttributeConfigComponent implements OnInit {
   }
   submit(){
     this.dialogRef.close(this.inputName);
-
+  }
+  cancel() {
+    this.dialogRef.close();
   }
 }
