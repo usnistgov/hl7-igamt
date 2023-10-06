@@ -3,9 +3,10 @@ import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
-import { filter, map, take, withLatestFrom } from 'rxjs/operators';
+import { filter, flatMap, map, take } from 'rxjs/operators';
 import { DocumentConfigComponent } from 'src/app/modules/shared/components/document-config/document-config.component';
 import { VerificationType } from 'src/app/modules/shared/models/verification.interface';
+import { VerificationService } from 'src/app/modules/shared/services/verification.service';
 import { selectDelta, selectViewOnly } from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { selectDerived } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
@@ -15,7 +16,6 @@ import { ExportTypes } from '../../../export-configuration/models/export-types';
 import { ExportConfigurationService } from '../../../export-configuration/services/export-configuration.service';
 import { ExportToolComponent } from '../../../shared/components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from '../../../shared/components/export-xml-dialog/export-xml-dialog.component';
-import { VerifyIgDialogComponent } from '../../../shared/components/verify-ig-dialog/verify-ig-dialog.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IConnectingInfo } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
@@ -47,13 +47,18 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     private exportConfigurationService: ExportConfigurationService,
     private igService: IgService,
     private router: Router,
-    private dialog: MatDialog) {
+    private dialog: MatDialog,
+    private verificationService: VerificationService,
+  ) {
     this.subscription = this.store.select(selectViewOnly).subscribe(
       (value) => this.viewOnly = value,
     );
     this.verifiying$ = this.store.select(selectVerificationStatus).pipe(map((x) => x.loading));
     this.failed$ = this.store.select(selectVerificationStatus).pipe(map((x) => x.failed));
-    this.stats$ = this.store.select(selectVerificationResult).pipe(filter((x) => x), map((x) => x.stats));
+    this.stats$ = this.store.select(selectVerificationResult).pipe(
+      filter((x) => !!x),
+      map((x) => this.verificationService.getVerificationStatsFromIgVerificationReport(x)),
+    );
     this.toolConfig = this.store.select(selectExternalTools);
     this.deltaMode$ = this.store.select(selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
@@ -115,28 +120,24 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   exportXML() {
-    const subscription = this.getMessages().pipe(
-      withLatestFrom(this.getCompositeProfies()),
-      map(([messages, cps]) => {
-        this.getIgId().subscribe((igId) => {
-          const dialogRef = this.dialog.open(ExportXmlDialogComponent, {
-            data: { conformanceProfiles: messages, compositeProfiles: cps, igId },
-          });
-
-          dialogRef.afterClosed().pipe(
-            filter((x) => x !== undefined),
-            withLatestFrom(this.getIgId()),
-            take(1),
-            map(([result, igId2]) => {
-
-              this.igService.exportXML(igId2, result, null);
-            }),
-          ).subscribe();
-        });
-
+    combineLatest(
+      this.getMessages(),
+      this.getCompositeProfies(),
+      this.getIgId(),
+    ).pipe(
+      take(1),
+      flatMap(([messages, cps, igId]) => {
+        return this.dialog.open(ExportXmlDialogComponent, {
+          data: { conformanceProfiles: messages, compositeProfiles: cps, igId },
+        }).afterClosed().pipe(
+          filter((x) => x !== undefined),
+          take(1),
+          map((result) => {
+            this.igService.exportXML(igId, result);
+          }),
+        );
       }),
     ).subscribe();
-    subscription.unsubscribe();
   }
 
   exportDiffXML() {

@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { Severity } from '../../models/verification.interface';
 import { IVerificationEntryList, IVerificationEntryTable, IVerificationStats } from '../../services/verification.service';
 import { Type } from './../../constants/type.enum';
+import { PropertyType } from '../../models/save-change';
 
 export interface IEntryFilter {
   severity: {
@@ -48,6 +49,10 @@ export class VerificationEntryTableComponent implements OnInit {
     { key: 'warning', type: Severity.WARNING },
     { key: 'informational', type: Severity.INFORMATIONAL },
   ];
+
+  propertyTextMap = {
+    [PropertyType.STATEMENT]: "CONFORMANCE STATEMENT",
+  }
 
   @Input()
   preSelectSeverities: EntryTableSeverityFilterSelector = selectErrorFatalOrHighest;

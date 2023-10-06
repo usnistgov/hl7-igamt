@@ -120,7 +120,7 @@ public class SegmentDependencyServiceImpl implements SegmentDependencyService {
             bindingService.processValueSetBinding(rb.getValueSetBindings(pathId), used.getValuesets(), filter.getExcluded());  
         
             if (f.getRef() != null && f.getRef().getId() != null ) {
-              datatypeDependencyService.visit(f.getRef().getId(), used.getDatatypes(), used, filter, rb, pathId);
+              datatypeDependencyService.visit(f.getRef().getId(), used.getDatatypes(), used, filter, rb, pathId, new HashSet<>());
             }
             if(slicingMap.containsKey(f.getId())) {
               this.processSlicing(slicingMap.get(f.getId()), used, filter, pathId);
@@ -145,7 +145,7 @@ public class SegmentDependencyServiceImpl implements SegmentDependencyService {
 
     for (DynamicMappingItem item : dynamicMappingInfo.getItems()) {
       if(item.getDatatypeId() != null) {
-        datatypeDependencyService.visit(item.getDatatypeId(), used.getDatatypes(), used, filter, new ResourceBindingProcessor() , null);
+        datatypeDependencyService.visit(item.getDatatypeId(), used.getDatatypes(), used, filter, new ResourceBindingProcessor() , null, new HashSet<>());
       }
     }
   }
@@ -172,7 +172,7 @@ public class SegmentDependencyServiceImpl implements SegmentDependencyService {
     if(slices != null) {
       for ( T slice: slices) {
         if(slice.getFlavorId() != null) {
-          datatypeDependencyService.visit(slice.getFlavorId(), used.getDatatypes(), used, filter, new ResourceBindingProcessor() , null);
+          datatypeDependencyService.visit(slice.getFlavorId(), used.getDatatypes(), used, filter, new ResourceBindingProcessor() , null, new HashSet<>());
         }
       }
     }

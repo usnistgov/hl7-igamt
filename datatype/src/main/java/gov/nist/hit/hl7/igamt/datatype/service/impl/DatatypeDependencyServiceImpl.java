@@ -80,13 +80,13 @@ public class DatatypeDependencyServiceImpl implements DatatypeDependencyService 
     DatatypeDependencies ret = new DatatypeDependencies();
     ResourceBindingProcessor rb = new ResourceBindingProcessor(resource.getBinding());
     if (resource instanceof ComplexDatatype) {
-      this.process((ComplexDatatype)resource, ret, filter, rb, null);
+      this.process((ComplexDatatype)resource, ret, filter, rb, null, new HashSet<>());
     }
     return ret;
   }
 
   @Override
-  public void process(Datatype datatype, DatatypeDependencies used, DependencyFilter filter,  ResourceBindingProcessor rb, String path) throws EntityNotFound {
+  public void process(Datatype datatype, DatatypeDependencies used, DependencyFilter filter,  ResourceBindingProcessor rb, String path, Set<String> visited) throws EntityNotFound {
     if (datatype instanceof ComplexDatatype) {
       ComplexDatatype complex =  (ComplexDatatype)datatype;
       for (Component c : complex.getComponents()) {
@@ -96,7 +96,7 @@ public class DatatypeDependencyServiceImpl implements DatatypeDependencyService 
 
           if (c.getRef() != null) {
             if (c.getRef().getId() != null) {
-              this.visit(c.getRef().getId(), used.getDatatypes(), used, filter, rb, pathId);
+              this.visit(c.getRef().getId(), used.getDatatypes(), used, filter, rb, pathId, new HashSet<>(visited));
             }
           }
         }
@@ -106,19 +106,27 @@ public class DatatypeDependencyServiceImpl implements DatatypeDependencyService 
 
   @Override
   public void visit(String id, Map<String, Datatype> existing, DatatypeDependencies used,
-      DependencyFilter filter, ResourceBindingProcessor rb, String parentPath) throws EntityNotFound {
+      DependencyFilter filter, ResourceBindingProcessor rb, String parentPath, Set<String> visited) throws EntityNotFound {
 
 	    if(id != null) {
-	        Datatype d = existing.containsKey(id)? existing.get(id): datatypeService.findById(id);
-	      	
-	        if(d!= null) {
-	          existing.put(d.getId(), d);
-	          if(d instanceof ComplexDatatype) {
-	            rb.addChild(d.getBinding(), parentPath);
-	            this.process(d, used , filter, rb, parentPath);
-	          }
-	        }else throw new EntityNotFound(id);
-	      }
+          // If already visited stop recursion
+          if(visited.contains(id)) {
+            return;
+          }
+          visited.add(id);
+
+          Datatype d = existing.containsKey(id)? existing.get(id): datatypeService.findById(id);
+
+          if(d!= null) {
+            existing.put(d.getId(), d);
+            if(d instanceof ComplexDatatype) {
+              rb.addChild(d.getBinding(), parentPath);
+              this.process(d, used , filter, rb, parentPath, visited);
+            }
+          } else {
+            throw new EntityNotFound(id);
+          }
+        }
   }
 
 

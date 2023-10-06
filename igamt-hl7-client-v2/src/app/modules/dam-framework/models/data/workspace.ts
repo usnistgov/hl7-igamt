@@ -1,3 +1,5 @@
+import { Type } from 'src/app/modules/shared/constants/type.enum';
+
 export interface IEditorMetadata {
   id: string;
   title?: string;
@@ -23,6 +25,10 @@ export interface IVerificationEnty {
   targetType: string;
   message: string;
   severity: string;
+  subTarget?: {
+    id: string;
+    type: Type;
+  };
 }
 
 export interface IWorkspace {

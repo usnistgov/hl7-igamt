@@ -206,7 +206,7 @@ public class ProfileComponentDependencyServiceImpl implements ProfileComponentDe
         if(ctx.getProfileComponentDynamicMapping().getItems() != null) {
           for( PcDynamicMappingItem item: ctx.getProfileComponentDynamicMapping().getItems()) {   
             if(item.getFlavorId() != null && !profileComponentDependencies.getDatatypes().containsKey(item.getFlavorId())) {
-              datatypeDependencyService.visit(item.getFlavorId(),profileComponentDependencies.getDatatypes(), profileComponentDependencies, filter, new ResourceBindingProcessor() , null);
+              datatypeDependencyService.visit(item.getFlavorId(),profileComponentDependencies.getDatatypes(), profileComponentDependencies, filter, new ResourceBindingProcessor() , null, new HashSet<>());
             }
           }
         }
@@ -240,7 +240,7 @@ public class ProfileComponentDependencyServiceImpl implements ProfileComponentDe
           if(prop instanceof PropertyDatatype) {
             PropertyDatatype propDt =  (PropertyDatatype)prop;
             if(propDt.getDatatypeId() != null) {
-              this.datatypeDependencyService.visit(propDt.getDatatypeId() , profileComponentDependencies.getDatatypes(), profileComponentDependencies, filter, new ResourceBindingProcessor(), null);
+              this.datatypeDependencyService.visit(propDt.getDatatypeId() , profileComponentDependencies.getDatatypes(), profileComponentDependencies, filter, new ResourceBindingProcessor(), null, new HashSet<>());
             }
           }
           if(prop instanceof PropertyRef) {

@@ -5,9 +5,10 @@ import { Store } from '@ngrx/store';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { combineLatest, concat, EMPTY, interval, Observable, of } from 'rxjs';
-import { flatMap, map, tap } from 'rxjs/operators';
+import { flatMap, map } from 'rxjs/operators';
 import { IVerificationEnty } from '../../dam-framework';
 import { selectWorkspaceActive, selectWorkspaceVerification } from '../../dam-framework/store';
+import { IIgVerificationReport } from '../../ig/models/ig/ig-document.class';
 import { IResourceKey } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { IVerificationResultDisplay } from '../components/verification-result-display/verification-result-display.component';
 import { Type } from '../constants/type.enum';
@@ -55,6 +56,7 @@ export interface IVerificationEntryTable {
 
 export interface IVerificationEntryList {
   target: IDisplayElement;
+  subTarget?: IDisplayElement;
   stats: IVerificationStats;
   entries: IVerificationEnty[];
 }
@@ -183,6 +185,21 @@ export class VerificationService {
     };
   }
 
+  getVerificationStatsFromIgVerificationReport(report: IIgVerificationReport): IVerificationStats {
+    const entries = this.igVerificationReportToIssueList(report);
+    const error = entries.filter((e) => e.severity === Severity.ERROR).length;
+    const informational = entries.filter((e) => e.severity === Severity.INFORMATIONAL).length;
+    const fatal = entries.filter((e) => e.severity === Severity.FATAL).length;
+    const warning = entries.filter((e) => e.severity === Severity.WARNING).length;
+    return {
+      error,
+      informational,
+      fatal,
+      warning,
+      total: error + informational + fatal + warning,
+    };
+  }
+
   getEntryTable(tab: VerificationTab, repository: AResourceRepositoryService): Observable<IVerificationEntryTable> {
     if (tab === VerificationTab.EDITOR) {
       return this.getEditorVerificationEntryTable(repository);
@@ -211,12 +228,42 @@ export class VerificationService {
   getEditorVerificationEntryTable(repository: AResourceRepositoryService): Observable<IVerificationEntryTable> {
     return this.store.select(selectWorkspaceVerification).pipe(
       flatMap((verification) => {
-        return verification.supported ? this.getVerificationEntryTable(verification.entries || [], repository) : of(undefined);
+        return verification.supported ? this.getVerificationEntryTable([], verification.entries || [], repository) : of(undefined);
       }),
     );
   }
 
-  getVerificationEntryTable(entries: IVerificationEnty[], repository: AResourceRepositoryService): Observable<IVerificationEntryTable> {
+  getEntryDisplayElement(generatedList: IDisplayElement[], id: string, type: Type, repository: AResourceRepositoryService): Observable<IDisplayElement> {
+    if (type === Type.IGDOCUMENT) {
+      return of(undefined);
+    }
+    const generated = generatedList && generatedList.find((element) => element.id === id && element.type === type);
+    if (generated) {
+      return of(generated);
+    }
+    return repository.getResourceDisplay(type, id);
+  }
+
+  private keyToStr(id: string, type: string): string {
+    return `${id}@${type}`;
+  }
+
+  getAllResourceRefs(entries: IVerificationEnty[]): IResourceKey[] {
+    return Object.values(entries.reduce((acc, entry) => {
+      const target: IResourceKey = {
+        id: entry.targetId,
+        type: entry.targetType as Type,
+      };
+      const subTarget: IResourceKey = entry.subTarget;
+      return {
+        ...acc,
+        [this.keyToStr(target.id, target.type)]: target,
+        ...(subTarget ? { [this.keyToStr(subTarget.id, subTarget.type)]: subTarget } : {}),
+      };
+    }, {} as Record<string, IResourceKey>));
+  }
+
+  getVerificationEntryTable(generated: IDisplayElement[], entries: IVerificationEnty[], repository: AResourceRepositoryService): Observable<IVerificationEntryTable> {
     if (!entries || entries.length === 0) {
       return of({
         valid: true,
@@ -234,124 +281,78 @@ export class VerificationService {
       });
     }
 
-    const keyToStr = (id: string, type: string): string => {
-      return `${id}@${type}`;
-    };
-
     const stats = this.getVerificationStats(entries);
     const codes = Array.from(new Set(entries.map((entry) => entry.code)));
     const severities = Array.from(new Set(entries.map((entry) => entry.severity)));
-    const resourceKeys = Object.values(entries.reduce((acc, entry) => {
-      const key: IResourceKey = {
-        id: entry.targetId,
-        type: entry.targetType as Type,
-      };
-      return {
-        ...acc,
-        [keyToStr(key.id, key.type)]: key,
-      };
-    }, {} as Record<string, IResourceKey>));
-
+    const resourceKeys = this.getAllResourceRefs(entries);
     return combineLatest(
-      resourceKeys.map(
-        (key) => repository.getResourceDisplay(key.type, key.id).pipe(tap((x) => {
-          if (!x) {
-            console.log(key.type, key.id);
-          }
-        })),
-      ),
-
+      resourceKeys.map((key) => this.getEntryDisplayElement(generated, key.id, key.type, repository)),
     ).pipe(
       map((resources) => {
-        const grouped = entries.reduce((acc, entry) => {
-          const key: IResourceKey = {
-            id: entry.targetId,
-            type: entry.targetType as Type,
-          };
-          const keyStr = keyToStr(key.id, key.type);
-          return {
-            ...acc,
-            [keyStr]: [
-              ...(acc[keyStr] ? acc[keyStr] : []),
-              entry,
-            ],
-          };
-        }, {} as Record<string, IVerificationEnty[]>);
-        const resourceLists = Object.keys(grouped).map((key) => {
-          return {
-            target: resources.find((resource) => keyToStr(resource.id, resource.type) === key),
-            stats: this.getVerificationStats(grouped[key]),
-            entries: grouped[key],
-          };
-        });
+        const entriesByGroupId = _.groupBy(entries, (entry) => this.getEntryGroupId(entry));
+        const groupedEntryList = this.createEntryGroups(resources, entries, entriesByGroupId);
 
         return {
-          valid: false,
+          valid: (stats.error && stats.error > 0) || (stats.fatal && stats.fatal > 0),
           stats,
           resources,
           codes,
           severities,
-          entries: resourceLists,
+          entries: groupedEntryList,
         };
       }),
     );
   }
 
-  convertValue(report: any, repository: AResourceRepositoryService): Observable<IVerificationEntryTable> {
-    let errors = [];
-    for (const property in report) {
-      if (report[property].length) {
-        report[property].forEach((element) => {
-          errors = _.union(errors, element.errors);
-        });
-      }
-    }
-    return this.getVerificationEntryTable(this.convertErrorsToEntries(errors), repository);
-
+  createEntryGroups(resources: IDisplayElement[], entries: IVerificationEnty[], entriesByGroupId: Record<string, IVerificationEnty[]>): IVerificationEntryList[] {
+    return Object.values(entries.reduce((acc, entry) => {
+      const entryGroupId = this.getEntryGroupId(entry);
+      if (acc[entryGroupId]) { return acc; }
+      return {
+        ...acc,
+        [entryGroupId]: {
+          target: resources.find((resource) => resource && this.keyToStr(resource.id, resource.type) === this.getEntryTargetResourceId(entry)),
+          subTarget: entry.subTarget ? resources.find((resource) => resource && this.keyToStr(resource.id, resource.type) === this.getEntrySubTargetResourceId(entry)) : undefined,
+          stats: this.getVerificationStats(entriesByGroupId[entryGroupId]),
+          entries: entriesByGroupId[entryGroupId],
+        },
+      };
+    }, {} as Record<string, IVerificationEntryList>));
   }
 
-  verificationReportToDisplay(report: any, repository: AResourceRepositoryService): Observable<IVerificationResultDisplay> {
+  getEntryTargetResourceId(entry: IVerificationEnty): string {
+    return this.keyToStr(entry.targetId, entry.targetType);
+  }
+  getEntrySubTargetResourceId(entry: IVerificationEnty): string {
+    return entry.subTarget ? this.keyToStr(entry.subTarget.id, entry.subTarget.type) : '';
+  }
+  getEntryGroupId(entry: IVerificationEnty): string {
+    return this.getEntryTargetResourceId(entry) + (entry.subTarget ? '|' + this.getEntrySubTargetResourceId(entry) : '');
+  }
+
+  verificationReportToDisplay(report: IIgVerificationReport, repository: AResourceRepositoryService): Observable<IVerificationResultDisplay> {
     return combineLatest(
-      this.convertValueByType(report, Type.IGDOCUMENT, repository),
-      this.convertValueByType(report, Type.CONFORMANCEPROFILE, repository),
-      this.convertValueByType(report, Type.SEGMENT, repository),
-      this.convertValueByType(report, Type.DATATYPE, repository),
-      this.convertValueByType(report, Type.VALUESET, repository),
+      this.convertIssueListToVerificationEntryTable(report.generated || [], report.ig, repository),
+      this.convertIssueListToVerificationEntryTable(report.generated || [], report.compositeProfiles, repository),
+      this.convertIssueListToVerificationEntryTable(report.generated || [], report.conformanceProfiles, repository),
+      this.convertIssueListToVerificationEntryTable(report.generated || [], report.segments, repository),
+      this.convertIssueListToVerificationEntryTable(report.generated || [], report.datatypes, repository),
+      this.convertIssueListToVerificationEntryTable(report.generated || [], report.valueSets, repository),
+      this.convertIssueListToVerificationEntryTable(report.generated || [], report.coConstraintGroups, repository),
     ).pipe(
-      map(([ig, conformanceProfiles, segments, datatypes, valueSets]) => ({
+      map(([ig, compositeProfiles, conformanceProfiles, segments, datatypes, valueSets, coConstraintGroups]) => ({
         ig,
+        compositeProfiles,
         conformanceProfiles,
         segments,
         datatypes,
         valueSets,
+        coConstraintGroups,
       })));
   }
 
-  convertValueByType(report: any, type: Type, repository: AResourceRepositoryService): Observable<IVerificationEntryTable> {
-    let errors = [];
-    let prop: string;
-    if (type === Type.IGDOCUMENT) {
-
-      prop = 'igVerificationResult';
-    } else if (type === Type.SEGMENT) {
-      prop = 'segmentVerificationResults';
-
-    } else if (type === Type.CONFORMANCEPROFILE) {
-      prop = 'conformanceProfileVerificationResults';
-    } else if (type === Type.DATATYPE) {
-      prop = 'datatypeVerificationResults';
-    } else if (type === Type.VALUESET) {
-      prop = 'valuesetVerificationResults';
-    }
-    if (report && report[prop] && report[prop].length) {
-      report[prop].forEach((element) => {
-        const elementErrors = element.errors.map((error) => {
-          return { ...error, target: element.resourceId, targetType: element.resourceType };
-        });
-        errors = _.union(errors, elementErrors);
-      });
-    }
-    return this.getVerificationEntryTable(this.convertErrorsToEntries(errors), repository);
+  convertIssueListToVerificationEntryTable(generated: IDisplayElement[], list: any[], repository: AResourceRepositoryService): Observable<IVerificationEntryTable> {
+    return this.getVerificationEntryTable(generated, this.convertErrorsToEntries(list || []), repository);
   }
 
   convertErrorsToEntries(errors: any[]): IVerificationEnty[] {
@@ -366,27 +367,29 @@ export class VerificationService {
         targetType: element.targetType,
         message: element.description,
         severity: element.severity,
+        subTarget: element.subTarget,
       });
     });
     return ret;
   }
 
-  convertValueToTocElements(report: any): Dictionary<IVerificationEnty[]> {
-    let temp: Dictionary<IVerificationEnty[]> = {};
-    let errors = [];
-    for (const property in report) {
-      if (report && report[property] && report[property].length) {
-        report[property].forEach((element) => {
+  convertValueToTocElements(report: IIgVerificationReport): Dictionary<IVerificationEnty[]> {
+    return _.groupBy(
+      this.convertErrorsToEntries(this.igVerificationReportToIssueList(report)),
+      (entry) => entry.targetId,
+    );
+  }
 
-          const elementErrors = element.errors.map((error) => {
-            return { ...error, targetType: element.resourceType, target: element.resourceId };
-          });
-          errors = _.union(errors, elementErrors);
-        });
-      }
-    }
-    temp = _.groupBy(errors, (x) => x.target);
-    return temp;
+  igVerificationReportToIssueList(report: IIgVerificationReport): any[] {
+    return report ? [
+      ...(report.ig || []),
+      ...(report.compositeProfiles || []),
+      ...(report.conformanceProfiles || []),
+      ...(report.segments || []),
+      ...(report.datatypes || []),
+      ...(report.valueSets || []),
+      ...(report.coConstraintGroups || []),
+    ] : [];
   }
 
 }

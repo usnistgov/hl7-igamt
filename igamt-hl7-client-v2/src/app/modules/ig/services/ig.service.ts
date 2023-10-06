@@ -29,7 +29,7 @@ import { IMetadata } from '../../shared/models/metadata.interface';
 import { IRegistry } from '../../shared/models/registry.interface';
 import { IVerificationRequest } from '../../shared/models/verification.interface';
 import { INarrative } from '../components/ig-section-editor/ig-section-editor.component';
-import { IDocumentDisplayInfo, IIgUpdateInfo } from '../models/ig/ig-document.class';
+import { IDocumentDisplayInfo, IIgUpdateInfo, IIgVerificationReport } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
 
@@ -322,7 +322,7 @@ export class IgService {
     return this.http.post<string[]>(this.IG_END_POINT + documentId + '/' + registryType + '/deleteResources', ids);
   }
 
-  exportXML(igId: string, selectedIds: ISelectedIds, xmlFormat) {
+  exportXML(igId: string, selectedIds: ISelectedIds) {
     const form = document.createElement('form');
     form.action = this.EXPORT_URL + igId + '/xml/validation';
     form.method = 'POST';
@@ -474,7 +474,7 @@ export class IgService {
     return this.http.post<Message<ICreateProfileComponentResponse>>(this.IG_END_POINT + request.documentId + '/composite-profile/create', request);
   }
 
-  verify(payload: IVerificationRequest): Observable<any> {
+  verify(payload: IVerificationRequest): Observable<IIgVerificationReport> {
     return this.http.get<any>(this.IG_END_POINT + payload.id + '/verification');
   }
   getUpdateInfo(igId: string): Observable<IIgUpdateInfo> {

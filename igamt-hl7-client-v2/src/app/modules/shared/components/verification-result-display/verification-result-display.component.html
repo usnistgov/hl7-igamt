@@ -1,9 +1,11 @@
-<ul class="nav nav-pills" style="margin-top: 10px;">
+<ul class="nav nav-pills" style="margin-top: 10px; gap: 10px;">
   <ng-container *ngTemplateOutlet="tab; context : {$implicit: verificationResult.ig, type: 'IGDOCUMENT', name: 'IG Document'}" ></ng-container>
   <ng-container *ngTemplateOutlet="tab; context : {$implicit: verificationResult.conformanceProfiles, type: 'CONFORMANCEPROFILE', name: 'Conformance Profile'}" ></ng-container>
+  <ng-container *ngTemplateOutlet="tab; context : {$implicit: verificationResult.compositeProfiles, type: 'COMPOSITEPROFILE', name: 'Composite Profile'}" ></ng-container>
   <ng-container *ngTemplateOutlet="tab; context : {$implicit: verificationResult.segments, type: 'SEGMENT', name: 'Segments'}" ></ng-container>
   <ng-container *ngTemplateOutlet="tab; context : {$implicit: verificationResult.datatypes, type: 'DATATYPE', name: 'Data types'}" ></ng-container>
   <ng-container *ngTemplateOutlet="tab; context : {$implicit: verificationResult.valueSets, type: 'VALUESET', name: 'Value Sets'}" ></ng-container>
+  <ng-container *ngTemplateOutlet="tab; context : {$implicit: verificationResult.coConstraintGroups, type: 'COCONSTRAINTGROUP', name: 'Co-Constraint Groups'}" ></ng-container>
 </ul>
 <div style="overflow: hidden; margin-top: 15px;">
   <ng-container [ngSwitch]="active">
@@ -19,6 +21,12 @@
     <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
       <app-verification-entry-table [value]="verificationResult.conformanceProfiles" [documentId]="documentId"> </app-verification-entry-table>
     </ng-container>
+    <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
+      <app-verification-entry-table [value]="verificationResult.compositeProfiles" [documentId]="documentId"> </app-verification-entry-table>
+    </ng-container>
+    <ng-container *ngSwitchCase="'COCONSTRAINTGROUP'">
+      <app-verification-entry-table [value]="verificationResult.coConstraintGroups" [documentId]="documentId"> </app-verification-entry-table>
+    </ng-container>
     <ng-container *ngSwitchCase="'IGDOCUMENT'">
       <app-verification-entry-table [value]="verificationResult.ig" [documentId]="documentId"> </app-verification-entry-table>
     </ng-container>
@@ -27,7 +35,7 @@
 
 
 <ng-template #tab let-data let-name="name" let-type="type">
-  <li *ngIf="data && (showEmpty || data.stats?.total > 0)" style="cursor: pointer; border: 1px solid lightgray; border-radius: 5px; margin-right: 10px;" class="nav-item"  (click)="setActive(type)">
+  <li *ngIf="data && (showEmpty || data.stats?.total > 0)" style="cursor: pointer; border: 1px solid lightgray; border-radius: 5px;" class="nav-item"  (click)="setActive(type)">
     <span  class="nav-link" style="display: flex" [ngClass]="{ 'verification-tab-active': active === type }">
       <span style="margin-right: 10px;">{{name}}</span>
       <ng-container *ngTemplateOutlet="stats; context : {$implicit: data.stats}" ></ng-container>

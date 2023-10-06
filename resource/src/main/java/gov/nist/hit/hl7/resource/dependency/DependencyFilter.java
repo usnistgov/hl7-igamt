@@ -25,6 +25,10 @@ public class DependencyFilter {
 	
 	Map<RealKey, Boolean> excluded = new HashMap<RealKey,Boolean>();
 	UsageFilter usageFilter;
+
+	public DependencyFilter() {
+	}
+
 	/**
 	 * @param excluded2
 	 */

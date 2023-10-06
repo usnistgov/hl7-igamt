@@ -16,11 +16,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipOutputStream;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
-import gov.nist.hit.hl7.igamt.ig.service.AddService;
+import gov.nist.hit.hl7.igamt.ig.model.IgProfileResourceSubSet;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
+import gov.nist.hit.hl7.igamt.ig.service.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -105,9 +108,6 @@ import gov.nist.hit.hl7.igamt.ig.exceptions.ImportValueSetException;
 import gov.nist.hit.hl7.igamt.ig.model.FilterIGInput;
 import gov.nist.hit.hl7.igamt.ig.model.FilterResponse;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
-import gov.nist.hit.hl7.igamt.ig.service.IgService;
-import gov.nist.hit.hl7.igamt.ig.service.ResourceHelper;
-import gov.nist.hit.hl7.igamt.ig.service.XMLSerializeService;
 import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentBinding;
@@ -221,6 +221,9 @@ public class IgServiceImpl implements IgService {
 
 	@Autowired
 	ResourceHelper resourceHelper;
+
+	@Autowired
+	IgDependencyService igDependencyService;
 
 	@Override
 	public Ig findById(String id) {
@@ -1459,6 +1462,40 @@ public class IgServiceImpl implements IgService {
 		}
 
 		return ret;
+	}
+
+	public IgProfileResourceSubSet getIgProfileResourceSubSet(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws EntityNotFound {
+		IgProfileResourceSubSet igProfileResourceSubSet = new IgProfileResourceSubSet();
+		Set<ResourceRef> dependencies = new HashSet<>();
+		igProfileResourceSubSet.setConformanceProfiles(this.conformanceProfileService.findByIdIn(conformanceProfiles));
+		igProfileResourceSubSet.setCompositeProfiles(this.compositeProfileService.findByIdIn(compositeProfiles));
+
+		for(ConformanceProfile conformanceProfile: igProfileResourceSubSet.getConformanceProfiles()) {
+			dependencies.addAll(this.igDependencyService.collectAllConformanceProfileDependencies(conformanceProfile));
+		}
+		for(CompositeProfileStructure compositeProfileStructure: igProfileResourceSubSet.getCompositeProfiles()) {
+			dependencies.addAll(this.igDependencyService.collectAllCompositeProfileDependencies(compositeProfileStructure));
+		}
+
+		igProfileResourceSubSet.setDatatypes(this.datatypeService.findByIdIn(
+				dependencies.stream()
+						.filter((d) -> d.getType().equals(Type.DATATYPE))
+						.map(ResourceRef::getId)
+						.collect(Collectors.toSet())
+		));
+		igProfileResourceSubSet.setSegments(this.segmentService.findByIdIn(
+				dependencies.stream()
+						.filter((d) -> d.getType().equals(Type.SEGMENT))
+						.map(ResourceRef::getId)
+						.collect(Collectors.toSet())
+		));
+		igProfileResourceSubSet.setValuesets(this.valueSetService.findByIdIn(
+				dependencies.stream()
+						.filter((d) -> d.getType().equals(Type.VALUESET))
+						.map(ResourceRef::getId)
+						.collect(Collectors.toSet())
+		));
+		return igProfileResourceSubSet;
 	}
 
 	@Override

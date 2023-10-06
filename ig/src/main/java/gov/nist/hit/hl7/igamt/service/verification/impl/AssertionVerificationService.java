@@ -88,22 +88,32 @@ public class AssertionVerificationService extends VerificationUtils {
                 xmlValidationErrors.add(exception);
             }
         });
+        IgamtObjectError throughException = null;
         try {
             validator.validate(new StreamSource(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))));
         } catch (SAXParseException exception) {
-            entries.add(this.entry.FreeTextAssertionXMLInvalid(
+            throughException = this.entry.FreeTextAssertionXMLInvalid(
                     location,
                     skeleton.getResource().getId(),
                     skeleton.getResource().getType(),
                     exception.getMessage()
-            ));
+            );
         }
-        xmlValidationErrors.stream().map((error) -> this.entry.FreeTextAssertionXMLInvalid(
-                location,
-                skeleton.getResource().getId(),
-                skeleton.getResource().getType(),
-                error.getMessage()
-        )).forEach(entries::add);
+
+        // Add all xml validation errors except duplicates that are caught through try/catch above
+        IgamtObjectError finalThroughException = throughException;
+        xmlValidationErrors.stream()
+                .map((error) -> this.entry.FreeTextAssertionXMLInvalid(
+                    location,
+                    skeleton.getResource().getId(),
+                    skeleton.getResource().getType(),
+                    error.getMessage())
+                )
+                .filter((entry) -> finalThroughException == null || !finalThroughException.getDescription().equals(entry.getDescription()))
+                .forEach(entries::add);
+        if(throughException != null) {
+            entries.add(throughException);
+        }
         return entries;
     }
 

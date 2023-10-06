@@ -94,12 +94,6 @@ public class SimpleResourceBindingVerificationService extends VerificationUtils 
         ).collect(Collectors.toList());
     }
 
-    private <T, E extends BindingContainer<T>> List<IgamtObjectError> checkBindings(List<E> bindings,  ResourceSkeleton resourceSkeleton, TriFunction<ResourceSkeleton, String, T, List<IgamtObjectError>> verify) {
-        return bindings.stream().flatMap(
-                (bindingContainer) -> verify.apply(resourceSkeleton, bindingContainer.getPathId(), bindingContainer.getValue()).stream()
-        ).collect(Collectors.toList());
-    }
-
     @Override
     public List<IgamtObjectError> verifyValueSetBinding(ResourceSkeleton resourceSkeleton, String pathId, Set<ValuesetBinding> valuesetBinding) {
         return this.vocabularyBindingVerificationService.verifyValueSetBinding(resourceSkeleton, pathId, valuesetBinding);

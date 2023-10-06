@@ -896,19 +896,15 @@ export class IgEditEffects extends DamWidgetEffect {
     mergeMap((action: OpenIgVerificationEditor) => {
       return combineLatest(
         this.store.select(selectIgDocument),
-        // this.store.select(selectVerificationResult)
       )
         .pipe(
           take(1),
-          map(([ig, result]) => {
+          map(([ig]) => {
             return new fromDAM.OpenEditor({
               id: action.payload.id,
               display: this.igService.igToIDisplayElement(ig),
               editor: action.payload.editor,
-              initial: {
-                verificationResult: result,
-                changes: {},
-              },
+              initial: {},
             });
           }),
         );

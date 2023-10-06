@@ -16,5 +16,6 @@ public interface InMemoryDomainExtensionService {
 	<T extends Resource> void put(String token, List<T> resource);
 	void clear(String token);
 	String put(DataExtension extension);
+	String put(DataExtension extension, Resource context);
 
 }

@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import * as _ from 'lodash';
-import { combineLatest, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { AbstractEditorComponent } from 'src/app/modules/core/components/abstract-editor-component/abstract-editor-component.component';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IVerificationResultDisplay, VerificationDisplayActiveTypeSelector } from 'src/app/modules/shared/components/verification-result-display/verification-result-display.component';
@@ -32,7 +32,9 @@ export class IgVerificationComponent extends AbstractEditorComponent implements 
     store: Store<any>,
     actions$: Actions,
     private igService: IgService,
-    public repository: StoreResourceRepositoryService, private verificationService: VerificationService) {
+    public repository: StoreResourceRepositoryService,
+    private verificationService: VerificationService,
+  ) {
     super(
       {
         id: EditorID.IG_VERIFICATION,
@@ -44,6 +46,7 @@ export class IgVerificationComponent extends AbstractEditorComponent implements 
     );
 
     this.verificationResult$ = this.store.select(selectVerificationResult).pipe(
+      filter((value) => !!value),
       switchMap((value) => {
         return this.verificationService.verificationReportToDisplay(value, repository);
       }),
@@ -69,18 +72,4 @@ export class IgVerificationComponent extends AbstractEditorComponent implements 
   ngOnInit() {
   }
 
-}
-export interface IVerificationReport {
-  igVerificationResult?: any;
-  segmentVerificationResults?: any;
-  conformanceProfileVerificationResults?: any;
-  datatypeVerificationResults?: any;
-  valuesetVerificationResults?: any;
-}
-export interface IVerificationReport {
-  ig?: any;
-  segment?: any;
-  message?: any;
-  datatype?: any;
-  valueset?: any;
 }

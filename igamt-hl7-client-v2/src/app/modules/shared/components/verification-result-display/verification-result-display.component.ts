@@ -37,8 +37,10 @@ export class VerificationResultDisplayComponent implements OnInit {
 
 export interface IVerificationResultDisplay {
   ig?: IVerificationEntryTable;
+  compositeProfiles?: IVerificationEntryTable;
   conformanceProfiles?: IVerificationEntryTable;
   segments?: IVerificationEntryTable;
   datatypes?: IVerificationEntryTable;
   valueSets?: IVerificationEntryTable;
+  coConstraintGroups?: IVerificationEntryTable;
 }

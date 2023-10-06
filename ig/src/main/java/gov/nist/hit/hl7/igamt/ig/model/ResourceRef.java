@@ -26,4 +26,22 @@ public class ResourceRef {
     public void setId(String id) {
         this.id = id;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ResourceRef that = (ResourceRef) o;
+
+        if (type != that.type) return false;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = type.hashCode();
+        result = 31 * result + id.hashCode();
+        return result;
+    }
 }

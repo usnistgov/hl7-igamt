@@ -25,7 +25,13 @@ export class ExportXmlDialogComponent implements OnInit {
   verificationErrorMessage: string;
   hasFatal = false;
   hasErrors = false;
-  activeSelector: VerificationDisplayActiveTypeSelector = () => {
+  activeSelector: VerificationDisplayActiveTypeSelector = (data) => {
+    if (data.conformanceProfiles && data.conformanceProfiles.entries && data.conformanceProfiles.entries.length > 0) {
+      return Type.CONFORMANCEPROFILE;
+    }
+    if (data.compositeProfiles && data.compositeProfiles.entries && data.compositeProfiles.entries.length > 0) {
+      return Type.COMPOSITEPROFILE;
+    }
     return Type.CONFORMANCEPROFILE;
   }
 
@@ -64,6 +70,7 @@ export class ExportXmlDialogComponent implements OnInit {
       }),
       catchError((e) => {
         this.verificationInProgress = false;
+        this.verificationFailed = true;
         this.verificationErrorMessage = this.message.fromError(e).message;
         this.step = 0;
         return throwError(e);
@@ -73,16 +80,20 @@ export class ExportXmlDialogComponent implements OnInit {
 
   setVerificationFlags(result: IVerificationResultDisplay) {
     const fatalCount = this.getCountOrZero(result.ig.stats.fatal)
+      + this.getCountOrZero(result.compositeProfiles.stats.fatal)
       + this.getCountOrZero(result.conformanceProfiles.stats.fatal)
       + this.getCountOrZero(result.segments.stats.fatal)
       + this.getCountOrZero(result.datatypes.stats.fatal)
-      + this.getCountOrZero(result.valueSets.stats.fatal);
+      + this.getCountOrZero(result.valueSets.stats.fatal)
+      + this.getCountOrZero(result.coConstraintGroups.stats.fatal);
 
     const errorsCount = this.getCountOrZero(result.ig.stats.error)
+      + this.getCountOrZero(result.compositeProfiles.stats.error)
       + this.getCountOrZero(result.conformanceProfiles.stats.error)
       + this.getCountOrZero(result.segments.stats.error)
       + this.getCountOrZero(result.datatypes.stats.error)
-      + this.getCountOrZero(result.valueSets.stats.error);
+      + this.getCountOrZero(result.valueSets.stats.error)
+      + this.getCountOrZero(result.coConstraintGroups.stats.error);
 
     this.hasErrors = errorsCount > 0;
     this.hasFatal = fatalCount > 0;

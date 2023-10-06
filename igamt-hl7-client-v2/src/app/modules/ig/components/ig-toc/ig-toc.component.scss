@@ -41,3 +41,18 @@ tree-node:last-child > .tree-node > .tree-children::after {
 .toggle-children {
   z-index: 1;
 }
+
+.toc-elm {
+  display:flex; 
+  flex-direction: row; 
+  position: relative;
+}
+
+.elm-indicators {
+  width: 30px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: flex-end; 
+  position: absolute; 
+  left: -30px;
+}

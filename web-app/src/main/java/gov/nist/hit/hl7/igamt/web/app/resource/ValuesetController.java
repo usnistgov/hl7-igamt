@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import gov.nist.hit.hl7.igamt.access.active.NotifySave;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +41,7 @@ import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VSVerificationResult;
-import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
-import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+import gov.nist.hit.hl7.igamt.service.verification.VerificationService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.exception.ValuesetException;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
@@ -169,11 +169,10 @@ public class ValuesetController extends BaseController {
 	@RequestMapping(value = "/api/valuesets/{id}/verification", method = RequestMethod.GET, produces = {
 			"application/json" })
 	@PreAuthorize("AccessResource('VALUESET', #id, READ)")
-	public @ResponseBody VSVerificationResult verifyById(@PathVariable("id") String id, Authentication authentication) {
+	public @ResponseBody List<IgamtObjectError> verifyById(@PathVariable("id") String id, Authentication authentication) {
 		Valueset vs = this.valuesetService.findById(id);
 		if (vs != null) {
-			VSVerificationResult report = this.verificationService.verifyValueset(vs);
-			return report;
+			return this.verificationService.verifyValueSet(vs);
 		}
 		return null;
 	}

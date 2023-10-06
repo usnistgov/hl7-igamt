@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.ig.service;
+package gov.nist.hit.hl7.igamt.service.verification;
 
 import java.util.Set;
 
@@ -12,6 +12,12 @@ import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.Location;
 
 public interface VerificationEntryService {
+
+    // Implementation Guide
+    IgamtObjectError IgTitleIsMissing(String id);
+    IgamtObjectError LinkedResourceIsNotFound(String igId, String resourceId, Type resourceType);
+    IgamtObjectError LinkedResourceDocumentInfoMissing(String resourceId, Type resourceType);
+    IgamtObjectError LinkedResourceDocumentInfoInvalid(String resourceId, Type resourceType);
 
     // Common
     IgamtObjectError ResourceNotFound(Location location, String id, Type type);
@@ -87,28 +93,30 @@ public interface VerificationEntryService {
     
     
     // Cardinality
-    IgamtObjectError Cardinality_INVALID_Range(Location info, String id, Type type, String min, String max);
-    IgamtObjectError Cardinality_INVALID_MAXCardinality(Location info, String id, Type type, String max);
-    IgamtObjectError Cardinality_NOTAllowed_MAXCardinality(Location info, String id, Type type, String max);
-    IgamtObjectError Cardinality_NOTAllowed_MINCardinality1(Location info, String id, Type type, String min);
-    IgamtObjectError Cardinality_NOTAllowed_MINCardinality2(Location info, String id, Type type, String usage, String min);
+    IgamtObjectError Cardinality_INVALID_Range(LocationInfo info, String id, Type type, String min, String max);
+    IgamtObjectError Cardinality_INVALID_MAXCardinality(LocationInfo info, String id, Type type, String max);
+    IgamtObjectError Cardinality_NOTAllowed_MAXCardinality(LocationInfo info, String id, Type type, String max);
+    IgamtObjectError Cardinality_NOTAllowed_MINCardinality1(LocationInfo info, String id, Type type, String min);
+    IgamtObjectError Cardinality_NOTAllowed_MINCardinality2(LocationInfo info, String id, Type type, String usage, String min);
     
     
     // Length
-    IgamtObjectError ConfLength_INVALID(Location info, String id, Type type, String confLength);
-    IgamtObjectError LengthorConfLength_Missing(Location info, String id, Type type);
-    IgamtObjectError Length_INVALID_MaxLength(Location info, String id, Type type, String maxLength);
-    IgamtObjectError Length_INVALID_MinLength(Location info, String id, Type type, String minLength);
-    IgamtObjectError Length_INVALID_Range(Location info, String id, Type type, String minLength, String maxLength);
-    
-    IgamtObjectError Usage_NOTAllowed_IXUsage_SenderProfile(Location info, String id, Type type);
-    IgamtObjectError Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(Location l, String id, Type type);
-    IgamtObjectError Required_ProfileRole_Error(Location l, String id, Type type);
-    IgamtObjectError Required_ProfileRole_Warning(Location l, String id, Type type);
-    
-    IgamtObjectError Constant_INVALID_Datatype(Location location, String id, Type type, SubStructElement e);
-    IgamtObjectError Constant_INVALID_Usage(Location location, String id, Type type);
-    IgamtObjectError Constant_INVALID_LengthRange(Location location, String id, Type type, String minLength,
-            String maxLength, String constantValue);
+    IgamtObjectError ConfLength_INVALID(LocationInfo info, String id, Type type, String confLength);
+    IgamtObjectError LengthorConfLength_Missing(LocationInfo info, String id, Type type);
+    IgamtObjectError Length_INVALID_MaxLength(LocationInfo info, String id, Type type, String maxLength);
+    IgamtObjectError Length_INVALID_MinLength(LocationInfo info, String id, Type type, String minLength);
+    IgamtObjectError Length_INVALID_Range(LocationInfo info, String id, Type type, String minLength, String maxLength);
+
+    // Conformance Profile
+    IgamtObjectError Usage_NOTAllowed_IXUsage_SenderProfile(LocationInfo info, String id, Type type);
+    IgamtObjectError Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(LocationInfo l, String id, Type type);
+    IgamtObjectError Required_ProfileRole_Error(String id, Type type);
+    IgamtObjectError Required_ProfileRole_Warning(String id, Type type);
+    IgamtObjectError MaxLevelExceeded(LocationInfo locationInfo, String id, Type type, String resourceName);
+
+    // Constant Value
+    IgamtObjectError Constant_INVALID_Datatype(LocationInfo location, String id, Type type, SubStructElement e);
+    IgamtObjectError Constant_INVALID_Usage(LocationInfo location, String id, Type type);
+    IgamtObjectError Constant_INVALID_LengthRange(LocationInfo location, String id, Type type, String minLength, String maxLength, String constantValue);
 }
 

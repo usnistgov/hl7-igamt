@@ -14,7 +14,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.Location;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
-import gov.nist.hit.hl7.igamt.ig.service.VerificationEntryService;
+import gov.nist.hit.hl7.igamt.service.verification.VerificationEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
