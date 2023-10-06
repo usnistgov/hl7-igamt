@@ -15,7 +15,9 @@ public class ExportTools {
 				usageConfiguration.isRe() && usage.equals(Usage.RE) ||
 				usageConfiguration.isRe() && usage.equals(Usage.RE) ||
 				usageConfiguration.isX() && usage.equals(Usage.X) ||
-				usageConfiguration.isB() && usage.equals(Usage.B);
+				usageConfiguration.isB() && usage.equals(Usage.B) ||
+				usageConfiguration.isIx() && usage.equals(Usage.IX) ;
+
 		
 	}
 	
