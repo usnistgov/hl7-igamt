@@ -1,4 +1,3 @@
-import { FieldType, IMetadataField } from './../metadata-form/metadata-form.component';
 import { Component, OnInit, ChangeDetectionStrategy, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 
@@ -10,14 +9,12 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 })
 export class MetadataAttributeConfigComponent implements OnInit {
 
-  customAttr : IMetadataField[] = [];
+  customAttr : any[] = [];
 
   inputName: string;
 
   constructor(public dialogRef: MatDialogRef<MetadataAttributeConfigComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) {
-
-
   }
 
   ngOnInit() {
@@ -26,8 +23,8 @@ export class MetadataAttributeConfigComponent implements OnInit {
   addField(){
 
     this.customAttr.push({
-      label: "TESTING",
-      type: FieldType.TEXT,
+      label: "Label",
+      type: "TEXT",
       placeholder: "",
       id: "New Field",
       name: "New Field",

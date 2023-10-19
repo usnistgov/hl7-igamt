@@ -46,7 +46,7 @@
           <th style="width:2.5em"></th>
            <th> Custom Attributes</th>
            <th width="50px">
-            <button (click)="openCustomAttributeDialog()" class="btn-sm btn-primary">
+            <button (click)="openCustomAttributeDialog()" class="btn-sm btn-primary" *ngIf="!(viewOnly$ | async)">
               <i class="fa fa-plus"> </i>
             </button>
           </th>
