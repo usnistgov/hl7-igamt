@@ -152,7 +152,7 @@ public class ExportNarratives {
 		File unzippedFolder = unzipFileWithDescriptors(uploadedFile);
 
 		Set<SectionTemplate> sections = new HashSet<SectionTemplate>();
-		processUploadedFolder(unzippedFolder.listFiles()[0],sections);
+		processUploadedFolder(unzippedFolder,sections);
 
 		deleteDirectory(unzippedFolder);
 
