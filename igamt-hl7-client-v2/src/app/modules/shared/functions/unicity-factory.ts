@@ -15,9 +15,18 @@ export function validateStructureUnicity(existing: IDisplayElement[], fixedName:
   };
 }
 
+// export function validateGeneratedFlavorsUnicity(existing: IDisplayElement[]): ValidatorFn {
+//   return (control: AbstractControl) => {
+//     return existing.filter((x) => x.flavorExt && x.flavorExt === control.value).length <= 0 ? null : {duplicated:  control.value + '  is already used'};
+//   };
+// }
+
 export function validateGeneratedFlavorsUnicity(existing: IDisplayElement[]): ValidatorFn {
   return (control: AbstractControl) => {
-    return existing.filter((x) => x.flavorExt && x.flavorExt === control.value).length <= 0 ? null : {duplicated:  control.value + '  is already used'};
+    const controlValue = control.value ? control.value.toLowerCase() : '';
+    const isDuplicate = existing.some((x) => x.flavorExt && x.flavorExt.toLowerCase() === controlValue);
+
+    return isDuplicate ? { duplicated: control.value + ' is already used' } : null;
   };
 }
 

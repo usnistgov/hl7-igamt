@@ -496,7 +496,6 @@ public class ExportController {
 			selectedIg.setContent(ig.getContent());
 			String xmlContent = igExportService.exportIgDocumentToDiffXml(selectedIg);
 			System.out.println(xmlContent);
-
 			InputStream xmlStream = new ByteArrayInputStream(xmlContent.getBytes());
 			response.setContentType("text/xml");
 			response.setHeader("Content-disposition",
