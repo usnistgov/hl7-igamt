@@ -20,6 +20,7 @@ export class UploadZipComponent implements OnInit {
   selectedFile: File | null = null;
   node: ISectionTemplate;
   ig: IgDocument;
+  profileRule = false;
 
   @ViewChild('fileInput') fileInput: any;
 
@@ -53,11 +54,20 @@ export class UploadZipComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', this.selectedFile);
 
-    this.http.post<ISectionTemplate[]>('/api/upload-narrative-zip', formData).subscribe(
+    this.http.post<ISectionTemplate[]>('/api/upload-narrative-zip/'+ this.ig.id, formData).subscribe(
       (response) => {
+
+        if( response) {
+        const sectionTemplatesWithProfile = response.filter(section => section.label === "Message Infrastructure");
+        if (sectionTemplatesWithProfile.length === 1) {
+          this.profileRule = true;
+        } else {
+          this.profileRule = false;
+        }
         this.selectedTemplate = this.orderByPosition(response);
         console.log('File uploaded sssss', response);
-      },
+      }
+    },
       (error) => {
         console.error('Error uploading file', error);
       }
@@ -73,6 +83,9 @@ export class UploadZipComponent implements OnInit {
         }
         return section;
       });
+  }
+  close(){
+    this.dialogRef.close();
   }
 
   selectNode(node){

@@ -821,12 +821,15 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
   }
   uploadNarratives(){
     let sub  = this.store.select(selectIgDocument).pipe(
+      take(1),
       map((document) => {
         const dialogRef = this.dialog.open(UploadZipComponent, {
           data: {document: document},
         });
         dialogRef.afterClosed().pipe(
+          filter((x) => x !== undefined),
           map( (answer) => {
+            console.log(answer);
             this.igService.saveTextSections(document.id, answer).pipe(
               map((message) => {
 

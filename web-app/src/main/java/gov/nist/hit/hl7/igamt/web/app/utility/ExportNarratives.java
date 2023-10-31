@@ -34,6 +34,7 @@ import org.plutext.jaxb.svg11.SVGTextContent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.core.io.FileSystemResource;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 
@@ -47,13 +48,13 @@ public class ExportNarratives {
 	@Autowired
 	IgService igService;
 
-	@RequestMapping(value = "/api/export-narrative/{id}", method = RequestMethod.GET)
-	//	  @PreAuthorize("AccessResource('IGDOCUMENT', #documentId, READ)")
-	public void generateFolderStructure(@PathVariable("id") String id, HttpServletResponse response) {
+	@RequestMapping(value = "/api/export-narrative/{documentId}", method = RequestMethod.GET)	  
+	@PreAuthorize("AccessResource('IGDOCUMENT', #documentId, READ)")
+	public void generateFolderStructure(@PathVariable("documentId") String documentId, HttpServletResponse response) {
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ZipOutputStream zos = new ZipOutputStream(baos);
-		Ig ig = this.igService.findById(id);
+		Ig ig = this.igService.findById(documentId);
 		for (TextSection text: ig.getContent()) {
 			generateFolderStructure(text, zos, "", ig.getMetadata().getTitle());	
 		}
@@ -140,88 +141,56 @@ public class ExportNarratives {
 	}
 
 
-	@PostMapping("/api/upload-narrative-zip")
-	public Set<SectionTemplate> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+	@PostMapping("/api/upload-narrative-zip/{documentId}")
+	@PreAuthorize("AccessResource('IGDOCUMENT', #documentId, WRITE)")
+
+	public Set<SectionTemplate> uploadFile(@PathVariable("documentId") String documentId, @RequestParam("file") MultipartFile file) throws IOException {
 		File uploadedFile = new File(file.getOriginalFilename());
 		FileOutputStream fos = new FileOutputStream(uploadedFile);
 		fos.write(file.getBytes());
 		fos.close();
-		//Ig ig = this.igService.findById(id);
-
-		// Unzip the file
 		File unzippedFolder = unzipFileWithDescriptors(uploadedFile);
-
 		Set<SectionTemplate> sections = new HashSet<SectionTemplate>();
-		processUploadedFolder(unzippedFolder,sections);
-
+		processUploadedFolder(unzippedFolder.listFiles()[0],sections);
 		deleteDirectory(unzippedFolder);
-
+		
 
 		return sections;
 	}
 
-	//	private File unzipFile(File zipFile) throws IOException {
-	//		File unzippedFolder = new File(zipFile.getParentFile(), zipFile.getName().replace(".zip", ""));
-	//		unzippedFolder.mkdirs();
-	//
-	//		try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFile))) {
-	//			byte[] buffer = new byte[1024];
-	//			ZipEntry zipEntry = zipInputStream.getNextEntry();
-	//			while (zipEntry != null) {
-	//				File newFile = new File(unzippedFolder, zipEntry.getName());
-	//				if (zipEntry.isDirectory()) {
-	//					newFile.mkdirs();
-	//				} else {
-	//					new File(newFile.getParent()).mkdirs();
-	//					try (FileOutputStream fos = new FileOutputStream(newFile)) {
-	//						int len;
-	//						while ((len = zipInputStream.read(buffer)) > 0) {
-	//							fos.write(buffer, 0, len);
-	//						}
-	//					}
-	//				}
-	//				zipEntry = zipInputStream.getNextEntry();
-	//			}
-	//			zipInputStream.closeEntry();
-	//		}
-	//
-	//		return unzippedFolder;
-	//	}
-	//	
 
-	private File unzipFiled(File zipFile) throws IOException {
-		File unzippedFolder = new File(zipFile.getParentFile(), zipFile.getName().replace(".zip", ""));
-		deleteDirectory(zipFile);
-
-		unzippedFolder.mkdirs();
-		try (ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(new FileInputStream(zipFile))) {
-			ZipArchiveEntry zipEntry = zipInputStream.getNextZipEntry();
-			while (zipEntry != null) {
-				File newFile = new File(unzippedFolder, zipEntry.getName());
-				if (zipEntry.isDirectory()) {
-					newFile.mkdirs();
-				} else {
-					new File(newFile.getParent()).mkdirs();
-					try (FileOutputStream fos = new FileOutputStream(newFile)) {
-						int len;
-						byte[] buffer = new byte[1024];
-						while ((len = zipInputStream.read(buffer)) > 0) {
-							fos.write(buffer, 0, len);
-						}
-					}
-				}
-				zipEntry = zipInputStream.getNextZipEntry();
-			}
-		}
-		return unzippedFolder;
-
-	}
+//	private File unzipFiled(File zipFile) throws IOException {
+//		File unzippedFolder = new File(zipFile.getParentFile(), zipFile.getName().replace(".zip", ""));
+//		deleteDirectory(zipFile);
+//
+//		unzippedFolder.mkdirs();
+//		try (ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(new FileInputStream(zipFile))) {
+//			ZipArchiveEntry zipEntry = zipInputStream.getNextZipEntry();
+//			while (zipEntry != null) {
+//				File newFile = new File(unzippedFolder, zipEntry.getName());
+//				if (zipEntry.isDirectory()) {
+//					newFile.mkdirs();
+//				} else {
+//					new File(newFile.getParent()).mkdirs();
+//					try (FileOutputStream fos = new FileOutputStream(newFile)) {
+//						int len;
+//						byte[] buffer = new byte[1024];
+//						while ((len = zipInputStream.read(buffer)) > 0) {
+//							fos.write(buffer, 0, len);
+//						}
+//					}
+//				}
+//				zipEntry = zipInputStream.getNextZipEntry();
+//			}
+//		}
+//		return unzippedFolder;
+//
+//	}
 
 
-	private File unzipFileWithDescriptors(File zipFile) throws IOException {
+	private File unzipFileWithDescriptors1(File zipFile) throws IOException {
 		File unzippedFolder = new File(zipFile.getParentFile(), zipFile.getName().replace(".zip", ""));
 		unzippedFolder.mkdirs();
-
 
 		try (ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(new FileInputStream(zipFile),"UTF-8", false, false)) {
 			ZipArchiveEntry zipEntry;
@@ -254,6 +223,46 @@ public class ExportNarratives {
 		return unzippedFolder;
 	}
 	
+	
+	
+	
+	private File unzipFileWithDescriptors(File zipFile) throws IOException {
+	    // Create a temporary directory to extract the contents
+	    File tempDir = File.createTempFile("temp", Long.toString(System.nanoTime()));
+	    if (!tempDir.delete() || !tempDir.mkdir()) {
+	        throw new IOException("Failed to create temporary directory");
+	    }
+
+	    try (ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(new FileInputStream(zipFile), "UTF-8", false, false)) {
+	        ZipArchiveEntry zipEntry;
+
+	        while ((zipEntry = zipInputStream.getNextZipEntry()) != null) {
+	            try {
+	                if (!zipEntry.isDirectory()) {
+	                    File newFile = new File(tempDir, zipEntry.getName());
+	                    new File(newFile.getParent()).mkdirs();
+
+	                    try (FileOutputStream fos = new FileOutputStream(newFile)) {
+	                        int len;
+	                        byte[] buffer = new byte[1024];
+	                        while ((len = zipInputStream.read(buffer)) > 0) {
+	                            fos.write(buffer, 0, len);
+	                        }
+	                    }
+	                }
+	            } catch (Exception e) {
+	                System.err.println("Error in entry: " + zipEntry.getName());
+	                e.printStackTrace();
+	        		deleteDirectory(zipFile);
+
+	            }
+	        }
+	    }
+		deleteDirectory(zipFile);
+
+	    return tempDir;
+	}
+	
 	private static void deleteDirectory(File directory) {
 	    if (directory.exists()) {
 	        File[] files = directory.listFiles();
@@ -278,6 +287,7 @@ public class ExportNarratives {
 		HashMap<String, SectionTemplate> map = new HashMap<String, SectionTemplate>();
 
 		File[] files = folder.listFiles();
+		
 
 
 		if (files != null) {
@@ -310,12 +320,6 @@ public class ExportNarratives {
 			}
 		}
 	}
-
-
-
-
-
-
 
 	private SectionTemplate processFile(File file) {
 
@@ -350,8 +354,6 @@ public class ExportNarratives {
 			int position = Integer.parseInt(input.substring(0, dotIndex));
 			String restOfString = input.substring(dotIndex + 1);
 			String name = removeSuffix(restOfString);
-
-			//			ret.setType(Type.TEXT);
 			ret.setLabel(name);
 			ret.setPosition(position);
 
@@ -371,6 +373,11 @@ public class ExportNarratives {
 	}
 
 
+	private void cleanupTempDirectory(File tempDir) {
+	    if (tempDir != null && tempDir.exists()) {
+	        deleteDirectory(tempDir);
+	    }
+	}
 
 
 
