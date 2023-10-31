@@ -183,8 +183,8 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			ExportFontConfiguration exportFontConfiguration =
 					exportFontConfigurationService.getExportFontConfiguration(username);
 			DocumentStructureDataModel documentStructureDataModel = new DocumentStructureDataModel();
-//			String xmlContent =
-//					igDataModelSerializationService.serializeDocument(igDataModel, exportConfiguration,decision).toXML();
+			String xmlContent =
+					igDataModelSerializationService.serializeDocument(igDataModel, exportConfiguration,decision).toXML();
 //					      FileWritter fw = new FileWritter();
 //					      fw.createAndWriteToFile(xmlContent);
 
