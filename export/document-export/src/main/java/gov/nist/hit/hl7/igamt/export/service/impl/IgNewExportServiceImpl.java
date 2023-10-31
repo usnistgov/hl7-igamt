@@ -185,8 +185,8 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			DocumentStructureDataModel documentStructureDataModel = new DocumentStructureDataModel();
 			String xmlContent =
 					igDataModelSerializationService.serializeDocument(igDataModel, exportConfiguration,decision).toXML();
-//			    FileWritter fw = new FileWritter();					     
-//  		   fw.createAndWriteToFile(xmlContent);
+//					      FileWritter fw = new FileWritter();
+//					      fw.createAndWriteToFile(xmlContent);
 
 			// TODO add app infoservice to get app version
 			ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
