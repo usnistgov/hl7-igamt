@@ -23,6 +23,8 @@ import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
 import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
 import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
 import gov.nist.hit.hl7.igamt.display.model.*;
+import gov.nist.hit.hl7.igamt.web.app.model.IgSubSet;
+import gov.nist.hit.hl7.igamt.web.app.service.LegacyIgSubSetService;
 import gov.nist.hit.hl7.igamt.web.app.service.impl.EntityBrowserService;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceDocumentManagementService;
 import org.bson.types.ObjectId;
@@ -267,8 +269,8 @@ public class IGDocumentController extends BaseController {
 	@Autowired
 	WorkspaceDocumentManagementService workspaceDocumentManagementService;
 
-	private String token;
-
+	@Autowired
+	LegacyIgSubSetService legacyIgSubSetService;
 
 	private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
 	private static final String SEGMENT_DELETED = "SEGMENT_DELETED";
@@ -662,7 +664,6 @@ public class IGDocumentController extends BaseController {
 
 	/**
 	 * 
-	 * @param id
 	 * @param elementId
 	 * @param authentication
 	 * @return
@@ -1430,14 +1431,15 @@ public class IGDocumentController extends BaseController {
 		ReqId reqIds = mapper.readValue(formData.getJson(), ReqId.class);
 		Ig ig = findIgById(id);
 		if (ig != null)  {
-			CompositeProfileState cps = null;
-			Ig selectedIg = this.makeSelectedIg(ig, reqIds, cps);
-			IgDataModel igModel = this.igService.generateDataModel(selectedIg);
+			IgSubSet igSubSet = this.legacyIgSubSetService.makeIgSubSet(ig, reqIds);
+			IgDataModel igModel = this.igService.generateDataModel(igSubSet.getSubSet());
 			InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
+			for(String token: igSubSet.getInMemoryDataTokens()) {
+				this.inMemoryDomainExtensionService.clear(token);
+			}
 			response.setContentType("application/zip");
 			response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
 			FileCopyUtils.copy(content, response.getOutputStream());
-			this.inMemoryDomainExtensionService.clear(this.token);
 		}
 	}
 
@@ -1460,310 +1462,26 @@ public class IGDocumentController extends BaseController {
 	public @ResponseBody VerificationReport verificationIGById(@PathVariable("igid") String igid, Authentication authentication) {
 		Ig ig = this.igService.findById(igid);
 		Map<String, String> map = new HashMap<>();
+		Set<String> tokens = new HashSet<>();
 		if (ig != null) {
 			for(Link l : ig.getCompositeProfileRegistry().getChildren()) {
 
 				if(l != null) {
-					CompositeProfileState cps = this.eval(l.getId());
+					CompositeProfileState cps = this.legacyIgSubSetService.eval(l.getId());
 					Link newLink = new Link(cps.getConformanceProfile().getResource());
-					System.out.println(l.getId() + "--->" + newLink.getId());
-
 					map.put(newLink.getId(), l.getId());
-
-
 					ig.getConformanceProfileRegistry().getChildren().add(newLink);
+					tokens.add(cps.getToken());
 				}
 			}
 
-			VerificationReport report =  this.verificationService.verifyIg(ig,map);	
-			this.inMemoryDomainExtensionService.clear(this.token);
+			VerificationReport report =  this.verificationService.verifyIg(ig,map);
+			for(String token: tokens) {
+				this.inMemoryDomainExtensionService.clear(token);
+			}
 			return report;
 		}
 		return null;
-	}
-
-
-	private Ig makeSelectedIg(Ig ig, ReqId reqIds, CompositeProfileState cps) throws IOException, AmbiguousOBX3MappingException, ResourceNotFoundException, PathNotFoundException {
-		Ig selectedIg = new Ig();
-		selectedIg.setId(ig.getId());
-		selectedIg.setDomainInfo(ig.getDomainInfo());
-		selectedIg.setMetadata(ig.getMetadata());
-		selectedIg.setConformanceProfileRegistry(new ConformanceProfileRegistry());
-		selectedIg.setSegmentRegistry(new SegmentRegistry());
-		selectedIg.setDatatypeRegistry(new DatatypeRegistry());
-		selectedIg.setValueSetRegistry(new ValueSetRegistry());
-
-		for (String id : reqIds.getConformanceProfilesId()) {
-			Link l = ig.getConformanceProfileRegistry().getLinkById(id);
-
-			if (l != null) {
-				selectedIg.getConformanceProfileRegistry().getChildren().add(l);
-
-				ConformanceProfile cp = this.conformanceProfileService.findById(l.getId());
-
-				this.visitSegmentRefOrGroup(cp.getChildren(), selectedIg, ig);
-
-				// For CoConstraint
-				Map<CoConstraintMappingLocation, Set<CoConstraintOBX3MappingValue>> maps = this.coConstraintSerializationHelper.getOBX3ToFlavorMap(cp);
-				for (CoConstraintMappingLocation key : maps.keySet()) {
-					for (CoConstraintOBX3MappingValue item : maps.get(key)) {
-						Link link = ig.getDatatypeRegistry().getLinkById(item.getFlavorId());
-						if (link != null) {
-							selectedIg.getDatatypeRegistry().getChildren().add(link);
-							Datatype dt = this.datatypeService.findById(link.getId());
-							if (dt != null && dt instanceof ComplexDatatype) {
-								ComplexDatatype cdt = (ComplexDatatype) dt;
-								if (cdt.getComponents() != null) {
-									this.visitDatatype(cdt.getComponents(), selectedIg, ig);
-									if (cdt.getBinding() != null && cdt.getBinding().getChildren() != null)
-										this.collectVS(cdt.getBinding().getChildren(), selectedIg, ig);
-								}
-							}
-						}
-					}
-				}
-
-				// For CP slicing
-				if(cp.getSlicings() != null) {
-					for(Slicing s : cp.getSlicings()) {
-						if (s.getType().equals(SlicingMethod.OCCURRENCE)) {
-							OrderedSlicing orderedSlicing = (OrderedSlicing) s;
-							if (orderedSlicing.getSlices() != null) {
-								orderedSlicing.getSlices().forEach(slice -> {
-									Link link = ig.getSegmentRegistry().getLinkById(slice.getFlavorId());
-									if (link != null) {
-										selectedIg.getSegmentRegistry().getChildren().add(link);
-										Segment seg = this.segmentService.findById(link.getId());
-
-										this.visitSegment(seg.getChildren(), selectedIg, ig);
-										this.handleSegmentSlicing(seg, selectedIg, ig);
-										if(seg.getBinding() != null && seg.getBinding().getChildren() != null) this.collectVS(seg.getBinding().getChildren(), selectedIg, ig);
-									}
-								});
-
-							}
-						}else if(s.getType().equals(SlicingMethod.ASSERTION)) {
-							ConditionalSlicing conditionalSlicing = (ConditionalSlicing) s;
-							if (conditionalSlicing.getSlices() != null) {
-								conditionalSlicing.getSlices().forEach(slice -> {
-									Link link = ig.getSegmentRegistry().getLinkById(slice.getFlavorId());
-									if (link != null) {
-										selectedIg.getSegmentRegistry().getChildren().add(link);
-										Segment seg = this.segmentService.findById(link.getId());
-
-										this.visitSegment(seg.getChildren(), selectedIg, ig);
-										this.handleSegmentSlicing(seg, selectedIg, ig);
-										if(seg.getBinding() != null && seg.getBinding().getChildren() != null) this.collectVS(seg.getBinding().getChildren(), selectedIg, ig);
-									}
-
-								});
-							}
-						}
-					}
-				}
-			}
-		}
-
-		for(String id : reqIds.getCompositeProfilesId()) {
-			Link l = ig.getCompositeProfileRegistry().getLinkById(id);
-
-			if(l != null) {
-				cps = this.eval(l.getId());
-				this.visitSegmentRefOrGroup(cps.getConformanceProfile().getResource().getChildren(), selectedIg, ig);
-				Link newLink = new Link(cps.getConformanceProfile().getResource());
-				this.inMemoryDomainExtensionService.put(newLink.getId(), cps.getConformanceProfile().getResource());
-				selectedIg.getConformanceProfileRegistry().getChildren().add(newLink);
-			}
-		}
-
-		return selectedIg;
-	}
-
-	private CompositeProfileState eval(String id) {
-		ProfileComponentsEvaluationResult<ConformanceProfile> profileComponentsEvaluationResult = compose.create(compositeProfileService.findById(id));
-		DataFragment<ConformanceProfile> df = profileComponentsEvaluationResult.getResources();
-		this.token = this.inMemoryDomainExtensionService.put(df.getContext());
-		Stream<Datatype> datatypes = df.getContext().getResources().stream().filter((r) -> r instanceof Datatype).map((r) -> (Datatype) r);
-		Stream<Segment> segments = df.getContext().getResources().stream().filter((r) -> r instanceof Segment).map((r) -> (Segment) r);
-		CompositeProfileState state = new CompositeProfileState();
-		state.setConformanceProfile(new ResourceAndDisplay<>(this.conformanceProfileService.convertConformanceProfile(df.getPayload(), 0), df.getPayload()));
-		state.setDatatypes(datatypes.map((dt) -> new ResourceAndDisplay<>(this.datatypeService.convertDatatype(dt), dt)).collect(Collectors.toList()));
-		state.setSegments(segments.map((sg) -> new ResourceAndDisplay<>(this.segmentService.convertSegment(sg), sg)).collect(Collectors.toList()));
-		Map<PropertyType, Set<String>> refChanges = profileComponentsEvaluationResult.getChangedReferences();
-		List<Datatype> refDatatype = this.datatypeService.findByIdIn(refChanges.get(PropertyType.DATATYPE));
-		List<Segment> refSegment = this.segmentService.findByIdIn(refChanges.get(PropertyType.SEGMENTREF));
-		state.setReferences(Stream.concat(refDatatype.stream(), refSegment.stream()).collect(Collectors.toList()));
-		return state;
-	}
-
-	private void visitSegmentRefOrGroup(Set<SegmentRefOrGroup> srgs, Ig selectedIg, Ig all) {
-		srgs.forEach(srg -> {
-			if(srg instanceof Group) {
-				Group g = (Group)srg;
-				if(g.getChildren() != null) this.visitSegmentRefOrGroup(g.getChildren(), selectedIg, all);
-			} else if (srg instanceof SegmentRef) {
-				SegmentRef sr = (SegmentRef)srg;
-
-				if(sr != null && sr.getId() != null && sr.getRef() != null && sr.getRef().getId() != null) {
-					Link l = all.getSegmentRegistry().getLinkById(sr.getRef().getId());
-					if(l == null) {
-						Segment s = this.inMemoryDomainExtensionService.findById(sr.getRef().getId(), Segment.class);
-						if( s != null) l = new Link(s);
-					}
-					if(l != null) {
-						selectedIg.getSegmentRegistry().getChildren().add(l);
-						Segment s = this.segmentService.findById(l.getId());
-						if(s == null) s = this.inMemoryDomainExtensionService.findById(l.getId(), Segment.class);
-						if (s != null && s.getChildren() != null) {
-							this.visitSegment(s.getChildren(), selectedIg, all);
-							if(s.getBinding() != null && s.getBinding().getChildren() != null) this.collectVS(s.getBinding().getChildren(), selectedIg, all);
-						}
-						//For Dynamic Mapping
-						if (s != null && s.getDynamicMappingInfo() != null && s.getDynamicMappingInfo().getItems() != null) {
-							s.getDynamicMappingInfo().getItems().forEach(item -> {
-								Link link = all.getDatatypeRegistry().getLinkById(item.getDatatypeId());
-								if(link != null) {
-									selectedIg.getDatatypeRegistry().getChildren().add(link);
-									Datatype dt = this.datatypeService.findById(link.getId());
-									if (dt != null && dt instanceof ComplexDatatype) {
-										ComplexDatatype cdt = (ComplexDatatype)dt;
-										if(cdt.getComponents() != null) {
-											this.visitDatatype(cdt.getComponents(), selectedIg, all);
-											if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
-										}
-									}
-
-								}           		
-							});
-						}
-
-						this.handleSegmentSlicing(s, selectedIg, all);
-					}
-				}
-			}
-		});
-
-	}
-
-	private void handleSegmentSlicing(Segment s, Ig selectedIg,Ig all) {
-		// For Segment slicing
-		if (s.getSlicings() != null) {
-			for (Slicing slicing : s.getSlicings()) {
-				if (slicing.getType().equals(SlicingMethod.OCCURRENCE)) {
-					OrderedSlicing orderedSlicing = (OrderedSlicing) slicing;
-					if (orderedSlicing.getSlices() != null) {
-						orderedSlicing.getSlices().forEach(slice -> {
-							Link link = all.getDatatypeRegistry().getLinkById(slice.getFlavorId());
-							if (link != null) {
-								selectedIg.getDatatypeRegistry().getChildren().add(link);
-								Datatype dt = this.datatypeService.findById(link.getId());
-
-								if (dt != null && dt instanceof ComplexDatatype) {
-									ComplexDatatype cdt = (ComplexDatatype) dt;
-									if (cdt.getComponents() != null) {
-										this.visitDatatype(cdt.getComponents(), selectedIg, all);
-										if (cdt.getBinding() != null
-												&& cdt.getBinding().getChildren() != null)
-											this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
-									}
-								}
-							}
-						});
-
-					}
-				} else if (slicing.getType().equals(SlicingMethod.ASSERTION)) {
-					ConditionalSlicing conditionalSlicing = (ConditionalSlicing) slicing;
-					if (conditionalSlicing.getSlices() != null) {
-						conditionalSlicing.getSlices().forEach(slice -> {
-							Link link = all.getDatatypeRegistry().getLinkById(slice.getFlavorId());
-							if (link != null) {
-								selectedIg.getDatatypeRegistry().getChildren().add(link);
-								Datatype dt = this.datatypeService.findById(link.getId());
-
-								if (dt != null && dt instanceof ComplexDatatype) {
-									ComplexDatatype cdt = (ComplexDatatype) dt;
-									if (cdt.getComponents() != null) {
-										this.visitDatatype(cdt.getComponents(), selectedIg, all);
-										if (cdt.getBinding() != null
-												&& cdt.getBinding().getChildren() != null)
-											this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
-									}
-								}
-							}
-						});
-
-					}
-				}
-			}
-		}
-
-	}
-
-	private void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all) {
-		sebs.forEach(seb -> {
-			if(seb.getValuesetBindings() != null) {
-				seb.getValuesetBindings().forEach(b -> {
-					if(b.getValueSets() != null) {
-						b.getValueSets().forEach(id -> {
-							Link l = all.getValueSetRegistry().getLinkById(id);
-							if(l != null) {
-								selectedIg.getValueSetRegistry().getChildren().add(l);
-							}
-						});
-					}
-				});
-			}
-		});
-
-	}
-
-	private void visitSegment(Set<Field> fields, Ig selectedIg, Ig all) {
-		fields.forEach(f -> {
-			if(f.getRef() != null && f.getRef().getId() != null) {
-				Link l = all.getDatatypeRegistry().getLinkById(f.getRef().getId());
-				if(l == null) {
-					Datatype dt = this.inMemoryDomainExtensionService.findById(f.getRef().getId(), ComplexDatatype.class);
-					if(dt != null) l = new Link(dt);
-				}
-				if(l != null) {
-					selectedIg.getDatatypeRegistry().getChildren().add(l);
-					Datatype dt = this.datatypeService.findById(l.getId());
-					if(dt == null) dt = this.inMemoryDomainExtensionService.findById(l.getId(), ComplexDatatype.class);
-					if (dt != null && dt instanceof ComplexDatatype) {
-						ComplexDatatype cdt = (ComplexDatatype)dt;
-						if(cdt.getComponents() != null) {
-							this.visitDatatype(cdt.getComponents(), selectedIg, all);
-							if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
-						}
-					}
-				}
-			}
-		});
-
-	}
-
-	private void visitDatatype(Set<Component> components, Ig selectedIg, Ig all) {
-		components.forEach(c -> {
-			if(c.getRef() != null && c.getRef().getId() != null) {
-				Link l = all.getDatatypeRegistry().getLinkById(c.getRef().getId());
-				if(l == null) {
-					Datatype dt = this.inMemoryDomainExtensionService.findById(c.getRef().getId(), ComplexDatatype.class);
-					if(dt != null) l = new Link(dt);
-				}
-				if(l != null) {
-					selectedIg.getDatatypeRegistry().getChildren().add(l);
-					Datatype dt = this.datatypeService.findById(l.getId());
-					if(dt == null) dt = this.inMemoryDomainExtensionService.findById(l.getId(), ComplexDatatype.class);
-					if (dt != null && dt instanceof ComplexDatatype) {
-						ComplexDatatype cdt = (ComplexDatatype)dt;
-						if(cdt.getComponents() != null) {
-							this.visitDatatype(cdt.getComponents(), selectedIg, all);
-							if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
-						}
-					}
-				}
-			}
-		});
 	}
 
 	@RequestMapping(value = "/api/igdocuments/igTemplates", method = RequestMethod.GET, produces = { "application/json" })
@@ -1799,10 +1517,11 @@ public class IGDocumentController extends BaseController {
 		System.out.println(reqIds);  
 		Ig ig = this.igService.findById(igid);
 		if (ig != null)  {
-			CompositeProfileState cps = null;
-			Ig selectedIg = this.makeSelectedIg(ig, reqIds, cps);
-			VerificationReport report = this.verificationService.verifyIg(selectedIg);		  
-			this.inMemoryDomainExtensionService.clear(this.token);
+			IgSubSet igSubSet = this.legacyIgSubSetService.makeIgSubSet(ig, reqIds);
+			VerificationReport report = this.verificationService.verifyIg(igSubSet.getSubSet());
+			for(String token: igSubSet.getInMemoryDataTokens()) {
+				this.inMemoryDomainExtensionService.clear(token);
+			}
 			return report;
 		}
 		return null;
