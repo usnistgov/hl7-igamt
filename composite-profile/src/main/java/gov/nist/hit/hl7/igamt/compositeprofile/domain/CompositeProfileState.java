@@ -12,6 +12,7 @@ public class CompositeProfileState {
     List<ResourceAndDisplay<Datatype>> datatypes;
     List<ResourceAndDisplay<Segment>> segments;
     List<Resource> references;
+    String token;
 
     public ResourceAndDisplay<ConformanceProfile> getConformanceProfile() {
         return conformanceProfile;
@@ -43,5 +44,13 @@ public class CompositeProfileState {
 
     public void setReferences(List<Resource> references) {
         this.references = references;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

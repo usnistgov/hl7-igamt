@@ -793,7 +793,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 		for (SegmentDataModel segModel : igModel.getSegments()) {
 
 			Element elm_ByID = new Element("ByID");
-			System.out.println(segModel.getModel().getLabel());
 			elm_ByID.addAttribute(
 					new Attribute("ID", this.segmentService.findXMLRefIdById(segModel.getModel(), defaultHL7Version)));
 
@@ -801,7 +800,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 				for (ConformanceStatement cs : segModel.getConformanceStatements()) {
 
 					String script = this.generateAssertionScript(cs, segModel.getModel().getId());
-					System.out.println(script);
 					Node n = this.innerXMLHandler(script);
 					if (n != null) {
 						Element elm_Constraint = new Element("Constraint");
@@ -1598,13 +1596,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 		for (ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
 			Set<String> vsIds = this.coConstraintSerializationHelper
 					.getCoConstraintReferencedValueSetIds(cpModel.getModel());
-			System.out.println("?????");
 			if (vsIds != null) {
 				for (String id : vsIds) {
-					System.out.println("______________");
-					System.out.println(id);
 					Valueset vs = this.valuesetService.findById(id);
-					System.out.println(vs.getBindingIdentifier());
 					ValuesetDataModel vsdm = new ValuesetDataModel();
 					vsdm.setModel(vs);
 					toBeAddedVSs.put(vs.getBindingIdentifier(), vsdm);
@@ -2041,7 +2035,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					new Attribute("ID", this.datatypeService.findXMLRefIdById(dtdm.getModel(), defaultHL7Version)));
 
 			if (dtdm.getModel().getBinding() != null && dtdm.getModel().getBinding().getChildren() != null) {
-				this.generateElmValueSetBinding(elmByID, dtdm.getModel().getBinding().getChildren(), "",
+				this.generateElmValueSetBinding(elmByID, dtdm.getModel().getBinding().getChildren(), "", "",
 						defaultHL7Version, igModel, dtdm);
 			}
 
@@ -2063,8 +2057,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					new Attribute("ID", this.segmentService.findXMLRefIdById(segdm.getModel(), defaultHL7Version)));
 
 			if (segdm.getModel().getBinding() != null && segdm.getModel().getBinding().getChildren() != null) {
-				this.generateElmValueSetBinding(elmByID, segdm.getModel().getBinding().getChildren(), "",
-						defaultHL7Version, igModel, segdm);
+				this.generateElmValueSetBinding(elmByID, segdm.getModel().getBinding().getChildren(), "", "", defaultHL7Version, igModel, segdm);
 			}
 
 			if (elmByID.getChildElements().size() > 0) {
@@ -2084,8 +2077,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 			elmByID.addAttribute(new Attribute("ID", cpdm.getModel().getId()));
 
 			if (cpdm.getModel().getBinding() != null && cpdm.getModel().getBinding().getChildren() != null) {
-				this.generateElmValueSetBinding(elmByID, cpdm.getModel().getBinding().getChildren(), "",
-						defaultHL7Version, igModel, cpdm);
+				this.generateElmValueSetBinding(elmByID, cpdm.getModel().getBinding().getChildren(), "", "", defaultHL7Version, igModel, cpdm);
 			}
 
 			if (elmByID.getChildElements().size() > 0) {
@@ -2112,7 +2104,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					new Attribute("ID", this.datatypeService.findXMLRefIdById(dtdm.getModel(), defaultHL7Version)));
 
 			if (dtdm.getModel().getBinding() != null && dtdm.getModel().getBinding().getChildren() != null) {
-				this.generateElmSingleCodeBinding(elmByID, dtdm.getModel().getBinding().getChildren(), "",
+				this.generateElmSingleCodeBinding(elmByID, dtdm.getModel().getBinding().getChildren(), "", "",
 						defaultHL7Version, igModel, dtdm);
 			}
 
@@ -2134,7 +2126,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					new Attribute("ID", this.segmentService.findXMLRefIdById(segdm.getModel(), defaultHL7Version)));
 
 			if (segdm.getModel().getBinding() != null && segdm.getModel().getBinding().getChildren() != null) {
-				this.generateElmSingleCodeBinding(elmByID, segdm.getModel().getBinding().getChildren(), "",
+				this.generateElmSingleCodeBinding(elmByID, segdm.getModel().getBinding().getChildren(), "", "",
 						defaultHL7Version, igModel, segdm);
 			}
 
@@ -2155,7 +2147,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 			elmByID.addAttribute(new Attribute("ID", cpdm.getModel().getId()));
 
 			if (cpdm.getModel().getBinding() != null && cpdm.getModel().getBinding().getChildren() != null) {
-				this.generateElmSingleCodeBinding(elmByID, cpdm.getModel().getBinding().getChildren(), "",
+				this.generateElmSingleCodeBinding(elmByID, cpdm.getModel().getBinding().getChildren(), "", "",
 						defaultHL7Version, igModel, cpdm);
 			}
 
@@ -2176,19 +2168,19 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 		return e;
 	}
 
-	private void generateElmSingleCodeBinding(Element parentElm, Set<StructureElementBinding> children, String path,
-			String defaultHL7Version, IgDataModel igModel, DatatypeDataModel dtdm) {
+	private void generateElmSingleCodeBinding(Element parentElm, Set<StructureElementBinding> children, String pathId, String positionPath, String defaultHL7Version, IgDataModel igModel, DatatypeDataModel dtdm) {
 		for (StructureElementBinding seb : children) {
 			if (seb.getSingleCodeBindings() != null) {
 				for (SingleCodeBinding sb : seb.getSingleCodeBindings()) {
 					Element elmSingleCodeBinding = new Element("SingleCodeBinding");
-					elmSingleCodeBinding.addAttribute(new Attribute("Target",
-							this.makeInstancePath((path + "." + seb.getElementId()).substring(1))));
+
+					String instancePositionPath = this.makeInstancePath((positionPath + "." + seb.getLocationInfo().getPosition()).substring(1));
+					elmSingleCodeBinding.addAttribute(new Attribute("Target", instancePositionPath));
 					elmSingleCodeBinding.addAttribute(new Attribute("Code", sb.getCode()));
 					elmSingleCodeBinding.addAttribute(new Attribute("CodeSystem", sb.getCodeSystem()));
 
-					DatatypeDataModel dt = this.findDatatype(igModel,
-							(path + "-" + seb.getElementId()).substring(1).split("\\-"), dtdm);
+					String childPathId = pathId + "-" + seb.getElementId();
+					DatatypeDataModel dt = this.findDatatype(igModel, childPathId.substring(1).split("\\-"), dtdm);
 
 					if (dt.getComponentDataModels() == null || dt.getComponentDataModels().size() == 0) {
 						Element elmBindingLocations = new Element("BindingLocations");
@@ -2233,25 +2225,28 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					}
 				}
 			}
-			if (seb.getChildren() != null)
-				this.generateElmSingleCodeBinding(parentElm, seb.getChildren(), path + "-" + seb.getElementId(),
-						defaultHL7Version, igModel, dtdm);
+			if (seb.getChildren() != null) {
+				String instancePositionPath = positionPath + "." + seb.getLocationInfo().getPosition();
+				String childPathId = pathId + "-" + seb.getElementId();
+				this.generateElmSingleCodeBinding(parentElm, seb.getChildren(), childPathId, instancePositionPath, defaultHL7Version, igModel, dtdm);
+			}
 		}
 	}
 
-	private void generateElmSingleCodeBinding(Element parentElm, Set<StructureElementBinding> children, String path,
+	private void generateElmSingleCodeBinding(Element parentElm, Set<StructureElementBinding> children, String pathId, String positionPath,
 			String defaultHL7Version, IgDataModel igModel, SegmentDataModel segdm) {
 		for (StructureElementBinding seb : children) {
 			if (seb.getSingleCodeBindings() != null) {
 				for (SingleCodeBinding sb : seb.getSingleCodeBindings()) {
 					Element elmSingleCodeBinding = new Element("SingleCodeBinding");
-					elmSingleCodeBinding.addAttribute(new Attribute("Target",
-							this.makeInstancePath((path + "." + seb.getElementId()).substring(1))));
+
+					String instancePositionPath = this.makeInstancePath((positionPath + "." + seb.getLocationInfo().getPosition()).substring(1));
+					elmSingleCodeBinding.addAttribute(new Attribute("Target", instancePositionPath));
 					elmSingleCodeBinding.addAttribute(new Attribute("Code", sb.getCode()));
 					elmSingleCodeBinding.addAttribute(new Attribute("CodeSystem", sb.getCodeSystem()));
 
-					DatatypeDataModel dt = this.findDatatype(igModel,
-							(path + "-" + seb.getElementId()).substring(1).split("\\-"), segdm);
+					String childPathId = pathId + "-" + seb.getElementId();
+					DatatypeDataModel dt = this.findDatatype(igModel, childPathId.substring(1).split("\\-"), segdm);
 
 					if (dt.getComponentDataModels() == null || dt.getComponentDataModels().size() == 0) {
 						Element elmBindingLocations = new Element("BindingLocations");
@@ -2296,25 +2291,28 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					}
 				}
 			}
-			if (seb.getChildren() != null)
-				this.generateElmSingleCodeBinding(parentElm, seb.getChildren(), path + "-" + seb.getElementId(),
-						defaultHL7Version, igModel, segdm);
+			if (seb.getChildren() != null) {
+				String instancePositionPath = positionPath + "." + seb.getLocationInfo().getPosition();
+				String childPathId = pathId + "-" + seb.getElementId();
+				this.generateElmSingleCodeBinding(parentElm, seb.getChildren(), childPathId, instancePositionPath, defaultHL7Version, igModel, segdm);
+			}
 		}
 	}
 
-	private void generateElmSingleCodeBinding(Element parentElm, Set<StructureElementBinding> children, String path,
+	private void generateElmSingleCodeBinding(Element parentElm, Set<StructureElementBinding> children, String pathId, String positionPath,
 			String defaultHL7Version, IgDataModel igModel, ConformanceProfileDataModel cpdm) {
 		for (StructureElementBinding seb : children) {
 			if (seb.getSingleCodeBindings() != null) {
 				for (SingleCodeBinding sb : seb.getSingleCodeBindings()) {
 					Element elmSingleCodeBinding = new Element("SingleCodeBinding");
-					elmSingleCodeBinding.addAttribute(new Attribute("Target",
-							this.makeInstancePath((path + "." + seb.getElementId()).substring(1))));
+
+					String instancePositionPath = this.makeInstancePath((positionPath + "." + seb.getLocationInfo().getPosition()).substring(1));
+					elmSingleCodeBinding.addAttribute(new Attribute("Target", instancePositionPath));
 					elmSingleCodeBinding.addAttribute(new Attribute("Code", sb.getCode()));
 					elmSingleCodeBinding.addAttribute(new Attribute("CodeSystem", sb.getCodeSystem()));
 
-					DatatypeDataModel dt = this.findDatatype(igModel,
-							(path + "-" + seb.getElementId()).substring(1).split("\\-"), cpdm);
+					String childPathId = pathId + "-" + seb.getElementId();
+					DatatypeDataModel dt = this.findDatatype(igModel, childPathId.substring(1).split("\\-"), cpdm);
 
 					if (dt.getComponentDataModels() == null || dt.getComponentDataModels().size() == 0) {
 						Element elmBindingLocations = new Element("BindingLocations");
@@ -2359,9 +2357,11 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					}
 				}
 			}
-			if (seb.getChildren() != null)
-				this.generateElmSingleCodeBinding(parentElm, seb.getChildren(), path + "-" + seb.getElementId(),
-						defaultHL7Version, igModel, cpdm);
+			if (seb.getChildren() != null) {
+				String instancePositionPath = positionPath + "." + seb.getLocationInfo().getPosition();
+				String childPathId = pathId + "-" + seb.getElementId();
+				this.generateElmSingleCodeBinding(parentElm, seb.getChildren(), childPathId, instancePositionPath, defaultHL7Version, igModel, cpdm);
+			}
 		}
 	}
 
@@ -2374,8 +2374,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 		return String.join(".", paths);
 	}
 
-	private void generateElmValueSetBinding(Element parentElm, Set<StructureElementBinding> children, String path,
-			String defaultHL7Version, IgDataModel igModel, DatatypeDataModel dtdm) {
+	private void generateElmValueSetBinding(Element parentElm, Set<StructureElementBinding> children, String pathId, String positionPath, String defaultHL7Version, IgDataModel igModel, DatatypeDataModel dtdm) {
 		for (StructureElementBinding seb : children) {
 			if (seb.getValuesetBindings() != null) {
 				for (ValuesetBinding vsb : seb.getValuesetBindings()) {
@@ -2386,11 +2385,12 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					} else {
 						elmValueSetBinding.addAttribute(new Attribute("BindingStrength", vsb.getStrength().toString()));
 					}
-					elmValueSetBinding.addAttribute(new Attribute("Target",
-							this.makeInstancePath((path + "." + seb.getElementId()).substring(1))));
 
-					DatatypeDataModel dt = this.findDatatype(igModel,
-							(path + "-" + seb.getElementId()).substring(1).split("\\-"), dtdm);
+					String instancePositionPath = this.makeInstancePath((positionPath + "." + seb.getLocationInfo().getPosition()).substring(1));
+					elmValueSetBinding.addAttribute(new Attribute("Target", instancePositionPath));
+
+					String childPathId = pathId + "-" + seb.getElementId();
+					DatatypeDataModel dt = this.findDatatype(igModel, childPathId.substring(1).split("\\-"), dtdm);
 
 					if (dt.getComponentDataModels() == null || dt.getComponentDataModels().size() == 0) {
 						Element elmBindingLocations = new Element("BindingLocations");
@@ -2452,14 +2452,15 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					}
 				}
 			}
-			if (seb.getChildren() != null)
-				this.generateElmValueSetBinding(parentElm, seb.getChildren(), path + "-" + seb.getElementId(),
-						defaultHL7Version, igModel, dtdm);
+			if (seb.getChildren() != null) {
+				String instancePositionPath = positionPath + "." + seb.getLocationInfo().getPosition();
+				String childPathId = pathId + "-" + seb.getElementId();
+				this.generateElmValueSetBinding(parentElm, seb.getChildren(), childPathId, instancePositionPath, defaultHL7Version, igModel, dtdm);
+			}
 		}
 	}
 
-	private void generateElmValueSetBinding(Element parentElm, Set<StructureElementBinding> children, String path,
-			String defaultHL7Version, IgDataModel igModel, SegmentDataModel segdm) {
+	private void generateElmValueSetBinding(Element parentElm, Set<StructureElementBinding> children, String pathId, String positionPath, String defaultHL7Version, IgDataModel igModel, SegmentDataModel segdm) {
 		for (StructureElementBinding seb : children) {
 			if (seb.getValuesetBindings() != null) {
 				for (ValuesetBinding vsb : seb.getValuesetBindings()) {
@@ -2470,11 +2471,12 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					} else {
 						elmValueSetBinding.addAttribute(new Attribute("BindingStrength", vsb.getStrength().toString()));
 					}
-					elmValueSetBinding.addAttribute(new Attribute("Target",
-							this.makeInstancePath((path + "." + seb.getElementId()).substring(1))));
 
-					DatatypeDataModel dt = this.findDatatype(igModel,
-							(path + "-" + seb.getElementId()).substring(1).split("\\-"), segdm);
+					String instancePositionPath = this.makeInstancePath((positionPath + "." + seb.getLocationInfo().getPosition()).substring(1));
+					elmValueSetBinding.addAttribute(new Attribute("Target", instancePositionPath));
+
+					String childPathId = pathId + "-" + seb.getElementId();
+					DatatypeDataModel dt = this.findDatatype(igModel, childPathId.substring(1).split("\\-"), segdm);
 
 					if (dt.getComponentDataModels() == null || dt.getComponentDataModels().size() == 0) {
 						Element elmBindingLocations = new Element("BindingLocations");
@@ -2538,14 +2540,15 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 				}
 			}
-			if (seb.getChildren() != null)
-				this.generateElmValueSetBinding(parentElm, seb.getChildren(), path + "-" + seb.getElementId(),
-						defaultHL7Version, igModel, segdm);
+			if (seb.getChildren() != null) {
+				String instancePositionPath = positionPath + "." + seb.getLocationInfo().getPosition();
+				String childPathId = pathId + "-" + seb.getElementId();
+				this.generateElmValueSetBinding(parentElm, seb.getChildren(), childPathId, instancePositionPath, defaultHL7Version, igModel, segdm);
+			}
 		}
 	}
 
-	private void generateElmValueSetBinding(Element parentElm, Set<StructureElementBinding> children, String path,
-			String defaultHL7Version, IgDataModel igModel, ConformanceProfileDataModel cpdm) {
+	private void generateElmValueSetBinding(Element parentElm, Set<StructureElementBinding> children, String pathId, String positionPath, String defaultHL7Version, IgDataModel igModel, ConformanceProfileDataModel cpdm) {
 		for (StructureElementBinding seb : children) {
 			if (seb.getValuesetBindings() != null) {
 				for (ValuesetBinding vsb : seb.getValuesetBindings()) {
@@ -2556,11 +2559,12 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					} else {
 						elmValueSetBinding.addAttribute(new Attribute("BindingStrength", vsb.getStrength().toString()));
 					}
-					elmValueSetBinding.addAttribute(new Attribute("Target",
-							this.makeInstancePath((path + "." + seb.getElementId()).substring(1))));
 
-					DatatypeDataModel dt = this.findDatatype(igModel,
-							(path + "-" + seb.getElementId()).substring(1).split("\\-"), cpdm);
+					String instancePositionPath = this.makeInstancePath((positionPath + "." + seb.getLocationInfo().getPosition()).substring(1));
+					elmValueSetBinding.addAttribute(new Attribute("Target", instancePositionPath));
+
+					String childPathId = pathId + "-" + seb.getElementId();
+					DatatypeDataModel dt = this.findDatatype(igModel, childPathId.substring(1).split("\\-"), cpdm);
 
 					if (dt.getComponentDataModels() == null || dt.getComponentDataModels().size() == 0) {
 						Element elmBindingLocations = new Element("BindingLocations");
@@ -2624,9 +2628,11 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 				}
 			}
-			if (seb.getChildren() != null)
-				this.generateElmValueSetBinding(parentElm, seb.getChildren(), path + "-" + seb.getElementId(),
-						defaultHL7Version, igModel, cpdm);
+			if (seb.getChildren() != null) {
+				String instancePositionPath = positionPath + "." + seb.getLocationInfo().getPosition();
+				String childPathId = pathId + "-" + seb.getElementId();
+				this.generateElmValueSetBinding(parentElm, seb.getChildren(), childPathId, instancePositionPath, defaultHL7Version, igModel, cpdm);
+			}
 		}
 	}
 
