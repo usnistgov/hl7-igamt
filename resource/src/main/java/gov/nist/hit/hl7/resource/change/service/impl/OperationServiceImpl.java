@@ -17,7 +17,7 @@ public class OperationServiceImpl implements OperationService {
 		if(resource.getDomainInfo().getScope().equals(Scope.HL7STANDARD) || resource.getId().startsWith("HL7")) { 
 			throw new ForbiddenOperationException("Cannot save HL7 RESOURCES"); 
 		}
-		 
+		
 	} 
  
 	@Override 

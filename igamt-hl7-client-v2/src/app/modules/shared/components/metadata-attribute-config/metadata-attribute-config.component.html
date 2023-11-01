@@ -1,0 +1,25 @@
+<h2 mat-dialog-title> Add Custom attributes</h2>
+
+
+<div with="500px">
+
+  <div>
+
+    <input type="text" class="form-control" [(ngModel)]="inputName" placeholder="type the attribute name" required>
+
+  </div>
+<ng-container *ngIf="customAttr">
+  <div cdkDropList (cdkDropListDropped)="drop($event)" class="doc-list" [cdkDropListDisabled]="false">
+    <div *ngFor="let l of customAttr" cdkDrag>
+       {{l.label}}
+    </div>
+  </div>
+</ng-container>
+
+
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()" [disabled]="!inputName" class="btn btn-sm btn-success">Done</button>
+</mat-dialog-actions>
+</div>
+

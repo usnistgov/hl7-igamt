@@ -26,7 +26,7 @@ public class IgAudienceSet {
     @Autowired
     DatatypeLibraryRepository dtLibs;
 
-    //@PostConstruct
+//    @PostConstruct
     void fix() {
         List<Ig> igs = this.igService.findAll();
         for(Ig ig: igs) {

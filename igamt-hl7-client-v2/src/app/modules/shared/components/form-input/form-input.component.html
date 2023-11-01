@@ -4,7 +4,7 @@
     [required]="required" [disabled]="disabled" [value]="value? value : ''" (input)="valueChange($event.target.value)"
     #inputElm
     (blur)="onTouch()">
-  <div *ngIf="control.invalid && !viewOnly" class="input-form-invalid-feedback"
+  <div *ngIf="control?.invalid && !viewOnly" class="input-form-invalid-feedback"
     style="margin-left: 10px;">
     {{convertErrors()}}
   </div>

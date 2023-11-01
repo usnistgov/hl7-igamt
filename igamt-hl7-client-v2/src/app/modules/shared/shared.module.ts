@@ -151,6 +151,7 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { MetadataAttributeConfigComponent } from './components/metadata-attribute-config/metadata-attribute-config.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -261,6 +262,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MessagePickerComponent,
     SelectedMessagesComponent,
     DocumentConfigComponent,
+    MetadataAttributeConfigComponent,
     ImportFromLibComponent,
     VerificationResultDisplayComponent,
   ],
@@ -464,6 +466,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DocumentConfigComponent,
     ActiveUsersListComponent,
     FirstLetterPipe,
+    MetadataAttributeConfigComponent,
     ImportFromLibComponent,
     MatTooltipModule,
     VerificationResultDisplayComponent,
@@ -505,6 +508,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     RefreshDialogComponent,
     MessagePickerComponent,
     DocumentConfigComponent,
+    MetadataAttributeConfigComponent,
     ImportFromLibComponent,
   ],
 })

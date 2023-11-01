@@ -30,6 +30,7 @@ public class DocumentMetadata implements Serializable{
   private String coverPicture;
   private String subTitle;
   private String specificationName;
+  private List<CustomAttribute> customAttributes;
   
   public DocumentMetadata() {
     super();
@@ -123,6 +124,14 @@ public String getSpecificationName() {
 
 public void setSpecificationName(String specificationName) {
   this.specificationName = specificationName;
+}
+
+public List<CustomAttribute> getCustomAttributes() {
+	return customAttributes;
+}
+
+public void setCustomAttributes(List<CustomAttribute> customAttributes) {
+	this.customAttributes = customAttributes;
 }
 
 }

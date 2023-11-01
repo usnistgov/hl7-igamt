@@ -973,9 +973,9 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
     			if(segmentRefOrGroup instanceof SegmentRef) {
     				bindedPaths.put(segmentRefOrGroup.getId(), true);
     			} else if(segmentRefOrGroup instanceof Group ) {
-                    Map<String, Boolean > groupBindingPaths = buildBindedPath(((Group) segmentRefOrGroup).getChildren(), bindedPaths, conformanceProfileExportConfiguration);
-                    bindedPaths.putAll(groupBindingPaths);
-    			}
+                    Map<String, Boolean > groupBindedPath = buildBindedPath(((Group) segmentRefOrGroup).getChildren(), bindedPaths, conformanceProfileExportConfiguration);
+                    bindedPaths.putAll(groupBindedPath);
+                }
     		}
     	}
     	return bindedPaths;
