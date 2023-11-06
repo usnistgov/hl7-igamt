@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { combineLatest } from 'rxjs';
 import { finalize, flatMap, map, take, tap } from 'rxjs/operators';
-import { Type } from '../../constants/type.enum';
 import { ComparativeType, DeclarativeType, OccurrenceType, PropositionType, StatementType } from '../../models/conformance-statements.domain';
 import { AssertionMode, IComplement, IPath, ISimpleAssertion, ISubject } from '../../models/cs.interface';
 import { ElementNamingService } from '../../services/element-naming.service';
@@ -108,6 +107,17 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
 
   labelsMap = {};
 
+  valueListContainsInvalidValues: boolean;
+  invalidValueErrorMessage = 'Invalid value provided, the only allowed characters are:  numbers, letters, - (dash), _ (underscore), . (period), \\ (backslash) and spaces. The value shall not start or end with a space.';
+  valueListStatementTypes: string[] = [
+    DeclarativeType.CONTAINS_VALUES,
+    DeclarativeType.CONTAINS_VALUES_DESC,
+    DeclarativeType.CONTAINS_CODES,
+    DeclarativeType.CONTAINS_CODES_DESC,
+    PropositionType.NOT_CONTAINS_VALUES,
+    PropositionType.NOT_CONTAINS_VALUES_DESC,
+  ].map((v) => v as string);
+
   constructor(
     elementNamingService: ElementNamingService,
     private pathService: PathService,
@@ -157,6 +167,18 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     this.map(this.proposition_statements);
   }
 
+  validateValueList() {
+    if (this.valueListStatementTypes.includes(this.assertion.complement.complementKey) && this.assertion.complement.values) {
+      for (const value of this.assertion.complement.values) {
+        if (value && !/^[0-9a-zA-Z\-_.\\]+( +[0-9a-zA-Z\-_.\\]+)*$/.test(value)) {
+          this.valueListContainsInvalidValues = true;
+          return;
+        }
+      }
+      this.valueListContainsInvalidValues = false;
+    }
+  }
+
   updateVerb(strength: ConformanceStatementStrength, assertion: ISimpleAssertion) {
     if (assertion && assertion.verbKey) {
       switch (strength) {
@@ -197,6 +219,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     }
     this.setSubjectTreeFilter(token.value.data.branch, this.statementType);
     this.valueChange.emit(this.assertion);
+    this.validateValueList();
     combineLatest(
       this.subject.setSubject(token.value.payload.subject as ISubject, token.payload.getValue().effectiveContext, this.res, this.repository),
       this.compare.setSubject(token.value.payload.complement as ISubject, token.payload.getValue().effectiveContext, this.res, this.repository),
@@ -276,6 +299,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
   }
 
   change() {
+    this.validateValueList();
     combineLatest(
       this.subject.getDescription(this.res, this.repository, !!this.token.dependency),
       this.compare.getDescription(this.res, this.repository, !!this.token.dependency),

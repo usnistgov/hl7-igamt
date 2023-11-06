@@ -155,7 +155,7 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
     return conformanceProfileDependencies;
   }
 
-  private void processSlicing(Slicing slicing, SegmentDependencies used, DependencyFilter filter) throws EntityNotFound {
+  private void processSlicing(Slicing slicing, ConformanceProfileDependencies used, DependencyFilter filter) throws EntityNotFound {
     if(slicing instanceof ConditionalSlicing) {
       this.processSlices(((ConditionalSlicing) slicing).getSlices(), used, filter);
     } else if (slicing instanceof OrderedSlicing){
@@ -163,11 +163,11 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
     }
   }
 
-  private <T extends Slice> void processSlices(List<T> slices, SegmentDependencies used, DependencyFilter filter) throws EntityNotFound {
+  private <T extends Slice> void processSlices(List<T> slices, ConformanceProfileDependencies used, DependencyFilter filter) throws EntityNotFound {
     if(slices != null) {
       for ( T slice: slices) {
         if(slice.getFlavorId() != null) {
-          datatypeDependencyService.visit(slice.getFlavorId(), used.getDatatypes(), used, filter, new ResourceBindingProcessor() , null, new HashSet<>());
+          segmentDependencyService.visit(slice.getFlavorId(), used.getSegments(), used, filter, new ResourceBindingProcessor() , null);
         }
       }
     }

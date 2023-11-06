@@ -337,7 +337,7 @@ export class IgEditEffects extends DamWidgetEffect {
                 hl7Versions: ig.metadata.hl7Versions,
                 status: ig.status,
                 authorNotes: ig.authorNotes,
-                customAttributes: ig.metadata.customAttributes? ig.metadata.customAttributes: [],
+                customAttributes: ig.metadata.customAttributes ? ig.metadata.customAttributes : [],
               },
             });
           }),

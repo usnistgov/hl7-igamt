@@ -100,6 +100,7 @@ import { ImportFromLibComponent } from './components/import-from-lib/import-from
 import { ImportStructureComponent } from './components/import-structure/import-structure.component';
 import { IssueBadgeComponent } from './components/issue-badge/issue-badge.component';
 import { MessagePickerComponent } from './components/message-picker/message-picker.component';
+import { MetadataAttributeConfigComponent } from './components/metadata-attribute-config/metadata-attribute-config.component';
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
 import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';
 import { NewPasswordFromComponent } from './components/new-password-from/new-password-from.component';
@@ -151,7 +152,6 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { MetadataAttributeConfigComponent } from './components/metadata-attribute-config/metadata-attribute-config.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,

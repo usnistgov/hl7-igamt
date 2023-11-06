@@ -20,10 +20,11 @@ public class DatatypeVerificationService extends VerificationUtils {
 	@Autowired
 	ResourceBindingVerificationService resourceBindingVerificationService;
 	@Autowired
-	CommonStructureVerificationService commonStructureVerificationService;
+	CommonVerificationService commonVerificationService;
 
 	List<IgamtObjectError> verifyDatatype(Datatype datatype) {
 		List<IgamtObjectError> errors = new ArrayList<>();
+		errors.addAll(commonVerificationService.checkExtension(datatype, datatype.getExt()));
 		errors.addAll(checkStructure(datatype));
 		errors.addAll(resourceBindingVerificationService.verifyDatatypeBindings(datatype));
 		return errors;
@@ -44,14 +45,14 @@ public class DatatypeVerificationService extends VerificationUtils {
 			for(Component component: components) {
 				LocationInfo locationInfo = getComponentLocationInfo(complexDatatype.getName(), component);
 				// Check length issues
-				List<IgamtObjectError> lengthIssues = commonStructureVerificationService.checkLength(
+				List<IgamtObjectError> lengthIssues = commonVerificationService.checkLength(
 						component,
 						locationInfo,
 						complexDatatype.getId(),
 						Type.DATATYPE
 				);
 				// Check constant issues
-				List<IgamtObjectError> constantIssues = commonStructureVerificationService.checkConstant(
+				List<IgamtObjectError> constantIssues = commonVerificationService.checkConstant(
 						component,
 						locationInfo,
 						complexDatatype.getId(),

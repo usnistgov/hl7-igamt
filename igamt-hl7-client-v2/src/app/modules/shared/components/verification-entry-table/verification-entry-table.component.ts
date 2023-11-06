@@ -1,10 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { PropertyType } from '../../models/save-change';
 import { Severity } from '../../models/verification.interface';
 import { IVerificationEntryList, IVerificationEntryTable, IVerificationStats } from '../../services/verification.service';
 import { Type } from './../../constants/type.enum';
-import { PropertyType } from '../../models/save-change';
 
 export interface IEntryFilter {
   severity: {
@@ -51,8 +51,8 @@ export class VerificationEntryTableComponent implements OnInit {
   ];
 
   propertyTextMap = {
-    [PropertyType.STATEMENT]: "CONFORMANCE STATEMENT",
-  }
+    [PropertyType.STATEMENT]: 'CONFORMANCE STATEMENT',
+  };
 
   @Input()
   preSelectSeverities: EntryTableSeverityFilterSelector = selectErrorFatalOrHighest;

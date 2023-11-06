@@ -24,6 +24,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,6 +35,8 @@ public class AssertionVerificationService extends VerificationUtils {
     private final Set<String> NUMERICAL_DT = new HashSet<>(Arrays.asList("NM", "SI"));
     private final Set<String> OCCURRENCE_TYPES = new HashSet<>(Arrays.asList("atLeast", "instance", "exactlyOne", "count", "all"));
     private final Schema assertionSchema;
+    static final Predicate<String> valueListPattern = Pattern.compile("^[0-9a-zA-Z\\-_.\\\\]+( +[0-9a-zA-Z\\-_.\\\\]+)*$").asPredicate();
+    static final Predicate<String> valuePattern = Pattern.compile("^[\\s]*[\\S].*$").asPredicate();
 
     public AssertionVerificationService() throws SAXException {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -395,14 +399,29 @@ public class AssertionVerificationService extends VerificationUtils {
             boolean empty = assertion.getComplement().getValues() == null || assertion.getComplement().getValues().length == 0;
             // Declaration Type Requires Value List and Value List is empty
             if(key.isValue()) {
-                boolean emptyOrContainsEmpty = empty || Arrays.stream(assertion.getComplement().getValues()).anyMatch(Strings::isNullOrEmpty);
-                if(emptyOrContainsEmpty) {
+                if(empty) {
                     issues.add(this.entry.AssertionValueMissing(
                             location,
                             subject.getResource().getId(),
                             subject.getResource().getType(),
                             true
                     ));
+                } else {
+                    Set<String> invalidValues = Arrays
+                            .stream(assertion.getComplement().getValuesRaw())
+                            .filter((value) -> Strings.isNullOrEmpty(value) || !valueListPattern.test(value))
+                            .map((value) -> value == null ? "" : value)
+                            .collect(Collectors.toSet());
+                    if(invalidValues.size() > 0) {
+                        issues.add(this.entry.AssertionValueInvalid(
+                                location,
+                                subject.getResource().getId(),
+                                subject.getResource().getType(),
+                                "['"+ String.join("', '", invalidValues) + "']",
+                                "The only allowed characters are:  numbers, letters, - (dash), _ (underscore), . (period), \\ (backslash) and spaces. The value shall not start or end with a space.",
+                                true
+                        ));
+                    }
                 }
             }
 
@@ -429,13 +448,24 @@ public class AssertionVerificationService extends VerificationUtils {
         } else {
 
             // Declaration Type Requires Value but its missing
-            if(key.isValue() && Strings.isNullOrEmpty(assertion.getComplement().getValue())) {
-                issues.add(this.entry.AssertionValueMissing(
-                        location,
-                        subject.getResource().getId(),
-                        subject.getResource().getType(),
-                        false
-                ));
+            if(key.isValue()) {
+                if(Strings.isNullOrEmpty(assertion.getComplement().getValue())) {
+                    issues.add(this.entry.AssertionValueMissing(
+                            location,
+                            subject.getResource().getId(),
+                            subject.getResource().getType(),
+                            false
+                    ));
+                } else if(!valuePattern.test(assertion.getComplement().getValue())) {
+                    issues.add(this.entry.AssertionValueInvalid(
+                            location,
+                            subject.getResource().getId(),
+                            subject.getResource().getType(),
+                            assertion.getComplement().getValue(),
+                            "The value shall not be whitespace.",
+                            false
+                    ));
+                }
             }
 
             // Declaration Type Requires Description but its missing

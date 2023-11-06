@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.service.verification.impl;
+import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
@@ -13,13 +15,15 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 @Service
 public class SegmentVerificationService extends VerificationUtils {
 	@Autowired
 	ResourceBindingVerificationService resourceBindingVerificationService;
 	@Autowired
-	CommonStructureVerificationService commonStructureVerificationService;
+	CommonVerificationService commonVerificationService;
 
 	List<IgamtObjectError> verifySegment(Segment segment) {
 		List<IgamtObjectError> errors = new ArrayList<>();
@@ -35,6 +39,7 @@ public class SegmentVerificationService extends VerificationUtils {
 				segment.getId()
 		);
 		// TODO: verify dynamic mapping
+		errors.addAll(commonVerificationService.checkExtension(segment, segment.getExt()));
 		errors.addAll(checkFields(segment.getChildren(), contextLocationInfo, contextResourceRef));
 		errors.addAll(resourceBindingVerificationService.verifySegmentBindings(segment));
 		return errors;
@@ -54,14 +59,14 @@ public class SegmentVerificationService extends VerificationUtils {
 		List<IgamtObjectError> issues = new ArrayList<>();
 		LocationInfo locationInfo = getFieldLocationInfo(field, parentLocationInfo);
 		// Check length issues
-		issues.addAll(commonStructureVerificationService.checkLength(
+		issues.addAll(commonVerificationService.checkLength(
 				field,
 				locationInfo,
 				context.getId(),
 				context.getType()
 		));
 		// Check constant issues
-		issues.addAll(commonStructureVerificationService.checkConstant(
+		issues.addAll(commonVerificationService.checkConstant(
 				field,
 				locationInfo,
 				context.getId(),
@@ -69,7 +74,7 @@ public class SegmentVerificationService extends VerificationUtils {
 				issues.isEmpty()
 		));
 		// Check cardinality issues
-		issues.addAll(commonStructureVerificationService.checkCardinality(
+		issues.addAll(commonVerificationService.checkCardinality(
 				locationInfo,
 				context.getId(),
 				context.getType(),

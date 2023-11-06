@@ -38,40 +38,40 @@
     </span>
   </div>
 
-<ng-container >
-  <form>
-<p-table [columns]="cols" [value]= "customAttributes$ | async" [reorderableColumns]="true" (onRowReorder)="dataChange()">
-  <ng-template pTemplate="header" let-columns>
-      <tr>
-          <th style="width:2.5em"></th>
-           <th> Custom Attributes</th>
-           <th width="50px">
-            <button (click)="openCustomAttributeDialog()" class="btn-sm btn-primary" *ngIf="!(viewOnly$ | async)">
-              <i class="fa fa-plus"> </i>
-            </button>
-          </th>
-      </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
-      <tr [pReorderableRow]="index">
-          <td>
-              <i class="fa fa-bars" pReorderableRowHandle></i>
-          </td>
-          <td>
-            <div class="form-group">
-              <label class="form-label-lg">{{rowData.name}}</label>
-              <input [type]="type" class="form-control" [id]="rowData.name" [name]="rowData.name" placeholder="" [(ngModel)]="rowData.value" (ngModelChange)="dataChange()" [disabled]="viewOnly$ | async">
-            </div>
-          </td>
-          <td>
-            <button type="button" (click)="removeItem(i)" class="btn-sm btn-danger" [disabled]="viewOnly$ | async"><i class="fa fa-remove"></i></button>
-          </td>
-      </tr>
-  </ng-template>
-</p-table>
-</form>
-</ng-container>
-<ng-container>
+  <ng-container>
+    <form style="margin-bottom: 15px;">
+      <p-table [columns]="cols" [value]= "customAttributes$ | async" [reorderableColumns]="true" (onRowReorder)="dataChange()">
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th style="width:2.5em"></th>
+                <th> Custom Attributes</th>
+                <th width="50px">
+                  <button (click)="openCustomAttributeDialog()" class="btn-sm btn-primary" *ngIf="!(viewOnly$ | async)">
+                    <i class="fa fa-plus"> </i>
+                  </button>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+            <tr [pReorderableRow]="index">
+                <td>
+                    <i class="fa fa-bars" pReorderableRowHandle></i>
+                </td>
+                <td>
+                  <div class="form-group">
+                    <label class="form-label-lg">{{rowData.name}}</label>
+                    <input [type]="type" class="form-control" [id]="rowData.name" [name]="rowData.name" placeholder="" [(ngModel)]="rowData.value" (ngModelChange)="dataChange()" [disabled]="viewOnly$ | async">
+                  </div>
+                </td>
+                <td>
+                  <button type="button" (click)="removeItem(i)" class="btn-sm btn-danger" [disabled]="viewOnly$ | async"><i class="fa fa-remove"></i></button>
+                </td>
+            </tr>
+        </ng-template>
+      </p-table>
+    </form>
+  </ng-container>
+  <ng-container>
     <label><strong>Author Notes </strong></label>
     <div *ngIf="!(viewOnly$ | async)" id="authorNotes" [froalaEditor]="froalaConfig$ |async" formControlName="authorNotes" style="flex-grow: 1; display: flex; flex-direction: column;" name="authorNotes"></div>
     <!-- <div *ngIf="(viewOnly ||  !metadataForm['authorNotes'])" [froalaView]="form['authorNotes']" [froalaEditor]="froalaConfig" ></div> -->

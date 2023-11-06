@@ -31,7 +31,7 @@ public class ConformanceProfileVerificationService  extends VerificationUtils {
 	@Autowired
 	private ResourceBindingVerificationService resourceBindingVerificationService;
 	@Autowired
-	private CommonStructureVerificationService commonStructureVerificationService;
+	private CommonVerificationService commonVerificationService;
 	@Autowired
 	private DatatypeService datatypeService;
 	@Autowired
@@ -63,7 +63,7 @@ public class ConformanceProfileVerificationService  extends VerificationUtils {
 	public List<IgamtObjectError> checkMetadata(ConformanceProfile conformanceProfile, List<IgamtObjectError> issues) {
 		// Remove duplicate ProfileRole missing or invalid
 		List<IgamtObjectError> profileRoleIssues = issues.stream()
-				.filter((issue) -> issue.getCode().equals("ProfileRole_MissingOrInValid"))
+				.filter((issue) -> issue.getCode().equals("PROFILE_ROLE_MISSING_OR_INVALID_IX"))
 				.collect(Collectors.toList());
 		if(profileRoleIssues.size() > 1) {
 			for(int i = 1; i < profileRoleIssues.size(); i++) {
@@ -71,7 +71,7 @@ public class ConformanceProfileVerificationService  extends VerificationUtils {
 			}
 		} else if(profileRoleIssues.size() == 0) {
 			if(conformanceProfile.getRole() == null || !Arrays.asList(Role.Receiver, Role.Sender, Role.SenderAndReceiver).contains(conformanceProfile.getRole())) {
-				issues.add(this.entry.Required_ProfileRole_Warning(conformanceProfile.getId(), Type.CONFORMANCEPROFILE));
+				issues.add(this.entry.ProfileRoleMissingOrInvalid(conformanceProfile.getId(), Type.CONFORMANCEPROFILE));
 			}
 		}
 		return issues;
@@ -120,7 +120,7 @@ public class ConformanceProfileVerificationService  extends VerificationUtils {
 
 	public List<IgamtObjectError> checkMessageStructureElement(MsgStructElement element, ConformanceProfile conformanceProfile, String pathId, DataElementNamingService dataElementNamingService) {
 		LocationInfo locationInfo = dataElementNamingService.computeLocationInfo(conformanceProfile, pathId);
-		List<IgamtObjectError> issues = new ArrayList<>(this.commonStructureVerificationService.checkCardinality(
+		List<IgamtObjectError> issues = new ArrayList<>(this.commonVerificationService.checkCardinality(
 				locationInfo,
 				conformanceProfile.getId(),
 				Type.CONFORMANCEPROFILE,
@@ -138,7 +138,7 @@ public class ConformanceProfileVerificationService  extends VerificationUtils {
 			if (conformanceProfile.getRole() != null) {
 				if (conformanceProfile.getRole().equals(Role.Sender)) {
 					issues.add(
-							this.entry.Usage_NOTAllowed_IXUsage_SenderProfile(
+							this.entry.UsageNotAllowedIXUsageSenderProfile(
 									locationInfo,
 									conformanceProfile.getId(),
 									Type.CONFORMANCEPROFILE
@@ -146,7 +146,7 @@ public class ConformanceProfileVerificationService  extends VerificationUtils {
 					);
 				} else if(conformanceProfile.getRole().equals(Role.SenderAndReceiver)) {
 					issues.add(
-							this.entry.Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(
+							this.entry.UsageNOTAllowedIXUsageSenderAndReceiverProfile(
 									locationInfo,
 									conformanceProfile.getId(),
 									Type.CONFORMANCEPROFILE
@@ -155,7 +155,7 @@ public class ConformanceProfileVerificationService  extends VerificationUtils {
 				}
 			} else {
 				issues.add(
-						this.entry.Required_ProfileRole_Error(conformanceProfile.getId(), Type.CONFORMANCEPROFILE)
+						this.entry.ProfileRoleMissingOrInvalidIX(conformanceProfile.getId(), Type.CONFORMANCEPROFILE)
 				);
 			}
 		}

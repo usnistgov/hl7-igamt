@@ -17,8 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -64,6 +63,7 @@ public class IgVerificationService {
 				ig.getConformanceProfileRegistry(),
 				(id) -> this.conformanceProfileService.findById(id),
 				(resource) -> this.conformanceProfileVerificationService.verifyConformanceProfile(resource),
+				false,
 				igVerificationIssuesList.getConformanceProfiles()
 		);
 		// Segments Registry
@@ -74,6 +74,7 @@ public class IgVerificationService {
 				ig.getSegmentRegistry(),
 				(id) -> this.segmentService.findById(id),
 				(resource) -> this.segmentVerificationService.verifySegment(resource),
+				true,
 				igVerificationIssuesList.getSegments()
 		);
 		// Datatype Registry
@@ -84,6 +85,7 @@ public class IgVerificationService {
 				ig.getDatatypeRegistry(),
 				(id) -> this.datatypeService.findById(id),
 				(datatype) -> this.datatypeVerificationService.verifyDatatype(datatype),
+				true,
 				igVerificationIssuesList.getDatatypes()
 		);
 		// ValueSet Registry
@@ -94,6 +96,7 @@ public class IgVerificationService {
 				ig.getValueSetRegistry(),
 				(id) -> this.valuesetService.findById(id),
 				(resource) -> this.valueSetVerificationService.verifyValueSet(resource),
+				true,
 				igVerificationIssuesList.getValueSets()
 		);
 		// CoConstraint Groups Registry
@@ -110,6 +113,7 @@ public class IgVerificationService {
 					}
 				},
 				(resource) -> this.coConstraintVerificationService.verifyCoConstraintGroup(resource),
+				false,
 				igVerificationIssuesList.getCoConstraintGroups()
 		);
 		// Composite Profile Registry
@@ -128,12 +132,29 @@ public class IgVerificationService {
 		return igVerificationIssuesList;
 	}
 
-	public <T extends Resource> void processRegistry(DocumentStructure document, Type type, Registry registry, Function<String, T> getter, Function<T, List<IgamtObjectError>> verify, List<IgamtObjectError> container) {
+	public <T extends Resource> void processRegistry(DocumentStructure document, Type type, Registry registry, Function<String, T> getter, Function<T, List<IgamtObjectError>> verify, boolean checkDuplicateLabel, List<IgamtObjectError> container) {
+		Map<String, Set<String>> labels = new HashMap<>();
 		for(Link link: registry.getChildren()) {
 			T resource = getter.apply(link.getId());
 			container.addAll(verifyResource(document, resource, link.getId(), type));
 			if(resource != null) {
 				container.addAll(verify.apply(resource));
+				if(checkDuplicateLabel) {
+					String version = resource.getDomainInfo().getVersion();
+					String label = resource.getLabel().toLowerCase();
+					if(labels.containsKey(version) && labels.get(version).contains(label)) {
+						container.add(
+								this.entry.DuplicateResourceIdentifier(
+										resource.getId(),
+										resource.getType(),
+										resource.getLabel(),
+										version
+								)
+						);
+					} else {
+						labels.computeIfAbsent(version, (key) -> new HashSet<>()).add(label);
+					}
+				}
 			}
 		}
 	}

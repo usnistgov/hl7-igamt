@@ -32,7 +32,7 @@ public class ValueSetVerificationService extends VerificationUtils {
 				);
 				if(duplicate) {
 					issues.add(
-							this.entry.Valueset_Duplicated_Code(
+							this.entry.ValuesetDuplicatedCode(
 									codeLocation,
 									valueset.getId(),
 									Type.VALUESET,
@@ -51,7 +51,7 @@ public class ValueSetVerificationService extends VerificationUtils {
 		// Check code value
 		if (Strings.isBlank(code.getValue())) {
 			issues.add(
-					this.entry.Valueset_Missing_Code(
+					this.entry.ValuesetMissingCode(
 							location,
 							valueset.getId(),
 							Type.VALUESET
@@ -61,7 +61,7 @@ public class ValueSetVerificationService extends VerificationUtils {
 		// Check code description
 		if (Strings.isBlank(code.getDescription())) {
 			issues.add(
-					this.entry.Valueset_Missing_Description(
+					this.entry.ValuesetMissingDescription(
 							location,
 							valueset.getId(),
 							Type.VALUESET
@@ -71,7 +71,7 @@ public class ValueSetVerificationService extends VerificationUtils {
 		// Check code system
 		if (Strings.isBlank(code.getCodeSystem())) {
 			issues.add(
-					this.entry.Valueset_Missing_CodeSys(
+					this.entry.ValuesetMissingCodeSys(
 							location,
 							valueset.getId(),
 							Type.VALUESET
@@ -81,7 +81,7 @@ public class ValueSetVerificationService extends VerificationUtils {
 		// Check code usage
 		if (code.getUsage() == null) {
 			issues.add(
-					this.entry.Valueset_Missing_Usage(
+					this.entry.ValuesetMissingUsage(
 							location,
 							valueset.getId(),
 							Type.VALUESET

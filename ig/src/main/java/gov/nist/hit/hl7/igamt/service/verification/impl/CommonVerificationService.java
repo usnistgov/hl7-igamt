@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.service.verification.impl;
 
+import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.PrimitiveDatatype;
@@ -12,14 +13,18 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 @Service
-public class CommonStructureVerificationService {
+public class CommonVerificationService {
 
 	@Autowired
 	VerificationEntryService verificationEntryService;
 	@Autowired
 	DatatypeService datatypeService;
+
+	static final Predicate<String> extensionPattern = Pattern.compile("^[A-Za-z][\\w-]{0,7}$").asPredicate();
 
 	List<IgamtObjectError> checkLength(
 			SubStructElement element,
@@ -34,11 +39,23 @@ public class CommonStructureVerificationService {
 
 		if (!this.isLengthAllowedElement(element)) {
 			if (!this.isNullOrNA(confLength)) {
-				// TODO : No conf length where not allowed
+				results.add(
+						this.verificationEntryService.ConfLengthNotAllowed(
+								location,
+								id,
+								type
+						)
+				);
 			}
 
-			if(this.isNullOrNA(minLength) || this.isNullOrNA(maxLength)) {
-				// TODO : No min/max where not allowed
+			if(!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength)) {
+				results.add(
+						this.verificationEntryService.LengthNotAllowed(
+								location,
+								id,
+								type
+						)
+				);
 			}
 		} else {
 			// Check if length range is valid
@@ -49,8 +66,8 @@ public class CommonStructureVerificationService {
 						int maxLengthInt = Integer.parseInt(maxLength);
 
 						if (minLengthInt > maxLengthInt) {
-							results.add(this.verificationEntryService.Length_INVALID_Range(location, id, type, minLength,
-									maxLength));
+							results.add(this.verificationEntryService.LengthInvalidRange(location, id, type, minLength,
+							                                                             maxLength));
 						}
 					}
 				}
@@ -59,27 +76,27 @@ public class CommonStructureVerificationService {
 			// Check max length is valid value
 			if (!this.isNullOrNA(maxLength)) {
 				if (!this.isIntOrStar(maxLength)) {
-					results.add(this.verificationEntryService.Length_INVALID_MaxLength(location, id, type, maxLength));
+					results.add(this.verificationEntryService.LengthInvalidMaxLength(location, id, type, maxLength));
 				}
 			}
 
 			// Check min length is valid value
 			if (!this.isNullOrNA(minLength)) {
 				if (!this.isInt(minLength)) {
-					results.add(this.verificationEntryService.Length_INVALID_MinLength(location, id, type, minLength));
+					results.add(this.verificationEntryService.LengthInvalidMinLength(location, id, type, minLength));
 				}
 			}
 
 			// Check conf length is valid value
 			if (!this.isNullOrNA(confLength)) {
 				if (!confLength.contains("#") && !confLength.contains("=")) {
-					results.add(this.verificationEntryService.ConfLength_INVALID(location, id, type, confLength));
+					results.add(this.verificationEntryService.ConfLengthInvalid(location, id, type, confLength));
 				}
 			}
 
 			// Check length or conf length is set
 			if (this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) {
-				results.add(this.verificationEntryService.LengthorConfLength_Missing(location, id, type));
+				results.add(this.verificationEntryService.LengthOrConfLengthMissing(location, id, type));
 			}
 		}
 		return results;
@@ -97,10 +114,10 @@ public class CommonStructureVerificationService {
 
 		if (!StringUtils.isBlank(constantValue)) {
 			if (!this.isPrimitiveDatatype(element)) {
-				results.add(this.verificationEntryService.Constant_INVALID_Datatype(location, id, type, element));
+				results.add(this.verificationEntryService.ConstantInvalidDatatype(location, id, type, element));
 			}
 			if (element.getUsage().equals(Usage.X)) {
-				results.add(this.verificationEntryService.Constant_INVALID_Usage(location, id, type));
+				results.add(this.verificationEntryService.ConstantInvalidUsage(location, id, type));
 			}
 
 			if(results.isEmpty() && checkLength) {
@@ -127,7 +144,7 @@ public class CommonStructureVerificationService {
 
 					if(!passMinLength || !passMaxLength) {
 						results.add(
-								this.verificationEntryService.Constant_INVALID_LengthRange(
+								this.verificationEntryService.ConstantInvalidLengthRange(
 										location,
 										id,
 										type,
@@ -159,7 +176,7 @@ public class CommonStructureVerificationService {
 					int maxInt = Integer.parseInt(max);
 					if (min > maxInt) {
 						result.add(
-								this.verificationEntryService.Cardinality_INVALID_Range(
+								this.verificationEntryService.CardinalityInvalidRange(
 										location,
 										id,
 										type,
@@ -170,7 +187,7 @@ public class CommonStructureVerificationService {
 					} else if(usage != null){
 						if (usage.equals(Usage.X) && !max.equals("0")) {
 							result.add(
-									this.verificationEntryService.Cardinality_NOTAllowed_MAXCardinality(
+									this.verificationEntryService.CardinalityNotAllowedMaxCardinality(
 											location,
 											id,
 											type,
@@ -179,7 +196,7 @@ public class CommonStructureVerificationService {
 							);
 						} else if (usage.equals(Usage.R) && min < 1) {
 							result.add(
-									this.verificationEntryService.Cardinality_NOTAllowed_MINCardinality1(
+									this.verificationEntryService.CardinalityNotAllowedMinZero(
 											location,
 											id,
 											type,
@@ -188,7 +205,7 @@ public class CommonStructureVerificationService {
 							);
 						} else if(!usage.equals(Usage.R) && min != 0) {
 							result.add(
-									this.verificationEntryService.Cardinality_NOTAllowed_MINCardinality2(
+									this.verificationEntryService.CardinalityNotAllowedMin(
 											location,
 											id,
 											type,
@@ -201,7 +218,7 @@ public class CommonStructureVerificationService {
 				}
 			} else {
 				result.add(
-						this.verificationEntryService.Cardinality_INVALID_MAXCardinality(
+						this.verificationEntryService.CardinalityInvalidMaxCardinality(
 								location,
 								id,
 								type,
@@ -211,6 +228,33 @@ public class CommonStructureVerificationService {
 			}
 		}
 		return result;
+	}
+
+	List<IgamtObjectError> checkExtension(Resource resource, String extension) {
+		List<IgamtObjectError> errors = new ArrayList<>();
+		if(resource.getDomainInfo().getScope().equals(Scope.USER) && !resource.isGenerated()) {
+			if(Strings.isNullOrEmpty(extension)) {
+				errors.add(
+						this.verificationEntryService.MissingResourceExtension(
+								resource.getId(),
+								resource.getType(),
+								resource.getLabel(),
+								resource.getDomainInfo().getVersion()
+						)
+				);
+			} else if(!extensionPattern.test(extension)) {
+				errors.add(
+						this.verificationEntryService.InvalidResourceExtension(
+								resource.getId(),
+								resource.getType(),
+								resource.getLabel(),
+								resource.getDomainInfo().getVersion(),
+								extension
+						)
+				);
+			}
+		}
+		return errors;
 	}
 
 	public boolean isNullOrNA(String s) {
