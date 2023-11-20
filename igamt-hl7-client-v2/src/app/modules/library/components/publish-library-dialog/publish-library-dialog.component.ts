@@ -1,8 +1,8 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {Scope} from '../../../shared/constants/scope.enum';
-import {Type} from '../../../shared/constants/type.enum';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Scope } from '../../../shared/constants/scope.enum';
+import { Type } from '../../../shared/constants/type.enum';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
 
 @Component({
   selector: 'app-publish-library-dialog',
@@ -38,16 +38,13 @@ export class PublishLibraryDialogComponent implements OnInit {
     }
     this.dialogRef.close(this.publicationResult);
   }
-  print(form: any) {
-    console.log(form);
-  }
 
   isDuplicated(fixedName: any, suggested: any) {
-    return this.data.entries.filter((entry) =>  entry.display.fixedName === fixedName && entry.suggested === suggested).length > 1 ;
+    return this.data.entries.filter((entry) => entry.display.fixedName === fixedName && entry.suggested === suggested).length > 1;
   }
   disabled() {
     for (const entry of this.data.entries) {
-      if ( !entry.suggested || this.isDuplicated(entry.display.fixedName, entry.suggested)) {
+      if (!entry.suggested || this.isDuplicated(entry.display.fixedName, entry.suggested)) {
         return true;
       }
     }

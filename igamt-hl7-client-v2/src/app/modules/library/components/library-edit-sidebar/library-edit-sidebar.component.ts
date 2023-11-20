@@ -1,11 +1,11 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {MatDialog} from '@angular/material';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Actions} from '@ngrx/effects';
-import {Store} from '@ngrx/store';
-import {SelectItem} from 'primeng/api';
-import {combineLatest, Observable, of} from 'rxjs';
-import {concatMap, filter, map, take, withLatestFrom} from 'rxjs/operators';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Actions } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { SelectItem } from 'primeng/api';
+import { combineLatest, Observable, of } from 'rxjs';
+import { concatMap, filter, map, take, withLatestFrom } from 'rxjs/operators';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import * as fromLibraryEdit from 'src/app/root-store/library/library-edit/library-edit.index';
 import {
@@ -21,27 +21,27 @@ import {
   UpdateSections,
 } from 'src/app/root-store/library/library-edit/library-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
-import {ClearResource, LoadResource} from '../../../../root-store/resource-loader/resource-loader.actions';
+import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
-import {ConfirmDialogComponent} from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
-import {RxjsStoreHelperService} from '../../../dam-framework/services/rxjs-store-helper.service';
-import {selectIsAdmin} from '../../../dam-framework/store/authentication';
-import {EditorReset, selectWorkspaceActive} from '../../../dam-framework/store/data';
-import {IAddWrapper} from '../../../document/models/document/add-wrapper.class';
-import {IDocumentDisplayInfo} from '../../../ig/models/ig/ig-document.class';
-import {CopyResourceComponent} from '../../../shared/components/copy-resource/copy-resource.component';
-import {ResourcePickerComponent} from '../../../shared/components/resource-picker/resource-picker.component';
-import {UsageDialogComponent} from '../../../shared/components/usage-dialog/usage-dialog.component';
-import {Scope} from '../../../shared/constants/scope.enum';
-import {Type} from '../../../shared/constants/type.enum';
-import {ActiveStatus, IDocumentRef} from '../../../shared/models/abstract-domain.interface';
-import {ICopyResourceData} from '../../../shared/models/copy-resource-data';
-import {IUsages} from '../../../shared/models/cross-reference';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {IResourcePickerData} from '../../../shared/models/resource-picker-data.interface';
-import {CrossReferencesService} from '../../../shared/services/cross-references.service';
-import {ILibrary} from '../../models/library.class';
-import {LibraryTocComponent} from '../library-toc/library-toc.component';
+import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
+import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
+import { selectIsAdmin } from '../../../dam-framework/store/authentication';
+import { EditorReset, selectWorkspaceActive } from '../../../dam-framework/store/data';
+import { IAddWrapper } from '../../../document/models/document/add-wrapper.class';
+import { IDocumentDisplayInfo } from '../../../ig/models/ig/ig-document.class';
+import { CopyResourceComponent } from '../../../shared/components/copy-resource/copy-resource.component';
+import { ResourcePickerComponent } from '../../../shared/components/resource-picker/resource-picker.component';
+import { UsageDialogComponent } from '../../../shared/components/usage-dialog/usage-dialog.component';
+import { Scope } from '../../../shared/constants/scope.enum';
+import { Type } from '../../../shared/constants/type.enum';
+import { ActiveStatus, IDocumentRef } from '../../../shared/models/abstract-domain.interface';
+import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
+import { IUsages } from '../../../shared/models/cross-reference';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { IResourcePickerData } from '../../../shared/models/resource-picker-data.interface';
+import { CrossReferencesService } from '../../../shared/services/cross-references.service';
+import { ILibrary } from '../../models/library.class';
+import { LibraryTocComponent } from '../library-toc/library-toc.component';
 
 @Component({
   selector: 'app-library-edit-sidebar',
@@ -114,11 +114,10 @@ export class LibraryEditSidebarComponent implements OnInit {
   }
 
   addChildren(event: IAddWrapper) {
-    console.log(event);
     const subscription = combineLatest(this.hl7Version$, this.version$, this.master$).pipe(
       take(1),
       map(([versions, selectedVersion, ms]) => {
-        this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version: selectedVersion , compatibility: true}));
+        this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version: selectedVersion, compatibility: true }));
 
         const dialogData: IResourcePickerData = {
           hl7Versions: versions,
@@ -161,27 +160,27 @@ export class LibraryEditSidebarComponent implements OnInit {
     const subscription = combineLatest(this.documentRef$, this.master$).pipe(
       take(1),
       map(([documentRef, master]) => {
-          const dialogRef = this.dialog.open(CopyResourceComponent, {
-            data: {...$event, targetScope: Scope.USER, title: this.getCopyTitle($event.element.type), documentType: documentRef.type, master},
-          });
-          dialogRef.afterClosed().pipe(
-            filter((x) => x !== undefined),
-            map((result) => {
-              if (result && result.redirect) {
-                RxjsStoreHelperService.listenAndReact(this.actions, {
-                  [LibraryEditActionTypes.CopyResourceSuccess]: {
-                    do: (action: CopyResourceSuccess) => {
-                      this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], {relativeTo: this.activeRoute});
-                      return of();
-                    },
+        const dialogRef = this.dialog.open(CopyResourceComponent, {
+          data: { ...$event, targetScope: Scope.USER, title: this.getCopyTitle($event.element.type), documentType: documentRef.type, master },
+        });
+        dialogRef.afterClosed().pipe(
+          filter((x) => x !== undefined),
+          map((result) => {
+            if (result && result.redirect) {
+              RxjsStoreHelperService.listenAndReact(this.actions, {
+                [LibraryEditActionTypes.CopyResourceSuccess]: {
+                  do: (action: CopyResourceSuccess) => {
+                    this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
+                    return of();
                   },
-                }).subscribe();
-              }
-              this.store.dispatch(new CopyResource({documentId: documentRef.documentId, selected: result.flavor}));
-            }),
-          ).subscribe();
-        }),
-      ).subscribe();
+                },
+              }).subscribe();
+            }
+            this.store.dispatch(new CopyResource({ documentId: documentRef.documentId, selected: result.flavor }));
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
     subscription.unsubscribe();
   }
   delete($event: IDisplayElement) {
@@ -298,7 +297,7 @@ export class LibraryEditSidebarComponent implements OnInit {
         return this.crossReferencesService.findUsagesDisplay(documentRef, Type.DATATYPELIBRARY, $event.type, $event.id).pipe(
           take(1),
           map((usages: IUsages[]) => {
-            usages =  usages.filter((x) =>  x.element.activeInfo && x.element.activeInfo.status === ActiveStatus.ACTIVE);
+            usages = usages.filter((x) => x.element.activeInfo && x.element.activeInfo.status === ActiveStatus.ACTIVE);
             if (usages.length === 0) {
               const dialogRef = this.dialog.open(ConfirmDialogComponent, {
                 data: {
@@ -309,7 +308,7 @@ export class LibraryEditSidebarComponent implements OnInit {
               dialogRef.afterClosed().subscribe(
                 (answer) => {
                   if (answer) {
-                    this.store.dispatch(new DeactivateElements( documentRef.documentId, [$event.id]));
+                    this.store.dispatch(new DeactivateElements(documentRef.documentId, [$event.id]));
                   }
                 },
               );

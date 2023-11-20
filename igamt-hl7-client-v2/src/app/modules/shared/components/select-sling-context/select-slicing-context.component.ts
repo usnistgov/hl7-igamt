@@ -21,7 +21,6 @@ export class SelectSlicingContextComponent implements OnInit {
 
   constructor(public dialogRef: MatDialogRef<SelectSlicingContextComponent>,
               @Inject(MAT_DIALOG_DATA) public data: ISlicingDialogData, readonly repository: StoreResourceRepositoryService) {
-    console.log(data);
   }
 
   ngOnInit() {
@@ -36,7 +35,6 @@ export class SelectSlicingContextComponent implements OnInit {
   }
 
   select($event: IStructureTreeSelect) {
-    console.log($event);
     this.selected = $event;
   }
 }

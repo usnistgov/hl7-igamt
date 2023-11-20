@@ -130,7 +130,6 @@ export class IgEditEffects extends DamWidgetEffect {
           ];
         }),
         catchError((error: HttpErrorResponse) => {
-          console.log(error);
           return of(
             new fromDAM.TurnOffLoader(),
             new IgEditResolverLoadFailure(error),
@@ -695,7 +694,6 @@ export class IgEditEffects extends DamWidgetEffect {
           ];
         }),
         catchError((error: HttpErrorResponse) => {
-          console.log(error);
           return of(
             new fromDAM.TurnOffLoader(),
             new ToggleDeltaFailure(error),
@@ -718,11 +716,8 @@ export class IgEditEffects extends DamWidgetEffect {
         this.store.select(selectIgDocument).pipe(take(1))).pipe(
           take(1),
           flatMap(([response, selected, ig]) => {
-
             const url = '/' + 'ig/' + ig.id + '/profilecomponent/' + response.id;
-            console.log(selected);
             const redirect: boolean = selected && selected.display && selected.display.id === action.payload.element.id;
-
             if (redirect) {
               return [
                 new EditorReset(),
@@ -929,7 +924,6 @@ export class IgEditEffects extends DamWidgetEffect {
           ];
         }),
         catchError((error: HttpErrorResponse) => {
-          console.log(error);
           return of(
             new fromDAM.TurnOffLoader(),
             new UpdateDocumentConfigFailure(error),

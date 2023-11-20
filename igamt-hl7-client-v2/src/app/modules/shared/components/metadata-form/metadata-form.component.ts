@@ -57,9 +57,6 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
 
   @Input()
   set metadataFormInput(input: IMetadataFormInput<any>) {
-    console.log('input');
-
-    console.log(input.model);
     if (this.changesSubscription) {
       this.changesSubscription.unsubscribe();
     }
@@ -81,7 +78,6 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
     );
     this.changesSubscription = this.metadataForm.valueChanges.subscribe(
       (change) => {
-        console.log(this.metadataForm);
         this.dataChange.emit(this.metadataForm);
       },
     );

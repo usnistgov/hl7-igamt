@@ -25,25 +25,23 @@ export class MessagePickerComponent implements OnInit {
   @ViewChild('child') child;
   data$: Observable<IResource[]> = of([]);
   constructor(public dialogRef: MatDialogRef<MessagePickerComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: IMessagePickerData, private resourceService: ResourceService ) {
+              @Inject(MAT_DIALOG_DATA) public data: IMessagePickerData, private resourceService: ResourceService) {
 
-    this.data$ = this.resourceService.importResource({ type: Type.EVENTS, scope: data.scope, version: data.version}).pipe(map((x) =>  x.data));
+    this.data$ = this.resourceService.importResource({ type: Type.EVENTS, scope: data.scope, version: data.version }).pipe(map((x) => x.data));
 
   }
   ngOnInit() {
   }
 
   select($event: string) {
-    this.data$ = this.resourceService.importResource({ type: Type.EVENTS, scope: this.data.scope, version: $event}).pipe(map((x) =>  x.data));
+    this.data$ = this.resourceService.importResource({ type: Type.EVENTS, scope: this.data.scope, version: $event }).pipe(map((x) => x.data));
   }
 
   selected($event: any[]) {
-    console.log($event);
     this.selectedData = $event;
   }
 
   submit() {
-    console.log(this.selectedData);
     this.dialogRef.close(this.selectedData);
   }
   cancel() {
@@ -62,7 +60,7 @@ export class MessagePickerComponent implements OnInit {
   }
 
   update(version: string, scope: Scope) {
-    this.data$ = this.resourceService.importResource({ type: Type.EVENTS, scope, version}).pipe(map((x) =>  x.data));
+    this.data$ = this.resourceService.importResource({ type: Type.EVENTS, scope, version }).pipe(map((x) => x.data));
   }
 }
 

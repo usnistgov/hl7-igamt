@@ -688,7 +688,6 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   manageProfileStructure(event: IContent[]) {
-    console.log(event);
     this.documentRef$.pipe(
       take(1),
       tap((documentRef) => {
@@ -740,7 +739,6 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
             this.toc.filterNode((display) => {
               return this.igTocFilterService.isFiltered(display, tocFilter);
             });
-            console.log(this.toc.nodes);
             this.toc.updateNumbers();
             setTimeout(() => {
               this.blockUIView.stop();
@@ -802,7 +800,6 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
               dialogRef.afterClosed().subscribe(
                 (answer) => {
                   if (answer) {
-                    console.log(answer);
                     this.store.dispatch(new DeleteResources({ documentId: documentRef.documentId, ids: answer, type: $event.type }));
                   }
                 },

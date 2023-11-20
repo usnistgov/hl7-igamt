@@ -169,8 +169,6 @@ export class ImportStructureComponent implements OnInit {
   selectSegment(rowData) {
     const display: IDisplayElement = this.display.getDisplay(rowData);
     this.children = [display];
-    console.log(display);
-    console.log(this.children);
     this.duplicatedList = [];
     this.duplicated = {};
     if (this.availables[display.fixedName]) {

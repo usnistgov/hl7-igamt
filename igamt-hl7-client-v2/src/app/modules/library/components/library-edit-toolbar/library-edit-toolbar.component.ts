@@ -55,7 +55,6 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
       this.exportConfigurationService.getAllExportConfigurations(ExportTypes.DATATYPELIBRARY)).pipe(
         take(1),
         map(([igId, configurations]) => {
-          console.log(igId);
           const dialogRef = this.dialog.open(ExportDialogComponent, {
             data: {
               toc: this.store.select(fromLibrayEdit.selectProfileTree),

@@ -163,7 +163,6 @@ export class ExportToolComponent implements OnInit {
     this.exportFailed = false;
     this.igService.exportToTesting(this.data.igId, this.ids, this.username, this.password, this.tool, this.selectedToolScope.domain).subscribe(
       (response: any) => {
-        console.log(response);
         this.store.dispatch(new fromDAM.TurnOffLoader());
         this.exportInProgress = false;
         if (response.token) {

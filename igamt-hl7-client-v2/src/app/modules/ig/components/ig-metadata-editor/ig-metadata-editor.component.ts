@@ -132,10 +132,6 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
     return Object.keys(item)[0];
   }
 
-  click(field) {
-    this.customAttributes$.subscribe((x) => console.log(x));
-  }
-
   getCustoms(): FormArray {
     return this.formGroup.get('customAttributes') as FormArray;
   }
@@ -168,12 +164,10 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
   }
 
   dataChange() {
-
     this.current$.pipe(
       take(1),
       withLatestFrom(this.customAttributes$),
       tap(([current, custom]) => {
-        console.log(current);
         this.coverPictureFile$.next(this.formGroup.getRawValue().pictureFile);
         this.editorChange(Object.assign(current.data, { ...this.formGroup.getRawValue(), customAttributes: custom }), this.formGroup.valid);
       }),

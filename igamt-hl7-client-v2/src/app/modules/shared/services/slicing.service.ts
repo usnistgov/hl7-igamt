@@ -1,15 +1,15 @@
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {sortAscendingPriority} from '@angular/flex-layout';
-import {Store} from '@ngrx/store';
-import {Observable, of} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {Type} from '../constants/type.enum';
-import {IConformanceProfile} from '../models/conformance-profile.interface';
-import {IResource} from '../models/resource.interface';
-import {ISegment} from '../models/segment.interface';
-import {ISlicing} from '../models/slicing';
-import {ElementNamingService, IPathInfo} from './element-naming.service';
+import { sortAscendingPriority } from '@angular/flex-layout';
+import { Store } from '@ngrx/store';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Type } from '../constants/type.enum';
+import { IConformanceProfile } from '../models/conformance-profile.interface';
+import { IResource } from '../models/resource.interface';
+import { ISegment } from '../models/segment.interface';
+import { ISlicing } from '../models/slicing';
+import { ElementNamingService, IPathInfo } from './element-naming.service';
 
 @Injectable({
   providedIn: 'root',
@@ -19,18 +19,17 @@ export class SlicingService {
   constructor(private http: HttpClient, private store: Store<any>, private elementNamingService: ElementNamingService) { }
 
   getResoureSlicing = (type: Type, id: string): Observable<ISlicing[]> => {
-    console.log({type, id});
     switch (type) {
       case Type.CONFORMANCEPROFILE:
-        return  this.getOrdered(this.http.get<IConformanceProfile>( 'api/conformanceprofiles/' + id ));
+        return this.getOrdered(this.http.get<IConformanceProfile>('api/conformanceprofiles/' + id));
       case Type.SEGMENT:
-        return this.getOrdered(this.http.get<ISegment>('api/segments/' + id ));
+        return this.getOrdered(this.http.get<ISegment>('api/segments/' + id));
       default: return null;
     }
     return of([]);
   }
   getOrdered(obs: Observable<IResource>) {
-    return obs.pipe(map((x) => x.slicings ? this.order(x.slicings) : [] ));
+    return obs.pipe(map((x) => x.slicings ? this.order(x.slicings) : []));
   }
 
   order(slicings: ISlicing[]) {

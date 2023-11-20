@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {DatatypeEvolutionService} from './datatype-evolution.service';
+import { ActivatedRoute } from '@angular/router';
+import { DatatypeEvolutionService } from './datatype-evolution.service';
 
 @Component({
   selector: 'app-datatypes-evolution',
@@ -9,7 +9,7 @@ import {DatatypeEvolutionService} from './datatype-evolution.service';
 })
 export class DatatypesEvolutionComponent implements OnInit {
 
-  constructor(private  ac: ActivatedRoute, private datatypeEvolutionService: DatatypeEvolutionService) { }
+  constructor(private ac: ActivatedRoute, private datatypeEvolutionService: DatatypeEvolutionService) { }
 
   classes: any;
   firstVersion: any;
@@ -34,15 +34,13 @@ export class DatatypesEvolutionComponent implements OnInit {
   ];
 
   criterias = [
-    {label: 'Name' , value: 'CPNAME'},
-    {label: 'Usage' , value: 'CPUSAGE'},
-    {label: 'DATATYPE' , value: 'CPDATATYPE'},
+    { label: 'Name', value: 'CPNAME' },
+    { label: 'Usage', value: 'CPUSAGE' },
+    { label: 'DATATYPE', value: 'CPDATATYPE' },
   ];
 
   ngOnInit() {
-    console.log('calling on init ');
     this.classes = this.ac.snapshot.data['matrix'];
-    console.log(this.classes);
     this.matrix = this.buildMatrix(this.classes);
   }
 
@@ -66,14 +64,10 @@ export class DatatypesEvolutionComponent implements OnInit {
       }
       result.push(obj);
     }
-    console.log(result);
     return result;
   }
 
   compareOrSelect(name, version) {
-    console.log(name);
-    console.log(version);
-
     if (this.selectedName) {
       if (name === this.selectedName) {
 
@@ -105,36 +99,30 @@ export class DatatypesEvolutionComponent implements OnInit {
 
   }
 
-  print(obj, col) {
-    console.log(obj);
-    console.log(col);
-
-  }
-
   getStyle(index) {
 
     if (index === 0) {
-      return {color : '#008B8B'};
+      return { color: '#008B8B' };
     } else if (index === 1) {
-      return {color: '#B8860B'};
+      return { color: '#B8860B' };
     } else if (index === 2) {
-      return {color: '#6495ED'};
+      return { color: '#6495ED' };
     } else if (index === 3) {
-      return {color: '#9932CC'};
+      return { color: '#9932CC' };
     } else if (index === 4) {
-      return {color: '#8FBC8F'};
+      return { color: '#8FBC8F' };
     } else if (index === 5) {
-      return {color: '#2F4F4F'};
+      return { color: '#2F4F4F' };
     } else if (index === 6) {
-      return {color: '#FF1493'};
+      return { color: '#FF1493' };
     } else if (index === 7) {
-      return {color: '#FFD700'};
+      return { color: '#FFD700' };
     } else if (index === 8) {
-      return {color: '#4B0082'};
+      return { color: '#4B0082' };
     } else if (index === 9) {
-      return {color: '#FFB6C1'};
+      return { color: '#FFB6C1' };
     } else if (index === 10) {
-      return {color: '#778899'};
+      return { color: '#778899' };
     }
 
   }

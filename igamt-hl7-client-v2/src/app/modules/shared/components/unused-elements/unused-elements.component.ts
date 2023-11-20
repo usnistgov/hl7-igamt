@@ -25,7 +25,7 @@ export class UnusedElementsComponent implements OnInit {
   selected: string[] = [];
   constructor(
     public dialogRef: MatDialogRef<UnusedElementsComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,     private dialog: MatDialog,
+    @Inject(MAT_DIALOG_DATA) public data: any, private dialog: MatDialog,
 
   ) {
     this.data.ids = [];
@@ -48,20 +48,16 @@ export class UnusedElementsComponent implements OnInit {
 
   getVersions(x) {
     if (x.domainInfo.version && x.domainInfo.version.indexOf('.') > -1) {
-     return x.domainInfo.version;
+      return x.domainInfo.version;
     } else {
       return ' *';
     }
   }
 
   submit() {
-
-    const selected = this.data.resources.filter((x) => _.indexOf(this.data.ids, x.id) > -1 );
-    console.log(selected);
     const dialogRef = this.dialog.open(DeleteListConfirmationComponent, {
-
       data: {
-        resources: this.data.resources.filter((x) => _.indexOf(this.data.ids, x.id) > -1).sort((a, b) => a.fixedName + a.variableName - b.fixedName + b.variableName ),
+        resources: this.data.resources.filter((x) => _.indexOf(this.data.ids, x.id) > -1).sort((a, b) => a.fixedName + a.variableName - b.fixedName + b.variableName),
       },
     });
     dialogRef.afterClosed().subscribe(
@@ -78,19 +74,19 @@ export class UnusedElementsComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  checkAll(items: IDisplayElement []) {
+  checkAll(items: IDisplayElement[]) {
 
-    this.data.ids = _.union(this.data.ids, _.map(items, (x) => x.id ));
+    this.data.ids = _.union(this.data.ids, _.map(items, (x) => x.id));
 
   }
 
   uncheckAll(items) {
 
-    this.data.ids = _.difference(this.data.ids, _.map(items, (x) => x.id ));
+    this.data.ids = _.difference(this.data.ids, _.map(items, (x) => x.id));
 
   }
   checkStatus(items: IDisplayElement[]) {
-    const diff =  _.difference( _.map(items, (x) => x.id ), this.data.ids);
+    const diff = _.difference(_.map(items, (x) => x.id), this.data.ids);
     if (diff.length === 0) {
       return 'ALL';
     } else if (diff.length === items.length) {
@@ -99,8 +95,8 @@ export class UnusedElementsComponent implements OnInit {
   }
 
   getSelected(items: IDisplayElement[]) {
-    const diff =  _.difference( _.map(items, (x) => x.id ), this.data.ids);
-    return  items.length - diff.length;
+    const diff = _.difference(_.map(items, (x) => x.id), this.data.ids);
+    return items.length - diff.length;
   }
 
 }

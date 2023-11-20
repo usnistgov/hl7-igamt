@@ -362,7 +362,6 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
         });
 
         dialogRef.afterClosed().subscribe((result) => {
-          console.log(result);
           if (result) {
             this.ig.cloneIg(item.id, mode, { inherit: result['inherit'], mode, template: result.template, exclude: result.exclude }).subscribe(
               (response: Message<string>) => {
@@ -454,9 +453,6 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
   }
 
   generalFilter(values: any) {
-    console.log('values');
-    console.log(values);
-
     this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: this.filter, deprecated: this.showDeprecated, status: values });
   }
 

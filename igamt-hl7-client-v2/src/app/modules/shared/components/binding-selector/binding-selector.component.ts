@@ -133,31 +133,27 @@ export class BindingSelectorComponent<T> implements OnInit {
 
   checkNotEmpty(): boolean {
 
-  if (this.selectedBindingType === IBindingType.SINGLECODE) {
+    if (this.selectedBindingType === IBindingType.SINGLECODE) {
 
-    return this.selectedSingleCodes != null && this.selectedSingleCodes.length > 0 ;
+      return this.selectedSingleCodes != null && this.selectedSingleCodes.length > 0;
 
-  } else {
-    if (!this.selectedValueSets || this.selectedValueSets.length === 0) {
-      return false;
-    }
-    for (const bindingDisplay of this.selectedValueSets) {
-      if (!bindingDisplay.valueSets || bindingDisplay.valueSets.length === 0) {
+    } else {
+      if (!this.selectedValueSets || this.selectedValueSets.length === 0) {
         return false;
       }
+      for (const bindingDisplay of this.selectedValueSets) {
+        if (!bindingDisplay.valueSets || bindingDisplay.valueSets.length === 0) {
+          return false;
+        }
 
-      if (bindingDisplay.valueSets.some((element) => element === null)) {
-        return false;
+        if (bindingDisplay.valueSets.some((element) => element === null)) {
+          return false;
+        }
       }
+      return true;
     }
-    return true;
   }
-}
 
-print() {
-  console.log(this.selectedValueSets);
-  console.log(this.checkNotEmpty());
-}
 }
 
 export interface IBindingLocationItem {

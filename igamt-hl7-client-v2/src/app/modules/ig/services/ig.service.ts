@@ -75,7 +75,6 @@ export class IgService {
 
   loadOrInsertRepositoryFromIgDisplayInfo(igInfo: IDocumentDisplayInfo<IgDocument>, load: boolean, values?: string[]): fromDam.InsertResourcesInRepostory | fromDam.LoadResourcesInRepostory {
     const _default = ['segments', 'datatypes', 'messages', 'valueSets', 'coConstraintGroups', 'profileComponents', 'compositeProfiles', 'sections'];
-    console.log('loading');
     const collections = (values ? values : _default).map((key) => {
       return {
         key,
@@ -197,14 +196,10 @@ export class IgService {
   }
 
   cloneIg(id: string, mode: CloneModeEnum, data: any): Observable<Message<string>> {
-    console.log('data');
-    console.log(data);
-
     return this.http.post<Message<string>>(this.IG_END_POINT + id + '/clone', data).pipe();
   }
 
   publish(id: string, publicationInfo: any): Observable<Message<string>> {
-    console.log(publicationInfo);
     return this.http.post<Message<string>>(this.IG_END_POINT + id + '/publish', publicationInfo).pipe();
   }
 
