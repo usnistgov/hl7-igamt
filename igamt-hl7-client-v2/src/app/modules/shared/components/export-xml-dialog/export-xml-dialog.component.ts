@@ -32,7 +32,7 @@ export class ExportXmlDialogComponent implements OnInit {
     if (data.compositeProfiles && data.compositeProfiles.entries && data.compositeProfiles.entries.length > 0) {
       return Type.COMPOSITEPROFILE;
     }
-    return Type.CONFORMANCEPROFILE;
+    return undefined;
   }
 
   constructor(

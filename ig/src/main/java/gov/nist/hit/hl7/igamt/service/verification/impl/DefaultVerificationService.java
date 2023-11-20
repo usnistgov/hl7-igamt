@@ -96,12 +96,12 @@ public class DefaultVerificationService implements gov.nist.hit.hl7.igamt.servic
 			);
 		}
 		if(valueSets != null) {
-			issuesList.setDatatypes(
+			issuesList.setValueSets(
 					valueSets.stream().flatMap((v) -> verifyValueSet(v).stream()).collect(Collectors.toList())
 			);
 		}
 		if(coConstraintGroups != null) {
-			issuesList.setDatatypes(
+			issuesList.setCoConstraintGroups(
 					coConstraintGroups.stream().flatMap((ccg) -> verifyCoConstraintGroup(ccg).stream()).collect(Collectors.toList())
 			);
 		}

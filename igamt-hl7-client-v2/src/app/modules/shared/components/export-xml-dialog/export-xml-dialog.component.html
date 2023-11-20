@@ -1,5 +1,8 @@
 <h2 mat-dialog-title>Export XML</h2>
 <div class="dialog-container">
+  <div *ngIf="step === 1 && !hasFatal && !hasErrors && !verificationFailed && !verificationInProgress" class="alert alert-success">
+    Your selected profile(s) have passed the verification.
+  </div>
   <div *ngIf="step === 1 && hasFatal" class="alert alert-danger">
     Your selected profile(s) have fatal errors, please fix your profiles and try again.
   </div>

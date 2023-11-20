@@ -128,6 +128,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       take(1),
       flatMap(([messages, cps, igId]) => {
         return this.dialog.open(ExportXmlDialogComponent, {
+          disableClose: true,
           data: { conformanceProfiles: messages, compositeProfiles: cps, igId },
         }).afterClosed().pipe(
           filter((x) => x !== undefined),
@@ -153,6 +154,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       take(1),
       map(([conformanceProfiles, tools, compositeProfiles, igId]) => {
         const dialogRef = this.dialog.open(ExportToolComponent, {
+          disableClose: true,
           data: { conformanceProfiles, tools, compositeProfiles, igId },
         });
         dialogRef.afterClosed().pipe(

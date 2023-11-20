@@ -29,7 +29,24 @@ export class VerificationResultDisplayComponent implements OnInit {
 
   ngOnInit() {
     if (this.activeSelector) {
-      this.active = this.activeSelector(this.verificationResult);
+      const active = this.activeSelector(this.verificationResult);
+      if (active) {
+        this.active = active;
+      } else {
+        const entryTypes = [
+          [Type.IGDOCUMENT, this.verificationResult.ig],
+          [Type.CONFORMANCEPROFILE, this.verificationResult.conformanceProfiles],
+          [Type.COMPOSITEPROFILE, this.verificationResult.compositeProfiles],
+          [Type.COCONSTRAINTGROUP, this.verificationResult.coConstraintGroups],
+          [Type.SEGMENT, this.verificationResult.segments],
+          [Type.DATATYPE, this.verificationResult.datatypes],
+          [Type.VALUESET, this.verificationResult.valueSets],
+        ].filter(([type, elm]) => elm && (elm as IVerificationEntryTable).entries.length > 0)
+          .map(([type, elm]) => type as Type);
+        if (entryTypes.length > 0) {
+          this.active = entryTypes[0];
+        }
+      }
     }
   }
 

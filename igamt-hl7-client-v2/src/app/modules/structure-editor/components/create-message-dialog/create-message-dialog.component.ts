@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -36,6 +36,11 @@ export class CreateMessageDialogComponent implements OnInit {
   subFormGroup: FormGroup;
   readonly AXX_PATTERN = '[A-Z][A-Z0-9]{2}';
   readonly AXX_AXX_PATTERN = '[A-Z][A-Z0-9]{2}(_[A-Z][A-Z0-9]{2})?';
+  patternsUserFriendlyDescription = {
+    '^Z[A-Z0-9]{2}$': 'ZXX where X is an alphanumerical character',
+    '^[A-Z][A-Z0-9]{2}(_[A-Z][A-Z0-9]{2})?$': 'AXX[_AXX] where A is a letter and X is an alphanumerical',
+    '^[A-Z][A-Z0-9]{2}$': 'AXX where A is a letter and X is an alphanumerical',
+  };
 
   get events() {
     return (this.formGroup.controls['events'] as FormArray).controls;
@@ -93,6 +98,37 @@ export class CreateMessageDialogComponent implements OnInit {
 
   deleteEvent(i: number) {
     (this.formGroup.controls['events'] as FormArray).controls.splice(i, 1);
+    this.formGroup.controls['events'].updateValueAndValidity();
+  }
+
+  getErrorText(label: string, control: FormControl): string[] {
+    const errors = [];
+    for (const property in control.errors) {
+      if (property === 'required') {
+        errors.push(label + ' is required');
+        break;
+      } else if (property === 'minlength') {
+        errors.push(label + ' is too short');
+        break;
+
+      } else if (property === 'maxlength') {
+        errors.push(label + ' is too long');
+        break;
+
+      } else if (property === 'pattern') {
+        let error = 'Invalid ' + label + ' format';
+        const requiredPattern = control.errors['pattern'].requiredPattern;
+        if (requiredPattern && this.patternsUserFriendlyDescription[requiredPattern]) {
+          error += ' name must follow the pattern ' + this.patternsUserFriendlyDescription[requiredPattern];
+        }
+        errors.push(error);
+        break;
+      } else if (control.errors[property]) {
+        errors.push(control.errors[property]);
+        break;
+      }
+    }
+    return errors;
   }
 
   addEvent() {
@@ -104,6 +140,7 @@ export class CreateMessageDialogComponent implements OnInit {
           description: [event.description],
         }),
       );
+      this.formGroup.controls['events'].updateValueAndValidity();
       this.subFormGroup.patchValue({ name: '', description: '' });
     }
   }

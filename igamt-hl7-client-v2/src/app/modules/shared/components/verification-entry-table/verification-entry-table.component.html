@@ -1,53 +1,56 @@
-<div *ngIf="verification$ | async as verification" class="table-container">
+<ng-container *ngIf="verification$ | async as verification" >
   <span *ngIf="verification.entries.length === 0" style="color: gray;">No entries.</span>
-  <div *ngIf="filter | async as filterValue" style="display: flex;">
-    <ng-container *ngFor="let item of severity">
-      <div class="severity-filter" *ngIf="verification.stats[item.key]">
-        <p-checkbox [style]="{ 'margin-right' : '5px'}" [(ngModel)]="filterValue.severity[item.key]" (ngModelChange)="updateFilter()" binary="true"></p-checkbox>
-        <app-issue-badge [type]="item.type" [number]="verification.stats[item.key]" label="true"></app-issue-badge>
-      </div>
-    </ng-container>
-  </div>
-  <div style="overflow: scroll; margin-top: 15px; border-top: 1px solid lightgray; border-bottom: 1px solid lightgray">
-    <table class="table table-sm table-bordered table-striped">
-      <ng-container *ngFor="let item of verification.entries">
-        <tbody *ngIf="item.entries?.length" [ngClass]="{ 'no-target-tbody': !item.target}">
-          <tr style="background-color: white;">
-            <th colspan="2" [ngClass]="{ 'no-target-th': !item.target}">
-              <div style="display: flex; justify-content: flex-start; align-items: center;">
-                <app-display-ref [element]="item.target" [documentId]="documentId" documentType="IGDOCUMENT"></app-display-ref>
-                <ng-container *ngIf="item.subTarget" >
-                  <div style="margin-left: 10px; margin-right: 10px;">
-                    <i class="fa fa-chevron-right"></i>
-                  </div>
-                  <app-display-ref [element]="item.subTarget" [documentId]="documentId" documentType="IGDOCUMENT"></app-display-ref>
-                </ng-container>
-              </div>
-            </th>
-          </tr>
-          <tr>
-            <th>Location</th>
-            <th>Message</th>
-          </tr>
-          <tr *ngFor="let entry of item.entries">
-            <td>
-              <div style="display: flex; height: 100%;">
-                <div style="display: flex; align-items: center; justify-content: center; width: 50px;">
-                  <app-issue-badge [ngbPopover]="entry.code" triggers="mouseenter:mouseleave" [type]="entry.severity"></app-issue-badge>
-                </div>
-                <div style="margin-left: 10px;">
-                  <div>{{entry.location}} </div>
-                  <div *ngIf="entry.property" style="display: flex; align-items: center; border-top: 1px solid lightgrey;">
-                    <div><strong>Property</strong></div>
-                    <div style="margin-left: 10px;">{{propertyTextMap[entry.property] || entry.property}}</div>
-                  </div>
-                </div>
-              </div>
-            </td>
-            <td style="vertical-align: middle;">{{entry.message}}</td>
-          </tr>
-        </tbody>
+  <div  *ngIf="verification.entries.length > 0" class="table-container">
+    <div *ngIf="filter | async as filterValue" style="display: flex;">
+      <ng-container *ngFor="let item of severity">
+        <div class="severity-filter" *ngIf="verification.stats[item.key]">
+          <p-checkbox [style]="{ 'margin-right' : '5px'}" [(ngModel)]="filterValue.severity[item.key]" (ngModelChange)="updateFilter()" binary="true"></p-checkbox>
+          <app-issue-badge [type]="item.type" [number]="verification.stats[item.key]" label="true"></app-issue-badge>
+        </div>
       </ng-container>
-    </table>
+    </div>
+    <div style="overflow: scroll; margin-top: 15px; border-top: 1px solid lightgray; border-bottom: 1px solid lightgray">
+      <table class="table table-sm table-bordered table-striped">
+        <ng-container *ngFor="let item of verification.entries">
+          <tbody *ngIf="item.entries?.length" [ngClass]="{ 'no-target-tbody': !item.target}">
+            <tr style="background-color: white;">
+              <th colspan="2" [ngClass]="{ 'no-target-th': !item.target}">
+                <div style="display: flex; justify-content: flex-start; align-items: center;">
+                  <app-display-ref [element]="item.target" [documentId]="documentId" documentType="IGDOCUMENT"></app-display-ref>
+                  <ng-container *ngIf="item.subTarget" >
+                    <div style="margin-left: 10px; margin-right: 10px;">
+                      <i class="fa fa-chevron-right"></i>
+                    </div>
+                    <app-display-ref [element]="item.subTarget" [documentId]="documentId" documentType="IGDOCUMENT"></app-display-ref>
+                  </ng-container>
+                </div>
+              </th>
+            </tr>
+            <tr>
+              <th>Location</th>
+              <th>Message</th>
+            </tr>
+            <tr *ngFor="let entry of item.entries">
+              <td>
+                <div style="display: flex; height: 100%;">
+                  <div style="display: flex; align-items: center; justify-content: center; width: 50px;">
+                    <app-issue-badge [ngbPopover]="entry.code" triggers="mouseenter:mouseleave" [type]="entry.severity"></app-issue-badge>
+                  </div>
+                  <div style="margin-left: 10px;">
+                    <div>{{entry.location}} </div>
+                    <div *ngIf="entry.property" style="display: flex; align-items: center; border-top: 1px solid lightgrey;">
+                      <div><strong>Property</strong></div>
+                      <div style="margin-left: 10px;">{{propertyTextMap[entry.property] || entry.property}}</div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td style="vertical-align: middle;">{{entry.message}}</td>
+            </tr>
+          </tbody>
+        </ng-container>
+      </table>
+    </div>
   </div>
-</div>
+</ng-container>
+
