@@ -17,7 +17,9 @@
                                 <div *ngIf="item.usage === 'R'"><b>{{item.format}}</b></div>
                                 <div *ngIf="item.usage === 'RE'">[<b>{{item.format}}</b>]</div>
                                 <div *ngIf="item.usage === 'O'">[{{item.format}}]</div>
+                                <div *ngIf="item.usage === 'IX'"><del>{{item.format}}</del></div>
                                 <div *ngIf="item.usage === 'X'"><del>{{item.format}}</del></div>
+
                             </td>
                             <td *ngIf="item.position === 1">
                                 <p-selectButton [options]="usageOptions" [(ngModel)]="item.usage" [disabled]="true"></p-selectButton>

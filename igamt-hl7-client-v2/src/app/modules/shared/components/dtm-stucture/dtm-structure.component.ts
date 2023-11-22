@@ -158,6 +158,17 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
     });
   }
 
+  makeIX(position: number) {
+    this.dateTimeConstraints.dateTimeComponentDefinitions.forEach((item) => {
+      if (item.position < position && item.position !== 11 && item.usage !== 'R' && item.usage !== 'RE') {
+          item.usage = 'IX';
+      }
+      if (item.position > position && item.position !== 11 && (item.usage === 'R' || item.usage === 'RE')) {
+          item.usage = 'IX';
+      }
+    });
+  }
+
   genHTML(pattern: string) {
     if (pattern && this.dateTimeConstraints.dateTimeComponentDefinitions) {
 
@@ -223,7 +234,7 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
     });
 
     if (!timeZoneUsage) { timeZoneUsage = 'X'; }
-    if (timeZoneUsage === 'RE' || timeZoneUsage === 'O') { timeZoneUsage = 'REO'; }
+    if (timeZoneUsage === 'RE' || timeZoneUsage === 'O' || timeZoneUsage === 'IX' ) { timeZoneUsage = 'REO'; }
 
     return countR + '-' + countX + '-' + timeZoneUsage;
   }
@@ -256,6 +267,9 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
 
     if (event.value === 'O') {
       this.makeO(target.position);
+    }
+    if (event.value === 'IX') {
+      this.makeIX(target.position);
     }
 
     this.loadRegexDataAndUpdateAssertion();
