@@ -79,8 +79,8 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 			}
 			String ext = structure.getFlavorsExtension();
 			extension.prune(ext);
-			target.setId(structure.getId() + '_' + ext);
-			target.setName(structure.getName());
+			continueOn.setId(structure.getId() + '_' + ext);
+			continueOn.setName(structure.getName());
 			return new ProfileComponentsEvaluationResult<>(new DataFragment<>(continueOn, extension), extension.generatedResourceMetadataList);
 		}
 		return null;

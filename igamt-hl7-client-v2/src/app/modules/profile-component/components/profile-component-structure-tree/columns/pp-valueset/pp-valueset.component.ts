@@ -159,7 +159,6 @@ export class PpValuesetComponent extends PPColumn<IValueSetOrSingleCodeBinding> 
     this.display$.pipe(
       take(1),
       tap((display) => {
-        console.log(display);
         switch (display.type) {
           case IBindingType.VALUESET:
             this.changeVsBinding(display.value as IValueSetBindingDisplay[]);

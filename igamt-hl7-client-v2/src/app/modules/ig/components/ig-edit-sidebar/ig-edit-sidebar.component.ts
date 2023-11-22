@@ -119,7 +119,10 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
       }),
     );
     // verification
-    this.verification$ =  this.store.select(selectVerificationResult).pipe(map(((x) => this.verificationService.convertValueToTocElements(x))));
+    this.verification$ = this.store.select(selectVerificationResult).pipe(
+      filter((value) => !!value),
+      map((value) => this.verificationService.convertValueToTocElements(value)),
+    );
     this.selectedSubscription = this.store.select(selectRouterURL).pipe(
       map((url: string) => {
         const regex = '/ig/[a-z0-9A-Z-]+/(?<type>[a-z]+)/(?<id>[a-z0-9A-Z-]+).*';
@@ -314,7 +317,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   addUserDataTypes(event: IAddWrapper) {
-     this.libraryService.getPublishedLibraries().pipe(
+    this.libraryService.getPublishedLibraries().pipe(
       withLatestFrom(this.version$),
       // take(1),
       map(([ILibraryDisplay, selectedVersion]) => {
@@ -685,7 +688,6 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   manageProfileStructure(event: IContent[]) {
-    console.log(event);
     this.documentRef$.pipe(
       take(1),
       tap((documentRef) => {
@@ -737,7 +739,6 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
             this.toc.filterNode((display) => {
               return this.igTocFilterService.isFiltered(display, tocFilter);
             });
-            console.log(this.toc.nodes);
             this.toc.updateNumbers();
             setTimeout(() => {
               this.blockUIView.stop();
@@ -766,7 +767,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
       }),
     ).subscribe();
   }
-  cleanUnused($event: {children: IDisplayElement[], type: Type}) {
+  cleanUnused($event: { children: IDisplayElement[], type: Type }) {
     this.documentRef$.pipe(
       take(1),
       concatMap((documentRef: IDocumentRef) => {
@@ -799,7 +800,6 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
               dialogRef.afterClosed().subscribe(
                 (answer) => {
                   if (answer) {
-                    console.log(answer);
                     this.store.dispatch(new DeleteResources({ documentId: documentRef.documentId, ids: answer, type: $event.type }));
                   }
                 },

@@ -154,6 +154,9 @@ export class CoConstraintsBindingEditorComponent extends CoConstraintEditorServi
               }),
             ];
           }),
+          catchError((e) => {
+            return throwError(this.messageService.fromError(e));
+          }),
         );
       }),
     );

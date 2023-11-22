@@ -121,9 +121,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
       actionMapping: {
         mouse: {
           drop: (tree: TreeModel, node: TreeNode, $event: any, { from, to }) => {
-
-            console.log(from);
-            console.log(to);
             if (from.data.type === Type.TEXT && (!this.isOrphan(to) && to.parent.data.type === Type.TEXT || this.isOrphan(to))) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
@@ -153,9 +150,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   ngOnInit() {
   }
 
-  print(elm) {
-    console.log(elm);
-  }
   updateNumbers(): any {
     const profileNodes = this.tree.treeModel.nodes.find((x) => x.type === Type.PROFILE);
     this.elementNumbers = {};
@@ -234,7 +228,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   exportCSVFileForVS(node: TreeNode) {
     this.valueSetService.exportCSVFile(node.data.id);
-    console.log(node.data);
   }
 
   deleteResource(node: TreeNode) {
@@ -290,7 +283,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
 
   update() {
-    console.log(this.tree.treeModel.nodes);
     this.nodeState.emit(this.tree.treeModel.nodes);
   }
 
@@ -309,9 +301,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     this.tree.treeModel.collapseAll();
   }
 
-  select($event: IClickInfo) {
-    console.log($event);
-  }
   createNew(node: IDisplayElement, type: Type) {
     this.addChild.emit({ node, type });
   }

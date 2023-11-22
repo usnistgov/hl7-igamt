@@ -1,44 +1,13 @@
-.error-INFO {
-    background-color: #b1daff;
+.dialog-container {
+    max-height: 65vh;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: min-content 1fr;
 }
 
-.error-WARNING {
-    background-color: #ffea38;
+.report-container {
+    overflow: hidden;
+    height: 100%;
+    display: grid;
+    grid-template-rows: min-content 1fr;
 }
-
-.error-ERROR {
-    background-color: orange;
-}
-
-.error-FATAL {
-    background-color: #f41005;
-}
-
-.error-Info {
-    background-color: #b1daff;
-}
-
-.error-Warning {
-    background-color: #ffea38;
-}
-
-.error-Error {
-    background-color: orange;
-}
-
-.error-Fatal {
-    background-color: #f41005;
-}
-
-.errorType-STRUCTURE {
-    background-color: #d400d4;
-}
-
-.errorType-METADATA {
-    background-color: #a7d6a9;
-}
-
-.error-code {
-    background-color: #a7d6a9;
-}
-

@@ -33,8 +33,8 @@ export class IgEditStatusBarComponent implements OnInit {
     );
   }
 
-  openVerificationTab(tab: VerificationTab, valid: boolean) {
-    if (!valid) {
+  openVerificationTab(tab: VerificationTab, canOpen: boolean) {
+    if (canOpen) {
       this.store.dispatch(new SetUIStateValue({ activeVerificationTab: tab }));
       this.store.dispatch(new ExpandBottomDrawer());
     }

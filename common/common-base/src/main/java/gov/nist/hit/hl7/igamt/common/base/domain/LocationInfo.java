@@ -5,7 +5,7 @@ public class LocationInfo {
     private String hl7Path; // RXA-5
     private Type type; // Component
     private String positionalPath; // 1.2.3
-    private String pathId;
+    private String pathId; // 1-2-3
 
     public LocationInfo() {
     }

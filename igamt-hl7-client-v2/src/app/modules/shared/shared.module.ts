@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { ExtendedModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatExpansionModule, MatFormFieldModule, MatRadioModule, MatSelectModule } from '@angular/material';
+import { MatExpansionModule, MatFormFieldModule, MatProgressSpinnerModule, MatRadioModule, MatSelectModule } from '@angular/material';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatSliderModule } from '@angular/material/slider';
@@ -100,6 +100,7 @@ import { ImportFromLibComponent } from './components/import-from-lib/import-from
 import { ImportStructureComponent } from './components/import-structure/import-structure.component';
 import { IssueBadgeComponent } from './components/issue-badge/issue-badge.component';
 import { MessagePickerComponent } from './components/message-picker/message-picker.component';
+import { MetadataAttributeConfigComponent } from './components/metadata-attribute-config/metadata-attribute-config.component';
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
 import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';
 import { NewPasswordFromComponent } from './components/new-password-from/new-password-from.component';
@@ -139,6 +140,7 @@ import { ValueSetStructureComponent } from './components/value-set-structure/val
 import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-delta.component';
 import { VerificationBadgeComponent } from './components/verification-badge/verification-badge.component';
 import { VerificationEntryTableComponent } from './components/verification-entry-table/verification-entry-table.component';
+import { VerificationResultDisplayComponent } from './components/verification-result-display/verification-result-display.component';
 import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
 import { VsCodePickerComponent } from './components/vs-code-picker/vs-code-picker.component';
 import { AddingDuplicationDirective } from './directives/adding-duplication.directive';
@@ -150,7 +152,6 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { MetadataAttributeConfigComponent } from './components/metadata-attribute-config/metadata-attribute-config.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -263,6 +264,7 @@ import { MetadataAttributeConfigComponent } from './components/metadata-attribut
     DocumentConfigComponent,
     MetadataAttributeConfigComponent,
     ImportFromLibComponent,
+    VerificationResultDisplayComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -326,6 +328,7 @@ import { MetadataAttributeConfigComponent } from './components/metadata-attribut
     MatTooltipModule,
     BreadcrumbModule,
     ConfirmDialogModule,
+    MatProgressSpinnerModule,
   ],
   exports: [
     MatExpansionModule,
@@ -466,6 +469,7 @@ import { MetadataAttributeConfigComponent } from './components/metadata-attribut
     MetadataAttributeConfigComponent,
     ImportFromLibComponent,
     MatTooltipModule,
+    VerificationResultDisplayComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,

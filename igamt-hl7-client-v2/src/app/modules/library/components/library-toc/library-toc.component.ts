@@ -13,8 +13,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TREE_ACTIONS, TreeComponent, TreeModel, TreeNode } from 'angular-tree-component';
 import { ContextMenuComponent } from 'ngx-contextmenu';
 import { SelectItem } from 'primeng/api';
-import {IAddNewWrapper, IAddWrapper} from '../../../document/models/document/add-wrapper.class';
-import {IClickInfo} from '../../../document/models/toc/click-info.interface';
+import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
+import { IClickInfo } from '../../../document/models/toc/click-info.interface';
 import { Scope } from '../../../shared/constants/scope.enum';
 import { Type } from '../../../shared/constants/type.enum';
 import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
@@ -67,9 +67,10 @@ export class LibraryTocComponent implements OnInit, AfterViewInit {
 
   constructor(private nodeHelperService: NodeHelperService, private valueSetService: ValueSetService, private cd: ChangeDetectorRef, private router: Router, private activatedRoute: ActivatedRoute) {
     this.options = {
-      allowDrag: (node: TreeNode) => { return !(this.viewOnly || this.delta) && (node.data.type === Type.TEXT ||
-        node.data.type === Type.CONFORMANCEPROFILE ||
-        node.data.type === Type.PROFILE);
+      allowDrag: (node: TreeNode) => {
+        return !(this.viewOnly || this.delta) && (node.data.type === Type.TEXT ||
+          node.data.type === Type.CONFORMANCEPROFILE ||
+          node.data.type === Type.PROFILE);
       },
       actionMapping: {
         mouse: {
@@ -96,10 +97,6 @@ export class LibraryTocComponent implements OnInit, AfterViewInit {
   ngOnInit() {
   }
 
-  print() {
-    console.log(document.getElementById('toc-container'));
-  }
-
   addSectionToNode(node) {
     this.nodeHelperService.addNode(node);
     this.update();
@@ -122,8 +119,8 @@ export class LibraryTocComponent implements OnInit, AfterViewInit {
     this.update();
   }
 
-  import(node, type: Type, scope: Scope, hideFlavor, hideAsIs ) {
-    this.addChildren.emit({ node, type, scope, hideFlavor, hideAsIs});
+  import(node, type: Type, scope: Scope, hideFlavor, hideAsIs) {
+    this.addChildren.emit({ node, type, scope, hideFlavor, hideAsIs });
   }
 
   importCSV(node, type: Type, scope: Scope) {
@@ -136,7 +133,6 @@ export class LibraryTocComponent implements OnInit, AfterViewInit {
 
   exportCSVFileForVS(node: TreeNode) {
     this.valueSetService.exportCSVFile(node.data.id);
-    console.log(node.data);
   }
 
   deleteResource(node: TreeNode) {
@@ -186,9 +182,6 @@ export class LibraryTocComponent implements OnInit, AfterViewInit {
     this.tree.treeModel.collapseAll();
   }
 
-  select($event: IClickInfo) {
-    console.log($event);
-  }
   createNew(node: IDisplayElement, type: Type) {
     this.addChild.emit({ node, type });
   }

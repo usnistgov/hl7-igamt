@@ -11,11 +11,15 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.service.impl;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.common.slicing.domain.ConditionalSlicing;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.OrderedSlicing;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.Slice;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeDependencyService;
+import gov.nist.hit.hl7.igamt.segment.wrappers.SegmentDependencies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,6 +60,9 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
 
   @Autowired
   SegmentDependencyService segmentDependencyService;
+
+  @Autowired
+  DatatypeDependencyService datatypeDependencyService;
 
   @Autowired
   SegmentService segmentService;
@@ -117,9 +124,9 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
 
   @Override
   public ConformanceProfileDependencies process(ConformanceProfile resource, ConformanceProfileDependencies conformanceProfileDependencies, DependencyFilter filter) throws EntityNotFound {
-
-
     ResourceBindingProcessor rb = new ResourceBindingProcessor(resource.getBinding());
+    Map<String, Slicing> slicingMap =  resource.getSlicings() != null ?  resource.getSlicings().stream().collect(
+            Collectors.toMap(Slicing::getPath, x -> x)) : new HashMap<>();
 
     for(MsgStructElement segOrgroup:  resource.getChildren()) {
       if(commonFilteringService.allow(filter.getUsageFilter(), segOrgroup)) {
@@ -136,6 +143,9 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
             processSegmentorGroup(child, conformanceProfileDependencies, filter, rb, g.getId());
           }
         }
+        if(slicingMap.containsKey(segOrgroup.getId())) {
+          this.processSlicing(slicingMap.get(segOrgroup.getId()), conformanceProfileDependencies, filter);
+        }
       }
     }
     if(resource.getCoConstraintsBindings() != null) {      
@@ -143,6 +153,24 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
     }
     
     return conformanceProfileDependencies;
+  }
+
+  private void processSlicing(Slicing slicing, ConformanceProfileDependencies used, DependencyFilter filter) throws EntityNotFound {
+    if(slicing instanceof ConditionalSlicing) {
+      this.processSlices(((ConditionalSlicing) slicing).getSlices(), used, filter);
+    } else if (slicing instanceof OrderedSlicing){
+      this.processSlices(((OrderedSlicing) slicing).getSlices(), used, filter);
+    }
+  }
+
+  private <T extends Slice> void processSlices(List<T> slices, ConformanceProfileDependencies used, DependencyFilter filter) throws EntityNotFound {
+    if(slices != null) {
+      for ( T slice: slices) {
+        if(slice.getFlavorId() != null) {
+          segmentDependencyService.visit(slice.getFlavorId(), used.getSegments(), used, filter, new ResourceBindingProcessor() , null);
+        }
+      }
+    }
   }
 
   @Override

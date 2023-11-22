@@ -36,7 +36,7 @@ public class DataElementNamingService {
         this.segmentMap = new HashMap<>();
     }
 
-    private Datatype getDatatypeById(String id) {
+    public Datatype getDatatypeById(String id) {
         if(datatypeMap.containsKey(id)) {
             return datatypeMap.get(id);
         } else {
@@ -46,7 +46,7 @@ public class DataElementNamingService {
         }
     }
 
-    private Segment getSegmentById(String id) {
+    public Segment getSegmentById(String id) {
         if(segmentMap.containsKey(id)) {
             return segmentMap.get(id);
         } else {

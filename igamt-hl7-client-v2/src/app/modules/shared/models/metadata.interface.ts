@@ -1,4 +1,4 @@
-import { ICoustomAttribute } from "../../ig/components/ig-metadata-editor/ig-metadata-editor.component";
+import { ICoustomAttribute } from '../../ig/components/ig-metadata-editor/ig-metadata-editor.component';
 
 export interface IMetadata {
   title: string;

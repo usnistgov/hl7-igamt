@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.access.active.NotifySave;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementDisplay;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.DTSegVerificationResult;
-import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
+import gov.nist.hit.hl7.igamt.service.verification.VerificationService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
@@ -158,12 +159,10 @@ public class SegmentController extends BaseController {
 	@RequestMapping(value = "/api/segments/{id}/verification", method = RequestMethod.GET, produces = {
 			"application/json" })
 	@PreAuthorize("AccessResource('SEGMENT', #id, READ)")
-	public @ResponseBody DTSegVerificationResult verifyById(@PathVariable("id") String id,
-			Authentication authentication) {
+	public @ResponseBody List<IgamtObjectError> verifyById(@PathVariable("id") String id, Authentication authentication) {
 		Segment seg = this.segmentService.findById(id);
 		if (seg != null) {
-			DTSegVerificationResult report = this.verificationService.verifySegment(seg);
-			return report;
+			return this.verificationService.verifySegment(seg);
 		}
 		return null;
 	}

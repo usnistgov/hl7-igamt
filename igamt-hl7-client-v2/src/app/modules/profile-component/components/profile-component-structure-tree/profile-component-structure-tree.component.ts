@@ -226,7 +226,6 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   }
 
   changeItem(change: IProfileComponentChange) {
-    console.log(this.itemsList);
     this.itemsList.update(change);
     this.changes.emit(change);
   }

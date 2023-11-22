@@ -20,7 +20,7 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
     },
   ],
 })
-export class FileExcelInputComponent implements  OnInit {
+export class FileExcelInputComponent implements OnInit {
 
   onChange: (files: File) => void;
   onTouched: () => void;
@@ -39,14 +39,10 @@ export class FileExcelInputComponent implements  OnInit {
     const file = event && event.item(0);
     this.file = file;
     this.resultFile.emit(file);
-    console.log('emmited ');
-    console.log('file name : ' + file.name );
     const reader = new FileReader();
-
     reader.onloadend = (e) => {
       this.preview = reader.result;
     };
-
     reader.readAsDataURL(file);
   }
 

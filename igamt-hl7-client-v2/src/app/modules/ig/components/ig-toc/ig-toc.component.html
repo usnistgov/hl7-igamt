@@ -155,20 +155,19 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'DATATYPE'">
-          <div style="display:flex; flex-direction: row;">
-
-          <div style="width: 30px; display: flex; align-items: center; justify-content: flex-end;">
-            <span style="margin-right: 5px;" *ngIf="node.data.derived">
-              <i class="fa fa-code-fork" style="font-weight: bold; color: blue;"></i>
-            </span>
-            <span style="margin-right: 5px;">
-              <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
-            </span>
-          </div>
-
-          <app-display-section [contextMenu]="datatypeContextMenu" #rla="routerLinkActive" [element]="node.data"
-                               [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" ></app-display-section>
+          <div class="toc-elm">
+            <div class="elm-indicators">
+              <span style="margin-right: 5px;" *ngIf="node.data.derived">
+                <i class="fa fa-code-fork" style="font-weight: bold; color: blue;"></i>
+              </span>
+              <span style="margin-right: 5px;">
+                <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
+              </span>
             </div>
+
+            <app-display-section [contextMenu]="datatypeContextMenu" #rla="routerLinkActive" [element]="node.data"
+                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" ></app-display-section>
+          </div>
           <context-menu #datatypeContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-copy"></i> Create Flavor
@@ -181,20 +180,19 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
-          <div style="display:flex; flex-direction: row;">
+          <div class="toc-elm">
+            <div class="elm-indicators">
+              <span style="margin-right: 5px;" *ngIf="node.data.derived">
+                <i class="fa fa-code-fork" style="font-weight: bold; color: blue;"></i>
+              </span>
+              <span style="margin-right: 5px;">
+                <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
+              </span>
+            </div>
 
-          <div style="width: 30px; display: flex; align-items: center; justify-content: flex-end;">
-            <span style="margin-right: 5px;" *ngIf="node.data.derived">
-              <i class="fa fa-code-fork" style="font-weight: bold; color: blue;"></i>
-            </span>
-            <span style="margin-right: 5px;">
-              <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
-            </span>
+            <app-display-section [contextMenu]="conformanceProfileContextMenu" [element]="node.data" #rla="routerLinkActive"
+                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" [hideDescription]="true" style="cursor: move !important;"></app-display-section>
           </div>
-
-          <app-display-section [contextMenu]="conformanceProfileContextMenu" [element]="node.data" #rla="routerLinkActive"
-                               [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" [hideDescription]="true" style="cursor: move !important;"></app-display-section>
-                               </div>
           <context-menu #conformanceProfileContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="exportDiffProfileXML(node)" contextMenuItem>
               <i class="fa fa-download"></i> Export Diff. Profile XML
@@ -210,13 +208,26 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
-            <span [id]="'TOC-COMPOSITEPROFILE-'+ node.data.id"  [contextMenu]='cp' [routerLink]="getElementUrl(node.data)" #rla="routerLinkActive" routerLinkActive [ngClass]="{
-                      'delta-changed':node.data.delta === 'UPDATED',
-                       'delta-deleted':node.data.delta === 'DELETED',
-                        'delta-added':node.data.delta === 'ADDED'}" style="cursor: pointer;">
-                   <app-entity-bagde [type]="'COMPOSITEPROFILE'" ></app-entity-bagde>
-              {{node.data.variableName}}
-          </span>
+          <div class="toc-elm">
+            <div class="elm-indicators">
+              <span style="margin-right: 5px;" *ngIf="node.data.derived">
+                <i class="fa fa-code-fork" style="font-weight: bold; color: blue;"></i>
+              </span>
+              <span style="margin-right: 5px;">
+                <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
+              </span>
+            </div>
+
+            <div>
+              <span [id]="'TOC-COMPOSITEPROFILE-'+ node.data.id"  [contextMenu]='cp' [routerLink]="getElementUrl(node.data)" #rla="routerLinkActive" routerLinkActive [ngClass]="{
+                'delta-changed':node.data.delta === 'UPDATED',
+                 'delta-deleted':node.data.delta === 'DELETED',
+                  'delta-added':node.data.delta === 'ADDED'}" style="cursor: pointer;">
+             <app-entity-bagde [type]="'COMPOSITEPROFILE'" ></app-entity-bagde>
+            {{node.data.variableName}}</span>
+            </div>
+           </div>
+
           <context-menu #cp [disabled]="viewOnly||delta">
             <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-remove"></i> Delete
@@ -226,19 +237,18 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'SEGMENT'">
-          <div style="display:flex; flex-direction: row;">
+          <div class="toc-elm">
+            <div class="elm-indicators">
+              <span style="margin-right: 5px;" *ngIf="node.data.derived">
+                <i class="fa fa-code-fork" style="font-weight: bold; color: blue;"></i>
+              </span>
+              <span style="margin-right: 5px;">
+                <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
+              </span>
+            </div>
 
-          <div style="width: 30px; display: flex; align-items: center; justify-content: flex-end;">
-            <span style="margin-right: 5px;" *ngIf="node.data.derived">
-              <i class="fa fa-code-fork" style="font-weight: bold; color: blue;"></i>
-            </span>
-            <span style="margin-right: 5px;">
-              <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
-            </span>
-          </div>
-
-          <app-display-section  [contextMenu]='segmentContextMenu' [element]="node.data" #rla="routerLinkActive"
-                               [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true"></app-display-section>
+            <app-display-section  [contextMenu]='segmentContextMenu' [element]="node.data" #rla="routerLinkActive"
+                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true"></app-display-section>
            </div>
           <context-menu #segmentContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
@@ -252,19 +262,18 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'VALUESET'">
-          <div style="display:flex; flex-direction: row;">
+          <div class="toc-elm">
+            <div class="elm-indicators">
+              <span style="margin-right: 5px;" *ngIf="node.data.derived">
+                <i class="fa fa-code-fork" style="font-weight: bold; color: blue;"></i>
+              </span>
+              <span style="margin-right: 5px;">
+                <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
+              </span>
+            </div>
 
-          <div style="width: 30px; display: flex; align-items: center; justify-content: flex-end;">
-            <span style="margin-right: 5px;" *ngIf="node.data.derived">
-              <i class="fa fa-code-fork" style="font-weight: bold; color: blue;"></i>
-            </span>
-            <span style="margin-right: 5px;">
-              <app-verification-badge *ngIf="verification&&verification[node.data.id]" [verification]="verification[node.data.id]"> </app-verification-badge>
-            </span>
-          </div>
-
-          <app-display-section  [contextMenu]='valueSetContextMenu' [element]="node.data" #rla="routerLinkActive"
-                               [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" ></app-display-section>
+            <app-display-section  [contextMenu]='valueSetContextMenu' [element]="node.data" #rla="routerLinkActive"
+                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" ></app-display-section>
           </div>
           <context-menu #valueSetContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">

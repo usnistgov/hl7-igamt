@@ -14,10 +14,93 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.Location;
-import gov.nist.hit.hl7.igamt.ig.service.VerificationEntryService;
+import gov.nist.hit.hl7.igamt.service.verification.VerificationEntryService;
 
 @Service
 public class DefaultVerificationEntryService implements VerificationEntryService {
+
+    @Override
+    public IgamtObjectError IgTitleIsMissing(String id) {
+        return new IgamtVerificationEntryBuilder("IG_TITLE_MISSING")
+                .error()
+                .handleInternally()
+                .target(id, Type.IGDOCUMENT)
+                .locationInfo("ig.metadata.title", "IG Metadata", null)
+                .message("Implementation guide title is missing")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError LinkedResourceIsNotFound(String igId, String resourceId, Type resourceType) {
+        return new IgamtVerificationEntryBuilder("IG_RESOURCE_MISSING")
+                .fatal()
+                .handleInternally()
+                .target(igId, Type.IGDOCUMENT)
+                .locationInfo("ig." + resourceType + ".registry", "IG " +resourceType+" List", null)
+                .message("Resource of type '" + resourceType + "' and ID '"+resourceId+"' is missing")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError LinkedResourceDocumentInfoMissing(String resourceId, Type resourceType) {
+        return new IgamtVerificationEntryBuilder("IG_RESOURCE_DOCUMENT_INFO_MISSING")
+                .fatal()
+                .handleInternally()
+                .target(resourceId, resourceType)
+                .locationInfo("resource.metadata", "Resource Document Info", null)
+                .message("Resource of type '" + resourceType + "' and ID '"+resourceId+" has missing document information")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError LinkedResourceDocumentInfoInvalid(String resourceId, Type resourceType) {
+        return new IgamtVerificationEntryBuilder("IG_RESOURCE_DOCUMENT_INFO_INVALID")
+                .fatal()
+                .handleInternally()
+                .target(resourceId, resourceType)
+                .locationInfo("resource.metadata", "Resource Document Info", null)
+                .message("Resource document information is invalid")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError DuplicateResourceIdentifier(
+            String resourceId, Type resourceType, String label, String version
+    ) {
+        return new IgamtVerificationEntryBuilder("IG_RESOURCE_DUPLICATE_IDENTIFIER")
+                .fatal()
+                .handleByUser()
+                .target(resourceId, resourceType)
+                .locationInfo("resource.extension", "Resource Extension", PropertyType.EXT)
+                .message("Resource with label " + label + " from version "+ version +" has duplicate identifier.")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError MissingResourceExtension(
+            String resourceId, Type resourceType, String label, String version
+    ) {
+        return new IgamtVerificationEntryBuilder("EXTENSION_MISSING")
+                .fatal()
+                .handleByUser()
+                .target(resourceId, resourceType)
+                .locationInfo("resource.extension", "Resource Extension", PropertyType.EXT)
+                .message("Resource extension is missing")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError InvalidResourceExtension(
+            String resourceId, Type resourceType, String label, String version, String ext
+    ) {
+        return new IgamtVerificationEntryBuilder("EXTENSION_INVALID")
+                .fatal()
+                .handleByUser()
+                .target(resourceId, resourceType)
+                .locationInfo("resource.extension", "Resource Extension", PropertyType.EXT)
+                .message("Resource '"+ label+ "' from version '"+ version +"' has an invalid extension '" + ext + "'. Extension must start with a letter and must not be longer than 8 characters and can only contain letters, numbers, - (dash) and _ (underscore)")
+                .entry();
+    }
 
     @Override
     public IgamtObjectError ResourceNotFound(Location location, String id, Type type) {
@@ -26,7 +109,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .handleInternally()
                 .target(id, type)
                 .locationInfo(location)
-                .message("In " + type.getValue().toLowerCase() + " Repository, " + type.getValue().toLowerCase() + " : " + id + " is not accessible")
+                .message("Resource of type '" + type.getValue().toLowerCase() + "' and ID '" + id + " is not found")
                 .entry();
     }
 
@@ -459,6 +542,24 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
+    public IgamtObjectError AssertionValueInvalid(
+            Location location,
+            String id,
+            Type type,
+            String value,
+            String requirement,
+            boolean list
+    ) {
+        return new IgamtVerificationEntryBuilder("ASSERTION_VALUE_INVALID")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Assertion's value "+(list ? "list contains invalid value(s): "+value : "'"+value+"' is invalid")+". "+ requirement)
+                .entry();
+    }
+
+    @Override
     public IgamtObjectError AssertionDescriptionMissing(Location location, String id, Type type, boolean list) {
         return new IgamtVerificationEntryBuilder("ASSERTION_DESCRIPTION_MISSING")
                 .error()
@@ -502,68 +603,91 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .entry();
     }
 
-
     @Override
-	public IgamtObjectError Valueset_Missing_Code(Location l, String id, Type type) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.CODES);
-		return new IgamtVerificationEntryBuilder("Valueset_Missing_Code")
-                .error()
-                .handleByUser()
-                .target(id, type)
-                .locationInfo(location)
-                .message("The ValueSet:" + location.getInfo().getName() + " has a missing-code ")
-                .entry();
-	}
-
-	@Override
-	public IgamtObjectError Valueset_Missing_Description(Location l, String id, Type type) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.DESCRIPTION);
-		return new IgamtVerificationEntryBuilder("Valueset_Missing_Description")
-                .informational()
-                .handleByUser()
-                .target(id, type)
-                .locationInfo(location)
-                .message("In the Code: " + location.getName() + " of the ValueSet:" + location.getInfo().getName() + ", the description is missing")
-                .entry();
-	}
-
-	@Override
-	public IgamtObjectError Valueset_Missing_CodeSys(Location l, String id, Type type) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.CODESYSTEM);
-		return new IgamtVerificationEntryBuilder("Valueset_Missing_CodeSys")
-                .error()
-                .handleByUser()
-                .target(id, type)
-                .locationInfo(location)
-                .message("In the Code: " + location.getName() + " of the ValueSet:" + location.getInfo().getName() + ", the codesys is missing")
-                .entry();
-	}
-
-	@Override
-	public IgamtObjectError Valueset_Missing_Usage(Location l, String id, Type type) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.USAGE);
-		return new IgamtVerificationEntryBuilder("Valueset_Missing_Usage")
+    public IgamtObjectError FreeTextAssertionScriptMissing(Location location, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("FREETEXT_SCRIPT_MISSING")
                 .warning()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(location)
-                .message("In the ValueSet: " + location.getInfo().getName() + ", the USAGE is missing")
+                .message("Free text assertion XML script is missing (no validation can be performed)")
                 .entry();
-	}
+    }
 
-	@Override
-	public IgamtObjectError Valueset_Duplicated_Code(Location l, String id, Type type, String code, String codesys) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.CODES);
-		return new IgamtVerificationEntryBuilder("Valueset_Duplicated_Code")
+    @Override
+    public IgamtObjectError FreeTextAssertionXMLInvalid(Location location, String id, Type type, String xmlError) {
+        return new IgamtVerificationEntryBuilder("FREETEXT_SCRIPT_ERROR")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Invalid assertion XML script: "+ xmlError)
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError DuplicateConformanceStatementIdentifier(Location location, String id, Type type, String identifier) {
+        return new IgamtVerificationEntryBuilder("CS_DUPLICATE_IDENTIFIER")
                 .error()
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(location)
+                .message("Duplicate conformance statement identifier : '"+identifier+"'")
+                .entry();
+    }
+
+
+    @Override
+	public IgamtObjectError ValuesetMissingCode(Location l, String id, Type type) {
+		return new IgamtVerificationEntryBuilder("Valueset_Missing_Code")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(l.getPathId(), l.getName(), PropertyType.CODES)
+                .message("Missing code value")
+                .entry();
+	}
+
+	@Override
+	public IgamtObjectError ValuesetMissingDescription(Location l, String id, Type type) {
+		return new IgamtVerificationEntryBuilder("Valueset_Missing_Description")
+                .informational()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(l.getPathId(), l.getName(), PropertyType.DESCRIPTION)
+                .message("Missing code description")
+                .entry();
+	}
+
+	@Override
+	public IgamtObjectError ValuesetMissingCodeSys(Location l, String id, Type type) {
+		return new IgamtVerificationEntryBuilder("Valueset_Missing_CodeSys")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(l.getPathId(), l.getName(), PropertyType.CODESYSTEM)
+                .message("Missing code system")
+                .entry();
+	}
+
+	@Override
+	public IgamtObjectError ValuesetMissingUsage(Location l, String id, Type type) {
+		return new IgamtVerificationEntryBuilder("Valueset_Missing_Usage")
+                .warning()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(l.getPathId(), l.getName(), PropertyType.USAGE)
+                .message("Missing code usage")
+                .entry();
+	}
+
+	@Override
+	public IgamtObjectError ValuesetDuplicatedCode(Location l, String id, Type type, String code, String codesys) {
+		return new IgamtVerificationEntryBuilder("Valueset_Duplicated_Code")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(l.getPathId(), l.getName(), PropertyType.CODES)
                 .message(String.format("The combination of value %s and codesys %s are duplicated", code, codesys))
                 .entry();
 	}
@@ -660,224 +784,222 @@ public class DefaultVerificationEntryService implements VerificationEntryService
 	}
 
 	@Override
-	public IgamtObjectError Cardinality_INVALID_Range(Location l, String id, Type type, String min, String max) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.CARDINALITY);
-		return new IgamtVerificationEntryBuilder("Cardinality_INVALID_Range")
-                .error()
+	public IgamtObjectError CardinalityInvalidRange(LocationInfo locationInfo, String id, Type type, String min, String max) {
+		return new IgamtVerificationEntryBuilder("CARDINALITY_INVALID_RANGE")
+                .fatal()
                 .handleByUser()
                 .target(id, type)
-                .locationInfo(location)
-                .message(String.format("In %s, MIN Cardinality value is bigger than MAX Cardinality. Current MinCardinality is %s and Current MaxCardinality is %s", location.getInfo().getName(), min, max))
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.CARDINALITY)
+                .message(String.format("Min Cardinality value is greater than Max Cardinality. Current Min Cardinality is %s and Current Max Cardinality is %s", min, max))
                 .entry();
 	}
 
 	@Override
-	public IgamtObjectError Cardinality_INVALID_MAXCardinality(Location l, String id, Type type, String max) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.CARDINALITY);
-		return new IgamtVerificationEntryBuilder("Cardinality_INVALID_MAXCardinality")
+	public IgamtObjectError CardinalityInvalidMaxCardinality(LocationInfo locationInfo, String id, Type type, String max) {
+		return new IgamtVerificationEntryBuilder("CARDINALITY_INVALID_MAX")
+				.fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.CARDINALITY)
+                .message(String.format("Max Cardinality value should be a number or '*'.  Current Max Cardinality is %s", max))
+                .entry();
+	}
+
+	@Override
+	public IgamtObjectError CardinalityNotAllowedMaxCardinality(LocationInfo locationInfo, String id, Type type, String max) {
+		return new IgamtVerificationEntryBuilder("CARDINALITY_NOT_ALLOWED_MAX")
 				.error()
                 .handleByUser()
                 .target(id, type)
-                .locationInfo(location)
-                .message(String.format("In %s, MAX cardinality value should be number or '*'.  Current MaxCardinality is %s.", location.getInfo().getName(), max))
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.CARDINALITY)
+                .message(String.format("Max Cardinality value should be 0, if the usage is X. Current Max Cardinality is %s", max))
                 .entry();
 	}
 
 	@Override
-	public IgamtObjectError Cardinality_NOTAllowed_MAXCardinality(Location l, String id, Type type, String max) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.CARDINALITY);
-		return new IgamtVerificationEntryBuilder("Cardinality_NOTAllowed_MAXCardinality")
+	public IgamtObjectError CardinalityNotAllowedMinZero(LocationInfo locationInfo, String id, Type type, String min) {
+		return new IgamtVerificationEntryBuilder("CARDINALITY_NOT_ALLOWED_MIN_ZERO")
 				.error()
                 .handleByUser()
                 .target(id, type)
-                .locationInfo(location)
-                .message(String.format("In %s, MAX cardinality value should be 0, if the USAGE is X. Current MaxCardinality is %s.", location.getInfo().getName(), max))
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.CARDINALITY)
+                .message(String.format("Min Cardinality value should be greater than 0, if the usage is R. Current Min Cardinality is %s", min))
                 .entry();
 	}
 
 	@Override
-	public IgamtObjectError Cardinality_NOTAllowed_MINCardinality1(Location l, String id, Type type, String min) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.CARDINALITY);
-		return new IgamtVerificationEntryBuilder("Cardinality_NOTAllowed_MINCardinality")
+	public IgamtObjectError CardinalityNotAllowedMin(LocationInfo locationInfo, String id, Type type, String usage, String min) {
+		return new IgamtVerificationEntryBuilder("CARDINALITY_NOT_ALLOWED_MIN")
 				.error()
                 .handleByUser()
                 .target(id, type)
-                .locationInfo(location)
-                .message(String.format("In %s, MIN cardinality value should be bigger than 0, if the USAGE is R. Current MinCardinality is %s", location.getInfo().getName(), min))
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.CARDINALITY)
+                .message(String.format("Min Cardinality value should be 0, if the usage is not R. Current usage is %s and current Min Cardinality is %s", usage, min))
                 .entry();
 	}
 
 	@Override
-	public IgamtObjectError Cardinality_NOTAllowed_MINCardinality2(Location l, String id, Type type, String usage, String min) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.CARDINALITY);
-		return new IgamtVerificationEntryBuilder("Cardinality_NOTAllowed_MINCardinality")
-				.error()
-                .handleByUser()
-                .target(id, type)
-                .locationInfo(location)
-                .message(String.format("In %s, MIN cardinality value should be 0, if the USAGE is not R. Current usage is %s and current MinCardinality is %s", location.getInfo().getName(), usage, min))
-                .entry();
-	}
-
-	@Override
-	public IgamtObjectError ConfLength_INVALID(Location l, String id, Type type, String confLength) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.CONFLENGTH);
-		return new IgamtVerificationEntryBuilder("ConfLength_INVALID")
+	public IgamtObjectError ConfLengthInvalid(LocationInfo locationInfo, String id, Type type, String confLength) {
+		return new IgamtVerificationEntryBuilder("CONF_LENGTH_INVALID")
                 .warning()
                 .handleByUser()
                 .target(id, type)
-                .locationInfo(location)
-                .message(String.format("In %s, Either # or = can used to define truncation. The current ConfLength is %s", location.getInfo().getName(), confLength))
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.LENGTH)
+                .message(String.format("Either # or = can be used to define truncation. The current ConfLength is %s", confLength))
                 .entry();
 	}
 
 	@Override
-	public IgamtObjectError LengthorConfLength_Missing(Location l, String id, Type type) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.LENGTH);
-		return new IgamtVerificationEntryBuilder("LengthorConfLength_Missing")
+	public IgamtObjectError LengthOrConfLengthMissing(LocationInfo locationInfo, String id, Type type) {
+		return new IgamtVerificationEntryBuilder("LENGTH_OR_CONF_LENGTH_MISSING")
                 .informational()
                 .handleByUser()
                 .target(id, type)
-                .locationInfo(location)
-                .message(String.format("In %s, Primitive datatype should have one of Length and ConfLength", location.getInfo().getName()))
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.LENGTH)
+                .message("Primitive datatype should have one of Length and ConfLength")
                 .entry();
 	}
 
 	@Override
-	public IgamtObjectError Length_INVALID_MaxLength(Location l, String id, Type type, String maxLength) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.LENGTHMAX);
-		return new IgamtVerificationEntryBuilder("Length_INVALID_MaxLength")
+	public IgamtObjectError LengthInvalidMaxLength(LocationInfo locationInfo, String id, Type type, String maxLength) {
+		return new IgamtVerificationEntryBuilder("MAX_LENGTH_INVALID")
                 .fatal()
                 .handleByUser()
                 .target(id, type)
-                .locationInfo(location)
-                .message(String.format("In %s, Max Length should be number, '*' or 'NA'. The current MaxLength is %s", location.getInfo().getName(), maxLength))
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.LENGTH)
+                .message(String.format("Max Length should be a number, '*' or 'NA'. The current Max Length is %s", maxLength))
                 .entry();
 	}
 
 	@Override
-	public IgamtObjectError Length_INVALID_MinLength(Location l, String id, Type type, String minLength) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.LENGTHMIN);
-		return new IgamtVerificationEntryBuilder("Length_INVALID_MinLength")
+	public IgamtObjectError LengthInvalidMinLength(LocationInfo locationInfo, String id, Type type, String minLength) {
+		return new IgamtVerificationEntryBuilder("MIN_LENGTH_INVALID")
                 .fatal()
                 .handleByUser()
                 .target(id, type)
-                .locationInfo(location)
-                .message(String.format("In %s, Min Length should be number or 'NA'. The current MinLength is %s", location.getInfo().getName(), minLength))
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.LENGTH)
+                .message(String.format("Min Length should be a number or 'NA'. The current Min Length is %s", minLength))
                 .entry();
 	}
 
 	@Override
-	public IgamtObjectError Length_INVALID_Range(Location l, String id, Type type, String minLength, String maxLength) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.LENGTH);
-		return new IgamtVerificationEntryBuilder("Length_INVALID_Range")
-                .error()
+	public IgamtObjectError LengthInvalidRange(LocationInfo locationInfo, String id, Type type, String minLength, String maxLength) {
+		return new IgamtVerificationEntryBuilder("LENGTH_INVALID_RANGE")
+                .fatal()
                 .handleByUser()
                 .target(id, type)
-                .locationInfo(location)
-                .message(String.format("In %s, MIN Length value is bigger than MAX Length. The current MinLength is %s and current MaxLength is %s", location.getInfo().getName(), minLength, maxLength))
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.LENGTH)
+                .message(String.format("Min Length value is greater than Max Length. The current Min Length is %s and current Max Length is %s", minLength, maxLength))
                 .entry();
 	}
 
-	@Override
-	public IgamtObjectError Usage_NOTAllowed_IXUsage_SenderProfile(Location l, String id, Type type) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.USAGE);
-		return new IgamtVerificationEntryBuilder("Usage_NOTAllowed_IXUsage")
+    @Override
+    public IgamtObjectError ConfLengthNotAllowed(LocationInfo locationInfo, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("CONF_LENGTH_NOT_ALLOWED")
                 .error()
                 .handleByUser()
                 .target(id, type)
-                .locationInfo(location)
-                .message(String.format("IX usage could be used only in profiles with role \"Receiver\". The IX usage is used on %s.", location.getInfo().getType().toString() + ' ' + location.getName() + "(Position:  " + location.getInfo().getPositionalPath() + ')'))
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.CONFLENGTH)
+                .message("ConfLength is not allowed on a complex element")
                 .entry();
-	}
-	
-	@Override
-	public IgamtObjectError Usage_NOTAllowed_IXUsage_SenderAndReceiverProfile(Location l, String id, Type type) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.USAGE);
-		return new IgamtVerificationEntryBuilder("Usage_NOTAllowed_IXUsage")
-                .warning()
-                .handleByUser()
-                .target(id, type)
-                .locationInfo(location)
-                .message(String.format("IX usage could be used only in profiles with role \"Receiver\". The IX usage is used on %s.", location.getInfo().getType().toString() + ' ' + location.getName() + "(Position:  " + location.getInfo().getPositionalPath() + ')'))
-                .entry();
-	}
-	
-	@Override
-	public IgamtObjectError Required_ProfileRole_Error(Location l, String id, Type type) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.ROLE);
-		return new IgamtVerificationEntryBuilder("ProfileRole_MissingOrInValid")
+    }
+
+    @Override
+    public IgamtObjectError LengthNotAllowed(LocationInfo locationInfo, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("LENGTH_NOT_ALLOWED")
                 .error()
                 .handleByUser()
                 .target(id, type)
-                .locationInfo(location)
-                .message(String.format("Profile Role must be specified"))
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.LENGTH)
+                .message("Min/Max Length is not allowed on a complex element")
+                .entry();
+    }
+
+	@Override
+	public IgamtObjectError UsageNotAllowedIXUsageSenderProfile(LocationInfo locationInfo, String id, Type type) {
+		return new IgamtVerificationEntryBuilder("USAGE_NOT_ALLOWED_IX_RECEIVER")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.USAGE)
+                .message("IX usage can only be used in conformance profiles with role \"Receiver\".")
                 .entry();
 	}
 	
 	@Override
-	public IgamtObjectError Required_ProfileRole_Warning(Location l, String id, Type type) {
-		Location location = l.clone();
-		location.setProperty(PropertyType.ROLE);
-		return new IgamtVerificationEntryBuilder("ProfileRole_MissingOrInValid")
+	public IgamtObjectError UsageNOTAllowedIXUsageSenderAndReceiverProfile(LocationInfo locationInfo, String id, Type type) {
+		return new IgamtVerificationEntryBuilder("USAGE_NOT_ALLOWED_IX_SENDER_RECEIVER")
                 .warning()
                 .handleByUser()
                 .target(id, type)
-                .locationInfo(location)
-                .message(String.format("Profile Role must be specified"))
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.USAGE)
+                .message("IX usage can only be used in conformance profiles with role \"Receiver\".")
                 .entry();
 	}
 	
 	@Override
-    public IgamtObjectError Constant_INVALID_Datatype(Location l, String id, Type type, SubStructElement e) {
-            Location location = l.clone();
-            location.setProperty(PropertyType.CONSTANTVALUE);
-            return new IgamtVerificationEntryBuilder("ConstantValue_NOTAllowed_NonPrimitiveDatetype")
+	public IgamtObjectError ProfileRoleMissingOrInvalidIX(String id, Type type) {
+		return new IgamtVerificationEntryBuilder("PROFILE_ROLE_MISSING_OR_INVALID_IX")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo("metadata", "Metadata", PropertyType.ROLE)
+                .message("Profile Role must be specified when IX usage is used in conformance profile")
+                .entry();
+	}
+	
+	@Override
+	public IgamtObjectError ProfileRoleMissingOrInvalid(String id, Type type) {
+		return new IgamtVerificationEntryBuilder("PROFILE_ROLE_MISSING_OR_INVALID")
+                .warning()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo("metadata", "Metadata", PropertyType.ROLE)
+                .message("Profile Role should be specified")
+                .entry();
+	}
+
+    @Override
+    public IgamtObjectError MaxLevelExceeded(LocationInfo locationInfo, String id, Type type, String datatypeLabel) {
+        return new IgamtVerificationEntryBuilder("MESSAGE_NESTING_LEVEL")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(locationInfo.getPathId(), locationInfo, null)
+                .message("Message nesting level exceeds allowed for an HL7 message structure. Primitive datatype must be used at this location, found: '"+datatypeLabel+"'")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError ConstantInvalidDatatype(LocationInfo locationInfo, String id, Type type, SubStructElement e) {
+            return new IgamtVerificationEntryBuilder("CONSTANT_VALUE_COMPLEX_DT")
             .error()
             .handleByUser()
             .target(id, type)
-            .locationInfo(location)
-            .message(String.format("ConstantValue must be used for the primitive datatype"))
+            .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.CONSTANTVALUE)
+            .message("Constant Value can only be specified for elements with a primitive datatype")
             .entry();
     }
 
     @Override
-    public IgamtObjectError Constant_INVALID_Usage(Location l, String id, Type type) {
-            Location location = l.clone();
-            location.setProperty(PropertyType.CONSTANTVALUE);
-            return new IgamtVerificationEntryBuilder("ConstantValue_NOTAllowed_XUsage")
+    public IgamtObjectError ConstantInvalidUsage(LocationInfo locationInfo, String id, Type type) {
+            return new IgamtVerificationEntryBuilder("CONSTANT_VALUE_USAGE_X")
             .warning()
             .handleByUser()
             .target(id, type)
-            .locationInfo(location)
-            .message(String.format("ConstantValue cannot be used with X usage"))
+            .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.CONSTANTVALUE)
+            .message("Constant Value cannot be specified for elements with X usage")
             .entry();
     }
 
     @Override
-    public IgamtObjectError Constant_INVALID_LengthRange(Location l, String id, Type type, String minLength,
-                    String maxLength, String constantValue) {
-            Location location = l.clone();
-            location.setProperty(PropertyType.CONSTANTVALUE);
-            return new IgamtVerificationEntryBuilder("ConstantValue_LengthInvalid")
+    public IgamtObjectError ConstantInvalidLengthRange(LocationInfo locationInfo, String id, Type type, String minLength, String maxLength, String constantValue) {
+            return new IgamtVerificationEntryBuilder("CONSTANT_VALUE_LENGTH")
             .error()
             .handleByUser()
             .target(id, type)
-            .locationInfo(location)
-            .message(String.format("The length of constantValue: '" + constantValue + "' is not within [" + minLength + "..." + maxLength + "]"))
+            .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.CONSTANTVALUE)
+            .message(String.format("The length of Constant Value: '%s' is not within [%s..%s]", constantValue, minLength, maxLength))
             .entry();
     }
 }

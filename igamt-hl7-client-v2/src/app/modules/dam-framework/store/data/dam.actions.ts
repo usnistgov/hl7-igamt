@@ -19,6 +19,7 @@ export enum DamActionTypes {
   EditorSave = '[DAMF Editor] Editor Save',
   EditorVerify = '[DAMF Editor] Editor Verify',
   EditorVerificationResult = '[DAMF Editor] Editor Verification Result',
+  EditorVerificationFailure = '[DAMF Editor] Editor Verification Failure',
   EditorSaveSuccess = '[DAMF Editor] Editor Save Success',
   EditorSaveFailure = '[DAMF Editor] Editor Save Failure',
   EditorUpdate = '[DAMF Editor] Update editor without changes',
@@ -165,6 +166,15 @@ export class EditorVerificationResult implements Action {
     supported: boolean;
     url?: string;
     entries?: IVerificationEnty[];
+  }) {
+  }
+}
+
+export class EditorVerificationFailure implements Action {
+  readonly type = DamActionTypes.EditorVerificationFailure;
+
+  constructor(readonly payload: {
+    message: string,
   }) {
   }
 }
@@ -346,4 +356,5 @@ export type DamActions =
   DeleteResourcesFromRepostory |
   ToggleFullScreen |
   EditorVerificationResult |
-  EditorVerify;
+  EditorVerify |
+  EditorVerificationFailure;

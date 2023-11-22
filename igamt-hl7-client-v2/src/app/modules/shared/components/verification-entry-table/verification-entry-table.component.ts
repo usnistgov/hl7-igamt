@@ -1,8 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { filter, map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
+import { PropertyType } from '../../models/save-change';
 import { Severity } from '../../models/verification.interface';
-import { IVerificationEntryList, IVerificationEntryTable } from '../../services/verification.service';
+import { IVerificationEntryList, IVerificationEntryTable, IVerificationStats } from '../../services/verification.service';
 import { Type } from './../../constants/type.enum';
 
 export interface IEntryFilter {
@@ -16,6 +17,22 @@ export interface IEntryFilter {
   properties: string[];
   type?: Type;
 }
+
+export type EntryTableSeverityFilterSelector = (stats: IVerificationStats) => Severity[];
+
+export const selectErrorFatalOrHighest: EntryTableSeverityFilterSelector = (stats: IVerificationStats) => {
+  if (stats.error || stats.fatal) {
+    return [Severity.ERROR, Severity.FATAL];
+  } else {
+    if (stats.warning) {
+      return [Severity.WARNING];
+    } else if (stats.informational) {
+      return [Severity.INFORMATIONAL];
+    } else {
+      return [];
+    }
+  }
+};
 
 @Component({
   selector: 'app-verification-entry-table',
@@ -33,6 +50,13 @@ export class VerificationEntryTableComponent implements OnInit {
     { key: 'informational', type: Severity.INFORMATIONAL },
   ];
 
+  propertyTextMap = {
+    [PropertyType.STATEMENT]: 'CONFORMANCE STATEMENT',
+  };
+
+  @Input()
+  preSelectSeverities: EntryTableSeverityFilterSelector = selectErrorFatalOrHighest;
+
   @Input()
   set value(table: IVerificationEntryTable) {
     this.table.next(table);
@@ -49,8 +73,8 @@ export class VerificationEntryTableComponent implements OnInit {
   constructor() {
     this.filter = new BehaviorSubject<IEntryFilter>({
       severity: {
-        fatal: true,
-        error: true,
+        fatal: false,
+        error: false,
         warning: false,
         informational: false,
       },
@@ -97,6 +121,19 @@ export class VerificationEntryTableComponent implements OnInit {
   }
 
   ngOnInit() {
+    const initial = this.table.getValue();
+    if (initial && initial.stats) {
+      const severities = this.preSelectSeverities(initial.stats);
+      this.filter.next({
+        ...this.filter.getValue(),
+        severity: {
+          fatal: severities.includes(Severity.FATAL),
+          error: severities.includes(Severity.ERROR),
+          warning: severities.includes(Severity.WARNING),
+          informational: severities.includes(Severity.INFORMATIONAL),
+        },
+      });
+    }
   }
 
 }

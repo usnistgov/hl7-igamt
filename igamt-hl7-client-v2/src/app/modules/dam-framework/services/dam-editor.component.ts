@@ -108,7 +108,7 @@ export abstract class DamAbstractEditorComponent {
         this.onEditorVerify(action).subscribe(
           (result) => this.store.dispatch(result),
           (result) => {
-            this.store.dispatch(result);
+            this.store.dispatch(new fromDam.EditorVerificationFailure({ message: result.message }));
           },
         );
       }),

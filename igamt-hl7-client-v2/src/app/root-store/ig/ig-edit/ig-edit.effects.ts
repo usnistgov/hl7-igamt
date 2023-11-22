@@ -130,7 +130,6 @@ export class IgEditEffects extends DamWidgetEffect {
           ];
         }),
         catchError((error: HttpErrorResponse) => {
-          console.log(error);
           return of(
             new fromDAM.TurnOffLoader(),
             new IgEditResolverLoadFailure(error),
@@ -337,7 +336,7 @@ export class IgEditEffects extends DamWidgetEffect {
                 hl7Versions: ig.metadata.hl7Versions,
                 status: ig.status,
                 authorNotes: ig.authorNotes,
-                customAttributes: ig.metadata.customAttributes? ig.metadata.customAttributes: [],
+                customAttributes: ig.metadata.customAttributes ? ig.metadata.customAttributes : [],
               },
             });
           }),
@@ -695,7 +694,6 @@ export class IgEditEffects extends DamWidgetEffect {
           ];
         }),
         catchError((error: HttpErrorResponse) => {
-          console.log(error);
           return of(
             new fromDAM.TurnOffLoader(),
             new ToggleDeltaFailure(error),
@@ -718,11 +716,8 @@ export class IgEditEffects extends DamWidgetEffect {
         this.store.select(selectIgDocument).pipe(take(1))).pipe(
           take(1),
           flatMap(([response, selected, ig]) => {
-
             const url = '/' + 'ig/' + ig.id + '/profilecomponent/' + response.id;
-            console.log(selected);
             const redirect: boolean = selected && selected.display && selected.display.id === action.payload.element.id;
-
             if (redirect) {
               return [
                 new EditorReset(),
@@ -876,17 +871,16 @@ export class IgEditEffects extends DamWidgetEffect {
       this.store.dispatch(new fromDAM.SetValue({ verificationStatus: { loading: true } }));
 
       return this.igService.verify(action.payload).pipe(
-
         flatMap((response) => {
           return [
             new fromDAM.SetValue({ verificationResult: response }),
-            new fromDAM.SetValue({ verificationStatus: { loading: false } }),
+            new fromDAM.SetValue({ verificationStatus: { loading: false, failed: false, failure: '' } }),
             new fromDAM.TurnOffLoader(),
           ];
         }),
         catchError((error: HttpErrorResponse) => {
           return of(
-            new fromDAM.SetValue({ verificationStatus: { loading: false } }),
+            new fromDAM.SetValue({ verificationStatus: { loading: false, failed: true, failure: this.message.fromError(error).message } }),
           );
         }),
       );
@@ -898,19 +892,15 @@ export class IgEditEffects extends DamWidgetEffect {
     mergeMap((action: OpenIgVerificationEditor) => {
       return combineLatest(
         this.store.select(selectIgDocument),
-        // this.store.select(selectVerificationResult)
       )
         .pipe(
           take(1),
-          map(([ig, result]) => {
+          map(([ig]) => {
             return new fromDAM.OpenEditor({
               id: action.payload.id,
               display: this.igService.igToIDisplayElement(ig),
               editor: action.payload.editor,
-              initial: {
-                verificationResult: result,
-                changes: {},
-              },
+              initial: {},
             });
           }),
         );
@@ -934,7 +924,6 @@ export class IgEditEffects extends DamWidgetEffect {
           ];
         }),
         catchError((error: HttpErrorResponse) => {
-          console.log(error);
           return of(
             new fromDAM.TurnOffLoader(),
             new UpdateDocumentConfigFailure(error),

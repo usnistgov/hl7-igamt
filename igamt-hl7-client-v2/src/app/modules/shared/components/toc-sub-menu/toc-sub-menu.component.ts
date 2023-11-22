@@ -44,7 +44,7 @@ export class TocSubMenuComponent implements OnInit {
       if (type !== Type.VALUESET.toLowerCase()) {
         if (!this.element.leaf || this.isDateAndTime()) {
 
-        ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'structure', 'Structure', Icons.TABLE));
+          ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'structure', 'Structure', Icons.TABLE));
         }
       } else {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'structure', 'Value Set Definition', Icons.TABLE));
@@ -73,7 +73,6 @@ export class TocSubMenuComponent implements OnInit {
     }
 
     if (this.element.derived) {
-      console.log(this.element);
       if (!this.isDateAndTime()) {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'delta', 'Differential', Icons.LIST));
       } else {

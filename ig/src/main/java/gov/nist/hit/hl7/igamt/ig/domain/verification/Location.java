@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.ig.domain.verification;
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import org.apache.commons.lang.StringUtils;
 
 public class Location {
     String pathId;
@@ -18,6 +19,9 @@ public class Location {
         this.property = property;
         if(info != null) {
             this.name = info.getHl7Path();
+            if(!StringUtils.isBlank(info.getName())) {
+                this.name += " ("+info.getName()+")";
+            }
         } else {
             this.name = pathId;
         }
@@ -38,6 +42,9 @@ public class Location {
         this.info = info;
         if(info != null) {
             this.name = info.getHl7Path();
+            if(!StringUtils.isBlank(info.getName())) {
+                this.name += " ("+info.getName()+")";
+            }
         } else {
             this.name = pathId;
         }

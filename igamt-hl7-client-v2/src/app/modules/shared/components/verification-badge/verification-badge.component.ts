@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { elementStart } from '@angular/core/src/render3';
 import * as _ from 'lodash';
+import { Severity } from '../../models/verification.interface';
 import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
 
 @Component({
@@ -11,39 +11,25 @@ import { IVerificationEnty } from './../../../dam-framework/models/data/workspac
 })
 export class VerificationBadgeComponent implements OnInit {
 
-  serverity: string;
-  number: number;
-  style: string;
-  color: string;
-
-  elments: IVerificationEnty[];
+  severity: Severity;
 
   @Input()
-  set verification(elments: IVerificationEnty[] ) {
-    this.elments = elments;
-    if (elments) {
-      const group = _.groupBy(elments, 'severity');
-      if (group['FATAL']) {
-      this.color = 'red';
-      this.style = 'fa fa fa-exclamation';
-      } else if (group['ERROR']) {
-        this.style = 'fa fa fa-exclamation-circle';
-        this.color = 'red';
-      } else if (group['WARNING']) {
-        this.style = 'fa fa-exclamation-triangle';
-        this.color = '#bb990c';
+  set verification(entries: IVerificationEnty[]) {
+    this.severity = undefined;
+    for (const entry of entries) {
+      if (entry.severity === Severity.FATAL) {
+        this.severity = Severity.FATAL;
+        break;
+      } else if (entry.severity === Severity.ERROR) {
+        this.severity = Severity.ERROR;
+        break;
       }
     }
-
   }
 
   constructor() { }
 
   ngOnInit() {
-  }
-
-  print() {
-    console.log(this.elments);
   }
 
 }

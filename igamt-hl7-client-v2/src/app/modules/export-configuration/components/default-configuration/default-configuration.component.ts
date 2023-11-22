@@ -205,7 +205,6 @@ export class DefaultConfigurationComponent implements OnInit {
   ngOnInit() {
     this.activeRoute.queryParams.pipe(filter((x) => x != null)).subscribe((params) => {
       this.type = params.type;
-      console.log(this.type);
       this.loadExportConfigurationList(this.type);
     });
   }

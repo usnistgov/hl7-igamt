@@ -66,14 +66,14 @@ public class Datatype extends Resource {
    */
   @Override
   public String getLabel() {
-    String entireExt = this.getEntireException();
+    String entireExt = this.getEntireExtension();
     if (entireExt != null && !entireExt.isEmpty()) {
-      return  this.getName()  + "_" + this.getEntireException();
+      return  this.getName()  + "_" + this.getEntireExtension();
     }
     return this.getName();
   }
 
-  public String getEntireException() {
+  public String getEntireExtension() {
     if(this.getFixedExtension() !=null && !this.getFixedExtension().isEmpty()) {
      return this.getFixedExtension()+ "_" + this.getExt();
     }

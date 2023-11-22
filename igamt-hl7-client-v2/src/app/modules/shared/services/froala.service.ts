@@ -25,25 +25,7 @@ export class FroalaService {
       charCounterCount: false,
       quickInsertTags: [''],
       immediateAngularModelUpdate: true,
-      events: {
-        'froalaEditor.image.beforeUpload': (images) => {
-          console.log('Before upload');
-          console.log(images);
-        },
-        'froalaEditor.image.uploaded': (response) => {
-          console.log('froalaEditor.image.uploaded');
-          console.log(response);
-        },
-        'froalaEditor.image.inserted': ($img, response) => {
-          console.log('froalaEditor.image.inserted');
-          console.log(response);
-          console.log($img);
-        },
-        'image.error': (error, response) => {
-          console.log(error);
-          console.log(response);
-        },
-      },
+      events: {},
       imageResize: true,
       pastePlain: true,
     };

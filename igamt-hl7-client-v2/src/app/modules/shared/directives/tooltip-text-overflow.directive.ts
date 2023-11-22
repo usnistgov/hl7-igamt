@@ -25,8 +25,6 @@ export class TooltipTextOverflowDirective implements AfterViewInit {
     } else {
       this.tooltipActive = false;
     }
-
-    console.log(this.tooltipActive);
   }
 
 }

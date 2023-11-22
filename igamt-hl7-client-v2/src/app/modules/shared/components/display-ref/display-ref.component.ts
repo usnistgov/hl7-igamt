@@ -39,7 +39,7 @@ export class DisplayRefComponent implements OnInit {
 
   redirect() {
     const documentUrl = this.getDocumentURL(this.documentType);
-    if (documentUrl) {
+    if (documentUrl && !this.element.generated) {
       this.router.navigate([documentUrl + this.documentId + '/' + this.element.type.toLowerCase() + '/' + this.element.id]);
     }
   }

@@ -44,7 +44,7 @@ export class ImportFromLibComponent implements OnInit {
     this.resourceService.importResource({ type: data.type, scope: data.scope, version: data.version }).pipe(map((x) => x.data)).subscribe(
       (x) => { this.table_ = x; });
     this.store.select(selectAllDatatypes).pipe(take(1),
-       map((table) => _.groupBy(table, (elm) => elm.fixedName))).subscribe((x) => this.availables = x);
+      map((table) => _.groupBy(table, (elm) => elm.fixedName))).subscribe((x) => this.availables = x);
   }
   ngOnInit() {
   }
@@ -57,7 +57,6 @@ export class ImportFromLibComponent implements OnInit {
   submit() {
     this.structure = { ...this.structure };
     this.structure.substitutes = this.process();
-    console.log(this.structure);
     this.dialogRef.close([this.structure]);
   }
   cancel() {
@@ -137,13 +136,13 @@ export class ImportFromLibComponent implements OnInit {
   private findDuplicated(availables: IDisplayElement[], child: IDisplayElement) {
     availables.forEach((elm) => {
       // tslint:disable-next-line:align
-        // tslint:disable-next-line:no-collapsible-if
-        if (this.duplicated[elm.fixedName]) {
-          this.duplicated[elm.fixedName].push(elm);
-        } else {
-          this.duplicatedList.push(child);
-          this.duplicated[elm.fixedName] = [elm];
-        }
+      // tslint:disable-next-line:no-collapsible-if
+      if (this.duplicated[elm.fixedName]) {
+        this.duplicated[elm.fixedName].push(elm);
+      } else {
+        this.duplicatedList.push(child);
+        this.duplicated[elm.fixedName] = [elm];
+      }
 
     });
   }

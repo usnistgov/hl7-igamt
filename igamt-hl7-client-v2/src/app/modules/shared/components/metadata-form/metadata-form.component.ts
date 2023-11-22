@@ -2,8 +2,8 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { FormControl, FormGroup, ValidatorFn } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { Observable, Subscription } from 'rxjs';
-import { MetadataAttributeConfigComponent } from '../metadata-attribute-config/metadata-attribute-config.component';
 import { filter, map } from 'rxjs/operators';
+import { MetadataAttributeConfigComponent } from '../metadata-attribute-config/metadata-attribute-config.component';
 
 @Component({
   selector: 'app-metadata-form',
@@ -21,11 +21,13 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
   dataChange: EventEmitter<FormGroup>;
 
   @Output()
-  modelChange: EventEmitter <Array<{
+  modelChange: EventEmitter<Array<{
     key: string;
-    data: IMetadataField}>> = new  EventEmitter <Array<{
+    data: IMetadataField
+  }>> = new EventEmitter<Array<{
     key: string;
-    data: IMetadataField}>> ();
+    data: IMetadataField
+  }>>();
   viewOnly: boolean;
 
   changesSubscription: Subscription;
@@ -34,13 +36,11 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
   @Input()
   froalaConfig: any;
 
-  constructor( private dialog: MatDialog) {
+  constructor(private dialog: MatDialog) {
     this.dataChange = new EventEmitter<FormGroup>();
   }
 
   initializeForm(model: MetadataModel<any>) {
-
-    console.log("Called initialized");
     const formGroup = new FormGroup({});
     this.model = [];
     for (const field of Object.keys(model)) {
@@ -57,9 +57,6 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
 
   @Input()
   set metadataFormInput(input: IMetadataFormInput<any>) {
-    console.log("input");
-
-    console.log(input.model);
     if (this.changesSubscription) {
       this.changesSubscription.unsubscribe();
     }
@@ -81,7 +78,6 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
     );
     this.changesSubscription = this.metadataForm.valueChanges.subscribe(
       (change) => {
-        console.log(this.metadataForm);
         this.dataChange.emit(this.metadataForm);
       },
     );
@@ -90,26 +86,23 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
   ngOnInit() {
   }
 
-  openCustomAttributeDialog(){
-    console.log(this.model );
-     const dialogRef = this.dialog.open(MetadataAttributeConfigComponent, {
-            data: { form: this.model },
-          });
-          dialogRef.afterClosed().pipe(
-            filter((res) => res !== undefined),
-            map((result: any) => {
+  openCustomAttributeDialog() {
+    const dialogRef = this.dialog.open(MetadataAttributeConfigComponent, {
+      data: { form: this.model },
+    });
+    dialogRef.afterClosed().pipe(
+      filter((res) => res !== undefined),
+      map((result: any) => {
 
-              for (const field of result) {
-                  this. metadataForm.addControl(field.name, new FormControl('', field.validators));
-                  this.model.splice(this.model.length -1, 0,  {key: field.name, data:  field});
-              }
-              this.modelChange.emit(this.model);
+        for (const field of result) {
+          this.metadataForm.addControl(field.name, new FormControl('', field.validators));
+          this.model.splice(this.model.length - 1, 0, { key: field.name, data: field });
+        }
+        this.modelChange.emit(this.model);
 
-            }),
-          ).subscribe();
+      }),
+    ).subscribe();
   }
-
-
 
   ngOnDestroy() {
     if (this.changesSubscription) {
@@ -148,7 +141,7 @@ export interface IMetadataField {
   name: string;
   validators: ValidatorFn[];
   addBefore?: boolean;
-  custom? : boolean;
+  custom?: boolean;
   position?: number;
 }
 

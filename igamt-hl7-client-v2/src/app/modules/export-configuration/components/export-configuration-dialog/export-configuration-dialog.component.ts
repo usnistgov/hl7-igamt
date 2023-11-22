@@ -124,7 +124,6 @@ export class ExportConfigurationDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('DOCTYPE IS :' + this.docType);
   }
 
   applyLastUserConfiguration() {
@@ -134,7 +133,6 @@ export class ExportConfigurationDialogComponent implements OnInit {
   }
 
   submit() {
-    console.log('new initalConfig is : ', this.initialConfig);
     this.dialogRef.close(this.filter);
   }
 
@@ -162,7 +160,6 @@ export class ExportConfigurationDialogComponent implements OnInit {
   }
 
   mergeDeltaFilter($event: string[], key: string) {
-    console.log($event);
     let ret = false;
     if ($event.indexOf('ADDED') > -1) {
       ret = this.filter.added[key] || ret;

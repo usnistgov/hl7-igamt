@@ -32,7 +32,6 @@ export class ValueSetExportConfigurationComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    console.log(this.config);
   }
 
   triggerChange() {

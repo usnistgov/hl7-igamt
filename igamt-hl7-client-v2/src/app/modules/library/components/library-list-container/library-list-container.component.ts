@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
-import {filter, map} from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromRoot from 'src/app/root-store/index';
 import {
@@ -20,15 +20,15 @@ import {
   DeleteIgListItemRequest,
   IgListLoad,
 } from '../../../../root-store/ig/ig-list/ig-list.actions';
-import {PublishLibrary} from '../../../../root-store/library/library-edit/library-edit.actions';
+import { PublishLibrary } from '../../../../root-store/library/library-edit/library-edit.actions';
 import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { ClearAll } from '../../../dam-framework/store/messages/messages.actions';
-import {IgListItem} from '../../../document/models/document/ig-list-item.class';
+import { IgListItem } from '../../../document/models/document/ig-list-item.class';
 import { CloneModeEnum } from '../../../shared/constants/clone-mode.enum';
-import {LibraryService} from '../../services/library.service';
-import {IgListItemControl} from '../library-list-item-card/library-list-item-card.component';
+import { LibraryService } from '../../services/library.service';
+import { IgListItemControl } from '../library-list-item-card/library-list-item-card.component';
 import {
   IPublicationResult,
   IPublicationSummary,
@@ -42,7 +42,7 @@ import { SharingDialogComponent } from './../../../shared/components/sharing-dia
   styleUrls: ['./library-list-container.component.scss'],
 })
 export class LibraryListContainerComponent implements OnInit, OnDestroy {
-  readonly   DATATYPE_LIBRARY = 'datatype-library';
+  readonly DATATYPE_LIBRARY = 'datatype-library';
 
   constructor(
     private store: Store<fromRoot.IRouteState>,
@@ -186,7 +186,7 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
                   return false;
                 },
                 hide: (item: IgListItem): boolean => {
-                  return  item.type !== 'PUBLISHED';
+                  return item.type !== 'PUBLISHED';
                 },
               },
 
@@ -195,13 +195,13 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
                 class: 'btn-secondary',
                 icon: 'fa fa-copy',
                 action: (item: IgListItem) => {
-                    this.cloneLib(item, CloneModeEnum.CLONE);
+                  this.cloneLib(item, CloneModeEnum.CLONE);
                 },
                 disabled: (item: IgListItem): boolean => {
                   return false;
                 },
                 hide: (item: IgListItem): boolean => {
-                  return  item.type === 'PUBLISHED';
+                  return item.type === 'PUBLISHED';
                 },
               },
               {
@@ -255,7 +255,7 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
       );
   }
 
-  cloneLib(item: IgListItem, mode: CloneModeEnum  ) {
+  cloneLib(item: IgListItem, mode: CloneModeEnum) {
     this.libraryService.clone(item.id, mode, null).subscribe(
       (response: Message<string>) => {
         this.store.dispatch(this.message.messageToAction(response));
@@ -334,10 +334,7 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
     this.store.dispatch(new SelectLibraryListSortOption(Object.assign(Object.assign({}, this.sortProperty), this.sortOrder)));
   }
 
-    generalFilter(values: any) {
-    console.log('values');
-    console.log(values);
-
+  generalFilter(values: any) {
     this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: this.filter, deprecated: false, status: values });
   }
 
