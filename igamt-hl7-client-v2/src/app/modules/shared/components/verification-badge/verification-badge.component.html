@@ -1,3 +1,1 @@
-<span [ngStyle]="{'color': color}">
-  <i [class]="style"></i>
-</span>
+<app-issue-badge [type]="severity" *ngIf="severity"></app-issue-badge>

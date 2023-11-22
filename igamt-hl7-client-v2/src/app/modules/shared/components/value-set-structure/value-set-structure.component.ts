@@ -1,8 +1,8 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Guid} from 'guid-typescript';
-import {SelectItem} from 'primeng/api';
-import {ChangeType, IChange, PropertyType} from '../../models/save-change';
-import {ICodes, IValueSet} from '../../models/value-set.interface';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Guid } from 'guid-typescript';
+import { SelectItem } from 'primeng/api';
+import { ChangeType, IChange, PropertyType } from '../../models/save-change';
+import { ICodes, IValueSet } from '../../models/value-set.interface';
 
 @Component({
   selector: 'app-value-set-structure',
@@ -16,7 +16,7 @@ export class ValueSetStructureComponent implements OnInit {
   @Input()
   valueSet: IValueSet;
   selectedCodes: ICodes[] = [];
-  notDefinedOption = {label: 'Not defined', value: 'Undefined'};
+  notDefinedOption = { label: 'Not defined', value: 'Undefined' };
   edit = {};
   temp: string = null;
   filteredCodeSystems: string[] = [];
@@ -34,17 +34,17 @@ export class ValueSetStructureComponent implements OnInit {
   selectedColumns: any[];
 
   stabilityOptionsOptions = [
-    this.notDefinedOption, {label: 'Dynamic', value: 'Dynamic'}, {label: 'Static', value: 'Static'},
+    this.notDefinedOption, { label: 'Dynamic', value: 'Dynamic' }, { label: 'Static', value: 'Static' },
   ];
   extensibilityOptions = [
-    this.notDefinedOption, {label: 'Open', value: 'Open'}, {label: 'Closed', value: 'Closed'},
+    this.notDefinedOption, { label: 'Open', value: 'Open' }, { label: 'Closed', value: 'Closed' },
   ];
   contentDefinitionOptions = [
-    this.notDefinedOption, {label: 'Extensional', value: 'Extensional'}, {label: 'Intensional', value: 'Intensional'},
+    this.notDefinedOption, { label: 'Extensional', value: 'Extensional' }, { label: 'Intensional', value: 'Intensional' },
   ];
 
   codeUsageOptions = [
-    {label: 'R', value: 'R'}, {label: 'P', value: 'P'}, {label: 'E', value: 'E'},
+    { label: 'R', value: 'R' }, { label: 'P', value: 'P' }, { label: 'E', value: 'E' },
   ];
   editMap = {};
 
@@ -56,13 +56,12 @@ export class ValueSetStructureComponent implements OnInit {
     const tempMap = this.editMap;
     this.editMap = {};
     this.editMap[id] = !tempMap[id];
-    console.log(this.editMap);
   }
 
   addCodeSystem(targetId: string) {
     if (this.valueSet.codeSystems.indexOf(this.temp) < 0) {
       this.valueSet.codeSystems.push(this.temp);
-      this.codeSystemOptions.push({value: this.temp, label: this.temp});
+      this.codeSystemOptions.push({ value: this.temp, label: this.temp });
       this.changes.emit({
         location: 'ROOT',
         propertyType: PropertyType.CODESYSTEM,
@@ -83,13 +82,13 @@ export class ValueSetStructureComponent implements OnInit {
 
   getCodeSystemOptions(): SelectItem[] {
     return this.valueSet.codeSystems.map((codeSystem: string) => {
-      return {label: codeSystem, value: codeSystem};
+      return { label: codeSystem, value: codeSystem };
     });
   }
 
   deleteCodeSystem(codeSystem: string) {
     this.valueSet.codeSystems = this.valueSet.codeSystems.filter((codeSys: string) => {
-      return codeSys != null && codeSystem.toLowerCase() !== codeSys.toLowerCase() ;
+      return codeSys != null && codeSystem.toLowerCase() !== codeSys.toLowerCase();
     });
     for (const code of this.valueSet.codes) {
       if (code.codeSystem && code.codeSystem.toLowerCase() === codeSystem.toLowerCase()) {
@@ -153,7 +152,7 @@ export class ValueSetStructureComponent implements OnInit {
   }
 
   deleteCodes() {
-    this.valueSet.codes = this.valueSet.codes.filter((x) =>  this.selectedCodes.indexOf(x) < 0);
+    this.valueSet.codes = this.valueSet.codes.filter((x) => this.selectedCodes.indexOf(x) < 0);
     this.selectedCodes = [];
     this.updateAttribute(PropertyType.CODES, this.valueSet.codes);
   }

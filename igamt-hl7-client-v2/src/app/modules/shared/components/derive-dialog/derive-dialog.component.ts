@@ -18,20 +18,20 @@ export class DeriveDialogComponent implements OnInit, AfterViewInit {
   title = '';
   constructor(public dialogRef: MatDialogRef<DeriveDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: IDeriveDialogData) {
-                if (data.mode === CloneModeEnum.DERIVE) {
+    if (data.mode === CloneModeEnum.DERIVE) {
 
-                  this.title = 'Deriving from' + data.origin;
+      this.title = 'Deriving from' + data.origin;
 
-                } else {
+    } else {
 
-                  this.title = 'Clone from ' + data.origin;
-                }
+      this.title = 'Clone from ' + data.origin;
+    }
 
-                this.map[PropertyType.PREDEF] = true;
-                this.map[PropertyType.POSTDEF] = true;
-                this.map[PropertyType.AUTHORNOTES] = true;
-                this.map[PropertyType.COMMENT] = true;
-                this.map[PropertyType.DEFINITIONTEXT] = true;
+    this.map[PropertyType.PREDEF] = true;
+    this.map[PropertyType.POSTDEF] = true;
+    this.map[PropertyType.AUTHORNOTES] = true;
+    this.map[PropertyType.COMMENT] = true;
+    this.map[PropertyType.DEFINITIONTEXT] = true;
   }
 
   select($event: IgTemplate) {
@@ -44,22 +44,15 @@ export class DeriveDialogComponent implements OnInit, AfterViewInit {
   }
 
   mapToExculded(): PropertyType[] {
-    console.log('this.map');
-
-    console.log(this.map);
     const keysWithTrueValues: any[] = [];
-
-    for (const key of Object.keys(this.map) ) {
-
+    for (const key of Object.keys(this.map)) {
       if (!this.map[key]) {
         keysWithTrueValues.push(key);
       }
     }
-
-    console.log(keysWithTrueValues);
     return keysWithTrueValues;
-
   }
+
   getPath(node) {
     if (this.isOrphan(node)) {
       return node.data.position;

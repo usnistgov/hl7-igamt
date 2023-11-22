@@ -16,57 +16,57 @@ export class ManageProfileStructureComponent implements OnInit {
   checked = {};
   hasChildren = {};
 
-  defaultOptions: IRegsitrySections[] =  [
+  defaultOptions: IRegsitrySections[] = [
     {
-    disabled: false,
-    position: 1,
-    label: 'Profile Components',
-    registryType: Type.PROFILECOMPONENTREGISTRY,
+      disabled: false,
+      position: 1,
+      label: 'Profile Components',
+      registryType: Type.PROFILECOMPONENTREGISTRY,
 
-   },
-   {
-    disabled: true,
-    position: 2,
-    label: 'Conformane Profiles',
-    registryType: Type.CONFORMANCEPROFILEREGISTRY,
+    },
+    {
+      disabled: true,
+      position: 2,
+      label: 'Conformane Profiles',
+      registryType: Type.CONFORMANCEPROFILEREGISTRY,
 
-   },
+    },
 
-  {
-    disabled: false,
-    position: 3,
-    label: 'Composite Profiles',
-    registryType: Type.COMPOSITEPROFILEREGISTRY,
+    {
+      disabled: false,
+      position: 3,
+      label: 'Composite Profiles',
+      registryType: Type.COMPOSITEPROFILEREGISTRY,
 
-  },
-  {
-    disabled: true,
-    position: 4,
-    label: 'Segments and Fields Descriptions',
-    registryType: Type.SEGMENTREGISTRY,
+    },
+    {
+      disabled: true,
+      position: 4,
+      label: 'Segments and Fields Descriptions',
+      registryType: Type.SEGMENTREGISTRY,
 
-  },
-  {
-    disabled: true,
-    position: 5,
-    label: 'Data Types',
-    registryType: Type.DATATYPEREGISTRY,
+    },
+    {
+      disabled: true,
+      position: 5,
+      label: 'Data Types',
+      registryType: Type.DATATYPEREGISTRY,
 
-  },
-  {
-    disabled: false,
-    position: 6,
-    label: 'Value Sets',
-    registryType: Type.VALUESETREGISTRY,
+    },
+    {
+      disabled: false,
+      position: 6,
+      label: 'Value Sets',
+      registryType: Type.VALUESETREGISTRY,
 
-  },
-  {
-    disabled: false,
-    position: 7,
-    label: 'Co-Constraint groups',
-    registryType: Type.COCONSTRAINTGROUPREGISTRY,
+    },
+    {
+      disabled: false,
+      position: 7,
+      label: 'Co-Constraint groups',
+      registryType: Type.COCONSTRAINTGROUPREGISTRY,
 
-  },
+    },
 
   ];
 
@@ -74,8 +74,6 @@ export class ManageProfileStructureComponent implements OnInit {
     public dialogRef: MatDialogRef<ManageProfileStructureComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
-    console.log(data);
-
     this.data.forEach((element) => {
       this.checked[element.type] = true;
       this.hasChildren[element.type] = element.children.length > 0;
@@ -89,7 +87,7 @@ export class ManageProfileStructureComponent implements OnInit {
 
     const existing = {};
     this.data.forEach((element) => {
-        existing[element.type] = true;
+      existing[element.type] = true;
     });
 
     this.defaultOptions.forEach((element) => {
@@ -106,7 +104,7 @@ export class ManageProfileStructureComponent implements OnInit {
       }
     });
 
-    this.dialogRef.close({added, removed});
+    this.dialogRef.close({ added, removed });
   }
 
   ngOnInit() { }

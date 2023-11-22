@@ -13,6 +13,7 @@ import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
+import gov.nist.hit.hl7.igamt.ig.model.IgProfileResourceSubSet;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -106,7 +107,7 @@ public interface IgService {
   public Set<RelationShip> builAllRelations(Ig ig) ;
     
   UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass, boolean updateDate);
-  
+  IgProfileResourceSubSet getIgProfileResourceSubSet(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws EntityNotFound;
   public Ig makeSelectedIg(Ig ig, ReqId reqIds);
   public void visitSegmentRefOrGroup(Set<SegmentRefOrGroup> srgs, Ig selectedIg, Ig all);
   public void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all);

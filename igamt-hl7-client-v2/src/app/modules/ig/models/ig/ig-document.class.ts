@@ -93,3 +93,14 @@ export interface IgDocumentStatusInfo {
   deprecated?: boolean;
   locked?: boolean;
 }
+
+export interface IIgVerificationReport {
+  ig?: any[];
+  segments?: any[];
+  conformanceProfiles?: any[];
+  compositeProfiles?: any[];
+  datatypes?: any[];
+  valueSets?: any[];
+  coConstraintGroups?: any[];
+  generated?: IDisplayElement[];
+}

@@ -1,10 +1,9 @@
-import {ResourceOrigin} from '../constants/resource-origin.enum';
-import {Type} from '../constants/type.enum';
-import {IActiveInfo, Status} from './abstract-domain.interface';
-import { SourceType } from './adding-info';
-import {DeltaAction} from './delta';
-import {IDomainInfo} from './domain-info.interface';
-import {IPublicationInfo} from './publication-info.interface';
+import { ResourceOrigin } from '../constants/resource-origin.enum';
+import { Type } from '../constants/type.enum';
+import { IActiveInfo, Status } from './abstract-domain.interface';
+import { DeltaAction } from './delta';
+import { IDomainInfo } from './domain-info.interface';
+import { IPublicationInfo } from './publication-info.interface';
 
 export interface IDisplayElement {
   id: string;
@@ -33,5 +32,5 @@ export interface IDisplayElement {
   resourceName?: string;
   structureIdentifier?: string;
   resourceOrigin?: ResourceOrigin;
-
+  generated?: boolean;
 }

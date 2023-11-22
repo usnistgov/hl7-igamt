@@ -1,17 +1,16 @@
-import {Directive, Input, OnInit} from '@angular/core';
-import {AbstractControl, NG_VALIDATORS, ValidationErrors, Validator, ValidatorFn} from '@angular/forms';
-import {IPublicationEntry} from './publish-library-dialog.component';
+import { Directive, Input, OnInit } from '@angular/core';
+import { AbstractControl, NG_VALIDATORS, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
+import { IPublicationEntry } from './publish-library-dialog.component';
 
 @Directive({
   selector: '[appNamingSelectionDirective]',
-  providers: [{provide: NG_VALIDATORS, useExisting: NamingSelectionDirective, multi: true}],
+  providers: [{ provide: NG_VALIDATORS, useExisting: NamingSelectionDirective, multi: true }],
 
 })
 export class NamingSelectionDirective implements Validator, OnInit {
   existing_: string[];
 
   @Input() set existing(event: IPublicationEntry[]) {
-    console.log(event);
     this.existing_ = event.filter((f) => f.display.id !== this.id).map((x) => x.display.fixedName + x.suggested);
   }
 
@@ -20,15 +19,15 @@ export class NamingSelectionDirective implements Validator, OnInit {
 
   constructor() {
   }
-  validate(control: AbstractControl): ValidationErrors| null {
-      return this.existing_.indexOf(this.fixedName + control.value) ? null : {duplicated:  control.value + 'is already used'};
+  validate(control: AbstractControl): ValidationErrors | null {
+    return this.existing_.indexOf(this.fixedName + control.value) ? null : { duplicated: control.value + 'is already used' };
   }
   ngOnInit() {
   }
 
   validateUnity(existing: IPublicationEntry[], fixedName: string, id: string): ValidatorFn {
     return (control: AbstractControl) => {
-      return !this.isDuplicated(existing, fixedName, control.value, id) ? null : {duplicated:  control.value + 'is already used'};
+      return !this.isDuplicated(existing, fixedName, control.value, id) ? null : { duplicated: control.value + 'is already used' };
     };
   }
   isDuplicated(existing: IPublicationEntry[], fixedName: string, value: string, id: string) {

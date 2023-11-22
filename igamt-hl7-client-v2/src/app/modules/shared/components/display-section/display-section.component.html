@@ -14,9 +14,12 @@
   </app-scope-badge>
   <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"> &nbsp;{{ getDisplayLabel() }}
     <ng-container *ngIf=" !hideDescription && element.description">
-         {{'-' + element.description }}
+         {{'- ' + element.description }}
     </ng-container>
   </span>
+  <ng-container *ngIf="element.generated">
+    <span  style="margin-left: 5px; margin-right: 5px;">(generated)</span>
+  </ng-container>
 </div>
 <ng-container *ngIf="compatibility">
   <span class="badge badge-secondary" style="padding: 1px; margin-left:3px;" *ngFor="let version of  element?.domainInfo?.compatibilityVersion"> {{version}}</span>

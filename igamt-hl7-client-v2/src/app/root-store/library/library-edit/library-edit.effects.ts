@@ -1,12 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {Router} from '@angular/router';
+import { Router } from '@angular/router';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
-import {catchError, concatMap, flatMap, map, mergeMap, switchMap, take, tap} from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
-import {EditorReset} from 'src/app/modules/dam-framework/store/index';
+import { EditorReset } from 'src/app/modules/dam-framework/store/index';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { Message, MessageType, UserMessage } from '../../../modules/dam-framework/models/messages/message.class';
@@ -14,13 +14,13 @@ import { RxjsStoreHelperService } from '../../../modules/dam-framework/services/
 import { DamWidgetEffect } from '../../../modules/dam-framework/store/dam-widget-effect.class';
 import { LoadPayloadData } from '../../../modules/dam-framework/store/data/dam.actions';
 import { IDocumentDisplayInfo } from '../../../modules/ig/models/ig/ig-document.class';
-import {LIBRARY_EDIT_WIDGET_ID} from '../../../modules/library/components/library-edit-container/library-edit-container.component';
-import {ILibrary} from '../../../modules/library/models/library.class';
-import {LibraryService} from '../../../modules/library/services/library.service';
+import { LIBRARY_EDIT_WIDGET_ID } from '../../../modules/library/components/library-edit-container/library-edit-container.component';
+import { ILibrary } from '../../../modules/library/models/library.class';
+import { LibraryService } from '../../../modules/library/services/library.service';
 import { ResourceService } from '../../../modules/shared/services/resource.service';
-import {selectSelectedResource} from '../../dam-igamt/igamt.selected-resource.selectors';
-import {selectLoadedDocumentInfo} from '../../dam-igamt/igamt.selectors';
-import {IgEditActionTypes} from '../../ig/ig-edit/ig-edit.actions';
+import { selectSelectedResource } from '../../dam-igamt/igamt.selected-resource.selectors';
+import { selectLoadedDocumentInfo } from '../../dam-igamt/igamt.selectors';
+import { IgEditActionTypes } from '../../ig/ig-edit/ig-edit.actions';
 import {
   DeactivateElements, DeactivateElementsFailure, DeactivateElementsSuccess,
   LibOpenNarrativeEditorNode, PublishLibrary, PublishLibraryFailure,
@@ -85,7 +85,6 @@ export class LibraryEditEffects extends DamWidgetEffect {
           ];
         }),
         catchError((error: HttpErrorResponse) => {
-          console.log(error);
           return of(
             new fromDAM.TurnOffLoader(),
             new LibraryEditResolverLoadFailure(error),
@@ -194,7 +193,6 @@ export class LibraryEditEffects extends DamWidgetEffect {
         this.store.select(fromIgamtDisplaySelectors.selectSectionDisplayById, { id: action.payload.id }),
         this.store.select(selectSectionFromLibraryById, { id: action.payload.id }))
         .pipe(
-          tap((x) => { console.log(x); }),
           take(1),
           flatMap(([elm, section]): Action[] => {
             if (!elm || !section || !elm.id || !section.id) {
@@ -299,7 +297,7 @@ export class LibraryEditEffects extends DamWidgetEffect {
         take(1),
         map(([libInfo, selected]) => {
           if (selected && selected.id === action.payload.id) {
-            this.router.navigate(['/' + 'datatype-library/' + libInfo.documentId] );
+            this.router.navigate(['/' + 'datatype-library/' + libInfo.documentId]);
           }
           return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Delete Success', null));
         }),
@@ -318,26 +316,26 @@ export class LibraryEditEffects extends DamWidgetEffect {
         combineLatest(
           this.libraryService.addResource(action.payload),
           this.store.select(selectLibrary).pipe(take(1))).pipe(
-          flatMap(([response, lib]) => {
-            return [
-              new fromDAM.TurnOffLoader(),
-              new LoadPayloadData({
-                ...lib,
-                datatypeRegistry: response.data.ig.datatypeRegistry,
-                valueSetRegistry: response.data.ig.valueSetRegistry,
-                content: lib.content,
-              }),
-              this.libraryService.insertRepositoryFromDisplayInfo(response.data, ['datatypes', 'valueSets']),
-              new AddResourceSuccess(response.data),
-            ];
-          }),
-          catchError((error: HttpErrorResponse) => {
-            return of(
-              new fromDAM.TurnOffLoader(),
-              new AddResourceFailure(error),
-            );
-          }),
-        );
+            flatMap(([response, lib]) => {
+              return [
+                new fromDAM.TurnOffLoader(),
+                new LoadPayloadData({
+                  ...lib,
+                  datatypeRegistry: response.data.ig.datatypeRegistry,
+                  valueSetRegistry: response.data.ig.valueSetRegistry,
+                  content: lib.content,
+                }),
+                this.libraryService.insertRepositoryFromDisplayInfo(response.data, ['datatypes', 'valueSets']),
+                new AddResourceSuccess(response.data),
+              ];
+            }),
+            catchError((error: HttpErrorResponse) => {
+              return of(
+                new fromDAM.TurnOffLoader(),
+                new AddResourceFailure(error),
+              );
+            }),
+          );
       return this.finalizeAdd(doAdd);
     }),
   );
@@ -352,20 +350,20 @@ export class LibraryEditEffects extends DamWidgetEffect {
         combineLatest(
           this.libraryService.copyResource(action.payload),
           this.store.select(selectLibrary).pipe(take(1))).pipe(
-          flatMap(([response, lib]) => {
-            return [
-              new fromDAM.TurnOffLoader(),
-              ...this.libraryService.insertRepositoryCopyResource(response.data.reg, response.data.display, lib),
-              new CopyResourceSuccess(response.data),
-            ];
-          }),
-          catchError((error: HttpErrorResponse) => {
-            return of(
-              new fromDAM.TurnOffLoader(),
-              new CopyResourceFailure(error),
-            );
-          }),
-        );
+            flatMap(([response, lib]) => {
+              return [
+                new fromDAM.TurnOffLoader(),
+                ...this.libraryService.insertRepositoryCopyResource(response.data.reg, response.data.display, lib),
+                new CopyResourceSuccess(response.data),
+              ];
+            }),
+            catchError((error: HttpErrorResponse) => {
+              return of(
+                new fromDAM.TurnOffLoader(),
+                new CopyResourceFailure(error),
+              );
+            }),
+          );
       return this.finalizeAdd(doAdd);
     }),
   );
@@ -380,8 +378,8 @@ export class LibraryEditEffects extends DamWidgetEffect {
         this.libraryService.deleteResource(action.payload.documentId, action.payload.element),
         this.store.select(selectSelectedResource),
         this.store.select(selectLibrary).pipe(take(1))).pipe(
-        take(1),
-        flatMap(([response, selected , lib]) => {
+          take(1),
+          flatMap(([response, selected, lib]) => {
             if (selected && selected.id === action.payload.element.id) {
               return [
                 new EditorReset(),
@@ -396,14 +394,14 @@ export class LibraryEditEffects extends DamWidgetEffect {
                 new DeleteResourceSuccess(action.payload.element),
               ];
             }
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return of(
-            new fromDAM.TurnOffLoader(),
-            new DeleteResourceFailure(error),
-          );
-        }),
-      );
+          }),
+          catchError((error: HttpErrorResponse) => {
+            return of(
+              new fromDAM.TurnOffLoader(),
+              new DeleteResourceFailure(error),
+            );
+          }),
+        );
     }),
   );
 
@@ -417,21 +415,21 @@ export class LibraryEditEffects extends DamWidgetEffect {
       return combineLatest(
         this.libraryService.deactivateElements(action.documentId, action.elements),
         this.store.select(selectLibrary).pipe(take(1))).pipe(
-        take(1),
-        flatMap(([response , lib]) => {
-          return [
-            new fromDAM.TurnOffLoader(),
-            this.message.messageToAction(new Message(MessageType.SUCCESS, 'Resource Deactivated ', null)),
-            new LibraryEditResolverLoad(lib.id),
-          ];
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return of(
-            new fromDAM.TurnOffLoader(),
-            new DeactivateElementsFailure(error),
-          );
-        }),
-      );
+          take(1),
+          flatMap(([response, lib]) => {
+            return [
+              new fromDAM.TurnOffLoader(),
+              this.message.messageToAction(new Message(MessageType.SUCCESS, 'Resource Deactivated ', null)),
+              new LibraryEditResolverLoad(lib.id),
+            ];
+          }),
+          catchError((error: HttpErrorResponse) => {
+            return of(
+              new fromDAM.TurnOffLoader(),
+              new DeactivateElementsFailure(error),
+            );
+          }),
+        );
     }),
   );
 
@@ -464,40 +462,40 @@ export class LibraryEditEffects extends DamWidgetEffect {
     return combineLatest(
       this.store.select(selectTableOfContentChanged),
       this.store.select(selectLibrary)).pipe(
-      take(1),
-      mergeMap(([changed, ig]) => {
-        if (changed) {
-          this.store.dispatch(new TableOfContentSave({
-            sections: ig.content,
-            id: ig.id,
-          }));
+        take(1),
+        mergeMap(([changed, ig]) => {
+          if (changed) {
+            this.store.dispatch(new TableOfContentSave({
+              sections: ig.content,
+              id: ig.id,
+            }));
 
-          return RxjsStoreHelperService.listenAndReact(this.actions$, {
-            [LibraryEditActionTypes.TableOfContentSaveSuccess]: {
-              do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
-                return toDoo;
+            return RxjsStoreHelperService.listenAndReact(this.actions$, {
+              [LibraryEditActionTypes.TableOfContentSaveSuccess]: {
+                do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
+                  return toDoo;
+                },
+                filter: (tocSaveSuccess: TableOfContentSaveSuccess) => {
+                  return tocSaveSuccess.igId === ig.id;
+                },
               },
-              filter: (tocSaveSuccess: TableOfContentSaveSuccess) => {
-                return tocSaveSuccess.igId === ig.id;
+              [LibraryEditActionTypes.TableOfContentSaveFailure]: {
+                do: (tocSaveFailure: TableOfContentSaveFailure) => {
+                  return of(
+                    new fromDAM.TurnOffLoader(),
+                    this.message.userMessageToAction(new UserMessage(MessageType.FAILED, 'Could not add resources due to failure to save table of content')),
+                  );
+                },
+                filter: (tocSaveSuccess: TableOfContentSaveFailure) => {
+                  return tocSaveSuccess.igId === ig.id;
+                },
               },
-            },
-            [LibraryEditActionTypes.TableOfContentSaveFailure]: {
-              do: (tocSaveFailure: TableOfContentSaveFailure) => {
-                return of(
-                  new fromDAM.TurnOffLoader(),
-                  this.message.userMessageToAction(new UserMessage(MessageType.FAILED, 'Could not add resources due to failure to save table of content')),
-                );
-              },
-              filter: (tocSaveSuccess: TableOfContentSaveFailure) => {
-                return tocSaveSuccess.igId === ig.id;
-              },
-            },
-          });
-        } else {
-          return toDoo;
-        }
-      }),
-    );
+            });
+          } else {
+            return toDoo;
+          }
+        }),
+      );
   }
 
   constructor(

@@ -168,7 +168,7 @@ public class CoConstraintDependencyServiceImpl implements CoConstraintDependency
           Datatype d = datatypeService.findById(dtCell.getDatatypeId());
           if(d != null ) {
             used.getDatatypes().put(dtCell.getDatatypeId(), d);
-            datatypeDependencyService.process(d, used, filter, new ResourceBindingProcessor(d.getBinding()), null);
+            datatypeDependencyService.process(d, used, filter, new ResourceBindingProcessor(d.getBinding()), null, new HashSet<>());
           }
         }
       }else if(cell instanceof VariesCell) {

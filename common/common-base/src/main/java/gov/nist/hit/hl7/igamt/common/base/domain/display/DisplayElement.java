@@ -38,6 +38,7 @@ public class DisplayElement {
   private String structureIdentifier;
   private ResourceOrigin resourceOrigin;
   private boolean derived;
+  private boolean generated;
 
   public DisplayElement() {
   }
@@ -241,5 +242,11 @@ public class DisplayElement {
     this.derived = derived;
   }
 
+  public boolean isGenerated() {
+    return generated;
+  }
 
+  public void setGenerated(boolean generated) {
+    this.generated = generated;
+  }
 }

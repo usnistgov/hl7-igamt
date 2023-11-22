@@ -57,7 +57,6 @@ export class UserProfileFormComponent implements OnInit {
     this.username.subscribe((uname) => {
       if (uname) {
         this.http.get<any>('api/user/' + uname).subscribe((o) => {
-          console.log(o);
           if (o) {
             this.userProfileForm.patchValue({
               username: uname,

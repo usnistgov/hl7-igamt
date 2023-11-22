@@ -9,9 +9,12 @@
 </div>
 
 <ng-template #verificationPill let-verification let-active="active" let-type="type" let-refresh="refresh">
-  <div (click)="openVerificationTab(type, verification.valid)" *ngIf="verification && (!verification.checked || verification.supported)" class="summary" [ngClass]="{ active : active === type, cursor: !verification.valid }">
+  <div (click)="openVerificationTab(type, !verification.valid || verification.failed)" *ngIf="verification && (!verification.checked || verification.supported)" class="summary" [ngClass]="{ active : active === type, cursor: !verification.valid }">
     <div style="margin-right: 10px;" *ngIf="verification.loading">
       <mat-spinner class="verification-progress" diameter="20" ></mat-spinner>
+    </div>
+    <div style="margin-right: 10px;" *ngIf="verification.failed">
+      <span class="badge badge-danger">FAILED</span>
     </div>
     <span style="margin-right: 20px;">{{ verification.title }}</span>
     <ng-container *ngTemplateOutlet="stats; context : {$implicit: verification.stats}" >

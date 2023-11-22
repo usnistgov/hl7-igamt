@@ -81,20 +81,21 @@
           <span class="badge badge-success" *ngIf="cs.payload?.type === 'FREE' && cs.payload?.assertionScript">script</span>
           <span class="badge badge-warning" *ngIf="cs.payload?.locked">derived</span>
         </td>
-        <td>{{ getDescription(cs.payload) }}</td>
+        <td>
+          <div style="width: 100%;">{{ getDescription(cs.payload) }}</div>
+          <div *ngIf="entries && entries[cs.payload.id]" style="border-top: 1px solid lightgray; padding: 5px; margin-top: 5px;">
+            <div *ngFor="let error of entries[cs.payload.id]">
+              <span style="color: red;">
+                <app-issue-badge [type]="error.severity"></app-issue-badge> {{error.message}}
+              </span>
+            </div>
+          </div>
+        </td>
         <ng-container *ngIf="tmpl && !(viewOnly$ | async)">
           <ng-container *ngTemplateOutlet="tmpl; context: { $implicit: cs, index: i }"></ng-container>
         </ng-container>
       </tr>
-      <ng-container *ngIf="entries && entries[cs.payload.id]">
-        <tr *ngFor="let error of entries[cs.payload.id]">
-          <td colspan="3">
-            <span style="color: red;">
-              <app-issue-badge [type]="error.severity"></app-issue-badge> {{error.message}}
-            </span>
-          </td>
-        </tr>
-      </ng-container>
+
     </ng-container>
   </table>
 </ng-template>

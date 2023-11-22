@@ -170,6 +170,24 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
             verificationTime: new Date(),
             entries: action.payload.entries,
             loading: false,
+            failed: false,
+            failure: undefined,
+          },
+        },
+      };
+
+    case DamActionTypes.EditorVerificationFailure:
+      return {
+        ...state,
+        workspace: {
+          ...state.workspace,
+          verification: {
+            ...state.workspace.verification,
+            supported: true,
+            verificationTime: new Date(),
+            loading: false,
+            failed: true,
+            failure: action.payload.message,
           },
         },
       };

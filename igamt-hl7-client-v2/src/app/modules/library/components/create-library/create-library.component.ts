@@ -1,17 +1,17 @@
-import {Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
-import {getHl7Versions} from '../../../../root-store/config/config.reducer';
-import {CreateLibrary} from '../../../../root-store/create-library/create-library.actions';
-import {LoadResource} from '../../../../root-store/resource-loader/resource-loader.actions';
-import {getData} from '../../../../root-store/resource-loader/resource-loader.reducer';
-import {selectIsAdmin} from '../../../dam-framework/store/authentication';
-import {IDocumentCreationWrapper} from '../../../document/models/document/document-creation.interface';
-import {Scope} from '../../../shared/constants/scope.enum';
-import {Type} from '../../../shared/constants/type.enum';
-import {IAddingInfo} from '../../../shared/models/adding-info';
-import {IResource} from '../../../shared/models/resource.interface';
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { getHl7Versions } from '../../../../root-store/config/config.reducer';
+import { CreateLibrary } from '../../../../root-store/create-library/create-library.actions';
+import { LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
+import { getData } from '../../../../root-store/resource-loader/resource-loader.reducer';
+import { selectIsAdmin } from '../../../dam-framework/store/authentication';
+import { IDocumentCreationWrapper } from '../../../document/models/document/document-creation.interface';
+import { Scope } from '../../../shared/constants/scope.enum';
+import { Type } from '../../../shared/constants/type.enum';
+import { IAddingInfo } from '../../../shared/models/adding-info';
+import { IResource } from '../../../shared/models/resource.interface';
 @Component({
   selector: 'app-create-library',
   templateUrl: './create-library.component.html',
@@ -50,7 +50,6 @@ export class CreateLibraryComponent implements OnInit {
   }
 
   updateAdded($event: IAddingInfo[]) {
-    console.log($event);
     this.selected = $event;
   }
 }

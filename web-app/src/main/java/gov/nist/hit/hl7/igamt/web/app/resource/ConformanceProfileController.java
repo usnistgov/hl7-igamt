@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.access.active.NotifySave;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfi
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.CPVerificationResult;
-import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
+import gov.nist.hit.hl7.igamt.service.verification.VerificationService;
 import gov.nist.hit.hl7.igamt.web.app.service.DateUpdateService;
 
 @RestController
@@ -147,11 +148,10 @@ public class ConformanceProfileController extends BaseController {
 	@RequestMapping(value = "/api/conformanceprofiles/{ig}/verification", method = RequestMethod.GET, produces = {
 			"application/json" })
 	@PreAuthorize("AccessResource('CONFORMANCEPROFILE', #id, READ)")
-	public @ResponseBody CPVerificationResult verifyById(@PathVariable("id") String id, Authentication authentication) {
+	public @ResponseBody List<IgamtObjectError> verifyById(@PathVariable("id") String id, Authentication authentication) {
 		ConformanceProfile cp = this.conformanceProfileService.findById(id);
 		if (cp != null) {
-			CPVerificationResult report = this.verificationService.verifyConformanceProfile(cp);
-			return report;
+			return this.verificationService.verifyConformanceProfile(cp);
 		}
 		return null;
 	}

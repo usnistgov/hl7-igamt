@@ -1,3 +1,14 @@
+:host {
+  display: contents;
+}
+
+.table-container {
+  display: grid;
+  grid-template-rows: 40px 1fr;
+  overflow: hidden;
+  height: 100%;
+}
+
 .severity-filter {
   display: flex;
   align-items: center;
@@ -7,4 +18,12 @@
   border: 1px solid darkgray;
   background-color: #efefef;
   margin-right: 5px;
+}
+
+.no-target-th {
+  padding: 0;
+}
+
+.no-target-tbody {
+  border-top: 5px solid lightgray;
 }

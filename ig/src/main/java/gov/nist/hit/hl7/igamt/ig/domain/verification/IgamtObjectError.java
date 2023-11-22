@@ -12,6 +12,7 @@
 package gov.nist.hit.hl7.igamt.ig.domain.verification;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
 
 /**
  * @author jungyubw
@@ -26,6 +27,7 @@ public class IgamtObjectError {
   private String handleBy;
   private String severity;
   private Location locationInfo;
+  private ResourceRef subTarget;
   
   public IgamtObjectError(){
     super();
@@ -105,5 +107,13 @@ public class IgamtObjectError {
 
   public void setLocationInfo(Location locationInfo) {
     this.locationInfo = locationInfo;
+  }
+
+  public ResourceRef getSubTarget() {
+    return subTarget;
+  }
+
+  public void setSubTarget(ResourceRef subTarget) {
+    this.subTarget = subTarget;
   }
 }

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
@@ -109,7 +109,7 @@ export class MetadataEditorComponent extends AbstractEditorComponent implements 
 
   initFormGroup() {
     this.formGroup = this.formBuilder.group({
-      name: [''],
+      name: ['', Validators.required],
       description: [''],
       displayName: [''],
       hl7Version: [''],

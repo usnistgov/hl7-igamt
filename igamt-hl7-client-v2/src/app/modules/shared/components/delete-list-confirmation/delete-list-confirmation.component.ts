@@ -13,8 +13,8 @@ export class DeleteListConfirmationComponent implements OnInit {
     public dialogRef: MatDialogRef<DeleteListConfirmationComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
-    console.log(data);
   }
+
   ngOnInit() {
   }
 

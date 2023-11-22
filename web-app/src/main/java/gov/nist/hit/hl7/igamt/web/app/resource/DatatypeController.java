@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.access.active.NotifySave;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.DTSegVerificationResult;
-import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
+import gov.nist.hit.hl7.igamt.service.verification.VerificationService;
 import gov.nist.hit.hl7.igamt.web.app.service.DateUpdateService;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 
@@ -170,12 +171,10 @@ public class DatatypeController extends BaseController {
 	@RequestMapping(value = "/api/datatypes/{id}/verification", method = RequestMethod.GET, produces = {
 			"application/json" })
 	@PreAuthorize("AccessResource('DATATYPE', #id, READ)")
-	public @ResponseBody DTSegVerificationResult verifyById(@PathVariable("id") String id,
-			Authentication authentication) {
+	public @ResponseBody List<IgamtObjectError> verifyById(@PathVariable("id") String id, Authentication authentication) {
 		Datatype dt = this.datatypeService.findById(id);
 		if (dt != null) {
-			DTSegVerificationResult report = this.verificationService.verifyDatatype(dt);
-			return report;
+			return this.verificationService.verifyDatatype(dt);
 		}
 		return null;
 	}

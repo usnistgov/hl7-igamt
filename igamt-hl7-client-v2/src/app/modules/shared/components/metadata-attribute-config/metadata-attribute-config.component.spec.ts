@@ -8,7 +8,7 @@ describe('MetadataAttributeConfigComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MetadataAttributeConfigComponent ]
+      declarations: [ MetadataAttributeConfigComponent ],
     })
     .compileComponents();
   }));

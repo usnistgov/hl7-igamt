@@ -19,11 +19,10 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.Location;
-import gov.nist.hit.hl7.igamt.ig.model.CoConstraintMappingLocation;
-import gov.nist.hit.hl7.igamt.ig.model.CoConstraintOBX3MappingValue;
-import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
-import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
+import gov.nist.hit.hl7.igamt.ig.model.*;
 import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.ResourceSkeletonService;
 import gov.nist.hit.hl7.igamt.service.impl.exception.AmbiguousOBX3MappingException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
@@ -54,6 +53,39 @@ public class CoConstraintVerificationService extends VerificationUtils {
 
     @Autowired
     CoConstraintSerializationHelper coConstraintSerializationHelper;
+
+    @Autowired
+    SegmentService segmentService;
+
+    public List<IgamtObjectError> verifyCoConstraintGroup(CoConstraintGroup coConstraintGroup) {
+        Segment baseSegment = this.segmentService.findById(coConstraintGroup.getBaseSegment());
+        List<IgamtObjectError> issues = new ArrayList<>();
+        if(baseSegment == null) {
+            // Base Segment does not exist
+        } else {
+            ResourceSkeleton segment = new ResourceSkeleton(
+                    new ResourceRef(
+                            Type.SEGMENT,
+                            baseSegment.getId()
+                    ),
+                    this.resourceSkeletonService
+            );
+            TargetLocation selectorHeadersLocation = TargetLocation.makeHeadersLocationFromCoConstraintGroup("selectors", "IF Columns");
+            TargetLocation constraintHeadersLocation = TargetLocation.makeHeadersLocationFromCoConstraintGroup( "constraints", "THEN Columns");
+            Map<String, List<IgamtObjectError>> selectors = checkCoConstraintHeaders(segment, selectorHeadersLocation, coConstraintGroup.getHeaders().getSelectors());
+            Map<String, List<IgamtObjectError>> constraints = checkCoConstraintHeaders(segment, constraintHeadersLocation, coConstraintGroup.getHeaders().getConstraints());
+            selectors.values().forEach(issues::addAll);
+            constraints.values().forEach(issues::addAll);
+            List<DataHeaderElementVerified> valid = Stream.concat(
+                    verifyHeaders(coConstraintGroup.getHeaders().getSelectors(), segment, true, selectors, constraints).stream(),
+                    verifyHeaders(coConstraintGroup.getHeaders().getConstraints(), segment, false, selectors, constraints).stream()
+            ).collect(Collectors.toList());
+
+            // Validate Co-Constraints
+            issues.addAll(checkCoConstraints(segment, new TargetLocation(), coConstraintGroup.getCoConstraints(), valid, false));
+        }
+        return issues;
+    }
 
     public List<IgamtObjectError> checkCoConstraintBindingsOBX3Mapping(ConformanceProfile profile) {
         List<IgamtObjectError> errors = new ArrayList<>();
@@ -919,11 +951,17 @@ public class CoConstraintVerificationService extends VerificationUtils {
         String name;
 
         static String concatPath(String pre, String value) {
-            return pre + ">" + value;
+            if(!Strings.isNullOrEmpty(pre)) {
+                return pre + ">" + value;
+            }
+            return value;
         }
 
         static String concatName(String pre, String value) {
-            return pre + " - " + value;
+            if(!Strings.isNullOrEmpty(pre)) {
+                return pre + " - " + value;
+            }
+            return value;
         }
 
         static TargetLocation makeContextLocation(String pathId, String name) {
@@ -965,6 +1003,13 @@ public class CoConstraintVerificationService extends VerificationUtils {
             TargetLocation location = new TargetLocation();
             location.name = concatName(tableLocation.name, headers);
             location.pathId = concatPath(tableLocation.pathId, headersKey);
+            return location;
+        }
+
+        static TargetLocation makeHeadersLocationFromCoConstraintGroup(String headersKey, String headers) {
+            TargetLocation location = new TargetLocation();
+            location.name = headers;
+            location.pathId = headersKey;
             return location;
         }
 

@@ -1,10 +1,10 @@
-import {HttpErrorResponse} from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
-import {Store} from '@ngrx/store';
-import {BehaviorSubject, Observable, of, Subject, throwError} from 'rxjs';
-import {catchError, filter, map, take} from 'rxjs/operators';
-import {TurnOffLoader, TurnOnLoader} from '../../../dam-framework/store/loader';
+import { Store } from '@ngrx/store';
+import { BehaviorSubject, Observable, of, Subject, throwError } from 'rxjs';
+import { catchError, filter, map, take } from 'rxjs/operators';
+import { TurnOffLoader, TurnOnLoader } from '../../../dam-framework/store/loader';
 import { IgService } from '../../../ig/services/ig.service';
 import { LibraryService } from '../../../library/services/library.service';
 import { Type } from '../../../shared/constants/type.enum';
@@ -43,15 +43,14 @@ export class ExportDialogComponent implements OnInit {
     this.type = data.type;
     this.configlist = data.configurations;
     this.delta = data.delta;
-    console.log('selected config : ', this.selectedConfig);
-    this.selectedConfig = this.configlist.find( (x) => {
-        return x.defaultConfig;
-      },
+    this.selectedConfig = this.configlist.find((x) => {
+      return x.defaultConfig;
+    },
     );
     if (!this.selectedConfig) {
-      this.selectedConfig = this.configlist.find( (x) => {
-          return x.original;
-        },
+      this.selectedConfig = this.configlist.find((x) => {
+        return x.original;
+      },
       );
     }
   }
@@ -60,18 +59,16 @@ export class ExportDialogComponent implements OnInit {
     if (this.type && this.type === Type.DATATYPELIBRARY) {
       return this.libraryService.getExportFirstDecision(this.igId, this.selectedConfig.id);
     } else {
-        return this.igService.getExportFirstDecision(this.igId, this.selectedConfig.id);
-      }
-}
+      return this.igService.getExportFirstDecision(this.igId, this.selectedConfig.id);
+    }
+  }
 
   customize() {
-    this.store.dispatch(new TurnOnLoader({blockUI: true}));
+    this.store.dispatch(new TurnOnLoader({ blockUI: true }));
 
     this.getFiltredDocumentByType(this.type).pipe(
       take(1),
       map((decision) => {
-        console.log('decision : ' , decision);
-        console.log('selectedConfig : ' + this.selectedConfig.configName);
         this.store.dispatch(new TurnOffLoader());
 
         const tocDialog = this.dialog.open(ExportConfigurationDialogComponent, {
@@ -99,7 +96,7 @@ export class ExportDialogComponent implements OnInit {
         });
       }),
       catchError((error: HttpErrorResponse) => {
-        this.store.dispatch(new TurnOffLoader() );
+        this.store.dispatch(new TurnOffLoader());
         return of(error);
       }),
     ).subscribe();

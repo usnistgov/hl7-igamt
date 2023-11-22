@@ -9,18 +9,40 @@ import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.Location;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
+import gov.nist.hit.hl7.v2.schemas.utils.HL7v2SchemaResourceResolver;
 import org.springframework.stereotype.Service;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
 public class AssertionVerificationService extends VerificationUtils {
-
     private final Set<String> TEMPORAL_DT = new HashSet<>(Arrays.asList("DT", "DTM", "TM"));
     private final Set<String> NUMERICAL_DT = new HashSet<>(Arrays.asList("NM", "SI"));
     private final Set<String> OCCURRENCE_TYPES = new HashSet<>(Arrays.asList("atLeast", "instance", "exactlyOne", "count", "all"));
+    private final Schema assertionSchema;
+    static final Predicate<String> valueListPattern = Pattern.compile("^[0-9a-zA-Z\\-_.\\\\]+( +[0-9a-zA-Z\\-_.\\\\]+)*$").asPredicate();
+    static final Predicate<String> valuePattern = Pattern.compile("^[\\s]*[\\S].*$").asPredicate();
+
+    public AssertionVerificationService() throws SAXException {
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        factory.setResourceResolver(new HL7v2SchemaResourceResolver());
+        assertionSchema = factory.newSchema(new StreamSource(AssertionVerificationService.class.getResourceAsStream("/freeTextAssertion.xsd")));
+    }
 
     public List<IgamtObjectError> checkAssertion(ResourceSkeleton skeleton, Location location, Assertion assertion) {
         switch (assertion.getMode()) {
@@ -36,6 +58,67 @@ public class AssertionVerificationService extends VerificationUtils {
                 return this.checkSubContextAssertion(skeleton, location, (SubContextAssertion) assertion);
         }
         return null;
+    }
+
+    public List<IgamtObjectError> checkFreeText(ResourceSkeleton skeleton, Location location, String assertion) throws IOException, SAXException {
+        if(assertion == null || assertion.isEmpty()) {
+            return Arrays.asList(
+                    this.entry.FreeTextAssertionScriptMissing(
+                            location,
+                            skeleton.getResource().getId(),
+                            skeleton.getResource().getType()
+                    )
+            );
+        } else {
+            return checkFreeTextXML(skeleton, location, assertion);
+        }
+    }
+
+    public List<IgamtObjectError> checkFreeTextXML(ResourceSkeleton skeleton, Location location, String xml) throws IOException, SAXException {
+        Validator validator = this.assertionSchema.newValidator();
+        List<IgamtObjectError> entries = new ArrayList<>();
+        List<SAXParseException> xmlValidationErrors = new ArrayList<>();
+        validator.setErrorHandler(new ErrorHandler() {
+            @Override
+            public void warning(SAXParseException exception) {
+                xmlValidationErrors.add(exception);
+            }
+            @Override
+            public void error(SAXParseException exception) {
+                xmlValidationErrors.add(exception);
+            }
+            @Override
+            public void fatalError(SAXParseException exception) {
+                xmlValidationErrors.add(exception);
+            }
+        });
+        IgamtObjectError throughException = null;
+        try {
+            validator.validate(new StreamSource(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))));
+        } catch (SAXParseException exception) {
+            throughException = this.entry.FreeTextAssertionXMLInvalid(
+                    location,
+                    skeleton.getResource().getId(),
+                    skeleton.getResource().getType(),
+                    exception.getMessage()
+            );
+        }
+
+        // Add all xml validation errors except duplicates that are caught through try/catch above
+        IgamtObjectError finalThroughException = throughException;
+        xmlValidationErrors.stream()
+                .map((error) -> this.entry.FreeTextAssertionXMLInvalid(
+                    location,
+                    skeleton.getResource().getId(),
+                    skeleton.getResource().getType(),
+                    error.getMessage())
+                )
+                .filter((entry) -> finalThroughException == null || !finalThroughException.getDescription().equals(entry.getDescription()))
+                .forEach(entries::add);
+        if(throughException != null) {
+            entries.add(throughException);
+        }
+        return entries;
     }
 
     public List<IgamtObjectError> checkIfThenAssertion(ResourceSkeleton skeleton, Location location, IfThenAssertion assertion) {
@@ -316,14 +399,29 @@ public class AssertionVerificationService extends VerificationUtils {
             boolean empty = assertion.getComplement().getValues() == null || assertion.getComplement().getValues().length == 0;
             // Declaration Type Requires Value List and Value List is empty
             if(key.isValue()) {
-                boolean emptyOrContainsEmpty = empty || Arrays.stream(assertion.getComplement().getValues()).anyMatch(Strings::isNullOrEmpty);
-                if(emptyOrContainsEmpty) {
+                if(empty) {
                     issues.add(this.entry.AssertionValueMissing(
                             location,
                             subject.getResource().getId(),
                             subject.getResource().getType(),
                             true
                     ));
+                } else {
+                    Set<String> invalidValues = Arrays
+                            .stream(assertion.getComplement().getValuesRaw())
+                            .filter((value) -> Strings.isNullOrEmpty(value) || !valueListPattern.test(value))
+                            .map((value) -> value == null ? "" : value)
+                            .collect(Collectors.toSet());
+                    if(invalidValues.size() > 0) {
+                        issues.add(this.entry.AssertionValueInvalid(
+                                location,
+                                subject.getResource().getId(),
+                                subject.getResource().getType(),
+                                "['"+ String.join("', '", invalidValues) + "']",
+                                "The only allowed characters are:  numbers, letters, - (dash), _ (underscore), . (period), \\ (backslash) and spaces. The value shall not start or end with a space.",
+                                true
+                        ));
+                    }
                 }
             }
 
@@ -350,13 +448,24 @@ public class AssertionVerificationService extends VerificationUtils {
         } else {
 
             // Declaration Type Requires Value but its missing
-            if(key.isValue() && Strings.isNullOrEmpty(assertion.getComplement().getValue())) {
-                issues.add(this.entry.AssertionValueMissing(
-                        location,
-                        subject.getResource().getId(),
-                        subject.getResource().getType(),
-                        false
-                ));
+            if(key.isValue()) {
+                if(Strings.isNullOrEmpty(assertion.getComplement().getValue())) {
+                    issues.add(this.entry.AssertionValueMissing(
+                            location,
+                            subject.getResource().getId(),
+                            subject.getResource().getType(),
+                            false
+                    ));
+                } else if(!valuePattern.test(assertion.getComplement().getValue())) {
+                    issues.add(this.entry.AssertionValueInvalid(
+                            location,
+                            subject.getResource().getId(),
+                            subject.getResource().getType(),
+                            assertion.getComplement().getValue(),
+                            "The value shall not be whitespace.",
+                            false
+                    ));
+                }
             }
 
             // Declaration Type Requires Description but its missing

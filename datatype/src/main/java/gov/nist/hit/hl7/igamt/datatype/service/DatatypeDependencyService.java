@@ -12,6 +12,7 @@
 package gov.nist.hit.hl7.igamt.datatype.service;
 
 import java.util.Map;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.binding.service.ResourceBindingProcessor;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
@@ -35,9 +36,9 @@ public interface DatatypeDependencyService extends DependencyService<Datatype, D
    * @throws EntityNotFound 
    */
   void process(Datatype d, DatatypeDependencies used, DependencyFilter filter,
-      ResourceBindingProcessor rb, String string) throws EntityNotFound;
+      ResourceBindingProcessor rb, String string, Set<String> visited) throws EntityNotFound;
 
   void visit(String id, Map<String, Datatype> existing, DatatypeDependencies used,
-      DependencyFilter filter, ResourceBindingProcessor rb, String path) throws EntityNotFound;
+      DependencyFilter filter, ResourceBindingProcessor rb, String path, Set<String> visited) throws EntityNotFound;
    
 }

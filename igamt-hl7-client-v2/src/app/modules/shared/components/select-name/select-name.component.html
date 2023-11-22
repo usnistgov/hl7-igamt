@@ -1,5 +1,5 @@
 <form #namingForm='ngForm'>
-  <div *ngIf="namingForm.dirty && namingForm.controls['variableName'] && namingForm.controls['variableName'].errors" class="alert alert-danger" style="margin-top: 5px;">
+  <div *ngIf="namingForm.dirty && namingForm.controls['variableName'] && namingForm.controls['variableName'].errors" class="alert alert-danger" style="margin-top: 5px; max-width: 400px;">
     <div *ngIf="namingForm.controls['variableName'].errors.required">
       <span> {{getVariableNameLabel()}} is required</span>
     </div>

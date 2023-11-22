@@ -5,12 +5,12 @@ import { Action } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { Scope } from 'src/app/modules/shared/constants/scope.enum';
-import {TableOfContentSave} from '../../../root-store/library/library-edit/library-edit.actions';
+import { TableOfContentSave } from '../../../root-store/library/library-edit/library-edit.actions';
 import { Message } from '../../dam-framework/models/messages/message.class';
-import {IDocumentCreationWrapper} from '../../document/models/document/document-creation.interface';
-import {IDocument} from '../../document/models/document/IDocument.interface';
-import {IAddNodes, ICopyNode, ICopyResourceResponse} from '../../document/models/toc/toc-operation.class';
-import {IDocumentDisplayInfo} from '../../ig/models/ig/ig-document.class';
+import { IDocumentCreationWrapper } from '../../document/models/document/document-creation.interface';
+import { IDocument } from '../../document/models/document/IDocument.interface';
+import { IAddNodes, ICopyNode, ICopyResourceResponse } from '../../document/models/toc/toc-operation.class';
+import { IDocumentDisplayInfo } from '../../ig/models/ig/ig-document.class';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { CloneModeEnum } from '../../shared/constants/clone-mode.enum';
 import { Type } from '../../shared/constants/type.enum';
@@ -23,7 +23,7 @@ import {
   IPublicationResult,
   IPublicationSummary,
 } from '../components/publish-library-dialog/publish-library-dialog.component';
-import {ILibrary} from '../models/library.class';
+import { ILibrary } from '../models/library.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
 import { IgTOCNodeHelper } from './library-toc-node-helper.service';
 
@@ -175,7 +175,6 @@ export class LibraryService {
   }
 
   getDisplayInfo(id: string): Observable<IDocumentDisplayInfo<ILibrary>> {
-    console.log(this.LIBRARY_END_POINT + id + '/state');
     return this.http.get<IDocumentDisplayInfo<ILibrary>>(this.LIBRARY_END_POINT + id + '/state');
   }
 
@@ -308,14 +307,14 @@ export class LibraryService {
   }
 
   getLastUserConfiguration = (libId: string): Observable<IExportConfigurationGlobal> => {
-    return this.http.get<IExportConfigurationGlobal>(this.EXPORT_URL + libId +   '/getLastUserConfiguration');
+    return this.http.get<IExportConfigurationGlobal>(this.EXPORT_URL + libId + '/getLastUserConfiguration');
   }
   getDisplay(id: string, delta: boolean) {
-      return this.getDisplayInfo(id);
+    return this.getDisplayInfo(id);
   }
 
   deactivateElements(documentId: string, elements: string[]): Observable<Message<any>> {
-    return this.http.post<Message<string>>(this.LIBRARY_END_POINT + documentId + '/deactivate-children' ,  elements);
+    return this.http.post<Message<string>>(this.LIBRARY_END_POINT + documentId + '/deactivate-children', elements);
   }
 
   getPublishedLibraries() {

@@ -1,18 +1,8 @@
 package gov.nist.hit.hl7.igamt.web.app.ig;
-
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,11 +13,12 @@ import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
 import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
 import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
 import gov.nist.hit.hl7.igamt.display.model.*;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.IgVerificationIssuesList;
+import gov.nist.hit.hl7.igamt.ig.model.*;
 import gov.nist.hit.hl7.igamt.web.app.model.IgSubSet;
 import gov.nist.hit.hl7.igamt.web.app.service.LegacyIgSubSetService;
 import gov.nist.hit.hl7.igamt.web.app.service.impl.EntityBrowserService;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceDocumentManagementService;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,7 +36,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.UpdateResult;
-import com.opencsv.CSVReader;
 
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.impl.SimpleCoConstraintService;
@@ -61,7 +51,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
-import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
@@ -134,14 +123,6 @@ import gov.nist.hit.hl7.igamt.ig.exceptions.ImportValueSetException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.PredicateNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.SectionNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.XReferenceFoundException;
-import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
-import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
-import gov.nist.hit.hl7.igamt.ig.model.CoConstraintMappingLocation;
-import gov.nist.hit.hl7.igamt.ig.model.CoConstraintOBX3MappingValue;
-import gov.nist.hit.hl7.igamt.ig.model.FilterIGInput;
-import gov.nist.hit.hl7.igamt.ig.model.FilterResponse;
-import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
-import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
 import gov.nist.hit.hl7.igamt.ig.repository.IgTemplateRepository;
 import gov.nist.hit.hl7.igamt.ig.service.AddService;
 import gov.nist.hit.hl7.igamt.ig.service.CloneService;
@@ -151,7 +132,7 @@ import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.ResourceManagementService;
 import gov.nist.hit.hl7.igamt.ig.service.SharingService;
-import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
+import gov.nist.hit.hl7.igamt.service.verification.VerificationService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
@@ -164,12 +145,7 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.XMLSerializeServiceImpl;
 import gov.nist.hit.hl7.igamt.service.impl.exception.AmbiguousOBX3MappingException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
-import gov.nist.hit.hl7.igamt.valueset.domain.Code;
-import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
@@ -1397,8 +1373,7 @@ public class IGDocumentController extends BaseController {
 		return ig;
 	}
 
-	@RequestMapping(value = "/api/igdocuments/{id}/valuesets/uploadCSVFile",
-			method = RequestMethod.POST)
+	@RequestMapping(value = "/api/igdocuments/{id}/valuesets/uploadCSVFile", method = RequestMethod.POST)
 	@NotifySave(id = "#id", type = "'IGDOCUMENT'")
 	@PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
 	public ResponseMessage<AddResourceResponse> addValuesetFromCSV(@PathVariable("id") String id,
@@ -1430,21 +1405,18 @@ public class IGDocumentController extends BaseController {
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		ReqId reqIds = mapper.readValue(formData.getJson(), ReqId.class);
 		Ig ig = findIgById(id);
-		if (ig != null)  {
-			IgSubSet igSubSet = this.legacyIgSubSetService.makeIgSubSet(ig, reqIds);
-			IgDataModel igModel = this.igService.generateDataModel(igSubSet.getSubSet());
-			InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
-			for(String token: igSubSet.getInMemoryDataTokens()) {
-				this.inMemoryDomainExtensionService.clear(token);
-			}
-			response.setContentType("application/zip");
-			response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
-			FileCopyUtils.copy(content, response.getOutputStream());
+		IgSubSet igSubSet = this.legacyIgSubSetService.makeIgSubSet(ig, reqIds);
+		IgDataModel igModel = this.igService.generateDataModel(igSubSet.getSubSet());
+		InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
+		for(String token: igSubSet.getInMemoryDataTokens()) {
+			this.inMemoryDomainExtensionService.clear(token);
 		}
+		response.setContentType("application/zip");
+		response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
+		FileCopyUtils.copy(content, response.getOutputStream());
 	}
 
-	@RequestMapping(value = "/api/igdocuments/{ig}/predicate/{id}", method = RequestMethod.GET,
-			produces = {"application/json"})
+	@RequestMapping(value = "/api/igdocuments/{ig}/predicate/{id}", method = RequestMethod.GET, produces = {"application/json"})
 	public @ResponseBody
 	Predicate getPredicate(@PathVariable("ig") String ig, @PathVariable("id") String id, Authentication authentication) throws IGNotFoundException, PredicateNotFoundException {
 		Ig igdocument = findIgById(ig);
@@ -1459,27 +1431,10 @@ public class IGDocumentController extends BaseController {
 
 	@RequestMapping(value = "/api/igdocuments/{igid}/verification", method = RequestMethod.GET, produces = {"application/json"})
 	@PreAuthorize("AccessResource('IGDOCUMENT', #igid, READ)")
-	public @ResponseBody VerificationReport verificationIGById(@PathVariable("igid") String igid, Authentication authentication) {
+	public @ResponseBody IgVerificationIssuesList verificationIGById(@PathVariable("igid") String igid, Authentication authentication) {
 		Ig ig = this.igService.findById(igid);
-		Map<String, String> map = new HashMap<>();
-		Set<String> tokens = new HashSet<>();
 		if (ig != null) {
-			for(Link l : ig.getCompositeProfileRegistry().getChildren()) {
-
-				if(l != null) {
-					CompositeProfileState cps = this.legacyIgSubSetService.eval(l.getId());
-					Link newLink = new Link(cps.getConformanceProfile().getResource());
-					map.put(newLink.getId(), l.getId());
-					ig.getConformanceProfileRegistry().getChildren().add(newLink);
-					tokens.add(cps.getToken());
-				}
-			}
-
-			VerificationReport report =  this.verificationService.verifyIg(ig,map);
-			for(String token: tokens) {
-				this.inMemoryDomainExtensionService.clear(token);
-			}
-			return report;
+			return this.verificationService.verifyIg(ig);
 		}
 		return null;
 	}
@@ -1513,16 +1468,20 @@ public class IGDocumentController extends BaseController {
 
 	@RequestMapping(value = "/api/igdocuments/{igid}/preverification", method = RequestMethod.POST, produces = { "application/json" })
 	@PreAuthorize("AccessResource('IGDOCUMENT', #igid, READ)")
-	public @ResponseBody VerificationReport preVerification(@PathVariable("igid") String igid, @RequestBody ReqId reqIds, Authentication authentication) throws Exception {
-		System.out.println(reqIds);  
+	public @ResponseBody IgVerificationIssuesList preVerification(@PathVariable("igid") String igid, @RequestBody ReqId reqIds) throws EntityNotFound {
 		Ig ig = this.igService.findById(igid);
+		Set<String> selectedConformanceProfileIds = new HashSet<>(reqIds.getConformanceProfilesId() != null ? Arrays.asList(reqIds.getConformanceProfilesId()) : new ArrayList<>());
+		Set<String> selectedCompositeProfileIds = new HashSet<>(reqIds.getCompositeProfilesId() != null ? Arrays.asList(reqIds.getCompositeProfilesId()) : new ArrayList<>());
 		if (ig != null)  {
-			IgSubSet igSubSet = this.legacyIgSubSetService.makeIgSubSet(ig, reqIds);
-			VerificationReport report = this.verificationService.verifyIg(igSubSet.getSubSet());
-			for(String token: igSubSet.getInMemoryDataTokens()) {
-				this.inMemoryDomainExtensionService.clear(token);
-			}
-			return report;
+			IgProfileResourceSubSet subSet = this.igService.getIgProfileResourceSubSet(ig, selectedConformanceProfileIds, selectedCompositeProfileIds);
+			return this.verificationService.verify(
+					subSet.getCompositeProfiles(),
+					subSet.getConformanceProfiles(),
+					subSet.getSegments(),
+					subSet.getDatatypes(),
+					subSet.getValuesets(),
+					null
+			);
 		}
 		return null;
 	}

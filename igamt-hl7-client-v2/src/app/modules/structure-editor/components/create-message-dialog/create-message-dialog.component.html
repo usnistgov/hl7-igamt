@@ -42,7 +42,13 @@
           <th> Action </th>
         </tr>
         <tr *ngFor="let item of events; let i = index;"  [formGroupName]="i">
-          <td> {{ item.controls.name.value }} </td>
+          <td> 
+            {{ item.controls.name.value }} 
+            <ng-container *ngIf="item.controls.name.errors" >
+              <br>
+              <span class="input-form-invalid-feedback">{{getErrorText('event name', item.controls.name)}}</span>
+            </ng-container>
+          </td>
           <td> {{ item.controls.description.value }} </td>
           <td>
             <button class="btn btn-sm btn-danger" (click)="deleteEvent(i)" >
