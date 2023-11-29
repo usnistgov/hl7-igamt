@@ -86,6 +86,7 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
       {label: 'RE', value: 'RE'},
       {label: 'O', value: 'O'},
       {label: 'X', value: 'X'},
+      {label: 'IX', value: 'IX'}
     ];
   }
 
