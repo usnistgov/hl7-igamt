@@ -151,7 +151,7 @@ public class AuthenticationController {
 
   @RequestMapping(value = "api/password/reset", method = RequestMethod.POST)
   @ResponseBody
-  public ConnectionResponseMessage<PasswordResetTokenResponse> resetPaswordRequest(
+  public ConnectionResponseMessage<String> resetPaswordRequest(
       HttpServletRequest req, HttpServletResponse res, @RequestBody String username)
       throws AuthenticationException {
     try {
@@ -162,7 +162,12 @@ public class AuthenticationController {
         PasswordResetTokenResponse responseData = (PasswordResetTokenResponse) (response.getData());
         emailService.sendResetTokenUrl(responseData.getFullName(), responseData.getUsername(),
             responseData.getEmail(), getUrl(req, responseData.getToken()));
-        return response;
+        
+   
+        ConnectionResponseMessage ret =  new ConnectionResponseMessage<String>();
+        ret.setStatus(Status.SUCCESS);
+        ret.setData("An email has been sent to the address provided" );
+        return ret;
       } else {
         throw new AuthenticationException("Invalid Data format");
       }
