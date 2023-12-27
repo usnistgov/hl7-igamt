@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import gov.nist.diff.domain.DeltaAction;
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.GeneratedResourceMetadata;
 import gov.nist.hit.hl7.igamt.delta.domain.ConformanceStatementDelta;
@@ -20,13 +21,6 @@ import gov.nist.hit.hl7.igamt.service.impl.ResourceSkeletonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.ActiveStatus;
-import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructureDataModel;
-import gov.nist.hit.hl7.igamt.common.base.domain.GenerationDirective;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
@@ -222,6 +216,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
           .addAttribute(new Attribute("id", component.getId() != null ? component.getId() : ""));
           componentElement.addAttribute(
               new Attribute("name", component.getName() != null ? component.getName() : ""));
+          componentElement.addAttribute(new Attribute("lengthType", component.getLengthType().getValue()));
           componentElement.addAttribute(new Attribute("maxLength",
               component.getMaxLength() != null ? component.getMaxLength() : ""));
           componentElement.addAttribute(new Attribute("minLength",

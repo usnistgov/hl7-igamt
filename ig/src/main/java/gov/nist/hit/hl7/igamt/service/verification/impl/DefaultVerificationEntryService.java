@@ -856,7 +856,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.LENGTH)
-                .message("Primitive datatype should have one of Length and ConfLength")
+                .message("Primitive datatype does not have one of Length or ConfLength")
                 .entry();
 	}
 
@@ -867,7 +867,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.LENGTH)
-                .message(String.format("Max Length should be a number, '*' or 'NA'. The current Max Length is %s", maxLength))
+                .message(String.format("Max Length should be a number or '*'. The current Max Length is '%s'", maxLength))
                 .entry();
 	}
 
@@ -878,7 +878,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.LENGTH)
-                .message(String.format("Min Length should be a number or 'NA'. The current Min Length is %s", minLength))
+                .message(String.format("Min Length should be a number. The current Min Length is '%s'", minLength))
                 .entry();
 	}
 
@@ -889,7 +889,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.LENGTH)
-                .message(String.format("Min Length value is greater than Max Length. The current Min Length is %s and current Max Length is %s", minLength, maxLength))
+                .message(String.format("Min Length value is greater than Max Length. The current Min Length is '%s' and current Max Length is '%s'", minLength, maxLength))
                 .entry();
 	}
 

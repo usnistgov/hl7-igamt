@@ -290,26 +290,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 									elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
 								}
 
-							} else {
-								if (c.getMinLength() != null && !c.getMinLength().isEmpty()) {
-									elmComponent.addAttribute(new Attribute("MinLength", this.str(c.getMinLength())));
-
-								} else {
-									elmComponent.addAttribute(new Attribute("MinLength", "NA"));
-								}
-
-								if (c.getMaxLength() != null && !c.getMaxLength().isEmpty()) {
-									elmComponent.addAttribute(new Attribute("MaxLength", this.str(c.getMaxLength())));
-
-								} else {
-									elmComponent.addAttribute(new Attribute("MaxLength", "NA"));
-
-								}
-								if (c.getConfLength() != null && !c.getConfLength().equals("")) {
-									elmComponent.addAttribute(new Attribute("ConfLength", this.str(c.getConfLength())));
-								} else {
-									elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
-								}
 							}
 
 							elmDatatype.appendChild(elmComponent);
@@ -1038,29 +1018,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 							elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
 						}
 
-					} else {
-						if (c.getModel().getMinLength() != null && !c.getModel().getMinLength().isEmpty()) {
-							elmComponent
-									.addAttribute(new Attribute("MinLength", this.str(c.getModel().getMinLength())));
-
-						} else {
-							elmComponent.addAttribute(new Attribute("MinLength", "NA"));
-						}
-
-						if (c.getModel().getMaxLength() != null && !c.getModel().getMaxLength().isEmpty()) {
-							elmComponent
-									.addAttribute(new Attribute("MaxLength", this.str(c.getModel().getMaxLength())));
-
-						} else {
-							elmComponent.addAttribute(new Attribute("MaxLength", "NA"));
-
-						}
-						if (c.getModel().getConfLength() != null && !c.getModel().getConfLength().equals("")) {
-							elmComponent
-									.addAttribute(new Attribute("ConfLength", this.str(c.getModel().getConfLength())));
-						} else {
-							elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
-						}
 					}
 					elmDatatype.appendChild(elmComponent);
 				}
@@ -1292,7 +1249,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 							if (f.getModel().getMinLength() != null && !f.getModel().getMinLength().isEmpty()) {
 								elmField.addAttribute(
 										new Attribute("MinLength", this.str(f.getModel().getMinLength())));
-
 							} else {
 								elmField.addAttribute(new Attribute("MinLength", "NA"));
 							}
@@ -1300,7 +1256,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 							if (f.getModel().getMaxLength() != null && !f.getModel().getMaxLength().isEmpty()) {
 								elmField.addAttribute(
 										new Attribute("MaxLength", this.str(f.getModel().getMaxLength())));
-
 							} else {
 								elmField.addAttribute(new Attribute("MaxLength", "NA"));
 
@@ -1310,30 +1265,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 							elmField.addAttribute(new Attribute("MinLength", "NA"));
 							elmField.addAttribute(new Attribute("MaxLength", "NA"));
 
-							if (f.getModel().getConfLength() != null && !f.getModel().getConfLength().equals("")) {
-								elmField.addAttribute(
-										new Attribute("ConfLength", this.str(f.getModel().getConfLength())));
-							} else {
-								elmField.addAttribute(new Attribute("ConfLength", "NA"));
-							}
-
-						} else {
-							if (f.getModel().getMinLength() != null && !f.getModel().getMinLength().isEmpty()) {
-								elmField.addAttribute(
-										new Attribute("MinLength", this.str(f.getModel().getMinLength())));
-
-							} else {
-								elmField.addAttribute(new Attribute("MinLength", "NA"));
-							}
-
-							if (f.getModel().getMaxLength() != null && !f.getModel().getMaxLength().isEmpty()) {
-								elmField.addAttribute(
-										new Attribute("MaxLength", this.str(f.getModel().getMaxLength())));
-
-							} else {
-								elmField.addAttribute(new Attribute("MaxLength", "NA"));
-
-							}
 							if (f.getModel().getConfLength() != null && !f.getModel().getConfLength().equals("")) {
 								elmField.addAttribute(
 										new Attribute("ConfLength", this.str(f.getModel().getConfLength())));

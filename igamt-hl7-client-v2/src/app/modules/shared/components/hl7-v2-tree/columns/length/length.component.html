@@ -14,14 +14,14 @@
           <input [ngModelOptions]="{updateOn: 'blur'}" class="range-input" type="text" [name]="location + 'max-length'" [id]="location + 'max-length'" placeholder="Max" [(ngModel)]="val.max" (ngModelChange)="maxChange($event)">
         </div>
         <button class="btn btn-sm btn-danger" (click)="clear()">
-          <i class="fa fa-times"></i>
+          <i class="fa fa-trash"></i>
         </button>
       </ng-container>
       <div *ngSwitchCase="false">
         <ng-container *ngTemplateOutlet="display; context : { $implicit : val, active: false }"></ng-container>
       </div>
-      <button *ngIf="lengthType && lengthType === lengthTypes.UNSET && leaf" class="btn btn-sm btn-primary" (click)="set()">
-        <i class="fa fa-pencil"></i>
+      <button *ngIf="lengthType && lengthType === lengthTypes.UNSET && leaf" class="btn btn-sm btn-info" (click)="set()">
+        <i class="fa fa-check"></i>
       </button>
     </ng-container>
     <ng-container *ngSwitchCase="true">
@@ -31,5 +31,5 @@
 </div>
 
 <ng-template #display let-val let-active="active">
-  <strong [ngClass]="{ 'treetable-light': !active }" >[{{val.min}} .. {{val.max}}]</strong>
+  <strong [ngClass]="{ 'treetable-light': !active, 'strikethrough': !active }" >[{{val.min || 'NA'}} .. {{val.max || 'NA'}}]</strong>
 </ng-template>

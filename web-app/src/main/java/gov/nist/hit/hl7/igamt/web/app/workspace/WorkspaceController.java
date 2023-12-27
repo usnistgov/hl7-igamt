@@ -340,7 +340,7 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/api/workspace/{wsId}/folder/{folderId}/document/{documentType}/{documentId}", method = RequestMethod.DELETE, produces = { "application/json" })
 	@ResponseBody
-	@PreAuthorize("AccessWorkspaceFolder(workspaceId, folderId, WRITE) && AccessResource(#documentType, #documentId, WRITE)")
+	@PreAuthorize("AccessWorkspaceFolder(#workspaceId, #folderId, WRITE) && AccessResource(#documentType, #documentId, WRITE)")
 	public WorkspaceInfo deleteDocument(
 			@PathVariable("wsId") String workspaceId,
 			@PathVariable("folderId") String folderId,

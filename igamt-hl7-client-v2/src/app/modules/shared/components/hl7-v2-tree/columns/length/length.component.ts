@@ -50,6 +50,14 @@ export class LengthComponent extends HL7v2TreeColumnComponent<ILengthRange> impl
   set() {
     this.onChange<string>(this.lengthType, LengthType.Length, PropertyType.LENGTHTYPE, ChangeType.UPDATE);
     this.updateLengthType.emit(LengthType.Length);
+    if (!this.val.min || this.val.min === 'NA') {
+      this.val.min = '';
+      this.minChange('');
+    }
+    if (!this.val.max || this.val.max === 'NA') {
+      this.val.max = '';
+      this.maxChange('');
+    }
   }
 
   isActualChange<X>(change: IChange<X>): boolean {
