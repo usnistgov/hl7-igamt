@@ -1452,7 +1452,7 @@ public class IgServiceImpl implements IgService {
 			if (l.getDomainInfo() != null && l.getDomainInfo().getScope() != null
 					&& l.getDomainInfo().getScope().equals(Scope.USER)) {
 				Datatype dt = this.datatypeService.findById(l.getId());
-				if (dt.getBinding() != null) {
+				if (dt.getBinding() != null && dt.getBinding().getConformanceStatements() != null) {
 					for (ConformanceStatement cs : dt.getBinding().getConformanceStatements()) {
 						cs.setResourceId(l.getId());
 						ret.add(cs);
