@@ -47,6 +47,10 @@ export class ConformanceLengthComponent extends HL7v2TreeColumnComponent<IString
   set() {
     this.onChange<string>(this.lengthType, LengthType.ConfLength, PropertyType.LENGTHTYPE, ChangeType.UPDATE);
     this.updateLengthType.emit(LengthType.ConfLength);
+    if (!this.val.value || this.val.value === 'NA') {
+      this.val.value = '';
+      this.confLengthChange('');
+    }
   }
 
   isActualChange<X>(change: IChange<X>): boolean {

@@ -52,7 +52,11 @@ public class AccessControlService {
                 return this.evaluateAccessLevel(L(AccessLevel.READ), requested);
             }
         } else {
-            return false;
+            if(isAdmin(user)) {
+                return this.evaluateAccessLevel(L(AccessLevel.READ), requested);
+            } else {
+                return false;
+            }
         }
     }
 
@@ -207,7 +211,10 @@ public class AccessControlService {
                 case VIEW:
                     return L(AccessLevel.READ);
             }
-        }        
+        }
+        if(isAdmin(user)) {
+            return L(AccessLevel.READ);
+        }
         return null;
     }
 

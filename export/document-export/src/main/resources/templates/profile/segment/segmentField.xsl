@@ -202,7 +202,7 @@
             <xsl:if test="$columnDisplay.segment.length = 'true'">
                 <xsl:element name="td">
                     <xsl:choose>
-                        <xsl:when test="@complex='true' or @usage = 'X' or @minLength = 'NA' or @maxLength = 'NA'">
+                        <xsl:when test="@complex='true' or @usage = 'X' or @lengthType != 'Length'  or @minLength = 'NA' or @maxLength = 'NA'">
                             <xsl:attribute name="class"><xsl:text>greyCell</xsl:text></xsl:attribute>
                         </xsl:when>
                         <xsl:otherwise>
@@ -272,7 +272,7 @@
                 <xsl:if test="$showConfLength='true'">
                     <xsl:element name="td">
                         <xsl:choose>
-                            <xsl:when test="@complex = 'true' or @confLength='NA' or @usage = 'X'">
+                            <xsl:when test="@complex = 'true' or @lengthType != 'ConfLength' or @confLength='NA' or @usage = 'X'">
                                 <xsl:attribute name="class"><xsl:text>greyCell</xsl:text></xsl:attribute>
                             </xsl:when>
                             <xsl:otherwise>

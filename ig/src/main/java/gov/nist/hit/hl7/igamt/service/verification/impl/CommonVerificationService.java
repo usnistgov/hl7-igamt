@@ -36,9 +36,11 @@ public class CommonVerificationService {
 		String minLength = element.getMinLength();
 		String maxLength = element.getMaxLength();
 		String confLength = element.getConfLength();
+		LengthType lengthType = element.getLengthType();
+		boolean elementAcceptsLength = this.isLengthAllowedElement(element);
 
-		if (!this.isLengthAllowedElement(element)) {
-			if (!this.isNullOrNA(confLength)) {
+		if (!elementAcceptsLength) {
+			if (lengthType.equals(LengthType.ConfLength)) {
 				results.add(
 						this.verificationEntryService.ConfLengthNotAllowed(
 								location,
@@ -48,7 +50,7 @@ public class CommonVerificationService {
 				);
 			}
 
-			if(!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength)) {
+			if(lengthType.equals(LengthType.Length)) {
 				results.add(
 						this.verificationEntryService.LengthNotAllowed(
 								location,
@@ -58,44 +60,42 @@ public class CommonVerificationService {
 				);
 			}
 		} else {
-			// Check if length range is valid
-			if (!this.isNullOrNA(minLength) && !this.isNullOrNA(maxLength)) {
-				if (!maxLength.equals("*")) {
-					if (this.isInt(minLength) && this.isInt(maxLength)) {
-						int minLengthInt = Integer.parseInt(minLength);
-						int maxLengthInt = Integer.parseInt(maxLength);
+			if(lengthType.equals(LengthType.Length)) {
+				// Check if length range is valid
+				if (!this.isNullOrNA(minLength) && !this.isNullOrNA(maxLength)) {
+					if (!maxLength.equals("*")) {
+						if (this.isInt(minLength) && this.isInt(maxLength)) {
+							int minLengthInt = Integer.parseInt(minLength);
+							int maxLengthInt = Integer.parseInt(maxLength);
 
-						if (minLengthInt > maxLengthInt) {
-							results.add(this.verificationEntryService.LengthInvalidRange(location, id, type, minLength,
-							                                                             maxLength));
+							if (minLengthInt > maxLengthInt) {
+								results.add(this.verificationEntryService.LengthInvalidRange(location, id, type, minLength,
+								                                                             maxLength));
+							}
 						}
 					}
 				}
-			}
 
-			// Check max length is valid value
-			if (!this.isNullOrNA(maxLength)) {
-				if (!this.isIntOrStar(maxLength)) {
-					results.add(this.verificationEntryService.LengthInvalidMaxLength(location, id, type, maxLength));
+				// Check max length is valid value
+				if (this.isNullOrNA(maxLength) || !this.isIntOrStar(maxLength)) {
+					results.add(this.verificationEntryService.LengthInvalidMaxLength(location, id, type, nullToEmpty(maxLength)));
+				}
+
+				// Check min length is valid value
+				if (this.isNullOrNA(minLength) || !this.isInt(minLength)) {
+					results.add(this.verificationEntryService.LengthInvalidMinLength(location, id, type, nullToEmpty(minLength)));
 				}
 			}
 
-			// Check min length is valid value
-			if (!this.isNullOrNA(minLength)) {
-				if (!this.isInt(minLength)) {
-					results.add(this.verificationEntryService.LengthInvalidMinLength(location, id, type, minLength));
-				}
-			}
-
-			// Check conf length is valid value
-			if (!this.isNullOrNA(confLength)) {
-				if (!confLength.contains("#") && !confLength.contains("=")) {
+			if(lengthType.equals(LengthType.ConfLength)) {
+				// Check conf length is valid value
+				if (this.isNullOrNA(confLength) || (!confLength.contains("#") && !confLength.contains("="))) {
 					results.add(this.verificationEntryService.ConfLengthInvalid(location, id, type, confLength));
 				}
 			}
 
-			// Check length or conf length is set
-			if (this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) {
+			if(lengthType.equals(LengthType.UNSET)) {
+				// Check length or conf length is set
 				results.add(this.verificationEntryService.LengthOrConfLengthMissing(location, id, type));
 			}
 		}
@@ -261,6 +261,14 @@ public class CommonVerificationService {
 		if(s == null)
 			return true;
 		return s.equals("NA");
+	}
+
+	public String nullToEmpty(String s) {
+		if(s == null) {
+			return "";
+		} else {
+			return s;
+		}
 	}
 
 	public boolean isInt(String s) {

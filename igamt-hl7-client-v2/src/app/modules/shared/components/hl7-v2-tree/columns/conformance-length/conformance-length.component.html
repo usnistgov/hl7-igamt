@@ -10,14 +10,14 @@
       <ng-container *ngSwitchCase="true">
         <input style="width: 100%;" class="range-input" type="text" [name]="location + 'conf-length'" [id]="location + 'conf-length'" placeholder="Conf Length" [ngModelOptions]="{updateOn: 'blur'}" [(ngModel)]="val.value" (ngModelChange)="confLengthChange($event)">
         <button class="btn btn-sm btn-danger" (click)="clear()" style="margin-left: 5px;">
-          <i class="fa fa-times"></i>
+          <i class="fa fa-trash"></i>
         </button>
       </ng-container>
       <div *ngSwitchCase="false">
         <ng-container *ngTemplateOutlet="display; context : { $implicit : val, active: false }"></ng-container>
       </div>
-      <button *ngIf="val && lengthType && lengthType === lengthTypes.UNSET && leaf" class="btn btn-sm btn-primary" (click)="set()">
-        <i class="fa fa-pencil"></i>
+      <button *ngIf="val && lengthType && lengthType === lengthTypes.UNSET && leaf" class="btn btn-sm btn-info" (click)="set()">
+        <i class="fa fa-check"></i>
       </button>
     </ng-container>
     <ng-container *ngSwitchCase="true">
@@ -26,7 +26,7 @@
   </ng-container>
 
   <ng-template #display let-val let-active="active">
-    <strong [ngClass]="{ 'treetable-light': !active }" >{{val.value ? val.value : 'NA'}}</strong>
+    <strong [ngClass]="{ 'treetable-light': !active, 'strikethrough': !active && val.value && val.value !== 'NA'  }" >{{val.value || 'NA'}}</strong>
   </ng-template>
 
 </div>
