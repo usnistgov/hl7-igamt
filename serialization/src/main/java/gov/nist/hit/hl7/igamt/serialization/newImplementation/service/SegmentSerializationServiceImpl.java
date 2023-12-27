@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
@@ -24,10 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.diff.domain.DeltaAction;
-import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
-import gov.nist.hit.hl7.igamt.common.base.domain.GenerationDirective;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
@@ -268,6 +265,7 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
                 new Attribute("constantValue", field.getConstantValue() != null ? field.getConstantValue() : ""));
             fieldElement
             .addAttribute(new Attribute("id", field.getId() != null ? field.getId() : ""));
+            fieldElement.addAttribute(new Attribute("lengthType", field.getLengthType().getValue()));
             fieldElement.addAttribute(new Attribute("maxLength",
                 field.getMaxLength() != null ? field.getMaxLength() : ""));
             fieldElement.addAttribute(new Attribute("minLength",
