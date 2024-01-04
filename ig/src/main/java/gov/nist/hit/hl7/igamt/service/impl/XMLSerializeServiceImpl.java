@@ -289,7 +289,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 								} else {
 									elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
 								}
-
+							} else if(c.getLengthType().equals(LengthType.UNSET)) {
+								elmComponent.addAttribute(new Attribute("MinLength", "NA"));
+								elmComponent.addAttribute(new Attribute("MaxLength", "NA"));
+								elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
 							}
 
 							elmDatatype.appendChild(elmComponent);
@@ -1017,7 +1020,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 						} else {
 							elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
 						}
-
+					}  else if(c.getModel().getLengthType().equals(LengthType.UNSET)) {
+						elmComponent.addAttribute(new Attribute("MinLength", "NA"));
+						elmComponent.addAttribute(new Attribute("MaxLength", "NA"));
+						elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
 					}
 					elmDatatype.appendChild(elmComponent);
 				}
@@ -1271,6 +1277,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 							} else {
 								elmField.addAttribute(new Attribute("ConfLength", "NA"));
 							}
+						}   else if(f.getModel().getLengthType().equals(LengthType.UNSET)) {
+							elmField.addAttribute(new Attribute("MinLength", "NA"));
+							elmField.addAttribute(new Attribute("MaxLength", "NA"));
+							elmField.addAttribute(new Attribute("ConfLength", "NA"));
 						}
 
 						elmField.addAttribute(new Attribute("Min", "" + f.getModel().getMin()));
