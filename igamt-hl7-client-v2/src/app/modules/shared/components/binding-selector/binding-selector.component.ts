@@ -135,11 +135,11 @@ export class BindingSelectorComponent<T> implements OnInit {
 
     if (this.selectedBindingType === IBindingType.SINGLECODE) {
 
-      return this.selectedSingleCodes != null && this.selectedSingleCodes.length > 0;
+      return true;
 
     } else {
       if (!this.selectedValueSets || this.selectedValueSets.length === 0) {
-        return false;
+        return true;
       }
       for (const bindingDisplay of this.selectedValueSets) {
         if (!bindingDisplay.valueSets || bindingDisplay.valueSets.length === 0) {
