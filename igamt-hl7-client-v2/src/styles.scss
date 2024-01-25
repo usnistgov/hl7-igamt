@@ -2,6 +2,12 @@
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "./assets/variables";
 @import '~angular-tree-component/dist/angular-tree-component.css';
+@import '~codemirror/lib/codemirror';
+@import '~codemirror/theme/monokai';
+@import '~codemirror/theme/material';
+
+@import '~codemirror/addon/fold/foldgutter';
+@import '~codemirror/addon/dialog/dialog';
 
 html {
   height: 100%;
@@ -493,3 +499,6 @@ block-ui-content {
   max-width: 450px !important;
 }
 
+.CodeMirror-placeholder {
+  color: gray !important;
+}

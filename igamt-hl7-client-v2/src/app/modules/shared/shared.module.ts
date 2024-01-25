@@ -152,6 +152,7 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -329,6 +330,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     BreadcrumbModule,
     ConfirmDialogModule,
     MatProgressSpinnerModule,
+    CodemirrorModule,
   ],
   exports: [
     MatExpansionModule,

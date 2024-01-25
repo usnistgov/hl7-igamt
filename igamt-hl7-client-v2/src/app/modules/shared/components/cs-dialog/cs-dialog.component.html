@@ -83,8 +83,16 @@
         <hr style="margin-bottom: -14px; margin-left: 110px;"> <span style="margin-left: 5px; color: gray;"><i class="fa" [ngClass]="{'fa-chevron-down': hideAdvanced, 'fa-chevron-right': !hideAdvanced }"></i> Advanced </span>
       </div>
       <div class="form-group" *ngIf="hideAdvanced">
-        <label for="free" class="form-label-lg"> Script </label>
-        <textarea type="text" class="form-control" id="script" rows="6" name="script" placeholder="XML Script" [required]="required" [(ngModel)]="cs.assertionScript"></textarea>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <label for="free" class="form-label-lg"> XML Script </label>
+          <button class="btn btn-sm btn-success" (click)="formatXML()" >Format</button>
+        </div>
+        <ngx-codemirror
+          [(ngModel)]="cs.assertionScript"
+          id="script"
+          name="script"
+          [options]="xmlEditorOptions"
+        ></ngx-codemirror>
       </div>
     </div>
     <div *ngIf="cs.type === csType.ASSERTION">

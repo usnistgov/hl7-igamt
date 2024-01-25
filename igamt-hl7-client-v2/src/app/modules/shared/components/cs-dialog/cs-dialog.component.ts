@@ -23,6 +23,7 @@ import { PatternDialogComponent } from '../pattern-dialog/pattern-dialog.compone
 import { ConformanceStatementStrength } from './../../models/conformance-statements.domain';
 import { IAssertion } from './../../models/cs.interface';
 import { IStatementTokenPayload } from './cs-statement.component';
+import { xml as xmlFormat } from 'vkbeautify';
 
 export type AssertionContainer = IAssertionConformanceStatement | IFreeTextConformanceStatement | IPredicate;
 
@@ -52,6 +53,23 @@ export class CsDialogComponent implements OnDestroy {
       }),
     ).subscribe();
   }
+
+  xmlEditorOptions = {
+    theme: 'monokai',
+    mode: 'xml',
+    lineNumbers: true,
+    foldGutter: true,
+    styleActiveLine: true,
+    autoCloseTags: true,
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
+    matchBrackets: true,
+    extraKeys: { 'Alt-F': 'findPersistent' },
+    lineWrapping: true,
+    placeholder:
+      `<Assertion>
+<!-- your assertion -->
+</Assertion>`,
+  };
 
   constructor(
     private csService: ConformanceStatementService,
@@ -377,6 +395,15 @@ export class CsDialogComponent implements OnDestroy {
         return this.csService.generateXMLfromCs(this.cs, this.resource.id, this.resourceType).pipe(
           tap(processValue),
         ).subscribe();
+      }
+    }
+  }
+
+  formatXML() {
+    if (this.cs.type === ConstraintType.FREE) {
+      const freeText = this.cs as IFreeTextConformanceStatement;
+      if (freeText.assertionScript) {
+        freeText.assertionScript = xmlFormat(freeText.assertionScript, 4)
       }
     }
   }
