@@ -379,10 +379,10 @@ public class AssertionXMLSerialization {
                 }
             }
         	
-        	Subcon subcon = this.generatePathService.generateSubCon(sAssertion.getContext().getPath(), targetId, level, context);
+        	Context subcon = this.generatePathService.generateSubCon(sAssertion.getContext().getPath(), targetId, level, context);
         	
             return "<SubContext Path=\"" + sPathStr + "\" " + occurenceStr + ">"
-            		+ this.generateAssertionScript(sAssertion.getChild(), subcon.getLevel(), subcon.getTargetId(), subcon.getContext(), presenceCheckOn)
+            		+ this.generateAssertionScript(sAssertion.getChild(), subcon.getLevel(), subcon.getTargetId(), subcon.getPath(), presenceCheckOn)
             		+ "</SubContext>";
         } else if (assertion instanceof SingleAssertion) {
             return this.generateSingleAssertionScript((SingleAssertion) assertion, level, targetId,

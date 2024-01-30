@@ -3,11 +3,20 @@ package gov.nist.hit.hl7.igamt.service.impl;
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 
-public class Subcon {
+public class Context {
 
 	private Level level;
 	private String targetId;
-	private InstancePath context;
+	private InstancePath path;
+
+	public Context(Level level, String targetId, InstancePath path) {
+		this.level = level;
+		this.targetId = targetId;
+		this.path = path;
+	}
+
+	public Context() {
+	}
 
 	public Level getLevel() {
 		return level;
@@ -25,11 +34,11 @@ public class Subcon {
 		this.targetId = targetId;
 	}
 
-	public InstancePath getContext() {
-		return context;
+	public InstancePath getPath() {
+		return path;
 	}
 
-	public void setContext(InstancePath context) {
-		this.context = context;
+	public void setPath(InstancePath path) {
+		this.path = path;
 	}
 }
