@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.domain;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,10 @@ public class Valueset extends Resource {
 	private List<ChangeReason> changeLogs;
 	private Set<String> codeSystems = new HashSet<String>();
 	private Set<Code> codes = new HashSet<Code>();
+	
+	private CodeType codeType;
+	private Date snapshotDate;
+	private CodeSetReference codeSetReference;
 	
 	public boolean isIncludeCodes() {
 		return includeCodes;
@@ -216,6 +221,22 @@ public class Valueset extends Resource {
 
 	public void setChangeLogs(List<ChangeReason> changeLogs) {
 		this.changeLogs = changeLogs;
+	}
+
+	public CodeType getCodeType() {
+		return codeType;
+	}
+
+	public void setCodeType(CodeType codeType) {
+		this.codeType = codeType;
+	}
+
+	public Date getSnapshotDate() {
+		return snapshotDate;
+	}
+
+	public void setSnapshotDate(Date snapshotDate) {
+		this.snapshotDate = snapshotDate;
 	};
 	
 	
