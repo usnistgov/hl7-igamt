@@ -43,8 +43,6 @@ export interface IValueSetOrSingleCodeDisplay {
   styleUrls: ['./valueset.component.scss'],
 })
 export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingleCodeBindings> implements OnInit, OnDestroy {
-
-  bindings: Array<IBinding<IValueSetOrSingleCode>>;
   freeze$: Observable<{
     context: IBindingContext,
     binding: IValueSetOrSingleCodeDisplay,
@@ -68,6 +66,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
   alive: boolean;
   activeChangeLog$: Observable<IChangeReasonSection[]>;
   vsOrScBindings: IValueSetOrSingleCodeBindings;
+  isOXB2MessageLevel: boolean;
 
   constructor(
     dialog: MatDialog,
@@ -347,6 +346,8 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
   }
 
   ngOnInit() {
+    const parentIsOBX = this.node && this.node.parent && this.node.parent.data && this.node.parent.data.type === Type.SEGMENTREF && this.node.parent.data.name === 'OBX';
+    this.isOXB2MessageLevel = parentIsOBX && this.position === 2 && this.context !== Type.SEGMENT;
     this.alive = true;
     this.value$.pipe(
       takeWhile(() => this.alive),

@@ -69,9 +69,9 @@ public class ResourceSkeletonService {
                     parent,
                     this
             )).collect(Collectors.toList());
-            return new ResourceSkeletonInfo(children, resource);
+            return new ResourceSkeletonInfo(children, resource, datatype.getBinding());
         } else {
-            return new ResourceSkeletonInfo(Collections.emptyList(), resource);
+            return new ResourceSkeletonInfo(Collections.emptyList(), resource, datatype.getBinding());
         }
     }
     public ResourceSkeletonInfo loadSegmentSkeleton(String id, LocationInfo parentLocationInfo, ResourceSkeleton parent) throws ResourceNotFoundException {
@@ -93,7 +93,7 @@ public class ResourceSkeletonService {
                 parent,
                 this
         )).collect(Collectors.toList());
-        return new ResourceSkeletonInfo(children, resource);
+        return new ResourceSkeletonInfo(children, resource, segment.getBinding());
     }
 
     public ResourceSkeletonInfo loadConformanceProfileSkeleton(String id, ResourceSkeleton parent) throws ResourceNotFoundException {
@@ -103,7 +103,7 @@ public class ResourceSkeletonService {
         }
 
         DisplayElement resource = this.conformanceProfileService.convertConformanceProfile(conformanceProfile, 0);
-        return new ResourceSkeletonInfo(getGroupChildren(resource, conformanceProfile.getChildren(), null, parent), resource);
+        return new ResourceSkeletonInfo(getGroupChildren(resource, conformanceProfile.getChildren(), null, parent), resource, conformanceProfile.getBinding());
     }
 
     public List<ResourceSkeletonBone> getGroupChildren(DisplayElement parent, Set<SegmentRefOrGroup> segmentRefOrGroups, LocationInfo parentLocationInfo, ResourceSkeleton parentSkeleton) {
@@ -162,6 +162,9 @@ public class ResourceSkeletonService {
             locationInfo.setPositionalPath(append(parent.getPositionalPath(), ".", position + ""));
             if(location.equals(Type.GROUP) || location.equals(Type.SEGMENTREF)) {
                 locationInfo.setHl7Path(append(parent.getHl7Path(), ".", name));
+            }
+            else if(location.equals(Type.FIELD)) {
+                locationInfo.setHl7Path(append(parent.getHl7Path(), "-", position + ""));
             }
             else {
                 locationInfo.setHl7Path(append(parent.getHl7Path(), ".", position + ""));

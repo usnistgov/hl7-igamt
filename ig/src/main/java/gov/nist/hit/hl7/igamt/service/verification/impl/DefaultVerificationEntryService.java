@@ -144,6 +144,36 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
+    public IgamtObjectError DynamicMappingValueNotFound(Location location, String id, Type type, String value, Set<String> valueSets) {
+        return new IgamtVerificationEntryBuilder("DYNAMIC_MAPPING_VALUE_NOT_FOUND")
+                .error()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Dynamic mapping value '"+value+"' is not part of the value sets ["+ String.join(", ", valueSets)+"] bound at location "+ location.getName() +".")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError DynamicMappingValueExcludedUsage(Location location, String id, Type type, String value, Set<String> valueSets) {
+        return new IgamtVerificationEntryBuilder("DYNAMIC_MAPPING_VALUE_EXCLUDED")
+                .error()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Dynamic mapping value '"+value+"' has a usage code of 'E' (excluded) in value sets ["+ String.join(", ", valueSets)+"] bound at location "+ location.getName() +".")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError DynamicMappingMissingValue(Location location, String id, Type type, Set<String> values, String valueSet) {
+        return new IgamtVerificationEntryBuilder("DYNAMIC_MAPPING_VALUE_MISSING")
+                .error()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Values ["+ String.join(", ", values)+"] from value set '"+valueSet+"' do not have a datatype associated in the dynamic mapping.")
+                .entry();
+    }
+
+    @Override
     public IgamtObjectError SingleCodeNotAllowed(String pathId, LocationInfo info, String id, Type type) {
         return new IgamtVerificationEntryBuilder("SINGLE_CODE_NOT_ALLOWED")
                 .fatal()
@@ -202,6 +232,18 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .target(id, type)
                 .locationInfo(pathId, name, prop)
                 .message("Invalid binding location : " + (blIsSet ? bindingLocations : '.') + " at " + target.getHl7Path() + (!Strings.isNullOrEmpty(reason) ? " ("+ reason +")" : ""))
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError OBX2MessageValueSetBindingNotAllowed(
+            String pathId, LocationInfo info, String id, Type type
+    ) {
+        return new IgamtVerificationEntryBuilder("OBX2_MESSAGE_VS_NOT_ALLOWED")
+                .fatal()
+                .target(id, type)
+                .locationInfo(pathId, info, PropertyType.VALUESET)
+                .message("Message level value set binding not allowed on OBX-2, this location's value set determines dynamic datatype mappings for OBX-5 and should be managed at the OBX segment level")
                 .entry();
     }
 
@@ -463,7 +505,17 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .message("Co-Constraint Table has multiple a column of VARIES type but no DATATYPE column")
                 .entry();
     }
-    
+
+    @Override
+    public IgamtObjectError CoConstraintDatatypeCellNotAllowed(String pathId, String locationName, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("COCONSTRAINT_DATATYPE_CELL_NOT_ALLOWED")
+                .fatal()
+                .target(id, type)
+                .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
+                .message("Co-Constraint Table restriction due to OBX-5 dynamic mapping : the IF column group is restricted to only contain a CODE column for OBX-3 when the THEN group contains a DATATYPE column for OBX-2.")
+                .entry();
+    }
+
     @Override
     public IgamtObjectError AssertionOccurrenceTypeOnNotRepeatable(Location location, String id, Type type, LocationInfo path, String occurrenceType, String pathQualifier) {
         return new IgamtVerificationEntryBuilder("ASSERTION_OCCTYPE_NOT_REPEATABLE")
