@@ -22,6 +22,7 @@ export class HeaderComponent implements OnInit {
   isAdmin: Observable<boolean>;
   isIG: Observable<boolean>;
   isWorkspace: Observable<boolean>;
+  isCodeSet: Observable<boolean>;
   isDtLib: Observable<boolean>;
   isConfig: Observable<boolean>;
   isLoggedIn: Observable<boolean>;
@@ -56,6 +57,13 @@ export class HeaderComponent implements OnInit {
       map(
         (url: string) => {
           return url.startsWith('/workspace');
+        },
+      ),
+    );
+    this.isCodeSet= store.select(fromDAM.selectRouterURL).pipe(
+      map(
+        (url: string) => {
+          return url.startsWith('/code-set');
         },
       ),
     );

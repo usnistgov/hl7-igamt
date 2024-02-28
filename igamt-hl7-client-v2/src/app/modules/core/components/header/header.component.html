@@ -70,6 +70,19 @@
         </div>
       </li>
 
+      <li [ngClass]="{'active': isCodeSet | async }" class="nav-item" ngbDropdown>
+        <span class="nav-link" ngbDropdownToggle>Code Sets</span>
+        <div ngbDropdownMenu>
+          <button [routerLink]="[ '/code-set/create']" ngbDropdownItem routerLinkActive="active-dropdown">
+            Create new Code Set
+          </button>
+          <button [routerLink]="[ '/code-set/list']" ngbDropdownItem
+                  routerLinkActive="active-dropdown">
+            Code Set List
+          </button>
+        </div>
+      </li>
+
 
 
       <li [ngClass]="{'active': isConfig | async }" class="nav-item" ngbDropdown>

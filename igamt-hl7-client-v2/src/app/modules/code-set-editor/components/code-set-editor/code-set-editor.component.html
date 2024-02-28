@@ -1,0 +1,28 @@
+<app-dam-layout [hideToolbar]="true" >
+
+  <ng-template #alerts>
+    <app-dam-alerts-container></app-dam-alerts-container>
+  </ng-template>
+
+  <ng-template #titleBar>
+    <div *ngIf="metadata$ | async as metadata" style="width: 100%; display: flex; align-items: center; padding: 5px 20px;">
+      <h2 style="margin: 0;">{{metadata.title}}</h2>
+    </div>
+  </ng-template>
+
+  <ng-template #activeTitleBar>
+    <app-code-set-active-titlebar
+      [controls]="activeComponent?.controls"
+      [header]="activeComponent?.header"
+    ></app-code-set-active-titlebar>
+  </ng-template>
+
+  <ng-template #editorContent>
+    <app-dam-editor-outlet></app-dam-editor-outlet>
+  </ng-template>
+
+  <ng-template #sideBar>
+    <app-code-set-side-bar></app-code-set-side-bar>
+  </ng-template>
+
+</app-dam-layout>

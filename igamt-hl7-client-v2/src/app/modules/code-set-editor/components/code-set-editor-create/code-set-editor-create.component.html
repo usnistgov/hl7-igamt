@@ -1,0 +1,23 @@
+<div class="create-code-set-layout">
+  <div class="page-content">
+    <div class="title">
+      <h5>Create Workspace</h5>
+    </div>
+    <div class="alerts">
+      <app-dam-alerts-container></app-dam-alerts-container>
+    </div>
+    <div class="metadata">
+      <form [formGroup]="metaDataForm" style="display: flex; flex-direction: column;">
+        <app-form-input formControlName="title" id="title" name="title"
+          placeholder="Code Set Title" label="Title"> </app-form-input>
+        <app-form-input formControlName="description" id="description" name="description"
+        placeholder="Description" label="Description"> </app-form-input>
+      </form>
+      <div class="submit">
+        <button (click)="submit()" [disabled]="metaDataForm.invalid" class="btn btn-primary"
+                type="submit">Create Code Set
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

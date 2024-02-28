@@ -73,6 +73,9 @@ const routes: Routes = [
   },
   {path: 'workspace',
   loadChildren: './modules/workspace/workspace.module#WorkspaceModule'},
+
+  {path: 'code-set',
+  loadChildren: './modules/code-set-editor/code-set-editor.module#CodeSetEditorModule'},
   {
     path: '**', component: ErrorPageComponent,
   },

@@ -1,0 +1,33 @@
+<div class="side-bar">
+  <ul class="list-group editors">
+    <li class="list-group-item cursor-pointer" routerLink="home" routerLinkActive="nav-active-link" >
+      Metadata
+    </li>
+    <li class="list-group-item" style="background-color: #f3f3f3; display: flex; justify-content: space-between; align-items: center;">
+      Code Set Versions:
+      <!-- <button class="btn btn-sm btn-primary" (click)="createFolder()" *ngIf="isAdmin$ | async">
+        <i class="fa fa-plus"></i>
+      </button> -->
+    </li>
+  </ul>
+  <div class="filter">
+    <div class="input-group" style="margin-left: 5px; min-width: 300px;">
+      <div class="input-group-prepend">
+        <span class="input-group-text"><i class="fa fa-filter"></i></span>
+      </div>
+      <input type="text" class="form-control" placeholder="filter" aria-label="filter">
+    </div>
+  </div>
+  <div class="list">
+    <div style="background-color: #f3f3f3; flex-grow: 1;">
+      <ul class="list-group">
+        <li [contextMenu]="codeSetVersionMenu" *ngFor="let codeSetVersion of children$ | async" [routerLink]="['code-set-version', codeSetVersion.id]" class="list-group-item folder-list-item cursor-pointer" routerLinkActive="nav-active-link" >
+          <span>
+            <i class="fa fa-folder" style="font-size: larger; margin-right: 5px;"></i>
+            {{codeSetVersion.version}}
+          </span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

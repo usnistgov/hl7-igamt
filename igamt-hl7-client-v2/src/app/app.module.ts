@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EffectsModule } from '@ngrx/effects';
-import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { BlockUIModule } from 'ng-block-ui';
@@ -17,6 +16,7 @@ import { ConfigEffects } from './root-store/config/config.effects';
 import {LoadedResourcesEffects} from './root-store/dam-igamt/igamt.loaded-resources.effects';
 import { ResourceLoaderEffects } from './root-store/resource-loader/resource-loader.effects';
 import { UserConfigEffects } from './root-store/user-config/user-config.effects';
+import { CodeSetEditorModule } from './modules/code-set-editor/code-set-editor.module';
 @NgModule({
   declarations: [
     AppComponent,
@@ -36,6 +36,7 @@ import { UserConfigEffects } from './root-store/user-config/user-config.effects'
     CoreModule,
     BlockUIModule.forRoot(),
     WorkspaceModule,
+    CodeSetEditorModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
