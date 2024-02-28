@@ -60,7 +60,7 @@
     </ng-container>
   </ng-container>
 
-  <div *ngIf="bindingInfo?.allowValueSets && !globalViewOnly" style="margin-left: 5px;">
+  <div *ngIf="bindingInfo?.allowValueSets && !isOXB2MessageLevel && !globalViewOnly" style="margin-left: 5px;">
     <button class="btn btn-sm btn-primary"  (click)="editBinding()"><i class="fa fa-pencil"></i></button>
   </div>
 </div>

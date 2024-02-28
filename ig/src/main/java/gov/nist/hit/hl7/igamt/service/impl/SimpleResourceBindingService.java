@@ -28,7 +28,7 @@ public class SimpleResourceBindingService implements ResourceBindingService {
     public FlatResourceBinding getFlatResourceBindings(ResourceBinding resourceBinding) {
         FlatResourceBinding structResourceBindings = resourceBinding.getChildren() != null && resourceBinding.getChildren().size() > 0 ?
                 resourceBinding.getChildren().stream()
-                        .map((a) -> this.getResourceBindings(null, a))
+                        .map((child) -> this.getResourceBindings(null, child))
                         .reduce(new FlatResourceBinding(), this::merge) : new FlatResourceBinding();
 
         if(resourceBinding.getConformanceStatements() != null) {
