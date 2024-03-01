@@ -228,12 +228,12 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
 
         if(!Strings.isNullOrEmpty(context.getPathId())) {
             InstancePath groupInstancePath = this.generatePathService.getInstancePath(context.getPathId(), "*");
-            String script = this.assertionXMLSerialization.generateAssertionScript(assertion, Level.GROUP, cpId, groupInstancePath, false);
+            String script = this.assertionXMLSerialization.generateAssertionScript(assertion, Level.GROUP, cpId, groupInstancePath, true);
             Element element = new Element("Assertion");
             element.appendChild(this.innerXMLHandler(script));
             condition.appendChild(element);
         } else {
-            String script = this.assertionXMLSerialization.generateAssertionScript(assertion, Level.CONFORMANCEPROFILE, cpId, null, false);
+            String script = this.assertionXMLSerialization.generateAssertionScript(assertion, Level.CONFORMANCEPROFILE, cpId, null, true);
             condition.appendChild(script);
         }
 
