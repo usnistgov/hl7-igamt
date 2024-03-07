@@ -3,6 +3,8 @@ import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { DamWidgetComponent } from 'src/app/modules/dam-framework';
+import { ICodeSetInfoMetadata } from '../../models/code-set.models';
+import { selectCodeSetMetadata } from 'src/app/root-store/code-set-editor/code-set-edit/code-set-edit.selectors';
 
 export const CODE_SET_EDIT_WIDGET_ID = 'CODE_SET_EDIT_WIDGET_ID';
 
@@ -17,7 +19,7 @@ export const CODE_SET_EDIT_WIDGET_ID = 'CODE_SET_EDIT_WIDGET_ID';
 
 export class CodeSetEditorComponent extends DamWidgetComponent {
 
-  // metadata$: Observable<IWorkspaceMetadata>;
+  metadata$: Observable<ICodeSetInfoMetadata>;
   // workspaceInfo$: Observable<IWorkspaceMetadata>;
   dateCreated$: Observable<Date>;
   dateUpdated$: Observable<Date>;
@@ -27,7 +29,7 @@ export class CodeSetEditorComponent extends DamWidgetComponent {
     dialog: MatDialog) {
     super(CODE_SET_EDIT_WIDGET_ID, store, dialog);
 
-    // this.metadata$ = this.store.select(selectWorkspaceMetadata);
+    this.metadata$ = this.store.select(selectCodeSetMetadata);
     // this.dateCreated$ = this.store.select(selectWorkspaceInfo).pipe(
     //   map((ws) => ws.created),
     // );
@@ -35,5 +37,6 @@ export class CodeSetEditorComponent extends DamWidgetComponent {
     //   map((ws) => ws.updated),
     // );
   }
+  
 
 }

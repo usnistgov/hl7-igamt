@@ -17,10 +17,12 @@ import { DamMessagesModule } from "../dam-framework/dam-framework.module";
 import { ReactiveFormsModule } from '@angular/forms';
 import { CodeSetActiveTitlebarComponent } from './components/code-set-active-titlebar/code-set-active-titlebar.component';
 import { CodeSetSideBarComponent } from './components/code-set-side-bar/code-set-side-bar.component';
+import { CodeSetToolBarComponent } from './components/code-set-tool-bar/code-set-tool-bar.component';
+import { CodeSetTableComponent } from './components/code-set-table/code-set-table.component';
 
 
 @NgModule({
-    declarations: [CodeSetEditorListComponent, CodeSetEditorCreateComponent, CodeSetEditorComponent, CodeSetVersionEditorComponent, CodeSetActiveTitlebarComponent, CodeSetSideBarComponent],
+    declarations: [CodeSetEditorListComponent, CodeSetEditorCreateComponent, CodeSetEditorComponent, CodeSetVersionEditorComponent, CodeSetActiveTitlebarComponent, CodeSetSideBarComponent, CodeSetToolBarComponent, CodeSetTableComponent],
     imports: [
         DamFrameworkModule.forRoot(),
         CodeSetRoutingModule,

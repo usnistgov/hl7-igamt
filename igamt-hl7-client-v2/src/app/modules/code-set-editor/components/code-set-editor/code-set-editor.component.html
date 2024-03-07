@@ -11,10 +11,15 @@
   </ng-template>
 
   <ng-template #activeTitleBar>
+    Active
     <app-code-set-active-titlebar
       [controls]="activeComponent?.controls"
       [header]="activeComponent?.header"
     ></app-code-set-active-titlebar>
+  </ng-template>
+
+  <ng-template #toolbar>
+    <app-code-set-tool-bar></app-code-set-tool-bar>
   </ng-template>
 
   <ng-template #editorContent>

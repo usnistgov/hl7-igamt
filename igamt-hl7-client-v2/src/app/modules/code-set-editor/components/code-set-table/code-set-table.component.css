@@ -1,0 +1,12 @@
+.code-system-column{
+  display: flex;
+  flex-direction: row;
+}
+.dropdown-button-column {
+  padding: 2px;
+}
+.dropdown-column {
+  width: 100%;
+}
+
+

@@ -502,3 +502,19 @@ block-ui-content {
 .CodeMirror-placeholder {
   color: gray !important;
 }
+
+.vs-table .ui-table .ui-table-thead > tr > th {
+
+  padding: 6px;
+  font-weight: bold;
+  background-color: #d4d4d6;
+  color: black;
+  border-bottom: 1px solid;
+}
+
+
+
+.vs-table .ui-table .ui-table-tbody > tr > td :hover{
+  background-color: inherit;
+  color: #333333;
+}

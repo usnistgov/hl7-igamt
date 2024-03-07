@@ -1,3 +1,10 @@
-<p>
-  code-set-version-editor works!
-</p>
+<ng-template #headerControls>
+
+  <button> PUBLSIH</button>
+
+
+</ng-template>
+
+<app-code-set-table [codeSetVersion]="resource$ | async" [selectedColumns]="selectedColumns" (changes)="updateCodes($event)"></app-code-set-table>
+
+

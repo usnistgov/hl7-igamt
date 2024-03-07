@@ -30,4 +30,5 @@ export interface ICodeSetActive {
 
 export interface ICodeSetVersionContent extends ICodeSetVersionInfo {
   codes: ICodes[];
+  codeSystems: string[];
 }
