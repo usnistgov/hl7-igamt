@@ -1,0 +1,100 @@
+@import '../../../../../assets/variables';
+
+:host {
+  display: contents;
+}
+
+.side-bar {
+  height: 100%;
+  display: grid;
+  gap: 2px;
+  grid-template-columns: [bar] minmax(min-content, 2fr);
+  grid-template-rows: [editors-row] minmax(min-content, max-content) [header-row] minmax(min-content, 40px) [container-row] auto;
+  overflow: hidden;
+}
+
+.editors {
+  grid-column: bar;
+  grid-row: editors-row;
+}
+
+.codeset-version-list-item {
+  display: flex; align-items: center; padding: 0;
+}
+
+.nav-active-link {
+  background-color: $nist_light_yellow;
+}
+
+.filter {
+  grid-column: bar;
+  grid-row: header-row;
+  background-color: white;
+  display: flex;
+  align-items: center;
+}
+
+.list {
+  grid-column: 1;
+  background-color: rgb(255, 246, 232);
+  grid-row: container-row;
+  overflow: scroll;
+  display: flex;
+}
+
+.list-group-item {
+  cursor: pointer;
+}
+
+.list-group-item:hover {
+  background-color: rgb(243, 243, 243);
+}
+
+.version-ball {
+  position: absolute; 
+  left: 10px; 
+  top: 15px; 
+  width: 20px; 
+  height: 20px; 
+  border-radius: 20px; 
+}
+
+.version-committed {
+  background-color: #37e0d0;
+}
+
+.version-inprogress {
+  background-color: #215aff;
+}
+
+.version-line {
+  position: absolute; 
+  width: 4px; 
+  background-color: gray;
+  left: 18px;
+}
+
+.version-line-top {
+  height: 50%; 
+  bottom: 0;
+}
+
+.version-line-middle {
+  height: 100%; 
+}
+
+.version-line-bottom {
+  height: 50%; 
+  top: 0;
+}
+
+.version-line-single {
+  display: none;
+}
+
+.version-icon {
+  height: 100%; 
+  min-height: 50px; 
+  width: 40px; 
+  position: relative;
+}

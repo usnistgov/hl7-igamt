@@ -49,7 +49,7 @@ export const selectAllCodeSetVersions = createSelector(
   selectCodeSetVersions,
   selectAll,
 );
-export const selectFolderById = createSelector(
+export const selectCodeSetVersionById = createSelector(
   selectCodeSetVersionsEntites,
   (dictionary: Dictionary<ICodeSetVersionInfo>, props: { id: string }) => {
     return dictionary[props.id];

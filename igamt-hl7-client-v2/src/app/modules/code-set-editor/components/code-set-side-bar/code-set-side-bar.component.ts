@@ -13,7 +13,7 @@ import { selectAllCodeSetVersions, selectCodeSetId } from 'src/app/root-store/co
 @Component({
   selector: 'app-code-set-side-bar',
   templateUrl: './code-set-side-bar.component.html',
-  styleUrls: ['./code-set-side-bar.component.css'],
+  styleUrls: ['./code-set-side-bar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CodeSetSideBarComponent implements OnInit {

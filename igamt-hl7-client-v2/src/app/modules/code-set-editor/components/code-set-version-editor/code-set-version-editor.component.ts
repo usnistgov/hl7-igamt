@@ -3,7 +3,7 @@ import { EditorChange } from './../../../dam-framework/store/data/dam.actions';
 import { Component, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
-import {  Observable, ReplaySubject, Subscription, of, throwError } from 'rxjs';
+import { Observable, ReplaySubject, Subscription, of, throwError } from 'rxjs';
 import { IEditorMetadata } from 'src/app/modules/dam-framework';
 import { DamAbstractEditorComponent } from 'src/app/modules/dam-framework/services/dam-editor.component';
 import { EditorSave } from 'src/app/modules/dam-framework/store';
@@ -16,6 +16,7 @@ import { IDocumentRef } from 'src/app/modules/shared/models/abstract-domain.inte
 import { IChange } from 'src/app/modules/shared/models/save-change';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { ICodeSetVersionContent } from '../../models/code-set.models';
+import { selectCodeSetVersionById } from 'src/app/root-store/code-set-editor/code-set-edit/code-set-edit.selectors';
 
 @Component({
   selector: 'app-code-set-version-editor',
@@ -42,15 +43,15 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
     actions$: Actions,
     store: Store<any>) {
     super({
-        id: EditorID.CODE_SET_VERSION,
-        title: "Code Set Version",
-      },
+      id: EditorID.CODE_SET_VERSION,
+      title: "Code Set Version",
+    },
       actions$,
       store,
     );
     this.resourceType = Type.CODESETVERSION;
 
-   // this.username = this.store.select(fromAuth.selectUsername);
+    // this.username = this.store.select(fromAuth.selectUsername);
     this.resourceSubject = new ReplaySubject<ICodeSetVersionContent>(1);
 
 
@@ -113,12 +114,7 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
   }
 
   editorDisplayNode(): Observable<IDisplayElement> {
-    // return this.elementId$.pipe(
-    //   concatMap((id) => {
-    //     return this.store.select(this.elementSelector(), { id });
-    //   }),
-    // );
-    return of(null);
+    return of();
   }
 
   contentChange(change: IChange) {
@@ -126,20 +122,20 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
 
   }
 
-  updateCodes(event: ICodes[]){
+  updateCodes(event: ICodes[]) {
     console.log("event");
     console.log(event);
 
-     this.resource$.pipe(
+    this.resource$.pipe(
       take(1),
       tap((resource) => {
 
-        this.editorChange({ data: {resource: {... resource, codes: event }} }, true);
+        this.editorChange({ data: { resource: { ...resource, codes: event } } }, true);
       }),
     ).subscribe();
 
 
-   //               this.resourceSubject.next(resource);
+    //               this.resourceSubject.next(resource);
 
 
 
@@ -160,27 +156,27 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
 
   onEditorSave(action: EditorSave): Observable<Action> {
     console.log("action");
-  //   return combineLatest(this.elementId$, this.documentRef$, this.changes.asObservable()).pipe(
-  //     take(1),
-  //     mergeMap(([id, documentRef, changes]) => {
-  //       return this.saveChanges(id, documentRef, Object.values(changes)).pipe(
-  //         mergeMap((message) => {
-  //           return this.getById(id).pipe(
-  //             take(1),
-  //             flatMap((resource) => {
-  //               this.changes.next({});
-  //               this.resourceSubject.next(resource);
-  //               return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
-  //             }),
-  //           );
-  //         }),
-  //         catchError((error) => throwError(this.messageService.actionFromError(error))),
-  //       );
-  //     }),
-  //   );
-  // }
-  return of(null);
+    //   return combineLatest(this.elementId$, this.documentRef$, this.changes.asObservable()).pipe(
+    //     take(1),
+    //     mergeMap(([id, documentRef, changes]) => {
+    //       return this.saveChanges(id, documentRef, Object.values(changes)).pipe(
+    //         mergeMap((message) => {
+    //           return this.getById(id).pipe(
+    //             take(1),
+    //             flatMap((resource) => {
+    //               this.changes.next({});
+    //               this.resourceSubject.next(resource);
+    //               return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
+    //             }),
+    //           );
+    //         }),
+    //         catchError((error) => throwError(this.messageService.actionFromError(error))),
+    //       );
+    //     }),
+    //   );
+    // }
+    return of(null);
 
-}
+  }
 
 }
