@@ -1,10 +1,14 @@
 package gov.nist.hit.hl7.igamt.valueset.service;
 
+import java.util.List;
+
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSet;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetVersion;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetCreateRequest;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetInfo;
+import gov.nist.hit.hl7.igamt.valueset.model.CodeSetListItem;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionContent;
 
 public interface CodeSetService {
@@ -15,6 +19,20 @@ public interface CodeSetService {
 			throws ResourceNotFoundException, ForbiddenOperationException;
 
 	CodeSetVersionContent getCodeSetVersionContent(String id, String codeSetVersionId, String username) throws ResourceNotFoundException;
+
+	CodeSetVersion saveCodeSetContent(String id, String versionId, CodeSetVersionContent content, String username) throws ResourceNotFoundException, ForbiddenOperationException;
+
+	List<CodeSet> findByUsername(String username);
+
+	List<CodeSet> findAll();
+
+	List<CodeSetListItem> convertToDisplayList(List<CodeSet> codesets);
+
+	List<CodeSet> findByPrivateAudienceEditor(String username);
+
+	List<CodeSet> findByPrivateAudienceViewer(String username);
+
+	List<CodeSet> findAllPrivateCodeSet();
 
 
 }

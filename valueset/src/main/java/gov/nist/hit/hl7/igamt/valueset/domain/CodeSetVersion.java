@@ -1,6 +1,6 @@
 package gov.nist.hit.hl7.igamt.valueset.domain;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
@@ -17,6 +17,8 @@ public class CodeSetVersion {
 	private boolean exposed; 
 	
 	private Date dateCommited;
+	private Date dateCreated;
+
 	
 	private String comments;
 	
@@ -73,6 +75,16 @@ public class CodeSetVersion {
 
 	public void setCodes(Set<Code> codes) {
 		this.codes = codes;
+	}
+
+
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+
+
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
 	}
 
 

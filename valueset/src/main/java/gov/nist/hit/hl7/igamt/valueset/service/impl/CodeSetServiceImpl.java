@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.valueset.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,12 +20,14 @@ import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetVersion;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetCreateRequest;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetInfo;
+import gov.nist.hit.hl7.igamt.valueset.model.CodeSetListItem;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetMetadata;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionContent;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionInfo;
 import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetRepository;
 import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetVersionRepository;
 import gov.nist.hit.hl7.igamt.valueset.service.CodeSetService;
+
 
 
 @Service
@@ -48,8 +51,19 @@ public class CodeSetServiceImpl implements CodeSetService {
 		
 		CodeSetVersion starting = new CodeSetVersion();
 		starting.setVersion("1");
+		CodeSetVersion second = new CodeSetVersion();
+		second.setDateCommited(new Date());
+		second.setVersion("2");
+		
+		CodeSetVersion third = new CodeSetVersion();
+		third.setDateCommited(null);
+		third.setVersion("3");
 		
 		codeSet.getCodeSetVersions().add(this.codeSetVersionRepo.save(starting));
+		codeSet.getCodeSetVersions().add(this.codeSetVersionRepo.save(second));
+
+		codeSet.getCodeSetVersions().add(this.codeSetVersionRepo.save(third));
+
 		return this.codeSetRepo.save(codeSet);
 	}
 	
@@ -57,10 +71,7 @@ public class CodeSetServiceImpl implements CodeSetService {
 	public CodeSetInfo getCodeSetInfo(String id, String username) throws ResourceNotFoundException, ForbiddenOperationException {
 		CodeSet codeSet = this.codeSetRepo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESET));
-		//if(this.workspacePermissionService.hasAccessTo(workspace, username)) {
 			return this.toCodeSetInfo(codeSet, username);
-		//}
-		//throw new ForbiddenOperationException();
 	}
 
 	private CodeSetInfo toCodeSetInfo(CodeSet codeSet, String username) {
@@ -116,17 +127,70 @@ public class CodeSetServiceImpl implements CodeSetService {
 		this.setVersionInfo(codeSetVersion, ret,  parentId);
 		
 		//temp 
+	
 		
-		Set<Code> codes = new HashSet<Code>();
-		Code code = new Code();
-		code.setId("id");
-		code.setCodeSystem("idsyss");
-		code.setValue("test");
-		code.setUsage(CodeUsage.R);
-		codes.add(code);
-		
-		ret.setCodes(codes);
+		ret.setCodes(codeSetVersion.getCodes());
 		return ret;
 	}
+
+	@Override
+	public CodeSetVersion saveCodeSetContent(String id, String versionId, CodeSetVersionContent content, String username)
+			throws ResourceNotFoundException, ForbiddenOperationException {
+		CodeSetVersion codeSetVersion =	this.codeSetVersionRepo.findById(versionId).orElseThrow(() -> new ResourceNotFoundException(versionId, Type.CODESETVERSION));
+		codeSetVersion.setCodes(content.getCodes());
+		return codeSetVersionRepo.save(codeSetVersion);
+		
+	}
+
+	@Override
+	public List<CodeSet> findByUsername(String username) {
+		return null;
+	}
+
+	@Override
+	public List<CodeSet> findAll() {
+		return null;
+	}
+
+	@Override
+	public List<CodeSetListItem> convertToDisplayList(List<CodeSet> codesets) {
+		
+		List<CodeSetListItem> ret = new ArrayList<CodeSetListItem>();
+		for(CodeSet codeSet: codesets) {
+			CodeSetListItem item = new CodeSetListItem();
+			item.setId(codeSet.getId());
+			item.setTitle(codeSet.getName());
+			item.setDescription(codeSet.getDescription());
+			//item.setUsername(codeSet.getUsername());
+//			item.setCoverPicture();
+			item.setDateUpdated(codeSet.getDateUpdated() != null? codeSet.getDateUpdated().toString(): "");
+			ret.add(item);
+		}
+		return ret;
+		
+	}
+	
+	@Override
+	public List<CodeSet> findByPrivateAudienceEditor(String username) {
+		return this.codeSetRepo.findByPrivateAudienceEditor(username);
+	}
+
+	@Override
+	public List<CodeSet> findByPrivateAudienceViewer(String username) {
+		return this.codeSetRepo.findByPrivateAudienceViewer(username);
+	}
+	
+	
+	@Override
+	public List<CodeSet> findAllPrivateCodeSet() {
+		return this.codeSetRepo.findAllPrivateCodeSet();
+	}
+
+	
+//	@Override
+//	public List<CodeSet> findByPublicAudienceAndStatusPublished() {
+//		return this.codeSetRepo.findByPublicAudienceAndStatusPublished();
+//	}
+//	
 	
 }

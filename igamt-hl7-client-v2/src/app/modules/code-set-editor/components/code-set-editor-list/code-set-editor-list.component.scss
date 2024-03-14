@@ -1,0 +1,41 @@
+ @import '../../../../../assets/variables';
+
+.code-set-list-layout {
+  @extend %page-wrapper;
+
+  display: grid;
+  grid-template-areas: 'alerts' 'topbar' 'search-bar' 'code-set';
+  grid-template-columns: 1fr;
+  grid-template-rows: minmax(min-content, max-content) 70px 60px auto;
+  height: 100%;
+}
+
+.topbar {
+  grid-area: topbar;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.alerts {
+  grid-area: alerts;
+}
+
+.search-bar {
+  grid-area: search-bar;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.code-set-list {
+  grid-area: code-set;
+  max-height: 100%;
+  overflow: scroll;
+}
+
+.spacer {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}

@@ -19,16 +19,19 @@ import { CodeSetActiveTitlebarComponent } from './components/code-set-active-tit
 import { CodeSetSideBarComponent } from './components/code-set-side-bar/code-set-side-bar.component';
 import { CodeSetToolBarComponent } from './components/code-set-tool-bar/code-set-tool-bar.component';
 import { CodeSetTableComponent } from './components/code-set-table/code-set-table.component';
+import { CodeSetListEffects } from 'src/app/root-store/code-set-editor/code-set-list/code-set-list.effects';
+import { DeleteCodeSetDialogComponent } from './components/delete-code-set-dialog/delete-code-set-dialog.component';
+import { CodeSetEditorListCardComponent } from './components/code-set-editor-list-card/code-set-editor-list-card.component';
 
 
 @NgModule({
-    declarations: [CodeSetEditorListComponent, CodeSetEditorCreateComponent, CodeSetEditorComponent, CodeSetVersionEditorComponent, CodeSetActiveTitlebarComponent, CodeSetSideBarComponent, CodeSetToolBarComponent, CodeSetTableComponent],
+    declarations: [CodeSetEditorListComponent, CodeSetEditorCreateComponent, CodeSetEditorComponent, CodeSetVersionEditorComponent, CodeSetActiveTitlebarComponent, CodeSetSideBarComponent, CodeSetToolBarComponent, CodeSetTableComponent, CodeSetEditorListCardComponent, DeleteCodeSetDialogComponent],
     imports: [
         DamFrameworkModule.forRoot(),
         CodeSetRoutingModule,
         CoreModule,
         SharedModule,
-        EffectsModule.forFeature([CodeSetEditEffects]),
+        EffectsModule.forFeature([CodeSetEditEffects, CodeSetListEffects]),
         StoreModule.forFeature(fromCodeSet.featureName, fromCodeSet.reducers),
         DamMessagesModule,
         ReactiveFormsModule,

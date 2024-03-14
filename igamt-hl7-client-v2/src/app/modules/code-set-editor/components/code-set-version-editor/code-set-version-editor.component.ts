@@ -3,20 +3,24 @@ import { EditorChange } from './../../../dam-framework/store/data/dam.actions';
 import { Component, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
-import { Observable, ReplaySubject, Subscription, of, throwError } from 'rxjs';
 import { IEditorMetadata } from 'src/app/modules/dam-framework';
 import { DamAbstractEditorComponent } from 'src/app/modules/dam-framework/services/dam-editor.component';
 import { EditorSave } from 'src/app/modules/dam-framework/store';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
-import { catchError, concatMap, map, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
+import { catchError, concatMap, filter, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { SelectItem } from 'primeng/primeng';
 import { IDocumentRef } from 'src/app/modules/shared/models/abstract-domain.interface';
 import { IChange } from 'src/app/modules/shared/models/save-change';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { ICodeSetVersionContent } from '../../models/code-set.models';
-import { selectCodeSetVersionById } from 'src/app/root-store/code-set-editor/code-set-edit/code-set-edit.selectors';
+import { selectCodeSetId, selectCodeSetVersionById } from 'src/app/root-store/code-set-editor/code-set-edit/code-set-edit.selectors';
+import { MatDialog } from '@angular/material';
+import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
+import { CodeSetServiceService } from '../../services/CodeSetService.service';
+import * as fromDam from '../../../dam-framework/store';
 
 @Component({
   selector: 'app-code-set-version-editor',
@@ -39,9 +43,15 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
   resource_s: Subscription;
   resourceType: Type;
   derived$: Observable<boolean>;
+  codeSetId$: Observable<string>;
+
   constructor(
     actions$: Actions,
-    store: Store<any>) {
+    store: Store<any>,
+    private dialog: MatDialog,
+    private messageService: MessageService,
+    private codeSetService: CodeSetServiceService
+    ) {
     super({
       id: EditorID.CODE_SET_VERSION,
       title: "Code Set Version",
@@ -73,6 +83,8 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
       this.selectedColumns = this.cols;
       this.codeSystemOptions = this.getCodeSystemOptions(resource);
     });
+
+    this.codeSetId$ = this.store.select(selectCodeSetId);
   }
 
   getCodeSystemOptions(resource: ICodeSetVersionContent): SelectItem[] {
@@ -84,10 +96,6 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
       return [];
     }
   }
-
-
-
-
 
   editorChange(data: any, valid: boolean) {
     this.changeTime = new Date();
@@ -114,7 +122,7 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
   }
 
   editorDisplayNode(): Observable<IDisplayElement> {
-    return of();
+    return of(null);
   }
 
   contentChange(change: IChange) {
@@ -154,29 +162,30 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
   }
 
 
-  onEditorSave(action: EditorSave): Observable<Action> {
-    console.log("action");
-    //   return combineLatest(this.elementId$, this.documentRef$, this.changes.asObservable()).pipe(
-    //     take(1),
-    //     mergeMap(([id, documentRef, changes]) => {
-    //       return this.saveChanges(id, documentRef, Object.values(changes)).pipe(
-    //         mergeMap((message) => {
-    //           return this.getById(id).pipe(
-    //             take(1),
-    //             flatMap((resource) => {
-    //               this.changes.next({});
-    //               this.resourceSubject.next(resource);
-    //               return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
-    //             }),
-    //           );
-    //         }),
-    //         catchError((error) => throwError(this.messageService.actionFromError(error))),
-    //       );
-    //     }),
-    //   );
-    // }
-    return of(null);
+    onEditorSave(action: EditorSave): Observable<Action> {
 
-  }
+        return combineLatest(this.elementId$, this.codeSetId$, this.resource$).pipe(
+          take(1),
+          mergeMap(([id, parent, resource]) => {
+
+            return this.codeSetService.saveCodeSetVersion(parent, resource.id, resource).pipe(
+              mergeMap((message) => {
+                return  this.codeSetService.getCodeSetVersionContent(parent, resource.id).pipe(
+                  take(1),
+                  flatMap((resource) => {
+                    this.resourceSubject.next(resource);
+                    return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
+                  }),
+                );
+              }),
+              catchError((error) => throwError(this.messageService.actionFromError(error))),
+            );
+          }),
+        );
+    }
+
+
+
+
 
 }

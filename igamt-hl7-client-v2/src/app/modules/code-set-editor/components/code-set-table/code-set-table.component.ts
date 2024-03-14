@@ -91,6 +91,9 @@ export class CodeSetTableComponent implements OnInit {
   }
 
   addCode() {
+    if(!this.codeSetVersion.codes){
+      this.codeSetVersion.codes = [];
+    }
     this.codeSetVersion.codes.unshift({
       id: Guid.create().toString(),
       value: null,

@@ -1,13 +1,11 @@
+import { GlobalSave } from './../../../modules/dam-framework/store/data/dam.actions';
 import { CodeSetServiceService } from './../../../modules/code-set-editor/services/CodeSetService.service';
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-
-import { EMPTY } from 'rxjs';
 import { CodeSetEditActionTypes, CodeSetEditActions, CodeSetEditResolverLoad, CodeSetEditResolverLoadFailure, CodeSetEditResolverLoadSuccess, OpenCodeSetVersionEditor } from './code-set-edit.actions';
 
 
 import { HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, switchMap, take } from 'rxjs/operators';
@@ -24,11 +22,8 @@ import { selectCodeSetId } from './code-set-edit.selectors';
 @Injectable()
 export class CodeSetEditEffects  extends DamWidgetEffect  {
 
-
   @Effect()
   loadCodeSetEdits$ = this.actions$.pipe(
-    ofType(CodeSetEditActionTypes.CodeSetEditResolverLoad),
-
     ofType(CodeSetEditActionTypes.CodeSetEditResolverLoad),
     switchMap((action: CodeSetEditResolverLoad) => {
       this.store.dispatch(new fromDAM.TurnOnLoader({
@@ -52,13 +47,10 @@ export class CodeSetEditEffects  extends DamWidgetEffect  {
         }),
       );
     }),
-
   );
 
-
-
   @Effect()
-  OpenFolderEditor$ = this.actions$.pipe(
+  OpenCodeVersionEditor$ = this.actions$.pipe(
     ofType(CodeSetEditActionTypes.OpenCodeSetVersionEditor),
     switchMap((action: OpenCodeSetVersionEditor) => {
       return this.store.select(selectCodeSetId).pipe(
@@ -90,7 +82,13 @@ export class CodeSetEditEffects  extends DamWidgetEffect  {
     }),
   );
 
-
+  @Effect()
+  toolbarSave$ = this.actions$.pipe(
+    ofType(fromDAM.DamActionTypes.GlobalSave),
+    map((action: GlobalSave) => {
+      return new EditorSave();
+    }),
+  );
 
     constructor(
       actions$: Actions<CodeSetEditActions>,
