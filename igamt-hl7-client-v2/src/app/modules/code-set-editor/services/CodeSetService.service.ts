@@ -18,6 +18,10 @@ export class CodeSetServiceService {
     return this.http.post<Message<string>>(this.CODE_SET_END_POINT + codeSetId + '/code-set-version/' + versionId, resource);
   }
 
+  commitCodeSetVersion( codeSetId: string, versionId: string, resource: ICodeSetVersionContent) : Observable<Message<string>>  {
+    return this.http.post<Message<string>>(this.CODE_SET_END_POINT + codeSetId + '/code-set-version/' + versionId +'/commit', resource);
+  }
+
   readonly CODE_SET_END_POINT = '/api/code-set/';
 
   constructor(
@@ -49,12 +53,6 @@ export class CodeSetServiceService {
     ];
   }
 
-
-
-
-
-
-
   fetchCodeSetList(type: CodeSetLoadType): Observable<ICodeSetListItem[]> {
     return this.http.get<ICodeSetListItem[]>('api/code-sets', {
       params: {
@@ -77,7 +75,22 @@ export class CodeSetServiceService {
   }
 
 
+  upload(id: string, file: File) {
+    const formData: FormData = new FormData();
+    formData.append('file', file, file.name);
 
+    return this.http.post('api/code-sets/importCSV/' + id, formData);
+  }
+
+
+  exportCSV(id: String) {
+    const form = document.createElement('form');
+    form.action = 'api/code-sets/exportCSV/' + id;
+    form.method = 'POST';
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    form.submit();
+  }
 
 }
 

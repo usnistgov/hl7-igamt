@@ -22,10 +22,12 @@ import { CodeSetTableComponent } from './components/code-set-table/code-set-tabl
 import { CodeSetListEffects } from 'src/app/root-store/code-set-editor/code-set-list/code-set-list.effects';
 import { DeleteCodeSetDialogComponent } from './components/delete-code-set-dialog/delete-code-set-dialog.component';
 import { CodeSetEditorListCardComponent } from './components/code-set-editor-list-card/code-set-editor-list-card.component';
+import { CommitCodeSetVersionDialogComponent } from './components/commit-code-set-version-dialog/commit-code-set-version-dialog.component';
+import { ImportCodeCSVComponent } from './components/import-code-csv/import-code-csv.component';
 
 
 @NgModule({
-    declarations: [CodeSetEditorListComponent, CodeSetEditorCreateComponent, CodeSetEditorComponent, CodeSetVersionEditorComponent, CodeSetActiveTitlebarComponent, CodeSetSideBarComponent, CodeSetToolBarComponent, CodeSetTableComponent, CodeSetEditorListCardComponent, DeleteCodeSetDialogComponent],
+    declarations: [CodeSetEditorListComponent, CodeSetEditorCreateComponent, CodeSetEditorComponent, CodeSetVersionEditorComponent, CodeSetActiveTitlebarComponent, CodeSetSideBarComponent, CodeSetToolBarComponent, CodeSetTableComponent, CodeSetEditorListCardComponent, DeleteCodeSetDialogComponent, CommitCodeSetVersionDialogComponent, ImportCodeCSVComponent],
     imports: [
         DamFrameworkModule.forRoot(),
         CodeSetRoutingModule,
@@ -35,7 +37,8 @@ import { CodeSetEditorListCardComponent } from './components/code-set-editor-lis
         StoreModule.forFeature(fromCodeSet.featureName, fromCodeSet.reducers),
         DamMessagesModule,
         ReactiveFormsModule,
-    ]
+    ],
+    entryComponents : [CommitCodeSetVersionDialogComponent, ImportCodeCSVComponent],
 })
 export class CodeSetEditorModule { }
 

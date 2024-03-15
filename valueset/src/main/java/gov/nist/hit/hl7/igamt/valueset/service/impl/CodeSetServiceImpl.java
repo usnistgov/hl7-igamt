@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,19 +51,9 @@ public class CodeSetServiceImpl implements CodeSetService {
 		codeSet.setAudience(new PrivateAudience(AudienceType.PRIVATE, username, new HashSet<String>()));
 		
 		CodeSetVersion starting = new CodeSetVersion();
-		starting.setVersion("1");
-		CodeSetVersion second = new CodeSetVersion();
-		second.setDateCommited(new Date());
-		second.setVersion("2");
-		
-		CodeSetVersion third = new CodeSetVersion();
-		third.setDateCommited(null);
-		third.setVersion("3");
-		
+		starting.setVersion("1");		
 		codeSet.getCodeSetVersions().add(this.codeSetVersionRepo.save(starting));
-		codeSet.getCodeSetVersions().add(this.codeSetVersionRepo.save(second));
 
-		codeSet.getCodeSetVersions().add(this.codeSetVersionRepo.save(third));
 
 		return this.codeSetRepo.save(codeSet);
 	}
@@ -104,17 +95,22 @@ public class CodeSetServiceImpl implements CodeSetService {
 			}
 		}
 		
-		return children;
+		return children.stream()
+                .sorted((v1, v2) -> v2.getDateCreated().compareTo(v1.getDateCreated()))
+                .collect(Collectors.toList());
+        
 	}
 
-	private void setVersionInfo(CodeSetVersion version,CodeSetVersionInfo codeSetVersionInfo,  String parent) {
+	private void setVersionInfo(CodeSetVersion version, CodeSetVersionInfo codeSetVersionInfo,  String parent) {
 		
 		codeSetVersionInfo.setId(version.getId());
 		codeSetVersionInfo.setVersion(version.getVersion());
 		codeSetVersionInfo.setExposted(false);
 		codeSetVersionInfo.setComments(version.getComments());
 		codeSetVersionInfo.setParentId(parent);
-	
+		codeSetVersionInfo.setDateUpdated(version.getDateUpdated());
+		codeSetVersionInfo.setDateCreated(version.getDateCreated());
+		codeSetVersionInfo.setDateCommitted(version.getDateCommitted());
 	}
 	
 	
@@ -125,9 +121,7 @@ public class CodeSetServiceImpl implements CodeSetService {
 		CodeSetVersion codeSetVersion =	this.codeSetVersionRepo.findById(codeSetVersionId).orElseThrow(() -> new ResourceNotFoundException(codeSetVersionId, Type.CODESETVERSION));
 		CodeSetVersionContent ret = new CodeSetVersionContent();
 		this.setVersionInfo(codeSetVersion, ret,  parentId);
-		
-		//temp 
-	
+			
 		
 		ret.setCodes(codeSetVersion.getCodes());
 		return ret;
@@ -137,8 +131,43 @@ public class CodeSetServiceImpl implements CodeSetService {
 	public CodeSetVersion saveCodeSetContent(String id, String versionId, CodeSetVersionContent content, String username)
 			throws ResourceNotFoundException, ForbiddenOperationException {
 		CodeSetVersion codeSetVersion =	this.codeSetVersionRepo.findById(versionId).orElseThrow(() -> new ResourceNotFoundException(versionId, Type.CODESETVERSION));
-		codeSetVersion.setCodes(content.getCodes());
+	
+		
+		applyCodeSet(content, codeSetVersion );
+		
 		return codeSetVersionRepo.save(codeSetVersion);
+		
+	}
+	
+	
+	@Override
+	public CodeSetVersion findById(String id)throws ResourceNotFoundException, ForbiddenOperationException {
+		return	this.codeSetVersionRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESETVERSION));
+	
+		
+	}
+	
+	
+	@Override
+	public CodeSetVersion commit(String id, String versionId, CodeSetVersionContent content, String username)
+			throws ResourceNotFoundException, ForbiddenOperationException {
+		CodeSetVersion codeSetVersion =	this.codeSetVersionRepo.findById(versionId).orElseThrow(() -> new ResourceNotFoundException(versionId, Type.CODESETVERSION));
+	
+		
+		applyCodeSet(content, codeSetVersion );
+		
+		codeSetVersion.setDateCommitted(new Date());
+		return codeSetVersionRepo.save(codeSetVersion);
+		
+	}
+	
+
+	public void applyCodeSet(CodeSetVersionContent content, CodeSetVersion codeSetVersion) {
+		
+		codeSetVersion.setCodes(content.getCodes());
+		codeSetVersion.setComments(content.getComments());
+		codeSetVersion.setVersion(content.getVersion());
+		codeSetVersion.setExposed(content.isExposted());
 		
 	}
 
@@ -185,6 +214,29 @@ public class CodeSetServiceImpl implements CodeSetService {
 	public List<CodeSet> findAllPrivateCodeSet() {
 		return this.codeSetRepo.findAllPrivateCodeSet();
 	}
+
+	@Override
+	public void addCodeSetVersion(String id) throws ResourceNotFoundException {
+		CodeSet codeSet = this.codeSetRepo.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESET));	
+		
+		
+		CodeSetVersion starting = new CodeSetVersion();
+		starting.setVersion(generateLatest(codeSet.getCodeSetVersions()));		
+		codeSet.getCodeSetVersions().add(this.codeSetVersionRepo.save(starting));
+		 this.codeSetRepo.save(codeSet);
+
+		
+		
+	}
+
+	private String generateLatest(Set<CodeSetVersion> codeSetVersions) {
+		return codeSetVersions.size()+1+"";
+	}
+	
+	
+	
+	
 
 	
 //	@Override

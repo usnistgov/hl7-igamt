@@ -9,18 +9,20 @@ import { EditorSave } from 'src/app/modules/dam-framework/store';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
 import { BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, filter, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
+import { catchError, concatMap, filter, flatMap, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { SelectItem } from 'primeng/primeng';
 import { IDocumentRef } from 'src/app/modules/shared/models/abstract-domain.interface';
 import { IChange } from 'src/app/modules/shared/models/save-change';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
-import { ICodeSetVersionContent } from '../../models/code-set.models';
+import { ICodeSetInfo, ICodeSetVersionContent } from '../../models/code-set.models';
 import { selectCodeSetId, selectCodeSetVersionById } from 'src/app/root-store/code-set-editor/code-set-edit/code-set-edit.selectors';
 import { MatDialog } from '@angular/material';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { CodeSetServiceService } from '../../services/CodeSetService.service';
 import * as fromDam from '../../../dam-framework/store';
+import { CommitCodeSetVersionDialogComponent } from '../commit-code-set-version-dialog/commit-code-set-version-dialog.component';
+import { selectViewOnly } from 'src/app/root-store/dam-igamt/igamt.selectors';
 
 @Component({
   selector: 'app-code-set-version-editor',
@@ -42,8 +44,10 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
   workspace_s: Subscription;
   resource_s: Subscription;
   resourceType: Type;
-  derived$: Observable<boolean>;
+  committed: boolean;
   codeSetId$: Observable<string>;
+
+
 
   constructor(
     actions$: Actions,
@@ -68,10 +72,12 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
     this.workspace_s = this.currentSynchronized$.pipe(
       map((current) => {
         this.resourceSubject.next(_.cloneDeep(current));
+        this.committed = current.dateCommitted != null
         // this.changes.next({ ...current.changes });
       }),
     ).subscribe();
     this.resource$ = this.resourceSubject.asObservable();
+
     this.resource_s = this.resource$.subscribe((resource: ICodeSetVersionContent) => {
       this.cols = [];
       this.cols.push({ field: 'value', header: 'Value' });
@@ -186,6 +192,82 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
 
 
 
+    updateCodeSetState(id: string): Observable<Action[]> {
+      return this.codeSetService.getCodeSetInfo(id).pipe(
+        map(cs => {
+          const actions = this.codeSetService.getUpdateAction(cs);
+          return actions;
+        })
+      );
+    }
+
+
+
+
+
+      saveAndUpdate(parent: string, resource: any) {
+        this.codeSetService.commitCodeSetVersion(parent, resource.id, resource).pipe(
+          mergeMap((message) =>
+            this.codeSetService.getCodeSetVersionContent(parent, resource.id).pipe(
+              take(1),
+              mergeMap((updatedResource) => {
+                console.log("TEST");
+                this.resourceSubject.next(updatedResource);
+                return this.updateCodeSetState(parent);
+              }),
+              tap((actions) => {
+                console.log("Calling");
+
+                this.dispatchList([...actions,
+                  this.messageService.messageToAction(message),
+                  new fromDam.EditorUpdate({ value: { resource: resource }, updateDate: false }),
+                  new fromDam.SetValue({ selected: resource })
+                ])
+              }
+              ),
+            )
+          ),
+        ).subscribe();
+      }
+      dispatchList(actions: Action []){
+        actions.forEach((action) => {
+          this.store.dispatch(action);
+        });
+      }
+
+
+      commit() {
+        combineLatest([this.elementId$, this.codeSetId$, this.resource$]).pipe(
+          take(1),
+          tap(([id, parent, resource]) => {
+            this.dialog.open(CommitCodeSetVersionDialogComponent, {
+              data: {
+                title: 'Commit Code Set Version',
+                comments: '',
+                version: resource.version,
+              },
+            }).afterClosed().subscribe({
+              next: (res) => {
+                if (res) {
+                  resource.version = res.version;
+                  resource.comments = res.comments;
+                  this.saveAndUpdate(parent, resource);
+                }
+              },
+            });
+          }),
+        ).subscribe();
+      }
+
+      importCSV($event){
+
+      }
+
+      exportCSV($event){
+
+        this.codeSetService.exportCSV( $event.id);
+       
+      }
 
 
 }

@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>Commit version</h2>
+<form [formGroup]="metaDataForm" style="display: flex; flex-direction: column;">
+  <app-form-input formControlName="version" id="version" name="version"
+    placeholder="Version" label="Version"> </app-form-input>
+  <app-form-input formControlName="comments" id="comments" name="comments"
+  placeholder="Comments" label="Comments"> </app-form-input>
+</form>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
+  <button (click)="create()" [disabled]="metaDataForm.invalid" class="btn btn-sm btn-success">Done</button>
+</mat-dialog-actions>

@@ -21,6 +21,14 @@ export class CodeSetTableComponent implements OnInit {
   filteredCodeSystems: string[] = [];
   @Output()
   changes: EventEmitter<ICodes[]> = new EventEmitter<ICodes[]>();
+
+  @Output()
+  exportCSVEvent: EventEmitter<any> = new EventEmitter<any>();
+
+  @Output()
+  importCSVEvent: EventEmitter<any> = new EventEmitter<any>();
+
+
   @Input()
   existingChangeReason: any[];
   @Input()
@@ -145,6 +153,14 @@ export class CodeSetTableComponent implements OnInit {
   }
   updateURl(value) {
     this.updateAttribute(PropertyType.URL, value);
+  }
+
+  importCSV(){
+    this.importCSVEvent.emit(this.codeSetVersion);
+  }
+  exportCSV(){
+    this.exportCSVEvent.emit(this.codeSetVersion);
+
   }
 
 }

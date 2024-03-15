@@ -34,5 +34,12 @@ public interface CodeSetService {
 
 	List<CodeSet> findAllPrivateCodeSet();
 
+	CodeSetVersion commit(String id, String versionId, CodeSetVersionContent content, String username)
+			throws ResourceNotFoundException, ForbiddenOperationException;
+
+	void addCodeSetVersion(String id) throws ResourceNotFoundException;
+
+	CodeSetVersion findById(String id) throws ResourceNotFoundException, ForbiddenOperationException;
+
 
 }

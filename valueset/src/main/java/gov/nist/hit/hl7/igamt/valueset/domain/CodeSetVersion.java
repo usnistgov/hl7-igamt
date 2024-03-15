@@ -3,12 +3,16 @@ package gov.nist.hit.hl7.igamt.valueset.domain;
 import java.util.Date;
 import java.util.Set;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 public class CodeSetVersion {
-	
+
+
+
 	@Id
 	private String id;
 	
@@ -16,8 +20,14 @@ public class CodeSetVersion {
 	
 	private boolean exposed; 
 	
-	private Date dateCommited;
+	private Date dateCommitted;
+	
+	@CreatedDate
 	private Date dateCreated;
+	
+	@LastModifiedDate
+	private Date dateUpdated;
+	
 
 	
 	private String comments;
@@ -53,12 +63,12 @@ public class CodeSetVersion {
 		this.exposed = exposed;
 	}
 
-	public Date getDateCommited() {
-		return dateCommited;
+	public Date getDateCommitted() {
+		return dateCommitted;
 	}
 
-	public void setDateCommited(Date dateCommited) {
-		this.dateCommited = dateCommited;
+	public void setDateCommitted(Date dateCommited) {
+		this.dateCommitted = dateCommited;
 	}
 
 	public String getComments() {
@@ -87,5 +97,15 @@ public class CodeSetVersion {
 		this.dateCreated = dateCreated;
 	}
 
+	
+	
+	public Date getDateUpdated() {
+		return dateUpdated;
+	}
+
+
+	public void setDateUpdated(Date dateUpdated) {
+		this.dateUpdated = dateUpdated;
+	}
 
 }

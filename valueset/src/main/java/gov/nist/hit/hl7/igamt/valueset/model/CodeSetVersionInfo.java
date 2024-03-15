@@ -1,5 +1,8 @@
 package gov.nist.hit.hl7.igamt.valueset.model;
 
+import java.util.Date;
+
+
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class CodeSetVersionInfo {
@@ -11,8 +14,18 @@ public class CodeSetVersionInfo {
 	private String comments;
 	private String parentId;
 	
+	private Date dateCreated;
+	
+	private Date dateCommitted;
+	private Date dateUpdated;
 	
 	
+	public Date getDateUpdated() {
+		return dateUpdated;
+	}
+	public void setDateUpdated(Date dateUpdated) {
+		this.dateUpdated = dateUpdated;
+	}
 	public CodeSetVersionInfo() {
 		super();
 		this.type = Type.CODESETVERSION;
@@ -52,5 +65,17 @@ public class CodeSetVersionInfo {
 	}
 	public void setParentId(String parentId) {
 		this.parentId = parentId;
+	}
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+	public Date getDateCommitted() {
+		return dateCommitted;
+	}
+	public void setDateCommitted(Date dateCommitted) {
+		this.dateCommitted = dateCommitted;
 	}
 }

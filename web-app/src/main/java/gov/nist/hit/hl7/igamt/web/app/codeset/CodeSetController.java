@@ -1,13 +1,23 @@
 package gov.nist.hit.hl7.igamt.web.app.codeset;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,15 +25,25 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.opencsv.bean.ColumnPositionMappingStrategy;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
 
 import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.common.config.domain.Config;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSet;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetVersion;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -34,6 +54,7 @@ import gov.nist.hit.hl7.igamt.valueset.model.CodeSetListItem;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetListType;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionContent;
 import gov.nist.hit.hl7.igamt.valueset.service.CodeSetService;
+import gov.nist.hit.hl7.igamt.valueset.service.impl.TableCSVGenerator;
 import gov.nist.hit.hl7.igamt.workspace.domain.Workspace;
 import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceForbidden;
 import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceNotFound;
@@ -115,7 +136,18 @@ public class CodeSetController {
 	}
 	
 	
-	
+	@RequestMapping(value = "/api/code-set/{id}/code-set-version/{versionId}/commit", method = RequestMethod.POST, produces = { "application/json" })
+	@ResponseBody
+	public ResponseMessage<?> commit(@PathVariable("id") String id,
+			@PathVariable("versionId") String versionId, @RequestBody CodeSetVersionContent content,
+			Authentication authentication) throws ValuesetException, IOException, ForbiddenOperationException, ResourceNotFoundException {
+		String username = authentication.getPrincipal().toString();
+
+		CodeSetVersion ret = codeSetService.commit(id, versionId, content, username);
+		
+		this.codeSetService.addCodeSetVersion(id);
+		return new ResponseMessage(Status.SUCCESS, "Code set Saved", ret.getId(), null);
+	}
 
 	@RequestMapping(value = "/api/code-sets", method = RequestMethod.GET, produces = { "application/json" })
 	public @ResponseBody List<CodeSetListItem> getUserWorkspaces(
@@ -144,5 +176,51 @@ public class CodeSetController {
 		
 	}
 	
+	
+	@RequestMapping(value = "/api/code-sets/exportCSV/{id}", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+    public void exportCSV(@PathVariable("id") String tableId, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ResourceNotFoundException, ForbiddenOperationException {
+        CodeSetVersion codeSetVersion = this.codeSetService.findById(tableId);
+        if (codeSetVersion == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "CodeSetVersion not found for ID: " + tableId);
+            return;
+        }
+
+        String csvContent = new TableCSVGenerator().generate(codeSetVersion.getCodes());
+
+        try (InputStream content = IOUtils.toInputStream(csvContent, "UTF-8")) {
+            response.setContentType("text/csv");
+
+            response.setHeader("Content-disposition", "attachment;filename=" + codeSetVersion.getVersion()
+                    + "-" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".csv");
+
+            FileCopyUtils.copy(content, response.getOutputStream());
+        } 
+    }
+	
+	@RequestMapping(value = "/api/code-sets/importCSV/", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+
+	public List<Code> uploadCSVFile(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+        } else {
+
+            try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+                ColumnPositionMappingStrategy<Code> strategy = new ColumnPositionMappingStrategy<>();
+                strategy.setType(Code.class);
+                
+                
+                strategy.setColumnMapping(new String[]{"Value",	"Pattern", 	"Description", "CodeSystem",	"Usage",	"Comments"});
+
+                CsvToBean<Code> csvToBean = new CsvToBeanBuilder<Code>(reader)
+                        .withMappingStrategy(strategy)
+                        .withIgnoreLeadingWhiteSpace(true)
+                        .build();
+                List<Code> codes = csvToBean.parse();
+                return codes;
+            } catch (Exception ex) {
+            }
+        }
+		return null;
+    }
 	
 }

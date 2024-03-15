@@ -49,6 +49,8 @@ export class ICodeSetListItem extends DiscoverableListItem {
   sharedUsers?: string[];
   currentAuthor?: string;
   invitation?: boolean;
+  dateCreated?: string;
+  dateCommitted?: string
 }
 
 export type ICodeSetItemType = 'PUBLIC' | 'PRIVATE' | 'DISCOVERABLE' | 'SHARED';

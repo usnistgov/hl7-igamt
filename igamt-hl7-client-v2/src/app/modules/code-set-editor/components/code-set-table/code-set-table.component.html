@@ -1,19 +1,20 @@
 <form #form="ngForm">
-
   <div style="display: flex; flex-direction: row; justify-content: flex-end;">
 
-  <div *ngIf="!viewOnly" style="display: flex; justify-content: flex-end">
-    <button (click)="addCode()" class="btn btn-seconday" type="button"><i class="fa fa-plus"></i> Import from CSV
+  <div  style="display: flex; justify-content: flex-end" >
+    <button (click)="importCSV()"  *ngIf="!viewOnly"   style="margin-right:5px;" class="btn btn-primary" type="button"><i class="fa fa-plus"></i> Import from CSV
     </button>
 
-    <button (click)="deleteCodes()" [disabled]="!selectedCodes.length" class="btn btn-danger"
+    <button (click)="exportCSV()"   style="margin-right:5px;"  class="btn btn-primary" type="button"><i class="fa fa-plus"></i> export CSV
+    </button>
+    <button (click)="deleteCodes()" [disabled]="!selectedCodes.length"  *ngIf="!viewOnly" class="btn btn-danger"
             style="margin-right:5px;"
             type="button">
       <i class="fa fa-trash"></i> Delete Selected
       <span class="badge badge-info">{{selectedCodes?.length }}</span>
     </button>
 
-    <button (click)="addCode()" class="btn btn-primary" type="button"  style="margin-right:5px;"><i class="fa fa-plus"></i> Add Code
+    <button (click)="addCode()" class="btn btn-primary" type="button"  style="margin-right:5px;" *ngIf="!viewOnly"><i class="fa fa-plus"></i> Add Code
     </button>
   </div>
 </div>
