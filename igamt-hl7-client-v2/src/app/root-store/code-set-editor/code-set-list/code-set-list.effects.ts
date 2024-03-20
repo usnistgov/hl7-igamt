@@ -3,18 +3,18 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError, concatMap, finalize, flatMap } from 'rxjs/operators';
+import { CodeSetServiceService } from 'src/app/modules/code-set-editor/services/CodeSetService.service';
 import { Message } from 'src/app/modules/dam-framework/models/messages/message.class';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import {
+  CodeSetListActionTypes,
   DeleteCodeSetListItemRequest,
   DeleteCodeSetListItemSuccess,
   LoadCodeSetList,
-  UpdatePendingInvitationCount,
   UpdateCodeSetList,
-  CodeSetListActionTypes,
+  UpdatePendingInvitationCount,
 } from './code-set-list.actions';
-import { CodeSetServiceService } from 'src/app/modules/code-set-editor/services/CodeSetService.service';
 
 @Injectable()
 export class CodeSetListEffects {
@@ -32,7 +32,7 @@ export class CodeSetListEffects {
               return [
                 new fromDAM.TurnOffLoader(),
                 new UpdateCodeSetList(items),
-//new UpdatePendingInvitationCount(countResult),
+// new UpdatePendingInvitationCount(countResult),
               ];
 
         }),
@@ -45,7 +45,6 @@ export class CodeSetListEffects {
       );
     }),
   );
-
 
   @Effect()
   deleteCodeSet$ = this.actions$.pipe(

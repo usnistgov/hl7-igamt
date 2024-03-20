@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { TreeModule } from 'angular-tree-component';
@@ -95,6 +96,7 @@ import { ValuesetComponent } from './components/hl7-v2-tree/columns/valueset/val
 import { Hl7V2TreeComponent } from './components/hl7-v2-tree/hl7-v2-tree.component';
 import { IgPublisherComponent } from './components/ig-publisher/ig-publisher.component';
 import { IgTypeComponent } from './components/ig-type/ig-type.component';
+import { ImportCodeCSVComponent } from './components/import-code-csv/import-code-csv.component';
 import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
 import { ImportFromLibComponent } from './components/import-from-lib/import-from-lib.component';
 import { ImportStructureComponent } from './components/import-structure/import-structure.component';
@@ -152,7 +154,6 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -266,6 +267,7 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
     MetadataAttributeConfigComponent,
     ImportFromLibComponent,
     VerificationResultDisplayComponent,
+    ImportCodeCSVComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -512,6 +514,7 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
     DocumentConfigComponent,
     MetadataAttributeConfigComponent,
     ImportFromLibComponent,
+    ImportCodeCSVComponent,
   ],
 })
 export class SharedModule {

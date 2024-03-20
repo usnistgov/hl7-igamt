@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -92,7 +93,7 @@ public class DataFixer {
 
 
 
-  public void readCsv() throws ValidationException, ForbiddenOperationException {
+  public void readCsv() throws ValidationException, ForbiddenOperationException, CsvValidationException {
     String csvFile = "/Users/ena3/projects/hl7-igamt/bootstrap/src/main/resources/HL7tables-csv.csv";
     List<BindingInfo> locationIssues= new ArrayList<BindingInfo>();
     HashMap<String, Segment> segmentMap= new HashMap<String, Segment>();

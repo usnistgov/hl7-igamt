@@ -2,9 +2,8 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { ICodeSetActive } from '../../models/code-set.models';
 import { selectWorkspaceActive } from '../../../../root-store/documentation/documentation.reducer';
-
+import { ICodeSetActive } from '../../models/code-set.models';
 
 @Component({
   selector: 'app-code-set-active-titlebar',
@@ -26,6 +25,3 @@ export class CodeSetActiveTitlebarComponent implements OnInit {
 
   ngOnInit() { }
 }
-
-
-

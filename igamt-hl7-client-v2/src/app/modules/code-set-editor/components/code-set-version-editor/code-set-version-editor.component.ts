@@ -1,36 +1,36 @@
-import { ICodes } from './../../../shared/models/value-set.interface';
-import { EditorChange } from './../../../dam-framework/store/data/dam.actions';
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
-import { IEditorMetadata } from 'src/app/modules/dam-framework';
-import { DamAbstractEditorComponent } from 'src/app/modules/dam-framework/services/dam-editor.component';
-import { EditorSave } from 'src/app/modules/dam-framework/store';
-import { Type } from 'src/app/modules/shared/constants/type.enum';
-import { EditorID } from 'src/app/modules/shared/models/editor.enum';
-import { BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, filter, flatMap, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { SelectItem } from 'primeng/primeng';
-import { IDocumentRef } from 'src/app/modules/shared/models/abstract-domain.interface';
-import { IChange } from 'src/app/modules/shared/models/save-change';
-import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
-import { ICodeSetInfo, ICodeSetVersionContent } from '../../models/code-set.models';
-import { selectCodeSetId, selectCodeSetVersionById } from 'src/app/root-store/code-set-editor/code-set-edit/code-set-edit.selectors';
-import { MatDialog } from '@angular/material';
+import { BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
+import { catchError, concatMap, filter, flatMap, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { IEditorMetadata } from 'src/app/modules/dam-framework';
+import { DamAbstractEditorComponent } from 'src/app/modules/dam-framework/services/dam-editor.component';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
-import { CodeSetServiceService } from '../../services/CodeSetService.service';
-import * as fromDam from '../../../dam-framework/store';
-import { CommitCodeSetVersionDialogComponent } from '../commit-code-set-version-dialog/commit-code-set-version-dialog.component';
+import { EditorSave } from 'src/app/modules/dam-framework/store';
+import { Type } from 'src/app/modules/shared/constants/type.enum';
+import { IDocumentRef } from 'src/app/modules/shared/models/abstract-domain.interface';
+import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
+import { EditorID } from 'src/app/modules/shared/models/editor.enum';
+import { IChange } from 'src/app/modules/shared/models/save-change';
+import { selectCodeSetId, selectCodeSetVersionById } from 'src/app/root-store/code-set-editor/code-set-edit/code-set-edit.selectors';
 import { selectViewOnly } from 'src/app/root-store/dam-igamt/igamt.selectors';
+import * as fromDam from '../../../dam-framework/store';
+import { ICodeSetInfo, ICodeSetVersionContent } from '../../models/code-set.models';
+import { CodeSetServiceService } from '../../services/CodeSetService.service';
+import { CommitCodeSetVersionDialogComponent } from '../commit-code-set-version-dialog/commit-code-set-version-dialog.component';
+import { EditorChange } from './../../../dam-framework/store/data/dam.actions';
+import { ImportCodeCSVComponent } from './../../../shared/components/import-code-csv/import-code-csv.component';
+import { ICodes } from './../../../shared/models/value-set.interface';
 
 @Component({
   selector: 'app-code-set-version-editor',
   templateUrl: './code-set-version-editor.component.html',
-  styleUrls: ['./code-set-version-editor.component.css']
+  styleUrls: ['./code-set-version-editor.component.css'],
 })
 export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
-
 
   selectedColumns: any[] = [];
   cols: any[] = [];
@@ -47,18 +47,16 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
   committed: boolean;
   codeSetId$: Observable<string>;
 
-
-
   constructor(
     actions$: Actions,
     store: Store<any>,
     private dialog: MatDialog,
     private messageService: MessageService,
-    private codeSetService: CodeSetServiceService
+    private codeSetService: CodeSetServiceService,
     ) {
     super({
       id: EditorID.CODE_SET_VERSION,
-      title: "Code Set Version",
+      title: 'Code Set Version',
     },
       actions$,
       store,
@@ -68,11 +66,10 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
     // this.username = this.store.select(fromAuth.selectUsername);
     this.resourceSubject = new ReplaySubject<ICodeSetVersionContent>(1);
 
-
     this.workspace_s = this.currentSynchronized$.pipe(
       map((current) => {
         this.resourceSubject.next(_.cloneDeep(current));
-        this.committed = current.dateCommitted != null
+        this.committed = current.dateCommitted != null;
         // this.changes.next({ ...current.changes });
       }),
     ).subscribe();
@@ -137,21 +134,19 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
   }
 
   updateCodes(event: ICodes[]) {
-    console.log("event");
+    console.log('event');
     console.log(event);
 
     this.resource$.pipe(
       take(1),
       tap((resource) => {
+        this.resourceSubject.next({ ...resource, codes: event });
 
         this.editorChange({ data: { resource: { ...resource, codes: event } } }, true);
       }),
     ).subscribe();
 
-
     //               this.resourceSubject.next(resource);
-
-
 
   }
   change(change: IChange) {
@@ -166,7 +161,6 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
     //   }),
     // ).subscribe();
   }
-
 
     onEditorSave(action: EditorSave): Observable<Action> {
 
@@ -190,20 +184,14 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
         );
     }
 
-
-
     updateCodeSetState(id: string): Observable<Action[]> {
       return this.codeSetService.getCodeSetInfo(id).pipe(
-        map(cs => {
+        map((cs) => {
           const actions = this.codeSetService.getUpdateAction(cs);
           return actions;
-        })
+        }),
       );
     }
-
-
-
-
 
       saveAndUpdate(parent: string, resource: any) {
         this.codeSetService.commitCodeSetVersion(parent, resource.id, resource).pipe(
@@ -211,30 +199,29 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
             this.codeSetService.getCodeSetVersionContent(parent, resource.id).pipe(
               take(1),
               mergeMap((updatedResource) => {
-                console.log("TEST");
+                console.log('TEST');
                 this.resourceSubject.next(updatedResource);
                 return this.updateCodeSetState(parent);
               }),
               tap((actions) => {
-                console.log("Calling");
+                console.log('Calling');
 
                 this.dispatchList([...actions,
                   this.messageService.messageToAction(message),
-                  new fromDam.EditorUpdate({ value: { resource: resource }, updateDate: false }),
-                  new fromDam.SetValue({ selected: resource })
-                ])
-              }
+                  new fromDam.EditorUpdate({ value: { resource }, updateDate: false }),
+                  new fromDam.SetValue({ selected: resource }),
+                ]);
+              },
               ),
-            )
+            ),
           ),
         ).subscribe();
       }
-      dispatchList(actions: Action []){
+      dispatchList(actions: Action []) {
         actions.forEach((action) => {
           this.store.dispatch(action);
         });
       }
-
 
       commit() {
         combineLatest([this.elementId$, this.codeSetId$, this.resource$]).pipe(
@@ -259,15 +246,24 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent {
         ).subscribe();
       }
 
-      importCSV($event){
+      importCSV($event) {
+        console.log($event);
 
+        this.dialog.open(ImportCodeCSVComponent, {
+        }).afterClosed().subscribe({
+          next: (codes: ICodes[]) => {
+            console.log(codes);
+            if (codes) {
+              this.updateCodes(codes);
+            }
+          },
+        });
       }
 
-      exportCSV($event){
+      exportCSV($event) {
 
         this.codeSetService.exportCSV( $event.id);
-       
-      }
 
+      }
 
 }

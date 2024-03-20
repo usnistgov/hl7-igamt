@@ -70,6 +70,39 @@
     <p-panel [toggleable]="true" collapseIcon="pi pi-fw pi-chevron-down" expandIcon="pi pi-fw pi-chevron-right"
              header="Content">
       <div *ngIf="valueSet.includeCodes">
+
+        <div  class="codes-options">
+          <div class="csv-actions">
+            <div ngbDropdown placement="bottom-right" container="body" class="d-inline-block" style="margin-right:5px;" >
+              <button class="btn btn-secondary dropdown-toggle"
+                id="csv"
+                ngbDropdownToggle>
+              <i class="fa fa-table"></i> CSV
+              </button>
+              <div ngbDropdownMenu aria-labelledby="exportDropDown">
+                <button ngbDropdownItem (click)="importCSV()"  *ngIf="!viewOnly" >
+                  Import From CSV
+                </button>
+                <button ngbDropdownItem (click)="exportCSV()">
+                  Export CSV
+                </button>
+                <button ngbDropdownItem (click)="downloadExample()">
+                  Download Example
+                </button>
+              </div>
+            </div>
+
+          <button (click)="deleteCodes()" [disabled]="!selectedCodes.length" *ngIf="!viewOnly" class="btn btn-danger"
+                  style="margin-right:5px;"
+                  type="button">
+            <i class="fa fa-trash"></i> Delete Selected
+            <span class="badge badge-info">{{selectedCodes?.length }}</span>
+          </button>
+          <button (click)="addCode()" class="btn btn-primary" type="button" *ngIf="!viewOnly"><i class="fa fa-plus"></i> Add Code
+          </button>
+        </div>
+      </div>
+
         <p-table #dt1 [(selection)]="selectedCodes" [columns]="selectedColumns" [reorderableColumns]="true" sortField="value"
                  [resizableColumns]="false" [value]="valueSet.codes" selectionMode="checkbox" [paginator]="true" [rows]="50">
           <ng-template pTemplate="caption">
@@ -80,33 +113,25 @@
                                name="columns" optionLabel="header"
                                selectedItemsLabel="{0} columns selected"></p-multiSelect>
               </div>
-              <div *ngIf="!viewOnly" class="selected-codes-options">
+              <div *ngIf="!viewOnly" class="selected-codes-options" >
+
+                <div class="apply-usages" style="margin-right: 5px; margin-left: 10px;">
+                  <span style="margin-right: 5px">
+                   <strong> apply usage</strong>
+                   </span>
+
+                  <button (click)="applyUsage('P')" [disabled]="!selectedCodes.length"  class="btn btn-sm btn-primary" style="height: 32px; margin-right: 5px;"> P</button>
+                  <button (click)="applyUsage('R')"  [disabled]="!selectedCodes.length" class="btn btn-sm btn-primary" style="height: 32px ; margin-right: 5px;"> R</button>
+                  <button (click)="applyUsage('E')" [disabled]="!selectedCodes.length"  class="btn btn-sm btn-primary" style="height: 32px;"> E</button>
+                </div>
+
                 <div>
                   <p-dropdown (onChange)="applyCodeSystem($event)" [editable]="true"  [disabled]="!selectedCodes.length"  [options]="codeSystemOptions"
                               placeholder="Apply Code System"></p-dropdown>
                 </div>
-                <div class="apply-usages" style="margin-right: 5px; margin-left: 10px;">
-                  <span style="margin-right: 5px">
-                   <strong>Apply Usages</strong>
-                   </span>
-
-                  <button (click)="applyUsage('P')" [disabled]="!selectedCodes.length"  class="btn btn-sm btn-primary" style="height: 38px;"> P</button>
-                  <button (click)="applyUsage('R')"  [disabled]="!selectedCodes.length" class="btn btn-sm btn-primary" style="height: 38px;"> R</button>
-                  <button (click)="applyUsage('E')" [disabled]="!selectedCodes.length"  class="btn btn-sm btn-primary" style="height: 38px;"> E</button>
-                </div>
+              </div>
               </div>
 
-              <div *ngIf="!viewOnly" class="codes-options">
-                <button (click)="deleteCodes()" [disabled]="!selectedCodes.length" class="btn btn-danger"
-                        style="margin-right:5px;"
-                        type="button">
-                  <i class="fa fa-trash"></i> Delete Selected
-                  <span class="badge badge-info">{{selectedCodes?.length }}</span>
-                </button>
-                <button (click)="addCode()" class="btn btn-primary" type="button"><i class="fa fa-plus"></i> Add Code
-                </button>
-              </div>
-            </div>
           </ng-template>
           <ng-template let-columns pTemplate="header">
             <tr>

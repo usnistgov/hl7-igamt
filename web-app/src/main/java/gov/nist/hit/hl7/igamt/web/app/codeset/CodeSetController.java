@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,13 +42,17 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.AddResourceResponse;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
+import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
+import gov.nist.hit.hl7.igamt.ig.exceptions.ImportValueSetException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSet;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetVersion;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.exception.ValuesetException;
+import gov.nist.hit.hl7.igamt.valueset.model.CodeRaw;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetCreateRequest;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetInfo;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetListItem;
@@ -162,7 +167,17 @@ public class CodeSetController {
 
 				codesets = codeSetService.findByPrivateAudienceEditor(username);
 
-			} else if (type.equals(CodeSetListType.ALL)) {
+			}
+			
+			else if (type.equals(CodeSetListType.PUBLIC)) {
+
+				codesets = codeSetService.findByPublicAudienceAndStatusPublished();
+
+			} 
+			
+			
+			
+			else if (type.equals(CodeSetListType.ALL)) {
 
 				commonService.checkAuthority(authentication, "ADMIN");
 				codesets = codeSetService.findAllPrivateCodeSet();
@@ -198,29 +213,62 @@ public class CodeSetController {
         } 
     }
 	
-	@RequestMapping(value = "/api/code-sets/importCSV/", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	@RequestMapping(value = "/api/code-sets/importCSV", method = RequestMethod.POST)
 
-	public List<Code> uploadCSVFile(@RequestParam("file") MultipartFile file) {
+	public List<Code> uploadCSVFile(@RequestParam("file") MultipartFile file, Authentication authentication) {
         if (file.isEmpty()) {
         } else {
 
             try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-                ColumnPositionMappingStrategy<Code> strategy = new ColumnPositionMappingStrategy<>();
-                strategy.setType(Code.class);
+                ColumnPositionMappingStrategy<CodeRaw> strategy = new ColumnPositionMappingStrategy<>();
+                strategy.setType(CodeRaw.class);
                 
                 
-                strategy.setColumnMapping(new String[]{"Value",	"Pattern", 	"Description", "CodeSystem",	"Usage",	"Comments"});
+                //strategy.setColumnMapping(new String[]{"Value",	"Pattern", 	"Description", "CodeSystem",	"Usage",	"Comments"});
+                strategy.setColumnMapping(new String[]{"value",	"pattern", 	"description", "codeSystem",	"usage",	"comments"});
 
-                CsvToBean<Code> csvToBean = new CsvToBeanBuilder<Code>(reader)
+                CsvToBean<CodeRaw> csvToBean = new CsvToBeanBuilder<CodeRaw>(reader)
                         .withMappingStrategy(strategy)
                         .withIgnoreLeadingWhiteSpace(true)
+                        .withSkipLines(1)
                         .build();
-                List<Code> codes = csvToBean.parse();
+                
+                
+                
+                List<CodeRaw> rawCodes = csvToBean.parse();
+                
+                
+                
+                List<Code> codes = rawCodes.stream().map(rawCode -> {
+                	return rawCode.convertToCode();     
+                }).collect(Collectors.toList());
+                
                 return codes;
             } catch (Exception ex) {
+            	
+            	ex.printStackTrace();
             }
+            
         }
 		return null;
     }
+	
+	
+
+//	@RequestMapping(value = "/api/igdocuments/{id}/valuesets/uploadCSVFile", method = RequestMethod.POST)
+//	@NotifySave(id = "#id", type = "'IGDOCUMENT'")
+//	@PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
+//	public ResponseMessage<AddResourceResponse> addValuesetFromCSV(@PathVariable("id") String id,
+//			@RequestParam("file") MultipartFile csvFile, Authentication authentication) throws ImportValueSetException, IGNotFoundException, ForbiddenOperationException {
+//		
+//		Valueset newVS = this.igService.importValuesetsFromCSV(id, csvFile);
+//		AddResourceResponse response = new AddResourceResponse();
+//		response.setId(newVS.getId());
+//		response.setReg(findIgById(id).getValueSetRegistry());
+//		response.setDisplay(displayInfoService.convertValueSet(newVS));
+//		return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Value Set clone Success", newVS.getId(), false,
+//				newVS.getUpdateDate(), response);
+//	}
+
 	
 }

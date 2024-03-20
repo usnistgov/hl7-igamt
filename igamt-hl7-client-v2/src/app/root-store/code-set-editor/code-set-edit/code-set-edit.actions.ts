@@ -9,7 +9,7 @@ export enum CodeSetEditActionTypes {
   CodeSetEditResolverLoadSuccess = '[CodeSet Edit Resolver] Load CodeSet Success',
   CodeSetEditResolverLoadFailure = '[CodeSet Edit Resolver] Load CodeSet Failure',
   OpenCodeSetMetadataEditor = '[CodeSet Edit] Open CodeSet Metadata Editor',
-  OpenCodeSetHomeEditor = '[CodeSet Edit] Open CodeSet Home Editor',
+  OpenCodeSetDashboardEditor = '[CodeSet Edit] Open CodeSet DashBoard Editor',
   OpenCodeSetVersionEditor = '[CodeSet Edit] Open CodeSet Version Editor',
   OpenCodeSetAccessManagementEditor = '[CodeSet Edit] Open CodeSet Access Management Editor',
 }
@@ -65,8 +65,8 @@ export class OpenCodeSetAccessManagementEditor extends OpenEditorBase {
   }
 }
 
-export class OpenCodeSetHomeEditor extends OpenEditorBase {
-  readonly type = CodeSetEditActionTypes.OpenCodeSetHomeEditor;
+export class OpenCodeSetDashboardEditor extends OpenEditorBase {
+  readonly type = CodeSetEditActionTypes.OpenCodeSetDashboardEditor;
 
   constructor(readonly payload: {
     id: string,
@@ -75,4 +75,5 @@ export class OpenCodeSetHomeEditor extends OpenEditorBase {
     super();
   }
 }
-export type CodeSetEditActions = CodeSetEditResolverLoad | CodeSetEditResolverLoadSuccess | CodeSetEditResolverLoadFailure | OpenCodeSetMetadataEditor | OpenCodeSetHomeEditor | OpenCodeSetVersionEditor | OpenCodeSetAccessManagementEditor;
+export type CodeSetEditActions = CodeSetEditResolverLoad | CodeSetEditResolverLoadSuccess | CodeSetEditResolverLoadFailure | OpenCodeSetMetadataEditor  | OpenCodeSetVersionEditor | OpenCodeSetAccessManagementEditor;
+

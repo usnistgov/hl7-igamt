@@ -4,18 +4,15 @@ import { ICodeSetListItem } from '../../models/code-set.models';
 @Component({
   selector: 'app-code-set-editor-list-card',
   templateUrl: './code-set-editor-list-card.component.html',
-  styleUrls: ['./code-set-editor-list-card.component.css']
+  styleUrls: ['./code-set-editor-list-card.component.css'],
 })
 export class CodeSetEditorListCardComponent implements OnInit {
-
 
   @Input() item: ICodeSetListItem;
   @Input() controls: ICodeSetListItemControl[];
   moreInfo: boolean;
 
-
   constructor() { }
-
 
   doDefault() {
     const ctrls = this.controls.filter((control) => control.default);
@@ -29,7 +26,6 @@ export class CodeSetEditorListCardComponent implements OnInit {
   }
 
 }
-
 
 export interface ICodeSetListItemControl {
   label: string;

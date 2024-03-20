@@ -1,7 +1,7 @@
 import { createEntityAdapter, Dictionary } from '@ngrx/entity';
 import { createSelector } from '@ngrx/store';
-import { selectFromCollection, selectPayloadData } from '../../../modules/dam-framework/store/data/dam.selectors';
 import { ICodeSetInfo, ICodeSetVersionInfo } from 'src/app/modules/code-set-editor/models/code-set.models';
+import { selectFromCollection, selectPayloadData } from '../../../modules/dam-framework/store/data/dam.selectors';
 
 export const selectCodeSetInfo = createSelector(
   selectPayloadData,
@@ -16,7 +16,6 @@ export const selectCodeSetId = createSelector(
     return state.id;
   },
 );
-
 
 export const selectCodeSetMetadata = createSelector(
   selectCodeSetInfo,

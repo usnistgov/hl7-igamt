@@ -19,7 +19,6 @@ export const reducers: ActionReducerMap<IState> = {
 // Selectors
 export const selectCodeSetFeature = createFeatureSelector(featureName);
 
-
 // Selectors
 export const selectCodeSetList = createSelector(
   selectCodeSetFeature,

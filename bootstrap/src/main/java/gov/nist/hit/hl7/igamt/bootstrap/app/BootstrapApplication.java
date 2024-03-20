@@ -38,6 +38,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opencsv.exceptions.CsvValidationException;
+
 import ca.uhn.fhir.context.FhirContext;
 import gov.nist.hit.hl7.igamt.bootstrap.data.CodeFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConfigCreator;
@@ -426,7 +428,7 @@ public class BootstrapApplication implements CommandLineRunner {
 
 
 	//@PostConstruct
-	public void fixBinding() throws ValidationException, ForbiddenOperationException {
+	public void fixBinding() throws ValidationException, ForbiddenOperationException, CsvValidationException {
 		this.dataFixer.readCsv();
 	}
 
@@ -491,7 +493,7 @@ public class BootstrapApplication implements CommandLineRunner {
 	}
 
 	//@PostConstruct
-	void fixDeprecated() throws FileNotFoundException {
+	void fixDeprecated() throws FileNotFoundException, CsvValidationException {
 		codeFixer.fixFromCSV();
 	}
 

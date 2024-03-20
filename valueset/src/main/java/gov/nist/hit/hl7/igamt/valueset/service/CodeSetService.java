@@ -41,5 +41,7 @@ public interface CodeSetService {
 
 	CodeSetVersion findById(String id) throws ResourceNotFoundException, ForbiddenOperationException;
 
+	List<CodeSet> findByPublicAudienceAndStatusPublished();
+
 
 }

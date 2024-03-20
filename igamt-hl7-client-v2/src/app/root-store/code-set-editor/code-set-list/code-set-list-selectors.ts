@@ -1,9 +1,9 @@
 import { createSelector } from '@ngrx/store';
+import { ICodeSetListItem } from 'src/app/modules/code-set-editor/models/code-set.models';
 import { ISortOptions } from 'src/app/modules/shared/models/sort.class';
 import { selectCodeSetList } from './../code-set.reducer';
 import { CodeSetLoadType } from './code-set-list.actions';
-import { IState, codeSetListItemAdapter } from './code-set-list.reducer';
-import { ICodeSetListItem } from 'src/app/modules/code-set-editor/models/code-set.models';
+import { codeSetListItemAdapter, IState } from './code-set-list.reducer';
 
 export const {
   selectAll,

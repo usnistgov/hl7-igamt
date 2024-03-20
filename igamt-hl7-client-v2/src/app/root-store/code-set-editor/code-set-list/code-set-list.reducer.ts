@@ -1,7 +1,7 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
+import { ICodeSetListItem } from 'src/app/modules/code-set-editor/models/code-set.models';
 import { ISortOptions } from 'src/app/modules/shared/models/sort.class';
 import { CodeSetListActions, CodeSetListActionTypes, CodeSetLoadType } from './code-set-list.actions';
-import { ICodeSetListItem } from 'src/app/modules/code-set-editor/models/code-set.models';
 
 export interface IState extends EntityState<ICodeSetListItem> {
   viewType: CodeSetLoadType;

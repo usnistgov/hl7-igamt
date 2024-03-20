@@ -53,7 +53,7 @@ import { WorkspaceRoutingModule } from './workspace-routing.module';
     CoreModule,
     EffectsModule.forFeature([WorkspaceListEffects, WorkspaceEditEffects]),
     StoreModule.forFeature(fromWorkspace.featureName, fromWorkspace.reducers),
-    AutoCompleteModule
+    AutoCompleteModule,
   ],
   entryComponents: [
     FolderAddDialogComponent,

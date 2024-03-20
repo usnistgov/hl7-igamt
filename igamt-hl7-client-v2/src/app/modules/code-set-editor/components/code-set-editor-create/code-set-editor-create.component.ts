@@ -11,7 +11,7 @@ import { CodeSetServiceService } from '../../services/CodeSetService.service';
 @Component({
   selector: 'app-code-set-editor-create',
   templateUrl: './code-set-editor-create.component.html',
-  styleUrls: ['./code-set-editor-create.component.css']
+  styleUrls: ['./code-set-editor-create.component.css'],
 })
 export class CodeSetEditorCreateComponent implements OnInit {
 

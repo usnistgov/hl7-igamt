@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import { BehaviorSubject, from, Observable, of, Subject, Subscription } from 'rxjs';
 import { concatMap, finalize, flatMap, map, skip, take, takeWhile, tap } from 'rxjs/operators';
 import * as vk from 'vkbeautify';
+import { xml as xmlFormat } from 'vkbeautify';
 import { Type } from '../../constants/type.enum';
 import { ConditionalUsageOptions } from '../../constants/usage.enum';
 import { ConstraintType, IAssertionConformanceStatement, IFreeTextConformanceStatement, IPath } from '../../models/cs.interface';
@@ -23,7 +24,6 @@ import { PatternDialogComponent } from '../pattern-dialog/pattern-dialog.compone
 import { ConformanceStatementStrength } from './../../models/conformance-statements.domain';
 import { IAssertion } from './../../models/cs.interface';
 import { IStatementTokenPayload } from './cs-statement.component';
-import { xml as xmlFormat } from 'vkbeautify';
 
 export type AssertionContainer = IAssertionConformanceStatement | IFreeTextConformanceStatement | IPredicate;
 
@@ -403,7 +403,7 @@ export class CsDialogComponent implements OnDestroy {
     if (this.cs.type === ConstraintType.FREE) {
       const freeText = this.cs as IFreeTextConformanceStatement;
       if (freeText.assertionScript) {
-        freeText.assertionScript = xmlFormat(freeText.assertionScript, 4)
+        freeText.assertionScript = xmlFormat(freeText.assertionScript, 4);
       }
     }
   }

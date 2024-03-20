@@ -63,6 +63,7 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
       title: 'Structure',
       resourceType: Type.VALUESET,
     }, actions$, store);
+
     this.resourceType = Type.VALUESET;
     this.hasOrigin$ = this.store.select(fromIgamtSelectedSelectors.selectedResourceHasOrigin);
     this.config = this.store.select(getHl7ConfigState).pipe(
@@ -235,6 +236,10 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
   updateChangeReason(changeReason: IChangeReason[]) {
     this.changeReason$.next(changeReason);
     this.change(this.createReasonForChange(changeReason));
+  }
+
+  exportCSV($event: string){
+    this.valueSetService.exportCodeCSVFile($event);
   }
 }
 

@@ -144,6 +144,33 @@ public class ValuesetController extends BaseController {
 		+ "-" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".csv");
 		FileCopyUtils.copy(content, response.getOutputStream());
 	}
+	
+	
+	@RequestMapping(value = "/api/valuesets/export-code-csv/{id}", method = RequestMethod.POST, produces = "text/xml", consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	@PreAuthorize("AccessResource('VALUESET', #tableId, READ)")
+	public void exportCodeCSV(@PathVariable("id") String tableId, HttpServletRequest request,
+			HttpServletResponse response) throws IOException, ValuesetNotFoundException {
+		log.info("Export table " + tableId);
+		Valueset valueset = findById(tableId);
+		
+		if (valueset == null) {
+			throw new ValuesetNotFoundException(tableId);
+		}
+		
+		if (valueset.getBindingIdentifier().equals("HL70396") && valueset.getSourceType().equals(SourceType.EXTERNAL)) {
+			valueset.setCodes(fhirHandlerService.getValusetCodeForDynamicTable());
+
+		}
+
+		valueset.getCodes().removeIf((x) -> x.isDeprecated());
+		
+		
+		InputStream content = IOUtils.toInputStream(new TableCSVGenerator().generate(valueset.getCodes()), "UTF-8");
+		response.setContentType("text/xml");
+		response.setHeader("Content-disposition", "attachment;filename=" + valueset.getBindingIdentifier()
+		+ "-" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".csv");
+		FileCopyUtils.copy(content, response.getOutputStream());
+	}
 
 
 	private Valueset findById(String id) throws ValuesetNotFoundException {

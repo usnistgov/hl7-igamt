@@ -1,15 +1,15 @@
-import { SelectItem } from 'primeng/api';
-import { Guid } from 'guid-typescript';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ICodeSetVersionContent } from '../../models/code-set.models';
-import { ICodes } from 'src/app/modules/shared/models/value-set.interface';
-import { IChange, PropertyType } from 'src/app/modules/shared/models/save-change';
+import { Guid } from 'guid-typescript';
+import { SelectItem } from 'primeng/api';
 import { CodeUsage } from 'src/app/modules/shared/constants/usage.enum';
+import { IChange, PropertyType } from 'src/app/modules/shared/models/save-change';
+import { ICodes } from 'src/app/modules/shared/models/value-set.interface';
+import { ICodeSetVersionContent } from '../../models/code-set.models';
 
 @Component({
   selector: 'app-code-set-table',
   templateUrl: './code-set-table.component.html',
-  styleUrls: ['./code-set-table.component.css']
+  styleUrls: ['./code-set-table.component.css'],
 })
 export class CodeSetTableComponent implements OnInit {
 
@@ -28,7 +28,6 @@ export class CodeSetTableComponent implements OnInit {
   @Output()
   importCSVEvent: EventEmitter<any> = new EventEmitter<any>();
 
-
   @Input()
   existingChangeReason: any[];
   @Input()
@@ -40,8 +39,6 @@ export class CodeSetTableComponent implements OnInit {
   @Input()
   selectedColumns: any[];
   editMap = {};
-
-
 
   codeUsageOptions = [
     { label: 'R', value: 'R' }, { label: 'P', value: 'P' }, { label: 'E', value: 'E' },
@@ -60,7 +57,7 @@ export class CodeSetTableComponent implements OnInit {
   }
 
   addCodeSystem(targetId: string) {
-    if(!this.codeSetVersion.codeSystems){
+    if (!this.codeSetVersion.codeSystems) {
 
       this.codeSetVersion.codeSystems = [];
       this.codeSystemOptions = [];
@@ -99,7 +96,7 @@ export class CodeSetTableComponent implements OnInit {
   }
 
   addCode() {
-    if(!this.codeSetVersion.codes){
+    if (!this.codeSetVersion.codes) {
       this.codeSetVersion.codes = [];
     }
     this.codeSetVersion.codes.unshift({
@@ -112,7 +109,7 @@ export class CodeSetTableComponent implements OnInit {
       pattern: null,
       hasPattern: false,
     });
-    console.log(" adding codes ");
+    console.log(' adding codes ');
     this.changes.emit(this.codeSetVersion.codes);
   }
 
@@ -130,7 +127,7 @@ export class CodeSetTableComponent implements OnInit {
   }
 
   changeCodes() {
-    this.changes.emit(this.codeSetVersion.codes)
+    this.changes.emit(this.codeSetVersion.codes);
   }
 
   addCodeSystemFormCode(code: ICodes) {
@@ -155,12 +152,24 @@ export class CodeSetTableComponent implements OnInit {
     this.updateAttribute(PropertyType.URL, value);
   }
 
-  importCSV(){
+  importCSV() {
     this.importCSVEvent.emit(this.codeSetVersion);
   }
-  exportCSV(){
+  exportCSV() {
     this.exportCSVEvent.emit(this.codeSetVersion);
 
+  }
+
+  downloadExample() {
+    // in service
+    const exampleCSV = 'data:text/csv;charset=utf-8,value,pattern,description,codeSystem,usage,comments\nvalue1,pattern1,description1,codeSystem1,P,comments1';
+    const encodedUri = encodeURI(exampleCSV);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', 'example.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
 }

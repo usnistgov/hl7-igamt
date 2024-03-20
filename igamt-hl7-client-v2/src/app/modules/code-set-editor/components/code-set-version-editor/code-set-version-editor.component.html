@@ -1,6 +1,6 @@
 <ng-template #headerControls>
   <div>
-    <button class="btn btn-sm btn-primary" (click)="commit()" *ngIf="!committed" >
+    <button class="btn btn-sm btn-primary" (click)="commit()" *ngIf="!(resource$ | async).dateCommitted" >
       Commit
     </button>
   </div>
@@ -16,13 +16,13 @@
   <div style="height: 100%; display: flex; justify-content: center; align-items: flex-end;">
     <span style="font-size: 0.75em; color: gray; margin-left: 10px;">
 
-     <span *ngIf="committed" > <i class="fa fa-calendar-o"></i>Committed On  </span> {{(resource$ | async).dateCommitted | date}}
+     <span *ngIf="(resource$ | async).dateCommitted" > <i class="fa fa-calendar-o"></i> Committed On  </span> {{(resource$ | async).dateCommitted | date}}
 
     </span>
   </div>
 
 </ng-template>
 
-<app-code-set-table [codeSetVersion]="resource$ | async" [selectedColumns]="selectedColumns" (changes)="updateCodes($event)" (importCSVEvent)="importCSV($event)" (exportCSVEvent)="exportCSV($event)" [viewOnly]="committed"></app-code-set-table>
+<app-code-set-table [codeSetVersion]="resource$ | async" [selectedColumns]="selectedColumns" (changes)="updateCodes($event)" (importCSVEvent)="importCSV($event)" (exportCSVEvent)="exportCSV($event)" [viewOnly]="(resource$ | async).dateCommitted"></app-code-set-table>
 
 

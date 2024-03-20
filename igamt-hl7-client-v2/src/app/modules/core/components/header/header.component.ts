@@ -60,7 +60,7 @@ export class HeaderComponent implements OnInit {
         },
       ),
     );
-    this.isCodeSet= store.select(fromDAM.selectRouterURL).pipe(
+    this.isCodeSet = store.select(fromDAM.selectRouterURL).pipe(
       map(
         (url: string) => {
           return url.startsWith('/code-set');

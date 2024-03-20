@@ -149,33 +149,30 @@ public class TableCSVGenerator {
     
     public String generate(Set<Code> codes) {
     	
-    	
     	String csvString = "";
 		List<String> values = new ArrayList<String>();
 
 		
 		values = new ArrayList<String>();
-		values.add("Value");
-		values.add("Pattern");
-
-		values.add("Description");
-		values.add("CodeSystem");
-		values.add("Usage");
-		values.add("Comments");
+		values.add("value");
+		values.add("pattern");
+		values.add("description");
+		values.add("codeSystem");
+		values.add("usage");
+		values.add("comments");
 		csvString = this.writeLine(csvString, values, ',', '"');
 		
 		for(Code c: codes){
 			values = new ArrayList<String>();
 			values.add(c.getValue());
-			values.add(c.getDescription());
 			values.add(c.getPattern());
+			values.add(c.getDescription());
 			values.add(c.getCodeSystem());
 			if(c.getUsage() == null) c.setUsage(CodeUsage.P);
 			values.add(c.getUsage().toString());
 			values.add(c.getComments());
 			csvString = this.writeLine(csvString, values, ',', '"');	
 		}
-		
 		return csvString;
 	}
     	

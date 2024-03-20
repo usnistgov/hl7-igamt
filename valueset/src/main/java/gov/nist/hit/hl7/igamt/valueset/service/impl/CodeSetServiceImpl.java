@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.AudienceType;
@@ -233,7 +234,12 @@ public class CodeSetServiceImpl implements CodeSetService {
 	private String generateLatest(Set<CodeSetVersion> codeSetVersions) {
 		return codeSetVersions.size()+1+"";
 	}
-	
+
+	@Override
+	public List<CodeSet> findByPublicAudienceAndStatusPublished() {
+		// TODO Auto-generated method stub
+		return this.codeSetRepo.findByPublicAudienceAndStatusPublished();
+	}
 	
 	
 	

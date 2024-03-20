@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
-import { ICodeSetInfo, ICodeSetVersionInfo } from '../../models/code-set.models';
+import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { CodeSetServiceService } from '../../services/CodeSetService.service';
-import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
-import { MatDialog } from '@angular/material';
-import { tap } from 'rxjs/operators';
 import { map } from 'jquery';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { selectAllCodeSetVersions, selectCodeSetId } from 'src/app/root-store/code-set-editor/code-set-edit/code-set-edit.selectors';
+import { ICodeSetInfo, ICodeSetVersionInfo } from '../../models/code-set.models';
+import { CodeSetServiceService } from '../../services/CodeSetService.service';
 
 @Component({
   selector: 'app-code-set-side-bar',
@@ -34,7 +34,6 @@ export class CodeSetSideBarComponent implements OnInit {
 
   }
 
-
   updateCodeSetState(id: string): Observable<ICodeSetInfo> {
     return this.codeSetService.getCodeSetInfo(id).pipe(
       tap((codeSet) => {
@@ -49,4 +48,3 @@ export class CodeSetSideBarComponent implements OnInit {
   }
 
 }
-

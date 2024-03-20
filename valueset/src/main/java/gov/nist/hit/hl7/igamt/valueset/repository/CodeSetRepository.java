@@ -22,11 +22,13 @@ public interface CodeSetRepository extends MongoRepository<CodeSet, String> {
 	  @Query(value = "{ $and :  [{ 'audience.type' : 'PRIVATE' }, { 'audience.viewers' : ?0 }] }")
 	  List<CodeSet> findByPrivateAudienceViewer(String username);
 //	  
-//	  @Query(value = "{ $and :  [{ 'audience.type' : 'PUBLIC' }, { status : 'PUBLISHED' }] }")
-//	  List<CodeSet> findByPublicAudienceAndStatusPublished();
+	  @Query(value = "{ 'audience.type' : 'PUBLIC'  }")
 
+	//  @Query(value = "{ $and :  [{ 'audience.type' : 'PUBLIC' }, { status : 'PUBLISHED' }] }")
+	  List<CodeSet> findByPublicAudienceAndStatusPublished();
 	  
 	  @Query(value = "{ 'audience.type' : 'PRIVATE'}")
 	  List<CodeSet> findAllPrivateCodeSet();
+
 
 }

@@ -5,21 +5,20 @@ import { Store } from '@ngrx/store';
 import { combineLatest, Observable, Subscription, throwError } from 'rxjs';
 import { catchError, flatMap, map, tap } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
-import * as fromRoot from 'src/app/root-store/index';
 import * as fromCodeSetList from 'src/app/root-store/code-set-editor/code-set-list/code-set-list.index';
-import { ClearCodeSetList, DeleteCodeSetListItemSuccess, LoadCodeSetList, SelectCodeSetListSortOption, SelectCodeSetListViewType, UpdatePendingInvitationCount, CodeSetLoadType } from './../../../../root-store/code-set-editor/code-set-list/code-set-list.actions';
+import * as fromRoot from 'src/app/root-store/index';
+import { ICodeSetListItem } from '../../models/code-set.models';
+import { CodeSetServiceService } from '../../services/CodeSetService.service';
+import { ICodeSetListItemControl } from '../code-set-editor-list-card/code-set-editor-list-card.component';
+import { DeleteCodeSetDialogComponent } from '../delete-code-set-dialog/delete-code-set-dialog.component';
+import { ClearCodeSetList, CodeSetLoadType, DeleteCodeSetListItemSuccess, LoadCodeSetList, SelectCodeSetListSortOption, SelectCodeSetListViewType, UpdatePendingInvitationCount } from './../../../../root-store/code-set-editor/code-set-list/code-set-list.actions';
 import { MessageService } from './../../../dam-framework/services/message.service';
 import { ClearAll } from './../../../dam-framework/store/messages/messages.actions';
-import { CodeSetServiceService } from '../../services/CodeSetService.service';
-import { DeleteCodeSetDialogComponent } from '../delete-code-set-dialog/delete-code-set-dialog.component';
-import { ICodeSetListItem } from '../../models/code-set.models';
-import { ICodeSetListItemControl } from '../code-set-editor-list-card/code-set-editor-list-card.component';
-
 
 @Component({
   selector: 'app-code-set-editor-list',
   templateUrl: './code-set-editor-list.component.html',
-  styleUrls: ['./code-set-editor-list.component.scss']
+  styleUrls: ['./code-set-editor-list.component.scss'],
 })
 export class CodeSetEditorListComponent implements OnInit, OnDestroy {
 

@@ -7,7 +7,7 @@ import { ICodeSetVersionContent } from '../../models/code-set.models';
 @Component({
   selector: 'app-commit-code-set-version-dialog',
   templateUrl: './commit-code-set-version-dialog.component.html',
-  styleUrls: ['./commit-code-set-version-dialog.component.css']
+  styleUrls: ['./commit-code-set-version-dialog.component.css'],
 })
 export class CommitCodeSetVersionDialogComponent implements OnInit {
 

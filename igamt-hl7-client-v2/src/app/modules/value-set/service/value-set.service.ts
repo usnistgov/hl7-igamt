@@ -33,4 +33,14 @@ export class ValueSetService {
     document.body.appendChild(form);
     form.submit();
   }
+
+  exportCodeCSVFile(vsId: string) {
+    const form = document.createElement('form');
+    form.action = 'api/valuesets/export-code-csv/' + vsId;
+    form.method = 'POST';
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    form.submit();
+  }
+
 }

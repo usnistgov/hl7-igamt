@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
 import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
@@ -71,7 +72,7 @@ public class CodeFixer {
 	   }
 	  }
   
-  public void fixFromCSV() throws FileNotFoundException {
+  public void fixFromCSV() throws FileNotFoundException, CsvValidationException {
    
     File file = ResourceUtils.getFile("classpath:deprecatedCodes.csv");
     System.out.println(file.exists());

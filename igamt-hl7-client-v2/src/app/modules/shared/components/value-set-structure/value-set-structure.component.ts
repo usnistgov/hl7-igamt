@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { Guid } from 'guid-typescript';
 import { SelectItem } from 'primeng/api';
 import { ChangeType, IChange, PropertyType } from '../../models/save-change';
 import { ICodes, IValueSet } from '../../models/value-set.interface';
+import { ImportCodeCSVComponent } from '../import-code-csv/import-code-csv.component';
 
 @Component({
   selector: 'app-value-set-structure',
@@ -11,7 +13,8 @@ import { ICodes, IValueSet } from '../../models/value-set.interface';
 })
 export class ValueSetStructureComponent implements OnInit {
 
-  constructor() {
+  constructor(private dialog: MatDialog,
+    ) {
   }
   @Input()
   valueSet: IValueSet;
@@ -22,6 +25,8 @@ export class ValueSetStructureComponent implements OnInit {
   filteredCodeSystems: string[] = [];
   @Output()
   changes: EventEmitter<IChange> = new EventEmitter<IChange>();
+  @Output()
+  exportCSVEvent: EventEmitter<string> = new EventEmitter<string>();
   @Input()
   existingChangeReason: any[];
   @Input()
@@ -180,6 +185,36 @@ export class ValueSetStructureComponent implements OnInit {
 
   updateContentDefinition($event) {
     this.updateAttribute(PropertyType.CONTENTDEFINITION, $event);
+  }
+
+  importCSV() {
+
+    this.dialog.open(ImportCodeCSVComponent, {
+    }).afterClosed().subscribe({
+      next: (codes: ICodes[]) => {
+        console.log(codes);
+        if (codes) {
+          this.valueSet.codes = codes;
+          this.updateAttribute(PropertyType.CODES, this.valueSet.codes);
+        }
+      },
+    });
+  }
+  exportCSV() {
+   this.exportCSVEvent.emit(this.valueSet.id);
+
+  }
+
+  downloadExample() {
+    // in service
+    const exampleCSV = 'data:text/csv;charset=utf-8,value,pattern,description,codeSystem,usage,comments\nvalue1,pattern1,description1,codeSystem1,P,comments1';
+    const encodedUri = encodeURI(exampleCSV);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', 'example.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
 }
