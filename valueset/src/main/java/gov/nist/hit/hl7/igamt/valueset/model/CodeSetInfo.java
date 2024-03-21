@@ -6,6 +6,8 @@ public class CodeSetInfo {
 	private String id;
 	private CodeSetMetadata metadata;
 	private List<CodeSetVersionInfo> children;
+	private boolean exposed;
+	private String defaultVersion;
 	
 	
 	public CodeSetInfo() {
@@ -28,6 +30,15 @@ public class CodeSetInfo {
 	}
 	public void setChildren(List<CodeSetVersionInfo> children) {
 		this.children = children;
+	}
+	public boolean isExposed() {
+		return exposed;
+	}
+	public void setExposed(boolean exposed) {
+		this.exposed = exposed;
+	}
+	public void setDefaultVersion(String latest) {
+		this.defaultVersion = latest;
 	}
 
 

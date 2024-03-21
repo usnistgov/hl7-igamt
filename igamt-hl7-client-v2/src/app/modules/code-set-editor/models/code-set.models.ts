@@ -5,6 +5,7 @@ import { ICodes } from '../../shared/models/value-set.interface';
 export interface  ICodeSetInfo {
   id?: string;
   metadata: ICodeSetInfoMetadata;
+  exposed?: boolean;
   children?: ICodeSetVersionInfo[];
 }
 

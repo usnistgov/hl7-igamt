@@ -94,9 +94,9 @@ export class CodeSetEditEffects  extends DamWidgetEffect  {
                 id: action.payload.id,
               },
               editor: action.payload.editor,
-              initial: {
-                value: codeSetInfo,
-              },
+              initial:
+                codeSetInfo,
+
             }),
           ];
         }),

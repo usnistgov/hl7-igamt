@@ -24,9 +24,11 @@ import { CodeSetTableComponent } from './components/code-set-table/code-set-tabl
 import { CodeSetToolBarComponent } from './components/code-set-tool-bar/code-set-tool-bar.component';
 import { CommitCodeSetVersionDialogComponent } from './components/commit-code-set-version-dialog/commit-code-set-version-dialog.component';
 import { DeleteCodeSetDialogComponent } from './components/delete-code-set-dialog/delete-code-set-dialog.component';
+import { CodeSetManagementComponent } from './components/code-set-management/code-set-management.component';
+import { ConfirmDialogModule, ConfirmationService } from 'primeng/primeng';
 
 @NgModule({
-    declarations: [CodeSetEditorListComponent, CodeSetEditorCreateComponent, CodeSetEditorComponent, CodeSetVersionEditorComponent, CodeSetActiveTitlebarComponent, CodeSetSideBarComponent, CodeSetToolBarComponent, CodeSetTableComponent, CodeSetEditorListCardComponent, DeleteCodeSetDialogComponent, CommitCodeSetVersionDialogComponent, CodeSetDashBoardComponent],
+    declarations: [CodeSetEditorListComponent, CodeSetEditorCreateComponent, CodeSetEditorComponent, CodeSetVersionEditorComponent, CodeSetActiveTitlebarComponent, CodeSetSideBarComponent, CodeSetToolBarComponent, CodeSetTableComponent, CodeSetEditorListCardComponent, DeleteCodeSetDialogComponent, CommitCodeSetVersionDialogComponent, CodeSetDashBoardComponent, CodeSetManagementComponent],
     imports: [
         DamFrameworkModule.forRoot(),
         CodeSetRoutingModule,
@@ -36,7 +38,10 @@ import { DeleteCodeSetDialogComponent } from './components/delete-code-set-dialo
         StoreModule.forFeature(fromCodeSet.featureName, fromCodeSet.reducers),
         DamMessagesModule,
         ReactiveFormsModule,
+        ConfirmDialogModule,
+
     ],
+    providers :[ConfirmationService],
     entryComponents : [CommitCodeSetVersionDialogComponent],
 })
 export class CodeSetEditorModule { }

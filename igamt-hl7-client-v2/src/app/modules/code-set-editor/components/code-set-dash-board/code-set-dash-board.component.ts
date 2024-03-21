@@ -22,6 +22,7 @@ import { CodeSetServiceService } from '../../services/CodeSetService.service';
 import { EditorChange } from './../../../dam-framework/store/data/dam.actions';
 import { ImportCodeCSVComponent } from './../../../shared/components/import-code-csv/import-code-csv.component';
 import { ICodes } from './../../../shared/models/value-set.interface';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-code-set-dash-board',
@@ -42,6 +43,9 @@ export class CodeSetDashBoardComponent extends DamAbstractEditorComponent {
   workspace_s: Subscription;
   resource_s: Subscription;
   codeSetId$: Observable<string>;
+  // metaDataForm: FormGroup;
+  // wsSubscription: Subscription;
+  // changeSubscription: Subscription;
 
   constructor(
     actions$: Actions,
@@ -62,6 +66,8 @@ export class CodeSetDashBoardComponent extends DamAbstractEditorComponent {
 
     this.workspace_s = this.currentSynchronized$.pipe(
       map((current) => {
+
+
         this.resourceSubject.next(_.cloneDeep(current));
         // this.changes.next({ ...current.changes });
       }),
@@ -69,17 +75,24 @@ export class CodeSetDashBoardComponent extends DamAbstractEditorComponent {
     this.resource$ = this.resourceSubject.asObservable();
 
     this.codeSetId$ = this.store.select(selectCodeSetId);
+
+
+
+    // this.metaDataForm = new FormGroup({
+    //   title: new FormControl('', [Validators.required]),
+    //   description: new FormControl('', []),
+    // });
+    // this.wsSubscription = this.currentSynchronized$.pipe(
+    //   tap((value) => {
+    //     console.log(value);
+    //     this.metaDataForm.patchValue(value.metadata, { emitEvent: false });
+    //   }),
+    // ).subscribe();
+    // this.changeSubscription = this.metaDataForm.valueChanges.subscribe((changed) => {
+    //   this.editorChange(changed, this.metaDataForm.valid);
+    // });
   }
 
-  getCodeSystemOptions(resource: ICodeSetVersionContent): SelectItem[] {
-    if (resource.codeSystems && resource.codeSystems.length > 0) {
-      return resource.codeSystems.map((codeSystem: string) => {
-        return { label: codeSystem, value: codeSystem };
-      });
-    } else {
-      return [];
-    }
-  }
 
   editorChange(data: any, valid: boolean) {
     this.changeTime = new Date();
@@ -180,27 +193,5 @@ export class CodeSetDashBoardComponent extends DamAbstractEditorComponent {
         });
       }
 
-      // commit() {
-      //   combineLatest([this.elementId$, this.codeSetId$, this.resource$]).pipe(
-      //     take(1),
-      //     tap(([id, parent, resource]) => {
-      //       this.dialog.open(CommitCodeSetVersionDialogComponent, {
-      //         data: {
-      //           title: 'Commit Code Set Version',
-      //           comments: '',
-      //           version: resource.version,
-      //         },
-      //       }).afterClosed().subscribe({
-      //         next: (res) => {
-      //           if (res) {
-      //             resource.version = res.version;
-      //             resource.comments = res.comments;
-      //             this.saveAndUpdate(parent, resource);
-      //           }
-      //         },
-      //       });
-      //     }),
-      //   ).subscribe();
-      // }
 
 }

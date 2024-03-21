@@ -1,0 +1,40 @@
+
+
+
+
+<form #myForm="ngForm" style="display: flex; flex-direction: column;">
+  <label for="title"><strong>Title</strong></label>
+  <input type="text" id="title" name="title" class="form-control" required [(ngModel)]="info.metadata.title">
+  <label for="description"><strong>Description</strong></label>
+  <input type="text" id="description" name="description" class="form-control"  [(ngModel)]="info.metadata.description">
+
+
+
+  <div>
+    <label for="api-toggle"> <strong>Expose through API</strong></label>
+    <p-inputSwitch id="api-toggle" (onChange)="handleChange($event)" [(ngModel)]="info.exposed" name="exposed"></p-inputSwitch>
+  </div>
+
+
+
+<span style="color: gray;">Code Set Versions</span>
+<hr style="margin-top: 8px; margin-bottom: 8px;">
+<p-checkbox [(ngModel)]="filterExposed" binary="true" (onChange)="filterVersion($event)"> Show only folders with a set custom permission</p-checkbox>
+
+<p-table [value]="filteredChildren" [paginator]="true" [rows]="5" [style]="{width: 'min-content', 'margin-top': '10px'}">
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 200px;">Code Set Version</th>
+      <th style="width: 250px;">Is Exposed</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-codeSetVersion>
+    <tr>
+      <td>{{ codeSetVersion.version }}</td>
+      <td>
+        <p-inputSwitch [(ngModel)]="codeSetVersion.exposted" (onChange)="onExposedChange(codeSetVersion)"></p-inputSwitch>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+</form>

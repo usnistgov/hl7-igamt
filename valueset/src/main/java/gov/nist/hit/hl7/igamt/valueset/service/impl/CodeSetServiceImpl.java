@@ -73,6 +73,8 @@ public class CodeSetServiceImpl implements CodeSetService {
 		CodeSetMetadata metadata = new CodeSetMetadata();
 		metadata.setDescription(codeSet.getDescription());
 		metadata.setTitle(codeSet.getName());
+		info.setExposed(codeSet.isExposed());
+		info.setDefaultVersion(codeSet.getLatest());
 		List<CodeSetVersionInfo> children = new ArrayList<CodeSetVersionInfo>();
 		children = this.generateChildren(codeSet.getCodeSetVersions(),  codeSet.getId() );
 		
