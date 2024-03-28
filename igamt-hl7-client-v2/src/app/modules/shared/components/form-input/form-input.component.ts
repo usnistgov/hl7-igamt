@@ -109,6 +109,7 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
         errors.push(error);
         break;
       } else if (this.control.errors[property]) {
+        console.log(this.control.errors[property]);
         errors.push(this.control.errors[property]);
         break;
       }

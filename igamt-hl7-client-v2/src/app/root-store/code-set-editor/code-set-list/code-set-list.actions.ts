@@ -10,6 +10,14 @@ export enum CodeSetListActionTypes {
   SelectCodeSetListSortOption = '[CodeSetList] Select Sort Option',
   ClearCodeSetList = '[CodeSetList] Clear CodeSet List',
   UpdatePendingInvitationCount = '[CodeSetList] Update Pending Invitation Count',
+  CloneCodeSet = '[CodeSetList] Clone Code Set',
+  CloneCodeSetSuccess = '[CodeSetList] Clone Code Set Success',
+  CloneCodeSetFailure = '[CodeSetList] Clone Code Set Failure',
+
+  PublishCodeSet  =  '[CodeSetList] Clone Code Set',
+  PublishCodeSetSuccess  =  '[CodeSetList] Clone Code Set Success',
+  PublishCodeSetFailure  =  '[CodeSetList] Clone Code Set Failure',
+
 }
 
 export type CodeSetLoadType = 'PRIVATE' | 'PUBLIC' | 'ALL';
@@ -41,6 +49,13 @@ export class DeleteCodeSetListItemSuccess implements Action {
   readonly type = CodeSetListActionTypes.DeleteCodeSetListItemSuccess;
 
   constructor(readonly id: string) {
+  }
+}
+
+export class CloneCodeSetSuccess implements Action {
+  readonly type = CodeSetListActionTypes.CloneCodeSetSuccess;
+
+  constructor(readonly payload: ICodeSetListItem) {
   }
 }
 
@@ -80,4 +95,5 @@ export type CodeSetListActions =
   ClearCodeSetList |
   SelectCodeSetListViewType |
   SelectCodeSetListSortOption |
+  CloneCodeSetSuccess|
   UpdatePendingInvitationCount;

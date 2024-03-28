@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Observable } from 'rxjs';
 import { ICodeSetVersionContent } from '../../models/code-set.models';
@@ -21,8 +21,9 @@ export class CommitCodeSetVersionDialogComponent implements OnInit {
   ) {
     this.title = data.title || 'Code Set Version';
     this.metaDataForm = new FormGroup({
-      version: new FormControl(data.version ? data.version || '' : '', [Validators.required]),
+      version: new FormControl(data.version ? data.version || '' : '', [Validators.required, this.versionValidator()]),
       comments: new FormControl(data.comments ? data.comments || '' : '', []),
+      latest: new FormControl(true),
     });
   }
 
@@ -35,6 +36,13 @@ export class CommitCodeSetVersionDialogComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  versionValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const forbidden = control.value ? !/^[a-zA-Z0-9-_.]+$/.test(control.value) : false;
+      return forbidden ? { invalidVersion: { value: control.value } } : {};
+    };
   }
 
 }

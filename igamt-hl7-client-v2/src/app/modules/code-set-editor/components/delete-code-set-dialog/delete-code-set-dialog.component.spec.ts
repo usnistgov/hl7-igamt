@@ -8,7 +8,7 @@ describe('DeleteCodeSetDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DeleteCodeSetDialogComponent ]
+      declarations: [ DeleteCodeSetDialogComponent ],
     })
     .compileComponents();
   }));

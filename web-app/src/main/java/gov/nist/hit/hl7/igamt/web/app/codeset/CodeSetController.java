@@ -36,6 +36,7 @@ import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
@@ -45,7 +46,12 @@ import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddResourceResponse;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
+import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
+import gov.nist.hit.hl7.igamt.display.model.PublishingInfo;
+import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
+import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.ImportValueSetException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSet;
@@ -72,63 +78,74 @@ import gov.nist.hit.hl7.igamt.workspace.model.WorkspaceListType;
 @RestController
 public class CodeSetController {
 
-	
+
 	@Autowired
 	CodeSetService codeSetService;
 	
+	
+
 	@Autowired
 	CommonService commonService;
-	
-	
+
+
 	@RequestMapping(value = "/api/code-set/create", method = RequestMethod.POST, produces = { "application/json" })
 	public ResponseMessage<String> createWorkspace(
 			@RequestBody CodeSetCreateRequest CodeSetCreateRequest,
 			Authentication authentication
-	) {
+			) {
 		CodeSet ws = this.codeSetService.createCodeSet(CodeSetCreateRequest, authentication.getName());
 		return new ResponseMessage<>(ResponseMessage.Status.SUCCESS, "Code Set Created Successfully",  ws.getId(), ws.getId(), new Date());
 	}
-	
-	
+
+
 	@RequestMapping(value = "/api/code-set/{id}/state", method = RequestMethod.GET, produces = { "application/json" })
 	@ResponseBody
-//	@PreAuthorize("AccessWorkspace(#id, READ)")
+	//	@PreAuthorize("AccessWorkspace(#id, READ)")
 	public CodeSetInfo getWorkspaceInfo(
 			Authentication authentication,
 			@PathVariable("id") String id
-	) throws  ResourceNotFoundException, ForbiddenOperationException {
+			) throws  ResourceNotFoundException, ForbiddenOperationException {
 		String username = authentication.getPrincipal().toString();
 		return codeSetService.getCodeSetInfo(id, username);
 	}
-	
-	
-//	@RequestMapping(value = "/api/code-set/{id}/folder/{folderId}", method = RequestMethod.POST, produces = { "application/json" })
-//	@ResponseBody
-////	@PreAuthorize("IsWorkspaceAdmin(#id)")
-//	public ResponseMessage<String> editFolder(
-//			Authentication authentication,
-//			@PathVariable("id") String id,
-//			@PathVariable("folderId") String folderId,
-//			@RequestBody AddFolderRequest addFolderRequest
-//	) throws Exception {
-//		String username = authentication.getPrincipal().toString();
-//		workspaceService.updateFolder(id, folderId, addFolderRequest, username);
-//		return new ResponseMessage<>(ResponseMessage.Status.SUCCESS, "Folder Updated Successfully",  id, new Date());
-//	}
+
+
+	@RequestMapping(value = "/api/code-set/{id}/applyInfo", method = RequestMethod.POST, produces = { "application/json" })
+	@ResponseBody
+	//	@PreAuthorize("AccessWorkspace(#id, READ)")
+	public ResponseMessage<?> SaveCodeSet(
+			Authentication authentication,
+			@PathVariable("id") String id,  @RequestBody CodeSetInfo content
+			) throws  ResourceNotFoundException, ForbiddenOperationException {
+		String username = authentication.getPrincipal().toString();
+		CodeSet ret =  codeSetService.saveCodeSetContent(id, content, username);
+
+
+		return new ResponseMessage(Status.SUCCESS, "Code set Saved", ret.getId(), null);
+	}
+
+	@RequestMapping(value = "/api/code-set/{id}/updateViewers", method = RequestMethod.POST, produces = { "application/json" })
+	//	@PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+	public @ResponseBody ResponseMessage<String> updateViewers(@PathVariable("id") String id, @RequestBody List<String> viewers, Authentication authentication) throws Exception {
+		this.codeSetService.updateViewers(id, viewers, authentication.getName());
+		return new ResponseMessage<>(Status.SUCCESS, "", "Code Set Shared Users Successfully Updated", id, false, new Date(), id);
+	}
+
+
 
 	@RequestMapping(value = "/api/code-set/{id}/code-set-version/{versionId}", method = RequestMethod.GET, produces = { "application/json" })
 	@ResponseBody
-//	@PreAuthorize("AccessWorkspaceFolder(#id, #folderId, READ)")
+	//	@PreAuthorize("AccessWorkspaceFolder(#id, #folderId, READ)")
 	public CodeSetVersionContent getFolderContent(
 			Authentication authentication,
 			@PathVariable("id") String id,
 			@PathVariable("versionId") String versionId
-	) throws ResourceNotFoundException {
+			) throws ResourceNotFoundException {
 		String username = authentication.getPrincipal().toString();
 		return codeSetService.getCodeSetVersionContent(id, versionId, username);
 	}
-	
-	
+
+
 	@RequestMapping(value = "/api/code-set/{id}/code-set-version/{versionId}", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
 	public ResponseMessage<?> applyStructureChanges(@PathVariable("id") String id,
@@ -136,11 +153,11 @@ public class CodeSetController {
 			Authentication authentication) throws ValuesetException, IOException, ForbiddenOperationException, ResourceNotFoundException {
 		String username = authentication.getPrincipal().toString();
 
-		CodeSetVersion ret = codeSetService.saveCodeSetContent(id, versionId, content, username);
+		CodeSetVersion ret = codeSetService.saveCodeSetVersionContent(id, versionId, content, username);
 		return new ResponseMessage(Status.SUCCESS, "Code set Saved", ret.getId(), null);
 	}
-	
-	
+
+
 	@RequestMapping(value = "/api/code-set/{id}/code-set-version/{versionId}/commit", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
 	public ResponseMessage<?> commit(@PathVariable("id") String id,
@@ -149,8 +166,8 @@ public class CodeSetController {
 		String username = authentication.getPrincipal().toString();
 
 		CodeSetVersion ret = codeSetService.commit(id, versionId, content, username);
-		
-		this.codeSetService.addCodeSetVersion(id);
+
+		//this.codeSetService.addCodeSetVersion(id);
 		return new ResponseMessage(Status.SUCCESS, "Code set Saved", ret.getId(), null);
 	}
 
@@ -158,25 +175,23 @@ public class CodeSetController {
 	public @ResponseBody List<CodeSetListItem> getUserWorkspaces(
 			Authentication authentication,
 			@RequestParam("type") CodeSetListType type
-	) throws ForbiddenOperationException {
+			) throws ForbiddenOperationException {
 		String username = authentication.getPrincipal().toString();
 		List<CodeSet> codesets = new ArrayList<>();
-		
+
 		if (type != null) {
 			if (type.equals(CodeSetListType.PRIVATE)) {
 
 				codesets = codeSetService.findByPrivateAudienceEditor(username);
 
 			}
-			
+
 			else if (type.equals(CodeSetListType.PUBLIC)) {
 
 				codesets = codeSetService.findByPublicAudienceAndStatusPublished();
 
 			} 
-			
-			
-			
+
 			else if (type.equals(CodeSetListType.ALL)) {
 
 				commonService.checkAuthority(authentication, "ADMIN");
@@ -188,87 +203,106 @@ public class CodeSetController {
 			codesets = codeSetService.findByPrivateAudienceEditor(username);
 			return codeSetService.convertToDisplayList(codesets);
 		}
-		
+
 	}
-	
-	
+
+
 	@RequestMapping(value = "/api/code-sets/exportCSV/{id}", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-    public void exportCSV(@PathVariable("id") String tableId, HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ResourceNotFoundException, ForbiddenOperationException {
-        CodeSetVersion codeSetVersion = this.codeSetService.findById(tableId);
-        if (codeSetVersion == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "CodeSetVersion not found for ID: " + tableId);
-            return;
-        }
+	public void exportCSV(@PathVariable("id") String tableId, HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ResourceNotFoundException, ForbiddenOperationException {
+		CodeSetVersion codeSetVersion = this.codeSetService.findById(tableId);
+		if (codeSetVersion == null) {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, "CodeSetVersion not found for ID: " + tableId);
+			return;
+		}
 
-        String csvContent = new TableCSVGenerator().generate(codeSetVersion.getCodes());
+		String csvContent = new TableCSVGenerator().generate(codeSetVersion.getCodes());
 
-        try (InputStream content = IOUtils.toInputStream(csvContent, "UTF-8")) {
-            response.setContentType("text/csv");
+		try (InputStream content = IOUtils.toInputStream(csvContent, "UTF-8")) {
+			response.setContentType("text/csv");
 
-            response.setHeader("Content-disposition", "attachment;filename=" + codeSetVersion.getVersion()
-                    + "-" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".csv");
+			response.setHeader("Content-disposition", "attachment;filename=" + codeSetVersion.getVersion()
+			+ "-" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".csv");
 
-            FileCopyUtils.copy(content, response.getOutputStream());
-        } 
-    }
-	
+			FileCopyUtils.copy(content, response.getOutputStream());
+		} 
+	}
+
 	@RequestMapping(value = "/api/code-sets/importCSV", method = RequestMethod.POST)
 
 	public List<Code> uploadCSVFile(@RequestParam("file") MultipartFile file, Authentication authentication) {
-        if (file.isEmpty()) {
-        } else {
+		if (file.isEmpty()) {
+		} else {
 
-            try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-                ColumnPositionMappingStrategy<CodeRaw> strategy = new ColumnPositionMappingStrategy<>();
-                strategy.setType(CodeRaw.class);
-                
-                
-                //strategy.setColumnMapping(new String[]{"Value",	"Pattern", 	"Description", "CodeSystem",	"Usage",	"Comments"});
-                strategy.setColumnMapping(new String[]{"value",	"pattern", 	"description", "codeSystem",	"usage",	"comments"});
+			try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+				ColumnPositionMappingStrategy<CodeRaw> strategy = new ColumnPositionMappingStrategy<>();
+				strategy.setType(CodeRaw.class);
 
-                CsvToBean<CodeRaw> csvToBean = new CsvToBeanBuilder<CodeRaw>(reader)
-                        .withMappingStrategy(strategy)
-                        .withIgnoreLeadingWhiteSpace(true)
-                        .withSkipLines(1)
-                        .build();
-                
-                
-                
-                List<CodeRaw> rawCodes = csvToBean.parse();
-                
-                
-                
-                List<Code> codes = rawCodes.stream().map(rawCode -> {
-                	return rawCode.convertToCode();     
-                }).collect(Collectors.toList());
-                
-                return codes;
-            } catch (Exception ex) {
-            	
-            	ex.printStackTrace();
-            }
-            
-        }
+
+				//strategy.setColumnMapping(new String[]{"Value",	"Pattern", 	"Description", "CodeSystem",	"Usage",	"Comments"});
+				strategy.setColumnMapping(new String[]{"value",	"pattern", 	"description", "codeSystem",	"usage",	"comments"});
+
+				CsvToBean<CodeRaw> csvToBean = new CsvToBeanBuilder<CodeRaw>(reader)
+						.withMappingStrategy(strategy)
+						.withIgnoreLeadingWhiteSpace(true)
+						.withSkipLines(1)
+						.build();
+
+
+
+				List<CodeRaw> rawCodes = csvToBean.parse();
+
+
+
+				List<Code> codes = rawCodes.stream().map(rawCode -> {
+					return rawCode.convertToCode();     
+				}).collect(Collectors.toList());
+
+				return codes;
+			} catch (Exception ex) {
+
+				ex.printStackTrace();
+			}
+
+		}
 		return null;
-    }
-	
-	
+	}
 
-//	@RequestMapping(value = "/api/igdocuments/{id}/valuesets/uploadCSVFile", method = RequestMethod.POST)
-//	@NotifySave(id = "#id", type = "'IGDOCUMENT'")
-//	@PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
-//	public ResponseMessage<AddResourceResponse> addValuesetFromCSV(@PathVariable("id") String id,
-//			@RequestParam("file") MultipartFile csvFile, Authentication authentication) throws ImportValueSetException, IGNotFoundException, ForbiddenOperationException {
-//		
-//		Valueset newVS = this.igService.importValuesetsFromCSV(id, csvFile);
-//		AddResourceResponse response = new AddResourceResponse();
-//		response.setId(newVS.getId());
-//		response.setReg(findIgById(id).getValueSetRegistry());
-//		response.setDisplay(displayInfoService.convertValueSet(newVS));
-//		return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Value Set clone Success", newVS.getId(), false,
-//				newVS.getUpdateDate(), response);
-//	}
 
 	
+	@RequestMapping(value = "/api/code-set/{id}", method = RequestMethod.DELETE, produces = { "application/json" })
+	public ResponseMessage<String> deleteCodeSet(
+			Authentication authentication,
+			@PathVariable("id") String id
+	) throws ForbiddenOperationException, ResourceNotFoundException {
+		
+		String username = authentication.getPrincipal().toString();
+		this.codeSetService.deleteCodeSet(id, username);
+		
+		return new ResponseMessage<>(ResponseMessage.Status.SUCCESS, "Code Set  Deleted Successfully",  id, id, new Date());
+	}
+
+	@RequestMapping(value = "/api/code-set/{id}/clone", method = RequestMethod.POST, produces = {
+	"application/json" })
+	public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id,  Authentication authentication)
+			throws  ResourceNotFoundException, ForbiddenOperationException {
+		String username = authentication.getPrincipal().toString();
+		CodeSet clone = codeSetService.clone(id, username);
+		return new ResponseMessage<String>(Status.SUCCESS, "", "Code Set Cloned Successfully", clone.getId(), false,
+				clone.getDateUpdated(), clone.getId());
+	}
+	
+	
+	@RequestMapping(value = "/api/code-set/{id}/publish", method = RequestMethod.POST, produces = {
+	"application/json" })
+	public @ResponseBody ResponseMessage<String> publish(@PathVariable("id") String id,  Authentication authentication) throws
+	ForbiddenOperationException, ResourceNotFoundException {
+		String username = authentication.getPrincipal().toString();
+		commonService.checkAuthority(authentication, "ADMIN");
+
+		CodeSet published = codeSetService.publish(id, username);
+		return new ResponseMessage<String>(Status.SUCCESS, "", "Code Set Published Successfully", published.getId(), false,
+				published.getDateUpdated(), published.getId());
+	}
+
 }

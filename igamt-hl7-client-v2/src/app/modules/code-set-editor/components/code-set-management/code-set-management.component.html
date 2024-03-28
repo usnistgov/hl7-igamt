@@ -2,39 +2,87 @@
 
 
 
-<form #myForm="ngForm" style="display: flex; flex-direction: column;">
+<form #form="ngForm" style="display: flex; flex-direction: column;">
   <label for="title"><strong>Title</strong></label>
-  <input type="text" id="title" name="title" class="form-control" required [(ngModel)]="info.metadata.title">
+  <input type="text" id="title" name="title" class="form-control" required [(ngModel)]="info.metadata.title" (ngModelChange)="emitChange()">
   <label for="description"><strong>Description</strong></label>
-  <input type="text" id="description" name="description" class="form-control"  [(ngModel)]="info.metadata.description">
+  <input type="text" id="description" name="description" class="form-control"  (ngModelChange)="emitChange()" [(ngModel)]="info.metadata.description">
 
-
-
-  <div>
-    <label for="api-toggle"> <strong>Expose through API</strong></label>
-    <p-inputSwitch id="api-toggle" (onChange)="handleChange($event)" [(ngModel)]="info.exposed" name="exposed"></p-inputSwitch>
+  <div style="margin-top: 20px; margin-bottom: 20px;">
+    <label for="defaultVersion" style="margin-right: 5px;"><strong>Select Default Version</strong></label>
+    <p-dropdown
+      [options]="info.children"
+      [(ngModel)]="selectedVersion"
+      optionLabel="version"
+      (ngModelChange)="updateDefault($event)"
+      placeholder="Select your option"
+      name="defaultVersion"
+      dataKey="id" >
+    </p-dropdown>
   </div>
+<p-table [value]="filteredChildren" [paginator]="true" [rows]="5" [style]="{width: '100%', 'margin-top': '10px'}">
+  <ng-template pTemplate="caption">
+    <div style="display: flex; align-items: flex-start; justify-content: flex-start;">
+      <p-multiSelect
+        [options]="filterOptions"
+        [(ngModel)]="selectedFilters"
+        defaultLabel="Select filters"
+        (onChange)="applyFilters($event)"
+        [style]="{'min-width':'250px'}"
+        [panelStyle]="{'min-width':'300px'}"
+        dataKey = "id">
+      </p-multiSelect>
+    </div>
+  </ng-template>
 
-
-
-<span style="color: gray;">Code Set Versions</span>
-<hr style="margin-top: 8px; margin-bottom: 8px;">
-<p-checkbox [(ngModel)]="filterExposed" binary="true" (onChange)="filterVersion($event)"> Show only folders with a set custom permission</p-checkbox>
-
-<p-table [value]="filteredChildren" [paginator]="true" [rows]="5" [style]="{width: 'min-content', 'margin-top': '10px'}">
   <ng-template pTemplate="header">
     <tr>
-      <th style="width: 200px;">Code Set Version</th>
-      <th style="width: 250px;">Is Exposed</th>
+      <th style="width: 60%;">Code Set Version</th>
+      <th style="width: 100px;">Status</th>
+      <th>Actions</th>
     </tr>
   </ng-template>
-  <ng-template pTemplate="body" let-codeSetVersion>
-    <tr>
-      <td>{{ codeSetVersion.version }}</td>
+
+  <ng-template pTemplate="body" let-version>
+    <tr  [ngStyle]="{'background-color': rowIndex % 2 === 0 ? '#FFFFFF' : '#FFFFFF'}">
       <td>
-        <p-inputSwitch [(ngModel)]="codeSetVersion.exposted" (onChange)="onExposedChange(codeSetVersion)"></p-inputSwitch>
+
+        <div class="code-set-info">
+          <span style="font-weight: bold;">Version: {{ version.version }}</span>
+          <br>
+          <span style="font-style: italic;">
+              Date Updated: {{ version.dateUpdated | date }},
+              <span *ngIf="version.dateCommitted; else inProgress">
+                  Date Committed: {{ version.dateCommitted | date }}
+              </span>
+              <ng-template #inProgress>In Progress</ng-template>
+          </span>
+          <br>
+      </div>
+
+      </td>
+
+      <td>
+        <strong>{{ version.deprecated ? 'Archived' : 'Active' }}</strong>
+
+      </td>
+      <td>
+
+        <button type="button" class="btn btn-sm btn-primary" (click)="openAction(version)" style="margin-right: 5px;" [routerLink]="['../code-set-version', version.id]" routerLinkActive="router-link-active" >
+          <i class="fa fa-folder-open"></i> Open
+        </button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="confirmAction('DELETE', version.id)" style="margin-right: 5px;">
+          <i class="fa fa-trash"></i> Delete
+        </button>
+        <button type="button" class="btn btn-sm btn-warning" (click)="confirmAction('ARCHIVE', version.id)" style="margin-right: 5px;">
+          <i class="fa fa-archive"></i> Archive
+        </button>
+        <!-- <button type="button" class="btn btn-sm btn-info" (click)="copyUrlAction(version)" style="margin-right: 5px;">
+          <i class="fa fa-copy"></i> Copy URL
+        </button> -->
       </td>
     </tr>
   </ng-template>
 </p-table>
+
 </form>

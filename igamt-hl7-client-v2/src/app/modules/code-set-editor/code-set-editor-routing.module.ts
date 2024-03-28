@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CodeSetEditActionTypes, CodeSetEditResolverLoad, OpenCodeSetDashboardEditor, OpenCodeSetVersionEditor } from 'src/app/root-store/code-set-editor/code-set-edit/code-set-edit.actions';
+import { ErrorPageComponent } from './../core/components/error-page/error-page.component';
 import { DamWidgetContainerComponent } from './../dam-framework/components/data-widget/dam-widget-container/dam-widget-container.component';
 import { AuthenticatedGuard } from './../dam-framework/guards/auth-guard.guard';
 import { DataLoaderGuard } from './../dam-framework/guards/data-loader.guard';
@@ -27,11 +28,11 @@ const routes: Routes = [
     component: CodeSetEditorCreateComponent,
     canActivate: [AuthenticatedGuard],
   },
-  // {
-  //   path: 'error',
-  //   component: ErrorPageComponent,
-  // }
-  // ,
+  {
+    path: 'error',
+    component: ErrorPageComponent,
+  }
+  ,
   {
     data: {
       widgetId: CODE_SET_EDIT_WIDGET_ID,

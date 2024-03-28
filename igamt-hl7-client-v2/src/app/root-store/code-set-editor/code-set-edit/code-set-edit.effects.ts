@@ -15,7 +15,6 @@ import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { EditorSave } from '../../../modules/dam-framework/store/data/dam.actions';
 import { DamWidgetEffect } from './../../../modules/dam-framework/store/dam-widget-effect.class';
 import { selectCodeSetId } from './code-set-edit.selectors';
-// import { selectWorkspaceId } from './workspace-edit.selectors';
 
 @Injectable()
 export class CodeSetEditEffects  extends DamWidgetEffect  {

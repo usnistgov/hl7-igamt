@@ -238,7 +238,7 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
     this.change(this.createReasonForChange(changeReason));
   }
 
-  exportCSV($event: string){
+  exportCSV($event: string) {
     this.valueSetService.exportCodeCSVFile($event);
   }
 }

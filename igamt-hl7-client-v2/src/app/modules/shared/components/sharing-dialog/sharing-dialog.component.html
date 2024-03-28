@@ -1,25 +1,25 @@
-<h5 mat-dialog-title> 
-  <i class="fa fa-share" style="margin-right: 20px;"></i> 
-  {{title}} 
+<h5 mat-dialog-title>
+  <i class="fa fa-share" style="margin-right: 20px;"></i>
+  {{title}}
 </h5>
 <mat-dialog-content>
   <div class="alert alert-warning">
-    The document will be shared as "View Only". Users will not be able to edit the document. 
+    The resource will be shared as "View Only". Users will not be able to edit the resource.
   </div>
 
   <div style="display: flex; flex-direction: column">
 
-    <p-autoComplete 
-      [(ngModel)]="newSharedUser" 
-      [suggestions]="filteredUsersSingle" 
-      (completeMethod)="filterUsersSingle($event)" 
+    <p-autoComplete
+      [(ngModel)]="newSharedUser"
+      [suggestions]="filteredUsersSingle"
+      (completeMethod)="filterUsersSingle($event)"
       (onSelect)="addUser($event)"
-      size="100%" 
-      [style]="{'width':'100%','margin-bottom': '10px'}" 
+      size="100%"
+      [style]="{'width':'100%','margin-bottom': '10px'}"
       [inputStyle]="{'width':'100%'}"
-      placeholder="Search Users by Username" 
-      [minLength]="1" 
-      checkbox="true" 
+      placeholder="Search Users by Username"
+      [minLength]="1"
+      checkbox="true"
       [appendTo]="List">
 
       <ng-template let-value pTemplate="item">

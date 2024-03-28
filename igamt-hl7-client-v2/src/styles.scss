@@ -507,9 +507,9 @@ block-ui-content {
 
   padding: 6px;
   font-weight: bold;
-  background-color: #d4d4d6;
+  background-color: #e2e2e4;
   color: black;
-  border-bottom: 1px solid;
+  border-bottom: 1px solid gray;
 }
 
 
@@ -517,4 +517,12 @@ block-ui-content {
 .vs-table .ui-table .ui-table-tbody > tr > td :hover{
   background-color: inherit;
   color: #333333;
+}
+div.vs-table.ng-star-inserted > p-table > div > p-paginator > div > p-dropdown > div > label{
+  background-color: #f4f4f4;
+
+  }
+div.vs-table.ng-star-inserted > p-table > div > p-paginator .ui-dropdown-trigger{
+    background-color: #f4f4f4;
+
 }

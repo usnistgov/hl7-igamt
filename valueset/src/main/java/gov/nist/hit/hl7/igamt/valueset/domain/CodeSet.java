@@ -28,6 +28,8 @@ public class CodeSet {
     
     private String description;
     
+    private String username;
+    
     
     @DBRef
     private Set<CodeSetVersion> codeSetVersions;
@@ -107,6 +109,12 @@ public class CodeSet {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-     
 
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
 }

@@ -19,6 +19,7 @@ public class CodeSetVersionInfo {
 	private Date dateCommitted;
 	private Date dateUpdated;
 	
+	private boolean deprecated;
 	
 	public Date getDateUpdated() {
 		return dateUpdated;
@@ -77,5 +78,11 @@ public class CodeSetVersionInfo {
 	}
 	public void setDateCommitted(Date dateCommitted) {
 		this.dateCommitted = dateCommitted;
+	}
+	public boolean isDeprecated() {
+		return deprecated;
+	}
+	public void setDeprecated(boolean deprecated) {
+		this.deprecated = deprecated;
 	}
 }

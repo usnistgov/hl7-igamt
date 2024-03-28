@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { CoreModule } from '@angular/flex-layout';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { DamFrameworkModule } from '../dam-framework/dam-framework.module';
@@ -12,20 +11,21 @@ import { CodeSetEditorComponent } from './components/code-set-editor/code-set-ed
 import { CodeSetVersionEditorComponent } from './components/code-set-version-editor/code-set-version-editor.component';
 
 import { ReactiveFormsModule } from '@angular/forms';
+import { ConfirmationService, ConfirmDialogModule } from 'primeng/primeng';
 import { CodeSetEditEffects } from 'src/app/root-store/code-set-editor/code-set-edit/code-set-edit.effects';
 import { CodeSetListEffects } from 'src/app/root-store/code-set-editor/code-set-list/code-set-list.effects';
 import * as fromCodeSet from '../../root-store/code-set-editor/code-set.reducer';
+import { CoreModule } from '../core/core.module';
 import { DamMessagesModule } from '../dam-framework/dam-framework.module';
 import { CodeSetActiveTitlebarComponent } from './components/code-set-active-titlebar/code-set-active-titlebar.component';
 import { CodeSetDashBoardComponent } from './components/code-set-dash-board/code-set-dash-board.component';
 import { CodeSetEditorListCardComponent } from './components/code-set-editor-list-card/code-set-editor-list-card.component';
+import { CodeSetManagementComponent } from './components/code-set-management/code-set-management.component';
 import { CodeSetSideBarComponent } from './components/code-set-side-bar/code-set-side-bar.component';
 import { CodeSetTableComponent } from './components/code-set-table/code-set-table.component';
 import { CodeSetToolBarComponent } from './components/code-set-tool-bar/code-set-tool-bar.component';
 import { CommitCodeSetVersionDialogComponent } from './components/commit-code-set-version-dialog/commit-code-set-version-dialog.component';
 import { DeleteCodeSetDialogComponent } from './components/delete-code-set-dialog/delete-code-set-dialog.component';
-import { CodeSetManagementComponent } from './components/code-set-management/code-set-management.component';
-import { ConfirmDialogModule, ConfirmationService } from 'primeng/primeng';
 
 @NgModule({
     declarations: [CodeSetEditorListComponent, CodeSetEditorCreateComponent, CodeSetEditorComponent, CodeSetVersionEditorComponent, CodeSetActiveTitlebarComponent, CodeSetSideBarComponent, CodeSetToolBarComponent, CodeSetTableComponent, CodeSetEditorListCardComponent, DeleteCodeSetDialogComponent, CommitCodeSetVersionDialogComponent, CodeSetDashBoardComponent, CodeSetManagementComponent],
@@ -41,7 +41,7 @@ import { ConfirmDialogModule, ConfirmationService } from 'primeng/primeng';
         ConfirmDialogModule,
 
     ],
-    providers :[ConfirmationService],
+    providers : [ConfirmationService],
     entryComponents : [CommitCodeSetVersionDialogComponent],
 })
 export class CodeSetEditorModule { }

@@ -8,7 +8,7 @@ describe('CommitCodeSetVersionDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CommitCodeSetVersionDialogComponent ]
+      declarations: [ CommitCodeSetVersionDialogComponent ],
     })
     .compileComponents();
   }));

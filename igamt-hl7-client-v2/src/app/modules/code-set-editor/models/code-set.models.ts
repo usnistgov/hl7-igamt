@@ -7,6 +7,7 @@ export interface  ICodeSetInfo {
   metadata: ICodeSetInfoMetadata;
   exposed?: boolean;
   children?: ICodeSetVersionInfo[];
+  defaultVersion?: string;
 }
 
 export interface  ICodeSetInfoMetadata {
@@ -22,6 +23,11 @@ export interface  ICodeSetVersionInfo {
   date: string;
   comment: string;
   parentId: string;
+  dateCreated?: string;
+  dateCommitted?: string;
+  deprecated?: boolean;
+  latest?: boolean;
+
 }
 
 export interface ICodeSetActive {

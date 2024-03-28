@@ -27,12 +27,12 @@ public class CodeSetVersion {
 	
 	@LastModifiedDate
 	private Date dateUpdated;
-	
-
-	
+		
 	private String comments;
 	
 	private Set<Code> codes;
+	
+	private boolean deprecated;
 	
 	public CodeSetVersion() {
 		super();
@@ -106,6 +106,16 @@ public class CodeSetVersion {
 
 	public void setDateUpdated(Date dateUpdated) {
 		this.dateUpdated = dateUpdated;
+	}
+
+
+	public boolean isDeprecated() {
+		return deprecated;
+	}
+
+
+	public void setDeprecated(boolean deprecated) {
+		this.deprecated = deprecated;
 	}
 
 }

@@ -20,16 +20,18 @@ export class CodeSetServiceService {
   }
 
   readonly CODE_SET_END_POINT = '/api/code-set/';
+  readonly CODE_SET_VERSION_END_POINT = '/code-set-version/';
+
   saveDashBoard(id: string, data: ICodeSetInfo): Observable<Message<string>>  {
-    throw new Error('Method not implemented.');
+    return this.http.post<Message<string>>(this.CODE_SET_END_POINT + id + '/applyInfo/' , data);
   }
 
   saveCodeSetVersion( codeSetId: string, versionId: string, resource: ICodeSetVersionContent): Observable<Message<string>>  {
-    return this.http.post<Message<string>>(this.CODE_SET_END_POINT + codeSetId + '/code-set-version/' + versionId, resource);
+    return this.http.post<Message<string>>(this.CODE_SET_END_POINT + codeSetId + this.CODE_SET_VERSION_END_POINT + versionId, resource);
   }
 
   commitCodeSetVersion( codeSetId: string, versionId: string, resource: ICodeSetVersionContent): Observable<Message<string>>  {
-    return this.http.post<Message<string>>(this.CODE_SET_END_POINT + codeSetId + '/code-set-version/' + versionId + '/commit', resource);
+    return this.http.post<Message<string>>(this.CODE_SET_END_POINT + codeSetId + this.CODE_SET_VERSION_END_POINT + versionId + '/commit', resource);
   }
 
   getCodeSetInfo(id: string): Observable<ICodeSetInfo> {
@@ -41,7 +43,7 @@ export class CodeSetServiceService {
   }
 
   getCodeSetVersionContent(codeSetId: string, versionId: string): Observable<ICodeSetVersionContent> {
-    return this.http.get<ICodeSetVersionContent>(this.CODE_SET_END_POINT + codeSetId + '/code-set-version/' + versionId);
+    return this.http.get<ICodeSetVersionContent>(this.CODE_SET_END_POINT + codeSetId + this.CODE_SET_VERSION_END_POINT + versionId);
   }
   getUpdateAction(codeSetInfo: ICodeSetInfo): Action[] {
     return [
@@ -73,7 +75,15 @@ export class CodeSetServiceService {
   }
 
   deleteCodeSet(id: string) {
-    return this.http.delete<Message>('api/code-set/' + id);
+    return this.http.delete<Message>(this.CODE_SET_END_POINT + id);
+  }
+
+  cloneCodeSet(id: string) {
+    return this.http.post<Message>(this.CODE_SET_END_POINT + id + '/clone', {});
+  }
+
+  publishCodeSet(id: string) {
+    return this.http.post<Message>(this.CODE_SET_END_POINT + id + '/publish', {});
   }
 
   upload(id: string, file: File) {
@@ -83,13 +93,17 @@ export class CodeSetServiceService {
     return this.http.post('api/code-sets/importCSV/' + id, formData);
   }
 
-  exportCSV(id: String) {
+  exportCSV(id: string) {
     const form = document.createElement('form');
     form.action = 'api/code-sets/exportCSV/' + id;
     form.method = 'POST';
     form.style.display = 'none';
     document.body.appendChild(form);
     form.submit();
+  }
+
+  updateViewers(viewers: string[], id: string): Observable<Message<string>> {
+    return this.http.post<Message<string>>(this.CODE_SET_END_POINT + id + '/updateViewers', viewers).pipe();
   }
 
 }

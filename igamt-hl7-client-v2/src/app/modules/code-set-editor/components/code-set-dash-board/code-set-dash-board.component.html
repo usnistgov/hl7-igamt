@@ -1,6 +1,6 @@
 
 
-<app-code-set-management [info]="resource$ | async"></app-code-set-management>
+<app-code-set-management [info]="resource$ | async" (changes)="applyChanges($event)"></app-code-set-management>
 
 
 
