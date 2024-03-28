@@ -8,7 +8,7 @@ describe('CodeSetManagementComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CodeSetManagementComponent ]
+      declarations: [ CodeSetManagementComponent ],
     })
     .compileComponents();
   }));

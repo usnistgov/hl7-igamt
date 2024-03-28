@@ -33,7 +33,7 @@ export class SharingDialogComponent implements OnInit {
         });
       }
 
-      this.title = 'Share Document "' + this.data.item.title + '"';
+      this.title = 'Share Resource "' + this.data.item.title + '"';
       this.owner = this.data.username;
     }
   }

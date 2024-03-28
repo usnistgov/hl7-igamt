@@ -20,7 +20,7 @@ public interface CodeSetService {
 
 	CodeSetVersionContent getCodeSetVersionContent(String id, String codeSetVersionId, String username) throws ResourceNotFoundException;
 
-	CodeSetVersion saveCodeSetContent(String id, String versionId, CodeSetVersionContent content, String username) throws ResourceNotFoundException, ForbiddenOperationException;
+	CodeSetVersion saveCodeSetVersionContent(String id, String versionId, CodeSetVersionContent content, String username) throws ResourceNotFoundException, ForbiddenOperationException;
 
 	List<CodeSet> findByUsername(String username);
 
@@ -42,6 +42,20 @@ public interface CodeSetService {
 	CodeSetVersion findById(String id) throws ResourceNotFoundException, ForbiddenOperationException;
 
 	List<CodeSet> findByPublicAudienceAndStatusPublished();
+
+	CodeSet saveCodeSetContent(String id, CodeSetInfo content, String username)
+			throws ResourceNotFoundException, ForbiddenOperationException;
+
+	void addCodeSetVersion(String id, CodeSetVersion from) throws ResourceNotFoundException;
+
+	void updateViewers(String id, List<String> viewers, String username) throws Exception;
+
+	void deleteCodeSet(String id, String username) throws ForbiddenOperationException, ResourceNotFoundException;
+
+	CodeSet publish(String id, String username) throws ForbiddenOperationException, ResourceNotFoundException;
+	
+	CodeSet clone(String id, String username) throws ForbiddenOperationException, ResourceNotFoundException;
+
 
 
 }

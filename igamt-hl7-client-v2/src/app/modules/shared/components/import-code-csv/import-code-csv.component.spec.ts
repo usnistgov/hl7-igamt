@@ -8,7 +8,7 @@ describe('ImportCodeCSVComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ImportCodeCSVComponent ]
+      declarations: [ ImportCodeCSVComponent ],
     })
     .compileComponents();
   }));

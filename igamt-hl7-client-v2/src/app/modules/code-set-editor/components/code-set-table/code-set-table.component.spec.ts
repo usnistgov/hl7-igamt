@@ -8,7 +8,7 @@ describe('CodeSetTableComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CodeSetTableComponent ]
+      declarations: [ CodeSetTableComponent ],
     })
     .compileComponents();
   }));

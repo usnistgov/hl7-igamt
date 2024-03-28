@@ -4,7 +4,7 @@
   <div  style="display: flex; justify-content: flex-end" >
 
     <div ngbDropdown placement="bottom-right" container="body" class="d-inline-block" style="margin-right:5px;" >
-      <button class="btn btn-secondary dropdown-toggle"
+      <button class="btn btn-sm btn-secondary dropdown-toggle"
         id="csv"
         ngbDropdownToggle>
       <i class="fa fa-table"></i> CSV
@@ -21,21 +21,21 @@
         </button>
       </div>
     </div>
-    <button (click)="deleteCodes()" [disabled]="!selectedCodes.length"  *ngIf="!viewOnly" class="btn btn-danger"
+    <button (click)="deleteCodes()" [disabled]="!selectedCodes.length"  *ngIf="!viewOnly" class="btn btn-danger btn-sm"
             style="margin-right:5px;"
             type="button">
       <i class="fa fa-trash"></i> Delete Selected
       <span class="badge badge-info">{{selectedCodes?.length }}</span>
     </button>
 
-    <button (click)="addCode()" class="btn btn-primary" type="button"  style="margin-right:5px;" *ngIf="!viewOnly"><i class="fa fa-plus"></i> Add Code
+    <button (click)="addCode()" class="btn btn-primary btn-sm" type="button"  style="margin-right:5px;" *ngIf="!viewOnly"><i class="fa fa-plus"></i> Add Code
     </button>
   </div>
 </div>
   <div style="margin-top:5px" class="vs-table" *ngIf="codeSetVersion">
     <p-table #dt1 [(selection)]="selectedCodes" [columns]="selectedColumns" sortField="value"
     [resizableColumns]="false" [value]="codeSetVersion.codes" selectionMode="checkbox"
-    [scrollable]="true" scrollHeight="600px"  dataKey="id" [paginator]="true" [rows]="20" [rowsPerPageOptions]="[5,10,15,20,30, 40, 50]">
+     dataKey="id" [paginator]="true" [rows]="20" [rowsPerPageOptions]="[5,10,15,20,30, 40, 50]">
           <ng-template pTemplate="caption">
 
             <div style="display: flex; justify-content: space-between">
@@ -95,7 +95,7 @@
                 <div #anchor *ngSwitchCase="'usage'">
                   <p-dropdown (onChange)="changeCodes()" [(ngModel)]="rowData.usage" [appendTo]="anchor"
                               [id]="'usage'+rowData.id" [name]="'usage'+rowData.id" [options]="codeUsageOptions"
-                              placeholder="select code usage" [style]="{'minWidth':'90%'}"></p-dropdown>
+                              placeholder="usage" [style]="{'minWidth':'90%'}"></p-dropdown>
 
                 </div>
 
@@ -111,7 +111,7 @@
                                   [options]="codeSystemOptions" [readonly]="viewOnly"
                                   [style]="{'minWidth': '100%', 'maxWidth':'100%'}"
                                   autoZIndex="true"
-                                  placeholder="select code system" (ngModelChange)="updateAttribute('CODES', codeSetVersion.codes)"></p-dropdown>
+                                  placeholder="code system" (ngModelChange)="updateAttribute('CODES', codeSetVersion.codes)"></p-dropdown>
                     </div>
                     <div class="dropdown-button-column">
                       <button (click)="toggleEdit(rowData.id)" class="btn btn-sm btn-primary">
@@ -135,19 +135,19 @@
                   <input (change)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.description"
                          [id]="'description'+rowData.id"
                          [name]="'description'+rowData.id" class="form-control"
-                         placeholder="set code description"
+                         placeholder="description"
                          type="text">
                 </div>
                 <div *ngSwitchCase="'value'">
                   <input (change)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.value"
                          [id]="'value'+rowData.id" [name]="'value'+rowData.id"
-                         class="form-control" placeholder="set code value" required
+                         class="form-control" placeholder="value" required
                          type="text">
                 </div>
                 <div *ngSwitchCase="'comments'">
                   <input (change)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.comments"
                          [id]="'comments'+rowData.id"
-                         [name]="'comments'+rowData.id" class="form-control" placeholder="add comments"
+                         [name]="'comments'+rowData.id" class="form-control" placeholder="comments"
                          type="text">
                 </div>
               </td>

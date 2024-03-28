@@ -1,0 +1,26 @@
+.code-set-info {
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  padding: 10px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.code-set-info > span {
+  margin-right: 15px;
+}
+
+.version {
+  font-weight: bold;
+  color: #0056b3;
+}
+
+.exposed {
+  font-weight: bold;
+  color: #28a745;
+}
+
+.date-created, .date-updated, .date-committed {
+  color: #6c757d;
+}
+

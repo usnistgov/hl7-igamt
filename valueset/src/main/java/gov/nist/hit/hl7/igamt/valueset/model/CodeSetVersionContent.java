@@ -10,6 +10,7 @@ public class CodeSetVersionContent extends CodeSetVersionInfo {
 	
 	private Set<Code> codes;
     private List<String> codeSystems; 
+    private boolean latest;
     
 
   	public CodeSetVersionContent() {
@@ -30,6 +31,14 @@ public class CodeSetVersionContent extends CodeSetVersionInfo {
 
 	public void setCodes(Set<Code> codes) {
 		this.codes = codes;
+	}
+
+	public boolean isLatest() {
+		return latest;
+	}
+
+	public void setLatest(boolean latest) {
+		this.latest = latest;
 	}
 
 

@@ -1,19 +1,18 @@
 
 import { CodeSetEditActions, CodeSetEditActionTypes } from './code-set-edit.actions';
 
-export interface State {
+export interface IState {
 
 }
 
-export const initialState: State = {
+export const initialState: IState = {
 
 };
 
-export function reducer(state = initialState, action: CodeSetEditActions): State {
+export function reducer(state = initialState, action: CodeSetEditActions): IState {
   switch (action.type) {
 
     case CodeSetEditActionTypes.CodeSetEditResolverLoad:
-      return state;
 
     default:
       return state;

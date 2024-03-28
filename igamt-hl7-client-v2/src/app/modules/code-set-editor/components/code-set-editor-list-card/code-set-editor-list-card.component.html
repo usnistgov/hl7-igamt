@@ -1,34 +1,35 @@
-<p-card>
+<p-card >
+  <div style="display: flex; justify-content: space-between; width: 100%;">
+    <!-- CARD CONTENT -->
+    <div style="display: flex; flex-direction: row;">
+      <!-- ITEM DETAILS -->
+      <div style="display: flex; flex-direction: column;">
+        <h6  [routerLink]="['/code-set', item.id]"  style="margin-left: 10px; margin-bottom: 0;" class="link">
+          <strong>{{item.title}}</strong>
+        </h6>
 
-  <!-- CARD CONTENT -->
-  <div style="display: flex; flex-direction: row;">
+        <span style="margin-left: 10px; color: #818181;">{{item.subtitle}}</span>
+        <span *ngIf="item.username" style="margin-left: 10px; color: #818181;">
+          <i class="fa fa-user"></i>
+          {{item.username}}
+        </span>
+        <span *ngIf="item.sharedUsers && item.sharedUsers.length > 0 " style="margin-left: 10px; color: #818181;">
+          <i class="fa fa-users"></i>
+          shared with {{item.sharedUsers.length}} user(s)
+        </span>
+        <span *ngIf="item.dateUpdated" style="margin-left: 10px; color: #818181;">
+          <i class="fa fa-calendar"></i>
+          updated on:  {{item.dateUpdated | date}}
+        </span>
+        <span *ngIf="item.participants" style="margin-left: 10px;">
+          <i class="fa fa-users"></i>
+          <span *ngFor="let participant of item.participants">{{participant}} </span>
+        </span>
+      </div>
 
-    <!-- ITEM COVER IMAGE -->
-    <div *ngIf="!item.coverPicture"
-         style="height: 60px; width: 60px; background-color: #eef5ff; text-align: center; display: flex; flex-direction: column; justify-content: center;">
-      <strong style="color: #c9c9c9;">CODE SET</strong>
-    </div>
-    <img *ngIf="item.coverPicture" [src]="item.coverPicture" height="60px" >
-    <!-- ITEM DETAILS -->
-    <div style="display: flex; flex-direction: column;">
-      <h6 [routerLink]="['/code-set', item.id]"  style="margin-left: 10px; margin-bottom: 0;" class="link" (click)="doDefault()"><strong>{{item.title}}</strong></h6>
-      <span style="margin-left: 10px; color: #818181;">{{item.description}}</span>
-      <span *ngIf="item.username" style="margin-left: 10px; color: #818181;">
-        <i class="fa fa-user"></i>
-         {{item.username}}
-      </span>
-      <span *ngIf="item.dateUpdated" style="margin-left: 10px; color: #818181;">
-        <i class="fa fa-calendar"></i>
-         updated on:  {{item.dateUpdated | date}}
-      </span>
-      <span *ngIf="item.participants" style="margin-left: 10px;">
-        <i class="fa fa-users"></i>
-        <span *ngFor="let participant of item.participants">{{participant}} </span>
-      </span>
     </div>
 
   </div>
-
 
   <!-- CARD FOOTER -->
   <p-footer>
@@ -38,43 +39,46 @@
       <div style="width: 100%; display: flex; flex-direction: row; justify-content: space-between;">
 
         <!-- ITEM MORE INFO BUTTON -->
-        <!-- <div style="width: 100%; display: flex; flex-direction: row; justify-content: flex-start;">
+        <div style="width: 100%; display: flex; flex-direction: row; justify-content: flex-start;">
           <button (click)="moreInfo = !moreInfo" class="btn btn-sm btn-light border-gray" style="margin-right: 5px;">
             <i [class]="'fa ' + (moreInfo ? 'fa-chevron-down' : 'fa-chevron-right')"></i>
             More Info
           </button>
-        </div> -->
+        </div>
 
         <!-- ITEM CONTROL BUTTONS -->
         <div style="width: 100%; display: flex; flex-direction: row; justify-content: flex-end;">
-          <ng-container *ngFor="let control of controls" >
+          <div class="btn-group" role="group" aria-label="Actions">
+            <ng-container *ngFor="let control of controls" >
 
+              <button (click)="control.action(item)" [class]="'btn btn-sm btn-primary btn-action'"
+                      [disabled]="control.disabled(item)" *ngIf ="!control.hide || control.hide(item) ==false">
+                <i [class]="'fa ' + control.icon"></i>
+                <span style="margin-left: 3px;">
+                  {{ control.label }}
+                </span>
+              </button>
 
-          <button (click)="control.action(item)" [class]="'btn btn-sm ' + control.class"
-                  [disabled]="control.disabled(item)" style="margin-right: 5px;" *ngIf ="!control.hide || control.hide(item) ==false">
-            <i [class]="'fa ' + control.icon"></i>
-
-            {{ control.label }}
-
-          </button>
-          </ng-container>
+            </ng-container>
+          </div>
         </div>
 
       </div>
 
       <!-- ITEM MORE INFO ROW -->
-      <!-- <div *ngIf="moreInfo" style="display: flex; flex-direction: column; margin-top: 5px;">
+      <div *ngIf="moreInfo" style="display: flex; flex-direction: column; margin-top: 5px;">
         <table class="table table-sm table-striped table-bordered">
           <tr>
             <th>
-              Version
+              Code set versions
             </th>
           </tr>
-          <tr *ngFor=" let cp of item.elements">
+          <tr *ngFor="let cp of item.children">
+            {{item}}
             <td>{{cp}}</td>
           </tr>
         </table>
-      </div> -->
+      </div>
     </div>
   </p-footer>
 </p-card>

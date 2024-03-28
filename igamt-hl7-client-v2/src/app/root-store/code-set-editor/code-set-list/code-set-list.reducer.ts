@@ -39,6 +39,9 @@ export function reducer(state = initialState, action: CodeSetListActions): IStat
     case CodeSetListActionTypes.DeleteCodeSetListItemSuccess:
       return codeSetListItemAdapter.removeOne(action.id, state);
 
+    case CodeSetListActionTypes.CloneCodeSetSuccess:
+      return codeSetListItemAdapter.addOne(action.payload, state);
+
     case CodeSetListActionTypes.SelectCodeSetListViewType:
       return {
         ...state,
@@ -50,13 +53,6 @@ export function reducer(state = initialState, action: CodeSetListActions): IStat
         ...state,
         sortOptions: action.sortOption,
       };
-
-    case CodeSetListActionTypes.UpdatePendingInvitationCount:
-      return {
-        ...state,
-        pendingInvitations: action.payload.count,
-      };
-
     default:
       return state;
   }

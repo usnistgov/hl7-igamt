@@ -8,7 +8,7 @@ describe('CodeSetEditorCreateComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CodeSetEditorCreateComponent ]
+      declarations: [ CodeSetEditorCreateComponent ],
     })
     .compileComponents();
   }));

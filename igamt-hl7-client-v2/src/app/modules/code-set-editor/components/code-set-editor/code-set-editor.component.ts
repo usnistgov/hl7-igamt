@@ -20,7 +20,6 @@ export const CODE_SET_EDIT_WIDGET_ID = 'CODE_SET_EDIT_WIDGET_ID';
 export class CodeSetEditorComponent extends DamWidgetComponent {
 
   metadata$: Observable<ICodeSetInfoMetadata>;
-  // workspaceInfo$: Observable<IWorkspaceMetadata>;
   dateCreated$: Observable<Date>;
   dateUpdated$: Observable<Date>;
 
@@ -30,12 +29,7 @@ export class CodeSetEditorComponent extends DamWidgetComponent {
     super(CODE_SET_EDIT_WIDGET_ID, store, dialog);
 
     this.metadata$ = this.store.select(selectCodeSetMetadata);
-    // this.dateCreated$ = this.store.select(selectWorkspaceInfo).pipe(
-    //   map((ws) => ws.created),
-    // );
-    // this.dateUpdated$ = this.store.select(selectWorkspaceInfo).pipe(
-    //   map((ws) => ws.updated),
-    // );
+
   }
 
 }

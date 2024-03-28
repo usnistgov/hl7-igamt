@@ -8,6 +8,7 @@ import { BlockUIModule } from 'ng-block-ui';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { CodeSetEditorModule } from './modules/code-set-editor/code-set-editor.module';
 import { CoreModule } from './modules/core/core.module';
 import { DamRoutingModule } from './modules/dam-framework/dam-framework.module';
 import { WorkspaceModule } from './modules/workspace/workspace.module';
@@ -16,7 +17,6 @@ import { ConfigEffects } from './root-store/config/config.effects';
 import {LoadedResourcesEffects} from './root-store/dam-igamt/igamt.loaded-resources.effects';
 import { ResourceLoaderEffects } from './root-store/resource-loader/resource-loader.effects';
 import { UserConfigEffects } from './root-store/user-config/user-config.effects';
-import { CodeSetEditorModule } from './modules/code-set-editor/code-set-editor.module';
 @NgModule({
   declarations: [
     AppComponent,

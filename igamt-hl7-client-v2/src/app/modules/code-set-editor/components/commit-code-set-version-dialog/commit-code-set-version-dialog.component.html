@@ -1,10 +1,25 @@
-<h2 mat-dialog-title>Commit version</h2>
+<h2 mat-dialog-title>Commit Version</h2>
 <form [formGroup]="metaDataForm" style="display: flex; flex-direction: column;">
-  <app-form-input formControlName="version" id="version" name="version"
-    placeholder="Version" label="Version"> </app-form-input>
+
+    <div class="form-group">
+      <label for="version" class="form-label-lg">Version</label>
+      <input type="text" class="form-control" id="version" name="version"
+             placeholder="Version" formControlName="version">
+      <div *ngIf="metaDataForm.controls.version.errors?.invalidVersion" class="alert alert-danger">
+        Version can only contain alphanumeric characters, dashes (-), and underscores (_).
+      </div>
+      <div *ngIf="metaDataForm.controls.version.errors?.required" class="alert alert-danger">
+        Version is required
+      </div>
+    </div>
+
+
   <app-form-input formControlName="comments" id="comments" name="comments"
-  placeholder="Comments" label="Comments"> </app-form-input>
+    placeholder="Comments" label="Comments"> </app-form-input>
+
+  <p-checkbox binary="true" formControlName="latest" label="Mark as Latest Stable"></p-checkbox>
 </form>
+
 <mat-dialog-actions style="justify-content: flex-end;">
   <button (click)="cancel()" class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
   <button (click)="create()" [disabled]="metaDataForm.invalid" class="btn btn-sm btn-success">Done</button>

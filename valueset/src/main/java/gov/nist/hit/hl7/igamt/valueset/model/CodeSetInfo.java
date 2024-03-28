@@ -10,6 +10,9 @@ public class CodeSetInfo {
 	private String defaultVersion;
 	
 	
+	public String getDefaultVersion() {
+		return defaultVersion;
+	}
 	public CodeSetInfo() {
 		super();
 	}
