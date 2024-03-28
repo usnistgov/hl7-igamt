@@ -1,16 +1,14 @@
 package gov.nist.hit.hl7.igamt.access.security;
 
 import gov.nist.hit.hl7.igamt.access.common.ResourceAccessInfoFetcher;
-import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
-import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
-import gov.nist.hit.hl7.igamt.access.model.ExportConfigurationInfo;
-import gov.nist.hit.hl7.igamt.access.model.ResourceInfo;
+import gov.nist.hit.hl7.igamt.access.model.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.workspace.domain.Workspace;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissionType;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspacePermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import java.util.Arrays;
@@ -89,7 +87,14 @@ public class AccessControlService {
         if(resourceAccessInfoFetcher.isDocument(type)) {
             return this.evaluateAccessLevel(this.checkDocumentAccessPermission(resourceAccessInfoFetcher.getDocument(type, id), user), requested);
         } else {
-            return this.evaluateAccessLevel(this.checkResourceAccessPermission(resourceAccessInfoFetcher.getResourceInfo(type, id), user), requested);
+            switch(type) {
+                case CODESET:
+                    return this.evaluateAccessLevel(this.checkCodeSetAccessPermission(resourceAccessInfoFetcher.getCodeSetAccessInfo(id), user), requested);
+                case CODESETVERSION:
+                    return this.evaluateAccessLevel(this.checkCodeSetAccessPermission(resourceAccessInfoFetcher.getCodeSetAccessInfoByCodeSetVersionId(id), user), requested);
+                default:
+                    return this.evaluateAccessLevel(this.checkResourceAccessPermission(resourceAccessInfoFetcher.getResourceInfo(type, id), user), requested);
+            }
         }
     }
 
@@ -118,6 +123,10 @@ public class AccessControlService {
         }
 
         return null;
+    }
+
+    public Set<AccessLevel> checkCodeSetAccessPermission(CodeSetAccessInfo codeSetAccessInfo, AbstractAuthenticationToken token) {
+        return this.checkAudience(codeSetAccessInfo.getAudience(), token);
     }
 
     public Set<AccessLevel> checkResourceAccessPermission(ResourceInfo resourceInfo, UsernamePasswordAuthenticationToken user) throws ResourceNotFoundException {
@@ -166,7 +175,7 @@ public class AccessControlService {
         );
     }
 
-    public Set<AccessLevel> checkAudience(Audience audience, UsernamePasswordAuthenticationToken user) {
+    public Set<AccessLevel> checkAudience(Audience audience, AbstractAuthenticationToken user) {
         switch (audience.getType()) {
             case PUBLIC:
                 return this.checkPublicAudience((PublicAudience) audience, user);
@@ -178,7 +187,7 @@ public class AccessControlService {
         return null;
     }
 
-    public Set<AccessLevel> checkPrivateAudience(PrivateAudience audience, UsernamePasswordAuthenticationToken user) {
+    public Set<AccessLevel> checkPrivateAudience(PrivateAudience audience, AbstractAuthenticationToken user) {
         // If user is editor
         if(user.getName().equals(audience.getEditor())) {
             // Grant all access
@@ -198,11 +207,11 @@ public class AccessControlService {
         return null;
     }
 
-    public Set<AccessLevel> checkPublicAudience(PublicAudience audience, UsernamePasswordAuthenticationToken user) {
+    public Set<AccessLevel> checkPublicAudience(PublicAudience audience, AbstractAuthenticationToken user) {
         return L(AccessLevel.READ);
     }
 
-    public Set<AccessLevel> checkWorkspaceAudience(WorkspaceAudience audience, UsernamePasswordAuthenticationToken user) {
+    public Set<AccessLevel> checkWorkspaceAudience(WorkspaceAudience audience, AbstractAuthenticationToken user) {
         WorkspacePermissionType permissionType = this.workspacePermissionService.getWorkspacePermissionTypeByFolder(audience.getWorkspaceId(), user.getName(), audience.getFolderId());
         if (permissionType != null) {
             switch (permissionType) {
@@ -242,11 +251,11 @@ public class AccessControlService {
         return false;
     }
 
-    public boolean isPublisher(UsernamePasswordAuthenticationToken user) {
+    public boolean isPublisher(AbstractAuthenticationToken user) {
         return this.isAdmin(user);
     }
 
-    public boolean isAdmin(UsernamePasswordAuthenticationToken user) {
+    public boolean isAdmin(AbstractAuthenticationToken user) {
         return user.getAuthorities() != null && user.getAuthorities().stream().anyMatch((a) -> a.getAuthority().equals("ADMIN"));
     }
 

@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -21,21 +23,27 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 
-@Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-  @Autowired
-  private TokenAuthenticationService tokenService;
+  private final TokenAuthenticationService tokenService;
+  private final RequestMatcher pathMatcher;
+
+  public JWTAuthenticationFilter(String path, TokenAuthenticationService tokenService) {
+    this.pathMatcher = new AntPathRequestMatcher(path);
+    this.tokenService = tokenService;
+  }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
-    // TODO Auto-generated method stub
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    if(!this.pathMatcher.matches(request)) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+
     UsernamePasswordAuthenticationToken authentication;
     try {
       authentication = tokenService.getAuthentication(request);
       SecurityContextHolder.getContext().setAuthentication(authentication);
-//      throw new ExpiredJwtException(null, null, "");
 
       filterChain.doFilter(request, response);
     } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException

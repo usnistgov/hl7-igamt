@@ -1,8 +1,8 @@
 package gov.nist.hit.hl7.igamt.access.common;
 
-import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
-import gov.nist.hit.hl7.igamt.access.model.ExportConfigurationInfo;
-import gov.nist.hit.hl7.igamt.access.model.ResourceInfo;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import gov.nist.hit.hl7.igamt.access.model.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -16,16 +16,24 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeSet;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.workspace.domain.Workspace;
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,7 +52,66 @@ public class ResourceAccessInfoFetcher {
     private final Set<String> exportConfigurationInfoFields  = Arrays.stream(ExportConfigurationInfo.class.getDeclaredFields())
             .map(Field::getName)
             .collect(Collectors.toSet());
+    private final Set<String> codeSetAccessInfoFields = Arrays.stream(CodeSetAccessInfo.class.getDeclaredFields())
+             .map(Field::getName)
+             .collect(Collectors.toSet());
 
+    public CodeSetAccessInfo getCodeSetAccessInfo(String id) throws ResourceNotFoundException {
+        Query query = Query.query(Criteria.where("_id").is(id));
+        this.codeSetAccessInfoFields.forEach((field) -> {
+            query.fields().include(field);
+        });
+        CodeSetAccessInfo resource = this.mongoTemplate.findOne(query, CodeSetAccessInfo.class, formatCollectionName(CodeSet.class));
+
+        if(resource != null) {
+            return resource;
+        } else {
+            throw new ResourceNotFoundException(id, Type.CODESET);
+        }
+    }
+
+    public CodeSetAccessInfo getCodeSetAccessInfoByCodeSetVersionId(String codeSetVersionId) throws ResourceNotFoundException {
+        List<AggregationOperation> pipeline = new ArrayList<>();
+        AggregationOperation mapCodeSetVersionsDBRefToObjectId = context -> {
+            BasicDBList arrayElemAtArgs = new BasicDBList();
+            arrayElemAtArgs.add(new BasicDBObject("$objectToArray", "$$this"));
+            arrayElemAtArgs.add(1);
+            return new Document(
+                    "$project",
+                    new BasicDBObject(
+                            "codeSetVersions",
+                            new BasicDBObject(
+                                    "$map",
+                                    new BasicDBObject(
+                                            "input",
+                                            new BasicDBObject(
+                                                    "$map",
+                                                    new BasicDBObject("input", "$codeSetVersions")
+                                                            .append("in", new BasicDBObject(
+                                                                    "$arrayElemAt",
+                                                                    arrayElemAtArgs
+                                                            ))
+                                            )
+                                    ).append("in", "$$this.v")
+                            )
+                    ).append("audience", 1)
+            );
+        };
+        pipeline.add(mapCodeSetVersionsDBRefToObjectId);
+
+        // Match codeSetId
+        MatchOperation matchOperation = Aggregation.match(Criteria.where("codeSetVersions").is(codeSetVersionId));
+        pipeline.add(matchOperation);
+
+        Aggregation aggregation = Aggregation.newAggregation(pipeline);
+        AggregationResults<CodeSetAccessInfo> results = mongoTemplate.aggregate(aggregation, "codeSet", CodeSetAccessInfo.class);
+
+        if(results.getMappedResults().size() != 1) {
+            throw new ResourceNotFoundException(codeSetVersionId, Type.CODESETVERSION);
+        } else {
+            return results.getMappedResults().get(0);
+        }
+    }
 
     public DocumentAccessInfo getDocument(Type type, String id) throws ResourceNotFoundException {
         switch (type) {

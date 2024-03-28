@@ -1,10 +1,13 @@
 package gov.nist.hit.hl7.igamt.access.security;
 
 import gov.nist.hit.hl7.igamt.access.concurrent.SynchronizedAccessService;
+import gov.nist.hit.hl7.igamt.access.exception.APIResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.access.exception.EditNotSyncException;
+import gov.nist.hit.hl7.igamt.access.exception.ResourceAPIAccessDeniedException;
 import gov.nist.hit.hl7.igamt.access.exception.ResourceAccessDeniedException;
 import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
 import gov.nist.hit.hl7.igamt.access.model.OpSyncType;
+import gov.nist.hit.hl7.igamt.api.security.domain.KeyAuthenticationToken;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
@@ -16,6 +19,7 @@ import java.util.Arrays;
 public abstract class CustomSecurityExpressionRoot extends SecurityExpressionRoot {
 
     private final AccessControlService accessControlService;
+    private final APIAccessControlService apiAccessControlService;
     private final SynchronizedAccessService synchronizedAccessService;
 
     public final AccessLevel READ = AccessLevel.READ;
@@ -26,10 +30,11 @@ public abstract class CustomSecurityExpressionRoot extends SecurityExpressionRoo
     public final OpSyncType[] ALLOW_SYNC_LENIENT = { OpSyncType.SYNC, OpSyncType.INCONCLUSIVE };
 
 
-    public CustomSecurityExpressionRoot(Authentication authentication, AccessControlService accessControlService, SynchronizedAccessService synchronizedAccessService) {
+    public CustomSecurityExpressionRoot(Authentication authentication, AccessControlService accessControlService, SynchronizedAccessService synchronizedAccessService, APIAccessControlService apiAccessControlService) {
         super(authentication);
         this.accessControlService = accessControlService;
         this.synchronizedAccessService = synchronizedAccessService;
+        this.apiAccessControlService = apiAccessControlService;
     }
 
     public UsernamePasswordAuthenticationToken getAuthToken() {
@@ -38,22 +43,22 @@ public abstract class CustomSecurityExpressionRoot extends SecurityExpressionRoo
 
     public boolean AccessWorkspace(String id, AccessLevel level)  throws ResourceNotFoundException, ResourceAccessDeniedException {
         return allowOrException(this.accessControlService.checkWorkspaceAccessPermission(id, getAuthToken(), level),
-                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action"));
+                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action."));
     }
 
     public boolean IsWorkspaceAdmin(String id)  throws ResourceNotFoundException, ResourceAccessDeniedException {
         return allowOrException(this.accessControlService.isWorkspaceAdmin(id, getAuthToken()),
-                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action"));
+                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action."));
     }
 
     public boolean IsWorkspaceOwner(String id)  throws ResourceNotFoundException, ResourceAccessDeniedException {
         return allowOrException(this.accessControlService.isWorkspaceOwner(id, getAuthToken()),
-                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action"));
+                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action."));
     }
 
     public boolean AccessWorkspaceFolder(String id, String folderId, AccessLevel level)  throws ResourceNotFoundException, ResourceAccessDeniedException {
         return allowOrException(this.accessControlService.checkWorkspaceFolderAccessPermission(id, folderId, getAuthToken(), level),
-                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action"));
+                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action."));
     }
 
 
@@ -65,22 +70,27 @@ public abstract class CustomSecurityExpressionRoot extends SecurityExpressionRoo
 
     public boolean AccessResource(String type, String id, AccessLevel level) throws ResourceNotFoundException, ResourceAccessDeniedException {
         return allowOrException(this.accessControlService.checkResourceAccessPermission(getType(type), id, getAuthToken(), level),
-                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action"));
+                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action."));
     }
 
     public boolean AccessConfiguration(String id, AccessLevel level) throws ResourceNotFoundException, ResourceAccessDeniedException  {
         return allowOrException(this.accessControlService.checkExportConfigurationAccessPermission(id, getAuthToken(), level),
-                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action"));
+                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action."));
     }
 
     public boolean CanPublish() throws ResourceAccessDeniedException {
         return allowOrException(this.accessControlService.isPublisher(getAuthToken()),
-                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action"));
+                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action."));
+    }
+
+    public boolean APIAccess(String type, String id, AccessLevel level) throws ResourceAPIAccessDeniedException, APIResourceNotFoundException {
+        return allowOrException(this.apiAccessControlService.checkResourceAPIAccessPermission(getType(type), id, level),
+                                new ResourceAPIAccessDeniedException("You do not have permission to access this resource."));
     }
 
     public boolean IsAdmin() throws ResourceAccessDeniedException {
         return allowOrException(this.accessControlService.isAdmin(getAuthToken()),
-                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action"));
+                new ResourceAccessDeniedException("You do not have permission to access this resource, or perform this action."));
     }
 
     public Type getType(String type) {
