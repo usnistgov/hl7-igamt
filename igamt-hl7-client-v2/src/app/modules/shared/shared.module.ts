@@ -52,6 +52,7 @@ import { AddResourceComponent } from './components/add-resource/add-resource.com
 import { BindingBadgeComponent } from './components/binding-badge/binding-badge.component';
 import { BindingSelectorComponent } from './components/binding-selector/binding-selector.component';
 import { BuildCompositeComponent } from './components/build-composite/build-composite.component';
+import { BuildValueSetComponent } from './components/build-value-set/build-value-set.component';
 import { ChangeLogInfoComponent } from './components/change-log-info/change-log-info.component';
 import { ChangeLogListInfoComponent } from './components/change-log-list-info/change-log-list-info.component';
 import { ChangeReasonDialogComponent } from './components/change-reason-dialog/change-reason-dialog.component';
@@ -268,6 +269,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ImportFromLibComponent,
     VerificationResultDisplayComponent,
     ImportCodeCSVComponent,
+    BuildValueSetComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -515,6 +517,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MetadataAttributeConfigComponent,
     ImportFromLibComponent,
     ImportCodeCSVComponent,
+    BuildValueSetComponent,
   ],
 })
 export class SharedModule {

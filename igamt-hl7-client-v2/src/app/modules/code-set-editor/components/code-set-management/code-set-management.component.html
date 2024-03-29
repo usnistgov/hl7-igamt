@@ -3,11 +3,14 @@
 
 
 <form #form="ngForm" style="display: flex; flex-direction: column;">
-  <label for="title"><strong>Title</strong></label>
-  <input type="text" id="title" name="title" class="form-control" required [(ngModel)]="info.metadata.title" (ngModelChange)="emitChange()">
+  <div class="form-group">
+    <label for="title"><strong>Title</strong></label>
+    <input type="text" id="title" name="title" class="form-control" required [(ngModel)]="info.metadata.title" (ngModelChange)="emitChange()">
+  </div>
+  <div class="form-group">
   <label for="description"><strong>Description</strong></label>
   <input type="text" id="description" name="description" class="form-control"  (ngModelChange)="emitChange()" [(ngModel)]="info.metadata.description">
-
+  </div>
   <div style="margin-top: 20px; margin-bottom: 20px;">
     <label for="defaultVersion" style="margin-right: 5px;"><strong>Select Default Version</strong></label>
     <p-dropdown

@@ -1,80 +1,65 @@
 <form #form="ngForm">
-  <p-panel [toggleable]="true" collapseIcon="pi pi-fw pi-chevron-down" expandIcon="pi pi-fw pi-chevron-right" header="Value Set Attributes" [style]="{'margin-bottom':'5px;'}">
-    <div class="value-set-attributes">
-      <div class="value-set-attributes-col">
-        <strong>
-          Extensibility:
-        </strong>
-        <span *ngIf="viewOnly">
-          {{valueSet.extensibility}}
-        </span>
-        <p-dropdown (ngModelChange)="updateExtensibility($event)" *ngIf="!viewOnly" [(ngModel)]="valueSet.extensibility"
-                    [options]="extensibilityOptions"
-                    id="extensibility" name="extensibility"></p-dropdown>
-      </div>
-      <div class="value-set-attributes-col">
-        <strong>
-          Stability:
-        </strong>
-        <p-dropdown (ngModelChange)="updateStability($event)" *ngIf="!viewOnly" [(ngModel)]="valueSet.stability"
-                    [options]="stabilityOptionsOptions"
-                    id="stability" name="stability"></p-dropdown>
-        <span *ngIf="viewOnly">
-        {{valueSet.stability}}
-      </span>
-      </div>
-      <div class="value-set-attributes-col">
-        <strong>
-          Content Definition:
-        </strong>
-        <span *ngIf="viewOnly">
-          {{valueSet.contentDefinition}}
-        </span>
-        <p-dropdown (ngModelChange)="updateContentDefinition($event)" *ngIf="!viewOnly"
-                    [(ngModel)]="valueSet.contentDefinition" [options]="contentDefinitionOptions"
-                    id="contentDef" name="contentDef"></p-dropdown>
-      </div>
-    </div>
 
-    <div class="code-system-container" *ngIf="valueSet.includeCodes">
-        <span class="code-system-label">
-          <strong> Source code Systems: </strong>
-        </span>
-        <span *ngFor="let codeSys of valueSet.codeSystems" class="code-system-badge">
-          {{codeSys}}
-          <i (click)="deleteCodeSystem(codeSys)" *ngIf="!viewOnly" class="fa fa-remove" style="color: red; cursor: pointer;"></i>
-        </span>
-
-      <button (click)="toggleEdit(valueSet.id)" *ngIf="!editMap[valueSet.id] && !viewOnly" class="btn btn-sm btn-primary" style="height: 38px;">
-        <i class="fa fa-plus"></i>
-      </button>
-
-      <div *ngIf="editMap[valueSet.id]" class="input-group" style="width:200px">
-        <input [(ngModel)]="temp" aria-describedby="button-addon2" class="form-control" id="temCodeSystem"
-               name="tempCodeSystem"
-               placeholder="value" type="text">
-        <div class="input-group-append">
-          <button (click)="addCodeSystem(valueSet.id)" [disabled]="!temp" class="btn btn-outline-secondary"
-                  id="button-addon2" type="button">
-            <i class="fa fa-check" style="color: green;"></i>
-          </button>
-          <button (click)="toggleEdit(valueSet.id)" *ngIf="editMap[valueSet.id] && !viewOnly"
-                  class="btn btn-sm btn-danger" style="height: 38px;">
-            <i class="fa fa-trash"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-  </p-panel>
+  <table class="table table-bordered table-striped">
+    <tr>
+        <th style="text-align: center;">
+          <strong>Extensibility</strong>
+        </th>
+        <th style="text-align: center;">Stability</th>
+        <th style="text-align: center;">Content Definition</th>
+    </tr>
+    <tr>
+        <td>
+          <span *ngIf="viewOnly">
+            {{valueSet.extensibility}}
+          </span>
+          <p-dropdown
+            *ngIf="!viewOnly"
+            [(ngModel)]="valueSet.extensibility"
+            (ngModelChange)="updateExtensibility($event)"
+            [options]="extensibilityOptions"
+            id="extensibility"
+            name="extensibility"
+            [style]="{'width':'100%'}">
+          </p-dropdown>
+        </td>
+        <td>
+          <p-dropdown
+            *ngIf="!viewOnly"
+            [(ngModel)]="valueSet.stability"
+            (ngModelChange)="updateStability($event)"
+            [options]="stabilityOptionsOptions"
+            id="stability"
+            name="stability"
+            [style]="{'width':'100%'}">
+          </p-dropdown>
+          <span *ngIf="viewOnly">
+            {{valueSet.stability}}
+          </span>
+        </td>
+        <td>
+          <span *ngIf="viewOnly">
+            {{valueSet.contentDefinition}}
+          </span>
+          <p-dropdown
+            *ngIf="!viewOnly"
+            [(ngModel)]="valueSet.contentDefinition"
+            (ngModelChange)="updateContentDefinition($event)"
+            [options]="contentDefinitionOptions"
+            id="contentDef"
+            name="contentDef"
+            [style]="{'width':'100%'}">
+          </p-dropdown>
+        </td>
+    </tr>
+</table>
+  <hr/>
   <div style="margin-top:5px" >
-    <p-panel [toggleable]="true" collapseIcon="pi pi-fw pi-chevron-down" expandIcon="pi pi-fw pi-chevron-right"
-             header="Content">
-      <div *ngIf="valueSet.includeCodes">
-
+      <div *ngIf="valueSet.sourceType === 'INTERNAL'">
         <div  class="codes-options">
           <div class="csv-actions">
             <div ngbDropdown placement="bottom-right" container="body" class="d-inline-block" style="margin-right:5px;" >
-              <button class="btn btn-secondary dropdown-toggle"
+              <button class="btn btn-secondary btn-sm dropdown-toggle"
                 id="csv"
                 ngbDropdownToggle>
               <i class="fa fa-table"></i> CSV
@@ -91,14 +76,13 @@
                 </button>
               </div>
             </div>
-
-          <button (click)="deleteCodes()" [disabled]="!selectedCodes.length" *ngIf="!viewOnly" class="btn btn-danger"
+          <button (click)="deleteCodes()" [disabled]="!selectedCodes.length" *ngIf="!viewOnly" class="btn btn-sm btn-danger"
                   style="margin-right:5px;"
                   type="button">
             <i class="fa fa-trash"></i> Delete Selected
             <span class="badge badge-info">{{selectedCodes?.length }}</span>
           </button>
-          <button (click)="addCode()" class="btn btn-primary" type="button" *ngIf="!viewOnly"><i class="fa fa-plus"></i> Add Code
+          <button (click)="addCode()" class="btn btn-sm btn-primary" type="button" *ngIf="!viewOnly"><i class="fa fa-plus"></i> Add Code
           </button>
         </div>
       </div>
@@ -127,11 +111,10 @@
 
                 <div>
                   <p-dropdown (onChange)="applyCodeSystem($event)" [editable]="true"  [disabled]="!selectedCodes.length"  [options]="codeSystemOptions"
-                              placeholder="Apply Code System"></p-dropdown>
+                              placeholder="Code System"></p-dropdown>
                 </div>
               </div>
               </div>
-
           </ng-template>
           <ng-template let-columns pTemplate="header">
             <tr>
@@ -143,7 +126,6 @@
                 <p-sortIcon [field]="col.field"></p-sortIcon>
               </th>
             </tr>
-
             <tr>
               <th *ngIf="!viewOnly" style="background:#c8c8c8;">
                 <i class="fa fa-filter" style="width: 100%"></i>
@@ -164,7 +146,7 @@
                 <div #anchor *ngSwitchCase="'usage'">
                   <p-dropdown (onChange)="changeCodes()" [(ngModel)]="rowData.usage" [appendTo]="anchor"
                               [id]="'usage'+rowData.id" [name]="'usage'+rowData.id" [options]="codeUsageOptions"
-                              placeholder="select code usage" [style]="{'minWidth':'90%'}"></p-dropdown>
+                              placeholder="Usage" [style]="{'minWidth':'90%'}"></p-dropdown>
 
                 </div>
 
@@ -204,19 +186,19 @@
                   <input (change)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.description"
                          [id]="'description'+rowData.id"
                          [name]="'description'+rowData.id" class="form-control"
-                         placeholder="set code description"
+                         placeholder="Description"
                          type="text">
                 </div>
                 <div *ngSwitchCase="'value'">
                   <input (change)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.value"
                          [id]="'value'+rowData.id" [name]="'value'+rowData.id"
-                         class="form-control" placeholder="set code value" required
+                         class="form-control" placeholder="Value" required
                          type="text">
                 </div>
                 <div *ngSwitchCase="'comments'">
                   <input (change)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.comments"
                          [id]="'comments'+rowData.id"
-                         [name]="'comments'+rowData.id" class="form-control" placeholder="add comments"
+                         [name]="'comments'+rowData.id" class="form-control" placeholder="Comments"
                          type="text">
                 </div>
               </td>
@@ -233,7 +215,7 @@
           </ng-template>
         </p-table>
       </div>
-      <div *ngIf="!valueSet.includeCodes">
+      <div *ngIf="valueSet.sourceType === 'EXTERNAL' ">
         <div *ngIf="viewOnly">
           <label  class="form-label-lg">URL: </label>
           <a [href]="valueSet.url" target="_blank">{{valueSet.url}}</a>
@@ -245,13 +227,8 @@
              <span style="color:red"> Enter a valid URL</span>
            </div>
         </div>
-        <div class="form-group" *ngIf="!viewOnly && !valueSet.includeCodes && valueSet.contentDefinition =='Intensional'">
-          <label  class="form-label-lg"> Description</label>
-          <input required id="intensionalComment" name="intensionalComment" type="text"  placeholder="Description"  [(ngModel)]="valueSet.intensionalComment" (ngModelChange)="updateAttribute('INTENSIONALCOMMENT' ,valueSet.intensionalComment)" class="form-control" width="100%"/>
-        </div>
         <div>
         </div>
       </div>
-    </p-panel>
   </div>
 </form>
