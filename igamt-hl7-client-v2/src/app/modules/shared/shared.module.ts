@@ -154,6 +154,8 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { CodeSetBrowseDialogComponent } from './components/codeset-browse-dialog/codeset-browse-dialog.component';
+import { KeyDialogComponent } from './components/key-dialog/key-dialog.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -268,6 +270,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ImportFromLibComponent,
     VerificationResultDisplayComponent,
     ImportCodeCSVComponent,
+    CodeSetBrowseDialogComponent,
+    KeyDialogComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -474,6 +478,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ImportFromLibComponent,
     MatTooltipModule,
     VerificationResultDisplayComponent,
+    CodeSetBrowseDialogComponent,
+    KeyDialogComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -515,6 +521,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MetadataAttributeConfigComponent,
     ImportFromLibComponent,
     ImportCodeCSVComponent,
+    CodeSetBrowseDialogComponent,
+    KeyDialogComponent,
   ],
 })
 export class SharedModule {

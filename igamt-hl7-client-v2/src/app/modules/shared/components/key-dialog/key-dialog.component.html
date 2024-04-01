@@ -1,0 +1,16 @@
+<h4 mat-dialog-title>API Key</h4>
+<div mat-dialog-body>
+  <div class="alert alert-warning">
+    Please copy and secure this API key, you will not be able to retrieve it again.
+  </div>
+  
+  <div style="display: flex; align-items: center; justify-content: center;">
+    <input class="form-control" type="password" [value]="data.key.plainToken">
+    <button class="btn btn-dark" (click)="copy()" style="margin-left: 10px;" >
+      Copy
+    </button>
+  </div>
+  
+<mat-dialog-actions style="justify-content: flex-end; margin-top: 10px;">
+  <button (click)="close()" class="btn btn-danger" style="margin-right: 5px;">Close</button>
+</mat-dialog-actions>

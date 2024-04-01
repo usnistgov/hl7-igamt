@@ -39,6 +39,7 @@ $entity-badge-composite-profile: #11c6e6;
 $entity-badge-profile-component-jigg:#11e6b7;
 $entity-badge-folder: #91089d;
 $entity-badge-workspace: #050b53;
+$entity-badge-codeset: #ce9040;
 
 // Scope Badge Colors
 $hl7_scope_color: rgb(253, 150, 150);
@@ -124,6 +125,9 @@ $deprecated-element: yellow;
 }
 .entity-badge-workspace {
   background-color: $entity-badge-workspace !important;
+}
+.entity-badge-codeset {
+  background-color: $entity-badge-codeset !important;
 }
 
 // Page Container

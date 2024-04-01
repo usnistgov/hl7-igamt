@@ -8,8 +8,6 @@ import gov.nist.hit.hl7.igamt.workspace.domain.Workspace;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissionType;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspacePermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -37,20 +35,20 @@ public class AccessControlService {
         return false;
     }
 
-    public Set<AccessLevel> getDocumentAccessPermission(Type type, String id, UsernamePasswordAuthenticationToken user) throws ResourceNotFoundException {
-        return this.checkDocumentAccessPermission(resourceAccessInfoFetcher.getDocument(type, id), user);
+    public Set<AccessLevel> getDocumentAccessPermission(Type type, String id, AccessToken token) throws ResourceNotFoundException {
+        return this.checkDocumentAccessPermission(resourceAccessInfoFetcher.getDocument(type, id), token);
     }
 
-    public boolean checkWorkspaceAccessPermission(String id, UsernamePasswordAuthenticationToken user, AccessLevel requested) throws ResourceNotFoundException {
+    public boolean checkWorkspaceAccessPermission(String id, AccessToken token, AccessLevel requested) throws ResourceNotFoundException {
         Workspace workspace = this.resourceAccessInfoFetcher.getWorkspace(id);
-        if(this.workspacePermissionService.hasAccessTo(workspace, user.getName())) {
-            if(this.workspacePermissionService.isAdmin(workspace, user.getName())) {
+        if(this.workspacePermissionService.hasAccessTo(workspace, token.getUsername())) {
+            if(this.workspacePermissionService.isAdmin(workspace, token.getUsername())) {
                 return this.evaluateAccessLevel(L(AccessLevel.ALL), requested);
             } else {
                 return this.evaluateAccessLevel(L(AccessLevel.READ), requested);
             }
         } else {
-            if(isAdmin(user)) {
+            if(isAdmin(token)) {
                 return this.evaluateAccessLevel(L(AccessLevel.READ), requested);
             } else {
                 return false;
@@ -58,9 +56,9 @@ public class AccessControlService {
         }
     }
 
-    public boolean checkWorkspaceFolderAccessPermission(String id, String folderId, UsernamePasswordAuthenticationToken user, AccessLevel requested) throws ResourceNotFoundException {
+    public boolean checkWorkspaceFolderAccessPermission(String id, String folderId, AccessToken token, AccessLevel requested) throws ResourceNotFoundException {
         Workspace workspace = this.resourceAccessInfoFetcher.getWorkspace(id);
-        WorkspacePermissionType workspacePermissionType = this.workspacePermissionService.getWorkspacePermissionTypeByFolder(workspace, user.getName(), folderId);
+        WorkspacePermissionType workspacePermissionType = this.workspacePermissionService.getWorkspacePermissionTypeByFolder(workspace, token.getUsername(), folderId);
         if(workspacePermissionType != null) {
             switch (workspacePermissionType) {
                 case EDIT:
@@ -72,18 +70,18 @@ public class AccessControlService {
         return false;
     }
 
-    public boolean isWorkspaceAdmin(String id, UsernamePasswordAuthenticationToken user) throws ResourceNotFoundException {
+    public boolean isWorkspaceAdmin(String id, AccessToken token) throws ResourceNotFoundException {
         Workspace workspace = this.resourceAccessInfoFetcher.getWorkspace(id);
-        return this.workspacePermissionService.isAdmin(workspace, user.getName());
+        return this.workspacePermissionService.isAdmin(workspace, token.getUsername());
     }
 
-    public boolean isWorkspaceOwner(String id, UsernamePasswordAuthenticationToken user) throws ResourceNotFoundException {
+    public boolean isWorkspaceOwner(String id, AccessToken token) throws ResourceNotFoundException {
         Workspace workspace = this.resourceAccessInfoFetcher.getWorkspace(id);
-        return this.workspacePermissionService.isOwner(workspace, user.getName());
+        return this.workspacePermissionService.isOwner(workspace, token.getUsername());
     }
 
 
-    public boolean checkResourceAccessPermission(Type type, String id, UsernamePasswordAuthenticationToken user, AccessLevel requested) throws ResourceNotFoundException {
+    public boolean checkResourceAccessPermission(Type type, String id, AccessToken user, AccessLevel requested) throws ResourceNotFoundException {
         if(resourceAccessInfoFetcher.isDocument(type)) {
             return this.evaluateAccessLevel(this.checkDocumentAccessPermission(resourceAccessInfoFetcher.getDocument(type, id), user), requested);
         } else {
@@ -98,7 +96,7 @@ public class AccessControlService {
         }
     }
 
-    public Set<AccessLevel> checkDocumentAccessPermission(DocumentAccessInfo document, UsernamePasswordAuthenticationToken user) {
+    public Set<AccessLevel> checkDocumentAccessPermission(DocumentAccessInfo document, AccessToken token) {
         // If document is published
         if(document.getStatus() != null && document.getStatus().equals(Status.PUBLISHED)) {
             // Grant READ access
@@ -115,21 +113,21 @@ public class AccessControlService {
         }
 
         if(document.getAudience() != null) {
-            return this.checkAudience(document.getAudience(), user);
+            return this.checkAudience(document.getAudience(), token);
         }
 
-        if(isAdmin(user)) {
+        if(isAdmin(token)) {
             return L(AccessLevel.READ);
         }
 
         return null;
     }
 
-    public Set<AccessLevel> checkCodeSetAccessPermission(CodeSetAccessInfo codeSetAccessInfo, AbstractAuthenticationToken token) {
+    public Set<AccessLevel> checkCodeSetAccessPermission(CodeSetAccessInfo codeSetAccessInfo, AccessToken token) {
         return this.checkAudience(codeSetAccessInfo.getAudience(), token);
     }
 
-    public Set<AccessLevel> checkResourceAccessPermission(ResourceInfo resourceInfo, UsernamePasswordAuthenticationToken user) throws ResourceNotFoundException {
+    public Set<AccessLevel> checkResourceAccessPermission(ResourceInfo resourceInfo, AccessToken token) throws ResourceNotFoundException {
         // If the resource is an HL7 resource, can READ only
         if(resourceInfo.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
             // Grant READ access
@@ -146,9 +144,9 @@ public class AccessControlService {
         if(resourceInfo.getDomainInfo().getScope().equals(Scope.USERCUSTOM)) {
             // If user is the owner
             if(
-                    (resourceInfo.getUsername() != null && resourceInfo.getUsername().equals(user.getName()))
+                    (resourceInfo.getUsername() != null && resourceInfo.getUsername().equals(token.getUsername()))
                             ||
-                            (resourceInfo.getParticipants() != null && resourceInfo.getParticipants().contains(user.getName()))
+                            (resourceInfo.getParticipants() != null && resourceInfo.getParticipants().contains(token.getUsername()))
             ) {
                 // If it's published
                 if(resourceInfo.getStatus() != null && resourceInfo.getStatus().equals(Status.PUBLISHED)) {
@@ -171,48 +169,48 @@ public class AccessControlService {
 
         return this.checkDocumentAccessPermission(
                 resourceAccessInfoFetcher.getDocumentAccessInfo(resourceInfo.getDocumentInfo()),
-                user
+                token
         );
     }
 
-    public Set<AccessLevel> checkAudience(Audience audience, AbstractAuthenticationToken user) {
+    public Set<AccessLevel> checkAudience(Audience audience, AccessToken token) {
         switch (audience.getType()) {
             case PUBLIC:
-                return this.checkPublicAudience((PublicAudience) audience, user);
+                return this.checkPublicAudience((PublicAudience) audience, token);
             case PRIVATE:
-                return this.checkPrivateAudience((PrivateAudience) audience, user);
+                return this.checkPrivateAudience((PrivateAudience) audience, token);
             case WORKSPACE:
-                return this.checkWorkspaceAudience((WorkspaceAudience) audience, user);
+                return this.checkWorkspaceAudience((WorkspaceAudience) audience, token);
         }
         return null;
     }
 
-    public Set<AccessLevel> checkPrivateAudience(PrivateAudience audience, AbstractAuthenticationToken user) {
+    public Set<AccessLevel> checkPrivateAudience(PrivateAudience audience, AccessToken token) {
         // If user is editor
-        if(user.getName().equals(audience.getEditor())) {
+        if(token.getUsername().equals(audience.getEditor())) {
             // Grant all access
             return L(AccessLevel.ALL);
         }
 
         // If user is viewer
-        if(audience.getViewers().contains(user.getName())) {
+        if(audience.getViewers().contains(token.getUsername())) {
             // Grant user access
             return L(AccessLevel.READ);
         }
 
-        if(isAdmin(user)) {
+        if(isAdmin(token)) {
             return L(AccessLevel.READ);
         }
 
         return null;
     }
 
-    public Set<AccessLevel> checkPublicAudience(PublicAudience audience, AbstractAuthenticationToken user) {
+    public Set<AccessLevel> checkPublicAudience(PublicAudience audience, AccessToken token) {
         return L(AccessLevel.READ);
     }
 
-    public Set<AccessLevel> checkWorkspaceAudience(WorkspaceAudience audience, AbstractAuthenticationToken user) {
-        WorkspacePermissionType permissionType = this.workspacePermissionService.getWorkspacePermissionTypeByFolder(audience.getWorkspaceId(), user.getName(), audience.getFolderId());
+    public Set<AccessLevel> checkWorkspaceAudience(WorkspaceAudience audience, AccessToken token) {
+        WorkspacePermissionType permissionType = this.workspacePermissionService.getWorkspacePermissionTypeByFolder(audience.getWorkspaceId(), token.getUsername(), audience.getFolderId());
         if (permissionType != null) {
             switch (permissionType) {
                 case EDIT:
@@ -221,7 +219,7 @@ public class AccessControlService {
                     return L(AccessLevel.READ);
             }
         }
-        if(isAdmin(user)) {
+        if(isAdmin(token)) {
             return L(AccessLevel.READ);
         }
         return null;
@@ -231,12 +229,12 @@ public class AccessControlService {
         return new HashSet<>(Arrays.asList(levels));
     }
 
-    public boolean checkExportConfigurationAccessPermission(String exportConfigurationId, UsernamePasswordAuthenticationToken user, AccessLevel level) throws ResourceNotFoundException {
+    public boolean checkExportConfigurationAccessPermission(String exportConfigurationId, AccessToken token, AccessLevel level) throws ResourceNotFoundException {
         ExportConfigurationInfo exportConfigurationInfo = resourceAccessInfoFetcher.getExportConfigurationInfo(exportConfigurationId);
 
         if(exportConfigurationInfo.getUsername() != null && !exportConfigurationInfo.getUsername().isEmpty()) {
             // If user is owner
-            if(exportConfigurationInfo.getUsername().equals(user.getName())) {
+            if(exportConfigurationInfo.getUsername().equals(token.getUsername())) {
                 // Grant ALL access
                 return true;
             }
@@ -251,12 +249,12 @@ public class AccessControlService {
         return false;
     }
 
-    public boolean isPublisher(AbstractAuthenticationToken user) {
-        return this.isAdmin(user);
+    public boolean isPublisher(AccessToken token) {
+        return this.isAdmin(token);
     }
 
-    public boolean isAdmin(AbstractAuthenticationToken user) {
-        return user.getAuthorities() != null && user.getAuthorities().stream().anyMatch((a) -> a.getAuthority().equals("ADMIN"));
+    public boolean isAdmin(AccessToken token) {
+        return token.getAuthorities() != null && token.getAuthorities().stream().anyMatch((a) -> a.getAuthority().equals("ADMIN"));
     }
 
 }

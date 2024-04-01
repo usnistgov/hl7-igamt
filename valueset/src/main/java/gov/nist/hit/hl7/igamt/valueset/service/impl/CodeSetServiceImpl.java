@@ -156,7 +156,7 @@ public class CodeSetServiceImpl implements CodeSetService {
 	
 	
 	@Override
-	public CodeSetVersion findById(String id)throws ResourceNotFoundException, ForbiddenOperationException {
+	public CodeSetVersion findById(String id)throws ResourceNotFoundException {
 		return	this.codeSetVersionRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESETVERSION));
 	
 		

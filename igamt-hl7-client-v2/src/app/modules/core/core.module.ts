@@ -21,6 +21,8 @@ import { RegisterComponent } from './components/register/register.component';
 import { ResetPasswordRequestComponent } from './components/reset-password-request/reset-password-request.component';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
+import { ApiKeyManagementComponent } from './components/api-key-management/api-key-management.component';
+import { CreateApiKeyComponent } from './components/create-api-key/create-api-key.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +36,8 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
     HomeComponent,
     ErrorPageComponent,
     ConfigurationDialogComponent,
+    ApiKeyManagementComponent,
+    CreateApiKeyComponent
   ],
   imports: [
     CommonModule,
@@ -72,6 +76,8 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
     HomeComponent,
     ErrorPageComponent,
     ConfigurationDialogComponent,
+    ApiKeyManagementComponent,
+    CreateApiKeyComponent,
   ],
   entryComponents: [
     ConfigurationDialogComponent,

@@ -39,7 +39,7 @@ public interface CodeSetService {
 
 	void addCodeSetVersion(String id) throws ResourceNotFoundException;
 
-	CodeSetVersion findById(String id) throws ResourceNotFoundException, ForbiddenOperationException;
+	CodeSetVersion findById(String id) throws ResourceNotFoundException;
 
 	List<CodeSet> findByPublicAudienceAndStatusPublished();
 

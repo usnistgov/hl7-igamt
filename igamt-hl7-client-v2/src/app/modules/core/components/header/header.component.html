@@ -91,9 +91,6 @@
           <button [routerLink]="[ '/export-configuration']" [queryParams]="{type: 'IGDOCUMENT'}" ngbDropdownItem routerLinkActive="active-dropdown">
             Export Configuration
           </button>
-          <!-- <button (click)="openConfig()" ngbDropdownItem >
-            Other Configurations
-          </button> -->
         </div>
       </li>
 
@@ -118,6 +115,9 @@
         <div ngbDropdownMenu>
           <button [routerLink]="[ '/user-profile']" ngbDropdownItem routerLinkActive="active-dropdown">
             <span><i class="fa fa-user"></i> My Profile </span>
+          </button>
+          <button [routerLink]="['/keys']" ngbDropdownItem routerLinkActive="active-dropdown">
+            <span><i class="fa fa-key"></i> API Key </span>
           </button>
           <button  *ngIf="isAdmin | async" [routerLink]="[ '/user-management']" ngbDropdownItem routerLinkActive="active-dropdown">
             <span><i class="fa fa-cog"></i> Management Users </span>

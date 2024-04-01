@@ -15,24 +15,28 @@ import java.util.Set;
 public class AccessKey {
 	@Id
 	private String id;
+	private String name;
+	private Date createdAt;
 	@Indexed(unique = true)
 	private String token;
 	@Indexed()
 	private String username;
 	private Date expireAt;
-	private boolean active;
 	private Map<Type, Set<String>> resources;
 
 	@JsonIgnore
 	public boolean isValid() {
-		Date now = new Date();
-		return this.active && expireAt.after(now);
+		return !isExpired();
 	}
 
 	@JsonIgnore
 	public boolean isExpired() {
-		Date now = new Date();
-		return expireAt.before(now) || expireAt.equals(now);
+		if(expireAt != null) {
+			Date now = new Date();
+			return expireAt.before(now) || expireAt.equals(now);
+		} else {
+			return false;
+		}
 	}
 
 	public String getId() {
@@ -67,14 +71,6 @@ public class AccessKey {
 		this.expireAt = expireAt;
 	}
 
-	public boolean isActive() {
-		return active;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-
 	public Map<Type, Set<String>> getResources() {
 		if(resources == null) {
 			resources = new HashMap<>();
@@ -87,4 +83,19 @@ public class AccessKey {
 		this.resources = resources;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
 }

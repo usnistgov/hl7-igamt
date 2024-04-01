@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
+import gov.nist.hit.hl7.igamt.access.model.AccessToken;
 import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
 import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
 import gov.nist.hit.hl7.igamt.display.model.*;
@@ -1259,7 +1260,9 @@ public class IGDocumentController extends BaseController {
 			throws Exception {
 		Ig ig = findIgById(id);
 		IGDisplayInfo igDisplayInfo = displayInfoService.covertIgToDisplay(ig);
-		Set<AccessLevel> accessLevel = this.accessControlService.checkDocumentAccessPermission(new DocumentAccessInfo(ig), (UsernamePasswordAuthenticationToken) authentication);
+		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) authentication;
+		AccessToken accessToken = new AccessToken(usernamePasswordAuthenticationToken.getName(), new HashSet<>(usernamePasswordAuthenticationToken.getAuthorities()));
+		Set<AccessLevel> accessLevel = this.accessControlService.checkDocumentAccessPermission(new DocumentAccessInfo(ig), accessToken);
 		ig.setSharePermission(accessLevel.contains(AccessLevel.ALL) || accessLevel.contains(AccessLevel.WRITE) ? SharePermission.WRITE : SharePermission.READ);
 		igDisplayInfo.setDocumentLocation(this.browserService.getDocumentLocationInformation(ig, authentication.getName()));
 		return igDisplayInfo;
