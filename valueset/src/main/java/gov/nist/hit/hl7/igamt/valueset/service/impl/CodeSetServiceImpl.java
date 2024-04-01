@@ -221,7 +221,6 @@ public class CodeSetServiceImpl implements CodeSetService {
 			element.setId(codeSet.getId());
 			element.setResourceType(Type.CODESET);
 			element.setTitle(codeSet.getName());
-	
 
 			if(codeSet.getAudience() != null && codeSet.getAudience() instanceof PrivateAudience) {
 				element.setSharedUsers(((PrivateAudience) codeSet.getAudience()).getViewers());
@@ -229,14 +228,10 @@ public class CodeSetServiceImpl implements CodeSetService {
 				element.setSharedUsers(audience.getViewers());
 				element.setCurrentAuthor(audience.getEditor());
 				element.setUsername(audience.getEditor());
-
 			}
-
 			ret.add(element);
 		}
 		return ret;
-		
-		
 	}
 	
 	@Override
@@ -310,7 +305,7 @@ public class CodeSetServiceImpl implements CodeSetService {
 		
 		codeSet.setName(info.getMetadata().getTitle());
 		codeSet.setDescription(info.getMetadata().getTitle());
-		
+		codeSet.setLatest(info.getDefaultVersion());
 		mergeCodeSetVersions(codeSet.getCodeSetVersions(),info.getChildren());		
 
 		codeSetRepo.save(codeSet);
@@ -331,12 +326,9 @@ public class CodeSetServiceImpl implements CodeSetService {
 	        	  modified = true;
 	        	  codeSetVersionRepo.deleteById(child.getId());
 	        }
-
 	        else if (info.isDeprecated()) {
 	            child.setDeprecated(true);
 	        	codeSetVersionRepo.save(child);
-
-
 	        }
 	    }
 		return modified;
@@ -401,7 +393,7 @@ public class CodeSetServiceImpl implements CodeSetService {
 		CodeSet originalCodeSet =	this.codeSetRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESET));
 
 	    CodeSet clonedCodeSet = new CodeSet();
-	    clonedCodeSet.setAudience(originalCodeSet.getAudience());
+	    clonedCodeSet.setAudience(new PrivateAudience(AudienceType.PRIVATE, username, new HashSet<String>()));
 	    clonedCodeSet.setExposed(originalCodeSet.isExposed());
 	    clonedCodeSet.setLatest(originalCodeSet.getLatest());
 	    clonedCodeSet.setDateUpdated(originalCodeSet.getDateUpdated());

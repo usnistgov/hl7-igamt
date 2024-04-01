@@ -12,7 +12,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class CodeSetVersion {
 
 
-
 	@Id
 	private String id;
 	
