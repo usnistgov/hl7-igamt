@@ -57,6 +57,7 @@ import { ChangeLogInfoComponent } from './components/change-log-info/change-log-
 import { ChangeLogListInfoComponent } from './components/change-log-list-info/change-log-list-info.component';
 import { ChangeReasonDialogComponent } from './components/change-reason-dialog/change-reason-dialog.component';
 import { ChangeReasonListDialogComponent } from './components/change-reason-list-dialog/change-reason-list-dialog.component';
+import { CodeSetBrowseDialogComponent } from './components/codeset-browse-dialog/codeset-browse-dialog.component';
 import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
 import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
 import { CsListComponent } from './components/cs-list/cs-list.component';
@@ -102,6 +103,7 @@ import { ImportCsvValuesetComponent } from './components/import-csv-valueset/imp
 import { ImportFromLibComponent } from './components/import-from-lib/import-from-lib.component';
 import { ImportStructureComponent } from './components/import-structure/import-structure.component';
 import { IssueBadgeComponent } from './components/issue-badge/issue-badge.component';
+import { KeyDialogComponent } from './components/key-dialog/key-dialog.component';
 import { MessagePickerComponent } from './components/message-picker/message-picker.component';
 import { MetadataAttributeConfigComponent } from './components/metadata-attribute-config/metadata-attribute-config.component';
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
@@ -155,8 +157,6 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { CodeSetBrowseDialogComponent } from './components/codeset-browse-dialog/codeset-browse-dialog.component';
-import { KeyDialogComponent } from './components/key-dialog/key-dialog.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,

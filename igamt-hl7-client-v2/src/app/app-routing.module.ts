@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ApiKeyManagementComponent } from './modules/core/components/api-key-management/api-key-management.component';
+import { CreateApiKeyComponent } from './modules/core/components/create-api-key/create-api-key.component';
 import { ErrorPageComponent } from './modules/core/components/error-page/error-page.component';
 import { HomeComponent } from './modules/core/components/home/home.component';
 import { NewPasswordComponent } from './modules/core/components/new-password/new-password.component';
@@ -10,8 +12,6 @@ import { UserProfileComponent } from './modules/core/components/user-profile/use
 import { LoginComponent } from './modules/dam-framework/components/authentication/login/login.component';
 import { NotAuthenticatedGuard } from './modules/dam-framework/guards/auth-guard.guard';
 import { NewPasswordResolver } from './modules/dam-framework/guards/new-password.resolver';
-import { ApiKeyManagementComponent } from './modules/core/components/api-key-management/api-key-management.component';
-import { CreateApiKeyComponent } from './modules/core/components/create-api-key/create-api-key.component';
 
 const routes: Routes = [
   {
@@ -83,12 +83,12 @@ const routes: Routes = [
   },
   {
     path: 'workspace',
-    loadChildren: './modules/workspace/workspace.module#WorkspaceModule'
+    loadChildren: './modules/workspace/workspace.module#WorkspaceModule',
   },
 
   {
     path: 'code-set',
-    loadChildren: './modules/code-set-editor/code-set-editor.module#CodeSetEditorModule'
+    loadChildren: './modules/code-set-editor/code-set-editor.module#CodeSetEditorModule',
   },
   {
     path: '**', component: ErrorPageComponent,

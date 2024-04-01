@@ -1,9 +1,9 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { Type } from "../../shared/constants/type.enum";
-import { IDisplayElement } from "../../shared/models/display-element.interface";
-import { Observable } from "rxjs";
-import { IMessage } from "../../dam-framework/models/messages/message.class";
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { IMessage } from '../../dam-framework/models/messages/message.class';
+import { Type } from '../../shared/constants/type.enum';
+import { IDisplayElement } from '../../shared/models/display-element.interface';
 
 export interface IAPIKeyDisplay {
     id: string;
@@ -33,14 +33,14 @@ export class APIKeyService {
     }
 
     getAPIKeys(): Observable<IAPIKeyDisplay[]> {
-        return this.http.get<IAPIKeyDisplay[]>("/api/access-keys");
+        return this.http.get<IAPIKeyDisplay[]>('/api/access-keys');
     }
 
     deleteAPIKey(id: string): Observable<IMessage<never>> {
-        return this.http.delete<IMessage<never>>("/api/access-keys/" + id);
+        return this.http.delete<IMessage<never>>('/api/access-keys/' + id);
     }
 
     createAPIKey(request: IAPIKeyCreateRequest): Observable<IMessage<IGeneratedAPIKey>> {
-        return this.http.post<IMessage<IGeneratedAPIKey>>("/api/access-keys/create", request);
+        return this.http.post<IMessage<IGeneratedAPIKey>>('/api/access-keys/create', request);
     }
 }

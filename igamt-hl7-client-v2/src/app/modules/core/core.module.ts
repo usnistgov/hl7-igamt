@@ -11,7 +11,9 @@ import { RegistrationEffects } from '../../root-store/registration/registration.
 import { UserProfileEffects } from '../../root-store/user-profile/user-profile.effects';
 import { DamAuthenticationModule, DamMessagesModule } from '../dam-framework/dam-framework.module';
 import { SharedModule } from '../shared/shared.module';
+import { ApiKeyManagementComponent } from './components/api-key-management/api-key-management.component';
 import { ConfigurationDialogComponent } from './components/configuration-dialog/configuration-dialog.component';
+import { CreateApiKeyComponent } from './components/create-api-key/create-api-key.component';
 import { ErrorPageComponent } from './components/error-page/error-page.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -21,8 +23,6 @@ import { RegisterComponent } from './components/register/register.component';
 import { ResetPasswordRequestComponent } from './components/reset-password-request/reset-password-request.component';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
-import { ApiKeyManagementComponent } from './components/api-key-management/api-key-management.component';
-import { CreateApiKeyComponent } from './components/create-api-key/create-api-key.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +37,7 @@ import { CreateApiKeyComponent } from './components/create-api-key/create-api-ke
     ErrorPageComponent,
     ConfigurationDialogComponent,
     ApiKeyManagementComponent,
-    CreateApiKeyComponent
+    CreateApiKeyComponent,
   ],
   imports: [
     CommonModule,

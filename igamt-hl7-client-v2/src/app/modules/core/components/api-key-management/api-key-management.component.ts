@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
+import * as moment from 'moment';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, flatMap, map } from 'rxjs/operators';
+import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
+import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
+import { TurnOffLoader, TurnOnLoader } from 'src/app/modules/dam-framework/store';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import { ClearAll } from 'src/app/modules/dam-framework/store/messages/messages.actions';
 import { UserProfileRequest } from '../../../../root-store/user-profile/user-profile.actions';
 import { IUserProfile } from '../../../dam-framework/models/authentication/user-profile.class';
 import { ResetPasswordRequest } from '../../../dam-framework/store/authentication/authentication.actions';
 import { APIKeyService, IAPIKeyDisplay } from '../../services/api-key.service';
-import * as moment from 'moment';
-import { Observable, of } from 'rxjs';
-import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
-import { catchError, finalize, flatMap, map } from 'rxjs/operators';
-import { TurnOffLoader, TurnOnLoader } from 'src/app/modules/dam-framework/store';
-import { MatDialog } from '@angular/material';
-import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-api-key-management',
@@ -22,7 +22,7 @@ import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components
 export class ApiKeyManagementComponent implements OnInit {
 
   keys$: Observable<IAPIKeyDisplay[]>;
-  openCodeSets: Record<string, boolean> = {}
+  openCodeSets: Record<string, boolean> = {};
 
   constructor(
     private store: Store<any>,
@@ -40,8 +40,8 @@ export class ApiKeyManagementComponent implements OnInit {
     this.dialog.open(ConfirmDialogComponent, {
       data: {
         action: 'Delete API Key',
-        question: 'Are you sure you want to delete API Key "' + key.name + '", you will not be able to use the key to access resources anymore'
-      }
+        question: 'Are you sure you want to delete API Key "' + key.name + '", you will not be able to use the key to access resources anymore',
+      },
     }).afterClosed().pipe(
       flatMap((answer) => {
         if (answer) {
@@ -52,18 +52,18 @@ export class ApiKeyManagementComponent implements OnInit {
               return this.keys$ = this.keyService.getAPIKeys().pipe(
                 finalize(() => {
                   this.store.dispatch(new TurnOffLoader());
-                })
+                }),
               );
             }),
             catchError((error) => {
               this.store.dispatch(this.messageService.actionFromError(error));
               this.store.dispatch(new TurnOffLoader());
               return of();
-            })
+            }),
           );
         }
         return of();
-      })
+      }),
     ).subscribe();
   }
 
