@@ -1,7 +1,12 @@
 <h2 mat-dialog-title>{{data.title}}</h2>
 <mat-dialog-content>
   <form #form='ngForm'>
+
+
+  
     <div class="form-group">
+
+
       <input [(ngModel)]="model.name" [domainInfo]="{scope:'USER',version:null}" [existing]="data.existing"
              [fixedName]="model.ext" [scope]="data.scope"
              [type]="data.type" appNamingConvention appNamingDuplication

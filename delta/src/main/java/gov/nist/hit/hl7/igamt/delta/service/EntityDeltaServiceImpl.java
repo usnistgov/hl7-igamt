@@ -33,9 +33,6 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 import org.springframework.beans.factory.annotation.Autowired;

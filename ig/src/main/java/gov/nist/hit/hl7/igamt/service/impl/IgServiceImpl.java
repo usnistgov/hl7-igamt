@@ -129,9 +129,6 @@ import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;

@@ -31,10 +31,13 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.ContentDefinition;
+import gov.nist.hit.hl7.igamt.common.base.domain.Extensibility;
 import gov.nist.hit.hl7.igamt.common.base.domain.LengthType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 // import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Stability;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
@@ -98,9 +101,6 @@ import gov.nist.hit.hl7.igamt.service.impl.exception.SegmentSerializationExcepti
 import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import nu.xom.Attribute;
 import nu.xom.Builder;

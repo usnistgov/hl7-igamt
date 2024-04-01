@@ -14,15 +14,15 @@ package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 import java.io.Serializable;
 import java.util.Date;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.ContentDefinition;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Extensibility;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
+import gov.nist.hit.hl7.igamt.common.base.domain.Stability;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 
 /**
  * @author jungyubw

@@ -106,8 +106,8 @@ export class CodeSetTableComponent implements OnInit {
       codeSystem: null,
       usage: CodeUsage.P,
       comments: null,
-      pattern: null,
-      hasPattern: false,
+      pattern: "",
+      hasPattern: true,
     });
     console.log(' adding codes ');
     this.changes.emit(this.codeSetVersion.codes);

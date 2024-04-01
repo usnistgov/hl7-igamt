@@ -1,4 +1,7 @@
+import { ContentDefinition } from '../constants/content-definition.enum';
+import { Stability } from '../constants/stability.enum';
 import {Type} from '../constants/type.enum';
+import { Extensibility } from './../constants/extensibility.enum';
 import { ProfileType, Role } from './conformance-profile.interface';
 import {IDomainInfo} from './domain-info.interface';
 export enum SourceType {
@@ -33,4 +36,8 @@ export interface IAddingInfo {
   substitutes?: ISubstitution[];
   role?: Role;
   profileType?: ProfileType;
+  stability?: Stability;
+  extensibility?: Extensibility;
+  contentDefinition?: ContentDefinition;
+
 }

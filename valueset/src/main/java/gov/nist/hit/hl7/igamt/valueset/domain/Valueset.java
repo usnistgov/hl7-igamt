@@ -19,14 +19,15 @@ import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CodeType;
+import gov.nist.hit.hl7.igamt.common.base.domain.ContentDefinition;
+import gov.nist.hit.hl7.igamt.common.base.domain.Extensibility;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
+import gov.nist.hit.hl7.igamt.common.base.domain.Stability;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 
 /**
  * @author jungyubw
