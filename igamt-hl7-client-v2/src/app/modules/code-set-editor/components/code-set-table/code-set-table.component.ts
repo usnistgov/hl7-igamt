@@ -13,11 +13,26 @@ import { ICodeSetVersionContent } from '../../models/code-set.models';
 })
 export class CodeSetTableComponent implements OnInit {
 
+  _codeSetVersion: ICodeSetVersionContent;
+
   @Input()
-  codeSetVersion: ICodeSetVersionContent;
+  set codeSetVersion(codeSetVersion: ICodeSetVersionContent) {
+    this._codeSetVersion = codeSetVersion;
+    this.codeSystemOptions = this.getCodeSystemOptions();
+    this.selectedCodes  = [];
+
+  }
+
+  get codeSetVersion() {
+    return this._codeSetVersion;
+  }
+
   selectedCodes: ICodes[] = [];
+
   edit = {};
+
   temp: string = null;
+
   filteredCodeSystems: string[] = [];
   @Output()
   changes: EventEmitter<ICodes[]> = new EventEmitter<ICodes[]>();
@@ -32,8 +47,8 @@ export class CodeSetTableComponent implements OnInit {
   existingChangeReason: any[];
   @Input()
   viewOnly: boolean;
-  @Input()
-  codeSystemOptions: any[];
+
+  codeSystemOptions: any[] = [];
   @Input()
   cols: any[];
   @Input()
@@ -47,8 +62,8 @@ export class CodeSetTableComponent implements OnInit {
   ngOnInit() {
    this.editMap[this.codeSetVersion.id] = false;
    this.cols = this.selectedColumns;
-   this.codeSystemOptions = [];
   }
+
   toggleEdit(id: string) {
     this.temp = null;
     const tempMap = this.editMap;
@@ -109,7 +124,6 @@ export class CodeSetTableComponent implements OnInit {
       pattern: '',
       hasPattern: true,
     });
-    console.log(' adding codes ');
     this.changes.emit(this.codeSetVersion.codes);
   }
 

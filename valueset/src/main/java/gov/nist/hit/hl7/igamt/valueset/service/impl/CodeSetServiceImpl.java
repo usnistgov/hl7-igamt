@@ -104,7 +104,7 @@ public class CodeSetServiceImpl implements CodeSetService {
 				
 				CodeSetVersionInfo info = new CodeSetVersionInfo();
 
-				this.setVersionInfo(version,info,  parentId);
+				this.setVersionInfo(version, info,  parentId);
 				children.add(info);
 			}
 		}
@@ -136,7 +136,7 @@ public class CodeSetServiceImpl implements CodeSetService {
 		CodeSetVersion codeSetVersion =	this.codeSetVersionRepo.findById(codeSetVersionId).orElseThrow(() -> new ResourceNotFoundException(codeSetVersionId, Type.CODESETVERSION));
 		CodeSetVersionContent ret = new CodeSetVersionContent();
 		this.setVersionInfo(codeSetVersion, ret,  parentId);
-			
+		ret.setCodeSystems(codeSetVersion.getCodes().stream().map(x -> x.getCodeSystem()).collect(Collectors.toList()));
 		
 		ret.setCodes(codeSetVersion.getCodes());
 		return ret;

@@ -13,7 +13,7 @@ import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components
 export class CodeSetManagementComponent implements OnInit {
 
   filterExposed = false;
-  children: any[];
+  committedChildren: ICodeSetVersionInfo[];
   filteredChildren: ICodeSetVersionInfo[];
   selectedFilters: any[] = [];
   filterOptions: any[];
@@ -31,6 +31,7 @@ export class CodeSetManagementComponent implements OnInit {
   set info(param: ICodeSetInfo) {
     this._info = param;
     this.selectedVersion = this._info.children.find( (x) => x.id ===  param.defaultVersion);
+    this.committedChildren =  this._info.children.filter( (x) => x.dateCommitted);
   }
 
   get info() {
@@ -95,7 +96,6 @@ export class CodeSetManagementComponent implements OnInit {
   initializeFilters() {
     this.filterOptions = [
       { label: 'Committed', value: 'committed' },
-      { label: 'Exposed', value: 'exposed' },
       { label: 'Archived', value: 'archived' },
     ];
   }

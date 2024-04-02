@@ -1,4 +1,3 @@
-import { CodeSetLoadType } from 'src/app/root-store/code-set-editor/code-set-list/code-set-list.actions';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,6 +8,7 @@ import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components
 import { Message } from 'src/app/modules/dam-framework/models/messages/message.class';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import { SharingDialogComponent } from 'src/app/modules/shared/components/sharing-dialog/sharing-dialog.component';
+import { CodeSetLoadType } from 'src/app/root-store/code-set-editor/code-set-list/code-set-list.actions';
 import * as fromCodeSetList from 'src/app/root-store/code-set-editor/code-set-list/code-set-list.index';
 import * as fromRoot from 'src/app/root-store/index';
 import { ICodeSetListItem } from '../../models/code-set.models';

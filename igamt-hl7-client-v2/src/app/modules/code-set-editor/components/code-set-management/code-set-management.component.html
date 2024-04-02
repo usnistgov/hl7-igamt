@@ -14,7 +14,7 @@
   <div style="margin-bottom: 20px;">
     <label for="defaultVersion" style="margin-right: 5px;"><strong>Latest Stable Version</strong></label><br>
     <p-dropdown
-      [options]="info.children"
+      [options]="committedChildren"
       [(ngModel)]="selectedVersion"
       optionLabel="version"
       (ngModelChange)="updateDefault($event)"
