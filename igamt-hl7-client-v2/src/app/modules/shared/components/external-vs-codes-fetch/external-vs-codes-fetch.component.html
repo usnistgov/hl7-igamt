@@ -1,0 +1,18 @@
+<div style="width: 100%; display: flex; flex-direction: column; background-color: #fbfbfb; border: 2px solid lightgray; border-radius: 3px; padding: 5px;">
+    <div class="alert alert-danger" style="margin-bottom: 5px;" *ngIf="error">
+        {{ error.message }}
+    </div>
+    <div style="width: 100%; display: flex; align-items: center; justify-content: flex-end;">
+        <div class="input-group" style="width: 500px;">
+            <div class="input-group-prepend">
+                <strong class="input-group-text">API Key</strong>
+            </div>
+            <input type="password" class="form-control" [ngClass]="{ 'use-key': useKey}" [(ngModel)]="key">
+        </div>
+        <button class="btn btn-outline-primary" style="margin-left: 10px;" [disabled]="!URL" (click)="fetch()">
+            <i class="fa fa-download"></i>
+            Fetch Codes
+        </button>
+    </div>
+
+</div>

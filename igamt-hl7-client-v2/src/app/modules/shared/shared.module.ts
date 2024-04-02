@@ -57,6 +57,7 @@ import { ChangeLogInfoComponent } from './components/change-log-info/change-log-
 import { ChangeLogListInfoComponent } from './components/change-log-list-info/change-log-list-info.component';
 import { ChangeReasonDialogComponent } from './components/change-reason-dialog/change-reason-dialog.component';
 import { ChangeReasonListDialogComponent } from './components/change-reason-list-dialog/change-reason-list-dialog.component';
+import { CodeSetBrowseDialogComponent } from './components/codeset-browse-dialog/codeset-browse-dialog.component';
 import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
 import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
 import { CsListComponent } from './components/cs-list/cs-list.component';
@@ -79,6 +80,7 @@ import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.com
 import { EntityBrowseDialogComponent } from './components/entity-browse-dialog/entity-browse-dialog.component';
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
+import { ExternalVsCodesFetchComponent } from './components/external-vs-codes-fetch/external-vs-codes-fetch.component';
 import { FieldAddDialogComponent } from './components/field-add-dialog/field-add-dialog.component';
 import { FileExcelInputComponent } from './components/file-excel-input/file-excel-input.component';
 import { FileSelectInputComponent } from './components/file-select-input/file-select-input.component';
@@ -101,7 +103,9 @@ import { ImportCodeCSVComponent } from './components/import-code-csv/import-code
 import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
 import { ImportFromLibComponent } from './components/import-from-lib/import-from-lib.component';
 import { ImportStructureComponent } from './components/import-structure/import-structure.component';
+import { InputCopyComponent } from './components/input-copy/input-copy.component';
 import { IssueBadgeComponent } from './components/issue-badge/issue-badge.component';
+import { KeyDialogComponent } from './components/key-dialog/key-dialog.component';
 import { MessagePickerComponent } from './components/message-picker/message-picker.component';
 import { MetadataAttributeConfigComponent } from './components/metadata-attribute-config/metadata-attribute-config.component';
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
@@ -270,6 +274,10 @@ import { MinNumberDirective } from './validators/min-number.directive';
     VerificationResultDisplayComponent,
     ImportCodeCSVComponent,
     BuildValueSetComponent,
+    CodeSetBrowseDialogComponent,
+    KeyDialogComponent,
+    InputCopyComponent,
+    ExternalVsCodesFetchComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -476,6 +484,10 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ImportFromLibComponent,
     MatTooltipModule,
     VerificationResultDisplayComponent,
+    CodeSetBrowseDialogComponent,
+    KeyDialogComponent,
+    InputCopyComponent,
+    ExternalVsCodesFetchComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -517,6 +529,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MetadataAttributeConfigComponent,
     ImportFromLibComponent,
     ImportCodeCSVComponent,
+    CodeSetBrowseDialogComponent,
+    KeyDialogComponent,
     BuildValueSetComponent,
   ],
 })

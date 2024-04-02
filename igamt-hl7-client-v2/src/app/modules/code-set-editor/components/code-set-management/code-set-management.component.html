@@ -11,8 +11,8 @@
   <label for="description"><strong>Description</strong></label>
   <input type="text" id="description" name="description" class="form-control"  (ngModelChange)="emitChange()" [(ngModel)]="info.metadata.description">
   </div>
-  <div style="margin-top: 20px; margin-bottom: 20px;">
-    <label for="defaultVersion" style="margin-right: 5px;"><strong>Select Default Version</strong></label>
+  <div style="margin-bottom: 20px;">
+    <label for="defaultVersion" style="margin-right: 5px;"><strong>Latest Stable Version</strong></label><br>
     <p-dropdown
       [options]="info.children"
       [(ngModel)]="selectedVersion"

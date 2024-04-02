@@ -1,11 +1,13 @@
 package gov.nist.hit.hl7.igamt.workspace.service;
 
 import java.util.List;
+import java.util.Map;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.workspace.domain.Workspace;
+import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissionType;
 import gov.nist.hit.hl7.igamt.workspace.model.*;
 import gov.nist.hit.hl7.igamt.workspace.exception.CreateRequestException;
 import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceForbidden;
@@ -23,6 +25,7 @@ public interface WorkspaceService {
 	List<WorkspaceListItem> convertToDisplayList(List<Workspace> workspaces, boolean invitation);
 
 	FolderContent getFolderContent(String workspaceId, String folderId, String username) throws Exception;
+	Map<String, Map<String, WorkspacePermissionType>> getUserWorkspacesPermissions(String username);
 
 	// Actions
 	Workspace createWorkspace(WorkspaceCreateRequest createInfo, String username) throws CreateRequestException;

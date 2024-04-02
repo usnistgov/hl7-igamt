@@ -1,9 +1,7 @@
 package gov.nist.hit.hl7.igamt.access.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.nist.hit.hl7.igamt.access.exception.EditNotSyncException;
-import gov.nist.hit.hl7.igamt.access.exception.EditSyncInconclusiveException;
-import gov.nist.hit.hl7.igamt.access.exception.ResourceAccessDeniedException;
+import gov.nist.hit.hl7.igamt.access.exception.*;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +36,10 @@ public class AccessErrorHandler {
             } else if(cause instanceof EditSyncInconclusiveException) {
                 editSyncInconclusiveException(response, (EditSyncInconclusiveException) cause);
                 return;
+            } else if(cause instanceof ResourceAPIAccessDeniedException) {
+                resourceAPIAccessDeniedException(response, (ResourceAPIAccessDeniedException) cause);
+            } else if(cause instanceof APIResourceNotFoundException) {
+                apiResourceNotFound(response, (APIResourceNotFoundException) cause);
             }
         }
         handleIllegalArgumentException(response, e);
@@ -70,6 +72,18 @@ public class AccessErrorHandler {
     public void handleIllegalArgumentException(HttpServletResponse response, IllegalArgumentException e) throws IOException {
         response.setStatus(400);
         ResponseMessage<String> ack = new ResponseMessage<>(ResponseMessage.Status.FAILED, e.getMessage(), e.getMessage(), new Date());
+        this.objectMapper.writeValue(response.getOutputStream(), ack);
+    }
+
+    public void resourceAPIAccessDeniedException(HttpServletResponse response, ResourceAPIAccessDeniedException e) throws IOException {
+        response.setStatus(403);
+        gov.nist.hit.hl7.igamt.api.codesets.model.ResponseMessage ack = new gov.nist.hit.hl7.igamt.api.codesets.model.ResponseMessage(e.getMessage());
+        this.objectMapper.writeValue(response.getOutputStream(), ack);
+    }
+
+    public void apiResourceNotFound(HttpServletResponse response, APIResourceNotFoundException e) throws IOException {
+        response.setStatus(404);
+        gov.nist.hit.hl7.igamt.api.codesets.model.ResponseMessage ack = new gov.nist.hit.hl7.igamt.api.codesets.model.ResponseMessage(e.getMessage());
         this.objectMapper.writeValue(response.getOutputStream(), ack);
     }
 

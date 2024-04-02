@@ -8,8 +8,8 @@ public class CustomMethodSecurityExpressionRoot extends CustomSecurityExpression
     private Object filterObject;
     private Object returnObject;
 
-    public CustomMethodSecurityExpressionRoot(Authentication authentication, AccessControlService accessControlService, SynchronizedAccessService synchronizedAccessService) {
-        super(authentication, accessControlService, synchronizedAccessService);
+    public CustomMethodSecurityExpressionRoot(Authentication authentication, AccessControlService accessControlService, SynchronizedAccessService synchronizedAccessService, APIAccessControlService apiAccessControlService) {
+        super(authentication, accessControlService, synchronizedAccessService, apiAccessControlService);
     }
 
     @Override

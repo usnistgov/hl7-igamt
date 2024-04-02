@@ -5,8 +5,13 @@
   </ng-template>
 
   <ng-template #titleBar>
-    <div *ngIf="metadata$ | async as metadata" style="width: 100%; display: flex; align-items: center; padding: 5px 20px;">
-      <h2 style="margin: 0;">{{metadata.title}}</h2>
+    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+      <div *ngIf="metadata$ | async as metadata" style="width: 100%; display: flex; align-items: center; padding: 5px 20px;">
+        <h2 style="margin: 0;">{{metadata.title}}</h2>
+      </div>
+      <div [ngStyle]="{width: urlSize+'px' }">
+        <app-input-copy type="text" [value]="codeSetURL" label="URL" container="body"></app-input-copy>
+      </div>
     </div>
   </ng-template>
 

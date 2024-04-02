@@ -43,6 +43,7 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
   resourceType: Type;
   committed: boolean;
   codeSetId$: Observable<string>;
+  versionURL: string;
 
   constructor(
     actions$: Actions,
@@ -67,6 +68,8 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
       map((current) => {
         this.resourceSubject.next(_.cloneDeep(current));
         this.committed = current.dateCommitted != null;
+        const host = window.location.protocol + '//' + window.location.host;
+        this.versionURL = host + '/codesets/' + current.parentId + '?version=' + current.version;
       }),
     ).subscribe();
     this.resource$ = this.resourceSubject.asObservable();
@@ -160,7 +163,7 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
   updateCodeSetState(id: string): Observable<Action[]> {
     return this.codeSetService.getCodeSetInfo(id).pipe(
       map((cs) => {
-         return this.codeSetService.getUpdateAction(cs);
+        return this.codeSetService.getUpdateAction(cs);
       }),
     );
   }
@@ -208,7 +211,7 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
               console.log(res);
               resource.version = res.version;
               resource.comments = res.comments;
-              resource.latest =  res.latest;
+              resource.latest = res.latest;
               this.saveAndUpdate(parent, resource);
             }
           },

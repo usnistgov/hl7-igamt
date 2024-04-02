@@ -1,0 +1,30 @@
+@import '../../../../../assets/variables';
+
+.api-keys-layout {
+  @extend %page-wrapper;
+  display: grid;
+  grid-template-areas: 'alerts' 'register-content';
+  grid-template-columns: 1fr;
+  grid-template-rows: minmax(min-content, max-content) auto;
+  overflow: scroll;
+}
+
+.api-keys-card {
+  grid-column: register-content;
+  grid-row: 2;
+}
+
+.expired {
+  font-weight: bold;
+  color: goldenrod;
+}
+
+.active {
+  font-weight: bold;
+  color: green;
+}
+
+.deactivated {
+  font-weight: bold;
+  color: red;
+}

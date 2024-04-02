@@ -1,18 +1,18 @@
 <div class="side-bar">
   <ul class="list-group editors">
     <li class="list-group-item cursor-pointer" routerLink="dashboard" routerLinkActive="nav-active-link" >
-     <i class="fa fa-home" style ="font-size: larger; margin-right: 5px;"></i> Code Set Management
+     <i class="fa fa-home" style="font-size: larger; margin-right: 5px;"></i> Code Set Management
     </li>
-    <li class="list-group-item" style="background-color: #f3f3f3; display: flex;  font-weight: bold;">
-      Version History
+    <li class="list-group-item" style="background-color: #f3f3f3; cursor: auto; border-top: 2px solid #ced4da;">
+      <i class="fa fa-code-fork" style ="font-size: larger; margin-right: 5px;" aria-hidden="true"></i> Version History
     </li>
   </ul>
   <div class="filter">
-    <div class="input-group" style="margin-left: 5px; min-width: 300px;">
+    <div class="input-group" style="min-width: 300px;">
       <div class="input-group-prepend">
-        <span class="input-group-text"><i class="fa fa-filter"></i></span>
+        <span class="input-group-text"><i class="fa fa-search"></i></span>
       </div>
-      <input type="text" class="form-control" placeholder="filter" aria-label="filter">
+      <input type="text" class="form-control" placeholder="Search" aria-label="filter">
     </div>
   </div>
   <div class="list">
@@ -22,20 +22,13 @@
         <li style="padding: 0;" [contextMenu]="codeSetVersionMenu" *ngFor="let codeSetVersion of codeSetVersions; let i = index" routerLinkActive="nav-active-link"  [routerLink]="['code-set-version', codeSetVersion.id]" class="list-group-item codeset-version-list-item cursor-pointer" >
           <div style="width: 100px; text-align: center;">
             <span *ngIf="codeSetVersion.dateCommitted" style="color: gray; font-size: 0.75em;">{{codeSetVersion.dateCommitted | date}}</span>
-            <span *ngIf="!codeSetVersion.dateCommitted" style="color: gray; font-size: 0.75em;">in progress</span>
+            <span *ngIf="!codeSetVersion.dateCommitted" style="color: blue; font-size: 0.75em;">in progress</span>
           </div>
           <ng-container *ngTemplateOutlet="versionIcon; context: { $implicit: i, single: codeSetVersions.length === 1, size: codeSetVersions.length }"></ng-container>
-          <div>
-            v<strong>{{codeSetVersion.version}}</strong>
-
-
-            <span *ngIf="codeSetVersion.dateCommitted" style="margin-left: 10px; font-size: 0.80em; color: black" [ngbPopover]="commitMessage" triggers="mouseenter:mouseleave" container="body" placement="bottom">
-
-              <i class="fa fa-file-text" aria-hidden="true" ></i>
-
-              <ng-template #commitMessage >
-                <span>{{codeSetVersion.comments}}</span>
-              </ng-template>
+          <div class="version-text" [ngStyle]="{color: !codeSetVersion.dateCommitted ? 'gray' : 'black'}">
+            v<span [ngStyle]="{'font-weight': codeSetVersion.dateCommitted ? 'bold' : 'normal'}" >{{codeSetVersion.version}}</span>
+            <span *ngIf="codeSetVersion.dateCommitted" style="margin-left: 10px; font-size: 0.80em; color: gray" [ngbPopover]="codeSetVersion.comments" triggers="mouseenter:mouseleave" container="body" placement="bottom">
+              {{codeSetVersion.comments}}
             </span>
           </div>
         </li>
@@ -44,17 +37,15 @@
   </div>
 </div>
 
-<ng-template #versionIcon let-i let-size="size" let-single="single" >
+<ng-template #versionIcon let-i let-size="size" let-single="single" let-latest="latest" >
   <div class="version-icon">
     <div class="version-line" [ngClass]="{
-      'version-line-single': single,
-      'version-line-top': !single && i === 0,
+      'version-line-single': single || i === 0,
+      'version-line-top': !single && i === 1,
       'version-line-bottom': !single && i === (size - 1),
-      'version-line-middle': !single && i > 0 && i < (size - 1)
+      'version-line-middle': !single && i > 1 && i < (size - 1)
     }" ></div>
-    <div class="version-ball" [ngClass]="{ 'version-committed': !single && i < (size - 1) , 'version-inprogress': single || i === (size - 1) }"
-
-
-    ></div>
+    <div class="version-ball" [ngClass]="{ 'version-committed': !single && i > 0 , 'version-inprogress': single || i === 0 }"
+    >{{ latest ? 'L' : '' }}</div>
   </div>
 </ng-template>

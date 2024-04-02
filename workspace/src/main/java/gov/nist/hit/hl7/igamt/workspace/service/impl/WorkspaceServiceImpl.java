@@ -244,6 +244,35 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 		}
 	}
 
+	public Map<String, Map<String, WorkspacePermissionType>> getUserWorkspacesPermissions(String username) {
+		Map<String, Map<String, WorkspacePermissionType>> workspacesFolders = new HashMap<>();
+		List<Workspace> workspaces = this.findByMember(username);
+		for(Workspace workspace: workspaces) {
+			WorkspaceUser user = workspace.getUserAccessInfo().getUsers().stream().filter(u -> u.getUsername().equals(username)).findFirst().orElse(null);
+			Map<String, WorkspacePermissionType> folders = getUserAccessibleFolders(workspace, username, user);
+			workspacesFolders.put(workspace.getId(), folders);
+		}
+		return workspacesFolders;
+	}
+
+	Map<String, WorkspacePermissionType> getUserAccessibleFolders(Workspace workspace, String username, WorkspaceUser workspaceUser) {
+		Map<String, WorkspacePermissionType> folderPermissions = new HashMap<>();
+
+		if(workspace.getUsername().equals(username) || workspaceUser.getPermissions().isAdmin() || WorkspacePermissionType.EDIT.equals(workspaceUser.getPermissions().getGlobal())) {
+			workspace.getFolders().forEach((folder) -> folderPermissions.put(folder.getId(), WorkspacePermissionType.EDIT));
+		} else {
+			WorkspacePermissions permissions = workspaceUser.getPermissions();
+			if(permissions.getGlobal() != null) {
+				workspace.getFolders().forEach((folder) -> folderPermissions.put(folder.getId(), permissions.getGlobal()));
+			} else {
+				permissions.getByFolder().keySet().stream().filter(k -> permissions.getByFolder().get(k) != null).forEach((folderId) -> {
+					folderPermissions.put(folderId, permissions.getByFolder().get(folderId));
+				});
+			}
+		}
+		return folderPermissions;
+	}
+
     @Override
     public List<Workspace> findByMember(String username) {
 		Query query = new Query(new Criteria().orOperator(

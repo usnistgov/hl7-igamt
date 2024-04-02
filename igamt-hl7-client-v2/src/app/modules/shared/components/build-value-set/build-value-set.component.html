@@ -74,7 +74,6 @@
       <label> <strong> Code Set URL </strong> </label>
 
       <input [(ngModel)]="model.url" class="form-control" id="url" name="url"
-        pattern="^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$"
         placeholder="Enter Code set URL" required type="url" width="100%" />
       <div *ngIf="form.controls['url'] && form.controls['url'].invalid" class="input-form-invalid-feedback"
         style="margin-left: 10px;">
