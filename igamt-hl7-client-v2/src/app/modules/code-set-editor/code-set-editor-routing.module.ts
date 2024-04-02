@@ -54,6 +54,11 @@ const routes: Routes = [
     path: ':codeSetId',
     children: [
       {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'dashboard',
+      },
+      {
         path: 'dashboard',
         component: CodeSetDashBoardComponent,
         canActivate: [EditorActivateGuard],

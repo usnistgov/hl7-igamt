@@ -222,13 +222,12 @@
         </div>
         <div class="form-group" *ngIf="!viewOnly">
           <label  class="form-label-lg"> URL</label>
-        <input required id="url" name="url" type="url" (ngModelChange)="updateURl($event)"  placeholder="enter a valid url"  pattern="^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$" [(ngModel)]="valueSet.url" class="form-control" width="100%"/>
-           <div *ngIf="form.controls['url'] && form.controls['url'].invalid" class="input-form-invalid-feedback" style="margin-left: 10px;">
-             <span style="color:red"> Enter a valid URL</span>
-           </div>
+          <input required id="url" name="url" type="url" (ngModelChange)="updateURl($event)"  placeholder="enter a valid url" [(ngModel)]="valueSet.url" class="form-control" width="100%"/>
+          <div *ngIf="form.controls['url'] && form.controls['url'].invalid" class="input-form-invalid-feedback" style="margin-left: 10px;">
+            <span style="color:red"> Enter a valid URL</span>
+          </div>
         </div>
-        <div>
-        </div>
+        <app-external-vs-codes-fetch [URL]="valueSet.url" ></app-external-vs-codes-fetch>
       </div>
   </div>
 </form>

@@ -9,3 +9,34 @@
   width: 100%;
 }
 
+.apply-usage {
+  border: 1px solid;
+  padding: 2px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 8px;
+  height: 32px;
+  margin-right: 5px;
+  background-color: #edfbff;
+}
+
+.apply-usage-btn {
+  height: 26px;
+  margin: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selected-codes-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32px;
+  border-right: 2px solid black;
+  margin-right: 5px;
+  padding-right: 5px;
+  margin-left: 10px;
+}

@@ -57,6 +57,13 @@
   width: 20px; 
   height: 20px; 
   border-radius: 20px; 
+  text-align: center;
+  font-weight: bold;
+  vertical-align: middle;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
 }
 
 .version-committed {
@@ -64,7 +71,15 @@
 }
 
 .version-inprogress {
-  background-color: #215aff;
+  background-color: #dddddd;
+  border: 2px dashed #93a5ff;
+}
+
+.version-text {
+  text-overflow: ellipsis;
+  max-width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .version-line {

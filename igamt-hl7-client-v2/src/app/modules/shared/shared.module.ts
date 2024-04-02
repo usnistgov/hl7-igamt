@@ -80,6 +80,7 @@ import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.com
 import { EntityBrowseDialogComponent } from './components/entity-browse-dialog/entity-browse-dialog.component';
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
+import { ExternalVsCodesFetchComponent } from './components/external-vs-codes-fetch/external-vs-codes-fetch.component';
 import { FieldAddDialogComponent } from './components/field-add-dialog/field-add-dialog.component';
 import { FileExcelInputComponent } from './components/file-excel-input/file-excel-input.component';
 import { FileSelectInputComponent } from './components/file-select-input/file-select-input.component';
@@ -102,6 +103,7 @@ import { ImportCodeCSVComponent } from './components/import-code-csv/import-code
 import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
 import { ImportFromLibComponent } from './components/import-from-lib/import-from-lib.component';
 import { ImportStructureComponent } from './components/import-structure/import-structure.component';
+import { InputCopyComponent } from './components/input-copy/input-copy.component';
 import { IssueBadgeComponent } from './components/issue-badge/issue-badge.component';
 import { KeyDialogComponent } from './components/key-dialog/key-dialog.component';
 import { MessagePickerComponent } from './components/message-picker/message-picker.component';
@@ -274,6 +276,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     BuildValueSetComponent,
     CodeSetBrowseDialogComponent,
     KeyDialogComponent,
+    InputCopyComponent,
+    ExternalVsCodesFetchComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -482,6 +486,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     VerificationResultDisplayComponent,
     CodeSetBrowseDialogComponent,
     KeyDialogComponent,
+    InputCopyComponent,
+    ExternalVsCodesFetchComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
