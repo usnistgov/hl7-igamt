@@ -32,7 +32,6 @@ export class CodeSetListEffects {
               return [
                 new fromDAM.TurnOffLoader(),
                 new UpdateCodeSetList(items),
-// new UpdatePendingInvitationCount(countResult),
               ];
 
         }),

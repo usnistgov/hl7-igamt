@@ -20,7 +20,7 @@ export enum CodeSetListActionTypes {
 
 }
 
-export type CodeSetLoadType = 'PRIVATE' | 'PUBLIC' | 'ALL';
+export type CodeSetLoadType = 'PRIVATE' | 'PUBLIC' | 'ALL' |  'SHARED';
 
 export class LoadCodeSetList implements Action {
   readonly type = CodeSetListActionTypes.LoadCodeSetList;
