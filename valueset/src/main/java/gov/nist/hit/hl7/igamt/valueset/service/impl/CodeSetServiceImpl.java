@@ -136,7 +136,10 @@ public class CodeSetServiceImpl implements CodeSetService {
 		CodeSetVersion codeSetVersion =	this.codeSetVersionRepo.findById(codeSetVersionId).orElseThrow(() -> new ResourceNotFoundException(codeSetVersionId, Type.CODESETVERSION));
 		CodeSetVersionContent ret = new CodeSetVersionContent();
 		this.setVersionInfo(codeSetVersion, ret,  parentId);
-		ret.setCodeSystems(codeSetVersion.getCodes().stream().map(x -> x.getCodeSystem()).collect(Collectors.toList()));
+		if(codeSetVersion.getCodes() != null ) {
+			ret.setCodeSystems(codeSetVersion.getCodes().stream().map(x -> x.getCodeSystem()).collect(Collectors.toList()));
+
+		}else ret.setCodeSystems(new ArrayList<String>());
 		
 		ret.setCodes(codeSetVersion.getCodes());
 		return ret;
@@ -308,7 +311,7 @@ public class CodeSetServiceImpl implements CodeSetService {
 	private void toCodeSetInfo(CodeSetInfo info, CodeSet codeSet) {
 		
 		codeSet.setName(info.getMetadata().getTitle());
-		codeSet.setDescription(info.getMetadata().getTitle());
+		codeSet.setDescription(info.getMetadata().getDescription());
 		codeSet.setLatest(info.getDefaultVersion());
 		mergeCodeSetVersions(codeSet.getCodeSetVersions(),info.getChildren());		
 

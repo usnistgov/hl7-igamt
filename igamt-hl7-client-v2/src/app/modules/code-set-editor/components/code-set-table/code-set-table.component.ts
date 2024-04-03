@@ -91,9 +91,11 @@ export class CodeSetTableComponent implements OnInit {
   }
 
   getCodeSystemOptions(): SelectItem[] {
+    if(this.codeSetVersion.codeSystems){
     return this.codeSetVersion.codeSystems.map((codeSystem: string) => {
       return { label: codeSystem, value: codeSystem };
     });
+    }else return [];
   }
 
   deleteCodeSystem(codeSystem: string) {

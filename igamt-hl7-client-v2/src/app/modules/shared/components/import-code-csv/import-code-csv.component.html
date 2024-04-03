@@ -1,64 +1,5 @@
-<!-- <h2 mat-dialog-title>Upload CSV File</h2>
-<mat-dialog-content class="mat-typography">
-  <input type="file" #fileInput accept=".csv">
-</mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-button (click)="uploadFile(fileInput.files)">Upload</button>
-  <button mat-button [mat-dialog-close]>Cancel</button>
-</mat-dialog-actions> -->
 
-<!-- <h2 mat-dialog-title>Upload and Review CSV File</h2>
-<mat-dialog-content class="mat-typography">
-  <div *ngIf="uploadStep">
-    <div class="upload-drop-zone"
-         (drop)="onFileDrop($event)"
-         (dragover)="onDragOver($event)"
-         (dragleave)="onDragLeave($event)">
-      <input type="file" #fileInput accept=".csv" (change)="fileInputChange(fileInput.files)">
-      <p>Drag and drop a file here, or click to select a file.</p>
-    </div>
-    <button *ngIf="fileToUpload" mat-button (click)="removeFile()">Remove</button>
-  </div>
-  <div *ngIf="reviewStep">
-    <p-table [value]="codes" selectionMode="multiple" [(selection)]="selectedCodes" dataKey="id">
-      <ng-template pTemplate="header">
-        <tr>
-          <th style="width: 3em;"></th>
-          <th>Value</th>
-          <th>Pattern</th>
-          <th>Description</th>
-          <th>Code System</th>
-          <th>Usage</th>
-          <th>Comments</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-code let-selected="selected">
-        <tr>
-          <td><p-tableCheckbox [value]="code"></p-tableCheckbox></td>
-          <td>{{code.value}}</td>
-          <td>{{code.pattern}}</td>
-          <td>{{code.description}}</td>
-          <td>{{code.codeSystem}}</td>
-          <td>{{code.usage}}</td>
-          <td>{{code.comments}}</td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-  <div *ngIf="errorStep">
-    <p>Error during file upload: {{errorMessage}}</p>
-  </div>
-</mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-button [mat-dialog-close]>Cancel</button>
-  <button *ngIf="uploadStep" mat-button (click)="uploadFile()">Upload</button>
-  <button *ngIf="reviewStep" mat-button [mat-dialog-close]="selectedCodes">Finish</button>
-</mat-dialog-actions> -->
-
-
-
-
-<h2 mat-dialog-title>Upload and Review CSV File</h2>
+<h2 mat-dialog-title>Upload Codes From CSV </h2>
 
 <mat-dialog-content class="mat-typography dialog-content">
   <div *ngIf="uploadStep" class="upload-step">
@@ -68,9 +9,9 @@
          (dragleave)="onDragLeave($event)">
       <input type="file" #fileInput accept=".csv" (change)="fileInputChange(fileInput.files)" hidden>
       <button mat-stroked-button (click)="fileInput.click()" class="upload-btn">
-        file_upload Select file
+        Select File
       </button>
-      <p *ngIf="!fileToUpload">or drag and drop a file here</p>
+      <p *ngIf="!fileToUpload">or Drag and Drop a File Here</p>
       <p *ngIf="fileToUpload">{{fileToUpload.name}}</p>
     </div>
     <button *ngIf="fileToUpload"  color="warn" class="remove-btn" (click)="removeFile()">
@@ -111,23 +52,13 @@
     Error during file upload: {{errorMessage}}
   </div>
 </mat-dialog-content>
-
-<!-- <mat-dialog-actions class="dialog-actions"> -->
-  <!-- <button mat-button [mat-dialog-close] class="action-btn">Cancel</button>
-  <button *ngIf="uploadStep"  color="primary" (click)="uploadFile()" class="action-btn">
-    Upload
-  </button>
-  <button *ngIf="reviewStep" color="accent" [mat-dialog-close]="selectedCodes" class="action-btn">
-    Finish
-  </button>
-</mat-dialog-actions> -->
 <mat-dialog-actions style="justify-content: flex-end;">
 
 
 
   <button mat-button [mat-dialog-close] class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
-  <button *ngIf="uploadStep"  class="btn btn-sm btn-secondary" style="margin-right: 5px;" (click)="uploadFile()" class="action-btn">
-    Upload
+  <button *ngIf="uploadStep"  class="btn btn-sm btn-secondary" style="margin-right: 5px;" (click)="uploadFile()" [disabled]="!fileToUpload" class="btn btn-sm btn-primary">
+    Preview
   </button>
   <button *ngIf="reviewStep" color="accent" (click)="submit()" class="btn btn-sm btn-success">
     Finish
