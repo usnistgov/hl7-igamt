@@ -76,6 +76,8 @@ export class DatatypeStructureEditorComponent extends StructureEditorComponent<I
           HL7v2TreeColumnType.NAME,
           HL7v2TreeColumnType.DATATYPE,
           HL7v2TreeColumnType.USAGE,
+          HL7v2TreeColumnType.OLDUSAGE,
+
           HL7v2TreeColumnType.CONSTANTVALUE,
           HL7v2TreeColumnType.LENGTH,
           HL7v2TreeColumnType.CONFLENGTH,

@@ -51,6 +51,9 @@
                 <th *ngSwitchCase="columnTypes.TEXT" style="width: 135px;" ttReorderableColumn ttResizableColumn>
                   {{col.header}}
                 </th>
+                <th *ngSwitchCase="columnTypes.OLDUSAGE" style="width: 135px;" ttReorderableColumn ttResizableColumn>
+                  {{col.header}}
+                </th>
                 <th *ngSwitchDefault ttReorderableColumn ttResizableColumn>
                   {{col.header}}
                 </th>
@@ -117,6 +120,10 @@
                     }"
                     (valueChange)="registerChange($event)"
                   ></app-usage>
+                </ng-container>
+
+                <ng-container *ngSwitchCase="columnTypes.OLDUSAGE">
+                  {{rowData.oldUsage}}
                 </ng-container>
                 <ng-container *ngSwitchCase="columnTypes.CARDINALITY">
                   <app-cardinality
