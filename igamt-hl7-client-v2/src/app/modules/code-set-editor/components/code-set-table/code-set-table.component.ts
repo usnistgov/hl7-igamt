@@ -14,15 +14,17 @@ import { ICodeSetVersionContent } from '../../models/code-set.models';
 export class CodeSetTableComponent implements OnInit {
 
   _codeSetVersion: ICodeSetVersionContent;
+  codeSystems: string[] = [];
 
   @Input()
   set codeSetVersion(codeSetVersion: ICodeSetVersionContent) {
     this._codeSetVersion = codeSetVersion;
+    this.codeSystems = this.getUniqueCodeSystems(this._codeSetVersion.codes?this._codeSetVersion.codes : [] );
+    this._codeSetVersion.codeSystems = this.codeSystems;
     this.codeSystemOptions = this.getCodeSystemOptions();
     this.selectedCodes  = [];
 
   }
-
   get codeSetVersion() {
     return this._codeSetVersion;
   }
@@ -91,11 +93,9 @@ export class CodeSetTableComponent implements OnInit {
   }
 
   getCodeSystemOptions(): SelectItem[] {
-    if(this.codeSetVersion.codeSystems){
-    return this.codeSetVersion.codeSystems.map((codeSystem: string) => {
+    return this.codeSystems.map((codeSystem: string) => {
       return { label: codeSystem, value: codeSystem };
     });
-    }else return [];
   }
 
   deleteCodeSystem(codeSystem: string) {
@@ -174,6 +174,11 @@ export class CodeSetTableComponent implements OnInit {
   exportCSV() {
     this.exportCSVEvent.emit(this.codeSetVersion);
 
+  }
+   getUniqueCodeSystems(codes: ICodes[]): string[] {
+    const codeSystems = codes.map(code => code.codeSystem);
+    const uniqueCodeSystems = new Set(codeSystems);
+    return Array.from(uniqueCodeSystems);
   }
 
   downloadExample() {
