@@ -239,10 +239,7 @@ public class CodeSetServiceImpl implements CodeSetService {
 		return this.codeSetRepo.findByPrivateAudienceEditor(username);
 	}
 
-	@Override
-	public List<CodeSet> findByPrivateAudienceViewer(String username) {
-		return this.codeSetRepo.findByPrivateAudienceViewer(username);
-	}
+
 	
 	
 	@Override
@@ -285,6 +282,13 @@ public class CodeSetServiceImpl implements CodeSetService {
 		// TODO Auto-generated method stub
 		return this.codeSetRepo.findByPublicAudienceAndStatusPublished();
 	}
+	
+
+	@Override
+	public List<CodeSet> findByPrivateAudienceViewer(String username) {
+		return this.codeSetRepo.findByPrivateAudienceViewer(username);
+	}
+	
 	
 	@Override
 	public CodeSet saveCodeSetContent(String id, CodeSetInfo content, String username)

@@ -11,7 +11,7 @@
     <div  [(ngModel)]="_shadowViewType" class="btn-group btn-group-toggle border-gray" name="radioBasic" ngbRadioGroup
          style="border-radius: 5px;">
       <label class="btn-light no-focus" ngbButtonLabel>
-        <input [queryParams]="{ type : 'PRIVATE' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="MEMBER">
+        <input [queryParams]="{ type : 'PRIVATE' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="PRIVATE">
         Owned
       </label>
 
@@ -21,7 +21,7 @@
       </label>
 
       <label class="btn-light no-focus" ngbButtonLabel>
-        <input [queryParams]="{ type : 'PUBLIC' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="PUBLISHED">
+        <input [queryParams]="{ type : 'PUBLIC' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="PUBLIC">
         Public
       </label>
 

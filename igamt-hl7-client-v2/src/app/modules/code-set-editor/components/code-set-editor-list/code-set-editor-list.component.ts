@@ -1,3 +1,4 @@
+import { CodeSetLoadType } from 'src/app/root-store/code-set-editor/code-set-list/code-set-list.actions';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,7 +15,7 @@ import { ICodeSetListItem } from '../../models/code-set.models';
 import { CodeSetServiceService } from '../../services/CodeSetService.service';
 import { ICodeSetListItemControl } from '../code-set-editor-list-card/code-set-editor-list-card.component';
 import { DeleteCodeSetDialogComponent } from '../delete-code-set-dialog/delete-code-set-dialog.component';
-import { ClearCodeSetList, CodeSetLoadType, DeleteCodeSetListItemSuccess, LoadCodeSetList, SelectCodeSetListSortOption, SelectCodeSetListViewType, UpdatePendingInvitationCount } from './../../../../root-store/code-set-editor/code-set-list/code-set-list.actions';
+import { ClearCodeSetList, DeleteCodeSetListItemSuccess, LoadCodeSetList, SelectCodeSetListSortOption, SelectCodeSetListViewType, UpdatePendingInvitationCount } from './../../../../root-store/code-set-editor/code-set-list/code-set-list.actions';
 import { MessageService } from './../../../dam-framework/services/message.service';
 import { ClearAll } from './../../../dam-framework/store/messages/messages.actions';
 

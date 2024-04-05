@@ -190,7 +190,10 @@ public class CodeSetController {
 
 				codesets = codeSetService.findByPublicAudienceAndStatusPublished();
 
-			} 
+			} else if (type.equals(CodeSetListType.SHARED)) {
+				
+				codesets = codeSetService.findByPrivateAudienceViewer(username);
+			}
 
 			else if (type.equals(CodeSetListType.ALL)) {
 
