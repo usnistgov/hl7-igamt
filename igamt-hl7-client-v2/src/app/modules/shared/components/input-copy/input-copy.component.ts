@@ -14,17 +14,16 @@ export class InputCopyComponent implements OnInit {
     type: string;
     @Input()
     value: string;
-    @Input()
-    container: string;
+    copied = false;
 
     constructor() { }
 
-    copy(p) {
+    copy() {
         window.navigator['clipboard'].writeText(this.value);
-        p.open();
+        this.copied = true;
         setTimeout(() => {
-            p.close();
-        }, 500);
+            this.copied = false;
+        }, 600);
     }
 
     ngOnInit() { }

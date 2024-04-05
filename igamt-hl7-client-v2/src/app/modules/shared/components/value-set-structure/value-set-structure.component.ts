@@ -2,8 +2,14 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Guid } from 'guid-typescript';
 import { SelectItem } from 'primeng/api';
+import { map } from 'rxjs/operators';
+import { CodeSetServiceService } from 'src/app/modules/code-set-editor/services/CodeSetService.service';
+import { Type } from '../../constants/type.enum';
 import { ChangeType, IChange, PropertyType } from '../../models/save-change';
 import { ICodes, IValueSet } from '../../models/value-set.interface';
+import { ICodeSetQueryResult } from '../../services/external-codeset.service';
+import { BrowseType, CodeSetBrowseDialogComponent, IBrowserTreeNode } from '../codeset-browse-dialog/codeset-browse-dialog.component';
+import { FetchCodesDialogComponent } from '../fetch-codes-dialog/fetch-codes-dialog.component';
 import { ImportCodeCSVComponent } from '../import-code-csv/import-code-csv.component';
 
 @Component({
@@ -13,8 +19,10 @@ import { ImportCodeCSVComponent } from '../import-code-csv/import-code-csv.compo
 })
 export class ValueSetStructureComponent implements OnInit {
 
-  constructor(private dialog: MatDialog,
-    ) {
+  constructor(
+    private dialog: MatDialog,
+    private codeSetService: CodeSetServiceService,
+  ) {
   }
   @Input()
   valueSet: IValueSet;
@@ -52,6 +60,42 @@ export class ValueSetStructureComponent implements OnInit {
     { label: 'R', value: 'R' }, { label: 'P', value: 'P' }, { label: 'E', value: 'E' },
   ];
   editMap = {};
+
+  importMenuItems = [
+    {
+      label: 'CSV',
+      items: [{
+        label: 'Import From CSV',
+        command: (event) => {
+          this.importCSV();
+        },
+      },
+      { separator: true },
+      {
+        label: 'Example CSV Format',
+        command: (event) => {
+          this.downloadExample();
+        },
+      }],
+    },
+    { separator: true },
+    {
+      label: 'CodeSet',
+      items: [
+        {
+          label: 'From IGAMT', command: () => {
+            this.importFromCodeSet();
+          },
+        },
+        { separator: true },
+        {
+          label: 'From URL', command: () => {
+            this.importFromURL();
+          },
+        },
+      ],
+    },
+  ];
 
   ngOnInit() {
     this.editMap[this.valueSet.id] = false;
@@ -187,6 +231,84 @@ export class ValueSetStructureComponent implements OnInit {
     this.updateAttribute(PropertyType.CONTENTDEFINITION, $event);
   }
 
+  importFromCodeSet() {
+    return this.dialog.open(CodeSetBrowseDialogComponent, {
+      data: {
+        browserType: BrowseType.ENTITY,
+        scope: {
+          private: true,
+          public: true,
+        },
+        types: [Type.CODESET, Type.CODESETVERSION],
+        exclude: [],
+        selectionMode: 'single',
+        includeVersions: true,
+      },
+    }).afterClosed().pipe(
+      map((browserResult: IBrowserTreeNode) => {
+        let codeSetId: string;
+        let codeSetVersionId: string;
+
+        if (browserResult.data.type === Type.CODESET) {
+          codeSetId = browserResult.data.id;
+          codeSetVersionId = browserResult.data.latestId;
+        } else if (browserResult.data.type === Type.CODESETVERSION) {
+          codeSetVersionId = browserResult.data.id;
+          codeSetId = browserResult.parent ? browserResult.parent.data.id : undefined;
+        }
+
+        if (codeSetId && codeSetVersionId) {
+          this.codeSetService.getCodeSetVersionContent(codeSetId, codeSetVersionId).pipe(
+            map((content) => {
+              this.valueSet.codes = content.codes;
+              this.updateAttribute(PropertyType.CODES, content.codes);
+            }),
+          ).subscribe();
+        }
+      }),
+    ).subscribe();
+  }
+
+  linkToCodeSet() {
+    return this.dialog.open(CodeSetBrowseDialogComponent, {
+      data: {
+        browserType: BrowseType.ENTITY,
+        scope: {
+          private: true,
+          public: true,
+        },
+        types: [Type.CODESET],
+        exclude: [],
+        selectionMode: 'single',
+        includeVersions: false,
+      },
+    }).afterClosed().pipe(
+      map((browserResult: IBrowserTreeNode) => {
+        // TODO
+      }),
+    ).subscribe();
+  }
+
+  importFromURL() {
+    return this.dialog.open(FetchCodesDialogComponent, {}).afterClosed().pipe(
+      map((result: ICodeSetQueryResult) => {
+        if (result) {
+          this.valueSet.codes = result.codes.map((code) => ({
+            value: code.value,
+            id: Guid.create().toString(),
+            description: code.displayText,
+            codeSystem: code.codeSystem,
+            hasPattern: code.isPattern,
+            usage: code.usage,
+            pattern: code.regularExpression,
+            comments: '',
+          }));
+          this.updateAttribute(PropertyType.CODES, this.valueSet.codes);
+        }
+      }),
+    ).subscribe();
+  }
+
   importCSV() {
 
     this.dialog.open(ImportCodeCSVComponent, {
@@ -201,7 +323,7 @@ export class ValueSetStructureComponent implements OnInit {
     });
   }
   exportCSV() {
-   this.exportCSVEvent.emit(this.valueSet.id);
+    this.exportCSVEvent.emit(this.valueSet.id);
 
   }
 

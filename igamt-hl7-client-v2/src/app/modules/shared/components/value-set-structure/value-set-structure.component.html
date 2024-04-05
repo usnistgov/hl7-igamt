@@ -58,32 +58,32 @@
       <div *ngIf="valueSet.sourceType === 'INTERNAL'">
         <div  class="codes-options">
           <div class="csv-actions">
-            <div ngbDropdown placement="bottom-right" container="body" class="d-inline-block" style="margin-right:5px;" >
-              <button class="btn btn-secondary btn-sm dropdown-toggle"
-                id="csv"
-                ngbDropdownToggle>
-              <i class="fa fa-table"></i> CSV
-              </button>
-              <div ngbDropdownMenu aria-labelledby="exportDropDown">
-                <button ngbDropdownItem (click)="importCSV()"  *ngIf="!viewOnly" >
-                  Import From CSV
-                </button>
-                <button ngbDropdownItem (click)="exportCSV()">
-                  Export CSV
-                </button>
-                <button ngbDropdownItem (click)="downloadExample()">
-                  Download Example
+            <div style="display: flex; gap: 4px;">
+              <div *ngIf="!viewOnly">
+                <p-tieredMenu #menu [model]="importMenuItems" [popup]="true"></p-tieredMenu>
+                <button class="btn btn-secondary btn-sm dropdown-toggle" (click)="menu.toggle($event)">
+                  <i class="fa fa-upload"></i>
+                  Import Codes
                 </button>
               </div>
+              <button class="btn btn-secondary btn-sm" (click)="exportCSV()">
+                <i class="fa fa-download"></i>
+                Export Codes (CSV)
+              </button>
+              <button class="btn btn-info btn-sm" (click)="linkToCodeSet()">
+                <i class="fa fa-link" aria-hidden="true"></i>
+                Link To CodeSet
+              </button>
             </div>
-          <button (click)="deleteCodes()" [disabled]="!selectedCodes.length" *ngIf="!viewOnly" class="btn btn-sm btn-danger"
-                  style="margin-right:5px;"
-                  type="button">
-            <i class="fa fa-trash"></i> Delete Selected
-            <span class="badge badge-info">{{selectedCodes?.length }}</span>
-          </button>
-          <button (click)="addCode()" class="btn btn-sm btn-primary" type="button" *ngIf="!viewOnly"><i class="fa fa-plus"></i> Add Code
-          </button>
+            <div>
+              <button (click)="deleteCodes()" [disabled]="!selectedCodes.length" *ngIf="!viewOnly" class="btn btn-sm btn-danger"
+                style="margin-right:5px;"
+                type="button">
+                <i class="fa fa-trash"></i> Delete Selected
+                <span class="badge badge-info">{{selectedCodes?.length }}</span>
+              </button>
+              <button (click)="addCode()" class="btn btn-sm btn-primary" type="button" *ngIf="!viewOnly"><i class="fa fa-plus"></i> Add Code</button>
+            </div>
         </div>
       </div>
 

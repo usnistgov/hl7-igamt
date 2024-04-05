@@ -1,20 +1,16 @@
 package gov.nist.hit.hl7.igamt.api.codesets.model;
 
-import java.util.Date;
-
 public class CodeSetInfo {
 	private String id;
 	private String name;
-	private Date dateUpdated;
-	private String latestStableVersion;
+	private Version latestStableVersion;
 
 	public CodeSetInfo() {
 	}
 
-	public CodeSetInfo(String id, String name, Date dateUpdated, String latestStableVersion) {
+	public CodeSetInfo(String id, String name, Version latestStableVersion) {
 		this.id = id;
 		this.name = name;
-		this.dateUpdated = dateUpdated;
 		this.latestStableVersion = latestStableVersion;
 	}
 
@@ -34,19 +30,11 @@ public class CodeSetInfo {
 		this.name = name;
 	}
 
-	public Date getDateUpdated() {
-		return dateUpdated;
-	}
-
-	public void setDateUpdated(Date dateUpdated) {
-		this.dateUpdated = dateUpdated;
-	}
-
-	public String getLatestStableVersion() {
+	public Version getLatestStableVersion() {
 		return latestStableVersion;
 	}
 
-	public void setLatestStableVersion(String latestStableVersion) {
+	public void setLatestStableVersion(Version latestStableVersion) {
 		this.latestStableVersion = latestStableVersion;
 	}
 }

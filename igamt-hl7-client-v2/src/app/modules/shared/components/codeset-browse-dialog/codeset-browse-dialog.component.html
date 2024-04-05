@@ -31,7 +31,7 @@
                id="filter" placeholder="Search" required
                style="background-color: #fbfbfb; height: 35px;" type="text">
       </div>
-      <p-treeTable *ngIf="scope" #tt [value]="browserTree" [columns]="columns" [paginator]="true" [rows]="5" [reorderableColumns]="true" [resizableColumns]="true" selectionMode="multiple"
+      <p-treeTable *ngIf="scope" #tt [value]="browserTree" [columns]="columns" [paginator]="true" [rows]="5" [reorderableColumns]="true" [resizableColumns]="true" [selectionMode]="selectionMode"
       [(selection)]="selected"
       dataKey="id" >
         <ng-template pTemplate="header" let-columns>
@@ -60,7 +60,10 @@
                         </td>
                         <td style="white-space: normal;">
                           <app-entity-bagde [type]="rowData.type"></app-entity-bagde>                          
-                          <strong [ngStyle]="{ 'color': rowNode.node.selectable ? 'black' : '#b1b1b1'}" style="margin-left: 10px">{{rowData.label}}</strong>
+                          <strong [ngStyle]="{ 'color': rowNode.node.selectable ? 'black' : '#b1b1b1'}" style="margin-left: 10px">
+                            <span>{{rowData.label}}</span>
+                            <span style="margin-left: 5px;" class="badge badge-primary" *ngIf="rowData.type === 'CODESETVERSION' && rowData.latestStable">latest</span>
+                          </strong>
                         </td>
                       </tr>
                     </tbody>
@@ -69,22 +72,51 @@
                     {{rowData.type}}
                   </ng-container>
                   <ng-container *ngSwitchCase="colType.DATE">
-                    {{rowData.dateUpdated | date}}
+                    <span *ngIf="rowData.type === 'CODESETVERSION'">{{rowData.dateCommitted | date:'medium'}}</span>
                   </ng-container>
                 </td>
             </tr>
         </ng-template>
     </p-treeTable>
-    <ng-container *ngIf="selected && selected.length > 0" >
+    <ng-container *ngIf="selected" >
       <div style="color: #9b9898; margin: 15px; text-align: center;">Selection</div>
-      <ul class="list-group">
+      <ul class="list-group" *ngIf="selectionMode === 'multiple'">
         <li class="list-group-item list-item" *ngFor="let item of selected; let i = index" >
-          <div>
+          <div *ngIf="item.data.type === 'CODESETVERSION'" style="display: flex; gap: 10px; align-items: center; justify-content: space-between;">
+            <app-entity-bagde [type]="item.parent.data.type"></app-entity-bagde>
+            <strong style="margin-left: 10px">{{item.parent.data.label}}</strong>
+            <i class="fa fa-chevron-right"></i>
+            <strong>version {{item.data.label}}</strong>
+            <span style="margin-left: 5px;" class="badge badge-primary" *ngIf="item.data.latestStable">latest</span>
+            <span style="color: gray;">Committed on {{item.data.dateCommitted | date:'medium'}}</span>
+          </div>
+          <div *ngIf="item.data.type === 'CODESET'">
             <app-entity-bagde [type]="item.data.type"></app-entity-bagde>
             <strong style="margin-left: 10px">{{item.data.label}}</strong>
           </div>
           <div>
             <button (click)="clear(i)" class="btn btn-sm btn-danger">
+              <i class="fa fa-times"></i>
+            </button>
+          </div>
+        </li>
+      </ul>
+      <ul class="list-group" *ngIf="selectionMode === 'single'">
+        <li class="list-group-item list-item">
+          <div *ngIf="selected.data.type === 'CODESETVERSION'" style="display: flex; gap: 10px; align-items: center; justify-content: space-between;">
+            <app-entity-bagde [type]="selected.parent.data.type"></app-entity-bagde>
+            <strong style="margin-left: 10px">{{selected.parent.data.label}}</strong>
+            <i class="fa fa-chevron-right"></i>
+            <strong>version {{selected.data.label}}</strong>
+            <span style="margin-left: 5px;" class="badge badge-primary" *ngIf="selected.data.latestStable">latest</span>
+            <span style="color: gray;">Committed on {{selected.data.dateCommitted | date:'medium'}}</span>
+          </div>
+          <div *ngIf="selected.data.type === 'CODESET'">
+            <app-entity-bagde [type]="selected.data.type"></app-entity-bagde>
+            <strong style="margin-left: 10px">{{selected.data.label}}</strong>
+          </div>
+          <div>
+            <button (click)="clearSelection()" class="btn btn-sm btn-danger">
               <i class="fa fa-times"></i>
             </button>
           </div>

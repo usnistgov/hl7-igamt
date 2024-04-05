@@ -4,7 +4,7 @@ import java.util.List;
 
 public class CodeSetBrowserTreeNode {
 	private CodeSetBrowserTreeNodeData data;
-	private List<BrowserTreeNode> children;
+	private List<CodeSetVersionBrowserTreeNode> children;
 
 	public CodeSetBrowserTreeNodeData getData() {
 		return data;
@@ -14,11 +14,11 @@ public class CodeSetBrowserTreeNode {
 		this.data = data;
 	}
 
-	public List<BrowserTreeNode> getChildren() {
+	public List<CodeSetVersionBrowserTreeNode> getChildren() {
 		return children;
 	}
 
-	public void setChildren(List<BrowserTreeNode> children) {
+	public void setChildren(List<CodeSetVersionBrowserTreeNode> children) {
 		this.children = children;
 	}
 }

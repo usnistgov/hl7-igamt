@@ -84,6 +84,11 @@ public class AccessErrorHandler {
     public void apiResourceNotFound(HttpServletResponse response, APIResourceNotFoundException e) throws IOException {
         response.setStatus(404);
         gov.nist.hit.hl7.igamt.api.codesets.model.ResponseMessage ack = new gov.nist.hit.hl7.igamt.api.codesets.model.ResponseMessage(e.getMessage());
+        switch(e.getType()) {
+            case CODESET:
+                ack.setMessage("Code set (id='"+e.getId()+"') not found.");
+                break;
+        }
         this.objectMapper.writeValue(response.getOutputStream(), ack);
     }
 

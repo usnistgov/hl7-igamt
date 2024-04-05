@@ -6,7 +6,7 @@ public class Code {
 	private String value;
 	private String codeSystem;
 	private String displayText;
-	private String isPattern;
+	private boolean isPattern;
 	private String regularExpression;
 	private CodeUsage usage;
 
@@ -34,12 +34,12 @@ public class Code {
 		this.displayText = displayText;
 	}
 
-	public String getIsPattern() {
+	public boolean isPattern() {
 		return isPattern;
 	}
 
-	public void setIsPattern(String isPattern) {
-		this.isPattern = isPattern;
+	public void setPattern(boolean pattern) {
+		isPattern = pattern;
 	}
 
 	public String getRegularExpression() {
