@@ -25,7 +25,7 @@
 </ng-template>
 
 <div *ngIf="(resource$ | async).dateCommitted" style="margin-top: 10px; margin-bottom: 10px;">
-  <app-input-copy type="text" [value]="versionURL" label="Version URL" container="body"></app-input-copy>
+  <app-input-copy type="text" [value]="versionURL" label="Version URL"></app-input-copy>
 </div>
 <app-code-set-table [codeSetVersion]="resource$ | async" [selectedColumns]="selectedColumns" (changes)="updateCodes($event)" (importCSVEvent)="importCSV($event)" (exportCSVEvent)="exportCSV($event)" [viewOnly]="(resource$ | async).dateCommitted"></app-code-set-table>
 

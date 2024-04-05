@@ -40,12 +40,11 @@
 <ng-template #versionIcon let-i let-size="size" let-single="single" let-latest="latest" >
   <div class="version-icon">
     <div class="version-line" [ngClass]="{
-      'version-line-single': single || i === 0,
+      'version-line-single': single || i === 0 || size === 2,
       'version-line-top': !single && i === 1,
       'version-line-bottom': !single && i === (size - 1),
       'version-line-middle': !single && i > 1 && i < (size - 1)
     }" ></div>
-    <div class="version-ball" [ngClass]="{ 'version-committed': !single && i > 0 , 'version-inprogress': single || i === 0 }"
-    >{{ latest ? 'L' : '' }}</div>
+    <div class="version-ball" [ngClass]="{ 'version-committed': !single && i > 0 , 'version-inprogress': single || i === 0 }"></div>
   </div>
 </ng-template>

@@ -35,6 +35,7 @@ import {
   PickListModule,
   RadioButtonModule,
   TabViewModule,
+  TieredMenuModule,
   TooltipModule,
   TreeTableModule,
 } from 'primeng/primeng';
@@ -81,6 +82,7 @@ import { EntityBrowseDialogComponent } from './components/entity-browse-dialog/e
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
 import { ExternalVsCodesFetchComponent } from './components/external-vs-codes-fetch/external-vs-codes-fetch.component';
+import { FetchCodesDialogComponent } from './components/fetch-codes-dialog/fetch-codes-dialog.component';
 import { FieldAddDialogComponent } from './components/field-add-dialog/field-add-dialog.component';
 import { FileExcelInputComponent } from './components/file-excel-input/file-excel-input.component';
 import { FileSelectInputComponent } from './components/file-select-input/file-select-input.component';
@@ -278,6 +280,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     KeyDialogComponent,
     InputCopyComponent,
     ExternalVsCodesFetchComponent,
+    FetchCodesDialogComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -343,6 +346,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ConfirmDialogModule,
     MatProgressSpinnerModule,
     CodemirrorModule,
+    TieredMenuModule,
   ],
   exports: [
     MatExpansionModule,
@@ -383,6 +387,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MatInputModule,
     MatFormFieldModule,
     MatRadioModule,
+    TieredMenuModule,
     DropdownModule,
     FormInputComponent,
     SelectVersionsComponent,
@@ -488,6 +493,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     KeyDialogComponent,
     InputCopyComponent,
     ExternalVsCodesFetchComponent,
+    FetchCodesDialogComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -532,6 +538,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     CodeSetBrowseDialogComponent,
     KeyDialogComponent,
     BuildValueSetComponent,
+    FetchCodesDialogComponent,
   ],
 })
 export class SharedModule {

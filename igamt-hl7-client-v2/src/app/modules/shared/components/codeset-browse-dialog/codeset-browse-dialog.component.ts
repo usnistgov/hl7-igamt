@@ -40,6 +40,7 @@ export interface IEntity {
 export interface IBrowserTreeNodeData {
   id: string;
   label: string;
+  latestId?: string;
   type: Type;
   readOnly: boolean;
   children?: IBrowserTreeNode[];
@@ -60,10 +61,12 @@ export interface IOption {
 
 export interface IBrowseDialogData {
   browserType: BrowseType;
+  includeVersions: boolean;
   scope: IBrowseScope;
   types: Type[];
   multi: boolean;
   exclude?: Array<{ id: string; type: Type; }>;
+  selectionMode: 'multiple' | 'single';
 }
 
 @Component({
@@ -73,7 +76,8 @@ export interface IBrowseDialogData {
 })
 export class CodeSetBrowseDialogComponent implements OnInit {
   BrowserScope = BrowserScope;
-  selected: IBrowserTreeNode[];
+  selected: IBrowserTreeNode & IBrowserTreeNode[];
+  selectionMode: 'single' | 'multiple' = 'multiple';
   scope: BrowserScope;
   browser: IBrowseDialogData;
   browserTree: IBrowserTreeNode[] = [];
@@ -96,22 +100,23 @@ export class CodeSetBrowseDialogComponent implements OnInit {
   ) {
     this.browser = data;
     if (this.browser.scope.private) {
-      this.getTreeByScope(BrowserScope.PRIVATE);
+      this.getTreeByScope(BrowserScope.PRIVATE, this.browser.includeVersions);
     } else if (this.browser.scope.public) {
-      this.getTreeByScope(BrowserScope.PUBLIC);
+      this.getTreeByScope(BrowserScope.PUBLIC, this.browser.includeVersions);
     } else if (this.browser.scope.sharedWithMe) {
-      this.getTreeByScope(BrowserScope.SHARED);
+      this.getTreeByScope(BrowserScope.SHARED, this.browser.includeVersions);
     } else if (this.browser.scope.workspaces) {
-      this.getTreeByScope(this.scope = BrowserScope.WORKSPACES);
+      this.getTreeByScope(this.scope = BrowserScope.WORKSPACES, this.browser.includeVersions);
     }
+    this.selectionMode = data.selectionMode;
   }
 
   track = (n) => n.key;
 
-  getTreeByScope(scope: BrowserScope) {
+  getTreeByScope(scope: BrowserScope, includeVersions: boolean) {
     this.scope = scope;
 
-    this.http.get<IBrowserTreeNode[]>('/api/browser/codesets/' + scope).pipe(
+    this.http.get<IBrowserTreeNode[]>('/api/browser/codesets/' + scope, { params: { includeVersions: includeVersions.toString() } }).pipe(
       map((nodes) => {
         const n = this.processNodes(nodes);
         this.browserTree = [
@@ -135,7 +140,13 @@ export class CodeSetBrowseDialogComponent implements OnInit {
   }
 
   clear(i: number) {
-    this.selected.splice(i, 1);
+    if (Array.isArray(this.selected)) {
+      this.selected.splice(i, 1);
+    }
+  }
+
+  clearSelection() {
+    this.selected = undefined;
   }
 
   isExcluded(node: IBrowserTreeNode) {

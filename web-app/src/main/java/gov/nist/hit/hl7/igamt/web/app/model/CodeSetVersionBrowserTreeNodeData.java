@@ -4,12 +4,12 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 import java.util.Date;
 
-public class CodeSetBrowserTreeNodeData {
+public class CodeSetVersionBrowserTreeNodeData {
 	private String id;
 	private String label;
 	private Type type;
-	private Date dateUpdated;
-	private String latestId;
+	private Date dateCommitted;
+	private boolean latestStable;
 	private boolean readOnly;
 
 	public String getId() {
@@ -36,14 +36,6 @@ public class CodeSetBrowserTreeNodeData {
 		this.type = type;
 	}
 
-	public Date getDateUpdated() {
-		return dateUpdated;
-	}
-
-	public void setDateUpdated(Date dateUpdated) {
-		this.dateUpdated = dateUpdated;
-	}
-
 	public boolean isReadOnly() {
 		return readOnly;
 	}
@@ -52,11 +44,19 @@ public class CodeSetBrowserTreeNodeData {
 		this.readOnly = readOnly;
 	}
 
-	public String getLatestId() {
-		return latestId;
+	public Date getDateCommitted() {
+		return dateCommitted;
 	}
 
-	public void setLatestId(String latestId) {
-		this.latestId = latestId;
+	public void setDateCommitted(Date dateCommitted) {
+		this.dateCommitted = dateCommitted;
+	}
+
+	public boolean isLatestStable() {
+		return latestStable;
+	}
+
+	public void setLatestStable(boolean latestStable) {
+		this.latestStable = latestStable;
 	}
 }

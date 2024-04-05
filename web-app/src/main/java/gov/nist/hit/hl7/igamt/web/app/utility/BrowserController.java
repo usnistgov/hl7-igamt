@@ -30,9 +30,10 @@ public class BrowserController {
     @ResponseBody
     public List<CodeSetBrowserTreeNode> getCodeSetBrowserTree(
             Authentication authentication,
+            @RequestParam("includeVersions") boolean includeVersions,
             @PathVariable("scope") CodeSetBrowserScope scope
     ) throws Exception {
         String username = authentication.getPrincipal().toString();
-        return browserService.getCodeSetTreeNodeByScope(scope, username);
+        return browserService.getCodeSetTreeNodeByScope(scope, username, includeVersions);
     }
 }
