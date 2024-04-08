@@ -132,7 +132,7 @@ public class DlNewExportServiceImpl implements DlNewExportService {
 					      System.out.println("XML_EXPORT_DATATYPELIBRARY : " + xmlContent);
 //					      System.out.println("XmlContent in IgExportService is : " + xmlContent);
 			// TODO add app infoservice to get app version
-			ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
+			ExportParameters exportParameters = new ExportParameters("dl",false, true, exportFormat.getValue(),
 					dl.getName(), dl.getMetadata().getCoverPicture(), exportConfiguration,
 					exportConfiguration.getExportFontConfiguration(), "2.0_beta",dl.getType());
 			InputStream htmlContent = exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH,
