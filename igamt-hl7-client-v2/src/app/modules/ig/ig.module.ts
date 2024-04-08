@@ -41,17 +41,16 @@ import { IgListService } from './services/ig-list.service';
 import { IgService } from './services/ig.service';
 import { SyncEditInterceptor } from './services/sync-edit.interceptor';
 
-
-import 'codemirror/mode/xml/xml';
-import 'codemirror/addon/edit/matchbrackets';
-import 'codemirror/addon/edit/closetag';
-import 'codemirror/addon/selection/active-line';
-import 'codemirror/addon/fold/foldgutter';
-import 'codemirror/addon/fold/brace-fold';
+import 'codemirror/addon/display/placeholder';
 import 'codemirror/addon/edit/closebrackets';
+import 'codemirror/addon/edit/closetag';
 import 'codemirror/addon/edit/matchbrackets';
+import 'codemirror/addon/edit/matchbrackets';
+import 'codemirror/addon/fold/brace-fold';
+import 'codemirror/addon/fold/foldgutter';
 import 'codemirror/addon/fold/xml-fold';
-import 'codemirror/addon/display/placeholder'
+import 'codemirror/addon/selection/active-line';
+import 'codemirror/mode/xml/xml';
 
 @NgModule({
   declarations: [
