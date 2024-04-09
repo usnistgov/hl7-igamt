@@ -58,6 +58,10 @@ public interface CodeSetService {
 
 	CodeSetVersionContent getLatestCodeVersion(String parentId) throws ResourceNotFoundException;
 
+	void deleteCodeSetVersion(String id, String versionId, String username) throws ResourceNotFoundException, ForbiddenOperationException, Exception;
+	
+	
+
 
 
 }

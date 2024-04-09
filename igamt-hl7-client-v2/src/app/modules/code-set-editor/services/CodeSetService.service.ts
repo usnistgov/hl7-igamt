@@ -6,7 +6,7 @@ import { map } from 'rxjs/operators';
 import { CodeSetLoadType } from 'src/app/root-store/code-set-editor/code-set-list/code-set-list.actions';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { LoadPayloadData, LoadResourcesInRepostory } from '../../dam-framework/store';
-import { ICodeSetInfo, ICodeSetListItem, ICodeSetVersionContent } from '../models/code-set.models';
+import { ICodeSetInfo, ICodeSetListItem, ICodeSetVersionContent, ICodeSetVersionInfo } from '../models/code-set.models';
 
 @Injectable({
   providedIn: 'root',
@@ -104,6 +104,10 @@ export class CodeSetServiceService {
 
   updateViewers(viewers: string[], id: string): Observable<Message<string>> {
     return this.http.post<Message<string>>(this.CODE_SET_END_POINT + id + '/updateViewers', viewers).pipe();
+  }
+
+  deleteCodeSetVersion(version: any): Observable<Message<string>> {
+    return this.http.delete<Message<string>>(this.CODE_SET_END_POINT + version.parentId + this.CODE_SET_VERSION_END_POINT + version.id);
   }
 
 }

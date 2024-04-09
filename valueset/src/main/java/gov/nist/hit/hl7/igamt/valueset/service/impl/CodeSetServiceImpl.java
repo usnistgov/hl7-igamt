@@ -461,5 +461,22 @@ public class CodeSetServiceImpl implements CodeSetService {
 		return ret;
 	}
 
+	@Override
+	public void deleteCodeSetVersion(String id, String versionId, String username) throws Exception {
+		CodeSet codeSet = this.codeSetRepo.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESET));
+		
+		CodeSetVersion codeSetVersion =	this.codeSetVersionRepo.findById(versionId).orElseThrow(() -> new ResourceNotFoundException(versionId, Type.CODESETVERSION));
+		
+		if( codeSetVersion.getId().equals(codeSet.getLatest())) {
+			throw new Exception(" Cannot delete Default version");
+			
+		}
+		codeSet.getCodeSetVersions().removeIf(x-> x.getId().equals(codeSetVersion.getId()));
+		this.codeSetRepo.save(codeSet);
+		this.codeSetVersionRepo.deleteById(versionId);
+		
+	}
+
 	
 }

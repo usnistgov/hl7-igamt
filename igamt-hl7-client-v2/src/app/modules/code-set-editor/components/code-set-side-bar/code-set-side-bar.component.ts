@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { map } from 'jquery';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { flatMap, tap } from 'rxjs/operators';
+import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { selectAllCodeSetVersions, selectCodeSetId } from 'src/app/root-store/code-set-editor/code-set-edit/code-set-edit.selectors';
 import { ICodeSetInfo, ICodeSetVersionInfo } from '../../models/code-set.models';
@@ -42,6 +42,27 @@ export class CodeSetSideBarComponent implements OnInit {
         });
       }),
     );
+  }
+
+  deleteCodeSetVersion(codeSetVersion: ICodeSetVersionInfo ) {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        action: 'Delete Code Set Version',
+        question: 'Are you sure you want to Delete this Code Set Version  ' + codeSetVersion.version + '?',
+      },
+    }).afterClosed().pipe(
+      flatMap((answer) => {
+        if (answer) {
+          return this.codeSetService.deleteCodeSetVersion(codeSetVersion).pipe(
+            flatMap((message) => {
+              this.store.dispatch(this.messageService.messageToAction(message));
+              return this.updateCodeSetState(codeSetVersion.parentId);
+            }),
+          );
+        }
+        return of();
+      }),
+    ).subscribe();
   }
 
   ngOnInit() {

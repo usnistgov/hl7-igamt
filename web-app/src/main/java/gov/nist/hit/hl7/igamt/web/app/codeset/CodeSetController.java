@@ -307,5 +307,19 @@ public class CodeSetController {
 		return new ResponseMessage<String>(Status.SUCCESS, "", "Code Set Published Successfully", published.getId(), false,
 				published.getDateUpdated(), published.getId());
 	}
+	
+	@RequestMapping(value = "/api/code-set/{id}/code-set-version/{versionId}", method = RequestMethod.DELETE, produces = { "application/json" })
+	@ResponseBody
+	public ResponseMessage<String> deleteCodeSetVersion(
+			Authentication authentication,
+			@PathVariable("id") String id,
+			@PathVariable("versionId") String versionId
+	) throws Exception  {
+		String username = authentication.getPrincipal().toString();
+		codeSetService.deleteCodeSetVersion(id, versionId, username);
+		return new ResponseMessage<>(ResponseMessage.Status.SUCCESS, "Code Set  Deleted Successfully",  id, new Date());
+
+	}
+
 
 }
