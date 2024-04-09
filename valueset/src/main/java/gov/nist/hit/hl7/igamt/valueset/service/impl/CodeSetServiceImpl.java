@@ -445,5 +445,21 @@ public class CodeSetServiceImpl implements CodeSetService {
 	}
 	
 	
+	@Override
+	public CodeSetVersionContent getLatestCodeVersion(String parentId) throws ResourceNotFoundException {
+		
+		CodeSet codeSet = this.codeSetRepo.findById(parentId)
+				.orElseThrow(() -> new ResourceNotFoundException(parentId, Type.CODESET));
+		
+		CodeSetVersion codeSetVersion =	this.codeSetVersionRepo.findById(codeSet.getLatest()).orElseThrow(() -> new ResourceNotFoundException(codeSet.getLatest(), Type.CODESETVERSION));
+		
+		CodeSetVersionContent ret = new CodeSetVersionContent();
+		this.setVersionInfo(codeSetVersion, ret,  parentId);
+		ret.setParentName(codeSet.getName());
+
+		ret.setCodes(codeSetVersion.getCodes());
+		return ret;
+	}
+
 	
 }

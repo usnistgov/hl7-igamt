@@ -1279,7 +1279,7 @@ public class IGDocumentController extends BaseController {
 	"application/json" })
 	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
 	public @ResponseBody Valueset getValueSetInIG(@PathVariable("id") String id ,@PathVariable("vsId") String vsId, Authentication authentication)
-			throws IGNotFoundException, ValuesetNotFoundException {
+			throws IGNotFoundException, ValuesetNotFoundException, ResourceNotFoundException {
 		return this.igService.getValueSetInIg(id, vsId);	
 	}
 
@@ -1287,7 +1287,7 @@ public class IGDocumentController extends BaseController {
 	"application/json" })
 	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
 	public @ResponseBody Set<Valueset> getValueSetInIGAsResource(@PathVariable("id") String id ,@PathVariable("vsId") String vsId, Authentication authentication)
-			throws IGNotFoundException, ValuesetNotFoundException {
+			throws IGNotFoundException, ValuesetNotFoundException, ResourceNotFoundException {
 		HashSet<Valueset> ret = new HashSet<Valueset>();
 		Valueset vs = this.igService.getValueSetInIg(id, vsId);
 		ret.add(vs);

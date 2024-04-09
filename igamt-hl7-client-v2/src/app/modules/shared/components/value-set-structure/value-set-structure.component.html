@@ -1,233 +1,298 @@
 <form #form="ngForm">
-
   <table class="table table-bordered table-striped">
     <tr>
-        <th style="text-align: center;">
-          <strong>Extensibility</strong>
-        </th>
-        <th style="text-align: center;">Stability</th>
-        <th style="text-align: center;">Content Definition</th>
+      <th style="text-align: center;">
+        <strong>Extensibility</strong>
+      </th>
+      <th style="text-align: center;">Stability</th>
+      <th style="text-align: center;">Content Definition</th>
     </tr>
     <tr>
-        <td>
-          <span *ngIf="viewOnly">
-            {{valueSet.extensibility}}
-          </span>
-          <p-dropdown
-            *ngIf="!viewOnly"
-            [(ngModel)]="valueSet.extensibility"
-            (ngModelChange)="updateExtensibility($event)"
-            [options]="extensibilityOptions"
-            id="extensibility"
-            name="extensibility"
-            [style]="{'width':'100%'}">
-          </p-dropdown>
-        </td>
-        <td>
-          <p-dropdown
-            *ngIf="!viewOnly"
-            [(ngModel)]="valueSet.stability"
-            (ngModelChange)="updateStability($event)"
-            [options]="stabilityOptionsOptions"
-            id="stability"
-            name="stability"
-            [style]="{'width':'100%'}">
-          </p-dropdown>
-          <span *ngIf="viewOnly">
-            {{valueSet.stability}}
-          </span>
-        </td>
-        <td>
-          <span *ngIf="viewOnly">
-            {{valueSet.contentDefinition}}
-          </span>
-          <p-dropdown
-            *ngIf="!viewOnly"
-            [(ngModel)]="valueSet.contentDefinition"
-            (ngModelChange)="updateContentDefinition($event)"
-            [options]="contentDefinitionOptions"
-            id="contentDef"
-            name="contentDef"
-            [style]="{'width':'100%'}">
-          </p-dropdown>
-        </td>
+      <td>
+        <span *ngIf="viewOnly">
+          {{valueSet.extensibility}}
+        </span>
+        <p-dropdown *ngIf="!viewOnly" [(ngModel)]="valueSet.extensibility" (ngModelChange)="updateExtensibility($event)"
+          [options]="extensibilityOptions" id="extensibility" name="extensibility" [style]="{'width':'100%'}">
+        </p-dropdown>
+      </td>
+      <td>
+        <p-dropdown *ngIf="!viewOnly" [(ngModel)]="valueSet.stability" (ngModelChange)="updateStability($event)"
+          [options]="stabilityOptionsOptions" id="stability" name="stability" [style]="{'width':'100%'}">
+        </p-dropdown>
+        <span *ngIf="viewOnly">
+          {{valueSet.stability}}
+        </span>
+      </td>
+      <td>
+        <span *ngIf="viewOnly">
+          {{valueSet.contentDefinition}}
+        </span>
+        <p-dropdown *ngIf="!viewOnly" [(ngModel)]="valueSet.contentDefinition"
+          (ngModelChange)="updateContentDefinition($event)" [options]="contentDefinitionOptions" id="contentDef"
+          name="contentDef" [style]="{'width':'100%'}">
+        </p-dropdown>
+      </td>
     </tr>
-</table>
-  <hr/>
-  <div style="margin-top:5px" >
-      <div *ngIf="valueSet.sourceType === 'INTERNAL'">
-        <div  class="codes-options">
-          <div class="csv-actions">
-            <div style="display: flex; gap: 4px;">
-              <div *ngIf="!viewOnly">
-                <p-tieredMenu #menu [model]="importMenuItems" [popup]="true"></p-tieredMenu>
-                <button class="btn btn-secondary btn-sm dropdown-toggle" (click)="menu.toggle($event)">
-                  <i class="fa fa-upload"></i>
-                  Import Codes
-                </button>
-              </div>
-              <button class="btn btn-secondary btn-sm" (click)="exportCSV()">
-                <i class="fa fa-download"></i>
-                Export Codes (CSV)
-              </button>
-              <button class="btn btn-info btn-sm" (click)="linkToCodeSet()">
-                <i class="fa fa-link" aria-hidden="true"></i>
-                Link To CodeSet
+  </table>
+  <hr />
+  <div style="margin-top:5px">
+    <div *ngIf="valueSet.sourceType === 'INTERNAL'">
+      <div class="codes-options">
+        <div class="csv-actions">
+          <div style="display: flex; gap: 4px;">
+            <div *ngIf="!viewOnly">
+              <p-tieredMenu #menu [model]="importMenuItems" [popup]="true"></p-tieredMenu>
+              <button class="btn btn-secondary btn-sm dropdown-toggle" (click)="menu.toggle($event)">
+                <i class="fa fa-upload"></i>
+                Import Codes
               </button>
             </div>
-            <div>
-              <button (click)="deleteCodes()" [disabled]="!selectedCodes.length" *ngIf="!viewOnly" class="btn btn-sm btn-danger"
-                style="margin-right:5px;"
-                type="button">
-                <i class="fa fa-trash"></i> Delete Selected
-                <span class="badge badge-info">{{selectedCodes?.length }}</span>
-              </button>
-              <button (click)="addCode()" class="btn btn-sm btn-primary" type="button" *ngIf="!viewOnly"><i class="fa fa-plus"></i> Add Code</button>
-            </div>
-        </div>
-      </div>
-
-        <p-table #dt1 [(selection)]="selectedCodes" [columns]="selectedColumns" [reorderableColumns]="true" sortField="value"
-                 [resizableColumns]="false" [value]="valueSet.codes" selectionMode="checkbox" [paginator]="true" [rows]="50">
-          <ng-template pTemplate="caption">
-            <div class="codes-toolbar">
-              <div class="column-filter">
-                <p-multiSelect [(ngModel)]="selectedColumns" [options]="cols" [style]="{minWidth: '200px'}"
-                               defaultLabel="Choose Columns" id="columns"
-                               name="columns" optionLabel="header"
-                               selectedItemsLabel="{0} columns selected"></p-multiSelect>
-              </div>
-              <div *ngIf="!viewOnly" class="selected-codes-options" >
-
-                <div class="apply-usages" style="margin-right: 5px; margin-left: 10px;">
-                  <span style="margin-right: 5px">
-                   <strong> apply usage</strong>
-                   </span>
-
-                  <button (click)="applyUsage('P')" [disabled]="!selectedCodes.length"  class="btn btn-sm btn-primary" style="height: 32px; margin-right: 5px;"> P</button>
-                  <button (click)="applyUsage('R')"  [disabled]="!selectedCodes.length" class="btn btn-sm btn-primary" style="height: 32px ; margin-right: 5px;"> R</button>
-                  <button (click)="applyUsage('E')" [disabled]="!selectedCodes.length"  class="btn btn-sm btn-primary" style="height: 32px;"> E</button>
-                </div>
-
-                <div>
-                  <p-dropdown (onChange)="applyCodeSystem($event)" [editable]="true"  [disabled]="!selectedCodes.length"  [options]="codeSystemOptions"
-                              placeholder="Code System"></p-dropdown>
-                </div>
-              </div>
-              </div>
-          </ng-template>
-          <ng-template let-columns pTemplate="header">
-            <tr>
-              <th *ngIf="!viewOnly" style="width: 3em">
-                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-              </th>
-              <th *ngFor="let col of columns" [pSortableColumn]="col.field" pReorderableColumn pResizableColumn>
-                {{col.header}}
-                <p-sortIcon [field]="col.field"></p-sortIcon>
-              </th>
-            </tr>
-            <tr>
-              <th *ngIf="!viewOnly" style="background:#c8c8c8;">
-                <i class="fa fa-filter" style="width: 100%"></i>
-              </th>
-              <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" style="background:#c8c8c8;">
-                <input (input)="dt1.filter($event.target.value, col.field, col.filterMatchMode)"
-                       [placeholder]="' Search by '+col.header" [value]="dt1.filters[col.field]?.value" pInputText
-                       type="text">
-              </th>
-            </tr>
-          </ng-template>
-          <ng-template let-columns="columns" let-index="rowIndex" let-rowData pTemplate="body">
-            <tr #anchor *ngIf="!viewOnly" [pSelectableRow]="rowData"  [ngClass]="{'pattern-row': rowData.hasPattern}">
-              <td *ngIf="!viewOnly" style="width: 3em">
-                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
-              </td>
-              <td *ngFor="let col of columns" [ngSwitch]="col.field">
-                <div #anchor *ngSwitchCase="'usage'">
-                  <p-dropdown (onChange)="changeCodes()" [(ngModel)]="rowData.usage" [appendTo]="anchor"
-                              [id]="'usage'+rowData.id" [name]="'usage'+rowData.id" [options]="codeUsageOptions"
-                              placeholder="Usage" [style]="{'minWidth':'90%'}"></p-dropdown>
-
-                </div>
-
-                <div #anchor *ngSwitchCase="'pattern'" style="display: flex; flex-direction: row; justify-content: space-between">
-
-                 {{rowData.pattern}}
-                </div>
-                <div #anchor *ngSwitchCase="'codeSystem'">
-                  <div *ngIf="!editMap[rowData.id]" class="input-group" class="code-system-column">
-                    <div class="dropdown-column">
-                      <p-dropdown [(ngModel)]="rowData.codeSystem" [appendTo]="anchor"
-                                  [id]="'codeSystem'+rowData.id" [name]="'codeSystem'+rowData.id"
-                                  [options]="codeSystemOptions" [readonly]="viewOnly"
-                                  [style]="{'minWidth': '100%', 'maxWidth':'100%'}"
-                                  autoZIndex="true"
-                                  placeholder="select code system" (ngModelChange)="updateAttribute('CODES', valueSet.codes)"></p-dropdown>
-                    </div>
-                    <div class="dropdown-button-column">
-                      <button (click)="toggleEdit(rowData.id)" class="btn btn-sm btn-primary">
-                        <i class="fa fa-plus"></i></button>
-                    </div>
-                  </div>
-                  <div *ngIf="editMap[rowData.id]" class="input-group">
-                    <input [(ngModel)]="temp" aria-describedby="button-addon2" class="form-control" id="tempCodeSystem"
-                           name="tempCodeSystem" placeholder="value" type="text">
-                    <div class="input-group-append">
-                      <button (click)="addCodeSystemFormCode(rowData)" [disabled]="!temp"
-                              [id]="'button-addon'+ rowData.id" class="btn btn-outline-secondary" type="button"><i
-                        class="fa fa-check" style="color: green;"></i></button>
-                      <button (click)="toggleEdit(rowData.id)" *ngIf="editMap[rowData.id] && !viewOnly"
-                              class="btn btn-sm btn-danger" style="height: 38px;">
-                        <i class="fa fa-trash"></i></button>
-                    </div>
-                  </div>
-                </div>
-                <div *ngSwitchCase="'description'">
-                  <input (change)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.description"
-                         [id]="'description'+rowData.id"
-                         [name]="'description'+rowData.id" class="form-control"
-                         placeholder="Description"
-                         type="text">
-                </div>
-                <div *ngSwitchCase="'value'">
-                  <input (change)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.value"
-                         [id]="'value'+rowData.id" [name]="'value'+rowData.id"
-                         class="form-control" placeholder="Value" required
-                         type="text">
-                </div>
-                <div *ngSwitchCase="'comments'">
-                  <input (change)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.comments"
-                         [id]="'comments'+rowData.id"
-                         [name]="'comments'+rowData.id" class="form-control" placeholder="Comments"
-                         type="text">
-                </div>
-              </td>
-            </tr>
-
-            <tr *ngIf="viewOnly" [pSelectableRow]="rowData" [ngClass]="{'pattern-row': rowData.hasPattern}" >
-              <td *ngIf="!viewOnly" style="width: 3em">
-                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
-              </td>
-              <td *ngFor="let col of columns" [ngSwitch]="col.field">
-                {{rowData[col.field]}}
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </div>
-      <div *ngIf="valueSet.sourceType === 'EXTERNAL' ">
-        <div *ngIf="viewOnly">
-          <label  class="form-label-lg">URL: </label>
-          <a [href]="valueSet.url" target="_blank">{{valueSet.url}}</a>
-        </div>
-        <div class="form-group" *ngIf="!viewOnly">
-          <label  class="form-label-lg"> URL</label>
-          <input required id="url" name="url" type="url" (ngModelChange)="updateURl($event)"  placeholder="enter a valid url" [(ngModel)]="valueSet.url" class="form-control" width="100%"/>
-          <div *ngIf="form.controls['url'] && form.controls['url'].invalid" class="input-form-invalid-feedback" style="margin-left: 10px;">
-            <span style="color:red"> Enter a valid URL</span>
+            <button class="btn btn-secondary btn-sm" (click)="exportCSV()">
+              <i class="fa fa-download"></i>
+              Export Codes (CSV)
+            </button>
+            <button class="btn btn-info btn-sm" (click)="linkToCodeSet()">
+              <i class="fa fa-link" aria-hidden="true"></i>
+              Link To CodeSet
+            </button>
+          </div>
+          <div>
+            <button (click)="deleteCodes()" [disabled]="!selectedCodes.length" *ngIf="!viewOnly"
+              class="btn btn-sm btn-danger" style="margin-right:5px;" type="button">
+              <i class="fa fa-trash"></i> Delete Selected
+              <span class="badge badge-info">{{selectedCodes?.length }}</span>
+            </button>
+            <button (click)="addCode()" class="btn btn-sm btn-primary" type="button" *ngIf="!viewOnly"><i
+                class="fa fa-plus"></i> Add Code</button>
           </div>
         </div>
-        <app-external-vs-codes-fetch [URL]="valueSet.url" ></app-external-vs-codes-fetch>
       </div>
+
+      <p-table #dt1 [(selection)]="selectedCodes" [columns]="selectedColumns" [reorderableColumns]="true"
+        sortField="value" [resizableColumns]="false" [value]="valueSet.codes" selectionMode="checkbox"
+        [paginator]="true" [rows]="50">
+        <ng-template pTemplate="caption">
+          <div class="codes-toolbar">
+            <div class="column-filter">
+              <p-multiSelect [(ngModel)]="selectedColumns" [options]="cols" [style]="{minWidth: '200px'}"
+                defaultLabel="Choose Columns" id="columns" name="columns" optionLabel="header"
+                selectedItemsLabel="{0} columns selected"></p-multiSelect>
+            </div>
+            <div *ngIf="!viewOnly" class="selected-codes-options">
+
+              <div class="apply-usages" style="margin-right: 5px; margin-left: 10px;">
+                <span style="margin-right: 5px">
+                  <strong> apply usage</strong>
+                </span>
+
+                <button (click)="applyUsage('P')" [disabled]="!selectedCodes.length" class="btn btn-sm btn-primary"
+                  style="height: 32px; margin-right: 5px;"> P</button>
+                <button (click)="applyUsage('R')" [disabled]="!selectedCodes.length" class="btn btn-sm btn-primary"
+                  style="height: 32px ; margin-right: 5px;"> R</button>
+                <button (click)="applyUsage('E')" [disabled]="!selectedCodes.length" class="btn btn-sm btn-primary"
+                  style="height: 32px;"> E</button>
+              </div>
+
+              <div>
+                <p-dropdown (onChange)="applyCodeSystem($event)" [editable]="true" [disabled]="!selectedCodes.length"
+                  [options]="codeSystemOptions" placeholder="Code System"></p-dropdown>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template let-columns pTemplate="header">
+          <tr>
+            <th *ngIf="!viewOnly" style="width: 3em">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field" pReorderableColumn pResizableColumn>
+              {{col.header}}
+              <p-sortIcon [field]="col.field"></p-sortIcon>
+            </th>
+          </tr>
+          <tr>
+            <th *ngIf="!viewOnly" style="background:#c8c8c8;">
+              <i class="fa fa-filter" style="width: 100%"></i>
+            </th>
+            <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" style="background:#c8c8c8;">
+              <input (input)="dt1.filter($event.target.value, col.field, col.filterMatchMode)"
+                [placeholder]="' Search by '+col.header" [value]="dt1.filters[col.field]?.value" pInputText type="text">
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template let-columns="columns" let-index="rowIndex" let-rowData pTemplate="body">
+          <tr #anchor *ngIf="!viewOnly" [pSelectableRow]="rowData" [ngClass]="{'pattern-row': rowData.hasPattern}">
+            <td *ngIf="!viewOnly" style="width: 3em">
+              <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+            </td>
+            <td *ngFor="let col of columns" [ngSwitch]="col.field">
+              <div #anchor *ngSwitchCase="'usage'">
+                <p-dropdown (onChange)="changeCodes()" [(ngModel)]="rowData.usage" [appendTo]="anchor"
+                  [id]="'usage'+rowData.id" [name]="'usage'+rowData.id" [options]="codeUsageOptions" placeholder="Usage"
+                  [style]="{'minWidth':'90%'}"></p-dropdown>
+
+              </div>
+
+              <div #anchor *ngSwitchCase="'pattern'"
+                style="display: flex; flex-direction: row; justify-content: space-between">
+
+                {{rowData.pattern}}
+              </div>
+              <div #anchor *ngSwitchCase="'codeSystem'">
+                <div *ngIf="!editMap[rowData.id]" class="input-group" class="code-system-column">
+                  <div class="dropdown-column">
+                    <p-dropdown [(ngModel)]="rowData.codeSystem" [appendTo]="anchor" [id]="'codeSystem'+rowData.id"
+                      [name]="'codeSystem'+rowData.id" [options]="codeSystemOptions" [readonly]="viewOnly"
+                      [style]="{'minWidth': '100%', 'maxWidth':'100%'}" autoZIndex="true"
+                      placeholder="select code system"
+                      (ngModelChange)="updateAttribute('CODES', valueSet.codes)"></p-dropdown>
+                  </div>
+                  <div class="dropdown-button-column">
+                    <button (click)="toggleEdit(rowData.id)" class="btn btn-sm btn-primary">
+                      <i class="fa fa-plus"></i></button>
+                  </div>
+                </div>
+                <div *ngIf="editMap[rowData.id]" class="input-group">
+                  <input [(ngModel)]="temp" aria-describedby="button-addon2" class="form-control" id="tempCodeSystem"
+                    name="tempCodeSystem" placeholder="value" type="text">
+                  <div class="input-group-append">
+                    <button (click)="addCodeSystemFormCode(rowData)" [disabled]="!temp"
+                      [id]="'button-addon'+ rowData.id" class="btn btn-outline-secondary" type="button"><i
+                        class="fa fa-check" style="color: green;"></i></button>
+                    <button (click)="toggleEdit(rowData.id)" *ngIf="editMap[rowData.id] && !viewOnly"
+                      class="btn btn-sm btn-danger" style="height: 38px;">
+                      <i class="fa fa-trash"></i></button>
+                  </div>
+                </div>
+              </div>
+              <div *ngSwitchCase="'description'">
+                <input (change)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.description"
+                  [id]="'description'+rowData.id" [name]="'description'+rowData.id" class="form-control"
+                  placeholder="Description" type="text">
+              </div>
+              <div *ngSwitchCase="'value'">
+                <input (change)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.value" [id]="'value'+rowData.id"
+                  [name]="'value'+rowData.id" class="form-control" placeholder="Value" required type="text">
+              </div>
+              <div *ngSwitchCase="'comments'">
+                <input (change)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.comments"
+                  [id]="'comments'+rowData.id" [name]="'comments'+rowData.id" class="form-control"
+                  placeholder="Comments" type="text">
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="viewOnly" [pSelectableRow]="rowData" [ngClass]="{'pattern-row': rowData.hasPattern}">
+            <td *ngIf="!viewOnly" style="width: 3em">
+              <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+            </td>
+            <td *ngFor="let col of columns" [ngSwitch]="col.field">
+              {{rowData[col.field]}}
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+    <div *ngIf="valueSet.sourceType === 'EXTERNAL'">
+      <div *ngIf="viewOnly">
+        <label class="form-label-lg">URL: </label>
+        <a [href]="valueSet.url" target="_blank">{{valueSet.url}}</a>
+      </div>
+      <div class="form-group" *ngIf="!viewOnly">
+        <label class="form-label-lg"> URL</label>
+        <input required id="url" name="url" type="url" (ngModelChange)="updateURl($event)"
+          placeholder="enter a valid url" [(ngModel)]="valueSet.url" class="form-control" width="100%" />
+        <div *ngIf="form.controls['url'] && form.controls['url'].invalid" class="input-form-invalid-feedback"
+          style="margin-left: 10px;">
+          <span style="color:red"> Enter a valid URL</span>
+        </div>
+      </div>
+      <app-external-vs-codes-fetch [URL]="valueSet.url"></app-external-vs-codes-fetch>
+    </div>
+
+
+    <div *ngIf="valueSet.sourceType === 'INTERNAL_TRACKED'">
+
+
+
+      <table class="table table-sm table-bordered table-stripped" style="background-color: white;" *ngIf="valueSet.codeSetLink">
+        <tbody>
+            <tr>
+                <th>Code Set</th>
+                <td>{{ valueSet.codeSetLink.parentName }}</td>
+            </tr>
+            <tr>
+              <th>Version <span *ngIf="valueSet.codeSetLink.latest" class="badge badge-primary">latest</span></th>
+              <td>{{ valueSet.codeSetLink?.version }} <span style="color: gray; font-size: 0.8em;"> - committed on {{ valueSet.codeSetLink.commitDate | date:'medium' }}</span></td>
+          </tr>
+        </tbody>
+    </table>
+
+
+
+      <div class="codes-options">
+        <div class="csv-actions">
+          <div style="display: flex; gap: 4px;">
+            <button class="btn btn-secondary btn-sm" (click)="exportCSV()">
+              <i class="fa fa-download"></i>
+              Export Codes (CSV)
+            </button>
+            <button class="btn btn-info btn-sm" (click)="linkToCodeSet()">
+              <i class="fa fa-link" aria-hidden="true"></i>
+              Link To CodeSet
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <p-table #dt1 [(selection)]="selectedCodes" [columns]="selectedColumns" [reorderableColumns]="true"
+        sortField="value" [resizableColumns]="false" [value]="valueSet.codes" selectionMode="checkbox"
+        [paginator]="true" [rows]="50">
+        <ng-template let-columns pTemplate="header">
+          <tr>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field" pReorderableColumn pResizableColumn>
+              {{col.header}}
+              <p-sortIcon [field]="col.field"></p-sortIcon>
+            </th>
+          </tr>
+          <tr>
+            <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" style="background:#c8c8c8;">
+              <input (input)="dt1.filter($event.target.value, col.field, col.filterMatchMode)"
+                [placeholder]="' Search by '+col.header" [value]="dt1.filters[col.field]?.value" pInputText type="text">
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template let-columns="columns" let-index="rowIndex" let-rowData pTemplate="body">
+          <tr #anchor *ngIf="!viewOnly" [pSelectableRow]="rowData">
+            <td *ngFor="let col of columns" [ngSwitch]="col.field">
+              <div #anchor *ngSwitchCase="'usage'">
+                {{rowData.usage}}
+
+              </div>
+
+              <div #anchor *ngSwitchCase="'pattern'"
+                style="display: flex; flex-direction: row; justify-content: space-between">
+
+                {{rowData.pattern}}
+              </div>
+              <div #anchor *ngSwitchCase="'codeSystem'">
+                {{rowData.codeSystem}}
+              </div>
+              <div *ngSwitchCase="'description'">
+                {{rowData.description}}
+              </div>
+              <div *ngSwitchCase="'value'">
+                {{rowData.value}}
+              </div>
+              <div *ngSwitchCase="'comments'">
+                {{rowData.comments}}
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
   </div>
 </form>

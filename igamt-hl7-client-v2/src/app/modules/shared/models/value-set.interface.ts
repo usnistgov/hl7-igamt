@@ -1,3 +1,4 @@
+import { ICodeSetReference } from '../../code-set-editor/models/code-set.models';
 import {ContentDefinition} from '../constants/content-definition.enum';
 import {Extensibility} from '../constants/extensibility.enum';
 import {Stability} from '../constants/stability.enum';
@@ -19,6 +20,7 @@ export interface ICodes {
 }
 
 export interface IValueSet extends IResource {
+  codeSetReference?: ICodeSetReference;
   codes: ICodes[];
   codeSystems?: string[];
   includeCodes?: boolean;
@@ -32,5 +34,13 @@ export interface IValueSet extends IResource {
   intensionalComment?: string;
   oid?: string;
   changeLogs?: any[];
+  codeSetLink?: ILinkedCodeSetInfo;
 
+}
+export interface ILinkedCodeSetInfo {
+  version?: string;
+	parentName?: string;
+	commitDate?: string ;
+	latest?: boolean;
+	latestFetched?: string;
 }

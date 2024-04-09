@@ -35,6 +35,7 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
  */
 @Document(collection = "valueset")
 public class Valueset extends Resource {
+	
 	private String bindingIdentifier;
 	private String oid;
 	private String intensionalComment;
@@ -54,8 +55,13 @@ public class Valueset extends Resource {
 	
 	private CodeType codeType;
 	private Date snapshotDate;
+	
 	private CodeSetReference codeSetReference;
 	
+	@org.springframework.data.annotation.Transient
+	private CodeSetLinkInfo codeSetLink;
+	
+
 	public boolean isIncludeCodes() {
 		return includeCodes;
 	}
@@ -238,8 +244,22 @@ public class Valueset extends Resource {
 
 	public void setSnapshotDate(Date snapshotDate) {
 		this.snapshotDate = snapshotDate;
+	}
+
+	public CodeSetReference getCodeSetReference() {
+		return codeSetReference;
+	}
+
+	public void setCodeSetReference(CodeSetReference codeSetReference) {
+		this.codeSetReference = codeSetReference;
 	};
 	
-	
+	public CodeSetLinkInfo getCodeSetLink() {
+		return codeSetLink;
+	}
+
+	public void setCodeSetLink(CodeSetLinkInfo codeSetLink) {
+		this.codeSetLink = codeSetLink;
+	}
 
 }

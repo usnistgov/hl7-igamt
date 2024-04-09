@@ -108,12 +108,12 @@ export class CodeSetBrowseDialogComponent implements OnInit {
     } else if (this.browser.scope.workspaces) {
       this.getTreeByScope(this.scope = BrowserScope.WORKSPACES, this.browser.includeVersions);
     }
-    this.selectionMode = data.selectionMode;
+    this.selectionMode = data.selectionMode || 'multiple';
   }
 
   track = (n) => n.key;
 
-  getTreeByScope(scope: BrowserScope, includeVersions: boolean) {
+  getTreeByScope(scope: BrowserScope, includeVersions: boolean = false) {
     this.scope = scope;
 
     this.http.get<IBrowserTreeNode[]>('/api/browser/codesets/' + scope, { params: { includeVersions: includeVersions.toString() } }).pipe(

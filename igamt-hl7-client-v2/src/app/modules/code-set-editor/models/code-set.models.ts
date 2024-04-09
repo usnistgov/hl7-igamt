@@ -27,6 +27,7 @@ export interface  ICodeSetVersionInfo {
   dateCommitted?: string;
   deprecated?: boolean;
   latest?: boolean;
+  parentName?: string;
 
 }
 
@@ -38,6 +39,16 @@ export interface ICodeSetActive {
 export interface ICodeSetVersionContent extends ICodeSetVersionInfo {
   codes: ICodes[];
   codeSystems: string[];
+  codeSetReference: ICodeSetReference;
+}
+
+export interface ICodeSetReference extends ICodeSetVersionInfo {
+  id: string;
+  latestId?: string;
+  latestVersion?: string;
+  latestCommitted?: string;
+  url?: string;
+  parentName?: string;
 }
 
 export class ICodeSetListItem extends DiscoverableListItem {

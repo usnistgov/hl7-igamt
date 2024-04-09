@@ -3,14 +3,16 @@ import { MatDialog } from '@angular/material';
 import { Guid } from 'guid-typescript';
 import { SelectItem } from 'primeng/api';
 import { map } from 'rxjs/operators';
+import { ICodeSetInfo } from 'src/app/modules/code-set-editor/models/code-set.models';
 import { CodeSetServiceService } from 'src/app/modules/code-set-editor/services/CodeSetService.service';
 import { Type } from '../../constants/type.enum';
 import { ChangeType, IChange, PropertyType } from '../../models/save-change';
-import { ICodes, IValueSet } from '../../models/value-set.interface';
+import { ICodes, ILinkedCodeSetInfo, IValueSet } from '../../models/value-set.interface';
 import { ICodeSetQueryResult } from '../../services/external-codeset.service';
 import { BrowseType, CodeSetBrowseDialogComponent, IBrowserTreeNode } from '../codeset-browse-dialog/codeset-browse-dialog.component';
 import { FetchCodesDialogComponent } from '../fetch-codes-dialog/fetch-codes-dialog.component';
 import { ImportCodeCSVComponent } from '../import-code-csv/import-code-csv.component';
+import { SourceType } from './../../models/adding-info';
 
 @Component({
   selector: 'app-value-set-structure',
@@ -284,7 +286,33 @@ export class ValueSetStructureComponent implements OnInit {
       },
     }).afterClosed().pipe(
       map((browserResult: IBrowserTreeNode) => {
-        // TODO
+        let codeSetId: string;
+        let codeSetVersionId: string;
+
+        if (browserResult.data.type === Type.CODESET) {
+          codeSetId = browserResult.data.id;
+          codeSetVersionId = browserResult.data.latestId;
+        }
+        if (codeSetId && codeSetVersionId) {
+          this.codeSetService.getCodeSetVersionContent(codeSetId, codeSetVersionId).pipe(
+            map((content) => {
+              console.log(content);
+              this.valueSet.codes = content.codes;
+              this.valueSet.codeSetReference = content.codeSetReference;
+              this.valueSet.sourceType = SourceType.INTERNAL_TRACKED;
+
+              const codeSetLink: ILinkedCodeSetInfo = {};
+              codeSetLink.commitDate = content.dateCommitted;
+              codeSetLink.latest = true;
+              codeSetLink.parentName = content.parentName;
+              codeSetLink.version = content.version;
+              codeSetLink.latestFetched = new Date().toDateString();
+
+              this.valueSet.codeSetLink = codeSetLink;
+              this.updateAttribute(PropertyType.CODESETREFERENCE, { codeSetId, versionId: codeSetVersionId });
+            }),
+          ).subscribe();
+        }
       }),
     ).subscribe();
   }

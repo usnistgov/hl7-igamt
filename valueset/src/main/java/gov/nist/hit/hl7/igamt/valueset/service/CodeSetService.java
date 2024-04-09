@@ -56,6 +56,8 @@ public interface CodeSetService {
 	
 	CodeSet clone(String id, String username) throws ForbiddenOperationException, ResourceNotFoundException;
 
+	CodeSetVersionContent getLatestCodeVersion(String parentId) throws ResourceNotFoundException;
+
 
 
 }

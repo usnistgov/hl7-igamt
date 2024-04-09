@@ -19,7 +19,7 @@ export class CodeSetTableComponent implements OnInit {
   @Input()
   set codeSetVersion(codeSetVersion: ICodeSetVersionContent) {
     this._codeSetVersion = codeSetVersion;
-    this.codeSystems = this.getUniqueCodeSystems(this._codeSetVersion.codes?this._codeSetVersion.codes : [] );
+    this.codeSystems = this.getUniqueCodeSystems(this._codeSetVersion.codes ? this._codeSetVersion.codes : [] );
     this._codeSetVersion.codeSystems = this.codeSystems;
     this.codeSystemOptions = this.getCodeSystemOptions();
     this.selectedCodes  = [];
@@ -176,7 +176,7 @@ export class CodeSetTableComponent implements OnInit {
 
   }
    getUniqueCodeSystems(codes: ICodes[]): string[] {
-    const codeSystems = codes.map(code => code.codeSystem);
+    const codeSystems = codes.map((code) => code.codeSystem);
     const uniqueCodeSystems = new Set(codeSystems);
     return Array.from(uniqueCodeSystems);
   }

@@ -47,6 +47,7 @@ import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintDependencyServic
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
@@ -127,9 +128,12 @@ import gov.nist.hit.hl7.igamt.service.impl.exception.CoConstraintXMLSerializatio
 import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetLinkInfo;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
+import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionContent;
+import gov.nist.hit.hl7.igamt.valueset.service.CodeSetService;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
@@ -221,6 +225,9 @@ public class IgServiceImpl implements IgService {
 
 	@Autowired
 	IgDependencyService igDependencyService;
+	
+	@Autowired
+	CodeSetService codeSetService;
 
 	@Override
 	public Ig findById(String id) {
@@ -843,7 +850,7 @@ public class IgServiceImpl implements IgService {
 	}
 
 	@Override
-	public Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException {
+	public Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException, ResourceNotFoundException {
 		Ig ig = this.findById(id);
 		if (ig == null) {
 			throw new IGNotFoundException(id);
@@ -857,6 +864,23 @@ public class IgServiceImpl implements IgService {
 			vs.setCodes(fhirHandlerService.getValusetCodeForDynamicTable());
 
 		}
+		if(vs.getSourceType().equals(SourceType.INTERNAL_TRACKED)){
+			if(vs.getCodeSetReference() != null && vs.getCodeSetReference().getCodeSetId() != null) {
+				
+				CodeSetVersionContent content = this.codeSetService.getLatestCodeVersion(vs.getCodeSetReference().getCodeSetId());
+				CodeSetLinkInfo link = new CodeSetLinkInfo();
+				link.setLatest(true);
+				link.setCommitDate(content.getDateCommitted());
+				link.setParentName(content.getParentName());
+				link.setVersion(content.getVersion());
+				link.setLatestFetched(new Date());
+				vs.setCodeSetLink(link);
+				vs.setCodes(content.getCodes());
+			}
+			
+		}
+		
+		// TODO Modify PHINVADS LOGIC
 		if (vs.getDomainInfo() != null && vs.getDomainInfo().getScope() != null) {
 			if (vs.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
 				Config conf = this.configService.findOne();

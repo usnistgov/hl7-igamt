@@ -13,6 +13,7 @@ public class CodeSetVersionInfo {
 	private boolean exposted;
 	private String comments;
 	private String parentId;
+	private String parentName;
 	
 	private Date dateCreated;
 	
@@ -84,5 +85,11 @@ public class CodeSetVersionInfo {
 	}
 	public void setDeprecated(boolean deprecated) {
 		this.deprecated = deprecated;
+	}
+	public String getParentName() {
+		return parentName;
+	}
+	public void setParentName(String parentName) {
+		this.parentName = parentName;
 	}
 }

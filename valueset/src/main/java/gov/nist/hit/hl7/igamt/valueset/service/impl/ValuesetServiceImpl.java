@@ -38,11 +38,13 @@ import gov.nist.hit.hl7.igamt.common.base.domain.ContentDefinition;
 import gov.nist.hit.hl7.igamt.common.base.domain.Extensibility;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Stability;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetReference;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.repository.ValuesetRepository;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
@@ -276,6 +278,13 @@ public class ValuesetServiceImpl implements ValuesetService {
             else if (item.getPropertyType().equals(PropertyType.NAME)) {
                 item.setOldPropertyValue(s.getName());
                 s.setName((String) item.getPropertyValue());
+                
+            }else if (item.getPropertyType().equals(PropertyType.CODESETREFERENCE)) {
+            	
+                String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+                CodeSetReference ref = mapper.readValue(jsonInString, CodeSetReference.class);
+                s.setCodeSetReference(ref);
+                s.setSourceType(SourceType.INTERNAL_TRACKED);
             }else if (item.getPropertyType().equals(PropertyType.CHANGEREASON)) {
 
                 String jsonInString = mapper.writeValueAsString(item.getPropertyValue());

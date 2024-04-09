@@ -7,6 +7,7 @@ import {IDomainInfo} from './domain-info.interface';
 export enum SourceType {
   INTERNAL = 'INTERNAL',
   EXTERNAL = 'EXTERNAL',
+  INTERNAL_TRACKED = 'INTERNAL_TRACKED',
 }
 
 export interface ISubstitution {
