@@ -39,8 +39,8 @@ export interface IValueSet extends IResource {
 }
 export interface ILinkedCodeSetInfo {
   version?: string;
-	parentName?: string;
-	commitDate?: string ;
-	latest?: boolean;
-	latestFetched?: string;
+  parentName?: string;
+  commitDate?: string ;
+  latest?: boolean;
+  latestFetched?: string;
 }

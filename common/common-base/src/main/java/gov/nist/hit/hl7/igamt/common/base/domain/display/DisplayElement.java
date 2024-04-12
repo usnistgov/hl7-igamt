@@ -39,6 +39,7 @@ public class DisplayElement {
   private ResourceOrigin resourceOrigin;
   private boolean derived;
   private boolean generated;
+  private SourceType sourceType;
 
   public DisplayElement() {
   }
@@ -249,4 +250,12 @@ public class DisplayElement {
   public void setGenerated(boolean generated) {
     this.generated = generated;
   }
+
+public SourceType getSourceType() {
+	return sourceType;
+}
+
+public void setSourceType(SourceType sourceType) {
+	this.sourceType = sourceType;
+}
 }

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {ResourceOrigin} from '../../constants/resource-origin.enum';
 import {Scope} from '../../constants/scope.enum';
-import { SourceType } from '../../models/adding-info';
+import { SourceType } from './../../models/adding-info';
 
 @Component({
   selector: 'app-scope-badge',
@@ -14,6 +14,7 @@ export class ScopeBadgeComponent implements OnInit {
   @Input() version: string;
   @Input() flavor: boolean;
   @Input() resourceOrigin: ResourceOrigin;
+  @Input() sourceType: SourceType;
 
   constructor() {
   }

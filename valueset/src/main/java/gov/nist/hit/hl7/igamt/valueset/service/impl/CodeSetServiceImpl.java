@@ -470,7 +470,6 @@ public class CodeSetServiceImpl implements CodeSetService {
 		
 		if( codeSetVersion.getId().equals(codeSet.getLatest())) {
 			throw new Exception(" Cannot delete Default version");
-			
 		}
 		codeSet.getCodeSetVersions().removeIf(x-> x.getId().equals(codeSetVersion.getId()));
 		this.codeSetRepo.save(codeSet);

@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,31 +31,14 @@ import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 
-import gov.nist.hit.hl7.igamt.access.active.NotifySave;
-import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
-import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
-import gov.nist.hit.hl7.igamt.common.base.wrappers.AddResourceResponse;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.config.domain.Config;
-import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
-import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
-import gov.nist.hit.hl7.igamt.display.model.PublishingInfo;
-import gov.nist.hit.hl7.igamt.ig.domain.Ig;
-import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
-import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
-import gov.nist.hit.hl7.igamt.ig.exceptions.ImportValueSetException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSet;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetVersion;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.exception.ValuesetException;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeRaw;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetCreateRequest;
@@ -66,14 +48,6 @@ import gov.nist.hit.hl7.igamt.valueset.model.CodeSetListType;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionContent;
 import gov.nist.hit.hl7.igamt.valueset.service.CodeSetService;
 import gov.nist.hit.hl7.igamt.valueset.service.impl.TableCSVGenerator;
-import gov.nist.hit.hl7.igamt.workspace.domain.Workspace;
-import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceForbidden;
-import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceNotFound;
-import gov.nist.hit.hl7.igamt.workspace.model.AddFolderRequest;
-import gov.nist.hit.hl7.igamt.workspace.model.FolderContent;
-import gov.nist.hit.hl7.igamt.workspace.model.WorkspaceInfo;
-import gov.nist.hit.hl7.igamt.workspace.model.WorkspaceListItem;
-import gov.nist.hit.hl7.igamt.workspace.model.WorkspaceListType;
 
 @RestController
 public class CodeSetController {
@@ -81,15 +55,11 @@ public class CodeSetController {
 
 	@Autowired
 	CodeSetService codeSetService;
-	
-	
-
 	@Autowired
 	CommonService commonService;
 
-
 	@RequestMapping(value = "/api/code-set/create", method = RequestMethod.POST, produces = { "application/json" })
-	public ResponseMessage<String> createWorkspace(
+	public ResponseMessage<String> createCodeSet(
 			@RequestBody CodeSetCreateRequest CodeSetCreateRequest,
 			Authentication authentication
 			) {
@@ -100,8 +70,7 @@ public class CodeSetController {
 
 	@RequestMapping(value = "/api/code-set/{id}/state", method = RequestMethod.GET, produces = { "application/json" })
 	@ResponseBody
-	//	@PreAuthorize("AccessWorkspace(#id, READ)")
-	public CodeSetInfo getWorkspaceInfo(
+	public CodeSetInfo getCodeSetInfo(
 			Authentication authentication,
 			@PathVariable("id") String id
 			) throws  ResourceNotFoundException, ForbiddenOperationException {
@@ -113,7 +82,7 @@ public class CodeSetController {
 	@RequestMapping(value = "/api/code-set/{id}/applyInfo", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
 	//	@PreAuthorize("AccessWorkspace(#id, READ)")
-	public ResponseMessage<?> SaveCodeSet(
+	public ResponseMessage<?> saveCodeSet(
 			Authentication authentication,
 			@PathVariable("id") String id,  @RequestBody CodeSetInfo content
 			) throws  ResourceNotFoundException, ForbiddenOperationException {
@@ -131,12 +100,10 @@ public class CodeSetController {
 		return new ResponseMessage<>(Status.SUCCESS, "", "Code Set Shared Users Successfully Updated", id, false, new Date(), id);
 	}
 
-
-
 	@RequestMapping(value = "/api/code-set/{id}/code-set-version/{versionId}", method = RequestMethod.GET, produces = { "application/json" })
 	@ResponseBody
 	//	@PreAuthorize("AccessWorkspaceFolder(#id, #folderId, READ)")
-	public CodeSetVersionContent getFolderContent(
+	public CodeSetVersionContent getCodeSetVersion(
 			Authentication authentication,
 			@PathVariable("id") String id,
 			@PathVariable("versionId") String versionId
@@ -166,16 +133,13 @@ public class CodeSetController {
 		String username = authentication.getPrincipal().toString();
 
 		CodeSetVersion ret = codeSetService.commit(id, versionId, content, username);
-
-		//this.codeSetService.addCodeSetVersion(id);
 		return new ResponseMessage(Status.SUCCESS, "Code set Saved", ret.getId(), null);
 	}
 
 	@RequestMapping(value = "/api/code-sets", method = RequestMethod.GET, produces = { "application/json" })
-	public @ResponseBody List<CodeSetListItem> getUserWorkspaces(
+	public @ResponseBody List<CodeSetListItem> getCodeSets(
 			Authentication authentication,
-			@RequestParam("type") CodeSetListType type
-			) throws ForbiddenOperationException {
+			@RequestParam("type") CodeSetListType type) throws ForbiddenOperationException {
 		String username = authentication.getPrincipal().toString();
 		List<CodeSet> codesets = new ArrayList<>();
 
@@ -183,26 +147,25 @@ public class CodeSetController {
 			if (type.equals(CodeSetListType.PRIVATE)) {
 
 				codesets = codeSetService.findByPrivateAudienceEditor(username);
-
-			}
-
-			else if (type.equals(CodeSetListType.PUBLIC)) {
-
+				
+			} else if (type.equals(CodeSetListType.PUBLIC)) {
+				
 				codesets = codeSetService.findByPublicAudienceAndStatusPublished();
-
+				
 			} else if (type.equals(CodeSetListType.SHARED)) {
 				
 				codesets = codeSetService.findByPrivateAudienceViewer(username);
-			}
-
-			else if (type.equals(CodeSetListType.ALL)) {
-
+				
+			} else if (type.equals(CodeSetListType.ALL)) {
+				
 				commonService.checkAuthority(authentication, "ADMIN");
 				codesets = codeSetService.findAllPrivateCodeSet();
-
+				
 			}
 			return codeSetService.convertToDisplayList(codesets);
+			
 		} else {
+			
 			codesets = codeSetService.findByPrivateAudienceEditor(username);
 			return codeSetService.convertToDisplayList(codesets);
 		}
@@ -320,6 +283,16 @@ public class CodeSetController {
 		return new ResponseMessage<>(ResponseMessage.Status.SUCCESS, "Code Set  Deleted Successfully",  id, new Date());
 
 	}
-
+	
+	
+	@RequestMapping(value = "/api/code-set/{id}/latest", method = RequestMethod.GET, produces = { "application/json" })
+	@ResponseBody
+	public CodeSetVersionContent getCodeSetLatest(
+			Authentication authentication,
+			@PathVariable("id") String id
+			) throws ResourceNotFoundException {
+		
+		return codeSetService.getLatestCodeVersion(id);
+	}
 
 }

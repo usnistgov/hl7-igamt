@@ -110,6 +110,10 @@ export class CodeSetServiceService {
     return this.http.delete<Message<string>>(this.CODE_SET_END_POINT + version.parentId + this.CODE_SET_VERSION_END_POINT + version.id);
   }
 
+  getCodeSetVersionLatest(codeSetId: string): Observable<ICodeSetVersionContent> {
+    return this.http.get<ICodeSetVersionContent>(this.CODE_SET_END_POINT + codeSetId + '/latest');
+  }
+
 }
 
 export interface ICodeSetCreateRequest {

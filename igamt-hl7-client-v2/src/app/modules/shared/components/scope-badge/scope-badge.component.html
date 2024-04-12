@@ -1,5 +1,6 @@
 <ng-container [ngSwitch]="scope">
-  <span *ngSwitchCase="'USER'" class="badge scope-badge-user">
+  <div class="inline-scope-label">
+  <span *ngSwitchCase="'USER'" class="badge scope-badge-user" >
     <ng-container [ngSwitch]="resourceOrigin">
       <ng-container *ngSwitchCase="'PHINVADS'">
     PHIN
@@ -31,4 +32,9 @@
   <span *ngSwitchCase="'PUBLISHED'" class="badge scope-badge-preloaded">
     PUBLISHED
   </span>
+
+  <span class="badge scope-badge-dynamic " *ngIf="sourceType && sourceType ==='EXTERNAL'" style ="margin-left: 5px;"> EXT </span>
+
+  <span class="badge badge-secondary" *ngIf="sourceType && sourceType ==='INTERNAL_TRACKED'" style ="margin-left: 5px;"> DYN </span>
+  </div>
 </ng-container>
