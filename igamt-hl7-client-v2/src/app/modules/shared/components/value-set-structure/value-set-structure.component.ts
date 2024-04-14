@@ -296,7 +296,6 @@ export class ValueSetStructureComponent implements OnInit {
         if (codeSetId && codeSetVersionId) {
           this.codeSetService.getCodeSetVersionContent(codeSetId, codeSetVersionId).pipe(
             map((content) => {
-              console.log(content);
               this.valueSet.codes = content.codes;
               this.valueSet.codeSetReference = content.codeSetReference;
               this.valueSet.sourceType = SourceType.INTERNAL_TRACKED;

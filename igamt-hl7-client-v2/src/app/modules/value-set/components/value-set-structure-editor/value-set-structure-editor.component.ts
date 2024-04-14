@@ -100,6 +100,10 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
       this.cols.push({ field: 'comments', header: 'Comments' });
       this.selectedColumns = this.cols;
       this.codeSystemOptions = this.getCodeSystemOptions(resource);
+      if(resource.sourceType === SourceType.INTERNAL_TRACKED) {
+        
+
+      }
 
     });
   }

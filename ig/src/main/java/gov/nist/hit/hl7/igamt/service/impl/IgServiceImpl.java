@@ -860,10 +860,10 @@ public class IgServiceImpl implements IgService {
 		if (vs == null) {
 			throw new ValuesetNotFoundException(vsId);
 		}
-		if (vs.getBindingIdentifier().equals("HL70396") && vs.getSourceType().equals(SourceType.EXTERNAL)) {
-			vs.setCodes(fhirHandlerService.getValusetCodeForDynamicTable());
-
-		}
+//		if (vs.getBindingIdentifier().equals("HL70396") && vs.getSourceType().equals(SourceType.EXTERNAL)) {
+//			vs.setCodes(fhirHandlerService.getValusetCodeForDynamicTable());
+//
+//		}
 		if(vs.getSourceType().equals(SourceType.INTERNAL_TRACKED)){
 			if(vs.getCodeSetReference() != null && vs.getCodeSetReference().getCodeSetId() != null) {
 				
@@ -877,7 +877,6 @@ public class IgServiceImpl implements IgService {
 				vs.setCodeSetLink(link);
 				vs.setCodes(content.getCodes());
 			}
-			
 		}
 		
 		// TODO Modify PHINVADS LOGIC
