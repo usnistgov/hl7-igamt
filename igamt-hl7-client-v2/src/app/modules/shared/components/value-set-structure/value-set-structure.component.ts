@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Guid } from 'guid-typescript';
 import { SelectItem } from 'primeng/api';
-import { map } from 'rxjs/operators';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { ICodeSetInfo } from 'src/app/modules/code-set-editor/models/code-set.models';
 import { CodeSetServiceService } from 'src/app/modules/code-set-editor/services/CodeSetService.service';
 import { Type } from '../../constants/type.enum';
@@ -13,6 +13,7 @@ import { BrowseType, CodeSetBrowseDialogComponent, IBrowserTreeNode } from '../c
 import { FetchCodesDialogComponent } from '../fetch-codes-dialog/fetch-codes-dialog.component';
 import { ImportCodeCSVComponent } from '../import-code-csv/import-code-csv.component';
 import { SourceType } from './../../models/adding-info';
+import { EMPTY, of } from 'rxjs';
 
 @Component({
   selector: 'app-value-set-structure',
@@ -26,8 +27,22 @@ export class ValueSetStructureComponent implements OnInit {
     private codeSetService: CodeSetServiceService,
   ) {
   }
+   _valueSet : IValueSet;
+
+  codesLoading: boolean;
+  loadingError: string;
+
   @Input()
-  valueSet: IValueSet;
+  set valueSet(valueSet){
+      this._valueSet = valueSet;
+
+      if(valueSet.sourceType === SourceType.INTERNAL_TRACKED) {
+        this.resolveInternal();
+      }
+  }
+  get valueSet(){
+    return this._valueSet;
+  }
   selectedCodes: ICodes[] = [];
   notDefinedOption = { label: 'Not defined', value: 'Undefined' };
   edit = {};
@@ -47,6 +62,7 @@ export class ValueSetStructureComponent implements OnInit {
   cols: any[];
   @Input()
   selectedColumns: any[];
+
 
   stabilityOptionsOptions = [
     this.notDefinedOption, { label: 'Dynamic', value: 'Dynamic' }, { label: 'Static', value: 'Static' },
@@ -364,6 +380,38 @@ export class ValueSetStructureComponent implements OnInit {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }
+
+  resolveInternal(){
+      this.codesLoading = true;
+      this.loadingError = null;
+      this.codeSetService.getCodeSetVersionLatest(this._valueSet.codeSetReference.codeSetId).pipe(
+        map((content) => {
+          this.valueSet.codes = content.codes;
+
+          const codeSetLink: ILinkedCodeSetInfo = {};
+          codeSetLink.commitDate = content.dateCommitted;
+          codeSetLink.latest = true;
+          codeSetLink.parentName = content.parentName;
+          codeSetLink.version = content.version;
+          codeSetLink.latestFetched = new Date().toDateString();
+
+          this.valueSet.codeSetLink = codeSetLink;
+          this.loadingError = null;
+
+        }),
+        catchError((error) => {
+          console.log(error);
+          this.loadingError =  error.error.text
+          return of(EMPTY);
+        }),
+        finalize(() => {
+          this.codesLoading = false;
+        })
+
+      ).subscribe();
+
+
   }
 
 }

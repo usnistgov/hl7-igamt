@@ -42,13 +42,10 @@ export interface ICodeSetVersionContent extends ICodeSetVersionInfo {
   codeSetReference: ICodeSetReference;
 }
 
-export interface ICodeSetReference extends ICodeSetVersionInfo {
-  id: string;
-  latestId?: string;
-  latestVersion?: string;
-  latestCommitted?: string;
-  url?: string;
-  parentName?: string;
+export interface ICodeSetReference  {
+  codeSetId: string;
+  versionId?: string;
+
 }
 
 export class ICodeSetListItem extends DiscoverableListItem {

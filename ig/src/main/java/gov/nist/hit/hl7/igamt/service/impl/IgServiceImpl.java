@@ -864,20 +864,20 @@ public class IgServiceImpl implements IgService {
 //			vs.setCodes(fhirHandlerService.getValusetCodeForDynamicTable());
 //
 //		}
-		if(vs.getSourceType().equals(SourceType.INTERNAL_TRACKED)){
-			if(vs.getCodeSetReference() != null && vs.getCodeSetReference().getCodeSetId() != null) {
-				
-				CodeSetVersionContent content = this.codeSetService.getLatestCodeVersion(vs.getCodeSetReference().getCodeSetId());
-				CodeSetLinkInfo link = new CodeSetLinkInfo();
-				link.setLatest(true);
-				link.setCommitDate(content.getDateCommitted());
-				link.setParentName(content.getParentName());
-				link.setVersion(content.getVersion());
-				link.setLatestFetched(new Date());
-				vs.setCodeSetLink(link);
-				vs.setCodes(content.getCodes());
-			}
-		}
+//		if(vs.getSourceType().equals(SourceType.INTERNAL_TRACKED)){
+//			if(vs.getCodeSetReference() != null && vs.getCodeSetReference().getCodeSetId() != null) {
+//				
+//				CodeSetVersionContent content = this.codeSetService.getLatestCodeVersion(vs.getCodeSetReference().getCodeSetId());
+//				CodeSetLinkInfo link = new CodeSetLinkInfo();
+//				link.setLatest(true);
+//				link.setCommitDate(content.getDateCommitted());
+//				link.setParentName(content.getParentName());
+//				link.setVersion(content.getVersion());
+//				link.setLatestFetched(new Date());
+//				vs.setCodeSetLink(link);
+//				vs.setCodes(content.getCodes());
+//			}
+//		}
 		
 		// TODO Modify PHINVADS LOGIC
 		if (vs.getDomainInfo() != null && vs.getDomainInfo().getScope() != null) {

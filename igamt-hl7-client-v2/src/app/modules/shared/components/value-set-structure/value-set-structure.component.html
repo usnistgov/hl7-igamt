@@ -52,7 +52,7 @@
               <i class="fa fa-download"></i>
               Export Codes (CSV)
             </button>
-            <button class="btn btn-info btn-sm" (click)="linkToCodeSet()">
+            <button class="btn btn-info btn-sm" (click)="linkToCodeSet()" *ngIf="!viewOnly">
               <i class="fa fa-link" aria-hidden="true"></i>
               Link To CodeSet
             </button>
@@ -243,9 +243,17 @@
         </tbody>
        </table>
 
+       <div class="alert alert-danger" *ngIf="loadingError" >
+        {{loadingError}}
+       </div>
+
+        <div *ngIf="codesLoading" style="display: flex; align-items: center; justify-content: center; height: 100%;">
+          <mat-spinner class="verification-progress" diameter="90"></mat-spinner>
+        </div>
+
       <p-table #dt1 [(selection)]="selectedCodes" [columns]="selectedColumns" [reorderableColumns]="true"
         sortField="value" [resizableColumns]="false" [value]="valueSet.codes" selectionMode="checkbox"
-        [paginator]="true" [rows]="50" *ngIf="valueSet.codes">
+        [paginator]="true" [rows]="50" *ngIf="valueSet.codes && !codesLoading && !loadingError">
         <ng-template let-columns pTemplate="header">
           <tr>
             <th *ngFor="let col of columns" [pSortableColumn]="col.field" pReorderableColumn pResizableColumn>
@@ -286,6 +294,7 @@
           </tr>
         </ng-template>
       </p-table>
+
     </div>
 
   </div>
