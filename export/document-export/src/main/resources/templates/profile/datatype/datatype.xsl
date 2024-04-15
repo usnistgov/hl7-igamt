@@ -378,7 +378,7 @@
 											</h2>
 											<p>
 												<b>Purpose and Use : </b>
-												<xsl:value-of select="@purposeAndUse" />
+												<xsl:value-of select="substring-before(substring-after(@usageNotes, '&gt;'), '&lt;')"  />
 											</p>
 											<table class="centered-table" width="600">
 												<tr>
@@ -440,6 +440,9 @@
 													<td colspan="1">
 														<font color="#cc0000">Usage</font>
 													</td>
+													<td colspan="1">
+														<font color="#cc0000">Old Usage</font>
+													</td>
 													<td colspan="2">
 														<font color="#cc0000">Condition Predicate</font>
 													</td>
@@ -456,19 +459,22 @@
 															<xsl:value-of select="@name" />
 														</td>
 														<td colspan="1" class="rouge">
-															<xsl:attribute name="id">
-																<xsl:text>p1</xsl:text>
-															</xsl:attribute>
-															<xsl:element name="a">
-
 																<xsl:value-of select="@datatype" />
-
-															</xsl:element>
 														</td>
 														<td colspan="1" class="rouge">
 															<xsl:value-of select="@usage" />
 														</td>
-														<td colspan="2" class="rouge">NA</td>
+														<td colspan="1" class="rouge">
+															<xsl:value-of select="@oldUsage" />
+														</td>
+														<td colspan="2" class="rouge">
+														<xsl:choose>
+															<xsl:when test="@predicate">
+																<xsl:value-of select="@predicate" />
+															</xsl:when>
+															<xsl:otherwise>N/A</xsl:otherwise>
+														</xsl:choose>
+														</td>
 													</tr>
 												</xsl:for-each>
 											</table>

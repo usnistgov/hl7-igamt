@@ -139,6 +139,8 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
     .addAttribute(new Attribute("ext", datatype.getExt() != null ? datatype.getExt() : ""));
     datatypeElement
     .addAttribute(new Attribute("label", datatype.getLabel() != null ? datatype.getLabel() : ""));
+    datatypeElement.addAttribute(new Attribute("usageNotes",
+            datatype.getUsageNotes() != null ? datatype.getUsageNotes() : ""));
     if(datatypeExportConfiguration.getPurposeAndUse()) {
       datatypeElement.addAttribute(new Attribute("purposeAndUse",
           datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
@@ -214,6 +216,8 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
               component.getConfLength() != null ? component.getConfLength() : ""));
           componentElement
           .addAttribute(new Attribute("id", component.getId() != null ? component.getId() : ""));
+//          componentElement
+//                  .addAttribute(new Attribute("old usage", component.getOldUsage() != null ? component.getOldUsage().toString() : ""));
           componentElement.addAttribute(
               new Attribute("name", component.getName() != null ? component.getName() : ""));
           componentElement.addAttribute(new Attribute("lengthType", component.getLengthType().getValue()));
@@ -290,8 +294,18 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
             	  componentElement.addAttribute(
                           new Attribute("usage", component.getUsage() != null ? serializationTools.extractPredicateUsages(datatypeDataModel.getPredicateMap(), component.getId()) : ""));
                   componentElement.addAttribute(
-                    new Attribute("predicate", component.getUsage() != null ? serializationTools.extractPredicateDescription(datatypeDataModel.getPredicateMap(), component.getId()) : ""));
+                    new Attribute("predicate", component.getUsage() != null ? serializationTools.extractPredicateDescription(datatypeDataModel.getPredicateMap(), component.getId()) : "N/A"));
              }
+          if(component.getOldUsage() != null && !component.getOldUsage().equals(Usage.CAB)) {
+            componentElement.addAttribute(
+                    new Attribute("oldUsage", component.getOldUsage() != null ? component.getOldUsage().toString() : ""));}
+          else if(component.getOldUsage() != null && component.getOldUsage().equals(Usage.CAB)) {
+
+            componentElement.addAttribute(
+                    new Attribute("oldUsage", component.getOldUsage() != null ? serializationTools.extractPredicateUsages(datatypeDataModel.getPredicateMap(), component.getId()) : ""));
+            componentElement.addAttribute(
+                    new Attribute("oldPredicate", component.getOldUsage() != null ? serializationTools.extractPredicateDescription(datatypeDataModel.getPredicateMap(), component.getId()) : ""));
+          }
         
           datatypeElement.appendChild(componentElement);
         } catch (Exception exception) {
