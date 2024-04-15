@@ -233,7 +233,6 @@ public class CodeSetServiceImpl implements CodeSetService {
 				element.setUsername(audience.getEditor());
 			}
 			ret.add(element);
-			element.set
 		}
 		return ret;
 	}
