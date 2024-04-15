@@ -2,7 +2,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Guid } from 'guid-typescript';
 import { SelectItem } from 'primeng/api';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { EMPTY, of } from 'rxjs';
+import { catchError, finalize, map, tap } from 'rxjs/operators';
 import { ICodeSetInfo } from 'src/app/modules/code-set-editor/models/code-set.models';
 import { CodeSetServiceService } from 'src/app/modules/code-set-editor/services/CodeSetService.service';
 import { Type } from '../../constants/type.enum';
@@ -13,7 +14,6 @@ import { BrowseType, CodeSetBrowseDialogComponent, IBrowserTreeNode } from '../c
 import { FetchCodesDialogComponent } from '../fetch-codes-dialog/fetch-codes-dialog.component';
 import { ImportCodeCSVComponent } from '../import-code-csv/import-code-csv.component';
 import { SourceType } from './../../models/adding-info';
-import { EMPTY, of } from 'rxjs';
 
 @Component({
   selector: 'app-value-set-structure',
@@ -27,20 +27,21 @@ export class ValueSetStructureComponent implements OnInit {
     private codeSetService: CodeSetServiceService,
   ) {
   }
-   _valueSet : IValueSet;
+   _valueSet: IValueSet;
 
   codesLoading: boolean;
   loadingError: string;
 
   @Input()
-  set valueSet(valueSet){
+  set valueSet(valueSet) {
       this._valueSet = valueSet;
+      this.codeSystemOptions = this.getCodeSystemOptions();
 
-      if(valueSet.sourceType === SourceType.INTERNAL_TRACKED) {
-        this.resolveInternal();
+      if (valueSet.sourceType === SourceType.INTERNAL_TRACKED) {
+        this.resolveInternal(this._valueSet.codeSetReference.codeSetId);
       }
   }
-  get valueSet(){
+  get valueSet() {
     return this._valueSet;
   }
   selectedCodes: ICodes[] = [];
@@ -56,13 +57,12 @@ export class ValueSetStructureComponent implements OnInit {
   existingChangeReason: any[];
   @Input()
   viewOnly: boolean;
-  @Input()
+  // @Input()
   codeSystemOptions: any[];
   @Input()
   cols: any[];
   @Input()
   selectedColumns: any[];
-
 
   stabilityOptionsOptions = [
     this.notDefinedOption, { label: 'Dynamic', value: 'Dynamic' }, { label: 'Static', value: 'Static' },
@@ -147,8 +147,15 @@ export class ValueSetStructureComponent implements OnInit {
     });
   }
 
+  // getCodeSystemOptions(): SelectItem[] {
+  //   return this.valueSet.codes.map((code: ICodes) => {
+  //     return { label: code.codeSystem, value: code.codeSystem };
+  //   });
+  // }
+
   getCodeSystemOptions(): SelectItem[] {
-    return this.valueSet.codeSystems.map((codeSystem: string) => {
+    const uniqueCodeSystems = new Set(this.valueSet.codes.map((code: ICodes) => code.codeSystem));
+    return Array.from(uniqueCodeSystems).map((codeSystem: string) => {
       return { label: codeSystem, value: codeSystem };
     });
   }
@@ -279,6 +286,8 @@ export class ValueSetStructureComponent implements OnInit {
           this.codeSetService.getCodeSetVersionContent(codeSetId, codeSetVersionId).pipe(
             map((content) => {
               this.valueSet.codes = content.codes;
+              this.codeSystemOptions = this.getCodeSystemOptions();
+
               this.updateAttribute(PropertyType.CODES, content.codes);
             }),
           ).subscribe();
@@ -301,33 +310,14 @@ export class ValueSetStructureComponent implements OnInit {
         includeVersions: false,
       },
     }).afterClosed().pipe(
-      map((browserResult: IBrowserTreeNode) => {
+      tap((browserResult: IBrowserTreeNode) => {
         let codeSetId: string;
         let codeSetVersionId: string;
 
         if (browserResult.data.type === Type.CODESET) {
           codeSetId = browserResult.data.id;
-          codeSetVersionId = browserResult.data.latestId;
         }
-        if (codeSetId && codeSetVersionId) {
-          this.codeSetService.getCodeSetVersionContent(codeSetId, codeSetVersionId).pipe(
-            map((content) => {
-              this.valueSet.codes = content.codes;
-              this.valueSet.codeSetReference = content.codeSetReference;
-              this.valueSet.sourceType = SourceType.INTERNAL_TRACKED;
-
-              const codeSetLink: ILinkedCodeSetInfo = {};
-              codeSetLink.commitDate = content.dateCommitted;
-              codeSetLink.latest = true;
-              codeSetLink.parentName = content.parentName;
-              codeSetLink.version = content.version;
-              codeSetLink.latestFetched = new Date().toDateString();
-
-              this.valueSet.codeSetLink = codeSetLink;
-              this.updateAttribute(PropertyType.CODESETREFERENCE, { codeSetId, versionId: codeSetVersionId });
-            }),
-          ).subscribe();
-        }
+        this.resolveInternal(codeSetId, true);
       }),
     ).subscribe();
   }
@@ -360,6 +350,7 @@ export class ValueSetStructureComponent implements OnInit {
         console.log(codes);
         if (codes) {
           this.valueSet.codes = codes;
+          this.codeSystemOptions = this.getCodeSystemOptions();
           this.updateAttribute(PropertyType.CODES, this.valueSet.codes);
         }
       },
@@ -382,13 +373,13 @@ export class ValueSetStructureComponent implements OnInit {
     document.body.removeChild(link);
   }
 
-  resolveInternal(){
+  resolveInternal(codeSetId: string, updateRef?: boolean) {
       this.codesLoading = true;
       this.loadingError = null;
-      this.codeSetService.getCodeSetVersionLatest(this._valueSet.codeSetReference.codeSetId).pipe(
+      this.codeSetService.getCodeSetVersionLatest(codeSetId).pipe(
         map((content) => {
           this.valueSet.codes = content.codes;
-
+          this.codeSystemOptions = this.getCodeSystemOptions();
           const codeSetLink: ILinkedCodeSetInfo = {};
           codeSetLink.commitDate = content.dateCommitted;
           codeSetLink.latest = true;
@@ -397,20 +388,27 @@ export class ValueSetStructureComponent implements OnInit {
           codeSetLink.latestFetched = new Date().toDateString();
 
           this.valueSet.codeSetLink = codeSetLink;
+          if (updateRef) {
+            this.valueSet.sourceType = SourceType.INTERNAL_TRACKED;
+            this.updateAttribute(PropertyType.CODESETREFERENCE, { codeSetId });
+          }
           this.loadingError = null;
 
         }),
         catchError((error) => {
-          console.log(error);
-          this.loadingError =  error.error.text
+          this.loadingError =  error.error.text;
           return of(EMPTY);
         }),
         finalize(() => {
           this.codesLoading = false;
-        })
-
+        }),
       ).subscribe();
+  }
 
+  detach() {
+    this.valueSet.sourceType = SourceType.INTERNAL;
+    this.updateAttribute(PropertyType.CODES, this.valueSet.codes);
+    this.updateAttribute(PropertyType.CODESETREFERENCE, null);
 
   }
 

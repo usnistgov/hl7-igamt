@@ -28,6 +28,8 @@ public class CodeSetListItem {
 	private Boolean deprecated;
 	
 	
+	
+	
 
 	public CodeSetListItem() {
 		super();

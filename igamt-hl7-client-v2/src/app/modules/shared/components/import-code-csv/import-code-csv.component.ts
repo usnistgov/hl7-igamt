@@ -56,6 +56,7 @@ export class ImportCodeCSVComponent {
     this.http.post('api/code-sets/importCSV', formData).subscribe({
       next: (data: any) => {
         this.codes = data;
+        this.selectedCodes = this.codes;
         this.uploadStep = false;
         this.reviewStep = true;
         this.errorStep = false;

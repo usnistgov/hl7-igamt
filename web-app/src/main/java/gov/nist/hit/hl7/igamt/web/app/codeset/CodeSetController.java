@@ -291,7 +291,6 @@ public class CodeSetController {
 			Authentication authentication,
 			@PathVariable("id") String id
 			) throws ResourceNotFoundException {
-		
 		return codeSetService.getLatestCodeVersion(id);
 	}
 

@@ -8,6 +8,7 @@ import { BehaviorSubject, combineLatest, Observable, ReplaySubject, Subscription
 import { catchError, concatMap, filter, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
+import { IgEditResolverLoad } from 'src/app/root-store/ig/ig-edit/ig-edit.actions';
 import { getHl7ConfigState } from '../../../../root-store/config/config.reducer';
 import { selectDerived } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
@@ -100,8 +101,7 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
       this.cols.push({ field: 'comments', header: 'Comments' });
       this.selectedColumns = this.cols;
       this.codeSystemOptions = this.getCodeSystemOptions(resource);
-      if(resource.sourceType === SourceType.INTERNAL_TRACKED) {
-        
+      if (resource.sourceType === SourceType.INTERNAL_TRACKED) {
 
       }
 
@@ -205,7 +205,7 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
               flatMap((resource) => {
                 this.changes.next({});
                 this.resourceSubject.next(resource);
-                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
+                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new IgEditResolverLoad(documentRef.documentId), new fromDam.SetValue({ selected: resource })];
               }),
             );
           }),

@@ -281,10 +281,17 @@ public class ValuesetServiceImpl implements ValuesetService {
                 
             }else if (item.getPropertyType().equals(PropertyType.CODESETREFERENCE)) {
             	
-                String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-                CodeSetReference ref = mapper.readValue(jsonInString, CodeSetReference.class);
-                s.setCodeSetReference(ref);
-                s.setSourceType(SourceType.INTERNAL_TRACKED);
+       
+                if(item.getPropertyValue() == null) {
+                  s.setSourceType(SourceType.INTERNAL);
+                  s.setCodeSetReference(null);
+                }else {
+                  String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+                  CodeSetReference ref = mapper.readValue(jsonInString, CodeSetReference.class);
+                  s.setSourceType(SourceType.INTERNAL_TRACKED);
+                  s.setCodeSetReference(ref);
+                }
+               
             }else if (item.getPropertyType().equals(PropertyType.CHANGEREASON)) {
 
                 String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
