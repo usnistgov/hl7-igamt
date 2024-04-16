@@ -31,6 +31,7 @@ import gov.nist.hit.hl7.igamt.valueset.model.CodeSetListItem;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetMetadata;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionContent;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionInfo;
+import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionListInfo;
 import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetRepository;
 import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetVersionRepository;
 import gov.nist.hit.hl7.igamt.valueset.service.CodeSetService;
@@ -232,11 +233,31 @@ public class CodeSetServiceImpl implements CodeSetService {
 				element.setCurrentAuthor(audience.getEditor());
 				element.setUsername(audience.getEditor());
 			}
+			element.setChildren(generateChildrenInfo(codeSet));
 			ret.add(element);
 		}
 		return ret;
 	}
 	
+
+
+	private List<CodeSetVersionListInfo> generateChildrenInfo(CodeSet codeSet) {
+		List<CodeSetVersionListInfo> ret = new ArrayList<CodeSetVersionListInfo>();
+		if(codeSet.getCodeSetVersions() != null) {
+			for( CodeSetVersion codeSetVersion: codeSet.getCodeSetVersions()) {
+				if(codeSetVersion.getDateCommitted() != null) {
+				CodeSetVersionListInfo info = new CodeSetVersionListInfo();
+				info.setDateCommitted(codeSetVersion.getDateCommitted());
+				info.setId(codeSetVersion.getId());
+				info.setVersion(codeSetVersion.getVersion());
+				ret.add(info);
+				}
+			}	
+		}
+		
+		return ret;
+	}
+
 	@Override
 	public List<CodeSet> findByPrivateAudienceEditor(String username) {
 		return this.codeSetRepo.findByPrivateAudienceEditor(username);

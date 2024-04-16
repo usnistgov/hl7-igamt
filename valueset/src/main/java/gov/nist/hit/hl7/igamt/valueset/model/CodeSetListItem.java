@@ -25,12 +25,9 @@ public class CodeSetListItem {
 	private Boolean draft;
 	private Type resourceType;
 	private PublicationInfo publicationInfo;
-	private Boolean deprecated;
+	private Boolean deprecated;	
+	private List<CodeSetVersionListInfo> children; 
 	
-	
-	
-	
-
 	public CodeSetListItem() {
 		super();
 		this.resourceType= Type.CODESET;
@@ -127,5 +124,12 @@ public class CodeSetListItem {
 	public void setUsername(String username) {
 		this.username = username;
 	}
+	public List<CodeSetVersionListInfo> getChildren() {
+		return children;
+	}
+	public void setChildren(List<CodeSetVersionListInfo> children) {
+		this.children = children;
+	}
+
 
 }

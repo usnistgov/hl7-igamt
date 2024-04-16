@@ -72,10 +72,13 @@
             <th>
               Code set versions
             </th>
+            <th>
+              Date Committed
+            </th>
           </tr>
-          <tr *ngFor="let cp of item.children">
-            {{item}}
-            <td>{{cp}}</td>
+          <tr *ngFor="let version of item.children">
+            <td>{{version.version}}</td>
+            <td>{{version.dateCommitted}}</td>
           </tr>
         </table>
       </div>
