@@ -33,11 +33,11 @@
                 </tr>
             </tbody>
         </table>
-        <p-table #dt [columns]="columns" [value]="fetchedCodeSet.codes" [paginator]="true" [rows]="20">
+        <p-table #dt [columns]="columns" [value]="fetchedCodeSet.codes" [paginator]="true" [rows]="10">
             <ng-template pTemplate="header" let-cols>
                 <tr>
                     <th *ngFor="let col of cols" [pSortableColumn]="col.field">
-                        <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>    
+                        <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
                         {{col.label}}
                     </th>
                 </tr>
