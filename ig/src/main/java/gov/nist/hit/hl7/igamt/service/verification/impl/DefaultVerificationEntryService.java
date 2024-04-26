@@ -897,7 +897,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.LENGTH)
-                .message(String.format("Either # or = can be used to define truncation. The current ConfLength is %s", confLength))
+                .message(String.format("The current ConfLength is '%s'. The truncation flag was left unspecified. The best practice is to define truncation by using '=' (truncation NOT allowed) or '#' (truncation allowed). If unspecified, the default behavior is that truncation is allowed '#'.", confLength))
                 .entry();
 	}
 

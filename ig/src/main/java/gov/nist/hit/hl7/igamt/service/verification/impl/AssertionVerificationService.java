@@ -35,6 +35,7 @@ public class AssertionVerificationService extends VerificationUtils {
     private final Set<String> NUMERICAL_DT = new HashSet<>(Arrays.asList("NM", "SI"));
     private final Set<String> OCCURRENCE_TYPES = new HashSet<>(Arrays.asList("atLeast", "instance", "exactlyOne", "count", "all"));
     private final Schema assertionSchema;
+    private final Schema predicateSchema;
     static final Predicate<String> valueListPattern = Pattern.compile("^[0-9a-zA-Z\\-_.\\\\]+( +[0-9a-zA-Z\\-_.\\\\]+)*$").asPredicate();
     static final Predicate<String> valuePattern = Pattern.compile("^[\\s]*[\\S].*$").asPredicate();
 
@@ -42,6 +43,7 @@ public class AssertionVerificationService extends VerificationUtils {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         factory.setResourceResolver(new HL7v2SchemaResourceResolver());
         assertionSchema = factory.newSchema(new StreamSource(AssertionVerificationService.class.getResourceAsStream("/freeTextAssertion.xsd")));
+        predicateSchema = factory.newSchema(new StreamSource(AssertionVerificationService.class.getResourceAsStream("/freeTextPredicate.xsd")));
     }
 
     public List<IgamtObjectError> checkAssertion(ResourceSkeleton skeleton, Location location, Assertion assertion) {
@@ -60,7 +62,7 @@ public class AssertionVerificationService extends VerificationUtils {
         return null;
     }
 
-    public List<IgamtObjectError> checkFreeText(ResourceSkeleton skeleton, Location location, String assertion) throws IOException, SAXException {
+    public List<IgamtObjectError> checkFreeText(ResourceSkeleton skeleton, Location location, String assertion, boolean predicate) throws IOException, SAXException {
         if(assertion == null || assertion.isEmpty()) {
             return Arrays.asList(
                     this.entry.FreeTextAssertionScriptMissing(
@@ -70,12 +72,18 @@ public class AssertionVerificationService extends VerificationUtils {
                     )
             );
         } else {
-            return checkFreeTextXML(skeleton, location, assertion);
+            return checkFreeTextXML(skeleton, location, assertion, predicate);
         }
     }
 
-    public List<IgamtObjectError> checkFreeTextXML(ResourceSkeleton skeleton, Location location, String xml) throws IOException, SAXException {
-        Validator validator = this.assertionSchema.newValidator();
+    public List<IgamtObjectError> checkFreeTextXML(ResourceSkeleton skeleton, Location location, String xml, boolean predicate) throws IOException, SAXException {
+        Validator validator;
+        if(predicate) {
+            validator = this.predicateSchema.newValidator();
+        } else {
+            validator = this.assertionSchema.newValidator();
+        }
+
         List<IgamtObjectError> entries = new ArrayList<>();
         List<SAXParseException> xmlValidationErrors = new ArrayList<>();
         validator.setErrorHandler(new ErrorHandler() {
