@@ -96,8 +96,12 @@ public interface VerificationEntryService {
     IgamtObjectError Valueset_NotAllowedExtensibility_ImplementableProfile(Location info, String id, Type type, String extensibility);
     IgamtObjectError Valueset_NotAllowedStability_ConstrainableProfile(Location info, String id, Type type, String stability);
     IgamtObjectError Valueset_NotAllowedStability_ImplementableProfile(Location info, String id, Type type, String stability);
-    
-    
+    IgamtObjectError ExternalValuesetMissingURL(Location info, String id, Type type);
+    IgamtObjectError ExternalValuesetInvalidURL(Location info, String id, Type type, String URL);
+    IgamtObjectError InternalTrackedValuesetMissingCodeSet(Location info, String id, Type type);
+    IgamtObjectError InternalTrackedValuesetCodeSetNotFound(Location info, String id, Type type);
+
+
     // Cardinality
     IgamtObjectError CardinalityInvalidRange(LocationInfo info, String id, Type type, String min, String max);
     IgamtObjectError CardinalityInvalidMaxCardinality(LocationInfo info, String id, Type type, String max);
