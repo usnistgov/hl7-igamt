@@ -32,6 +32,7 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -277,6 +278,13 @@ public class BootstrapApplication implements CommandLineRunner {
 		templateMessage.setFrom(env.getProperty(EMAIL_FROM));
 		templateMessage.setSubject(env.getProperty(EMAIL_SUBJECT));
 		return templateMessage;
+	}
+	
+	public class RestTemplateConfig {
+	    @Bean
+	    public RestTemplate restTemplate() {
+	        return new RestTemplate();
+	    }
 	}
 
 	@Bean()

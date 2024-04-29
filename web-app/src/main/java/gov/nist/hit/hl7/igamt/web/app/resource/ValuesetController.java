@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.web.app.resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -12,8 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import gov.nist.hit.hl7.igamt.access.active.NotifySave;
+import gov.nist.hit.hl7.igamt.api.codesets.service.CodeSetAdapterService;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import org.apache.commons.io.IOUtils;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +73,8 @@ public class ValuesetController extends BaseController {
 	
 	@Autowired
 	FhirHandlerService fhirHandlerService;
+	@Autowired
+	CodeSetAdapterService codeSetAdapterService;
 
 	private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
 
@@ -89,8 +94,16 @@ public class ValuesetController extends BaseController {
 	// TODO
 	public @ResponseBody ResponseMessage<List<Valueset>> findDisplayFormatByScope(
 			@PathVariable String scope, Authentication authentication) {
+		
+		List<Valueset> ret = new ArrayList<Valueset>();
+		
+		if(scope.equals(Scope.PHINVADS.toString())){
+			ret = codeSetAdapterService.getAllAvailablePhinvads();
+		}
+		List<Valueset> vs =  valuesetService.findDisplayFormatByScope(scope);
+		
 		return new ResponseMessage<List<Valueset>>(Status.SUCCESS, "", "", null, false, null,
-				valuesetService.findDisplayFormatByScope(scope));
+				ret);
 	}
 
 	@RequestMapping(value = "/api/valuesets/{id}/resources", method = RequestMethod.GET, produces = {
