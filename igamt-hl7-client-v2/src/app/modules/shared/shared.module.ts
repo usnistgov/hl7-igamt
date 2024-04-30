@@ -161,6 +161,7 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { ImportFromProviderComponent } from './components/import-from-provider/import-from-provider.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -281,6 +282,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     InputCopyComponent,
     ExternalVsCodesFetchComponent,
     FetchCodesDialogComponent,
+    ImportFromProviderComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -539,6 +541,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     KeyDialogComponent,
     BuildValueSetComponent,
     FetchCodesDialogComponent,
+    ImportFromProviderComponent,
   ],
 })
 export class SharedModule {

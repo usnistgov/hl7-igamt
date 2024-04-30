@@ -82,6 +82,7 @@ import { SourceType } from './../../../shared/models/adding-info';
 import { VerificationService } from './../../../shared/services/verification.service';
 import { ITypedSection } from './../ig-toc/ig-toc.component';
 import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
+import { ImportFromProviderComponent } from 'src/app/modules/shared/components/import-from-provider/import-from-provider.component';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -250,6 +251,22 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
       }),
     ).subscribe();
     subscription.unsubscribe();
+  }
+
+
+  addChildrenFromProvider(providerId: string){
+    const dialogRef = this.dialog.open(ImportFromProviderComponent, {
+      data: {},
+    });
+    dialogRef.afterClosed().pipe(
+      filter((x) => x !== undefined),
+      withLatestFrom(this.documentRef$),
+      take(1),
+      map(([result, documentRef]) => {
+        this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: Type.VALUESET }));
+      }),
+    ).subscribe();
+
   }
 
   addMessages(event: IAddWrapper) {

@@ -28,6 +28,8 @@ export interface IExternalCode {
     usage: CodeUsage;
 }
 
+
+
 export interface IResponseError {
     message: string;
     statusCode: number;
@@ -54,5 +56,22 @@ export class ExternalCodeSetService {
             }),
         );
     }
+
+
+  fetchAvailableCodeSets(url: string, key?: string): Observable<ICodeSetQueryResult[]> {
+
+     url = "http://hit-dev-admin.nist.gov:19070/api/v1/phinvads/codesets";
+
+      const options = key ? { headers: { 'X-API-KEY': key } } : {};
+      return this.httpClient.get<ICodeSetQueryResult[]>(url, options).pipe(
+          catchError((result: HttpErrorResponse) => {
+              return throwError({
+                  error: result,
+                  message: result.error ? result.error.message : undefined,
+                  statusCode: result.status,
+              });
+          }),
+      );
+  }
 
 }
