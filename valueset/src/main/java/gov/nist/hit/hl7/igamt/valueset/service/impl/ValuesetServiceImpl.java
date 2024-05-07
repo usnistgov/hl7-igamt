@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nist.hit.hl7.igamt.common.base.domain.ContentDefinition;
 import gov.nist.hit.hl7.igamt.common.base.domain.Extensibility;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.ResourceOrigin;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Stability;
@@ -47,7 +48,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetReference;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.repository.ValuesetRepository;
-import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
+//import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.resource.change.service.OperationService;
 
@@ -63,9 +64,9 @@ public class ValuesetServiceImpl implements ValuesetService {
 
     @Autowired
     private MongoTemplate mongoTemplate;
-    
-    @Autowired
-    private FhirHandlerService fhirHandlerService;
+//    
+//    @Autowired
+//    private FhirHandlerService fhirHandlerService;
     
     @Autowired
     private OperationService operationService;
@@ -188,9 +189,9 @@ public class ValuesetServiceImpl implements ValuesetService {
     @Override
     public List<Valueset> findDisplayFormatByScope(String scope) {
         // TODO Auto-generated method stub
-        if (scope.equals("PHINVADS")) {
-        	return fhirHandlerService.getPhinvadsValuesets();
-        } else {
+//        if (scope.equals("PHINVADS")) {
+//        	return fhirHandlerService.getPhinvadsValuesets();
+//        } else {
             Criteria where = Criteria.where("domainInfo.scope").is(scope);
             Query qry = Query.query(where);
             qry.fields().include("domainInfo");
@@ -201,7 +202,7 @@ public class ValuesetServiceImpl implements ValuesetService {
             qry.fields().include("numberOfCodes");
             List<Valueset> valueSets = mongoTemplate.find(qry, Valueset.class);
             return valueSets;
-        }
+       // }
     }
 
     private boolean exist(String codeSystemId, Set<String> codeSystemIds) {
@@ -318,9 +319,18 @@ public class ValuesetServiceImpl implements ValuesetService {
 	}
 
     @Override
-    public Valueset findExternalPhinvadsByOid(String oid) {
+    public Valueset findPreLoadedPHINVADS(String oid, String version) {
         Criteria where = Criteria.where("oid").is(oid);
-        where.andOperator(Criteria.where("domainInfo.scope").is(Scope.PHINVADS),Criteria.where("isFlavor").is(false));
+        where.andOperator(Criteria.where("domainInfo.scope").is(Scope.PHINVADS),Criteria.where("isFlavor").is(false), Criteria.where("sourceType").is(SourceType.EXTERNAL), Criteria.where("domainInfo.version").is(version) );
+        Query qry = Query.query(where);
+        Valueset valueSet = mongoTemplate.findOne(qry, Valueset.class);
+        return valueSet;
+    }
+    
+    @Override
+    public Valueset findTrackedPHINVADS(String oid) {
+        Criteria where = Criteria.where("oid").is(oid);
+        where.andOperator(Criteria.where("domainInfo.scope").is(Scope.PHINVADS),Criteria.where("isFlavor").is(false), Criteria.where("sourceType").is(SourceType.EXTERNAL_TRACKED));
         Query qry = Query.query(where);
         Valueset valueSet = mongoTemplate.findOne(qry, Valueset.class);
         return valueSet;
@@ -391,5 +401,10 @@ public class ValuesetServiceImpl implements ValuesetService {
 
 	private String str(String value) {
 		return value != null ? value : "";
+	}
+
+	@Override
+	public List<Valueset> findBySourceTypeAndResourceOrigin(SourceType type, ResourceOrigin origin) {
+		return this.valuesetRepository.findBySourceTypeAndResourceOrigin(type, origin);
 	}
 }

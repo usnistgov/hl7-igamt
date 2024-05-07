@@ -74,5 +74,7 @@ export class ExternalVsCodesFetchComponent implements OnInit {
         }, 500);
     }
 
-    ngOnInit() { }
+    ngOnInit() {
+      this.fetch();
+     }
 }

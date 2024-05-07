@@ -1,11 +1,11 @@
-package gov.nist.hit.hl7.igamt.api.codesets.model;
+package gov.nist.hit.hl7.igamt.valueset.model;
 
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 
-public class Code {
+public  class ExternalCode {
 	private String value;
 	private String codeSystem;
-	private String displayText;
+	private String displayText; // description ?
 	private boolean isPattern;
 	private String regularExpression;
 	private CodeUsage usage;

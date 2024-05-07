@@ -194,12 +194,13 @@
         </ng-template>
       </p-table>
     </div>
-    <div *ngIf="valueSet.sourceType === 'EXTERNAL'">
-      <div *ngIf="viewOnly">
-        <label class="form-label-lg">URL: </label>
-        <a [href]="valueSet.url" target="_blank">{{valueSet.url}}</a>
+    <div *ngIf="valueSet.sourceType === 'EXTERNAL' || valueSet.sourceType === 'EXTERNAL_TRACKED'  ">
+      <div *ngIf="viewOnly || valueSet.sourceType === 'EXTERNAL_TRACKED'" style="margin-bottom: 10px;">
+        <div [ngStyle]="{width: urlSize+'px' }">
+          <app-input-copy type="text" [value]="valueSet.url" label="URL"></app-input-copy>
+        </div>
       </div>
-      <div class="form-group" *ngIf="!viewOnly">
+      <div class="form-group" *ngIf="!viewOnly && valueSet.sourceType !== 'EXTERNAL_TRACKED'">
         <label class="form-label-lg"> URL</label>
         <input required id="url" name="url" type="url" (ngModelChange)="updateURl($event)"
           placeholder="enter a valid url" [(ngModel)]="valueSet.url" class="form-control" width="100%" />

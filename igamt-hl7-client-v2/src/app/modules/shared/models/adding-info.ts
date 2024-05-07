@@ -8,6 +8,8 @@ export enum SourceType {
   INTERNAL = 'INTERNAL',
   EXTERNAL = 'EXTERNAL',
   INTERNAL_TRACKED = 'INTERNAL_TRACKED',
+  EXTERNAL_TRACKED = 'EXTERNAL_TRACKED',
+
 }
 
 export interface ISubstitution {
@@ -40,5 +42,7 @@ export interface IAddingInfo {
   stability?: Stability;
   extensibility?: Extensibility;
   contentDefinition?: ContentDefinition;
+  fromProvider?: boolean;
+  trackLatest?: boolean;
 
 }

@@ -17,6 +17,7 @@ import javax.annotation.PostConstruct;
 import gov.nist.hit.hl7.igamt.ig.data.fix.PcConformanceStatementsIdFixes;
 
 import org.bson.types.ObjectId;
+import org.hl7.fhir.r4.model.Enumerations.ResourceType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -63,7 +64,9 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
+import gov.nist.hit.hl7.igamt.common.base.domain.ResourceOrigin;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
@@ -118,6 +121,7 @@ import gov.nist.hit.hl7.igamt.service.impl.IgServiceImpl;
 import gov.nist.hit.hl7.igamt.service.verification.impl.SimpleResourceBindingVerificationService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 @SpringBootApplication
@@ -865,7 +869,41 @@ public class BootstrapApplication implements CommandLineRunner {
 			}
 		}
 	}
-	
+	//@PostConstruct
+	void updatePHinvads() throws ForbiddenOperationException{
+		List<Valueset> phinvads = this.valuesetService.findByDomainInfoScope(Scope.PHINVADS.toString());
+		String url = "http://hit-dev-admin.nist.gov:19070/api/v1/phinvads/codesets/";
+		for ( Valueset vs : phinvads) {
+			vs.setUrl(url + vs.getOid());
+			vs.setSourceType(SourceType.EXTERNAL_TRACKED);
+			this.valuesetService.save(vs);
+		}
+		List<Valueset> users = this.valuesetService.findByDomainInfoScope(Scope.USER.toString());
+		
+		
+		for ( Valueset vs : users) {
+			if(vs.getOid() != null) {
+				
+		    vs.setResourceOrigin(ResourceOrigin.PHINVADS);
+				
+				
+			
+			String oidURL =url + vs.getOid();
+
+			if(vs.getDomainInfo().getVersion() != null) {
+				oidURL = oidURL+ "?version="+vs.getDomainInfo().getVersion();
+			} 
+			if(vs.getSourceType().equals(SourceType.EXTERNAL)) {
+				vs.setUrl(oidURL);
+
+			}
+			this.valuesetService.save(vs);
+			}
+		}
+		
+		
+		
+	}
 	
 
 }

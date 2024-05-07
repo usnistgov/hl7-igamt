@@ -58,6 +58,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import gov.nist.hit.hl7.igamt.valueset.service.impl.ExternalCodeService;
 
 @Service
 public class CrudServiceImpl implements CrudService {
@@ -77,6 +78,8 @@ public class CrudServiceImpl implements CrudService {
 	FhirHandlerService fhirHandlerService;
 	@Autowired
 	ResourceManagementService resourceManagementService;
+	@Autowired
+	ExternalCodeService externalCodeService;
 
 	@Override
 	public AddMessageResponseObject addConformanceProfiles(Set<String> ids, Ig ig)
@@ -477,13 +480,14 @@ public class CrudServiceImpl implements CrudService {
 		if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
 			addPhinvadsAsIs(elm, savedIds,ig, username );
 		} else {
-			ig.getValueSetRegistry().getCodesPresence().put(elm.getId(), elm.isIncludeChildren());
 			savedIds.add(elm.getId());
 		}
 	}
 
 	private void addPhinvadsAsIs(AddingInfo elm, Set<String> savedIds, Ig ig, String username) throws ForbiddenOperationException {
-		Valueset valueset = valuesetService.findExternalPhinvadsByOid(elm.getOid());
+		
+		
+		Valueset valueset = !elm.isTrackLatest()? valuesetService.findPreLoadedPHINVADS(elm.getOid(), elm.getDomainInfo().getVersion()) :valuesetService.findTrackedPHINVADS(elm.getOid()) ;
 
 		if(valueset == null) {
 			Valueset newValueset = new Valueset();
@@ -491,8 +495,11 @@ public class CrudServiceImpl implements CrudService {
 			info.setScope(Scope.PHINVADS);
 			info.setVersion(elm.getDomainInfo().getVersion());
 			newValueset.setDomainInfo(info);
-			newValueset.setSourceType(SourceType.EXTERNAL);
-			newValueset.setUsername(username);
+			if(elm.isTrackLatest()) {
+				newValueset.setSourceType(SourceType.EXTERNAL_TRACKED);		
+			}else {				
+				newValueset.setSourceType(SourceType.EXTERNAL);		
+			}
 			newValueset.setBindingIdentifier(elm.getName());
 			newValueset.setUrl(elm.getUrl());
 			newValueset.setOid(elm.getOid());
@@ -503,10 +510,8 @@ public class CrudServiceImpl implements CrudService {
 			newValueset.setId(new ObjectId().toString());
 			newValueset.setResourceOrigin(ResourceOrigin.PHINVADS);
 			Valueset saved = valuesetService.save(newValueset);
-			ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
 			savedIds.add(saved.getId());
 		} else {
-			ig.getValueSetRegistry().getCodesPresence().put(valueset.getId(), elm.isIncludeChildren());
 			savedIds.add(valueset.getId());
 		}
 
@@ -521,11 +526,13 @@ public class CrudServiceImpl implements CrudService {
 	 * @throws ForbiddenOperationException 
 	 */
 	private void addValueSetAsFlavor(AddingInfo elm, Set<String> savedIds, Ig ig, String username) throws EntityNotFound, ForbiddenOperationException {
-		if (elm.getOriginalId() != null) {
+		 
+			if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+				importPhinvadsAsFlavor( elm, savedIds, ig, username);
+			} 
+			else if (elm.getOriginalId() != null) {
 
 			Valueset clone =  resourceManagementService.getElmentFormAddingInfo( username, new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT), Type.VALUESET, elm);
-
-
 			clone.getDomainInfo().setScope(Scope.USER);
 
 			clone.setUsername(username);
@@ -534,12 +541,11 @@ public class CrudServiceImpl implements CrudService {
 			ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), elm.isIncludeChildren());
 			savedIds.add(clone.getId());
 		} else {
-			if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
-				importPhinvadsAsFlavor( elm, savedIds, ig, username);
-			} else {
-				createNewValueSet( elm, savedIds, ig, username);
-			}
+			createNewValueSet( elm, savedIds, ig, username);
 		}
+	
+	
+	
 	}
 
 	/**
@@ -556,40 +562,53 @@ public class CrudServiceImpl implements CrudService {
 
 		Valueset valueset = new Valueset();
 		DomainInfo info = new DomainInfo();
-		info.setScope(Scope.USER);
-		info.setVersion(elm.getDomainInfo().getVersion());
-		valueset.setDomainInfo(info);
-		if (!elm.isIncludeChildren()) {
-			valueset.setSourceType(SourceType.EXTERNAL);
-			valueset.setCodes(new HashSet<Code>());
+		valueset.setSourceType(elm.getSourceType());
+
+		valueset.setOid(elm.getOid()); // for internals, it is only for reference
+		if(elm.isTrackLatest()) {
+		
 			valueset.setExtensibility(Extensibility.Closed);
 			valueset.setStability(Stability.Dynamic);
 			valueset.setContentDefinition(ContentDefinition.Extensional);
-		} else {
-			valueset.setSourceType(SourceType.INTERNAL);
+			valueset.setSourceType(SourceType.EXTERNAL_TRACKED);	
+			valueset.setUrl(elm.getUrl());
+
+		} else {				
+			info.setVersion(elm.getDomainInfo().getVersion());
 			valueset.setExtensibility(Extensibility.Open);
 			valueset.setStability(Stability.Static);
 			valueset.setContentDefinition(ContentDefinition.Extensional);
-			// Get codes from vocab service
-			if (elm.getOid() != null) {
-				Set<Code> vsCodes = fhirHandlerService.getValusetCodes(elm.getOid());
-				valueset.setCodes(vsCodes);
-				valueset.setCodeSystems(valuesetService.extractCodeSystemsFromCodes(vsCodes));
-			}
+			valueset.setSourceType(SourceType.EXTERNAL);	
+			valueset.setUrl(elm.getUrl());
+
 		}
+		
+		if (elm.isIncludeChildren()) {
+			
+			
+			Set<Code> vsCodes = externalCodeService.getCodesByURL(elm.getUrl());
+
+			if(vsCodes.size()<= 500) {
+				
+			valueset.setCodes(vsCodes);
+			valueset.setCodeSystems(valuesetService.extractCodeSystemsFromCodes(vsCodes));
+			valueset.setSourceType(SourceType.INTERNAL);
+
+			} 
+		}
+		
 		valueset.setUsername(username);
 		valueset.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
 		valueset.setBindingIdentifier(elm.getName());
 		valueset.setName(elm.getDescription());
-		valueset.setUrl(elm.getUrl());
-		valueset.setOid(elm.getOid());
+	
 		valueset.setFlavor(true);
 		valueset.setId(new ObjectId().toString());
+		info.setScope(Scope.USER);
+		valueset.setDomainInfo(info);
 		valueset.setResourceOrigin(ResourceOrigin.PHINVADS);
 		Valueset saved = valuesetService.save(valueset);
-		ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
 		savedIds.add(saved.getId());
-
 	}
 
 	/**

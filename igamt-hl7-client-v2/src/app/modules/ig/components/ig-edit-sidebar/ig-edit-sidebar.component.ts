@@ -263,7 +263,17 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
       withLatestFrom(this.documentRef$),
       take(1),
       map(([result, documentRef]) => {
-        this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: Type.VALUESET }));
+        if(result.redirect){
+        RxjsStoreHelperService.listenAndReact(this.actions, {
+          [IgEditActionTypes.AddResourceSuccess]: {
+            do: (action: AddResourceSuccess) => {
+              this.router.navigate(['./' + Type.VALUESET.toString().toLocaleLowerCase() + '/' + action.payload.targetResourceId], { relativeTo: this.activeRoute });
+              return of();
+            },
+          },
+        }).subscribe();
+      }
+        this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result.selected, type: Type.VALUESET }));
       }),
     ).subscribe();
 

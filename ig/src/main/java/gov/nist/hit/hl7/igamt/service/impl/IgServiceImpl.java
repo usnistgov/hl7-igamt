@@ -878,28 +878,28 @@ public class IgServiceImpl implements IgService {
 //				vs.setCodes(content.getCodes());
 //			}
 //		}
-		
-		// TODO Modify PHINVADS LOGIC
-		if (vs.getDomainInfo() != null && vs.getDomainInfo().getScope() != null) {
-			if (vs.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
-				Config conf = this.configService.findOne();
-				if (conf != null) {
-					vs.setUrl(conf.getPhinvadsUrl() + vs.getOid());
-				}
-			}
-		}
-		if (ig.getValueSetRegistry().getCodesPresence() != null) {
-			if (ig.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
-				if (ig.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
-					vs.setIncludeCodes(true);
-				} else {
-					vs.setIncludeCodes(false);
-					vs.setCodes(new HashSet<Code>());
-				}
-			} else {
-				vs.setIncludeCodes(true);
-			}
-		}
+//		
+//		// TODO Modify PHINVADS LOGIC
+//		if (vs.getDomainInfo() != null && vs.getDomainInfo().getScope() != null) {
+//			if (vs.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+//				Config conf = this.configService.findOne();
+//				if (conf != null) {
+//					vs.setUrl(conf.getPhinvadsUrl() + vs.getOid());
+//				}
+//			}
+//		}
+//		if (ig.getValueSetRegistry().getCodesPresence() != null) {
+//			if (ig.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
+//				if (ig.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
+//					vs.setIncludeCodes(true);
+//				} else {
+//					vs.setIncludeCodes(false);
+//					vs.setCodes(new HashSet<Code>());
+//				}
+//			} else {
+//				vs.setIncludeCodes(true);
+//			}
+//		}
 		vs.getCodes().removeIf((x) -> x.isDeprecated());
 		return vs;
 	}

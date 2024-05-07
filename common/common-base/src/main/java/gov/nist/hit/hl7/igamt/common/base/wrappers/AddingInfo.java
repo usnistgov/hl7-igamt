@@ -37,6 +37,9 @@ public class AddingInfo {
 	private Extensibility extensibility = Extensibility.Undefined;
 	private ContentDefinition contentDefinition = ContentDefinition.Undefined;
 	private CodeType codeType;
+	private boolean fromProvider; // do not look in DB
+	private boolean trackLatest;
+	
 
 	public Role getRole() {
 		return role;
@@ -170,6 +173,18 @@ public class AddingInfo {
 	}
 	public void setStability(Stability stability) {
 		this.stability = stability;
-	} 
-
+	}
+	public boolean isFromProvider() {
+		return fromProvider;
+	}
+	public void setFromProvider(boolean fromProvider) {
+		this.fromProvider = fromProvider;
+	}
+	public boolean isTrackLatest() {
+		return trackLatest;
+	}
+	public void setTrackLatest(boolean trackLatest) {
+		this.trackLatest = trackLatest;
+	}
+	
 }

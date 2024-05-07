@@ -1,16 +1,15 @@
-<h2 mat-dialog-title> Import from Phinvads</h2>
+<h2 mat-dialog-title> Import Phinvads Value Sets</h2>
 <mat-dialog-content>
+  <form #form='ngForm'>
 
   <div class="alert alert-danger" style="margin-bottom: 5px;" *ngIf="error">
-    {{ error.message }}
+    {{ error?.error?.message }}
   </div>
-  <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 15px;">
+  <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 15px;"   *ngIf="step == 1">
     <div>
-      <mat-spinner *ngIf="loading" class="verification-progress" diameter="30"></mat-spinner>
 
-      <p-table #dt1 [value]="fetchedCodeSets"
-      [globalFilterFields]="['bindingIdentifier','name']" scrollHeight="100%" sortField="bindingIdentifier"
-      scrollable="true">
+      <p-table *ngIf="!loadingSelected" #dt1 [value]="fetchedCodeSets"
+      [globalFilterFields]="['bindingIdentifier','name']"  sortField="name" [paginator]="true" [rows]="8" [loading]="loading">
       <ng-template pTemplate="caption">
         <div style="text-align: left">
           <div class="input-group" style="margin-left: 10px;">
@@ -27,6 +26,9 @@
           <th class="header-padding">
             Value Sets
           </th>
+          <th style="width:65px">
+            #Codes
+          </th>
           <th class="header-padding" style="width:65px">
             As Is
           </th>
@@ -39,7 +41,10 @@
         let-rowNode pTemplate="body">
         <tr>
           <td>
-                {{rowData.name}}
+              {{rowData.name}}
+          </td>
+          <td style="width:65px">
+            <span class="badge badge-secondary">{{rowData?.latestStableVersion?.numberOfCodes}}</span>
           </td>
 
           <td style="width:65px">
@@ -57,8 +62,106 @@
     </p-table>
     </div>
   </div>
+
+  <div *ngIf="step == 2" >
+
+    <div *ngIf="loadingSelected" style="display: flex; align-items: center; justify-content: center; height: 100%;">
+      <mat-spinner  diameter="70"></mat-spinner>
+    </div>
+
+
+<ng-container *ngIf="!loadingSelected">
+
+<div class="alert alert-danger" *ngIf="errorSelected">{{errorSelected?.error?.message}}</div>
+<ng-container *ngIf="selectedCodeSet">
+
+  <div class="form-group">
+    <label> <strong> Binging Identifier </strong> </label>
+    <span style="display: flex; flex-direction: row; justify-items: flex-start;">
+      <input [(ngModel)]="model.name" class="form-control" id="variableName" name="variableName" required style="width: 100%" type="text" [disabled]="!model.flavor" />
+    </span>
+    <div *ngIf="form.controls['variableName'] && form.controls['variableName'].errors"
+      style="color:red; font-size: 11px">
+      <div *ngIf="form.controls['variableName'].errors.required">
+        <span>*Binding Identifier is required</span>
+      </div>
+      <div *ngIf="form.controls['variableName'].errors.duplicated">
+        <span> *Binding Identifier is duplicated</span>
+      </div>
+      <div *ngIf="form.controls['variableName'].errors.invalidConvention">
+        <span> {{form.controls['variableName'].errors.invalidConvention}}</span>
+      </div>
+    </div>
+  </div>
+
+  <table class="table table-bordered" width="100%">
+    <tr style="background-color: #efeded;">
+      <th>Version </th>
+      <th > Codes </th>
+    </tr>
+    <tr>
+      <td >
+      <p-radioButton [(ngModel)]="versionMode" value="LATEST" inputId="latest"
+      name="versionMode"></p-radioButton> Track Latest
+        </td>
+        <td>
+          <span *ngIf="selectedCodeSet" class="badge badge-info">{{selectedCodeSet.latestStableVersion?.numberOfCodes}}</span>
+        </td>
+
+    </tr>
+    <tr>
+      <td>  <p-radioButton [(ngModel)]="versionMode" value="SPECIFIC" inputId="latest"
+        name="versionMode"></p-radioButton>
+          <span>
+            Specific
+          </span>
+          <span  *ngIf="versionMode ==='SPECIFIC'" style="margin-bottom: 20px;">
+            <p-dropdown
+              [options]="selectedCodeSet.versions"
+              [(ngModel)]="versionInfo"
+              optionLabel="version"
+              placeholder="Select Version"
+              name="defaultVersion"
+              dataKey="version">
+            </p-dropdown>
+          </span>
+      </td>
+
+      <td>
+        <span *ngIf="versionInfo" class="badge badge-info">{{versionInfo?.numberOfCodes}}</span>
+      </td>
+
+
+    </tr>
+    <tr>
+
+    </tr>
+    <ng-container *ngIf="model.flavor && versionMode ==='SPECIFIC'">
+    <tr style="background-color: #efeded;" >
+      <th colspan="2">Code Management</th>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <p-checkbox [(ngModel)]="model.includeChildren" binary="true" name="IncludeCode" [disabled]="versionInfo?.numberOfCodes> limit"></p-checkbox>  <span> As Snapshot (Allowed only if number of codes < {{limit}}) </span>
+      </td>
+    </tr>
+    </ng-container>
+
+  </table>
+</ng-container>
+
+
+</ng-container>
+  </div>
+
+</form>
 </mat-dialog-content>
-<mat-dialog-actions style="justify-content: flex-end;">
-  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
-  <button (click)="submit()" class="btn btn-sm btn-success">Submit</button>
+<mat-dialog-actions style=" display: flex;justify-content: space-between">
+  <p-checkbox [(ngModel)]="redirect" binary="true" label="Redirect to the Created Value Set"></p-checkbox>
+  <div style="justify-content: flex-end; margin-left: 20px;">
+    <button (click)="back()" class="btn btn-sm btn-secondary" style="margin-right: 5px;" *ngIf="step == 2">  Back </button>
+    <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+
+    <button (click)="submit()" [disabled]="form&& form.invalid" class="btn btn-sm btn-success" (click) = "submit()">Submit</button>
+  </div>
 </mat-dialog-actions>

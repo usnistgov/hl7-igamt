@@ -1188,6 +1188,7 @@ public class IGDocumentController extends BaseController {
 				info.setTargetResourceId(objects.getValueSets().stream().findAny().get().getId());
 			}
 		}
+		info.setTargetResourceId(info.getValueSets().stream().findFirst().get().getId());
 		return new ResponseMessage<IGDisplayInfo>(Status.SUCCESS, "", "Value Sets Added Succesfully", ig.getId(), false,
 				ig.getUpdateDate(), info);
 	}

@@ -7,7 +7,7 @@ public class CodesetResponse {
     private String name;
     private VersionMetadata latestStableVersion;
     private List<VersionMetadata> versions;
-    private List<CodesetResponse> codes;
+    private List<ExternalCode> codes;
     private String codeMatchValue;
 
     public CodesetResponse() {
@@ -45,13 +45,7 @@ public class CodesetResponse {
         this.versions = versions;
     }
 
-    public List<CodesetResponse> getCodes() {
-        return codes;
-    }
 
-    public void setCodes(List<CodesetResponse> codes) {
-        this.codes = codes;
-    }
 
     public String getCodeMatchValue() {
         return codeMatchValue;
@@ -60,4 +54,12 @@ public class CodesetResponse {
     public void setCodeMatchValue(String codeMatchValue) {
         this.codeMatchValue = codeMatchValue;
     }
+
+	public List<ExternalCode> getCodes() {
+		return codes;
+	}
+
+	public void setCodes(List<ExternalCode> codes) {
+		this.codes = codes;
+	}
 }

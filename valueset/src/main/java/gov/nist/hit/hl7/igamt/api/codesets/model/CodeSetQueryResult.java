@@ -9,7 +9,7 @@ public class CodeSetQueryResult {
 	private Version version;
 	private boolean isLatestStable;
 	private String codeMatchValue;
-	private List<Code> codes;
+	private List<ExternalCode> codes;
 
 	public String getId() {
 		return id;
@@ -51,11 +51,11 @@ public class CodeSetQueryResult {
 		this.codeMatchValue = codeMatchValue;
 	}
 
-	public List<Code> getCodes() {
+	public List<ExternalCode> getCodes() {
 		return codes;
 	}
 
-	public void setCodes(List<Code> codes) {
+	public void setCodes(List<ExternalCode> codes) {
 		this.codes = codes;
 	}
 

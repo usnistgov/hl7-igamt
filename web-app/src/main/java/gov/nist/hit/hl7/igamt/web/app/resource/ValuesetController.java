@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import gov.nist.hit.hl7.igamt.access.active.NotifySave;
-import gov.nist.hit.hl7.igamt.api.codesets.service.CodeSetAdapterService;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.r4.model.ValueSet;
@@ -73,9 +72,7 @@ public class ValuesetController extends BaseController {
 	
 	@Autowired
 	FhirHandlerService fhirHandlerService;
-	@Autowired
-	CodeSetAdapterService codeSetAdapterService;
-
+	
 	private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
 
 	public ValuesetController() {
@@ -89,22 +86,22 @@ public class ValuesetController extends BaseController {
 				valuesetService.findByDomainInfoScopeAndDomainInfoVersion(scope, version));
 	}
 
-	@RequestMapping(value = "/api/valuesets/{scope}/info", method = RequestMethod.GET, produces = {
-	"application/json" })
-	// TODO
-	public @ResponseBody ResponseMessage<List<Valueset>> findDisplayFormatByScope(
-			@PathVariable String scope, Authentication authentication) {
-		
-		List<Valueset> ret = new ArrayList<Valueset>();
-		
-		if(scope.equals(Scope.PHINVADS.toString())){
-			ret = codeSetAdapterService.getAllAvailablePhinvads();
-		}
-		List<Valueset> vs =  valuesetService.findDisplayFormatByScope(scope);
-		
-		return new ResponseMessage<List<Valueset>>(Status.SUCCESS, "", "", null, false, null,
-				ret);
-	}
+//	@RequestMapping(value = "/api/valuesets/{scope}/info", method = RequestMethod.GET, produces = {
+//	"application/json" })
+//	// TODO
+//	public @ResponseBody ResponseMessage<List<Valueset>> findDisplayFormatByScope(
+//			@PathVariable String scope, Authentication authentication) {
+//		
+//		List<Valueset> ret = new ArrayList<Valueset>();
+//		
+//		if(scope.equals(Scope.PHINVADS.toString())){
+//			ret = codeSetAdapterService.getAllAvailablePhinvads();
+//		}
+//		List<Valueset> vs =  valuesetService.findDisplayFormatByScope(scope);
+//		
+//		return new ResponseMessage<List<Valueset>>(Status.SUCCESS, "", "", null, false, null,
+//				ret);
+//	}
 
 	@RequestMapping(value = "/api/valuesets/{id}/resources", method = RequestMethod.GET, produces = {
 	"application/json" })
