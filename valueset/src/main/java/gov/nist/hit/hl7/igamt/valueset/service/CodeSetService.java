@@ -18,7 +18,7 @@ public interface CodeSetService {
 	CodeSetInfo getCodeSetInfo(String id, String username)
 			throws ResourceNotFoundException, ForbiddenOperationException;
 
-	CodeSetVersionContent getCodeSetVersionContent(String id, String codeSetVersionId, String username) throws ResourceNotFoundException;
+	CodeSetVersionContent getCodeSetVersionContent(String id, String codeSetVersionId) throws ResourceNotFoundException;
 
 	CodeSetVersion saveCodeSetVersionContent(String id, String versionId, CodeSetVersionContent content, String username) throws ResourceNotFoundException, ForbiddenOperationException;
 

@@ -4,18 +4,20 @@ import gov.nist.hit.hl7.igamt.access.common.ResourceAccessInfoFetcher;
 import gov.nist.hit.hl7.igamt.access.model.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.service.impl.UserResourcePermissionService;
 import gov.nist.hit.hl7.igamt.workspace.domain.Workspace;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissionType;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspacePermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 @Service
-public class AccessControlService {
-
+public class AccessControlService implements UserResourcePermissionService {
 
     @Autowired
     private WorkspacePermissionService workspacePermissionService;
@@ -29,10 +31,7 @@ public class AccessControlService {
         if(granted.contains(requested) || granted.contains(AccessLevel.ALL)) {
             return true;
         }
-        if(requested.equals(AccessLevel.READ) && granted.contains(AccessLevel.WRITE)) {
-            return true;
-        }
-        return false;
+        return requested.equals(AccessLevel.READ) && granted.contains(AccessLevel.WRITE);
     }
 
     public Set<AccessLevel> getDocumentAccessPermission(Type type, String id, AccessToken token) throws ResourceNotFoundException {
@@ -257,4 +256,14 @@ public class AccessControlService {
         return token.getAuthorities() != null && token.getAuthorities().stream().anyMatch((a) -> a.getAuthority().equals("ADMIN"));
     }
 
+    @Override
+    public boolean hasPermission(Type type, String id, AccessLevel level) {
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        AccessToken currentUser = new AccessToken(usernamePasswordAuthenticationToken.getName(), new HashSet<>(usernamePasswordAuthenticationToken.getAuthorities()));
+        try {
+            return this.checkResourceAccessPermission(type, id, currentUser, level);
+        } catch(Exception e) {
+            return false;
+        }
+    }
 }

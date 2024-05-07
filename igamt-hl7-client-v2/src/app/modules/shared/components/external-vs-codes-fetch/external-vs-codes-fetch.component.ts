@@ -13,6 +13,8 @@ export class ExternalVsCodesFetchComponent implements OnInit {
 
     @Input()
     URL: string;
+    @Input()
+    fetchOnInit: boolean;
     @Output()
     codeSet: EventEmitter<ICodeSetQueryResult> = new EventEmitter<ICodeSetQueryResult>();
     useKey = false;
@@ -75,6 +77,8 @@ export class ExternalVsCodesFetchComponent implements OnInit {
     }
 
     ngOnInit() {
-      this.fetch();
-     }
+        if (this.fetchOnInit && this.URL) {
+            this.fetch();
+        }
+    }
 }
