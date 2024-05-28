@@ -352,7 +352,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     this.checkUnused.emit({ children: registryNode.children, type: registryNode.type });
   }
 
-  addFromProvider(providerId: string){
+  addFromProvider(providerId: string) {
     this.addChildrenFromProvider.emit(providerId);
   }
 

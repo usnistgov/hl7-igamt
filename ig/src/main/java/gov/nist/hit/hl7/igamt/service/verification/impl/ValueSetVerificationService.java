@@ -75,7 +75,7 @@ public class ValueSetVerificationService extends VerificationUtils {
 		}
 		if(userResourcePermissionService.hasPermission(Type.CODESET, valueset.getCodeSetReference().getCodeSetId(), AccessLevel.READ)) {
 			try {
-				CodeSetVersionContent content = this.codeSetService.getCodeSetVersionContent(valueset.getCodeSetReference().getCodeSetId(), valueset.getCodeSetReference().getVersionId());
+				CodeSetVersionContent content = this.codeSetService.getLatestCodeVersion(valueset.getCodeSetReference().getCodeSetId());
 				return checkCodes(content.getCodes(), valueset.getId());
 			} catch(ResourceNotFoundException e) {
 				issues.add(

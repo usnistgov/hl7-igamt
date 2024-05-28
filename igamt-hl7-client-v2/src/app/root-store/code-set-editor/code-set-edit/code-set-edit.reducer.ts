@@ -10,11 +10,7 @@ export const initialState: IState = {
 };
 
 export function reducer(state = initialState, action: CodeSetEditActions): IState {
-  switch (action.type) {
 
-    case CodeSetEditActionTypes.CodeSetEditResolverLoad:
+  return state;
 
-    default:
-      return state;
-  }
 }

@@ -312,8 +312,6 @@ export class ValueSetStructureComponent implements OnInit {
     }).afterClosed().pipe(
       tap((browserResult: IBrowserTreeNode) => {
         let codeSetId: string;
-        let codeSetVersionId: string;
-
         if (browserResult.data.type === Type.CODESET) {
           codeSetId = browserResult.data.id;
         }
@@ -373,7 +371,7 @@ export class ValueSetStructureComponent implements OnInit {
     document.body.removeChild(link);
   }
 
-  resolveInternal(codeSetId: string, updateRef?: boolean) {
+  resolveInternal(codeSetId: string, updateRef?: boolean ) {
       this.codesLoading = true;
       this.loadingError = null;
       this.codeSetService.getCodeSetVersionLatest(codeSetId).pipe(

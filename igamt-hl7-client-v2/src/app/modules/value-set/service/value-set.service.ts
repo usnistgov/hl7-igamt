@@ -35,12 +35,12 @@ export class ValueSetService {
   }
 
   exportCodeCSVFile(vsId: string) {
-    const form = document.createElement('form');
-    form.action = 'api/valuesets/export-code-csv/' + vsId;
-    form.method = 'POST';
-    form.style.display = 'none';
-    document.body.appendChild(form);
-    form.submit();
+    const codeForm = document.createElement('form');
+    codeForm.action = 'api/valuesets/export-code-csv/' + vsId;
+    codeForm.method = 'POST';
+    codeForm.style.display = 'none';
+    document.body.appendChild(codeForm);
+    codeForm.submit();
   }
 
 }

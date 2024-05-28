@@ -497,7 +497,7 @@ public class CrudServiceImpl implements CrudService {
 			newValueset.setDomainInfo(info);
 			if(elm.isTrackLatest()) {
 				newValueset.setSourceType(SourceType.EXTERNAL_TRACKED);		
-			}else {				
+			} else {				
 				newValueset.setSourceType(SourceType.EXTERNAL);		
 			}
 			newValueset.setBindingIdentifier(elm.getName());
@@ -593,7 +593,6 @@ public class CrudServiceImpl implements CrudService {
 			valueset.setCodes(vsCodes);
 			valueset.setCodeSystems(valuesetService.extractCodeSystemsFromCodes(vsCodes));
 			valueset.setSourceType(SourceType.INTERNAL);
-
 			} 
 		}
 		

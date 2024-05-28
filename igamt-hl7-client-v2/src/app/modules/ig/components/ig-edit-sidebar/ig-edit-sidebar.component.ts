@@ -11,6 +11,7 @@ import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import { concatMap, filter, flatMap, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { BuildValueSetComponent } from 'src/app/modules/shared/components/build-value-set/build-value-set.component';
 import { ImportFromLibComponent } from 'src/app/modules/shared/components/import-from-lib/import-from-lib.component';
+import { ImportFromProviderComponent } from 'src/app/modules/shared/components/import-from-provider/import-from-provider.component';
 import { Hl7Config } from 'src/app/modules/shared/models/config.class';
 import { IContent } from 'src/app/modules/shared/models/content.interface';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
@@ -82,7 +83,6 @@ import { SourceType } from './../../../shared/models/adding-info';
 import { VerificationService } from './../../../shared/services/verification.service';
 import { ITypedSection } from './../ig-toc/ig-toc.component';
 import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
-import { ImportFromProviderComponent } from 'src/app/modules/shared/components/import-from-provider/import-from-provider.component';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -253,30 +253,56 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     subscription.unsubscribe();
   }
 
+  // addChildrenFromProvider(providerId: string){
+  //   const dialogRef = this.dialog.open(ImportFromProviderComponent, {
+  //     data: {},
+  //   });
+  //   dialogRef.afterClosed().pipe(
+  //     filter((x) => x !== undefined),
+  //     withLatestFrom(this.documentRef$, this.config$),
+  //     take(1),
+  //     map(([result, documentRef, config]) => {
+  //       if(result.redirect){
+  //       RxjsStoreHelperService.listenAndReact(this.actions, {
+  //         [IgEditActionTypes.AddResourceSuccess]: {
+  //           do: (action: AddResourceSuccess) => {
+  //             this.router.navigate(['./' + Type.VALUESET.toString().toLocaleLowerCase() + '/' + action.payload.targetResourceId], { relativeTo: this.activeRoute });
+  //             return of();
+  //           },
+  //         },
+  //       }).subscribe();
+  //     }
+  //       this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result.selected, type: Type.VALUESET }));
+  //     }),
+  //   ).subscribe();
+  // }
 
-  addChildrenFromProvider(providerId: string){
-    const dialogRef = this.dialog.open(ImportFromProviderComponent, {
-      data: {},
-    });
-    dialogRef.afterClosed().pipe(
-      filter((x) => x !== undefined),
-      withLatestFrom(this.documentRef$),
+  addChildrenFromProvider(providerId: string) {
+    this.config$.pipe(
       take(1),
-      map(([result, documentRef]) => {
-        if(result.redirect){
-        RxjsStoreHelperService.listenAndReact(this.actions, {
-          [IgEditActionTypes.AddResourceSuccess]: {
-            do: (action: AddResourceSuccess) => {
-              this.router.navigate(['./' + Type.VALUESET.toString().toLocaleLowerCase() + '/' + action.payload.targetResourceId], { relativeTo: this.activeRoute });
-              return of();
-            },
-          },
-        }).subscribe();
-      }
-        this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result.selected, type: Type.VALUESET }));
+      switchMap((conf) => {
+        const dialogRef = this.dialog.open(ImportFromProviderComponent, {
+          data: { url: conf.phinvadsUrl },
+        });
+        return dialogRef.afterClosed().pipe(
+          filter((x) => x !== undefined),
+          withLatestFrom(this.documentRef$),
+          map(([result, documentRef]) => {
+            if (result && result.redirect) {
+              RxjsStoreHelperService.listenAndReact(this.actions, {
+                [IgEditActionTypes.AddResourceSuccess]: {
+                  do: (action: AddResourceSuccess) => {
+                    this.router.navigate(['./' + Type.VALUESET.toString().toLocaleLowerCase() + '/' + action.payload.targetResourceId], { relativeTo: this.activeRoute });
+                    return of();
+                  },
+                },
+              }).subscribe();
+            }
+            this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result.selected, type: Type.VALUESET }));
+          }),
+        );
       }),
     ).subscribe();
-
   }
 
   addMessages(event: IAddWrapper) {

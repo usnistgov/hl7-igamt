@@ -8,7 +8,7 @@ export interface IVersion {
     version: string;
     date: Date;
 }
-export interface VersionInfo {
+export class VersionInfo {
   version: string;
   date: number;
   numberOfCodes: number;
@@ -22,7 +22,6 @@ export interface ICodeSetQueryMetaData {
   codeMatchValue: any;
   id: string;
 }
-
 
 export interface ICodeSetQueryResult {
     id: string;
@@ -43,8 +42,6 @@ export interface IExternalCode {
     usage: CodeUsage;
 }
 
-
-
 export interface IResponseError {
     message: string;
     statusCode: number;
@@ -62,48 +59,33 @@ export class ExternalCodeSetService {
     fetchCodes(url: string, key?: string): Observable<ICodeSetQueryResult> {
         const options = key ? { headers: { 'X-API-KEY': key } } : {};
         return this.httpClient.get<ICodeSetQueryResult>(url, options).pipe(
-            catchError((result: HttpErrorResponse) => {
-                return throwError({
-                    error: result,
-                    message: result.error ? result.error.message : undefined,
-                    statusCode: result.status,
-                });
-            }),
+          catchError(this.handleError),
         );
     }
 
-
   fetchAvailableCodeSets(url: string, key?: string): Observable<ICodeSetQueryResult[]> {
-
-    // url = "http://hit-dev-admin.nist.gov:19070/api/v1/phinvads/codesets";
-
       const options = key ? { headers: { 'X-API-KEY': key } } : {};
       return this.httpClient.get<ICodeSetQueryResult[]>(url, options).pipe(
-          catchError((result: HttpErrorResponse) => {
-              return throwError({
-                  error: result,
-                  message: result.error ? result.error.message : undefined,
-                  statusCode: result.status,
-              });
-          }),
+        catchError(this.handleError),
       );
   }
 
   fetchCodeSetMetadata(url: string, oid: string,  key?: string): Observable<ICodeSetQueryMetaData> {
 
-    url = "http://hit-dev-admin.nist.gov:19070/api/v1/phinvads/codesets/"+ oid + '/metadata';
+    url = url +  '/' + oid + '/metadata';
 
-
-     const options = key ? { headers: { 'X-API-KEY': key } } : {};
-     return this.httpClient.get<ICodeSetQueryMetaData>(url, options).pipe(
-         catchError((result: HttpErrorResponse) => {
-             return throwError({
-                 error: result,
-                 message: result.error ? result.error.message : undefined,
-                 statusCode: result.status,
-             });
-         }),
+    const options = key ? { headers: { 'X-API-KEY': key } } : {};
+    return this.httpClient.get<ICodeSetQueryMetaData>(url, options).pipe(
+      catchError(this.handleError),
      );
+    }
+
+    private handleError(result: HttpErrorResponse) {
+      return throwError({
+        error: result,
+        message: result.error ? result.error.message : undefined,
+        statusCode: result.status,
+      });
     }
 
 }

@@ -104,6 +104,7 @@ import { IgTypeComponent } from './components/ig-type/ig-type.component';
 import { ImportCodeCSVComponent } from './components/import-code-csv/import-code-csv.component';
 import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
 import { ImportFromLibComponent } from './components/import-from-lib/import-from-lib.component';
+import { ImportFromProviderComponent } from './components/import-from-provider/import-from-provider.component';
 import { ImportStructureComponent } from './components/import-structure/import-structure.component';
 import { InputCopyComponent } from './components/input-copy/input-copy.component';
 import { IssueBadgeComponent } from './components/issue-badge/issue-badge.component';
@@ -161,7 +162,6 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { ImportFromProviderComponent } from './components/import-from-provider/import-from-provider.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
