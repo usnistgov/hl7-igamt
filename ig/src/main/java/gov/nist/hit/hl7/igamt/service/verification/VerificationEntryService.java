@@ -112,8 +112,9 @@ public interface VerificationEntryService {
     IgamtObjectError CardinalityNotAllowedMaxCardinality(LocationInfo info, String id, Type type, String max);
     IgamtObjectError CardinalityNotAllowedMinZero(LocationInfo info, String id, Type type, String min);
     IgamtObjectError CardinalityNotAllowedMin(LocationInfo info, String id, Type type, String usage, String min);
-    
-    
+    IgamtObjectError CardinalityMissingMaxCardinality(LocationInfo info, String id, Type type);
+
+
     // Length
     IgamtObjectError ConfLengthInvalid(LocationInfo info, String id, Type type, String confLength);
     IgamtObjectError LengthOrConfLengthMissing(LocationInfo info, String id, Type type);
