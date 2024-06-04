@@ -883,11 +883,7 @@ public class BootstrapApplication implements CommandLineRunner {
 		
 		for ( Valueset vs : users) {
 			if(vs.getOid() != null) {
-				
 		    vs.setResourceOrigin(ResourceOrigin.PHINVADS);
-				
-				
-			
 			String oidURL =url + vs.getOid();
 
 			if(vs.getDomainInfo().getVersion() != null) {
@@ -895,14 +891,10 @@ public class BootstrapApplication implements CommandLineRunner {
 			} 
 			if(vs.getSourceType().equals(SourceType.EXTERNAL)) {
 				vs.setUrl(oidURL);
-
 			}
 			this.valuesetService.save(vs);
 			}
 		}
-		
-		
-		
 	}
 	
 

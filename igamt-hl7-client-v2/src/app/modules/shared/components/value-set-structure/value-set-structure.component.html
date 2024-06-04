@@ -223,11 +223,11 @@
               <i class="fa fa-download"></i>
               Export Codes (CSV)
             </button>
-            <button class="btn btn-info btn-sm" (click)="linkToCodeSet()">
+            <button class="btn btn-info btn-sm" (click)="linkToCodeSet()" *ngIf="!viewOnly">
               <i class="fa fa-link" aria-hidden="true"></i>
               Link To CodeSet
             </button>
-            <button class="btn btn-danger btn-sm" (click)="detach()">
+            <button class="btn btn-danger btn-sm" (click)="detach()" *ngIf="!viewOnly">
               <i class="fa fa-remove" aria-hidden="true"></i>
               Detach
             </button>

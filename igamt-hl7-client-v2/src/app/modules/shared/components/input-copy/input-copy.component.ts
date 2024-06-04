@@ -23,6 +23,7 @@ export class InputCopyComponent implements OnInit {
         this.copied = true;
         setTimeout(() => {
             this.copied = false;
+            this.type = "text";
         }, 600);
     }
 

@@ -22,8 +22,6 @@ import * as fromDam from '../../../dam-framework/store';
 import { ICodeSetInfo, ICodeSetVersionContent } from '../../models/code-set.models';
 import { CodeSetServiceService } from '../../services/CodeSetService.service';
 import { EditorChange } from './../../../dam-framework/store/data/dam.actions';
-import { ImportCodeCSVComponent } from './../../../shared/components/import-code-csv/import-code-csv.component';
-import { ICodes } from './../../../shared/models/value-set.interface';
 
 @Component({
   selector: 'app-code-set-dash-board',
@@ -47,7 +45,6 @@ export class CodeSetDashBoardComponent extends DamAbstractEditorComponent implem
   constructor(
     actions$: Actions,
     store: Store<any>,
-    private dialog: MatDialog,
     private messageService: MessageService,
     private codeSetService: CodeSetServiceService,
   ) {

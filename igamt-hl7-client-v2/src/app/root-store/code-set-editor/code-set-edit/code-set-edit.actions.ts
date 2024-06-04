@@ -75,4 +75,4 @@ export class OpenCodeSetDashboardEditor extends OpenEditorBase {
     super();
   }
 }
-export type CodeSetEditActions = CodeSetEditResolverLoad | CodeSetEditResolverLoadSuccess | CodeSetEditResolverLoadFailure | OpenCodeSetMetadataEditor  | OpenCodeSetVersionEditor | OpenCodeSetAccessManagementEditor;
+export type CodeSetEditActions = CodeSetEditResolverLoad | CodeSetEditResolverLoadSuccess | CodeSetEditResolverLoadFailure | OpenCodeSetMetadataEditor  | OpenCodeSetVersionEditor | OpenCodeSetAccessManagementEditor | OpenCodeSetDashboardEditor;

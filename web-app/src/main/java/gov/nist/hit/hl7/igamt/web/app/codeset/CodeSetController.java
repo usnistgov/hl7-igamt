@@ -166,7 +166,7 @@ public class CodeSetController {
 
 
 	@RequestMapping(value = "/api/code-sets/exportCSV/{id}", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-	@PreAuthorize("AccessResource('CODESET', #id, READ)")
+	//@PreAuthorize("AccessResource('CODESETVERSION', #id, READ)")
 	public void exportCSV(@PathVariable("id") String id, HttpServletResponse response)
 			throws IOException, ResourceNotFoundException {
 		CodeSetVersion codeSetVersion = this.codeSetService.findById(id);

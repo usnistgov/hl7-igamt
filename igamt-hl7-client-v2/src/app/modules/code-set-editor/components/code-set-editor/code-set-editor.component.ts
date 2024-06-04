@@ -30,9 +30,7 @@ export class CodeSetEditorComponent extends DamWidgetComponent implements OnInit
     protected store: Store<any>,
     dialog: MatDialog) {
     super(CODE_SET_EDIT_WIDGET_ID, store, dialog);
-
     this.metadata$ = this.store.select(selectCodeSetMetadata);
-
   }
 
   ngOnInit(): void {
