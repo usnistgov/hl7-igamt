@@ -234,7 +234,9 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
             condition.appendChild(element);
         } else {
             String script = this.assertionXMLSerialization.generateAssertionScript(assertion, Level.CONFORMANCEPROFILE, cpId, null, true);
-            condition.appendChild(script);
+            Element element = new Element("Assertion");
+            element.appendChild(this.innerXMLHandler(script));
+            condition.appendChild(element);
         }
 
         condition.appendChild(description);

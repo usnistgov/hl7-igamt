@@ -857,7 +857,18 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .entry();
 	}
 
-	@Override
+    @Override
+    public IgamtObjectError CardinalityMissingMaxCardinality(LocationInfo locationInfo, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("CARDINALITY_MISSING_MAX")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.CARDINALITY)
+                .message("Max Cardinality is missing.")
+                .entry();
+    }
+
+    @Override
 	public IgamtObjectError CardinalityNotAllowedMaxCardinality(LocationInfo locationInfo, String id, Type type, String max) {
 		return new IgamtVerificationEntryBuilder("CARDINALITY_NOT_ALLOWED_MAX")
 				.error()
