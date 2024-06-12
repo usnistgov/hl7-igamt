@@ -261,7 +261,6 @@
 							</xsl:with-param>
 						</xsl:call-template>
 					</xsl:if>
-					// this code is working for now but we need to implements more
 					<!-- <xsl:if test="count(./Constraint[@Type='pre']) &gt; 0"> -->
 					<xsl:element name="br" />
 					<xsl:call-template name="Constraint">
@@ -360,11 +359,12 @@
 							.centered-table {
 							text-align: center;
 							}
+
 						</style>
 					</head>
 					<body>
 						<center>
-							<table style="background-color:#e0e0eb;" width="700" border="1"
+							<table style="background-color:#e0e0eb;" width="800" border="1"
 								   cellspacing="1" cellpadding="1">
 								<tr>
 									<td>
@@ -380,7 +380,7 @@
 												<b>Purpose and Use : </b>
 												<xsl:value-of select="substring-before(substring-after(@usageNotes, '&gt;'), '&lt;')"  />
 											</p>
-											<table class="centered-table" width="600">
+											<table class="centered-table" width="800">
 												<tr>
 													<th class="grisfonce" colspan="10" style="text-align: center;">
 														<font color="#cc0000"><xsl:value-of select="concat(@datatypeFlavor,'(',@datatypeName,')',' Data type')" /></font>
@@ -426,9 +426,9 @@
 													</th>
 												</tr>
 											</table>
-											<table class="centered-table" id="customers" width="600">
+											<table class="centered-table" id="customers" width="800">
 												<tr>
-													<td colspan="1">
+													<td colspan="1" width="50">
 														<font color="#cc0000">SEQ</font>
 													</td>
 													<td colspan="5">
