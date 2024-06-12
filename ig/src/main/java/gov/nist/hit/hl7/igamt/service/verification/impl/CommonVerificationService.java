@@ -235,6 +235,14 @@ public class CommonVerificationService {
 						)
 				);
 			}
+		} else {
+			result.add(
+					this.verificationEntryService.CardinalityMissingMaxCardinality(
+							location,
+							id,
+							type
+					)
+			);
 		}
 		return result;
 	}

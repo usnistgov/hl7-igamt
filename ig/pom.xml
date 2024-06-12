@@ -115,4 +115,10 @@
 		<!-- <dependency> <groupId>gov.nist.hit.hl7</groupId> <artifactId>document-export</artifactId> 
 			<version>${parent.version}</version> </dependency> -->
 	</dependencies>
+	<repositories>
+		<repository>
+			<id>hit-nexus</id>
+			<url>https://hit-nexus.nist.gov/repository/releases</url>
+		</repository>
+	</repositories>
 </project>

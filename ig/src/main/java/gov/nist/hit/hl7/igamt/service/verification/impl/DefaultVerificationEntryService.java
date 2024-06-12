@@ -857,7 +857,18 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .entry();
 	}
 
-	@Override
+    @Override
+    public IgamtObjectError CardinalityMissingMaxCardinality(LocationInfo locationInfo, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("CARDINALITY_MISSING_MAX")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.CARDINALITY)
+                .message("Max Cardinality is missing.")
+                .entry();
+    }
+
+    @Override
 	public IgamtObjectError CardinalityNotAllowedMaxCardinality(LocationInfo locationInfo, String id, Type type, String max) {
 		return new IgamtVerificationEntryBuilder("CARDINALITY_NOT_ALLOWED_MAX")
 				.error()
@@ -897,7 +908,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.LENGTH)
-                .message(String.format("Either # or = can be used to define truncation. The current ConfLength is %s", confLength))
+                .message(String.format("The current ConfLength is '%s'. The truncation flag was left unspecified. The best practice is to define truncation by using '=' (truncation NOT allowed) or '#' (truncation allowed). If unspecified, the default behavior is that truncation is allowed '#'.", confLength))
                 .entry();
 	}
 
