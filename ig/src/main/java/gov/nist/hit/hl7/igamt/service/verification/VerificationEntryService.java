@@ -89,6 +89,7 @@ public interface VerificationEntryService {
     IgamtObjectError AssertionComparisonDateTimeIncompatible(Location location, String id, Type type, LocationInfo path1, String path1ResourceName, LocationInfo path2, String path2ResourceName);
     IgamtObjectError FreeTextAssertionScriptMissing(Location location, String id, Type type);
     IgamtObjectError FreeTextAssertionXMLInvalid(Location location, String id, Type type, String xmlError);
+    IgamtObjectError FreeTextAssertionXMLLegacyValueSet(Location location, String id, Type type);
     IgamtObjectError DuplicateConformanceStatementIdentifier(Location location, String id, Type type, String identifier);
 
     // Value Sets

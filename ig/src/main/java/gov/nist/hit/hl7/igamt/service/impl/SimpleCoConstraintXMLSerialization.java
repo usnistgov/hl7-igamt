@@ -225,6 +225,7 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
         Element condition = new Element("Condition");
         Element description = new Element("Description");
         description.appendChild(assertion.getDescription());
+        condition.appendChild(description);
 
         if(!Strings.isNullOrEmpty(context.getPathId())) {
             InstancePath groupInstancePath = this.generatePathService.getInstancePath(context.getPathId(), "*");
@@ -238,8 +239,6 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
             element.appendChild(this.innerXMLHandler(script));
             condition.appendChild(element);
         }
-
-        condition.appendChild(description);
         return condition;
     }
 
