@@ -35,7 +35,7 @@
   </div>
 </mat-dialog-content>
 <mat-dialog-actions style=" display: flex;justify-content: space-between">
-  <p-checkbox [(ngModel)]="redirect" binary="true" label="redirect to the created value sets"></p-checkbox>
+  <p-checkbox [(ngModel)]="redirect" binary="true" label="redirect to the created code sets"></p-checkbox>
   <div style="justify-content: flex-end;margin-left:5px;">
     <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
     <button (click)="submit()" [disabled]="!this.preview || this.errorMessage" class="btn btn-sm btn-success">Submit</button>

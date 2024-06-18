@@ -68,6 +68,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.ResourceOrigin;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
@@ -893,6 +894,41 @@ public class BootstrapApplication implements CommandLineRunner {
 				vs.setUrl(oidURL);
 			}
 			this.valuesetService.save(vs);
+			}
+		}
+	}
+	//@PostConstruct
+	void updateVAlueSetSectionName(){
+		List<Ig> all = this.igRepo.findAll();
+		for(Ig ig: all) {
+			for( TextSection section: ig.getContent()) {
+				if (section.getType().equals(Type.PROFILE)) {
+					for (TextSection sub: section.getChildren() ) {
+						if(sub.getType().equals(Type.VALUESETREGISTRY)) {
+							sub.setLabel("Code Sets");
+							igRepo.save(ig);
+							break;
+						}
+					}
+					break;
+				}
+				
+			}
+		}
+		List<IgTemplate> templates = this.igTemplateRepository.findAll();
+		for(IgTemplate ig: templates) {
+			for( SectionTemplate section: ig.getChildren()) {
+				if (section.getType().equals(Type.PROFILE)) {
+					for (SectionTemplate sub: section.getChildren() ) {
+						if(sub.getType().equals(Type.VALUESETREGISTRY)) {
+							sub.setLabel("Code Sets");
+							igTemplateRepository.save(ig);
+							break;
+						}
+					}
+					break;
+				}
+				
 			}
 		}
 	}

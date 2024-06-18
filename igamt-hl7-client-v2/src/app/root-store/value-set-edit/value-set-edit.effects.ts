@@ -73,7 +73,7 @@ export class ValueSetEditEffects {
       return this.message.actionFromError(action.error);
     }),
   );
-  valueSetNotFound = 'Could not find Value Set with ID ';
+  valueSetNotFound = 'Could not find Code Set with ID ';
 
   @Effect()
   openValueSetPreDefEditor$ = this.editorHelper.openDefEditorHandler<string, OpenValueSetPreDefEditor>(

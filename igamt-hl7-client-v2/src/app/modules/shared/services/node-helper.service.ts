@@ -53,7 +53,7 @@ export class NodeHelperService {
     {
       disabled: false,
       position: 6,
-      label: 'Value Sets',
+      label: 'Code Sets',
       registryType: Type.VALUESETREGISTRY,
 
     },

@@ -250,7 +250,7 @@ export class LibraryEditSidebarComponent implements OnInit {
       case Type.CONFORMANCEPROFILE:
         return 'Conformance Profiles';
       case Type.VALUESET:
-        return 'Value Sets';
+        return 'Code Sets';
       default:
         return '';
     }

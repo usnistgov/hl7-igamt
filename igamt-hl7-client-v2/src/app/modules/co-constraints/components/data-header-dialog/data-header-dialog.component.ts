@@ -48,7 +48,7 @@ export class DataHeaderDialogComponent implements OnInit {
   ];
 
   coded = [
-    { label: 'Value Set', value: CoConstraintColumnType.VALUESET },
+    { label: 'Code Set', value: CoConstraintColumnType.VALUESET },
     { label: 'Code', value: CoConstraintColumnType.CODE },
   ];
 
@@ -89,7 +89,7 @@ export class DataHeaderDialogComponent implements OnInit {
     if (bindingInfo) {
       this.constraints = [
         ...(bindingInfo.coded ? [{ label: 'Code', value: CoConstraintColumnType.CODE }] : []),
-        ...(bindingInfo.allowValueSets ? [{ label: 'Value Set', value: CoConstraintColumnType.VALUESET }] : []),
+        ...(bindingInfo.allowValueSets ? [{ label: 'Code Set', value: CoConstraintColumnType.VALUESET }] : []),
         ...(this.selectedNode.leaf ? [{ label: 'Constant Value', value: CoConstraintColumnType.VALUE }] : []),
       ];
     } else if (this.selectedNode.leaf) {

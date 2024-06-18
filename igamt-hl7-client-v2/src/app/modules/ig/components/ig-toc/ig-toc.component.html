@@ -120,16 +120,16 @@
             <context-menu #valueSetsContextMenu [disabled]="viewOnly||delta">
 
               <ng-template (execute)="createNew(node.data, 'VALUESET')" contextMenuItem [enabled]="!viewOnly&&!delta">
-                <i class="fa fa-plus"></i> Create new Value Set
+                <i class="fa fa-plus"></i> Create new Code Set
               </ng-template>
               <ng-template (execute)="import(node.data, 'VALUESET', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
-                <i class="fa fa-plus"></i> Add HL7 Value Sets
+                <i class="fa fa-plus"></i> Add HL7 Code Sets
               </ng-template>
               <ng-template (execute)="addFromProvider('PHINVADS')" contextMenuItem [enabled]="!viewOnly&&!delta">
-                <i class="fa fa-plus"></i> Add PHINVADS Value Sets
+                <i class="fa fa-plus"></i> Add PHINVADS Code Sets
               </ng-template>
               <ng-template (execute)="importCSV(node.data, 'VALUESET', 'USER')" contextMenuItem [enabled]="!viewOnly&&!delta">
-                <i class="fa fa-plus"></i> Add User Value Sets by CSV
+                <i class="fa fa-plus"></i> Add User Code Sets by CSV
               </ng-template>
               <ng-template (execute)="deleteUnused(node.data)" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-remove"></i> Delete Unreferenced

@@ -47,7 +47,7 @@ export class TocSubMenuComponent implements OnInit {
           ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'structure', 'Structure', Icons.TABLE));
         }
       } else {
-        ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'structure', 'Value Set Definition', Icons.TABLE));
+        ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'structure', 'Code Set Definition', Icons.TABLE));
       }
 
       if ([Type.DATATYPE.toLowerCase(), Type.SEGMENT.toLowerCase(), Type.CONFORMANCEPROFILE.toLowerCase()].includes(type) && !this.element.leaf) {

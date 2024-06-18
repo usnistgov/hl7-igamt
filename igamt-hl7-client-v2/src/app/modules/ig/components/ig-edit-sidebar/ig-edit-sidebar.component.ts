@@ -513,7 +513,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
       case Type.CONFORMANCEPROFILE:
         return 'Conformance Profiles';
       case Type.VALUESET:
-        return 'Value Sets';
+        return 'Code Sets';
       case Type.PROFILECOMPONENT:
         return 'Profile Component';
       case Type.COMPOSITEPROFILE:

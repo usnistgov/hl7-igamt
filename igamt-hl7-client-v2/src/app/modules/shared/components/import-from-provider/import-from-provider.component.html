@@ -1,4 +1,4 @@
-<h2 mat-dialog-title> Import Phinvads Value Sets</h2>
+<h2 mat-dialog-title> Import Phinvads Code Sets</h2>
 <mat-dialog-content>
   <form #form='ngForm'>
 
@@ -24,7 +24,7 @@
       <ng-template let-columns pTemplate="header">
         <tr>
           <th class="header-padding">
-            Value Sets
+            Code Sets
           </th>
           <th style="width:65px">
             #Codes
@@ -157,7 +157,7 @@
 </form>
 </mat-dialog-content>
 <mat-dialog-actions style=" display: flex;justify-content: space-between">
-  <p-checkbox [(ngModel)]="redirect" binary="true" label="Redirect to the Created Value Set"></p-checkbox>
+  <p-checkbox [(ngModel)]="redirect" binary="true" label="Redirect to the Created Code Set"></p-checkbox>
   <div style="justify-content: flex-end; margin-left: 20px;">
     <button (click)="back()" class="btn btn-sm btn-secondary" style="margin-right: 5px;" *ngIf="step == 2">  Back </button>
     <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>

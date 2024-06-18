@@ -2,12 +2,12 @@
 <div style="display: flex; flex-direction: column; justify-content: space-between;">
 
   <div class="alert alert-warning" *ngIf="data.obx2">
-    <i class="fa fa-warning"></i>  This value set binding is used to define the dynamic mapping table. Any value set change would rebuild the dynamic mapping table
+    <i class="fa fa-warning"></i>  This code set binding is used to define the dynamic mapping table. Any code set change would rebuild the dynamic mapping table
   </div>
 
   <div *ngIf="locationInfo?.allowSingleCode && locationInfo?.allowValueSets"
        style="display: flex; flex-direction: row;justify-content: flex-end">
-    <p-radioButton  [(ngModel)]="selectedBindingType" label="Value set" name="vs" value="VALUESET"></p-radioButton>
+    <p-radioButton  [(ngModel)]="selectedBindingType" label="Code set" name="vs" value="VALUESET"></p-radioButton>
     <p-radioButton  [(ngModel)]="selectedBindingType"
                     [style]="{'margin-left': '5px'}" label="Single code" name="sg"
                     value="SINGLECODE" *ngIf="!data.obx2"></p-radioButton>
@@ -24,7 +24,7 @@
             Binding Location
           </th>
           <th>
-            Value Sets
+            Code Sets
           </th>
           <th style="width: 50px;">
             <button (click)="addValueSetBinding()"
@@ -69,7 +69,7 @@
                               [optionLabel]="'variableName'" [options]="data.resources" [filter]="true"
                               required
                               [name]="'vs'+index"
-                              placeholder="select value set" [style]="{'minWidth': '100%'}">
+                              placeholder="select code set" [style]="{'minWidth': '100%'}">
                     <ng-template let-item pTemplate="selectedItem">
                       <ng-container *ngIf="item.value">
                         <app-display-section [element]="item.value"></app-display-section>
