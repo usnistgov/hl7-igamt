@@ -96,12 +96,6 @@ public class AccessControlService implements UserResourcePermissionService {
     }
 
     public Set<AccessLevel> checkDocumentAccessPermission(DocumentAccessInfo document, AccessToken token) {
-        // If document is published
-        if(document.getStatus() != null && document.getStatus().equals(Status.PUBLISHED)) {
-            // Grant READ access
-            return L(AccessLevel.READ);
-        }
-
         boolean statusIsArchived = (document.getStatus() != null && document.getStatus().equals(Status.ARCHIVED));
         boolean scopeIsArchived = (document.getDomainInfo() != null && document.getDomainInfo().getScope() != null && document.getDomainInfo().getScope().equals(Scope.ARCHIVED));
 
@@ -112,7 +106,18 @@ public class AccessControlService implements UserResourcePermissionService {
         }
 
         if(document.getAudience() != null) {
+            // A public document can be "READ" but never written to
+            if(document.getAudience() instanceof PublicAudience) {
+                // Grant READ access
+                return L(AccessLevel.READ);
+            }
             return this.checkAudience(document.getAudience(), token);
+        }
+
+        // If document is published (but doesn't have an Audience set)
+        if(document.getStatus() != null && document.getStatus().equals(Status.PUBLISHED)) {
+            // Grant READ access
+            return L(AccessLevel.READ);
         }
 
         if(isAdmin(token)) {
@@ -123,7 +128,26 @@ public class AccessControlService implements UserResourcePermissionService {
     }
 
     public Set<AccessLevel> checkCodeSetAccessPermission(CodeSetAccessInfo codeSetAccessInfo, AccessToken token) {
-        return this.checkAudience(codeSetAccessInfo.getAudience(), token);
+        Set<AccessLevel> granted = new HashSet<>();
+        // Owner of a code set has all permissions on the code set regardless of the Audience
+        if(codeSetAccessInfo.getUsername().equals(token.getUsername())) {
+            granted.add(AccessLevel.READ);
+            granted.add(AccessLevel.WRITE);
+        } else {
+            Set<AccessLevel> audience = this.checkAudience(codeSetAccessInfo.getAudience(), token);
+            if(audience != null) {
+                granted.addAll(audience);
+            }
+        }
+        // Committed Code Set Version cannot be WRITTEN to
+        if(codeSetAccessInfo.getType().equals(Type.CODESETVERSION) && codeSetAccessInfo.getDateCommitted() != null) {
+            granted.remove(AccessLevel.WRITE);
+            if(granted.contains(AccessLevel.ALL)) {
+                granted.remove(AccessLevel.ALL);
+                granted.add(AccessLevel.READ);
+            }
+        }
+        return granted;
     }
 
     public Set<AccessLevel> checkResourceAccessPermission(ResourceInfo resourceInfo, AccessToken token) throws ResourceNotFoundException {
@@ -172,7 +196,7 @@ public class AccessControlService implements UserResourcePermissionService {
         );
     }
 
-    public Set<AccessLevel> checkAudience(Audience audience, AccessToken token) {
+    private Set<AccessLevel> checkAudience(Audience audience, AccessToken token) {
         switch (audience.getType()) {
             case PUBLIC:
                 return this.checkPublicAudience((PublicAudience) audience, token);
@@ -184,7 +208,7 @@ public class AccessControlService implements UserResourcePermissionService {
         return null;
     }
 
-    public Set<AccessLevel> checkPrivateAudience(PrivateAudience audience, AccessToken token) {
+    private Set<AccessLevel> checkPrivateAudience(PrivateAudience audience, AccessToken token) {
         // If user is editor
         if(token.getUsername().equals(audience.getEditor())) {
             // Grant all access
@@ -204,7 +228,7 @@ public class AccessControlService implements UserResourcePermissionService {
         return null;
     }
 
-    public Set<AccessLevel> checkPublicAudience(PublicAudience audience, AccessToken token) {
+    private Set<AccessLevel> checkPublicAudience(PublicAudience audience, AccessToken token) {
         return L(AccessLevel.READ);
     }
 

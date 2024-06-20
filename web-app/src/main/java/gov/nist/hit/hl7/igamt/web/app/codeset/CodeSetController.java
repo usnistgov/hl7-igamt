@@ -101,7 +101,7 @@ public class CodeSetController {
 
 	@RequestMapping(value = "/api/code-set/{id}/code-set-version/{versionId}", method = RequestMethod.GET, produces = { "application/json" })
 	@ResponseBody
-	@PreAuthorize("AccessResource('CODESET', #id, READ)")
+	@PreAuthorize("AccessResource('CODESETVERSION', #versionId, READ)")
 	public CodeSetVersionContent getCodeSetVersion(
 			@PathVariable("id") String id,
 			@PathVariable("versionId") String versionId
@@ -112,7 +112,7 @@ public class CodeSetController {
 
 	@RequestMapping(value = "/api/code-set/{id}/code-set-version/{versionId}", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
-	@PreAuthorize("AccessResource('CODESET', #id, WRITE)")
+	@PreAuthorize("AccessResource('CODESETVERSION', #versionId, WRITE)")
 	public ResponseMessage<?> saveCodeSetVersion(
 			@PathVariable("id") String id,
 			@PathVariable("versionId") String versionId,
@@ -127,7 +127,7 @@ public class CodeSetController {
 
 	@RequestMapping(value = "/api/code-set/{id}/code-set-version/{versionId}/commit", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
-	@PreAuthorize("AccessResource('CODESET', #id, WRITE)")
+	@PreAuthorize("AccessResource('CODESETVERSION', #versionId, WRITE)")
 	public ResponseMessage<?> commit(
 			@PathVariable("id") String id,
 			@PathVariable("versionId") String versionId,
@@ -166,14 +166,10 @@ public class CodeSetController {
 
 
 	@RequestMapping(value = "/api/code-sets/exportCSV/{id}", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-	//@PreAuthorize("AccessResource('CODESETVERSION', #id, READ)")
+	@PreAuthorize("AccessResource('CODESETVERSION', #id, READ)")
 	public void exportCSV(@PathVariable("id") String id, HttpServletResponse response)
 			throws IOException, ResourceNotFoundException {
 		CodeSetVersion codeSetVersion = this.codeSetService.findById(id);
-		if (codeSetVersion == null) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND, "CodeSetVersion not found for ID: " + id);
-			return;
-		}
 		String csvContent = new TableCSVGenerator().generate(codeSetVersion.getCodes());
 		try (InputStream content = IOUtils.toInputStream(csvContent, "UTF-8")) {
 			response.setContentType("text/csv");

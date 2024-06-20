@@ -17,9 +17,12 @@ import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSet;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetVersion;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetVersionRepository;
 import gov.nist.hit.hl7.igamt.workspace.domain.Workspace;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -42,6 +45,8 @@ public class ResourceAccessInfoFetcher {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+    @Autowired
+    private CodeSetVersionRepository codeSetVersionRepository;
 
     private final Set<String> resourceInfoFields = Arrays.stream(ResourceInfo.class.getDeclaredFields())
             .map(Field::getName)
@@ -64,6 +69,7 @@ public class ResourceAccessInfoFetcher {
         CodeSetAccessInfo resource = this.mongoTemplate.findOne(query, CodeSetAccessInfo.class, formatCollectionName(CodeSet.class));
 
         if(resource != null) {
+            resource.setType(Type.CODESET);
             return resource;
         } else {
             throw new ResourceNotFoundException(id, Type.CODESET);
@@ -94,13 +100,14 @@ public class ResourceAccessInfoFetcher {
                                             )
                                     ).append("in", "$$this.v")
                             )
-                    ).append("audience", 1)
+                    ).append("audience", 1).append("username", 1)
             );
         };
         pipeline.add(mapCodeSetVersionsDBRefToObjectId);
 
-        // Match codeSetId
-        MatchOperation matchOperation = Aggregation.match(Criteria.where("codeSetVersions").is(codeSetVersionId));
+        // Match codeSetVersionId
+        ObjectId codeSetVersionIdObjId = new ObjectId(codeSetVersionId);
+        MatchOperation matchOperation = Aggregation.match(Criteria.where("codeSetVersions").is(codeSetVersionIdObjId));
         pipeline.add(matchOperation);
 
         Aggregation aggregation = Aggregation.newAggregation(pipeline);
@@ -109,7 +116,14 @@ public class ResourceAccessInfoFetcher {
         if(results.getMappedResults().size() != 1) {
             throw new ResourceNotFoundException(codeSetVersionId, Type.CODESETVERSION);
         } else {
-            return results.getMappedResults().get(0);
+            CodeSetVersion version = codeSetVersionRepository.findById(codeSetVersionId).orElse(null);
+            if(version == null) {
+                throw new ResourceNotFoundException(codeSetVersionId, Type.CODESETVERSION);
+            }
+            CodeSetAccessInfo info = results.getMappedResults().get(0);
+            info.setDateCommitted(version.getDateCommitted());
+            info.setType(Type.CODESETVERSION);
+            return info;
         }
     }
 
