@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { TreeModule } from 'angular-tree-component';
@@ -152,7 +153,6 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
