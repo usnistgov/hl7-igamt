@@ -14,23 +14,15 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.service.impl;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.ConditionalSlicing;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.OrderedSlicing;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.Slice;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeDependencyService;
-import gov.nist.hit.hl7.igamt.segment.wrappers.SegmentDependencies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupBinding;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupBindingContained;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupBindingRef;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintDependencyService;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
@@ -179,7 +171,6 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
     for(CoConstraintBinding binding:coConstraintsBindings) {
       if(binding.getBindings()!=null) {
         for(CoConstraintBindingSegment segBinding: binding.getBindings()) {
-
           if(segBinding.getTables() !=null) {
             for( CoConstraintTableConditionalBinding CoConstraintTableConditionalBinding : segBinding.getTables()) {
               if(CoConstraintTableConditionalBinding.getValue() !=null) {
@@ -190,6 +181,35 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
         }
       }     
     }
+  }
+
+  @Override
+  public HashMap<String, CoConstraintGroup> getCoConstraintGroupDependencies(ConformanceProfile conformanceProfile) throws EntityNotFound {
+    HashMap<String, CoConstraintGroup> dependencies = new HashMap<>();
+    if(conformanceProfile.getCoConstraintsBindings() != null) {
+      for(CoConstraintBinding binding: conformanceProfile.getCoConstraintsBindings()) {
+        if(binding.getBindings()!=null) {
+          for(CoConstraintBindingSegment segBinding: binding.getBindings()) {
+            if(segBinding.getTables() !=null) {
+              for(CoConstraintTableConditionalBinding coConstraintTableConditionalBinding : segBinding.getTables()) {
+                if(coConstraintTableConditionalBinding.getValue() != null && coConstraintTableConditionalBinding.getValue().getGroups() != null) {
+                  for(CoConstraintGroupBinding groupBinding: coConstraintTableConditionalBinding.getValue().getGroups()) {
+                    if(groupBinding instanceof CoConstraintGroupBindingRef) {
+                      CoConstraintGroupBindingRef groupBindingRef = (CoConstraintGroupBindingRef) groupBinding;
+                      if(groupBindingRef.getRefId() != null && !dependencies.containsKey(groupBindingRef.getRefId())) {
+                        CoConstraintGroup ccg = this.coConstraintService.findById(groupBindingRef.getRefId());
+                        dependencies.put(ccg.getId(), ccg);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return dependencies;
   }
 
   public void processSegmentorGroup(MsgStructElement segOrgroup,  ConformanceProfileDependencies used, DependencyFilter filter, ResourceBindingProcessor rb, String parent) throws EntityNotFound {
@@ -215,31 +235,24 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
         if(groupBinding instanceof CoConstraintGroupBindingContained) {
           CoConstraintGroupBindingContained  contained = (CoConstraintGroupBindingContained)(groupBinding);
           if(contained.getCoConstraints() !=null) {
-            contained.getCoConstraints().stream().forEach( cc -> {
-              try {
-                this.coConstraintDependencyService.process(cc, used, filter);
-              } catch (EntityNotFound e) {
-                e.printStackTrace();
-              }
-            });
+            for(CoConstraint cc: contained.getCoConstraints()) {
+              this.coConstraintDependencyService.process(cc, used, filter);
+            }
           }
         }else if(groupBinding instanceof CoConstraintGroupBindingRef) {
           CoConstraintGroupBindingRef ref = (CoConstraintGroupBindingRef)groupBinding;
-          if(ref.getId() != null && !used.getCoConstraintGroups().containsKey(ref.getId())) {
-            CoConstraintGroup ccg = this.coConstraintService.findById(ref.getId());
+          if(ref.getRefId() != null && !used.getCoConstraintGroups().containsKey(ref.getRefId())) {
+            CoConstraintGroup ccg = this.coConstraintService.findById(ref.getRefId());
+            used.getCoConstraintGroups().put(ccg.getId(), ccg);
             this.coConstraintDependencyService.process(ccg, used, filter);
           }
         }
       }
-    };
+    }
     if(value.getCoConstraints() !=null) {
-      value.getCoConstraints().stream().forEach( cc -> {
-        try {
-          this.coConstraintDependencyService.process(cc, used, filter);
-        } catch (EntityNotFound e) {
-          e.printStackTrace();
-        }
-      });
+      for(CoConstraint cc: value.getCoConstraints()) {
+        this.coConstraintDependencyService.process(cc, used, filter);
+      }
     }
   }
   
@@ -337,6 +350,4 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
       }
     }
   }
-  
-  
 }

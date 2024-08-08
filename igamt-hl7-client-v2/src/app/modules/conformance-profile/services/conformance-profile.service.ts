@@ -11,6 +11,7 @@ import { ICPConformanceStatementList } from '../../shared/models/cs-list.interfa
 import { IChange } from '../../shared/models/save-change';
 import { ConformanceStatementService } from '../../shared/services/conformance-statement.service';
 import { IConformanceProfileEditMetadata } from '../components/metadata-editor/metadata-editor.component';
+import { ICoConstraintGroup } from '../../shared/models/co-constraint.interface';
 
 @Injectable()
 export class ConformanceProfileService {
@@ -59,6 +60,10 @@ export class ConformanceProfileService {
         );
       }),
     );
+  }
+
+  getReferencedCoConstraintGroups(id: string): Observable<ICoConstraintGroup[]> {
+    return this.http.get<ICoConstraintGroup[]>(this.URL + id + '/coconstraints/group');
   }
 
   getConformanceStatements(id: string, documentRef: IDocumentRef): Observable<ICPConformanceStatementList> {

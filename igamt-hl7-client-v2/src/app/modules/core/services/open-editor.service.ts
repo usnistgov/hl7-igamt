@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, ofType } from '@ngrx/effects';
 import { Action, MemoizedSelector, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
-import { catchError, concatMap, filter, flatMap, pluck, switchMap, take } from 'rxjs/operators';
+import { catchError, concatMap, filter, flatMap, map, pluck, switchMap, take } from 'rxjs/operators';
 import { InsertResourcesInRepostory, OpenEditor, OpenEditorBase, OpenEditorFailure } from 'src/app/modules/dam-framework/store/index';
 import { CompositeProfileActionTypes, OpenCompositeProfileStructureEditor } from 'src/app/root-store/composite-profile/composite-profile.actions';
 import { selectCompositeProfileById } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
@@ -32,6 +32,7 @@ import { IProfileComponentContext } from '../../shared/models/profile.component'
 import { IResource } from '../../shared/models/resource.interface';
 import { ResourceService } from '../../shared/services/resource.service';
 import { IResourceMetadata } from '../components/resource-metadata-editor/resource-metadata-editor.component';
+import { ConformanceProfileService } from '../../conformance-profile/services/conformance-profile.service';
 
 @Injectable({
   providedIn: 'root',
@@ -256,6 +257,7 @@ export class OpenEditorService {
     displayElement$: MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement>,
     resource$: Observable<T>,
     notFoundMessage: string,
+    service: ConformanceProfileService,
   ): Observable<Action> {
     return this.openEditor<T, A>(
       _action,
@@ -276,7 +278,19 @@ export class OpenEditorService {
         return RxjsStoreHelperService.listenAndReact(this.actions$, {
           [IgamtLoadedResourcesActionTypes.LoadResourceReferencesSuccess]: {
             do: (loadSuccess: LoadResourceReferencesSuccess) => {
-              return of(openEditor);
+              return service.getReferencedCoConstraintGroups(action.payload.id).pipe(
+                take(1),
+                flatMap((groups) => {
+                  this.store.dispatch(new fromDAM.InsertResourcesInRepostory({
+                    collections: [{
+                      key: 'resources',
+                      values: [...groups]
+                    }]
+                  }));
+                  return of(openEditor);
+                }),
+                catchError((e) => of(new OpenEditorFailure({ id: action.payload.id })))
+              );
             },
           },
           [IgamtLoadedResourcesActionTypes.LoadResourceReferencesFailure]: {

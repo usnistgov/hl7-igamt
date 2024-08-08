@@ -11,9 +11,11 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.wrappers.ConformanceProfileDependencies;
@@ -45,6 +47,6 @@ public interface ConformanceProfileDependencyService extends DependencyService<C
       ConformanceProfileDependencies conformanceProfileDependencies, DependencyFilter filter)
       throws EntityNotFound;
 
-  
 
+	HashMap<String, CoConstraintGroup> getCoConstraintGroupDependencies(ConformanceProfile conformanceProfile) throws EntityNotFound;
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
@@ -12,7 +13,7 @@ public interface CoConstraintService {
 
     CoConstraintGroup findById(String id) throws EntityNotFound;
     void delete(CoConstraintGroup ccGroup);
-    List<CoConstraintGroup> findByBaseSegmentAndDocumentIdAndUsername(String baseSegment, String documentId, String username);
+    List<CoConstraintGroup> findDocumentCoConstraintGroupsSegmentCompatible(String segmentId, DocumentType type, String documentId);
     CoConstraintGroup saveCoConstraintGroup(CoConstraintGroup group);
     CoConstraintTable resolveRefAndMerge(CoConstraintTable table);
     CoConstraintGroup createCoConstraintGroupPrototype(String id) throws SegmentNotFoundException;
