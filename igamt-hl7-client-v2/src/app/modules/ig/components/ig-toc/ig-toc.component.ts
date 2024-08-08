@@ -153,7 +153,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   findInToc(profileNodeChildren: any[], type: Type): any[] {
     const node = profileNodeChildren.find((x) => x.type === type);
     if (node) {
-      return (node.children || [])
+      return (node.children || []);
     } else {
       return [];
     }

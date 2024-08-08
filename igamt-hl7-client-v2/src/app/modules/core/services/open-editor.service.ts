@@ -14,6 +14,7 @@ import {
 } from '../../../root-store/dam-igamt/igamt.loaded-resources.actions';
 import { selectLoadedDocumentInfo } from '../../../root-store/dam-igamt/igamt.selectors';
 import { OpenProfileComponentMessageCoConstraintsEditor } from '../../../root-store/profile-component/profile-component.actions';
+import { ConformanceProfileService } from '../../conformance-profile/services/conformance-profile.service';
 import { IDamResource } from '../../dam-framework';
 import { MessageType, UserMessage } from '../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../dam-framework/services/message.service';
@@ -32,7 +33,6 @@ import { IProfileComponentContext } from '../../shared/models/profile.component'
 import { IResource } from '../../shared/models/resource.interface';
 import { ResourceService } from '../../shared/services/resource.service';
 import { IResourceMetadata } from '../components/resource-metadata-editor/resource-metadata-editor.component';
-import { ConformanceProfileService } from '../../conformance-profile/services/conformance-profile.service';
 
 @Injectable({
   providedIn: 'root',
@@ -284,12 +284,12 @@ export class OpenEditorService {
                   this.store.dispatch(new fromDAM.InsertResourcesInRepostory({
                     collections: [{
                       key: 'resources',
-                      values: [...groups]
-                    }]
+                      values: [...groups],
+                    }],
                   }));
                   return of(openEditor);
                 }),
-                catchError((e) => of(new OpenEditorFailure({ id: action.payload.id })))
+                catchError((e) => of(new OpenEditorFailure({ id: action.payload.id }))),
               );
             },
           },

@@ -6,12 +6,12 @@ import { selectDatatypesById, selectSegmentsById } from 'src/app/root-store/dam-
 import { IConformanceStatementEditorData } from '../../core/components/conformance-statement-editor/conformance-statement-editor.component';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
+import { ICoConstraintGroup } from '../../shared/models/co-constraint.interface';
 import { IConformanceProfile } from '../../shared/models/conformance-profile.interface';
 import { ICPConformanceStatementList } from '../../shared/models/cs-list.interface';
 import { IChange } from '../../shared/models/save-change';
 import { ConformanceStatementService } from '../../shared/services/conformance-statement.service';
 import { IConformanceProfileEditMetadata } from '../components/metadata-editor/metadata-editor.component';
-import { ICoConstraintGroup } from '../../shared/models/co-constraint.interface';
 
 @Injectable()
 export class ConformanceProfileService {
