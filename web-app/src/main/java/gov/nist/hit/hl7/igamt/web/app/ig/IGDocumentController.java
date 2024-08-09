@@ -1,10 +1,8 @@
 package gov.nist.hit.hl7.igamt.web.app.ig;
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -44,7 +42,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentConfig;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
@@ -62,33 +59,19 @@ import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
-import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddResourceResponse;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
-import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
-import gov.nist.hit.hl7.igamt.common.slicing.domain.ConditionalSlicing;
-import gov.nist.hit.hl7.igamt.common.slicing.domain.OrderedSlicing;
-import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
-import gov.nist.hit.hl7.igamt.common.slicing.domain.SlicingMethod;
-import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileState;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
-import gov.nist.hit.hl7.igamt.compositeprofile.domain.ProfileComponentsEvaluationResult;
-import gov.nist.hit.hl7.igamt.compositeprofile.domain.ResourceAndDisplay;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCompositeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
@@ -96,11 +79,9 @@ import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
-import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CoConstraintGroupCreateWrapper;
@@ -113,7 +94,6 @@ import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationReport;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.CloneException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGConverterException;
@@ -136,17 +116,12 @@ import gov.nist.hit.hl7.igamt.service.verification.VerificationService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
-import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
-import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.XMLSerializeServiceImpl;
-import gov.nist.hit.hl7.igamt.service.impl.exception.AmbiguousOBX3MappingException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
@@ -205,9 +180,6 @@ public class IGDocumentController extends BaseController {
 
 	@Autowired
 	XMLSerializeServiceImpl serializeService;
-
-	@Autowired
-	private FhirHandlerService fhirHandlerService;
 
 	@Autowired
 	private IgTemplateRepository igTemplateRepository;
@@ -1136,12 +1108,13 @@ public class IGDocumentController extends BaseController {
 				ig.getUpdateDate(), createChildResponse);
 	}
 
-	@RequestMapping(value = "/api/igdocuments/{documentId}/coconstraints/group/segment/{id}", method = RequestMethod.GET, produces = {"application/json" })
-	@PreAuthorize("AccessResource('IGDOCUMENT', #documentId, READ)")
-	public List<DisplayElement> getCoConstraintGroupForSegment(@PathVariable("id") String id,
-			@PathVariable("documentId") String documentId,
-			Authentication authentication) throws EntityNotFound {
-		List<CoConstraintGroup> groups = this.coConstraintService.findByBaseSegmentAndDocumentIdAndUsername(id, documentId, authentication.getName());
+	@RequestMapping(value = "/api/igdocuments/{documentId}/coconstraints/group/segment/{segmentId}", method = RequestMethod.GET, produces = {"application/json" })
+	@PreAuthorize("AccessResource('IGDOCUMENT', #documentId, READ) && AccessResource('SEGMENT', #segmentId, READ)")
+	public List<DisplayElement> getCoConstraintGroupForSegment(
+			@PathVariable("segmentId") String segmentId,
+			@PathVariable("documentId") String documentId
+	) {
+		List<CoConstraintGroup> groups = this.coConstraintService.findDocumentCoConstraintGroupsSegmentCompatible(segmentId, DocumentType.IGDOCUMENT, documentId);
 		return groups.stream().map(this.displayInfoService::convertCoConstraintGroup).collect(Collectors.toList());
 	}
 
@@ -1151,7 +1124,7 @@ public class IGDocumentController extends BaseController {
 	@PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
 	public ResponseMessage<IGDisplayInfo> addDatatypes(@PathVariable("id") String id,
 			@RequestBody AddingWrapper wrapper, Authentication authentication)
-					throws IGNotFoundException, AddingException, ForbiddenOperationException, EntityNotFound {
+					throws IGNotFoundException, ForbiddenOperationException, EntityNotFound {
 		String username = authentication.getPrincipal().toString();
 		Ig ig = findIgById(id);
 		//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());

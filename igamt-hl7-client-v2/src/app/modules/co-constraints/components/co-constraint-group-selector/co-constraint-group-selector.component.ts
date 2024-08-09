@@ -24,7 +24,6 @@ export class CoConstraintGroupSelectorComponent implements OnInit {
     this.segment = data.segment;
     this.selected = [];
     this.documentRef = data.documentRef;
-    /// TODO Handle library case
     this.groups$ = this.ccGroupService.getByBaseSegment(this.segment.id, this.documentRef.documentId);
   }
 

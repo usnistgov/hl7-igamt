@@ -20,7 +20,7 @@ import { SetValue } from '../../modules/dam-framework/store/data/dam.actions';
 import { Type } from '../../modules/shared/constants/type.enum';
 import { BindingService } from '../../modules/shared/services/binding.service';
 import { DeltaService } from '../../modules/shared/services/delta.service';
-import {SlicingService} from '../../modules/shared/services/slicing.service';
+import { SlicingService } from '../../modules/shared/services/slicing.service';
 import {
   ConformanceProfileEditActions,
   ConformanceProfileEditActionTypes,
@@ -104,6 +104,7 @@ export class ConformanceProfileEditEffects {
     fromIgamtDisplaySelectors.selectMessagesById,
     this.store.select(fromIgamtSelectedSelectors.selectedConformanceProfile),
     this.ConfPNotFound,
+    this.conformanceProfileService,
   );
 
   @Effect()
