@@ -7,14 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipOutputStream;
@@ -1498,147 +1491,66 @@ public class IgServiceImpl implements IgService {
 		return igProfileResourceSubSet;
 	}
 
-	@Override
-	public Ig makeSelectedIg(Ig ig, ReqId reqIds) {
-		Ig selectedIg = new Ig();
-		selectedIg.setId(ig.getId());
-		selectedIg.setDomainInfo(ig.getDomainInfo());
-		selectedIg.setMetadata(ig.getMetadata());
-		selectedIg.setConformanceProfileRegistry(new ConformanceProfileRegistry());
-		selectedIg.setSegmentRegistry(new SegmentRegistry());
-		selectedIg.setDatatypeRegistry(new DatatypeRegistry());
-		selectedIg.setValueSetRegistry(new ValueSetRegistry());
+	public Ig getIgProfileResourceSubSetAsIg(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws EntityNotFound {
+		IgProfileResourceSubSet resources = this.getIgProfileResourceSubSet(
+				ig,
+				conformanceProfiles,
+				compositeProfiles
+		);
 
-		for (String id : reqIds.getConformanceProfilesId()) {
-			Link l = ig.getConformanceProfileRegistry().getLinkById(id);
+		Ig subSetIg = new Ig();
+		subSetIg.setId(ig.getId());
+		subSetIg.setDomainInfo(ig.getDomainInfo());
+		subSetIg.setMetadata(ig.getMetadata());
 
-			if (l != null) {
-				selectedIg.getConformanceProfileRegistry().getChildren().add(l);
-
-				this.visitSegmentRefOrGroup(this.conformanceProfileService.findById(l.getId()).getChildren(),
-						selectedIg, ig);
-			}
-		}
-
-		return selectedIg;
+		// Composite Profile Registry
+		CompositeProfileRegistry compositeProfileRegistry = new CompositeProfileRegistry();
+		subSetIg.setCompositeProfileRegistry(compositeProfileRegistry);
+		compositeProfileRegistry.setChildren(
+				resources.getCompositeProfiles()
+				         .stream()
+				         .map((cp) -> ig.getCompositeProfileRegistry().getLinkById(cp.getId()))
+				         .collect(Collectors.toSet())
+		);
+		// Conformance Profile Registry
+		ConformanceProfileRegistry conformanceProfileRegistry = new ConformanceProfileRegistry();
+		subSetIg.setConformanceProfileRegistry(conformanceProfileRegistry);
+		conformanceProfileRegistry.setChildren(
+				resources.getConformanceProfiles()
+				         .stream()
+				         .map((cp) -> ig.getConformanceProfileRegistry().getLinkById(cp.getId()))
+				         .collect(Collectors.toSet())
+		);
+		// Segment Registry
+		SegmentRegistry segmentRegistry = new SegmentRegistry();
+		subSetIg.setSegmentRegistry(segmentRegistry);
+		segmentRegistry.setChildren(
+				resources.getSegments()
+				         .stream()
+				         .map((cp) -> ig.getSegmentRegistry().getLinkById(cp.getId()))
+				         .collect(Collectors.toSet())
+		);
+		// Datatype Registry
+		DatatypeRegistry datatypeRegistry = new DatatypeRegistry();
+		subSetIg.setDatatypeRegistry(datatypeRegistry);
+		datatypeRegistry.setChildren(
+				resources.getDatatypes()
+				         .stream()
+				         .map((cp) -> ig.getDatatypeRegistry().getLinkById(cp.getId()))
+				         .collect(Collectors.toSet())
+		);
+		// Value Set Registry
+		ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
+		subSetIg.setValueSetRegistry(valueSetRegistry);
+		valueSetRegistry.setChildren(
+				resources.getValuesets()
+				         .stream()
+				         .map((cp) -> ig.getValueSetRegistry().getLinkById(cp.getId()))
+				         .collect(Collectors.toSet())
+		);
+		return subSetIg;
 	}
 
-	@Override
-	public void visitSegmentRefOrGroup(Set<SegmentRefOrGroup> srgs, Ig selectedIg, Ig all) {
-		srgs.forEach(srg -> {
-			if (srg instanceof Group) {
-				Group g = (Group) srg;
-				if (g.getChildren() != null)
-					this.visitSegmentRefOrGroup(g.getChildren(), selectedIg, all);
-			} else if (srg instanceof SegmentRef) {
-				SegmentRef sr = (SegmentRef) srg;
-
-				if (sr != null && sr.getId() != null && sr.getRef() != null) {
-					Link l = all.getSegmentRegistry().getLinkById(sr.getRef().getId());
-					if (l != null) {
-						selectedIg.getSegmentRegistry().getChildren().add(l);
-						Segment s = this.segmentService.findById(l.getId());
-						if (s != null && s.getChildren() != null) {
-							this.visitSegment(s.getChildren(), selectedIg, all);
-							if (s.getBinding() != null && s.getBinding().getChildren() != null)
-								this.collectVS(s.getBinding().getChildren(), selectedIg, all);
-						}
-						// For Dynamic Mapping
-						if (s != null && s.getDynamicMappingInfo() != null
-								&& s.getDynamicMappingInfo().getItems() != null) {
-							s.getDynamicMappingInfo().getItems().forEach(item -> {
-								Link link = all.getDatatypeRegistry().getLinkById(item.getDatatypeId());
-								if (link != null) {
-									selectedIg.getDatatypeRegistry().getChildren().add(link);
-									Datatype dt = this.datatypeService.findById(link.getId());
-									if (dt != null && dt instanceof ComplexDatatype) {
-										ComplexDatatype cdt = (ComplexDatatype) dt;
-										if (cdt.getComponents() != null) {
-											this.visitDatatype(cdt.getComponents(), selectedIg, all);
-											if (cdt.getBinding() != null && cdt.getBinding().getChildren() != null)
-												this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
-										}
-									}
-
-								}
-							});
-						}
-					}
-				}
-			}
-		});
-
-	}
-
-	@Override
-	public void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all) {
-		sebs.forEach(seb -> {
-			if (seb.getValuesetBindings() != null) {
-				seb.getValuesetBindings().forEach(b -> {
-					if (b.getValueSets() != null) {
-						b.getValueSets().forEach(id -> {
-							Link l = all.getValueSetRegistry().getLinkById(id);
-							if (l != null) {
-								selectedIg.getValueSetRegistry().getChildren().add(l);
-							}
-						});
-					}
-				});
-			}
-		});
-
-	}
-
-	@Override
-	public void visitSegment(Set<Field> fields, Ig selectedIg, Ig all) {
-		fields.forEach(f -> {
-			if (f.getRef() != null && f.getRef().getId() != null) {
-				Link l = all.getDatatypeRegistry().getLinkById(f.getRef().getId());
-				if (l != null) {
-					selectedIg.getDatatypeRegistry().getChildren().add(l);
-					Datatype dt = this.datatypeService.findById(l.getId());
-					if (dt != null && dt instanceof ComplexDatatype) {
-						ComplexDatatype cdt = (ComplexDatatype) dt;
-						if (cdt.getComponents() != null) {
-							this.visitDatatype(cdt.getComponents(), selectedIg, all);
-							if (cdt.getBinding() != null && cdt.getBinding().getChildren() != null)
-								this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
-						}
-					}
-				}
-			}
-		});
-
-	}
-
-	@Override
-	public void visitDatatype(Set<Component> components, Ig selectedIg, Ig all) {
-		components.forEach(c -> {
-			if (c.getRef() != null && c.getRef().getId() != null) {
-				Link l = all.getDatatypeRegistry().getLinkById(c.getRef().getId());
-				if (l != null) {
-					selectedIg.getDatatypeRegistry().getChildren().add(l);
-					Datatype dt = this.datatypeService.findById(l.getId());
-					if (dt != null && dt instanceof ComplexDatatype) {
-						ComplexDatatype cdt = (ComplexDatatype) dt;
-						if (cdt.getComponents() != null) {
-							this.visitDatatype(cdt.getComponents(), selectedIg, all);
-							if (cdt.getBinding() != null && cdt.getBinding().getChildren() != null)
-								this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
-						}
-					}
-				}
-			}
-		});
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * gov.nist.hit.hl7.igamt.ig.service.IgService#createProfileComponent(gov.nist.
-	 * hit.hl7.igamt.ig.domain.Ig, java.lang.String, java.util.List)
-	 */
 	@Override
 	public ProfileComponent createProfileComponent(Ig ig, String name, List<DisplayElement> children) {
 		ProfileComponent ret = new ProfileComponent();

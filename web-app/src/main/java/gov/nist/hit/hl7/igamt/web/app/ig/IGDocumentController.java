@@ -10,6 +10,7 @@ import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
 import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
 import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
 import gov.nist.hit.hl7.igamt.display.model.*;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgVerificationIssuesList;
 import gov.nist.hit.hl7.igamt.ig.model.*;
@@ -1373,17 +1374,17 @@ public class IGDocumentController extends BaseController {
 
 	@RequestMapping(value = "/api/export/ig/{id}/xml/validation", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
 	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
-	public void exportXML(@PathVariable("id") String id, Authentication authentication, FormData formData, HttpServletResponse response) throws Exception {
+	public void exportXML(@PathVariable("id") String id, FormData formData, HttpServletResponse response) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		ReqId reqIds = mapper.readValue(formData.getJson(), ReqId.class);
-		Ig ig = findIgById(id);
-		IgSubSet igSubSet = this.legacyIgSubSetService.makeIgSubSet(ig, reqIds);
-		IgDataModel igModel = this.igService.generateDataModel(igSubSet.getSubSet());
+		Ig subSetIg = this.igService.getIgProfileResourceSubSetAsIg(
+				findIgById(id),
+				new HashSet<>(Arrays.asList(reqIds.getConformanceProfilesId())),
+				new HashSet<>(Arrays.asList(reqIds.getCompositeProfilesId()))
+		);
+		IgDataModel igModel = this.igService.generateDataModel(subSetIg);
 		InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
-		for(String token: igSubSet.getInMemoryDataTokens()) {
-			this.inMemoryDomainExtensionService.clear(token);
-		}
 		response.setContentType("application/zip");
 		response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
 		FileCopyUtils.copy(content, response.getOutputStream());

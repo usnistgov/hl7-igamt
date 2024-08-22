@@ -6,9 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -488,13 +486,15 @@ public class ExportController {
 		String[] profiles = {profileId};
 		ReqId reqIds = new ReqId();
 		reqIds.setConformanceProfilesId(profiles);
-
 		Ig ig = igService.findById(id);
-
 		if (ig != null)  {
-			Ig selectedIg = this.igService.makeSelectedIg(ig, reqIds);
-			selectedIg.setContent(ig.getContent());
-			String xmlContent = igExportService.exportIgDocumentToDiffXml(selectedIg);
+			Ig subSetIg = this.igService.getIgProfileResourceSubSetAsIg(
+					ig,
+					new HashSet<>(Arrays.asList(reqIds.getConformanceProfilesId())),
+					new HashSet<>(Arrays.asList(reqIds.getCompositeProfilesId()))
+			);
+			subSetIg.setContent(ig.getContent());
+			String xmlContent = igExportService.exportIgDocumentToDiffXml(subSetIg);
 			System.out.println(xmlContent);
 			InputStream xmlStream = new ByteArrayInputStream(xmlContent.getBytes());
 			response.setContentType("text/xml");
@@ -506,7 +506,7 @@ public class ExportController {
 	}
 	
 	// Helper functions for zipping
-	
+
 
 	public ByteArrayOutputStream createZip(InputStream word, List<InputStream> excelFiles) throws IOException {
 	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
