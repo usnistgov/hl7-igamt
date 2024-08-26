@@ -1390,6 +1390,7 @@ public class IGDocumentController extends BaseController {
 		FileCopyUtils.copy(content, response.getOutputStream());
 	}
 
+
 	@RequestMapping(value = "/api/igdocuments/{ig}/predicate/{id}", method = RequestMethod.GET, produces = {"application/json"})
 	public @ResponseBody
 	Predicate getPredicate(@PathVariable("ig") String ig, @PathVariable("id") String id, Authentication authentication) throws IGNotFoundException, PredicateNotFoundException {

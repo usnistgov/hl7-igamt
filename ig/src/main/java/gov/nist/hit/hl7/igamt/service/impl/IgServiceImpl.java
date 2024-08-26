@@ -1502,6 +1502,15 @@ public class IgServiceImpl implements IgService {
 		subSetIg.setId(ig.getId());
 		subSetIg.setDomainInfo(ig.getDomainInfo());
 		subSetIg.setMetadata(ig.getMetadata());
+		subSetIg.setContent(ig.getContent());
+		subSetIg.setAudience(ig.getAudience());
+		subSetIg.complete(ig);
+		subSetIg.setDeprecated(ig.getDeprecated());
+		subSetIg.setDocumentConfig(ig.getDocumentConfig());
+		subSetIg.setDraft(ig.getDraft());
+
+		// Profile Components
+		subSetIg.setProfileComponentRegistry(new ProfileComponentRegistry());
 
 		// Composite Profile Registry
 		CompositeProfileRegistry compositeProfileRegistry = new CompositeProfileRegistry();

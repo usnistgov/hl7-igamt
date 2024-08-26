@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.BindingSource;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
@@ -61,7 +62,7 @@ public class ResourceBindingProcessor {
   }
 
   private void processStructureElementBinding(BindingSource source, String parent, StructureElementBinding elm) {
-    String path = parent != null ? parent + '-' + elm.getElementId() : elm.getElementId();
+    String path = !Strings.isNullOrEmpty(parent) ? parent + '-' + elm.getElementId() : elm.getElementId();
     this.addBindings(source, path, elm);
 
     if(elm.getChildren() != null) {
@@ -72,16 +73,16 @@ public class ResourceBindingProcessor {
       }
     }
   }
-  
+
   public void addChild(BindingSource source, ResourceBinding resourceBinding, String parent) {
     if(resourceBinding.getChildren()!= null) {
       for(StructureElementBinding child : resourceBinding.getChildren()) {
-        String path_id = (parent != null? parent +'-'+ child.getElementId(): child.getElementId());
-        this.addBindings(source, path_id, child);
+        String pathId = (!Strings.isNullOrEmpty(parent) ? parent +'-'+ child.getElementId(): child.getElementId());
+        this.addBindings(source, pathId, child);
         if(child.getChildren() != null) {
           for(StructureElementBinding sub : child.getChildren()) {
             if(child.getChildren() != null) {
-              this.processStructureElementBinding(source, path_id, sub);
+              this.processStructureElementBinding(source, pathId, sub);
             }
           }
         }

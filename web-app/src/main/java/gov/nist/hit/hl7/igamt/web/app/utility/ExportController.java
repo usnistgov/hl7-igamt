@@ -480,6 +480,8 @@ public class ExportController {
 			FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
 		}
 	}
+
+
 	@RequestMapping(value = "/api/export/ig/{id}/{profileId}/xml/diff", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
     @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
     public void exportXML(@PathVariable("id") String id, @PathVariable("profileId") String profileId,  HttpServletResponse response) throws Exception {
@@ -493,21 +495,17 @@ public class ExportController {
 					new HashSet<>(Arrays.asList(reqIds.getConformanceProfilesId())),
 					new HashSet<>(Arrays.asList(reqIds.getCompositeProfilesId()))
 			);
-			subSetIg.setContent(ig.getContent());
 			String xmlContent = igExportService.exportIgDocumentToDiffXml(subSetIg);
 			System.out.println(xmlContent);
 			InputStream xmlStream = new ByteArrayInputStream(xmlContent.getBytes());
 			response.setContentType("text/xml");
-			response.setHeader("Content-disposition",
-					"attachment;filename=" + "pact-profile.xml");
-			
+			response.setHeader("Content-disposition","attachment;filename=" + "pact-profile.xml");
 			FileCopyUtils.copy(xmlStream, response.getOutputStream());
 		}
 	}
-	
+
+
 	// Helper functions for zipping
-
-
 	public ByteArrayOutputStream createZip(InputStream word, List<InputStream> excelFiles) throws IOException {
 	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	    ZipOutputStream zipOut = new ZipOutputStream(baos);
