@@ -12,9 +12,13 @@
 package gov.nist.hit.hl7.igamt.common.binding.service;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.BindingSource;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 
@@ -24,57 +28,61 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
  */
 public class ResourceBindingProcessor {
 
-  HashMap<String, StructureElementBinding> binding = new HashMap<String, StructureElementBinding>();
+  HashMap<String, Map<BindingSource, StructureElementBinding>> binding;
 
-  void addBindings(String pathId, StructureElementBinding binding) {
-    this.binding.put(pathId, binding);
+  public ResourceBindingProcessor() {
+    binding = new HashMap<>();
   }
-  public Set<ValuesetBinding> getValueSetBindings(String pathId) {
-    if(this.binding.containsKey(pathId)) {
-      return this.binding.get(pathId).getValuesetBindings();
-    }else  return null;
-  }
-  
-  public ResourceBindingProcessor(ResourceBinding resourceBinding) {
-    binding = new HashMap<String, StructureElementBinding>();
 
+  public ResourceBindingProcessor(BindingSource source, ResourceBinding resourceBinding) {
+    binding = new HashMap<>();
     if(resourceBinding.getChildren()!= null) {
       for(StructureElementBinding child : resourceBinding.getChildren()) {
         if(child.getChildren() != null) {
-          this.processsStructureElementBinding(null, child);
+          this.processStructureElementBinding(source, null, child);
         }
       }
     }
   }
-  
-  /**
-   * 
-   */
-  public ResourceBindingProcessor() {
-    binding = new HashMap<String, StructureElementBinding>();
+
+  void addBindings(BindingSource source, String pathId, StructureElementBinding binding) {
+    Map<BindingSource, StructureElementBinding> bindingsForPath = this.binding.computeIfAbsent(pathId, (k) -> new HashMap<>());
+    bindingsForPath.put(source, binding);
   }
-  private void processsStructureElementBinding(String path, StructureElementBinding elm) {
-    String newKey = path != null? path + '-' + elm.getElementId() : elm.getElementId();
-    binding.put(newKey, elm);
+
+  public Set<ValuesetBinding> getValueSetBindings(String pathId) {
+    if(this.binding.containsKey(pathId)) {
+      return this.binding.get(pathId).values().stream()
+                         .filter((binding) -> binding.getValuesetBindings() != null)
+                         .flatMap((binding) -> binding.getValuesetBindings().stream())
+                         .collect(Collectors.toSet());
+    } else {
+      return null;
+    }
+  }
+
+  private void processStructureElementBinding(BindingSource source, String parent, StructureElementBinding elm) {
+    String path = !Strings.isNullOrEmpty(parent) ? parent + '-' + elm.getElementId() : elm.getElementId();
+    this.addBindings(source, path, elm);
 
     if(elm.getChildren() != null) {
       for(StructureElementBinding child : elm.getChildren()) {
         if(child.getChildren() != null) {
-          this.processsStructureElementBinding(newKey, child);
+          this.processStructureElementBinding(source, path, child);
         }
       }
     }
   }
-  
-  public void addChild(ResourceBinding resourceBinding, String parent) {
+
+  public void addChild(BindingSource source, ResourceBinding resourceBinding, String parent) {
     if(resourceBinding.getChildren()!= null) {
       for(StructureElementBinding child : resourceBinding.getChildren()) {
-        String path_id = (parent != null? parent +'-'+ child.getElementId(): child.getElementId());
-        this.binding.put(path_id, child);
+        String pathId = (!Strings.isNullOrEmpty(parent) ? parent +'-'+ child.getElementId(): child.getElementId());
+        this.addBindings(source, pathId, child);
         if(child.getChildren() != null) {
           for(StructureElementBinding sub : child.getChildren()) {
             if(child.getChildren() != null) {
-              this.processsStructureElementBinding(path_id, sub);
+              this.processStructureElementBinding(source, pathId, sub);
             }
           }
         }
@@ -82,9 +90,7 @@ public class ResourceBindingProcessor {
     }
   }
   
-  public HashMap<String, StructureElementBinding> get(){
+  public HashMap<String, Map<BindingSource, StructureElementBinding>> get(){
 	return binding;
-	  
   }
-
 }

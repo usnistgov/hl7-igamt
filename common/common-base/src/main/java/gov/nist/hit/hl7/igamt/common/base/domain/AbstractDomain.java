@@ -287,7 +287,7 @@ public abstract class AbstractDomain implements Serializable{
     this.activeInfo = activeInfo;
   }
   
-  protected void complete(AbstractDomain elm) {
+  public void complete(AbstractDomain elm) {
     elm.id = id;
     elm.creationDate = creationDate;
     elm.updateDate = updateDate;

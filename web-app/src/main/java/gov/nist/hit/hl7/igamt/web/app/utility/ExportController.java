@@ -6,9 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -482,32 +480,32 @@ public class ExportController {
 			FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
 		}
 	}
+
+
 	@RequestMapping(value = "/api/export/ig/{id}/{profileId}/xml/diff", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
     @PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
     public void exportXML(@PathVariable("id") String id, @PathVariable("profileId") String profileId,  HttpServletResponse response) throws Exception {
 		String[] profiles = {profileId};
 		ReqId reqIds = new ReqId();
 		reqIds.setConformanceProfilesId(profiles);
-
 		Ig ig = igService.findById(id);
-
 		if (ig != null)  {
-			Ig selectedIg = this.igService.makeSelectedIg(ig, reqIds);
-			selectedIg.setContent(ig.getContent());
-			String xmlContent = igExportService.exportIgDocumentToDiffXml(selectedIg);
+			Ig subSetIg = this.igService.getIgProfileResourceSubSetAsIg(
+					ig,
+					new HashSet<>(Arrays.asList(reqIds.getConformanceProfilesId())),
+					new HashSet<>(Arrays.asList(reqIds.getCompositeProfilesId()))
+			);
+			String xmlContent = igExportService.exportIgDocumentToDiffXml(subSetIg);
 			System.out.println(xmlContent);
 			InputStream xmlStream = new ByteArrayInputStream(xmlContent.getBytes());
 			response.setContentType("text/xml");
-			response.setHeader("Content-disposition",
-					"attachment;filename=" + "pact-profile.xml");
-			
+			response.setHeader("Content-disposition","attachment;filename=" + "pact-profile.xml");
 			FileCopyUtils.copy(xmlStream, response.getOutputStream());
 		}
 	}
-	
-	// Helper functions for zipping
-	
 
+
+	// Helper functions for zipping
 	public ByteArrayOutputStream createZip(InputStream word, List<InputStream> excelFiles) throws IOException {
 	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	    ZipOutputStream zipOut = new ZipOutputStream(baos);
