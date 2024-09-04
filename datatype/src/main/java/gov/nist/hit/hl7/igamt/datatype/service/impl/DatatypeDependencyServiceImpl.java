@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.binding.domain.BindingSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +56,6 @@ public class DatatypeDependencyServiceImpl implements DatatypeDependencyService 
 
   @Override
   public void updateDependencies(Datatype resource, HashMap<RealKey, String> newKeys) {
-
     if (resource instanceof ComplexDatatype) {
       for (Component c : ((ComplexDatatype) resource).getComponents()) {
         if (c.getRef() != null) {
@@ -71,18 +71,17 @@ public class DatatypeDependencyServiceImpl implements DatatypeDependencyService 
     if (resource.getBinding() != null) {
       this.bindingService.substitute(resource.getBinding(), newKeys);
     }
-
   }
 
 
   @Override
   public DatatypeDependencies getDependencies(Datatype resource, DependencyFilter filter) throws EntityNotFound {
-    DatatypeDependencies ret = new DatatypeDependencies();
-    ResourceBindingProcessor rb = new ResourceBindingProcessor(resource.getBinding());
+    DatatypeDependencies dependencies = new DatatypeDependencies();
+    ResourceBindingProcessor rb = new ResourceBindingProcessor(new BindingSource(Type.DATATYPE, resource.getId()), resource.getBinding());
     if (resource instanceof ComplexDatatype) {
-      this.process((ComplexDatatype)resource, ret, filter, rb, null, new HashSet<>());
+      this.process(resource, dependencies, filter, rb, null, new HashSet<>());
     }
-    return ret;
+    return dependencies;
   }
 
   @Override
@@ -105,28 +104,30 @@ public class DatatypeDependencyServiceImpl implements DatatypeDependencyService 
   }
 
   @Override
-  public void visit(String id, Map<String, Datatype> existing, DatatypeDependencies used,
-      DependencyFilter filter, ResourceBindingProcessor rb, String parentPath, Set<String> visited) throws EntityNotFound {
+  public void visit(
+          String id,
+          Map<String, Datatype> existing,
+          DatatypeDependencies used,
+          DependencyFilter filter,
+          ResourceBindingProcessor rb,
+          String parentPath,
+          Set<String> visited
+  ) throws EntityNotFound {
+    // If already visited stop recursion
+    if(id != null && !visited.contains(id)) {
+      visited.add(id);
+      Datatype datatype = existing.containsKey(id)? existing.get(id): datatypeService.findById(id);
 
-	    if(id != null) {
-          // If already visited stop recursion
-          if(visited.contains(id)) {
-            return;
-          }
-          visited.add(id);
-
-          Datatype d = existing.containsKey(id)? existing.get(id): datatypeService.findById(id);
-
-          if(d!= null) {
-            existing.put(d.getId(), d);
-            if(d instanceof ComplexDatatype) {
-              rb.addChild(d.getBinding(), parentPath);
-              this.process(d, used , filter, rb, parentPath, visited);
-            }
-          } else {
-            throw new EntityNotFound(id);
-          }
+      if(datatype != null) {
+        existing.put(datatype.getId(), datatype);
+        if(datatype instanceof ComplexDatatype) {
+          rb.addChild(new BindingSource(Type.DATATYPE, datatype.getId()), datatype.getBinding(), parentPath);
+          this.process(datatype, used , filter, rb, parentPath, visited);
         }
+      } else {
+        throw new EntityNotFound(id);
+      }
+    }
   }
 
 

@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
+import gov.nist.hit.hl7.igamt.common.binding.domain.BindingSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +39,6 @@ import gov.nist.hit.hl7.igamt.common.slicing.domain.OrderedSlicing;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.Slice;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
 import gov.nist.hit.hl7.igamt.common.slicing.service.SlicingService;
-import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeDependencyService;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
@@ -57,8 +57,6 @@ import gov.nist.hit.hl7.resource.dependency.DependencyFilter;
 @Service
 public class SegmentDependencyServiceImpl implements SegmentDependencyService {
 
-
-
   @Autowired
   DatatypeService datatypeService;
   @Autowired
@@ -69,7 +67,6 @@ public class SegmentDependencyServiceImpl implements SegmentDependencyService {
   BindingService bindingService;
   @Autowired
   CommonFilteringService commonFilteringService;
-  
   @Autowired
   SlicingService slicingService;
 
@@ -92,44 +89,40 @@ public class SegmentDependencyServiceImpl implements SegmentDependencyService {
     updateDynamicMapping(elm, newKeys);
   }
 
-
   @Override
   public SegmentDependencies getDependencies(Segment resource, DependencyFilter filter) throws EntityNotFound {
-
-    SegmentDependencies ret = new SegmentDependencies();
-
-    ResourceBindingProcessor rb = new ResourceBindingProcessor(resource.getBinding());
-    this.process(resource, ret, filter, rb, null);
-
-    return ret;
+    SegmentDependencies dependencies = new SegmentDependencies();
+    ResourceBindingProcessor rb = new ResourceBindingProcessor(new BindingSource(Type.SEGMENT, resource.getId()), resource.getBinding());
+    this.process(resource, dependencies, filter, rb, null);
+    return dependencies;
   }
 
-
-
   @Override
-  public void process(Segment segment, SegmentDependencies used, DependencyFilter filter,
-      ResourceBindingProcessor rb, String path) throws EntityNotFound {
-    Map<String, Slicing> slicingMap =  segment.getSlicings() != null ?  segment.getSlicings().stream().collect(
-        Collectors.toMap(x -> x.getPath(), x -> x)) : new HashMap<String, Slicing>();
-
-        for (Field f : segment.getChildren()) {
-          String pathId = path != null? path + '-' + f.getId(): f.getId();
-
-          if(commonFilteringService.allow(filter.getUsageFilter(), f)) {
-
-            bindingService.processValueSetBinding(rb.getValueSetBindings(pathId), used.getValuesets(), filter.getExcluded());  
-        
-            if (f.getRef() != null && f.getRef().getId() != null ) {
-              datatypeDependencyService.visit(f.getRef().getId(), used.getDatatypes(), used, filter, rb, pathId, new HashSet<>());
-            }
-            if(slicingMap.containsKey(f.getId())) {
-              this.processSlicing(slicingMap.get(f.getId()), used, filter, pathId);
-            }
-          }
+  public void process(
+          Segment segment,
+          SegmentDependencies used,
+          DependencyFilter filter,
+          ResourceBindingProcessor rb,
+          String path
+  ) throws EntityNotFound {
+    Map<String, Slicing> slicingMap =  segment.getSlicings() != null ?  segment.getSlicings()
+                                                                               .stream()
+                                                                               .collect(Collectors.toMap(Slicing::getPath, x -> x)) : new HashMap<>();
+    for (Field f : segment.getChildren()) {
+      String pathId = path != null? path + '-' + f.getId(): f.getId();
+      if(commonFilteringService.allow(filter.getUsageFilter(), f)) {
+        bindingService.processValueSetBinding(rb.getValueSetBindings(pathId), used.getValuesets(), filter.getExcluded());
+        if (f.getRef() != null && f.getRef().getId() != null ) {
+          datatypeDependencyService.visit(f.getRef().getId(), used.getDatatypes(), used, filter, rb, pathId, new HashSet<>());
         }
-        if(segment.getDynamicMappingInfo() != null && segment.getDynamicMappingInfo().getItems() != null ) {
-          this.process(segment.getDynamicMappingInfo() , used, filter);
+        if(slicingMap.containsKey(f.getId())) {
+          this.processSlicing(slicingMap.get(f.getId()), used, filter, pathId);
         }
+      }
+    }
+    if(segment.getDynamicMappingInfo() != null && segment.getDynamicMappingInfo().getItems() != null ) {
+      this.process(segment.getDynamicMappingInfo() , used, filter);
+    }
   }
 
 
@@ -179,15 +172,19 @@ public class SegmentDependencyServiceImpl implements SegmentDependencyService {
   }
 
   @Override
-  public void visit(String id, Map<String, Segment> existing, SegmentDependencies used,
-      DependencyFilter filter, ResourceBindingProcessor rb, String path) throws EntityNotFound {
-
-      Segment s = existing.containsKey(id)? existing.get(id):  segmentService.findById(id);
-
-      if(s != null) {
-        existing.put(s.getId(), s);
-        rb.addChild(s.getBinding(), path);
-        this.process(s, used , filter, rb,  path);
+  public void visit(
+          String id,
+          Map<String, Segment> existing,
+          SegmentDependencies used,
+          DependencyFilter filter,
+          ResourceBindingProcessor rb,
+          String path
+  ) throws EntityNotFound {
+      Segment segment = existing.containsKey(id) ? existing.get(id):  segmentService.findById(id);
+      if(segment != null) {
+        existing.put(segment.getId(), segment);
+        rb.addChild(new BindingSource(Type.SEGMENT, segment.getId()), segment.getBinding(), path);
+        this.process(segment, used , filter, rb,  path);
       } else throw new EntityNotFound(id);
     
   }

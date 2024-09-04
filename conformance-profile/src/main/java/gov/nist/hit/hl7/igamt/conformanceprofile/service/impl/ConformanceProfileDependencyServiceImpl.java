@@ -14,6 +14,7 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.service.impl;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.common.binding.domain.BindingSource;
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.ConditionalSlicing;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.OrderedSlicing;
@@ -116,7 +117,7 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
 
   @Override
   public ConformanceProfileDependencies process(ConformanceProfile resource, ConformanceProfileDependencies conformanceProfileDependencies, DependencyFilter filter) throws EntityNotFound {
-    ResourceBindingProcessor rb = new ResourceBindingProcessor(resource.getBinding());
+    ResourceBindingProcessor rb = new ResourceBindingProcessor(new BindingSource(Type.CONFORMANCEPROFILE, resource.getId()), resource.getBinding());
     Map<String, Slicing> slicingMap =  resource.getSlicings() != null ?  resource.getSlicings().stream().collect(
             Collectors.toMap(Slicing::getPath, x -> x)) : new HashMap<>();
 
