@@ -153,6 +153,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 	private static final int limitSizeOfVS = 1000;
 
+	public static  String schemaVersion = "1.7.0";
+	public static  String schemaURL = "https://raw.githubusercontent.com/usnistgov/hl7-v2-schemas/"+ schemaVersion + "/src/main/resources/hl7-v2-schemas/";
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -205,6 +207,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 	public Element serializeCoConstraintXML(IgDataModel igModel) throws CoConstraintXMLSerializationException {
 		String defaultHL7Version = this.igService.findDefaultHL7VersionById(igModel.getModel().getId());
 		Element ccc = new Element("CoConstraintContext");
+		Attribute schemaDecl = new Attribute("noNamespaceSchemaLocation",
+				schemaURL+ "CoConstraintContext.xsd");
+		schemaDecl.setNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+		ccc.addAttribute(schemaDecl);
 		ccc.addAttribute(new Attribute("ID", UUID.randomUUID().toString()));
 		for (ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
 			Element message = this.simpleCoConstraintXMLSerialization.serialize(cpModel.getModel(), defaultHL7Version);
@@ -322,7 +328,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 		Element elmTableLibrary = new Element("ValueSetLibrary");
 
 		Attribute schemaDecl = new Attribute("noNamespaceSchemaLocation",
-				"https://raw.githubusercontent.com/Jungyubw/NIST_healthcare_hl7_v2_profile_schema/master/Schema/NIST%20Validation%20Schema/ValueSets.xsd");
+				schemaURL+ "ValueSets.xsd");
 		schemaDecl.setNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 		elmTableLibrary.addAttribute(schemaDecl);
 		elmTableLibrary.addAttribute(new Attribute("ValueSetLibraryIdentifier", UUID.randomUUID().toString()));
@@ -484,7 +490,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 		String defaultHL7Version = this.igService.findDefaultHL7VersionById(igModel.getModel().getId());
 		Element e = new Element("ConformanceContext");
 		Attribute schemaDecl = new Attribute("noNamespaceSchemaLocation",
-				"https://raw.githubusercontent.com/Jungyubw/NIST_healthcare_hl7_v2_profile_schema/master/Schema/NIST%20Validation%20Schema/ConformanceContext.xsd");
+				schemaURL+ "ConformanceContext.xsd");
 		schemaDecl.setNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 		e.addAttribute(schemaDecl);
 
@@ -1399,17 +1405,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 	}
 
 	private void serializeProfileMetaData(Element e, IgDataModel igModel, String type, String defaultHL7Version) {
-		if (type.equals("Validation")) {
-			Attribute schemaDecl = new Attribute("noNamespaceSchemaLocation",
-					"https://raw.githubusercontent.com/Jungyubw/NIST_healthcare_hl7_v2_profile_schema/master/Schema/NIST%20Validation%20Schema/Profile.xsd");
-			schemaDecl.setNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-			e.addAttribute(schemaDecl);
-		} else if (type.equals("Display")) {
-			Attribute schemaDecl = new Attribute("noNamespaceSchemaLocation",
-					"https://raw.githubusercontent.com/Jungyubw/NIST_healthcare_hl7_v2_profile_schema/master/Schema/NIST%20Display%20Schema/Profile.xsd");
-			schemaDecl.setNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-			e.addAttribute(schemaDecl);
-		}
+		Attribute schemaDecl = new Attribute("noNamespaceSchemaLocation",
+				schemaURL+ "Profile.xsd");
+		schemaDecl.setNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+		e.addAttribute(schemaDecl);
 
 		if (igModel != null && igModel.getModel() != null) {
 			e.addAttribute(new Attribute("ID", UUID.randomUUID().toString()));
@@ -1744,7 +1743,12 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 	@Override
 	public Element serializeSlicingXML(IgDataModel igModel) {
+
 		Element e = new Element("ProfileSlicing");
+		Attribute schemaDecl = new Attribute("noNamespaceSchemaLocation",
+				schemaURL+ "ProfileSlicing.xsd");
+		schemaDecl.setNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+		e.addAttribute(schemaDecl);
 		e.addAttribute(new Attribute("ID", UUID.randomUUID().toString()));
 
 		String defaultHL7Version = this.igService.findDefaultHL7VersionById(igModel.getModel().getId());
@@ -1962,6 +1966,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 	@Override
 	public Element serializeBindingsXML(IgDataModel igModel) {
 		Element e = new Element("ValueSetBindingsContext");
+		Attribute schemaDecl = new Attribute("noNamespaceSchemaLocation",
+				schemaURL+ "ValueSetBindings.xsd");
+		schemaDecl.setNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+		e.addAttribute(schemaDecl);
 		e.addAttribute(new Attribute("ID", UUID.randomUUID().toString()));
 
 		String defaultHL7Version = this.igService.findDefaultHL7VersionById(igModel.getModel().getId());

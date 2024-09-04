@@ -92,30 +92,30 @@ public class DataFixer {
 
 
 
-  public void readCsv() throws ValidationException, ForbiddenOperationException {
-    String csvFile = "/Users/ena3/projects/hl7-igamt/bootstrap/src/main/resources/HL7tables-csv.csv";
-    List<BindingInfo> locationIssues= new ArrayList<BindingInfo>();
-    HashMap<String, Segment> segmentMap= new HashMap<String, Segment>();
-    HashMap<String, String> valueSetIds= new HashMap<String, String>();
-
-    CSVReader reader = null;
-    try {
-      reader = new CSVReader(new FileReader(csvFile));
-      String[] line;
-      while ((line = reader.readNext()) != null) {
-        System.out.println("Country [id= " + line[0] + ", code= " + line[1] + " , name=" + line[2] + "]");
-        if(line[8] !=null && line[8].equals("Frank") && line[9].equals("1")) {
-
-          BindingInfo info = new BindingInfo(line[1], line[2], line[4], line[6], line[7]);
-          fix(info);
-          // locationIssues.add(new BindingInfo(line[1], line[2], line[4], line[6], line[7]));
-        }
-      }
-      System.out.println(locationIssues.size());        
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
+//  public void readCsv() throws ValidationException, ForbiddenOperationException {
+//    String csvFile = "/Users/ena3/projects/hl7-igamt/bootstrap/src/main/resources/HL7tables-csv.csv";
+//    List<BindingInfo> locationIssues= new ArrayList<BindingInfo>();
+//    HashMap<String, Segment> segmentMap= new HashMap<String, Segment>();
+//    HashMap<String, String> valueSetIds= new HashMap<String, String>();
+//
+//    CSVReader reader = null;
+//    try {
+//      reader = new CSVReader(new FileReader(csvFile));
+//      String[] line;
+//      while ((line = reader.readNext()) != null) {
+//        System.out.println("Country [id= " + line[0] + ", code= " + line[1] + " , name=" + line[2] + "]");
+//        if(line[8] !=null && line[8].equals("Frank") && line[9].equals("1")) {
+//
+//          BindingInfo info = new BindingInfo(line[1], line[2], line[4], line[6], line[7]);
+//          fix(info);
+//          // locationIssues.add(new BindingInfo(line[1], line[2], line[4], line[6], line[7]));
+//        }
+//      }
+//      System.out.println(locationIssues.size());
+//    } catch (IOException e) {
+//      e.printStackTrace();
+//    }
+//  }
 
 
   /**

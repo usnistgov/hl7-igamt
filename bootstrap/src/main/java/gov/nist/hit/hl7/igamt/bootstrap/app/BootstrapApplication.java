@@ -38,7 +38,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ca.uhn.fhir.context.FhirContext;
-import gov.nist.hit.hl7.igamt.bootstrap.data.CodeFixer;
+//import gov.nist.hit.hl7.igamt.bootstrap.data.CodeFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConfigCreator;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConfigUpdater;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConformanceStatementFixer;
@@ -229,8 +229,8 @@ public class BootstrapApplication implements CommandLineRunner {
 	@Autowired
 	PcConformanceStatementsIdFixes pcConformanceStatementsIdFixes;
 
-	@Autowired
-	CodeFixer codeFixer;
+//	@Autowired
+//	CodeFixer codeFixer;
 	@Autowired
 	DocumentInfoService documentService;
 
@@ -425,9 +425,9 @@ public class BootstrapApplication implements CommandLineRunner {
 
 
 	//@PostConstruct
-	public void fixBinding() throws ValidationException, ForbiddenOperationException {
-		this.dataFixer.readCsv();
-	}
+//	public void fixBinding() throws ValidationException, ForbiddenOperationException {
+//		this.dataFixer.readCsv();
+//	}
 
 	//@PostConstruct
 	public void fix0396() throws ValidationException, ForbiddenOperationException{
@@ -485,13 +485,13 @@ public class BootstrapApplication implements CommandLineRunner {
 
 	//@PostConstruct
 	void addDynamicMappingInfo() throws ForbiddenOperationException {
-		codeFixer.fixTableHL70125();
+		//codeFixer.fixTableHL70125();
 		dynamicMappingFixer.processSegments();
 	}
 
 	//@PostConstruct
 	void fixDeprecated() throws FileNotFoundException {
-		codeFixer.fixFromCSV();
+		//codeFixer.fixFromCSV();
 	}
 
 	//@PostConstruct
@@ -633,7 +633,7 @@ public class BootstrapApplication implements CommandLineRunner {
 
 	//@PostConstruct
 	void addVersionFixes() throws ForbiddenOperationException, ValidationException {
-		codeFixer.fixTableHL70125("2.9"); 
+		//codeFixer.fixTableHL70125("2.9");
 		this.dynamicMappingFixer.processSegmentByVersion("2.9");
 		tableFixes.fix0396ByVersion("2.9");
 
