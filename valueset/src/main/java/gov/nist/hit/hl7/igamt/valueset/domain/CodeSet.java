@@ -29,7 +29,8 @@ public class CodeSet {
     private String description;
     
     private String username;
-    
+
+	private boolean disableKeyProtection;
     
     @DBRef
     private Set<CodeSetVersion> codeSetVersions;
@@ -116,5 +117,13 @@ public class CodeSet {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public boolean isDisableKeyProtection() {
+		return disableKeyProtection;
+	}
+
+	public void setDisableKeyProtection(boolean disableKeyProtection) {
+		this.disableKeyProtection = disableKeyProtection;
 	}
 }

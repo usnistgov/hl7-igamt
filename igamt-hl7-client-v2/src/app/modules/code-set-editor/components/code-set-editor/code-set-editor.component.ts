@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
 import { DamWidgetComponent } from 'src/app/modules/dam-framework';
 import { selectCodeSetInfo, selectCodeSetMetadata } from 'src/app/root-store/code-set-editor/code-set-edit/code-set-edit.selectors';
-import { ICodeSetInfoMetadata } from '../../models/code-set.models';
+import { ICodeSetInfo, ICodeSetInfoMetadata } from '../../models/code-set.models';
 
 export const CODE_SET_EDIT_WIDGET_ID = 'CODE_SET_EDIT_WIDGET_ID';
 
@@ -21,6 +21,7 @@ export const CODE_SET_EDIT_WIDGET_ID = 'CODE_SET_EDIT_WIDGET_ID';
 export class CodeSetEditorComponent extends DamWidgetComponent implements OnInit {
 
   metadata$: Observable<ICodeSetInfoMetadata>;
+  codeSetInfo$: Observable<ICodeSetInfo>;
   dateCreated$: Observable<Date>;
   dateUpdated$: Observable<Date>;
   codeSetURL: string;
@@ -28,9 +29,10 @@ export class CodeSetEditorComponent extends DamWidgetComponent implements OnInit
 
   constructor(
     protected store: Store<any>,
-    dialog: MatDialog) {
+    dialog: MatDialog,
+  ) {
     super(CODE_SET_EDIT_WIDGET_ID, store, dialog);
-    this.metadata$ = this.store.select(selectCodeSetMetadata);
+    this.codeSetInfo$ = this.store.select(selectCodeSetInfo);
   }
 
   ngOnInit(): void {

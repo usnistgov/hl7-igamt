@@ -2,20 +2,21 @@ import { IEditorMetadata } from '../../dam-framework';
 import { DiscoverableListItem } from '../../document/models/document/ig-list-item.class';
 import { ICodes } from '../../shared/models/value-set.interface';
 
-export interface  ICodeSetInfo {
+export interface ICodeSetInfo {
   id?: string;
   metadata: ICodeSetInfoMetadata;
+  disableKeyProtection: boolean;
   exposed?: boolean;
   children?: ICodeSetVersionInfo[];
   defaultVersion?: string;
 }
 
-export interface  ICodeSetInfoMetadata {
- title?: string;
- description?: string;
+export interface ICodeSetInfoMetadata {
+  title?: string;
+  description?: string;
 }
 
-export interface  ICodeSetVersionInfo {
+export interface ICodeSetVersionInfo {
   id: string;
   type: 'CODESETVERSION';
   version: string;
@@ -42,7 +43,7 @@ export interface ICodeSetVersionContent extends ICodeSetVersionInfo {
   codeSetReference: ICodeSetReference;
 }
 
-export interface ICodeSetReference  {
+export interface ICodeSetReference {
   codeSetId: string;
   versionId?: string;
 
@@ -65,6 +66,7 @@ export class ICodeSetListItem extends DiscoverableListItem {
   invitation?: boolean;
   dateCreated?: string;
   dateCommitted?: string;
+  disableKeyProtection: boolean;
 }
 
 export type ICodeSetItemType = 'PUBLIC' | 'PRIVATE' | 'DISCOVERABLE' | 'SHARED';

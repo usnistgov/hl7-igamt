@@ -6,6 +6,7 @@ public class CodeSetInfo {
 	private String id;
 	private CodeSetMetadata metadata;
 	private List<CodeSetVersionInfo> children;
+	private boolean disableKeyProtection;
 	private boolean exposed;
 	private String defaultVersion;
 	
@@ -44,5 +45,11 @@ public class CodeSetInfo {
 		this.defaultVersion = latest;
 	}
 
+	public boolean isDisableKeyProtection() {
+		return disableKeyProtection;
+	}
 
+	public void setDisableKeyProtection(boolean disableKeyProtection) {
+		this.disableKeyProtection = disableKeyProtection;
+	}
 }

@@ -17,7 +17,7 @@ import { DamWidgetEffect } from './../../../modules/dam-framework/store/dam-widg
 import { selectCodeSetId } from './code-set-edit.selectors';
 
 @Injectable()
-export class CodeSetEditEffects  extends DamWidgetEffect  {
+export class CodeSetEditEffects extends DamWidgetEffect {
 
   @Effect()
   loadCodeSetEdits$ = this.actions$.pipe(
@@ -93,9 +93,9 @@ export class CodeSetEditEffects  extends DamWidgetEffect  {
                 id: action.payload.id,
               },
               editor: action.payload.editor,
-              initial:
-                codeSetInfo,
-
+              initial: {
+                ...codeSetInfo,
+              },
             }),
           ];
         }),
@@ -111,12 +111,12 @@ export class CodeSetEditEffects  extends DamWidgetEffect  {
     }),
   );
 
-    constructor(
-      actions$: Actions<CodeSetEditActions>,
-      private codeSetService: CodeSetServiceService,
-      private store: Store<any>,
-      private message: MessageService,
-    ) {
-      super(CODE_SET_EDIT_WIDGET_ID, actions$);
-    }
+  constructor(
+    actions$: Actions<CodeSetEditActions>,
+    private codeSetService: CodeSetServiceService,
+    private store: Store<any>,
+    private message: MessageService,
+  ) {
+    super(CODE_SET_EDIT_WIDGET_ID, actions$);
+  }
 }

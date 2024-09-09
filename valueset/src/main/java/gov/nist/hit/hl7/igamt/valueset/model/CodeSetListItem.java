@@ -25,7 +25,8 @@ public class CodeSetListItem {
 	private Boolean draft;
 	private Type resourceType;
 	private PublicationInfo publicationInfo;
-	private Boolean deprecated;	
+	private Boolean deprecated;
+	private boolean disableKeyProtection;
 	private List<CodeSetVersionListInfo> children; 
 	
 	public CodeSetListItem() {
@@ -131,5 +132,11 @@ public class CodeSetListItem {
 		this.children = children;
 	}
 
+	public boolean isDisableKeyProtection() {
+		return disableKeyProtection;
+	}
 
+	public void setDisableKeyProtection(boolean disableKeyProtection) {
+		this.disableKeyProtection = disableKeyProtection;
+	}
 }

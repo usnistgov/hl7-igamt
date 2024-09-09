@@ -9,6 +9,7 @@ public class CodeSetAccessInfo {
 	private Audience audience;
 	private String username;
 	private Type type;
+	private boolean disableKeyProtection;
 	private Date dateCommitted;
 
 	public Audience getAudience() {
@@ -41,5 +42,13 @@ public class CodeSetAccessInfo {
 
 	public void setDateCommitted(Date dateCommitted) {
 		this.dateCommitted = dateCommitted;
+	}
+
+	public boolean isDisableKeyProtection() {
+		return disableKeyProtection;
+	}
+
+	public void setDisableKeyProtection(boolean disableKeyProtection) {
+		this.disableKeyProtection = disableKeyProtection;
 	}
 }

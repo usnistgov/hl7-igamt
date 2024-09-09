@@ -117,12 +117,12 @@ export class CodeSetDashBoardComponent extends DamAbstractEditorComponent implem
           flatMap((message) => {
             return this.codeSetService.getCodeSetInfo(current.data.id).pipe(
               flatMap((codeSetInfo) => {
-                this.resourceSubject.next(codeSetInfo);
+                this.resourceSubject.next({ ...codeSetInfo });
                 return [
-                  ...this.codeSetService.getUpdateAction(codeSetInfo),
+                  ...this.codeSetService.getUpdateAction({ ...codeSetInfo }),
                   this.messageService.messageToAction(message),
-                  new fromDam.EditorUpdate({ value: codeSetInfo, updateDate: false }),
-                  new fromDam.LoadPayloadData(codeSetInfo),
+                  new fromDam.EditorUpdate({ value: { ...codeSetInfo }, updateDate: false }),
+                  new fromDam.LoadPayloadData({ ...codeSetInfo }),
                 ];
               }),
             );

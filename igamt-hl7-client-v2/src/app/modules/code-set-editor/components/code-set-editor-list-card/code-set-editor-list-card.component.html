@@ -1,13 +1,15 @@
 <p-card >
   <div style="display: flex; justify-content: space-between; width: 100%;">
     <!-- CARD CONTENT -->
-    <div style="display: flex; flex-direction: row;">
+    <div style="display: flex; flex-direction: row; width: 100%;">
       <!-- ITEM DETAILS -->
-      <div style="display: flex; flex-direction: column;">
-        <h6  [routerLink]="['/code-set', item.id]"  style="margin-left: 10px; margin-bottom: 0;" class="link">
-          <strong>{{item.title}}</strong>
-        </h6>
-
+      <div style="display: flex; flex-direction: column; width: 100%;">
+        <div style="display: flex; justify-content: space-between; align-items: start; width: 100%;">
+          <h6  [routerLink]="['/code-set', item.id]"  style="margin-left: 10px; margin-bottom: 0;" class="link">
+            <strong>{{item.title}}</strong>
+          </h6>
+          <span *ngIf="item.disableKeyProtection" class="badge badge-danger"><i class="fa fa-unlock"></i> API Access Without API Key</span>
+        </div>
         <span style="margin-left: 10px; color: #818181;">{{item.subtitle}}</span>
         <span *ngIf="item.username" style="margin-left: 10px; color: #818181;">
           <i class="fa fa-user"></i>

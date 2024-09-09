@@ -38,7 +38,7 @@ public class APIAccessControlService {
 			switch(type) {
 				case CODESET:
 					CodeSetAccessInfo codeSetAccessInfo = resourceAccessInfoFetcher.getCodeSetAccessInfo(id);
-					boolean requiresAPIKey = true; // for now, all code sets will require API Key even public ones
+					boolean requiresAPIKey = !codeSetAccessInfo.isDisableKeyProtection();
 					return checkResourceAPIAccess(
 							type,
 							id,
@@ -60,15 +60,17 @@ public class APIAccessControlService {
 	}
 
 	public boolean checkResourceAPIAccess(Type type, String id, boolean requiresAPIKey, Function<AccessToken, Boolean> checkFn, AccessLevel requested) {
-		if(requiresAPIKey) {
-			AccessKey key = getAccessKey();
-			if(key == null || !key.isValid() || !isGranted(type, id, key)) {
+		AccessKey key = getAccessKey();
+		if(!requiresAPIKey) {
+			return accessControlService.evaluateAccessLevel(L(AccessLevel.READ), requested);
+		} else if(key != null) {
+			if(!key.isValid() || !isGranted(type, id, key)) {
 				return false;
 			}
 			AccessToken token = new AccessToken(key.getUsername(), Collections.emptySet());
 			return checkFn.apply(token);
 		} else {
-			return accessControlService.evaluateAccessLevel(L(AccessLevel.READ), requested);
+			return false;
 		}
 	}
 

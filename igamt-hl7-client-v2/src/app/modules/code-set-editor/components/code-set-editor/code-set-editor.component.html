@@ -5,11 +5,12 @@
   </ng-template>
 
   <ng-template #titleBar>
-    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
-      <div *ngIf="metadata$ | async as metadata" style="width: 100%; display: flex; align-items: center; padding: 5px 20px;">
-        <h2 style="margin: 0;">{{metadata.title}}</h2>
+    <div style="width: 100%; display: grid; grid-template-columns: 1fr auto; justify-content: space-between; align-items: center;">
+      <div *ngIf="codeSetInfo$ | async as codeSetInfo" style="width: 100%; display: flex; align-items: start; padding: 5px 20px; overflow: hidden; gap: 10px;">
+        <h2 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{codeSetInfo.metadata.title}}</h2>
+        <span *ngIf="codeSetInfo.disableKeyProtection" class="badge badge-danger" style="font-size: 0.8em;"><i class="fa fa-unlock"></i> API Access without API key</span>
       </div>
-      <div [ngStyle]="{width: urlSize+'px' }">
+      <div>
         <app-input-copy type="text" [value]="codeSetURL" label="URL"></app-input-copy>
       </div>
     </div>

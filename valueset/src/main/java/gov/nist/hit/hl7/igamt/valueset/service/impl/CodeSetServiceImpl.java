@@ -87,6 +87,7 @@ public class CodeSetServiceImpl implements CodeSetService {
 		info.setExposed(codeSet.isExposed());
 		info.setDefaultVersion(username);
 		info.setDefaultVersion(codeSet.getLatest());
+		info.setDisableKeyProtection(codeSet.isDisableKeyProtection());
 		List<CodeSetVersionInfo> children = new ArrayList<CodeSetVersionInfo>();
 		children = this.generateChildren(codeSet.getCodeSetVersions(),  codeSet.getId() );
 		
@@ -225,6 +226,7 @@ public class CodeSetServiceImpl implements CodeSetService {
 			element.setId(codeSet.getId());
 			element.setResourceType(Type.CODESET);
 			element.setTitle(codeSet.getName());
+			element.setDisableKeyProtection(codeSet.isDisableKeyProtection());
 
 			if(codeSet.getAudience() != null && codeSet.getAudience() instanceof PrivateAudience) {
 				element.setSharedUsers(((PrivateAudience) codeSet.getAudience()).getViewers());
@@ -334,6 +336,7 @@ public class CodeSetServiceImpl implements CodeSetService {
 		codeSet.setName(info.getMetadata().getTitle());
 		codeSet.setDescription(info.getMetadata().getDescription());
 		codeSet.setLatest(info.getDefaultVersion());
+		codeSet.setDisableKeyProtection(info.isDisableKeyProtection());
 		mergeCodeSetVersions(codeSet.getCodeSetVersions(),info.getChildren());		
 
 		codeSetRepo.save(codeSet);
@@ -387,7 +390,6 @@ public class CodeSetServiceImpl implements CodeSetService {
 				throw new ForbiddenOperationException();
 			}
 
-		
 		this.codeSetRepo.save(codeSet);
 	}
 	@Override
