@@ -150,31 +150,41 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   ngOnInit() {
   }
 
+  findInToc(profileNodeChildren: any[], type: Type): any[] {
+    const node = profileNodeChildren.find((x) => x.type === type);
+    if (node) {
+      return (node.children || []);
+    } else {
+      return [];
+    }
+  }
+
   updateNumbers(): any {
     const profileNodes = this.tree.treeModel.nodes.find((x) => x.type === Type.PROFILE);
     this.elementNumbers = {};
-    const datatypeNodes = profileNodes.children.find((x) => x.type === Type.DATATYPEREGISTRY).children;
+
+    const datatypeNodes = this.findInToc(profileNodes.children, Type.DATATYPEREGISTRY);
     this.elementNumbers.datatypes = datatypeNodes.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
 
-    const segments = profileNodes.children.find((x) => x.type === Type.SEGMENTREGISTRY).children;
+    const segments = this.findInToc(profileNodes.children, Type.SEGMENTREGISTRY);
     this.elementNumbers.segments = segments.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
 
-    const valueSets = profileNodes.children.find((x) => x.type === Type.VALUESETREGISTRY).children;
+    const valueSets = this.findInToc(profileNodes.children, Type.VALUESETREGISTRY);
     this.elementNumbers.valueSets = valueSets.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
 
-    const coConstraintGroup = profileNodes.children.find((x) => x.type === Type.COCONSTRAINTGROUPREGISTRY).children;
+    const coConstraintGroup = this.findInToc(profileNodes.children, Type.COCONSTRAINTGROUPREGISTRY);
     this.elementNumbers.coConstraintGroup = coConstraintGroup.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
 
-    const conformanceProfiles = profileNodes.children.find((x) => x.type === Type.CONFORMANCEPROFILEREGISTRY).children;
+    const conformanceProfiles = this.findInToc(profileNodes.children, Type.CONFORMANCEPROFILEREGISTRY);
     this.elementNumbers.conformanceProfiles = conformanceProfiles.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
 
-    const profileComponents = profileNodes.children.find((x) => x.type === Type.PROFILECOMPONENTREGISTRY).children;
+    const profileComponents = this.findInToc(profileNodes.children, Type.PROFILECOMPONENTREGISTRY);
     this.elementNumbers.profileComponents = profileComponents.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
 
-    const compositeProfiles = profileNodes.children.find((x) => x.type === Type.COMPOSITEPROFILEREGISTRY).children;
+    const compositeProfiles = this.findInToc(profileNodes.children, Type.COMPOSITEPROFILEREGISTRY);
     this.elementNumbers.compositeProfiles = compositeProfiles.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
-
   }
+
   addSectionToNode(node) {
     this.nodeHelperService.addNode(node);
     this.update();

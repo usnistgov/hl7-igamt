@@ -678,6 +678,17 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
+    public IgamtObjectError FreeTextAssertionXMLLegacyValueSet(Location location, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("FREETEXT_SCRIPT_LEGACY_VALUESET")
+                .warning()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("'ValueSet' expression is used in the assertion's XML, this expression is limited and does not perform the same validation checks as other constructs such as regular value set validation or co-constraints. It is strongly advised to avoid using it.")
+                .entry();
+    }
+
+    @Override
     public IgamtObjectError DuplicateConformanceStatementIdentifier(Location location, String id, Type type, String identifier) {
         return new IgamtVerificationEntryBuilder("CS_DUPLICATE_IDENTIFIER")
                 .error()

@@ -11,7 +11,9 @@ import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
 import gov.nist.hit.hl7.v2.schemas.utils.HL7v2SchemaResourceResolver;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -20,8 +22,13 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Predicate;
@@ -62,7 +69,7 @@ public class AssertionVerificationService extends VerificationUtils {
         return null;
     }
 
-    public List<IgamtObjectError> checkFreeText(ResourceSkeleton skeleton, Location location, String assertion, boolean predicate) throws IOException, SAXException {
+    public List<IgamtObjectError> checkFreeText(ResourceSkeleton skeleton, Location location, String assertion, boolean predicate) throws IOException, SAXException, XPathExpressionException {
         if(assertion == null || assertion.isEmpty()) {
             return Arrays.asList(
                     this.entry.FreeTextAssertionScriptMissing(
@@ -76,7 +83,7 @@ public class AssertionVerificationService extends VerificationUtils {
         }
     }
 
-    public List<IgamtObjectError> checkFreeTextXML(ResourceSkeleton skeleton, Location location, String xml, boolean predicate) throws IOException, SAXException {
+    public List<IgamtObjectError> checkFreeTextXML(ResourceSkeleton skeleton, Location location, String xml, boolean predicate) throws IOException, SAXException, XPathExpressionException {
         Validator validator;
         if(predicate) {
             validator = this.predicateSchema.newValidator();
@@ -126,7 +133,26 @@ public class AssertionVerificationService extends VerificationUtils {
         if(throughException != null) {
             entries.add(throughException);
         }
+
+        if(entries.size() == 0) {
+            entries.addAll(this.checkForLegacyValueSetAssertion(location, skeleton, xml));
+        }
         return entries;
+    }
+
+    public List<IgamtObjectError> checkForLegacyValueSetAssertion(Location location, ResourceSkeleton skeleton, String xml) throws XPathExpressionException {
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        NodeList nodeList = (NodeList) xPath.compile("//ValueSet").evaluate(new InputSource(new StringReader(xml)), XPathConstants.NODESET);
+        if(nodeList.getLength() > 0) {
+            return Arrays.asList(
+                    this.entry.FreeTextAssertionXMLLegacyValueSet(
+                            location,
+                            skeleton.getResource().getId(),
+                            skeleton.getResource().getType()
+                    )
+            );
+        }
+        return this.NoErrors();
     }
 
     public List<IgamtObjectError> checkIfThenAssertion(ResourceSkeleton skeleton, Location location, IfThenAssertion assertion) {
