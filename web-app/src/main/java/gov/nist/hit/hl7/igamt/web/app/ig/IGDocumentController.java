@@ -1297,8 +1297,7 @@ public class IGDocumentController extends BaseController {
 	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
 	public @ResponseBody FilterResponse filter(@PathVariable("id") String id , @RequestBody FilterIGInput filter , Authentication authentication)
 			throws IGNotFoundException, ValuesetNotFoundException, EntityNotFound {
-
-		return this.igService.getFilterResponse( id, filter);
+     		return this.igService.getFilterResponse( id, filter);
 	}
 
 	/**
