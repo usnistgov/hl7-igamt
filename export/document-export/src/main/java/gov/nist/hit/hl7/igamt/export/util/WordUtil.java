@@ -91,7 +91,7 @@ public class WordUtil {
       Date dateUpdated, String hl7Version) throws ExportException {
     try {
       WordprocessingMLPackage wordMLPackage =
-          WordprocessingMLPackage.load(WordUtil.class.getResourceAsStream("/lri_template.dotx"));
+          WordprocessingMLPackage.load(WordUtil.class.getResourceAsStream("/lri_template.docx"));
       ObjectFactory factory = Context.getWmlObjectFactory();
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
       String formattedDateUpdated = dateUpdated != null ? simpleDateFormat.format(dateUpdated) : "" ;
@@ -349,7 +349,7 @@ public class WordUtil {
           new org.docx4j.relationships.ObjectFactory().createRelationship();
       rel.setType(Namespaces.ATTACHED_TEMPLATE);
       // String templatePath = "/rendering/lri_template.dotx";
-      URL templateData = WordUtil.class.getResource("/lri_template.dotx");
+      URL templateData = WordUtil.class.getResource("/lri_template.docx");
       rel.setTarget(templateData.getPath());
       rel.setTargetMode("External");
       rp.addRelationship(rel); // addRelationship sets the rel's @Id
@@ -382,6 +382,8 @@ public class WordUtil {
     tidy.parseDOM(html, outputStream);
     return outputStream;
   }
+
+
 
 
 }

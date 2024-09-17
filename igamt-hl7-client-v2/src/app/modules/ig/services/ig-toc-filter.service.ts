@@ -15,7 +15,7 @@ export const IG_TOC_FILTER_STATE = 'igTocFilter';
 export const selectIgTocFilter = selectValue<IIgTocFilter>(IG_TOC_FILTER_STATE);
 
 export interface IIgTocFilterConfiguration {
-  usedInConformanceProfiles: {
+usedInConformanceProfiles: {
     active: boolean;
     conformanceProfiles: string[];
     allow: boolean;
@@ -136,6 +136,21 @@ export class IgTocFilterService {
       });
     }
   }
+
+  getResourceIdsForConformanceProfile(conformanceProfileId: string, usages: Usage[]): Observable<IResourceFilter> {
+    return this.store.select(selectLoadedDocumentInfo).pipe(
+      take(1),
+      mergeMap((x) => {
+        return this.http.post<IResourceFilter>('/api/igdocuments/' + x.documentId + '/filter/', {
+          conformanceProfiles: [conformanceProfileId],
+          usageFilter: {
+            allow: true,
+            values: usages,
+          }
+        });
+      }));
+  }
+
   getFilterInput(config: IIgTocFilterConfiguration): any {
     return {
       conformanceProfiles: config.usedInConformanceProfiles.conformanceProfiles,
