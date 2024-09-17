@@ -23,6 +23,7 @@ import { IUserConfig } from './../../models/config.class';
 
 export enum HL7v2TreeColumnType {
   USAGE = 'Usage',
+  OLDUSAGE = 'Old Usage',
   NAME = 'Name',
   CARDINALITY = 'Cardinality',
   LENGTH = 'Length',

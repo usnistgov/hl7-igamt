@@ -1,5 +1,25 @@
-<div class="page-container-nopad" style="background-color: #d6d6d6e3;">
-  <div class="wrapper">
+<div  style="background-color: white; padding: 50px">
+  <div class="page-content">
+
+    <table class="table table-bordered table-stripped">
+    <tbody>
+      <tr>
+        <td style="background-color: #f4f4f4;"> <strong> Data Type Evolution Based on: </strong>  </td>
+
+        <td>
+          Number of Components
+        </td>
+        <td>
+          Component Usage
+        </td>
+        <td>
+          Component Data Type
+        </td>
+      </tr>
+    </tbody>
+
+    </table>
+
 <div *ngIf="matrix" class="card ui-g-6">
   <p-table  #dt [value]="matrix"  [globalFilterFields]="['#']" [scrollable]="true" scrollHeight="600px" >
     <ng-template pTemplate="caption">
@@ -25,8 +45,30 @@
   </p-table>
 </div>
 
-<div *ngIf="tableValue" class="card ui-g-6">
-  <p-treeTable [value]="tableValue" [scrollable]="true" scrollHeight="600px">
+<div class="card ui-g-6 ">
+
+  <div class="comparing-info">
+  <table class="table table-bordered">
+    <tbody>
+    <tr>
+        <td rowspan="2" >
+
+        {{selectedName? " Comparing Data Types": "No Data type selected" }}
+        </td>
+        <td *ngIf="firstVersion" >
+          <span class=" badge firstVersion"> {{selectedName}} {{firstVersion}} </span>
+        </td>
+     </tr>
+    <tr *ngIf="secondVersion">
+      <td>
+        <span class="badge secondVersion"> {{selectedName}} {{secondVersion}} </span>
+      </td>
+    </tr>
+    </tbody>
+    </table>
+  </div>
+
+  <p-treeTable [value]="tableValue" [scrollable]="true" scrollHeight="600px" *ngIf="tableValue">
     <ng-template pTemplate="header">
       <tr>
         <th>
