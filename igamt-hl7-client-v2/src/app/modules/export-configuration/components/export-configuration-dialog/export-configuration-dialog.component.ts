@@ -21,7 +21,7 @@ import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IExportConfigurationGlobal } from '../../models/config.interface';
 import { ExportTypes } from '../../models/export-types';
-import { UsageConfiguration } from '../../models/usageConfiguration';
+import { IUsageConfiguration } from '../../models/usage-configuration.interface';
 import { ConfigurationTocComponent, ProfileActionEventData, ProfileActionEventType } from '../configuration-toc/configuration-toc.component';
 
 @Component({
@@ -48,7 +48,6 @@ export class ExportConfigurationDialogComponent implements OnInit {
   documentId: string;
   removedProfiles: string[] = [];  // Array to keep track of removed conformance profiles
 
-
   constructor(
     public dialogRef: MatDialogRef<ExportConfigurationDialogComponent>,
     private libraryService: LibraryService,
@@ -66,8 +65,8 @@ export class ExportConfigurationDialogComponent implements OnInit {
     this.deltaMode$ = this.store.select(selectDelta);
     this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
     this.filter = this.initialConfig.exportFilterDecision;
-    
-    //change this.filter to update new dependencies selection
+
+    // change this.filter to update new dependencies selection
     this.defaultConfig = _.cloneDeep(data.decision.exportConfiguration);
     this.type = data.type;
     this.docType = data.type;
@@ -75,69 +74,67 @@ export class ExportConfigurationDialogComponent implements OnInit {
     this.documentId = data.documentId;
   }
 
-//create function selectProfileWithDependencies(id profile) and calls back end, the goal is to return the Id of dependencies 
+// create function selectProfileWithDependencies(id profile) and calls back end, the goal is to return the Id of dependencies
 // subscribes to observables and call following function with the IDS
 //  (this.dialog.open(ConfirmDialogComponent ) When unselecting a profile and its dependencies, prompt a warning dialog stating that some of the dependencies might be also used in another profile, unselecting this profile, will result in unselecting thoses dependencies for all profiles
-//create function updateFilter(listIds) ==> updates filterObject, this will be inside of first function, doing something different for each context menu option
+// create function updateFilter(listIds) ==> updates filterObject, this will be inside of first function, doing something different for each context menu option
 
 handleProfileAction(data: ProfileActionEventData) {
-  if(data.type === ProfileActionEventType.ADD || data.type === ProfileActionEventType.SELECT_ONLY) {
+  if (data.type === ProfileActionEventType.ADD || data.type === ProfileActionEventType.SELECT_ONLY) {
     this.addProfileAndDependencies(data.profileId);
 
           // If the profile was previously removed, remove it from the removedProfiles list
-    this.removedProfiles = this.removedProfiles.filter(id => id !== data.profileId);
+    this.removedProfiles = this.removedProfiles.filter((id) => id !== data.profileId);
   } else if (data.type === ProfileActionEventType.UNSELECT) {
     this.unselectProfileAndDependencies(data.profileId);
 
        // Add the profile to the removedProfiles list
-       if (!this.removedProfiles.includes(data.profileId)) {
+    if (!this.removedProfiles.includes(data.profileId)) {
         this.removedProfiles.push(data.profileId);
       }
-    
-   // Iterate over other conformance profiles and call addProfileAndDependencies
-   const otherConformanceProfiles = Object.keys(this.filter.conformanceProfileFilterMap)
-   .filter(id => id !== data.profileId && !this.removedProfiles.includes(id));
 
-    otherConformanceProfiles.forEach(profileId => {
+   // Iterate over other conformance profiles and call addProfileAndDependencies
+    const otherConformanceProfiles = Object.keys(this.filter.conformanceProfileFilterMap)
+   .filter((id) => id !== data.profileId && !this.removedProfiles.includes(id));
+
+    otherConformanceProfiles.forEach((profileId) => {
       this.addProfileAndDependencies(profileId);
     });
   }
 
 }
 addProfileAndDependencies(profileId: string) {
-  this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, this.getUsagesToInclude(this.initialConfig.exportConfiguration.conformamceProfileExportConfiguration.segmentORGroupsMessageExport)).subscribe(response => {
-    response.conformanceProfiles.forEach(id => {
+  this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, this.getUsagesToInclude(this.initialConfig.exportConfiguration.conformamceProfileExportConfiguration.segmentORGroupsMessageExport)).subscribe((response) => {
+    response.conformanceProfiles.forEach((id) => {
       this.filter.conformanceProfileFilterMap[id] = true;
     });
-    response.segments.forEach(id => {
+    response.segments.forEach((id) => {
       this.filter.segmentFilterMap[id] = true;
     });
-    response.datatypes.forEach(id => {
+    response.datatypes.forEach((id) => {
       this.filter.datatypesFilterMap[id] = true;
     });
-    response.valueSets.forEach(id => {
+    response.valueSets.forEach((id) => {
       this.filter.valueSetFilterMap[id] = true;
     });
   });
-}  
+}
 unselectProfileAndDependencies(profileId: string) {
-  this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, []).subscribe(response => {
-    response.conformanceProfiles.forEach(id => {
+  this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, []).subscribe((response) => {
+    response.conformanceProfiles.forEach((id) => {
       this.filter.conformanceProfileFilterMap[id] = false;
     });
-    response.segments.forEach(id => {
+    response.segments.forEach((id) => {
       this.filter.segmentFilterMap[id] = false;
     });
-    response.datatypes.forEach(id => {
+    response.datatypes.forEach((id) => {
       this.filter.datatypesFilterMap[id] = false;
     });
-    response.valueSets.forEach(id => {
+    response.valueSets.forEach((id) => {
       this.filter.valueSetFilterMap[id] = false;
     });
   });
 }
-
-
 
 // addProfileAndDependencies(profileId: string): void {
 //   console.log('Inside addProfileAndDependencies ');
@@ -279,14 +276,13 @@ unselectProfileAndDependencies(profileId: string) {
     this.applyFilter($event, this.filter.conformanceProfileFilterMap);
   }
 
-  getUsagesToInclude(config: UsageConfiguration | undefined): Usage[] {
+  getUsagesToInclude(config: IUsageConfiguration | undefined): Usage[] {
     if (!config) {
-      console.warn("getUsagesToInclude called with undefined config ");
       return [];
     }
-  
+
     const usages: Usage[] = [];
-  
+
     if (config.r) {
       usages.push(Usage.R);
     }
@@ -314,7 +310,7 @@ unselectProfileAndDependencies(profileId: string) {
     if (config.ix) {
       usages.push(Usage.IX);
     }
-  
+
     return usages;
   }
 }

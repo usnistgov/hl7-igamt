@@ -1,4 +1,5 @@
 import {ExportTypes} from './export-types';
+import { IUsageConfiguration } from './usage-configuration.interface';
 
 export interface IExportConfiguration {
   configName: string;
@@ -289,15 +290,6 @@ interface IColumn {
   position: number;
   present: boolean;
   disabled: boolean;
-}
-
-export interface IUsageConfiguration {
-  r: boolean;
-  re: boolean;
-  c: boolean;
-  x: boolean;
-  o: boolean;
-  usagesToInclude: string[];
 }
 
 export interface IConstraintExportConfiguration {

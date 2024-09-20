@@ -414,6 +414,7 @@ public class BootstrapApplication implements CommandLineRunner {
 		criterias1.put(EvolutionPropertie.CPNUMBER, true);
 		//		criterias1.put(EvolutionPropertie.CPDATATYPENAME, true);
 		datatypeClassifier.classify(hl7Versions,criterias1);
+
 		System.out.println("ENd of Classifying dts");
 
 	}
