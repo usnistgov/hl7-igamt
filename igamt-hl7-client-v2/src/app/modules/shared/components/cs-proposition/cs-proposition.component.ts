@@ -464,6 +464,11 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     this.change();
   }
 
+  removeOccurrence(subject: StatementTarget) {
+    subject.clearOccurrenceValue(true);
+    this.change();
+  }
+
   changeStatement() {
     Object.assign(this.assertion.complement, {
       ...this.assertion.complement,

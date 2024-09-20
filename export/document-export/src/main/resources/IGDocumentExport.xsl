@@ -12,11 +12,14 @@
 	<xsl:param name="inlineConstraints" select="'false'" />
 	<xsl:param name="includeTOC" select="'false'" />
 	<xsl:param name="targetFormat" select="'html'" />
+	<xsl:param name="exportType" select="'ig'" />
 	<xsl:variable name="documentTargetFormat" select="$targetFormat" />
 	<xsl:param name="documentTitle" select="'Implementation Guide'" />
 	<xsl:param name="imageLogo" select="''" />
 	<xsl:variable name="inlineConstraintsVar" select="$inlineConstraints" />
 	<xsl:variable name="imageLogoSrc" select="$imageLogo" />
+	<xsl:variable name="exportTypeVar" select="$exportType" />
+
 
 	<!-- Custom export font -->
 	<xsl:param name="userFontFamily" />

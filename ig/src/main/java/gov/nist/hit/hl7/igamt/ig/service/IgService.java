@@ -109,11 +109,7 @@ public interface IgService {
     
   UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass, boolean updateDate);
   IgProfileResourceSubSet getIgProfileResourceSubSet(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws EntityNotFound;
-  public Ig makeSelectedIg(Ig ig, ReqId reqIds);
-  public void visitSegmentRefOrGroup(Set<SegmentRefOrGroup> srgs, Ig selectedIg, Ig all);
-  public void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all);
-  public void visitSegment(Set<Field> fields, Ig selectedIg, Ig all);
-  public void visitDatatype(Set<Component> components, Ig selectedIg, Ig all);
+  Ig getIgProfileResourceSubSetAsIg(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws EntityNotFound;
 
   public ProfileComponent createProfileComponent(Ig ig, String name, List<DisplayElement> children);
 

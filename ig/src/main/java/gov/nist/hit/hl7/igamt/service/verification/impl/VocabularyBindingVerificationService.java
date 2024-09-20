@@ -30,6 +30,22 @@ public class VocabularyBindingVerificationService extends VerificationUtils {
                 PropertyType.VALUESET,
                 pathId,
                 (target) -> {
+
+                    if(
+                            resourceSkeleton.getResourceRef().getType().equals(Type.CONFORMANCEPROFILE)
+                                    && isOBX_2(target.getParent().getFixedName(), target.getPosition())
+                    ) {
+                        errors.add(
+                                this.entry.OBX2MessageValueSetBindingNotAllowed(
+                                        pathId,
+                                        target.getLocationInfo(),
+                                        resourceSkeleton.getResource().getId(),
+                                        resourceSkeleton.getResource().getType()
+                                )
+                        );
+                        return errors;
+                    }
+
                     BindingInfo bindingInfo = getBindingInfo(target.getResource().getFixedName());
                     if(bindingInfo != null &&
                             isAllowedLocation(
@@ -196,6 +212,10 @@ public class VocabularyBindingVerificationService extends VerificationUtils {
 
     public boolean existsValueSet(String vsId) {
         return this.valuesetService.findById(vsId) != null;
+    }
+
+    public boolean isOBX_2(String resourceName, int position) {
+        return resourceName.equals("OBX") && position == 2;
     }
 
     @FunctionalInterface()

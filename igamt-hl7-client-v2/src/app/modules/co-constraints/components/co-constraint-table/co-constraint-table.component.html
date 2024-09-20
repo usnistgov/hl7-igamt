@@ -37,7 +37,7 @@
           <div *ngIf="!delta" style="width: 100%; display: flex; justify-content: space-between;">
             <div>
               <button *ngIf="!vOnly && mode !== 'GROUP' && value.headers.grouper && (!value.groups || value.groups.length === 0)" (click)="clearGrouper()" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button>
-              <button *ngIf="!vOnly && (mode === 'GROUP' || (value.groups && value.groups.length > 0))" class="btn btn-sm btn-primary" (click)="setTableGrouper(false)"><i class="fa fa-pencil"></i></button>
+              <button *ngIf="!vOnly && !value.headers.grouper" class="btn btn-sm btn-primary" (click)="setTableGrouper(false)"><i class="fa fa-pencil"></i></button>
             </div>
             <ng-container *ngIf="getGrouperElementInfo(value.headers.grouper) | async as grouperInfo" >
               <div style="width: 100%; text-align: center;" *ngIf="grouperInfo.resolved" >

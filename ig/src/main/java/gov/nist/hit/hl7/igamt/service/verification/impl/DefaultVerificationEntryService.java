@@ -144,6 +144,36 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
+    public IgamtObjectError DynamicMappingValueNotFound(Location location, String id, Type type, String value, Set<String> valueSets) {
+        return new IgamtVerificationEntryBuilder("DYNAMIC_MAPPING_VALUE_NOT_FOUND")
+                .error()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Dynamic mapping value '"+value+"' is not part of the value sets ["+ String.join(", ", valueSets)+"] bound at location "+ location.getName() +".")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError DynamicMappingValueExcludedUsage(Location location, String id, Type type, String value, Set<String> valueSets) {
+        return new IgamtVerificationEntryBuilder("DYNAMIC_MAPPING_VALUE_EXCLUDED")
+                .error()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Dynamic mapping value '"+value+"' has a usage code of 'E' (excluded) in value sets ["+ String.join(", ", valueSets)+"] bound at location "+ location.getName() +".")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError DynamicMappingMissingValue(Location location, String id, Type type, Set<String> values, String valueSet) {
+        return new IgamtVerificationEntryBuilder("DYNAMIC_MAPPING_VALUE_MISSING")
+                .error()
+                .target(id, type)
+                .locationInfo(location)
+                .message("Values ["+ String.join(", ", values)+"] from value set '"+valueSet+"' do not have a datatype associated in the dynamic mapping.")
+                .entry();
+    }
+
+    @Override
     public IgamtObjectError SingleCodeNotAllowed(String pathId, LocationInfo info, String id, Type type) {
         return new IgamtVerificationEntryBuilder("SINGLE_CODE_NOT_ALLOWED")
                 .fatal()
@@ -202,6 +232,18 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .target(id, type)
                 .locationInfo(pathId, name, prop)
                 .message("Invalid binding location : " + (blIsSet ? bindingLocations : '.') + " at " + target.getHl7Path() + (!Strings.isNullOrEmpty(reason) ? " ("+ reason +")" : ""))
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError OBX2MessageValueSetBindingNotAllowed(
+            String pathId, LocationInfo info, String id, Type type
+    ) {
+        return new IgamtVerificationEntryBuilder("OBX2_MESSAGE_VS_NOT_ALLOWED")
+                .fatal()
+                .target(id, type)
+                .locationInfo(pathId, info, PropertyType.VALUESET)
+                .message("Message level value set binding not allowed on OBX-2, this location's value set determines dynamic datatype mappings for OBX-5 and should be managed at the OBX segment level")
                 .entry();
     }
 
@@ -463,7 +505,17 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .message("Co-Constraint Table has multiple a column of VARIES type but no DATATYPE column")
                 .entry();
     }
-    
+
+    @Override
+    public IgamtObjectError CoConstraintDatatypeCellNotAllowed(String pathId, String locationName, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("COCONSTRAINT_DATATYPE_CELL_NOT_ALLOWED")
+                .fatal()
+                .target(id, type)
+                .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
+                .message("Co-Constraint Table restriction due to OBX-5 dynamic mapping : the IF column group is restricted to only contain a CODE column for OBX-3 when the THEN group contains a DATATYPE column for OBX-2.")
+                .entry();
+    }
+
     @Override
     public IgamtObjectError AssertionOccurrenceTypeOnNotRepeatable(Location location, String id, Type type, LocationInfo path, String occurrenceType, String pathQualifier) {
         return new IgamtVerificationEntryBuilder("ASSERTION_OCCTYPE_NOT_REPEATABLE")
@@ -622,6 +674,17 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .target(id, type)
                 .locationInfo(location)
                 .message("Invalid assertion XML script: "+ xmlError)
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError FreeTextAssertionXMLLegacyValueSet(Location location, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("FREETEXT_SCRIPT_LEGACY_VALUESET")
+                .warning()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("'ValueSet' expression is used in the assertion's XML, this expression is limited and does not perform the same validation checks as other constructs such as regular value set validation or co-constraints. It is strongly advised to avoid using it.")
                 .entry();
     }
 
@@ -849,7 +912,18 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .entry();
 	}
 
-	@Override
+    @Override
+    public IgamtObjectError CardinalityMissingMaxCardinality(LocationInfo locationInfo, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("CARDINALITY_MISSING_MAX")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.CARDINALITY)
+                .message("Max Cardinality is missing.")
+                .entry();
+    }
+
+    @Override
 	public IgamtObjectError CardinalityNotAllowedMaxCardinality(LocationInfo locationInfo, String id, Type type, String max) {
 		return new IgamtVerificationEntryBuilder("CARDINALITY_NOT_ALLOWED_MAX")
 				.error()
@@ -889,7 +963,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.LENGTH)
-                .message(String.format("Either # or = can be used to define truncation. The current ConfLength is %s", confLength))
+                .message(String.format("The current ConfLength is '%s'. The truncation flag was left unspecified. The best practice is to define truncation by using '=' (truncation NOT allowed) or '#' (truncation allowed). If unspecified, the default behavior is that truncation is allowed '#'.", confLength))
                 .entry();
 	}
 

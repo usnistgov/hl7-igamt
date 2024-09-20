@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -136,9 +137,10 @@ public class SimpleResourceBindingVerificationService extends VerificationUtils 
                                                     target.getLocationInfo(),
                                                     PropertyType.PREDICATE
                                             ),
-                                            ((FreeTextPredicate) predicate).getAssertionScript()
+                                            ((FreeTextPredicate) predicate).getAssertionScript(),
+                                            true
                                     );
-                                } catch (IOException | SAXException e) {
+                                } catch (IOException | SAXException | XPathExpressionException e) {
                                     throw new RuntimeException(e);
                                 }
                             } else {
@@ -209,9 +211,10 @@ public class SimpleResourceBindingVerificationService extends VerificationUtils 
                                             conformanceStatement.getIdentifier(),
                                             PropertyType.STATEMENT
                                     ),
-                                    ((FreeTextConformanceStatement) conformanceStatement).getAssertionScript()
+                                    ((FreeTextConformanceStatement) conformanceStatement).getAssertionScript(),
+                                    false
                             );
-                        } catch (IOException | SAXException e) {
+                        } catch (IOException | SAXException | XPathExpressionException e) {
                             throw new RuntimeException(e);
                         }
                     } else {

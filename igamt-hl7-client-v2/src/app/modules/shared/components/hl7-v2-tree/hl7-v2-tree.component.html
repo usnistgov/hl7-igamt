@@ -13,7 +13,7 @@
           </div>
         </ng-template>
         <ng-template pTemplate="header" let-columns>
-            <tr>
+            <tr class="table-row" style="background-color: #c8c8c8;">
               <ng-container *ngFor="let col of columns" [ngSwitch]="col.field">
                 <th *ngSwitchCase="columnTypes.NAME" style="width: 380px;" ttReorderableColumn ttResizableColumn>
                   {{col.header}}
@@ -51,6 +51,9 @@
                 <th *ngSwitchCase="columnTypes.TEXT" style="width: 135px;" ttReorderableColumn ttResizableColumn>
                   {{col.header}}
                 </th>
+                <th *ngSwitchCase="columnTypes.OLDUSAGE" style="width: 135px;" ttReorderableColumn ttResizableColumn>
+                  {{col.header}}
+                </th>
                 <th *ngSwitchDefault ttReorderableColumn ttResizableColumn>
                   {{col.header}}
                 </th>
@@ -58,8 +61,8 @@
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
-            <tr>
-              <td  [ngSwitch]="col.field" class="text-cell" *ngFor="let col of columns; let i = index" [id]="i + '-' + rowNode.index" #anchor>
+            <tr class="table-row">
+              <td  [ngSwitch]="col.field" class="text-cell table-cell" *ngFor="let col of columns; let i = index" [id]="i + '-' + rowNode.index" #anchor>
                 <ng-container *ngSwitchCase="columnTypes.NAME">
                   <tbody>
                     <tr>
@@ -117,6 +120,10 @@
                     }"
                     (valueChange)="registerChange($event)"
                   ></app-usage>
+                </ng-container>
+
+                <ng-container *ngSwitchCase="columnTypes.OLDUSAGE">
+                  {{rowData.oldUsage}}
                 </ng-container>
                 <ng-container *ngSwitchCase="columnTypes.CARDINALITY">
                   <app-cardinality

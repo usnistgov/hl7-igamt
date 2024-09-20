@@ -4,12 +4,7 @@ import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.coconstraints.repository.CoConstraintGroupRepository;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
@@ -49,10 +44,10 @@ public class SimpleCoConstraintService implements CoConstraintService {
   }
 
   @Override
-  public List<CoConstraintGroup> findByBaseSegmentAndDocumentIdAndUsername(String baseSegment, String documentId, String username) {
-    Segment target = this.segmentService.findById(baseSegment);
+  public List<CoConstraintGroup> findDocumentCoConstraintGroupsSegmentCompatible(String segmentId, DocumentType type, String documentId) {
+    Segment target = this.segmentService.findById(segmentId);
     if(target != null) {
-      List<CoConstraintGroup> igGroups = this.coConstraintGroupRepository.findByDocumentIdAndUsername(documentId, username);
+      List<CoConstraintGroup> igGroups = this.coConstraintGroupRepository.findByDocumentInfoDocumentIdAndDocumentInfoType(documentId, type);
       return igGroups.stream().filter((group) -> {
         Segment groupTarget = this.segmentService.findById(group.getBaseSegment());
         return groupTarget != null && groupTarget.getName().equals(target.getName());

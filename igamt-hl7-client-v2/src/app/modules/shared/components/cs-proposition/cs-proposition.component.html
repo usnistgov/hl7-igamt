@@ -281,6 +281,11 @@
       <ng-container *ngFor="let occurence of subjectOccurrenceList">
         <input type="radio" [name]="id + 'target-occurences'" [value]="occurence.value" [(ngModel)]="subject.value.occurenceType" (ngModelChange)="changeOccurrenceType(subject)"/> {{ occurence.label }}<br>
       </ng-container>
+      <ng-container *ngIf="subjectOccurrenceList.length === 0 && subject.repeatMax === 0 && (subject.value && subject.value.occurenceType)">
+        <button class="btn btn-sm btn-danger" (click)="removeOccurrence(subject)">
+          <i class="fa fa-trash"></i> Remove target occurrence 
+        </button>
+      </ng-container>
     </td>
 
     <!-- Location -->

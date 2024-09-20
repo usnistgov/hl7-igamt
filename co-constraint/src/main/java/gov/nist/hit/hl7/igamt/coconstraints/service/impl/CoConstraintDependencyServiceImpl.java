@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.common.binding.domain.BindingSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -126,16 +127,14 @@ public class CoConstraintDependencyServiceImpl implements CoConstraintDependency
   @Override
   public void process(CoConstraintGroup ccGroup, CoConstraintsDependencies used,  DependencyFilter filter ) throws EntityNotFound {
     if(ccGroup.getBaseSegment() != null && !used.getSegments().containsKey(ccGroup.getBaseSegment())) {
-
       Segment s = segmentService.findById(ccGroup.getBaseSegment());
-      segmentDependencyService.process(s, used, filter, new ResourceBindingProcessor(s.getBinding()), null);
+      segmentDependencyService.process(s, used, filter, new ResourceBindingProcessor(new BindingSource(Type.SEGMENT, s.getId()), s.getBinding()), null);
     }
     if(ccGroup.getCoConstraints()!= null) {
-      for(CoConstraint cc :ccGroup.getCoConstraints() ) {
+      for(CoConstraint cc : ccGroup.getCoConstraints()) {
         this.process(cc, used, filter);
       }
     }
-
   }
 
   /**
@@ -154,28 +153,30 @@ public class CoConstraintDependencyServiceImpl implements CoConstraintDependency
     }
   }
   @Override
-  public void  process(CoConstraintCell cell,
-      DatatypeDependencies used, DependencyFilter filter) throws EntityNotFound {
-
+  public void  process(
+          CoConstraintCell cell,
+          DatatypeDependencies used,
+          DependencyFilter filter
+  ) throws EntityNotFound {
     if(cell instanceof ValueSetCell) {
       ValueSetCell vsCell= (ValueSetCell)cell;
       if(vsCell.getBindings() !=null) {
-        bindingService.processValueSetBinding(vsCell.getBindings().stream().collect(Collectors.toSet()), used.getValuesets(), filter.getExcluded()); 
+        bindingService.processValueSetBinding(new HashSet<>(vsCell.getBindings()), used.getValuesets(), filter.getExcluded());
       }
-      }else if(cell instanceof DatatypeCell ) {
-        DatatypeCell dtCell= (DatatypeCell)cell; 
-        if(dtCell.getDatatypeId() != null && !used.getDatatypes().containsKey(dtCell.getDatatypeId())) {
-          Datatype d = datatypeService.findById(dtCell.getDatatypeId());
-          if(d != null ) {
-            used.getDatatypes().put(dtCell.getDatatypeId(), d);
-            datatypeDependencyService.process(d, used, filter, new ResourceBindingProcessor(d.getBinding()), null, new HashSet<>());
-          }
+    } else if(cell instanceof DatatypeCell ) {
+      DatatypeCell dtCell= (DatatypeCell)cell;
+      if(dtCell.getDatatypeId() != null && !used.getDatatypes().containsKey(dtCell.getDatatypeId())) {
+        Datatype d = datatypeService.findById(dtCell.getDatatypeId());
+        if(d != null ) {
+          used.getDatatypes().put(dtCell.getDatatypeId(), d);
+          datatypeDependencyService.process(d, used, filter, new ResourceBindingProcessor(new BindingSource(Type.DATATYPE, d.getId()), d.getBinding()), null, new HashSet<>());
         }
-      }else if(cell instanceof VariesCell) {
-        VariesCell vrCell= (VariesCell)cell;
-        if(vrCell.getCellValue() !=null) {
-          process(vrCell.getCellValue(), used, filter);
-        }   
+      }
+    } else if(cell instanceof VariesCell) {
+      VariesCell vrCell= (VariesCell)cell;
+      if(vrCell.getCellValue() !=null) {
+        process(vrCell.getCellValue(), used, filter);
+      }
     }
   }
   

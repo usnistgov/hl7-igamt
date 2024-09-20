@@ -30,6 +30,11 @@ public interface VerificationEntryService {
     IgamtObjectError PathShouldBePrimitive(Location location, String id, Type type, LocationInfo path, String pathQualifier);
     IgamtObjectError PathShouldBeComplex(Location location, String id, Type type, LocationInfo path, String pathQualifier);
 
+    // Dynamic Mapping
+    IgamtObjectError DynamicMappingValueNotFound(Location location, String id, Type type, String value, Set<String> valueSets);
+    IgamtObjectError DynamicMappingValueExcludedUsage(Location location, String id, Type type, String value, Set<String> valueSets);
+    IgamtObjectError DynamicMappingMissingValue(Location location, String id, Type type, Set<String> value, String valueSet);
+
     // Single Code
     IgamtObjectError SingleCodeNotAllowed(String pathId, LocationInfo info, String id, Type type);
     IgamtObjectError SingleCodeMissingCode(String pathId, LocationInfo info, String id, Type type);
@@ -39,6 +44,7 @@ public interface VerificationEntryService {
     IgamtObjectError ValueSetBindingNotAllowed(String pathId, LocationInfo info, String id, Type type);
     IgamtObjectError MultipleValueSetNotAllowed(String pathId, LocationInfo info, String id, Type type);
     IgamtObjectError InvalidBindingLocation(String pathId, String locationName, LocationInfo target, PropertyType prop, String id, Type type, Set<Integer> bindingLocations, String reason);
+    IgamtObjectError OBX2MessageValueSetBindingNotAllowed(String pathId, LocationInfo info, String id, Type type);
 
     // Co-Constraints
     IgamtObjectError CoConstraintTargetIsNotSegment(String pathId, String locationName, String id, Type type, String path, String pathQualifier);
@@ -65,6 +71,8 @@ public interface VerificationEntryService {
     IgamtObjectError CoConstraintMultiDatatypeCells(String pathId, String locationName, String id, Type type);
     IgamtObjectError CoConstraintMultiVariesCells(String pathId, String locationName, String id, Type type);
     IgamtObjectError CoConstraintNoDatatypeCell(String pathId, String locationName, String id, Type type);
+    IgamtObjectError CoConstraintDatatypeCellNotAllowed(String pathId, String locationName, String id, Type type);
+
 
     // Conformance Statements and Predicates
     IgamtObjectError AssertionOccurrenceTypeOnNotRepeatable(Location location, String id, Type type, LocationInfo path, String occurrenceType, String pathQualifier);
@@ -81,6 +89,7 @@ public interface VerificationEntryService {
     IgamtObjectError AssertionComparisonDateTimeIncompatible(Location location, String id, Type type, LocationInfo path1, String path1ResourceName, LocationInfo path2, String path2ResourceName);
     IgamtObjectError FreeTextAssertionScriptMissing(Location location, String id, Type type);
     IgamtObjectError FreeTextAssertionXMLInvalid(Location location, String id, Type type, String xmlError);
+    IgamtObjectError FreeTextAssertionXMLLegacyValueSet(Location location, String id, Type type);
     IgamtObjectError DuplicateConformanceStatementIdentifier(Location location, String id, Type type, String identifier);
 
     // Value Sets
@@ -108,8 +117,9 @@ public interface VerificationEntryService {
     IgamtObjectError CardinalityNotAllowedMaxCardinality(LocationInfo info, String id, Type type, String max);
     IgamtObjectError CardinalityNotAllowedMinZero(LocationInfo info, String id, Type type, String min);
     IgamtObjectError CardinalityNotAllowedMin(LocationInfo info, String id, Type type, String usage, String min);
-    
-    
+    IgamtObjectError CardinalityMissingMaxCardinality(LocationInfo info, String id, Type type);
+
+
     // Length
     IgamtObjectError ConfLengthInvalid(LocationInfo info, String id, Type type, String confLength);
     IgamtObjectError LengthOrConfLengthMissing(LocationInfo info, String id, Type type);

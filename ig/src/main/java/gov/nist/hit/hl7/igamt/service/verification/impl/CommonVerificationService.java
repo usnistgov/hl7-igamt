@@ -6,15 +6,22 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.PrimitiveDatatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.Location;
 import gov.nist.hit.hl7.igamt.service.verification.VerificationEntryService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class CommonVerificationService {
@@ -23,6 +30,8 @@ public class CommonVerificationService {
 	VerificationEntryService verificationEntryService;
 	@Autowired
 	DatatypeService datatypeService;
+	@Autowired
+	ValuesetService valuesetService;
 
 	static final Predicate<String> extensionPattern = Pattern.compile("^[A-Za-z][\\w-]{0,7}$").asPredicate();
 
@@ -226,6 +235,14 @@ public class CommonVerificationService {
 						)
 				);
 			}
+		} else {
+			result.add(
+					this.verificationEntryService.CardinalityMissingMaxCardinality(
+							location,
+							id,
+							type
+					)
+			);
 		}
 		return result;
 	}
@@ -255,6 +272,100 @@ public class CommonVerificationService {
 			}
 		}
 		return errors;
+	}
+
+	List<IgamtObjectError> checkDynamicMappingInValueSet(Location location, String id, Type type, Set<Valueset> valueSets, Set<String> dynamicMappingValues) {
+		List<IgamtObjectError> issues = new ArrayList<>();
+		for(String value: dynamicMappingValues) {
+			issues.addAll(
+					this.checkDynamicMappingValueInValueSet(
+							location,
+							id,
+							type,
+							valueSets,
+							value
+					)
+			);
+		}
+
+		return issues;
+	}
+
+	List<IgamtObjectError>  checkDynamicMappingValueInValueSet(Location location, String id, Type type, Set<Valueset> valueSets, String value) {
+		List<IgamtObjectError> issues = new ArrayList<>();
+		Set<Valueset> validMatches = valueSets
+				.stream()
+				.filter((vs) -> vs.getCodes() != null)
+				.filter((vs) -> vs.getCodes()
+				                  .stream()
+				                  .anyMatch((code) -> code.getValue().equals(value) && (code.getUsage() == null || !code.getUsage().equals(CodeUsage.E)))
+				).collect(Collectors.toSet());
+
+		if(validMatches.size() > 0) {
+			return issues;
+		}
+
+		Set<Valueset> invalidMatches = valueSets
+				.stream()
+				.filter((vs) -> vs.getCodes() != null)
+				.filter((vs) -> vs.getCodes()
+				                  .stream()
+				                  .anyMatch((code) -> code.getValue().equals(value) && (code.getUsage() != null && code.getUsage().equals(CodeUsage.E)))
+				).collect(Collectors.toSet());
+
+		if(invalidMatches.size() > 0) {
+			// Found with excluded usage
+			issues.add(
+					this.verificationEntryService.DynamicMappingValueExcludedUsage(
+							location,
+							id,
+							type,
+							value,
+							invalidMatches.stream()
+							              .map(Valueset::getBindingIdentifier)
+							              .collect(Collectors.toSet())
+					)
+			);
+		} else {
+			// Not found
+			issues.add(
+					this.verificationEntryService.DynamicMappingValueNotFound(
+							location,
+							id,
+							type,
+							value,
+							valueSets.stream()
+							         .map(Valueset::getBindingIdentifier)
+							         .collect(Collectors.toSet())
+					)
+			);
+		}
+		return issues;
+	}
+
+	List<IgamtObjectError> checkValueSetValuesInDynamicMapping(Location location, String id, Type type, Set<Valueset> valueSets, Set<String> dynamicMappingValues) {
+		List<IgamtObjectError> issues = new ArrayList<>();
+		for(Valueset valueSet: valueSets) {
+			if(valueSet.getCodes() != null) {
+				Set<String> notMatched = valueSet.getCodes()
+				                                 .stream()
+				                                 .filter((code) -> code.getUsage() == null || ! code.getUsage().equals(CodeUsage.E))
+				                                 .map(Code::getValue)
+				                                 .filter((code) -> ! dynamicMappingValues.contains(code))
+				                                 .collect(Collectors.toSet());
+
+				if(notMatched.size() > 0) {
+					issues.add(this.verificationEntryService.DynamicMappingMissingValue(
+							location,
+							id,
+							type,
+							notMatched,
+							valueSet.getBindingIdentifier()
+					));
+				}
+			}
+		}
+		return issues;
 	}
 
 	public boolean isNullOrNA(String s) {

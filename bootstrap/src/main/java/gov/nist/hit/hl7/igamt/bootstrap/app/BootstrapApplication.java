@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.exceptions.CsvValidationException;
 
 import ca.uhn.fhir.context.FhirContext;
-import gov.nist.hit.hl7.igamt.bootstrap.data.CodeFixer;
+//import gov.nist.hit.hl7.igamt.bootstrap.data.CodeFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConfigCreator;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConfigUpdater;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConformanceStatementFixer;
@@ -237,8 +237,8 @@ public class BootstrapApplication implements CommandLineRunner {
 	@Autowired
 	PcConformanceStatementsIdFixes pcConformanceStatementsIdFixes;
 
-	@Autowired
-	CodeFixer codeFixer;
+//	@Autowired
+//	CodeFixer codeFixer;
 	@Autowired
 	DocumentInfoService documentService;
 
@@ -418,7 +418,7 @@ public class BootstrapApplication implements CommandLineRunner {
 
 	}
 
-	//@PostConstruct
+	@PostConstruct
 	void classifyDatatypes() throws DatatypeNotFoundException {
 		datatypeClassificationService.deleteAll();
 		System.out.println("Classifying dts");
@@ -429,6 +429,7 @@ public class BootstrapApplication implements CommandLineRunner {
 		criterias1.put(EvolutionPropertie.CPNUMBER, true);
 		//		criterias1.put(EvolutionPropertie.CPDATATYPENAME, true);
 		datatypeClassifier.classify(hl7Versions,criterias1);
+
 		System.out.println("ENd of Classifying dts");
 
 	}
@@ -440,9 +441,9 @@ public class BootstrapApplication implements CommandLineRunner {
 
 
 	//@PostConstruct
-	public void fixBinding() throws ValidationException, ForbiddenOperationException, CsvValidationException {
-		this.dataFixer.readCsv();
-	}
+//	public void fixBinding() throws ValidationException, ForbiddenOperationException {
+//		this.dataFixer.readCsv();
+//	}
 
 	//@PostConstruct
 	public void fix0396() throws ValidationException, ForbiddenOperationException{
@@ -500,13 +501,13 @@ public class BootstrapApplication implements CommandLineRunner {
 
 	//@PostConstruct
 	void addDynamicMappingInfo() throws ForbiddenOperationException {
-		codeFixer.fixTableHL70125();
+		//codeFixer.fixTableHL70125();
 		dynamicMappingFixer.processSegments();
 	}
 
 	//@PostConstruct
-	void fixDeprecated() throws FileNotFoundException, CsvValidationException {
-		codeFixer.fixFromCSV();
+	void fixDeprecated() throws FileNotFoundException {
+		//codeFixer.fixFromCSV();
 	}
 
 	//@PostConstruct
@@ -648,7 +649,7 @@ public class BootstrapApplication implements CommandLineRunner {
 
 	//@PostConstruct
 	void addVersionFixes() throws ForbiddenOperationException, ValidationException {
-		codeFixer.fixTableHL70125("2.9"); 
+		//codeFixer.fixTableHL70125("2.9");
 		this.dynamicMappingFixer.processSegmentByVersion("2.9");
 		tableFixes.fix0396ByVersion("2.9");
 

@@ -188,10 +188,11 @@ public class DatatypeLibraryController {
       throws DatatypeNotFoundException {
 
     List<DatatypeClassification> ret = datatypeClassificationService.findAll();
-    List<DatatypeClassification> ordred =
-        ret.stream().sorted((DatatypeClassification l1, DatatypeClassification l2) -> l1.getName()
-            .compareTo(l2.getName())).collect(Collectors.toList());
-    return ordred;
+    List<DatatypeClassification> ordered = ret.stream()
+    	    .filter(d -> !d.getName().equals("-") && !d.getName().equals("var"))
+    	    .sorted((DatatypeClassification l1, DatatypeClassification l2) -> l1.getName().compareTo(l2.getName()))
+    	    .collect(Collectors.toList());
+    return ordered;
   }
 
   @RequestMapping(value = "/api/datatype-library/create", method = RequestMethod.POST,
