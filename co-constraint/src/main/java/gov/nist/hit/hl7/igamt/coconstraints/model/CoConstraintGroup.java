@@ -10,6 +10,7 @@ import java.util.List;
 @Document(collection = "coconstraints")
 public class CoConstraintGroup extends Resource {
     protected String baseSegment;
+    @Deprecated
     protected String documentId;
     protected DeltaField<String> nameDelta;
     protected CoConstraintHeaders headers;
@@ -51,10 +52,12 @@ public class CoConstraintGroup extends Resource {
         this.delta = delta;
     }
 
+    @Deprecated
     public String getDocumentId() {
         return documentId;
     }
 
+    @Deprecated
     public void setDocumentId(String documentId) {
         this.documentId = documentId;
     }

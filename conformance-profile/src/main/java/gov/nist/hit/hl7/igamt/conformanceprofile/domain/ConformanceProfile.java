@@ -149,8 +149,15 @@ public class ConformanceProfile extends Resource {
     this.custom = elm.isCustom();
     this.setDomainInfo(elm.getDomainInfo());
   }
-  
-  
+
+  public boolean isCustom() {
+    return custom;
+  }
+
+  public void setCustom(boolean custom) {
+    this.custom = custom;
+  }
+
   public ConformanceProfile clone() {
       ConformanceProfile elm= new ConformanceProfile();
       complete(elm);

@@ -35,6 +35,17 @@ public class ValuesetBinding implements Serializable{
 		super();
 	}
 
+	public ValuesetBinding(ValuesetStrength strength, Set<Integer> valuesetLocations, List<String> valueSets) {
+		this.strength = strength;
+		this.valuesetLocations = valuesetLocations;
+		this.valueSets = valueSets;
+	}
+
+	public ValuesetBinding(ValuesetStrength strength, List<String> valueSets) {
+		this.strength = strength;
+		this.valueSets = valueSets;
+	}
+
 	public ValuesetStrength getStrength() {
 		return strength;
 	}
