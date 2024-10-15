@@ -46,7 +46,9 @@ export class ExportConfigurationDialogComponent implements OnInit {
   selectedDeltaValues = ['ADDED', 'UPDATED'];
   configurationName: string;
   documentId: string;
-  removedProfiles: string[] = [];  // Array to keep track of removed conformance profiles
+  // removedProfiles: string[] = [];  // Array to keep track of removed conformance profiles
+  checkedProfiles: Map<string, boolean> = new Map();  // Map to keep track of checked profiles
+
 
 
   constructor(
@@ -73,6 +75,11 @@ export class ExportConfigurationDialogComponent implements OnInit {
     this.docType = data.type;
     this.delta = data.delta;
     this.documentId = data.documentId;
+
+     // Initialize the checkedProfiles map with all profiles as checked by default
+     Object.keys(this.filter.conformanceProfileFilterMap).forEach(profileId => {
+      this.checkedProfiles.set(profileId, true);
+    });
   }
 
 //create function selectProfileWithDependencies(id profile) and calls back end, the goal is to return the Id of dependencies 
@@ -80,34 +87,101 @@ export class ExportConfigurationDialogComponent implements OnInit {
 //  (this.dialog.open(ConfirmDialogComponent ) When unselecting a profile and its dependencies, prompt a warning dialog stating that some of the dependencies might be also used in another profile, unselecting this profile, will result in unselecting thoses dependencies for all profiles
 //create function updateFilter(listIds) ==> updates filterObject, this will be inside of first function, doing something different for each context menu option
 
+// handleProfileAction(data: ProfileActionEventData) {
+//   if(data.type === ProfileActionEventType.ADD || data.type === ProfileActionEventType.SELECT_ONLY) {
+//     this.addProfileAndDependencies(data.profileId);
+
+//           // If the profile was previously removed, remove it from the removedProfiles list
+//     this.removedProfiles = this.removedProfiles.filter(id => id !== data.profileId);
+//   } else if (data.type === ProfileActionEventType.UNSELECT) {
+//     this.unselectProfileAndDependencies(data.profileId);
+
+//        // Add the profile to the removedProfiles list
+//        if (!this.removedProfiles.includes(data.profileId)) {
+//         this.removedProfiles.push(data.profileId);
+//       }
+    
+//    // Iterate over other conformance profiles and call addProfileAndDependencies
+//    const otherConformanceProfiles = Object.keys(this.filter.conformanceProfileFilterMap)
+//    .filter(id => id !== data.profileId && !this.removedProfiles.includes(id));
+
+//     otherConformanceProfiles.forEach(profileId => {
+//       this.addProfileAndDependencies(profileId);
+      
+//     });
+//   }
+
 handleProfileAction(data: ProfileActionEventData) {
   if(data.type === ProfileActionEventType.ADD || data.type === ProfileActionEventType.SELECT_ONLY) {
     this.addProfileAndDependencies(data.profileId);
 
-          // If the profile was previously removed, remove it from the removedProfiles list
-    this.removedProfiles = this.removedProfiles.filter(id => id !== data.profileId);
+    // If the profile was previously removed, remove it from the removedProfiles list
+    // this.removedProfiles = this.removedProfiles.filter(id => id !== data.profileId);
+
+    // Mark the profile as checked
+    this.checkedProfiles.set(data.profileId, true);
+
+    if(data.type === ProfileActionEventType.SELECT_ONLY) {
+      // Uncheck all other profiles
+      Object.keys(this.filter.conformanceProfileFilterMap).forEach(profileId => {
+        if(profileId !== data.profileId) {
+          this.checkedProfiles.set(profileId, false);
+        }
+      });
+    }
   } else if (data.type === ProfileActionEventType.UNSELECT) {
     this.unselectProfileAndDependencies(data.profileId);
 
-       // Add the profile to the removedProfiles list
-       if (!this.removedProfiles.includes(data.profileId)) {
-        this.removedProfiles.push(data.profileId);
-      }
-    
-   // Iterate over other conformance profiles and call addProfileAndDependencies
-   const otherConformanceProfiles = Object.keys(this.filter.conformanceProfileFilterMap)
-   .filter(id => id !== data.profileId && !this.removedProfiles.includes(id));
+    // Add the profile to the removedProfiles list
+    // if (!this.removedProfiles.includes(data.profileId)) {
+    //   this.removedProfiles.push(data.profileId);
+    // }
 
-    otherConformanceProfiles.forEach(profileId => {
-      this.addProfileAndDependencies(profileId);
-    });
+    // Mark the profile as unchecked
+    this.checkedProfiles.set(data.profileId, false);
+
+    // // Iterate over other checked conformance profiles and call addProfileAndDependencies
+    // const checkedProfiles = Array.from(this.checkedProfiles.keys())
+    //   .filter(profileId => this.checkedProfiles.get(profileId) && profileId !== data.profileId);
+
+    // checkedProfiles.forEach(profileId => {
+    //   console.log("profile id", profileId)
+    //   this.addProfileAndDependencies(profileId);
+    // });
+    // Iterate over checked profiles and call addProfileAndDependencies
+this.checkedProfiles.forEach((isChecked, profileId) => {
+  if (isChecked) {
+    console.log("profile id", profileId);
+    this.addProfileAndDependencies(profileId);
   }
-
+});
+  }
 }
+
+
+// }
+// addProfileAndDependencies(profileId: string) {
+//   this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, this.getUsagesToInclude(this.initialConfig.exportConfiguration.conformamceProfileExportConfiguration.segmentORGroupsMessageExport)).subscribe(response => {
+//     response.conformanceProfiles.forEach(id => {
+//       this.filter.conformanceProfileFilterMap[id] = true;
+//     });
+//     response.segments.forEach(id => {
+//       this.filter.segmentFilterMap[id] = true;
+//     });
+//     response.datatypes.forEach(id => {
+//       this.filter.datatypesFilterMap[id] = true;
+//     });
+//     response.valueSets.forEach(id => {
+//       this.filter.valueSetFilterMap[id] = true;
+//     });
+//   });
+// }  
+
 addProfileAndDependencies(profileId: string) {
   this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, this.getUsagesToInclude(this.initialConfig.exportConfiguration.conformamceProfileExportConfiguration.segmentORGroupsMessageExport)).subscribe(response => {
     response.conformanceProfiles.forEach(id => {
       this.filter.conformanceProfileFilterMap[id] = true;
+      this.checkedProfiles.set(id, true);
     });
     response.segments.forEach(id => {
       this.filter.segmentFilterMap[id] = true;
@@ -119,11 +193,13 @@ addProfileAndDependencies(profileId: string) {
       this.filter.valueSetFilterMap[id] = true;
     });
   });
-}  
+}
 unselectProfileAndDependencies(profileId: string) {
   this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, []).subscribe(response => {
     response.conformanceProfiles.forEach(id => {
       this.filter.conformanceProfileFilterMap[id] = false;
+      this.checkedProfiles.set(id, false);
+      console.log("look here", this.checkedProfiles);
     });
     response.segments.forEach(id => {
       this.filter.segmentFilterMap[id] = false;
@@ -136,6 +212,23 @@ unselectProfileAndDependencies(profileId: string) {
     });
   });
 }
+
+// unselectProfileAndDependencies(profileId: string) {
+//   this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, []).subscribe(response => {
+//     response.conformanceProfiles.forEach(id => {
+//       this.filter.conformanceProfileFilterMap[id] = false;
+//     });
+//     response.segments.forEach(id => {
+//       this.filter.segmentFilterMap[id] = false;
+//     });
+//     response.datatypes.forEach(id => {
+//       this.filter.datatypesFilterMap[id] = false;
+//     });
+//     response.valueSets.forEach(id => {
+//       this.filter.valueSetFilterMap[id] = false;
+//     });
+//   });
+// }
 
 
 
