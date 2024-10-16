@@ -1,4 +1,4 @@
-export interface UsageConfiguration {
+export interface IUsageConfiguration {
     r: boolean;
     re: boolean;
     c: boolean;
