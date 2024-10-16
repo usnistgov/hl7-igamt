@@ -1,8 +1,6 @@
 package gov.nist.hit.hl7.igamt.auth.config;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -16,11 +14,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
-
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
@@ -28,27 +21,19 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
   private TokenAuthenticationService tokenService;
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
-    // TODO Auto-generated method stub
-    UsernamePasswordAuthenticationToken authentication;
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
     try {
-      authentication = tokenService.getAuthentication(request);
+      UsernamePasswordAuthenticationToken authentication = tokenService.getAuthentication(request);
       SecurityContextHolder.getContext().setAuthentication(authentication);
-//      throw new ExpiredJwtException(null, null, "");
-
-      filterChain.doFilter(request, response);
-    } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException
-        | SignatureException | IllegalArgumentException | NoSuchAlgorithmException
-        | InvalidKeySpecException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch (Exception e) {
+      // Clear cookie
       Cookie authCookie = new Cookie("authCookie", "");
       authCookie.setPath("/api");
       authCookie.setMaxAge(0);
       response.addCookie(authCookie);
-      response.sendError(403);
-
+      // Clear Security Context
+      SecurityContextHolder.clearContext();
     }
+    filterChain.doFilter(request, response);
   }
 }

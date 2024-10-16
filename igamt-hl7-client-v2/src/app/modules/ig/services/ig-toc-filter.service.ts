@@ -146,7 +146,7 @@ export class IgTocFilterService {
           usageFilter: {
             allow: true,
             values: usages,
-          }
+          },
         });
       }));
   }
