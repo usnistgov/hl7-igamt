@@ -102,8 +102,9 @@ handleProfileAction(data: ProfileActionEventData) {
     // Iterate over checked profiles and call addProfileAndDependencies
     this.checkedProfiles.forEach((isChecked, profileId) => {
   if (isChecked) {
-    console.log('profile id', profileId);
+    console.log('Adding profile id', profileId);
     this.addProfileAndDependencies(profileId);
+
   }
 });
   }
@@ -112,6 +113,7 @@ handleProfileAction(data: ProfileActionEventData) {
 //
 
 addProfileAndDependencies(profileId: string) {
+  console.log("begining function adding profile",profileId);
   this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, this.getUsagesToInclude(this.initialConfig.exportConfiguration.conformamceProfileExportConfiguration.segmentORGroupsMessageExport)).subscribe((response) => {
     response.conformanceProfiles.forEach((id) => {
       this.filter.conformanceProfileFilterMap[id] = true;
@@ -127,6 +129,7 @@ addProfileAndDependencies(profileId: string) {
       this.filter.valueSetFilterMap[id] = true;
     });
   });
+  console.log("Added profile with id ",profileId);
 }
 unselectProfileAndDependencies(profileId: string) {
   this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, []).subscribe((response) => {
