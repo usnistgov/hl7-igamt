@@ -424,17 +424,18 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		HashMap<String, Boolean> bindedPaths = new HashMap<String, Boolean>();
 
 		for (MsgStructElement segOrgroup : cp.getChildren()) {
-			if (segOrgroup instanceof SegmentRef) {
+			if (segOrgroup.getUsage() != null && config.getConformamceProfileExportConfiguration().getSegmentORGroupsMessageExport().isBinded(segOrgroup.getUsage())) {
+				if (segOrgroup instanceof SegmentRef) {
 				SegmentRef ref = (SegmentRef) segOrgroup;
 				if (ref.getRef() != null && ref.getRef().getId() != null) {
-					if (ref.getUsage() != null && config.getConformamceProfileExportConfiguration().getSegmentORGroupsMessageExport().isBinded(ref.getUsage())) {
 						segmentsIds.add(ref.getRef().getId());
 						decision.getSegmentFilterMap().put(ref.getRef().getId(), true);
 						bindedPaths.put(ref.getId(), true);
 					}
 				}
-			} else {
-				processSegmentorGroup(segOrgroup, decision, config, bindedPaths, segOrgroup.getId(), segmentsIds);
+			 else {
+					processSegmentorGroup(segOrgroup, decision, config, bindedPaths, segOrgroup.getId(), segmentsIds);
+				}
 			}
 		}
 		this.processBinding(cp.getBinding(), bindedPaths, decision);
