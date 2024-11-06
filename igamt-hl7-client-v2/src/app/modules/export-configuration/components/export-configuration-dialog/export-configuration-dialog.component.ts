@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { TreeNode } from 'angular-tree-component';
 import * as _ from 'lodash';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { map, take, withLatestFrom } from 'rxjs/operators';
 import { IgTocFilterService } from 'src/app/modules/ig/services/ig-toc-filter.service';
 import { Usage } from 'src/app/modules/shared/constants/usage.enum';
@@ -29,16 +29,16 @@ export class ExportConfigurationDialogComponent implements OnInit {
   selected: IDisplayElement;
   type: Type;
   docType: ExportTypes;
-  @ViewChild(ConfigurationTocComponent) toc: ConfigurationTocComponent;
+  @ViewChild(ConfigurationTocComponent) toc;
   filter: any;
   lastUserFilter: any;
   loading = false;
-  configuration: any;
   nodes: Observable<TreeNode>;
   deltaMode$: Observable<boolean>;
   current: any = {};
   derived: boolean;
   delta: any;
+  configuration: any;
   selectedDeltaValues = ['ADDED', 'UPDATED'];
   configurationName: string;
   documentId: string;
@@ -49,12 +49,15 @@ export class ExportConfigurationDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<ExportConfigurationDialogComponent>,
     private igTocFilterService: IgTocFilterService,
     @Inject(MAT_DIALOG_DATA) public data: any, private store: Store<any>) {
+
     this.nodes = data.toc;
     this.configurationName = data.configurationName;
     this.deltaMode$ = this.store.select(selectDelta);
     this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
+
     this.filter = data.exportFilterDecision;
     this.lastUserFilter = data.lastUserExportFilterDecision;
+
     // change this.filter to update new dependencies selection
     this.configuration = _.cloneDeep(data.configuration);
     this.type = data.type;
@@ -84,19 +87,21 @@ export class ExportConfigurationDialogComponent implements OnInit {
         });
       }
     } else if (data.type === ProfileActionEventType.UNSELECT) {
-      this.checkedProfiles.set(data.profileId, false);
+      //     this.checkedProfiles.set(data.profileId, false);
       this.unselectProfileAndDependencies(data.profileId);
 
-      // Iterate over checked profiles and call addProfileAndDependencies
-      this.checkedProfiles.forEach((isChecked, profileId) => {
-        if (isChecked) {
-          console.log('Adding profile id', profileId);
-          this.addProfileAndDependencies(profileId);
+      //     // Iterate over checked profiles and call addProfileAndDependencies
+      //     this.checkedProfiles.forEach((isChecked, profileId) => {
+      //   if (isChecked) {
+      //     console.log('Adding profile id', profileId);
+      //     this.addProfileAndDependencies(profileId);
 
-        }
-      });
+      //   }
+      // });
     }
   }
+
+  //
 
   addProfileAndDependencies(profileId: string) {
     this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, this.getUsagesToInclude(this.configuration.conformamceProfileExportConfiguration.segmentORGroupsMessageExport)).subscribe((response) => {
@@ -115,22 +120,90 @@ export class ExportConfigurationDialogComponent implements OnInit {
       });
     });
   }
+  // unselectProfileAndDependencies(profileId: string) {
+  //   this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, []).subscribe((response) => {
+  //     response.conformanceProfiles.forEach((id) => {
+  //       this.filter.conformanceProfileFilterMap[id] = false;
+  //       this.checkedProfiles.set(id, false);
+  //       console.log('look here', this.checkedProfiles);
+  //     });
+  //     response.segments.forEach((id) => {
+  //       this.filter.segmentFilterMap[id] = false;
+  //     });
+  //     response.datatypes.forEach((id) => {
+  //       this.filter.datatypesFilterMap[id] = false;
+  //     });
+  //     response.valueSets.forEach((id) => {
+  //       this.filter.valueSetFilterMap[id] = false;
+  //     });
+  //   });
+  // }
 
   unselectProfileAndDependencies(profileId: string) {
+    // Step 1: Get the dependencies for the profile being unselected
     this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, []).subscribe((response) => {
-      response.conformanceProfiles.forEach((id) => {
-        this.filter.conformanceProfileFilterMap[id] = false;
-        this.checkedProfiles.set(id, false);
-      });
-      response.segments.forEach((id) => {
-        this.filter.segmentFilterMap[id] = false;
-      });
-      response.datatypes.forEach((id) => {
-        this.filter.datatypesFilterMap[id] = false;
-      });
-      response.valueSets.forEach((id) => {
-        this.filter.valueSetFilterMap[id] = false;
-      });
+      // Step 2: Temporarily unselect the conformance profile being removed
+      this.filter.conformanceProfileFilterMap[profileId] = false;
+      this.checkedProfiles.set(profileId, false);
+
+      // Step 3: Gather dependencies of all other checked profiles
+      const otherCheckedProfiles = Array.from(this.checkedProfiles.keys())
+        .filter(id => this.checkedProfiles.get(id) === true && id !== profileId);
+
+      if (otherCheckedProfiles.length === 0) {
+        // No other profiles are checked, so remove all dependencies of the unselected profile
+        this.removeDependencies(response);
+      } else {
+        // Step 4: Fetch dependencies for all other checked profiles
+        const profileDependencyRequests = otherCheckedProfiles.map((otherProfileId) => {
+          return this.igTocFilterService.getResourceIdsForConformanceProfile(
+            otherProfileId,
+            this.getUsagesToInclude(this.configuration.conformamceProfileExportConfiguration.segmentORGroupsMessageExport)
+          );
+        });
+
+        // Step 5: Use forkJoin to wait for all API calls to complete
+        forkJoin(profileDependencyRequests).pipe(
+          map((otherProfileResponses) => {
+            const usedSegments = new Set<string>();
+            const usedDatatypes = new Set<string>();
+            const usedValueSets = new Set<string>();
+
+            // Step 6: Collect all dependencies from other checked profiles
+            otherProfileResponses.forEach((otherResponse) => {
+              otherResponse.segments.forEach(segmentId => usedSegments.add(segmentId));
+              otherResponse.datatypes.forEach(datatypeId => usedDatatypes.add(datatypeId));
+              otherResponse.valueSets.forEach(valueSetId => usedValueSets.add(valueSetId));
+            });
+
+            return { usedSegments, usedDatatypes, usedValueSets };
+          })
+        ).subscribe(({ usedSegments, usedDatatypes, usedValueSets }) => {
+          // Step 7: Remove dependencies only if they are not used by other profiles
+          this.removeDependencies(response, usedSegments, usedDatatypes, usedValueSets);
+        });
+      }
+    });
+  }
+
+  // Helper method to remove dependencies if they are not used by any other profile
+  removeDependencies(response: any, usedSegments: Set<string> = new Set(), usedDatatypes: Set<string> = new Set(), usedValueSets: Set<string> = new Set()) {
+    response.segments.forEach((segmentId) => {
+      if (!usedSegments.has(segmentId)) {
+        this.filter.segmentFilterMap[segmentId] = false;
+      }
+    });
+
+    response.datatypes.forEach((datatypeId) => {
+      if (!usedDatatypes.has(datatypeId)) {
+        this.filter.datatypesFilterMap[datatypeId] = false;
+      }
+    });
+
+    response.valueSets.forEach((valueSetId) => {
+      if (!usedValueSets.has(valueSetId)) {
+        this.filter.valueSetFilterMap[valueSetId] = false;
+      }
     });
   }
 
