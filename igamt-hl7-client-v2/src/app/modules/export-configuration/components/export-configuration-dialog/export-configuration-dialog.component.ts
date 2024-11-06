@@ -8,18 +8,14 @@ import { Observable } from 'rxjs';
 import { map, take, withLatestFrom } from 'rxjs/operators';
 import { IgTocFilterService } from 'src/app/modules/ig/services/ig-toc-filter.service';
 import { Usage } from 'src/app/modules/shared/constants/usage.enum';
-import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { ToggleDelta } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {
   selectDelta,
   selectDerived,
   selectIgId,
 } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
-import { IgService } from '../../../ig/services/ig.service';
-import { LibraryService } from '../../../library/services/library.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IExportConfigurationGlobal } from '../../models/config.interface';
 import { ExportTypes } from '../../models/export-types';
 import { IUsageConfiguration } from '../../models/usageConfiguration';
 import { ConfigurationTocComponent, ProfileActionEventData, ProfileActionEventType } from '../configuration-toc/configuration-toc.component';
@@ -33,11 +29,11 @@ export class ExportConfigurationDialogComponent implements OnInit {
   selected: IDisplayElement;
   type: Type;
   docType: ExportTypes;
-  @ViewChild(ConfigurationTocComponent) toc;
-  initialConfig: IExportConfigurationGlobal;
+  @ViewChild(ConfigurationTocComponent) toc: ConfigurationTocComponent;
   filter: any;
+  lastUserFilter: any;
   loading = false;
-  defaultConfig: any;
+  configuration: any;
   nodes: Observable<TreeNode>;
   deltaMode$: Observable<boolean>;
   current: any = {};
@@ -51,110 +47,98 @@ export class ExportConfigurationDialogComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<ExportConfigurationDialogComponent>,
-    private libraryService: LibraryService,
-    private igService: IgService,
     private igTocFilterService: IgTocFilterService,
     @Inject(MAT_DIALOG_DATA) public data: any, private store: Store<any>) {
-    this.initialConfig = data.decision;
-
-    console.log(this.initialConfig);
-    console.log(this.initialConfig.exportConfiguration.conformamceProfileExportConfiguration.segmentORGroupsMessageExport);
-    console.log(this.getUsagesToInclude(this.initialConfig.exportConfiguration.conformamceProfileExportConfiguration.segmentORGroupsMessageExport));
-
     this.nodes = data.toc;
     this.configurationName = data.configurationName;
     this.deltaMode$ = this.store.select(selectDelta);
     this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
-    this.filter = this.initialConfig.exportFilterDecision;
-
+    this.filter = data.exportFilterDecision;
+    this.lastUserFilter = data.lastUserExportFilterDecision;
     // change this.filter to update new dependencies selection
-    this.defaultConfig = _.cloneDeep(data.decision.exportConfiguration);
+    this.configuration = _.cloneDeep(data.configuration);
     this.type = data.type;
     this.docType = data.type;
     this.delta = data.delta;
     this.documentId = data.documentId;
 
-     // Initialize the checkedProfiles map with all profiles as checked by default
+    // Initialize the checkedProfiles map with all profiles as checked by default
     Object.keys(this.filter.conformanceProfileFilterMap).forEach((profileId) => {
       this.checkedProfiles.set(profileId, true);
     });
   }
 
-handleProfileAction(data: ProfileActionEventData) {
-  if (data.type === ProfileActionEventType.ADD || data.type === ProfileActionEventType.SELECT_ONLY) {
-    this.addProfileAndDependencies(data.profileId);
+  handleProfileAction(data: ProfileActionEventData) {
+    if (data.type === ProfileActionEventType.ADD || data.type === ProfileActionEventType.SELECT_ONLY) {
+      this.addProfileAndDependencies(data.profileId);
 
-    // Mark the profile as checked
-    this.checkedProfiles.set(data.profileId, true);
+      // Mark the profile as checked
+      this.checkedProfiles.set(data.profileId, true);
 
-    if (data.type === ProfileActionEventType.SELECT_ONLY) {
-      // Uncheck all other profiles
-      Object.keys(this.filter.conformanceProfileFilterMap).forEach((profileId) => {
-        if (profileId !== data.profileId) {
-          this.checkedProfiles.set(profileId, false);
+      if (data.type === ProfileActionEventType.SELECT_ONLY) {
+        // Uncheck all other profiles
+        Object.keys(this.filter.conformanceProfileFilterMap).forEach((profileId) => {
+          if (profileId !== data.profileId) {
+            this.checkedProfiles.set(profileId, false);
+          }
+        });
+      }
+    } else if (data.type === ProfileActionEventType.UNSELECT) {
+      this.checkedProfiles.set(data.profileId, false);
+      this.unselectProfileAndDependencies(data.profileId);
+
+      // Iterate over checked profiles and call addProfileAndDependencies
+      this.checkedProfiles.forEach((isChecked, profileId) => {
+        if (isChecked) {
+          console.log('Adding profile id', profileId);
+          this.addProfileAndDependencies(profileId);
+
         }
       });
     }
-  } else if (data.type === ProfileActionEventType.UNSELECT) {
-    this.checkedProfiles.set(data.profileId, false);
-    this.unselectProfileAndDependencies(data.profileId);
-
-    // Iterate over checked profiles and call addProfileAndDependencies
-    this.checkedProfiles.forEach((isChecked, profileId) => {
-  if (isChecked) {
-    console.log('Adding profile id', profileId);
-    this.addProfileAndDependencies(profileId);
-
   }
-});
+
+  addProfileAndDependencies(profileId: string) {
+    this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, this.getUsagesToInclude(this.configuration.conformamceProfileExportConfiguration.segmentORGroupsMessageExport)).subscribe((response) => {
+      response.conformanceProfiles.forEach((id) => {
+        this.filter.conformanceProfileFilterMap[id] = true;
+        this.checkedProfiles.set(id, true);
+      });
+      response.segments.forEach((id) => {
+        this.filter.segmentFilterMap[id] = true;
+      });
+      response.datatypes.forEach((id) => {
+        this.filter.datatypesFilterMap[id] = true;
+      });
+      response.valueSets.forEach((id) => {
+        this.filter.valueSetFilterMap[id] = true;
+      });
+    });
   }
-}
 
-//
+  unselectProfileAndDependencies(profileId: string) {
+    this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, []).subscribe((response) => {
+      response.conformanceProfiles.forEach((id) => {
+        this.filter.conformanceProfileFilterMap[id] = false;
+        this.checkedProfiles.set(id, false);
+      });
+      response.segments.forEach((id) => {
+        this.filter.segmentFilterMap[id] = false;
+      });
+      response.datatypes.forEach((id) => {
+        this.filter.datatypesFilterMap[id] = false;
+      });
+      response.valueSets.forEach((id) => {
+        this.filter.valueSetFilterMap[id] = false;
+      });
+    });
+  }
 
-addProfileAndDependencies(profileId: string) {
-  console.log("begining function adding profile",profileId);
-  this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, this.getUsagesToInclude(this.initialConfig.exportConfiguration.conformamceProfileExportConfiguration.segmentORGroupsMessageExport)).subscribe((response) => {
-    response.conformanceProfiles.forEach((id) => {
-      this.filter.conformanceProfileFilterMap[id] = true;
-      this.checkedProfiles.set(id, true);
-    });
-    response.segments.forEach((id) => {
-      this.filter.segmentFilterMap[id] = true;
-    });
-    response.datatypes.forEach((id) => {
-      this.filter.datatypesFilterMap[id] = true;
-    });
-    response.valueSets.forEach((id) => {
-      this.filter.valueSetFilterMap[id] = true;
-    });
-  });
-  console.log("Added profile with id ",profileId);
-}
-unselectProfileAndDependencies(profileId: string) {
-  this.igTocFilterService.getResourceIdsForConformanceProfile(profileId, []).subscribe((response) => {
-    response.conformanceProfiles.forEach((id) => {
-      this.filter.conformanceProfileFilterMap[id] = false;
-      this.checkedProfiles.set(id, false);
-      console.log('look here', this.checkedProfiles);
-    });
-    response.segments.forEach((id) => {
-      this.filter.segmentFilterMap[id] = false;
-    });
-    response.datatypes.forEach((id) => {
-      this.filter.datatypesFilterMap[id] = false;
-    });
-    response.valueSets.forEach((id) => {
-      this.filter.valueSetFilterMap[id] = false;
-    });
-  });
-}
-
-  selectOverrideOrDefault(node, overiddedMap, defaultConfig) {
+  selectOverrideOrDefault(node, overiddedMap, configuration) {
     if (overiddedMap[node.id]) {
       this.current = overiddedMap[node.id];
     } else {
-      this.current = _.cloneDeep(defaultConfig);
+      this.current = _.cloneDeep(configuration);
     }
     this.loading = false;
   }
@@ -165,23 +149,23 @@ unselectProfileAndDependencies(profileId: string) {
     this.type = node.type;
     switch (this.type) {
       case Type.SEGMENT: {
-        this.selectOverrideOrDefault(node, this.filter.overiddedSegmentMap, this.defaultConfig.segmentExportConfiguration);
+        this.selectOverrideOrDefault(node, this.filter.overiddedSegmentMap, this.configuration.segmentExportConfiguration);
         break;
       }
       case Type.DATATYPE: {
-        this.selectOverrideOrDefault(node, this.filter.overiddedDatatypesMap, this.defaultConfig.datatypeExportConfiguration);
+        this.selectOverrideOrDefault(node, this.filter.overiddedDatatypesMap, this.configuration.datatypeExportConfiguration);
         break;
       }
       case Type.CONFORMANCEPROFILE: {
-        this.selectOverrideOrDefault(node, this.filter.overiddedConformanceProfileMap, this.defaultConfig.conformamceProfileExportConfiguration);
+        this.selectOverrideOrDefault(node, this.filter.overiddedConformanceProfileMap, this.configuration.conformamceProfileExportConfiguration);
         break;
       }
       case Type.COMPOSITEPROFILE: {
-        this.selectOverrideOrDefault(node, this.filter.overiddedCompositeProfileMap, this.defaultConfig.compositeProfileExportConfiguration);
+        this.selectOverrideOrDefault(node, this.filter.overiddedCompositeProfileMap, this.configuration.compositeProfileExportConfiguration);
         break;
       }
       case Type.VALUESET: {
-        this.selectOverrideOrDefault(node, this.filter.overiddedValueSetMap, this.defaultConfig.valueSetExportConfiguration);
+        this.selectOverrideOrDefault(node, this.filter.overiddedValueSetMap, this.configuration.valueSetExportConfiguration);
         break;
       }
       default: {
@@ -215,8 +199,8 @@ unselectProfileAndDependencies(profileId: string) {
   }
 
   applyLastUserConfiguration() {
-    if (this.initialConfig.previous) {
-      this.filter = this.initialConfig.previous;
+    if (this.lastUserFilter) {
+      this.filter = _.cloneDeep(this.lastUserFilter);
     }
   }
 
@@ -261,8 +245,7 @@ unselectProfileAndDependencies(profileId: string) {
   applyFilter($event: string[], obj: any) {
     Object.keys(obj).forEach((key) => {
       obj[key] = this.mergeDeltaFilter($event, key);
-    },
-    );
+    });
   }
 
   filterByDelta($event: string[]) {

@@ -20,7 +20,9 @@ import { Type } from '../../../shared/constants/type.enum';
 import { IConnectingInfo } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.class';
+import { ExportShareService } from '../../services/export-share.service';
 import { IgService } from '../../services/ig.service';
+import { IgShareLinkDialogComponent } from '../ig-share-link-dialog/ig-share-link-dialog.component';
 import { selectVerificationResult, selectVerificationStatus } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
 import { VerifyIg } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { selectIgConfig } from './../../../../root-store/ig/ig-edit/ig-edit.selectors';
@@ -49,6 +51,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     private router: Router,
     private dialog: MatDialog,
     private verificationService: VerificationService,
+    private exportShare: ExportShareService,
   ) {
     this.subscription = this.store.select(selectViewOnly).subscribe(
       (value) => this.viewOnly = value,
@@ -92,9 +95,28 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       ).subscribe();
   }
 
+  share() {
+    this.store.select(fromIgDocumentEdit.selectIgId).pipe(
+      take(1),
+      flatMap((igId) => {
+        return this.exportShare.getShareLinks(igId).pipe(
+          flatMap((links) => {
+            return this.dialog.open(IgShareLinkDialogComponent, {
+              data: {
+                links,
+                igId,
+              },
+            }).afterClosed();
+          }),
+        );
+      }),
+    ).subscribe();
+  }
+
   getDecision() {
     return of();
   }
+
   quickExport(type: ExportTypes, format: string) {
     this.getIgId().pipe(
       take(1),
@@ -179,7 +201,6 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
         ).subscribe();
       }),
     ).subscribe();
-
   }
 
   getIgId(): Observable<string> {

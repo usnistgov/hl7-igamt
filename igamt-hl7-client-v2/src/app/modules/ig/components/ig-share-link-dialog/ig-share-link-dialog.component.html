@@ -1,0 +1,65 @@
+<div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+  <h2 style="margin: 0;" mat-dialog-title>
+    Export Share
+  </h2>
+  <button *ngIf="list" class="btn btn-sm btn-primary" (click)="create()">
+    <i class="fa fa-plus"></i>
+  </button>
+</div>
+<mat-dialog-content style="margin-top: 20px; width: 600px;">
+  <ng-container *ngIf="list">
+    <span style="color: gray;" *ngIf="links.length === 0">Click on the [+] button to create an export share link</span>
+    <table *ngIf="links.length > 0" class="table table-sm table-bordered">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of links">
+          <td style="vertical-align: middle; padding-right: 30px;">{{item.name}}</td>
+          <td>
+            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 5px;">
+              <button (click)="deleteLink(item)" class="btn btn-sm btn-danger">
+                <i class="fa fa-trash"></i> Delete
+              </button>
+              <button (click)="edit(item)" class="btn btn-sm btn-primary">
+                <i class="fa fa-pencil"></i> Edit
+              </button>
+              <button class="btn btn-sm btn-outline-primary" (click)="copy(item)">
+                <i class="fa fa-copy"></i>
+                {{ copied[item.id] ? "Copied!" : "Copy Link" }}
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-container>
+  <ng-container *ngIf="!list">
+    <div *ngIf="configurationNotFound" class="alert alert-warning">
+      The export configuration associated with this link was not found. It was either deleted or it is not accessible to the current user (belongs to a different user that created the link). By editing this link you have to choose a different export configuration.
+    </div>
+    <form>
+      <div class="form-group">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+          <input placeholder="Link Name" class="form-control" [ngModelOptions]="{standalone: true}" [(ngModel)]="configuration.name" type="text">
+          <button (click)="selectConfiguration()" style="flex: none;" class="btn" [ngClass]="{'btn-primary': configuration.configurationId, 'btn-dark': !configuration.configurationId}">
+            <i *ngIf="configuration.configurationId" class="fa fa-pencil"></i>
+            {{ configuration.configurationId ? 'Edit Export Configuration' : 'Select Export Configuration' }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </ng-container>
+
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end; margin-top: 10px;">
+  <button (click)="save()" *ngIf="!list" [disabled]="!configuration.configurationId || !configuration.name" class="btn btn-sm btn-success" style="margin-right: 5px;">
+    Save
+  </button>
+  <button class="btn btn-sm btn-secondary" [mat-dialog-close]>
+    Cancel
+  </button>
+</mat-dialog-actions>

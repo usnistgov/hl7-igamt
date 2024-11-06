@@ -6,15 +6,15 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
 import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
 import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
-import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
 import gov.nist.hit.hl7.igamt.display.model.*;
+import gov.nist.hit.hl7.igamt.ig.domain.ExportShareConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgVerificationIssuesList;
 import gov.nist.hit.hl7.igamt.ig.model.*;
-import gov.nist.hit.hl7.igamt.web.app.model.IgSubSet;
 import gov.nist.hit.hl7.igamt.web.app.service.LegacyIgSubSetService;
 import gov.nist.hit.hl7.igamt.web.app.service.impl.EntityBrowserService;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceDocumentManagementService;
@@ -123,7 +123,6 @@ import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.XMLSerializeServiceImpl;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
@@ -545,6 +544,67 @@ public class IGDocumentController extends BaseController {
 
 		return new ResponseMessage<Object>(Status.SUCCESS, METATDATA_UPDATED, id, new Date());
 	}
+
+
+	@RequestMapping(value = {"/api/igdocuments/{id}/sharelink", "/api/igdocuments/{id}/sharelink/{linkId}"}, method = RequestMethod.POST, produces = {"application/json"})
+	@PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && AccessConfiguration(#exportShareConfiguration.configurationId, READ)")
+	public @ResponseBody ResponseMessage<String> saveShareLink(
+			@PathVariable("id") String id,
+			@PathVariable(value = "linkId", required = false) String linkId,
+			@RequestBody  ExportShareConfiguration exportShareConfiguration
+	) throws Exception {
+		Ig ig = findIgById(id);
+		if(ig.getShareLinks() == null) {
+			ig.setShareLinks(new HashMap<>());
+		}
+
+		if(!Strings.isNullOrEmpty(linkId) && !ig.getShareLinks().containsKey(linkId)) {
+			throw new Exception("Unknown link: "+ linkId);
+		}
+		String mapLinkId = Strings.isNullOrEmpty(linkId) ? UUID.randomUUID().toString() : linkId;
+
+		ig.getShareLinks().put(mapLinkId, exportShareConfiguration);
+		igService.save(ig);
+
+		return new ResponseMessage<>(Status.SUCCESS, "Link created successfully", mapLinkId, new Date());
+	}
+
+	@RequestMapping(value = "/api/igdocuments/{id}/sharelink/", method = RequestMethod.GET, produces = {"application/json"})
+	@PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+	public @ResponseBody Map<String, ExportShareConfiguration> getShareLink(
+			@PathVariable("id") String id
+	) throws Exception {
+		Ig ig = findIgById(id);
+		if(ig.getShareLinks() == null) {
+			return new HashMap<>();
+		} else {
+			return ig.getShareLinks();
+		}
+	}
+
+	@RequestMapping(value = "/api/igdocuments/{id}/sharelink/{linkId}", method = RequestMethod.DELETE, produces = {"application/json"})
+	@PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+	public @ResponseBody ResponseMessage<String> deleteShareLink(
+			@PathVariable("id") String id,
+			@PathVariable(value = "linkId") String linkId
+	) throws Exception {
+		Ig ig = findIgById(id);
+
+		if(ig.getShareLinks() == null) {
+			ig.setShareLinks(new HashMap<>());
+		}
+
+		if(!Strings.isNullOrEmpty(linkId) && !ig.getShareLinks().containsKey(linkId)) {
+			throw new Exception("Unknown link: "+ linkId);
+		}
+
+		ig.getShareLinks().remove(linkId);
+
+		igService.save(ig);
+
+		return new ResponseMessage<>(Status.SUCCESS, "Link created deleted", null, new Date());
+	}
+
 
 	@RequestMapping(value = "/api/igdocuments/findMessageEvents/{scope}/{version:.+}", method = RequestMethod.GET, produces = {
 	"application/json" })
