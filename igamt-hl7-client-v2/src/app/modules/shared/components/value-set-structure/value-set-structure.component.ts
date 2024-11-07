@@ -14,6 +14,7 @@ import { BrowseType, CodeSetBrowseDialogComponent, IBrowserTreeNode } from '../c
 import { FetchCodesDialogComponent } from '../fetch-codes-dialog/fetch-codes-dialog.component';
 import { ImportCodeCSVComponent } from '../import-code-csv/import-code-csv.component';
 import { SourceType } from './../../models/adding-info';
+import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-value-set-structure',
@@ -403,11 +404,27 @@ export class ValueSetStructureComponent implements OnInit {
       ).subscribe();
   }
 
-  detach() {
+  confirmDetach() {
     this.valueSet.sourceType = SourceType.INTERNAL;
-    this.updateAttribute(PropertyType.CODES, this.valueSet.codes);
     this.updateAttribute(PropertyType.CODESETREFERENCE, null);
+    this.updateAttribute(PropertyType.CODES, this.valueSet.codes);
+  }
 
+  detach() {
+    const message = 'Future updates to the code sets will not be reflected in this value sets. Are you sure you want to continue?';
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        question: message,
+        action:' CONFIRMATION',
+      },
+    });
+    dialogRef.afterClosed().subscribe(
+      (answer) => {
+        if(answer){
+          this.confirmDetach();
+        }
+      },
+    );
   }
 
 }

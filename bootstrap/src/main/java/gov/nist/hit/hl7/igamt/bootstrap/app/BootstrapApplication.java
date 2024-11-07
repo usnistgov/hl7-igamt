@@ -418,7 +418,7 @@ public class BootstrapApplication implements CommandLineRunner {
 
 	}
 
-	@PostConstruct
+	//@PostConstruct
 	void classifyDatatypes() throws DatatypeNotFoundException {
 		datatypeClassificationService.deleteAll();
 		System.out.println("Classifying dts");
