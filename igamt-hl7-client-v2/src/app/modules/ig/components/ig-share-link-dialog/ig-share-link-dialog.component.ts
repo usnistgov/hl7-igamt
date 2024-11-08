@@ -40,6 +40,8 @@ export class IgShareLinkDialogComponent {
   igId: string;
   selectedId: string;
   copied = {};
+  base = '';
+  hasClipboard = !!window.navigator['clipboard'];
 
   constructor(
     public dialogRef: MatDialogRef<IgShareLinkDialogComponent>,
@@ -59,6 +61,8 @@ export class IgShareLinkDialogComponent {
         ...this.data.links[id],
       });
     }
+    const host = window.location.protocol + '//' + window.location.host;
+    this.base = host + '/public/ig/' + this.igId + '/';
   }
 
   create() {

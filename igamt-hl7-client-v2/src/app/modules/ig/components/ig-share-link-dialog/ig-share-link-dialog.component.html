@@ -9,33 +9,38 @@
 <mat-dialog-content style="margin-top: 20px; width: 600px;">
   <ng-container *ngIf="list">
     <span style="color: gray;" *ngIf="links.length === 0">Click on the [+] button to create an export share link</span>
-    <table *ngIf="links.length > 0" class="table table-sm table-bordered">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of links">
-          <td style="vertical-align: middle; padding-right: 30px;">{{item.name}}</td>
-          <td>
-            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 5px;">
-              <button (click)="deleteLink(item)" class="btn btn-sm btn-danger">
-                <i class="fa fa-trash"></i> Delete
-              </button>
-              <button (click)="edit(item)" class="btn btn-sm btn-primary">
-                <i class="fa fa-pencil"></i> Edit
-              </button>
-              <button class="btn btn-sm btn-outline-primary" (click)="copy(item)">
-                <i class="fa fa-copy"></i>
-                {{ copied[item.id] ? "Copied!" : "Copy Link" }}
-              </button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <ng-container *ngIf="links.length > 0">
+      <table *ngFor="let item of links" class="table table-sm table-bordered" style="border: 2px solid darkgray !important;">
+        <tbody>
+          <tr>
+            <td>
+              <div style="display: flex; align-items: center; justify-content: flex-end; gap: 5px;">
+                <button (click)="deleteLink(item)" class="btn btn-sm btn-danger">
+                  <i class="fa fa-trash"></i> Delete
+                </button>
+                <button (click)="edit(item)" class="btn btn-sm btn-primary">
+                  <i class="fa fa-pencil"></i> Edit
+                </button>
+                <button *ngIf="hasClipboard" class="btn btn-sm btn-outline-primary" (click)="copy(item)">
+                  <i class="fa fa-copy"></i>
+                  {{ copied[item.id] ? "Copied!" : "Copy Link" }}
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: middle;">
+              {{item.name}}
+            </td>
+          </tr>
+          <tr>
+            <td  style="vertical-align: middle;">
+              <a style="word-break: break-all;" [href]="base + item.id" target="_blank">{{base + item.id}}</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
   </ng-container>
   <ng-container *ngIf="!list">
     <div *ngIf="configurationNotFound" class="alert alert-warning">
