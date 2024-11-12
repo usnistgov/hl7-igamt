@@ -493,7 +493,7 @@ public class ExportController {
 			Ig subSetIg = this.igService.getIgProfileResourceSubSetAsIg(
 					ig,
 					new HashSet<>(Arrays.asList(reqIds.getConformanceProfilesId())),
-					new HashSet<>(Arrays.asList(reqIds.getCompositeProfilesId()))
+					new HashSet<>()
 			);
 			String xmlContent = igExportService.exportIgDocumentToDiffXml(subSetIg);
 			System.out.println(xmlContent);
