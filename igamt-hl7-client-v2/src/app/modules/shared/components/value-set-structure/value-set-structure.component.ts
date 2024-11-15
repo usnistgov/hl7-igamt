@@ -6,6 +6,7 @@ import { EMPTY, of } from 'rxjs';
 import { catchError, finalize, map, tap } from 'rxjs/operators';
 import { ICodeSetInfo } from 'src/app/modules/code-set-editor/models/code-set.models';
 import { CodeSetServiceService } from 'src/app/modules/code-set-editor/services/CodeSetService.service';
+import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { Type } from '../../constants/type.enum';
 import { ChangeType, IChange, PropertyType } from '../../models/save-change';
 import { ICodes, ILinkedCodeSetInfo, IValueSet } from '../../models/value-set.interface';
@@ -14,7 +15,6 @@ import { BrowseType, CodeSetBrowseDialogComponent, IBrowserTreeNode } from '../c
 import { FetchCodesDialogComponent } from '../fetch-codes-dialog/fetch-codes-dialog.component';
 import { ImportCodeCSVComponent } from '../import-code-csv/import-code-csv.component';
 import { SourceType } from './../../models/adding-info';
-import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-value-set-structure',
@@ -415,12 +415,12 @@ export class ValueSetStructureComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         question: message,
-        action:' CONFIRMATION',
+        action: ' CONFIRMATION',
       },
     });
     dialogRef.afterClosed().subscribe(
       (answer) => {
-        if(answer){
+        if (answer) {
           this.confirmDetach();
         }
       },

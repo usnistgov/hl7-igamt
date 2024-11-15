@@ -44,6 +44,7 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
   committed: boolean;
   codeSetId$: Observable<string>;
   versionURL: string;
+  hasChanges: Observable<boolean>;
 
   constructor(
     actions$: Actions,
@@ -87,6 +88,7 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
     });
 
     this.codeSetId$ = this.store.select(selectCodeSetId);
+    this.hasChanges = this.store.select(fromDam.selectWorkspaceCurrentIsChanged);
   }
 
   getCodeSystemOptions(resource: ICodeSetVersionContent): SelectItem[] {
@@ -127,13 +129,13 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
     return of(null);
   }
 
-  updateCodes(event: ICodes[]) {
+  updateCodes(event: {codes: ICodes[], valid?: boolean}) {
     this.resource$.pipe(
       take(1),
       tap((resource) => {
-        this.resourceSubject.next({ ...resource, codes: event });
+        this.resourceSubject.next({ ...resource, codes: event.codes });
 
-        this.editorChange({ data: { resource: { ...resource, codes: event } } }, true);
+        this.editorChange({ data: { resource: { ...resource, codes: event } } }, event.valid);
       }),
     ).subscribe();
   }

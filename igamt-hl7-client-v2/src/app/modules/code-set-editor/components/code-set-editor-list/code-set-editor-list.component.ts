@@ -15,7 +15,7 @@ import { ICodeSetListItem } from '../../models/code-set.models';
 import { CodeSetServiceService } from '../../services/CodeSetService.service';
 import { ICodeSetListItemControl } from '../code-set-editor-list-card/code-set-editor-list-card.component';
 import { DeleteCodeSetDialogComponent } from '../delete-code-set-dialog/delete-code-set-dialog.component';
-import { ClearCodeSetList, DeleteCodeSetListItemSuccess, LoadCodeSetList, SelectCodeSetListSortOption, SelectCodeSetListViewType, UpdatePendingInvitationCount } from './../../../../root-store/code-set-editor/code-set-list/code-set-list.actions';
+import { ClearCodeSetList, CodeSetLoadType, DeleteCodeSetListItemSuccess, LoadCodeSetList, SelectCodeSetListSortOption, SelectCodeSetListViewType, UpdatePendingInvitationCount } from './../../../../root-store/code-set-editor/code-set-list/code-set-list.actions';
 import { MessageService } from './../../../dam-framework/services/message.service';
 import { ClearAll } from './../../../dam-framework/store/messages/messages.actions';
 
@@ -91,10 +91,10 @@ export class CodeSetEditorListComponent implements OnInit, OnDestroy {
   }
 
   codeSetListItemControls() {
-    this.controls = combineLatest(this.isAdmin, this.username)
+    this.controls = combineLatest(this.isAdmin, this.username, this.viewType)
       .pipe(
         map(
-          ([admin, username]) => {
+          ([admin, username, viewType]) => {
             return [
               {
                 label: 'Share',
@@ -107,6 +107,9 @@ export class CodeSetEditorListComponent implements OnInit, OnDestroy {
                   return username !== item.username || item.type === 'PUBLIC';
                 },
                 hide: (item: ICodeSetListItem): boolean => {
+                  console.log(item);
+                  console.log(viewType);
+
                   return item.type === 'PUBLIC' || item.type === 'SHARED' || username !== item.username;
                 },
               },
@@ -126,7 +129,7 @@ export class CodeSetEditorListComponent implements OnInit, OnDestroy {
                   }
                 },
                 hide: (item: ICodeSetListItem): boolean => {
-                  return item.type === 'PUBLIC' || item.type === 'SHARED';
+                  return (item.type === 'PUBLIC' || item.type === 'SHARED') || viewType !== 'PRIVATE';
                 },
               },
               {
@@ -250,7 +253,7 @@ export class CodeSetEditorListComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         question: 'Are you sure you want to Publish this Code Set "' + item.title + '" ?',
-        action: 'Delete Code Set',
+        action: 'Publish Code Set',
       },
     });
     dialogRef.afterClosed().subscribe(

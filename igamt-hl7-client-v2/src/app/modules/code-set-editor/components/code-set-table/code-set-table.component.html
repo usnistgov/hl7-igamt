@@ -256,7 +256,14 @@
                 class="form-control"
                 required
                 type="text"
+                pattern="^[^\s]+$"
+
               />
+              <div *ngIf="form.controls['value' + rowData.id]?.errors?.required" class="text-danger">
+                Value is required.
+              </div>
+              <div *ngIf="form.controls['value' + rowData.id]?.errors?.pattern" class="text-danger">No spaces allowed.</div>
+
             </div>
             <div *ngSwitchCase="'comments'">
               <input

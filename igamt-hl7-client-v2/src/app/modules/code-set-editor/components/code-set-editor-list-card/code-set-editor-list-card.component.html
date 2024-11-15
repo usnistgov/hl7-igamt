@@ -80,7 +80,7 @@
           </tr>
           <tr *ngFor="let version of item.children">
             <td>{{version.version}}</td>
-            <td>{{version.dateCommitted}}</td>
+            <td>{{version.dateCommitted | date}}</td>
           </tr>
         </table>
       </div>

@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { Guid } from 'guid-typescript';
 import { SelectItem } from 'primeng/api';
 import { CodeUsage } from 'src/app/modules/shared/constants/usage.enum';
@@ -15,7 +16,7 @@ export class CodeSetTableComponent implements OnInit {
 
   _codeSetVersion: ICodeSetVersionContent;
   codeSystems: string[] = [];
-
+  @ViewChild('form') form!: NgForm;
   @Input()
   set codeSetVersion(codeSetVersion: ICodeSetVersionContent) {
     this._codeSetVersion = codeSetVersion;
@@ -37,7 +38,7 @@ export class CodeSetTableComponent implements OnInit {
 
   filteredCodeSystems: string[] = [];
   @Output()
-  changes: EventEmitter<ICodes[]> = new EventEmitter<ICodes[]>();
+  changes: EventEmitter<any> = new EventEmitter<any>();
 
   @Output()
   exportCSVEvent: EventEmitter<any> = new EventEmitter<any>();
@@ -126,7 +127,9 @@ export class CodeSetTableComponent implements OnInit {
       pattern: '',
       hasPattern: true,
     });
-    this.changes.emit(this.codeSetVersion.codes);
+    this.changeCodes();
+
+    // this.changes.emit(this.codeSetVersion.codes);
   }
 
   applyUsage(usage) {
@@ -143,7 +146,7 @@ export class CodeSetTableComponent implements OnInit {
   }
 
   changeCodes() {
-    this.changes.emit(this.codeSetVersion.codes);
+    this.changes.emit({ codes: this.codeSetVersion.codes, valid: this.form.valid});
   }
 
   addCodeSystemFormCode(code: ICodes) {
@@ -155,24 +158,23 @@ export class CodeSetTableComponent implements OnInit {
   deleteCodes() {
     this.codeSetVersion.codes = this.codeSetVersion.codes.filter((x) => this.selectedCodes.indexOf(x) < 0);
     this.selectedCodes = [];
-    this.changes.emit(this.codeSetVersion.codes);
+    this.changeCodes();
 
   }
 
   updateAttribute(propertyType: PropertyType, value: any) {
     // change if we add other attributes
-    this.changes.emit(this.codeSetVersion.codes);
-
+    this.changeCodes();
   }
   updateURl(value) {
     this.updateAttribute(PropertyType.URL, value);
   }
 
   importCSV() {
-    this.importCSVEvent.emit(this.codeSetVersion);
+    this.changeCodes();
   }
   exportCSV() {
-    this.exportCSVEvent.emit(this.codeSetVersion);
+    this.changeCodes();
 
   }
    getUniqueCodeSystems(codes: ICodes[]): string[] {

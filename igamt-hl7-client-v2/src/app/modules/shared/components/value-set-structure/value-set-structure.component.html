@@ -131,12 +131,10 @@
                 <p-dropdown (onChange)="changeCodes()" [(ngModel)]="rowData.usage" [appendTo]="anchor"
                   [id]="'usage'+rowData.id" [name]="'usage'+rowData.id" [options]="codeUsageOptions" placeholder="Usage"
                   [style]="{'minWidth':'90%'}"></p-dropdown>
-
               </div>
 
               <div #anchor *ngSwitchCase="'pattern'"
                 style="display: flex; flex-direction: row; justify-content: space-between">
-
                 {{rowData.pattern}}
               </div>
               <div #anchor *ngSwitchCase="'codeSystem'">
@@ -214,8 +212,6 @@
 
 
     <div *ngIf="valueSet.sourceType === 'INTERNAL_TRACKED'">
-
-
       <div class="codes-options">
         <div class="csv-actions">
           <div style="display: flex; gap: 4px;">

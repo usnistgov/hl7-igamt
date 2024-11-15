@@ -1,6 +1,6 @@
 <ng-template #headerControls>
   <div>
-    <button class="btn btn-sm btn-dark" (click)="commit()" *ngIf="!(resource$ | async).dateCommitted" >
+    <button class="btn btn-sm btn-dark" (click)="commit()" *ngIf="!(resource$ | async).dateCommitted" [disabled]="hasChanges | async" >
       <i class="fa fa-check" aria-hidden="true"></i>
       Commit
     </button>
