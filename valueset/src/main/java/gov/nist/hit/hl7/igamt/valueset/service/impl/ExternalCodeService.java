@@ -1,6 +1,5 @@
 package gov.nist.hit.hl7.igamt.valueset.service.impl;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -18,10 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import gov.nist.hit.hl7.igamt.api.codesets.model.ExternalCode;
 import gov.nist.hit.hl7.igamt.api.codesets.model.CodesetResponse;
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 @Service
 public class ExternalCodeService {

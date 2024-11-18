@@ -20,10 +20,10 @@ export class CodeSetTableComponent implements OnInit {
   @Input()
   set codeSetVersion(codeSetVersion: ICodeSetVersionContent) {
     this._codeSetVersion = codeSetVersion;
-    this.codeSystems = this.getUniqueCodeSystems(this._codeSetVersion.codes ? this._codeSetVersion.codes : [] );
+    this.codeSystems = this.getUniqueCodeSystems(this._codeSetVersion.codes ? this._codeSetVersion.codes : []);
     this._codeSetVersion.codeSystems = this.codeSystems;
     this.codeSystemOptions = this.getCodeSystemOptions();
-    this.selectedCodes  = [];
+    this.selectedCodes = [];
 
   }
   get codeSetVersion() {
@@ -63,8 +63,8 @@ export class CodeSetTableComponent implements OnInit {
   ];
 
   ngOnInit() {
-   this.editMap[this.codeSetVersion.id] = false;
-   this.cols = this.selectedColumns;
+    this.editMap[this.codeSetVersion.id] = false;
+    this.cols = this.selectedColumns;
   }
 
   toggleEdit(id: string) {
@@ -122,10 +122,10 @@ export class CodeSetTableComponent implements OnInit {
       value: null,
       description: null,
       codeSystem: null,
-      usage: CodeUsage.P,
+      usage: null,
       comments: null,
       pattern: '',
-      hasPattern: true,
+      hasPattern: false,
     });
     this.changeCodes();
 
@@ -177,7 +177,7 @@ export class CodeSetTableComponent implements OnInit {
     this.changeCodes();
 
   }
-   getUniqueCodeSystems(codes: ICodes[]): string[] {
+  getUniqueCodeSystems(codes: ICodes[]): string[] {
     const codeSystems = codes.map((code) => code.codeSystem);
     const uniqueCodeSystems = new Set(codeSystems);
     return Array.from(uniqueCodeSystems);

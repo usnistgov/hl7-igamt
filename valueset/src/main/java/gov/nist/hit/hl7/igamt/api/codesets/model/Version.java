@@ -1,8 +1,12 @@
 package gov.nist.hit.hl7.igamt.api.codesets.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 
 public class Version {
+	@JsonIgnore
+	private String id;
 	private String version;
 	private Date date;
 
@@ -20,6 +24,14 @@ public class Version {
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	@Override
