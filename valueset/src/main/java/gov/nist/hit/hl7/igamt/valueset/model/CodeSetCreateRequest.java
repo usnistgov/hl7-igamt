@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.valueset.model;
 
 public class CodeSetCreateRequest {
+
     private String title;
     private String description;
 

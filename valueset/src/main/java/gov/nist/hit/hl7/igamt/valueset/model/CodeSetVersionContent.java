@@ -6,12 +6,10 @@ import java.util.Set;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 
 public class CodeSetVersionContent extends CodeSetVersionInfo {
-	
-	
+
 	private Set<Code> codes;
     private List<String> codeSystems; 
     private boolean latest;
-    
 
   	public CodeSetVersionContent() {
 		super();
@@ -40,6 +38,5 @@ public class CodeSetVersionContent extends CodeSetVersionInfo {
 	public void setLatest(boolean latest) {
 		this.latest = latest;
 	}
-
 
 }

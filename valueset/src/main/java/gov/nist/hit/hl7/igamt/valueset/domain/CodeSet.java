@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.valueset.domain;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Audience;
@@ -16,13 +17,9 @@ public class CodeSet {
 
     private Audience audience;
     
-    private boolean exposed;
-    
     private String latest;
     
     private Date dateUpdated;
-    
-    private String slug;
     
     private String name;
     
@@ -31,9 +28,8 @@ public class CodeSet {
     private String username;
 
 	private boolean disableKeyProtection;
-    
-    @DBRef
-    private Set<CodeSetVersion> codeSetVersions;
+
+    private Set<String> codeSetVersions = new HashSet<>();
 
 	public CodeSet() {
 		super();
@@ -55,14 +51,6 @@ public class CodeSet {
 		this.audience = audience;
 	}
 
-	public boolean isExposed() {
-		return exposed;
-	}
-
-	public void setExposed(boolean exposed) {
-		this.exposed = exposed;
-	}
-
 	public String getLatest() {
 		return latest;
 	}
@@ -77,22 +65,6 @@ public class CodeSet {
 
 	public void setDateUpdated(Date dateUpdated) {
 		this.dateUpdated = dateUpdated;
-	}
-
-	public String getSlug() {
-		return slug;
-	}
-
-	public void setSlug(String slug) {
-		this.slug = slug;
-	}
-
-	public Set<CodeSetVersion> getCodeSetVersions() {
-		return codeSetVersions;
-	}
-
-	public void setCodeSetVersions(Set<CodeSetVersion> codeSetVersions) {
-		this.codeSetVersions = codeSetVersions;
 	}
 
 	public String getName() {
@@ -125,5 +97,13 @@ public class CodeSet {
 
 	public void setDisableKeyProtection(boolean disableKeyProtection) {
 		this.disableKeyProtection = disableKeyProtection;
+	}
+
+	public Set<String> getCodeSetVersions() {
+		return codeSetVersions;
+	}
+
+	public void setCodeSetVersions(Set<String> codeSetVersions) {
+		this.codeSetVersions = codeSetVersions;
 	}
 }

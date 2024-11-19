@@ -51,4 +51,12 @@ public class CodeSetAccessInfo {
 	public void setDisableKeyProtection(boolean disableKeyProtection) {
 		this.disableKeyProtection = disableKeyProtection;
 	}
+
+	public boolean isCommitted() {
+		return dateCommitted != null;
+	}
+
+	public boolean isCodeSetVersion() {
+		return type.equals(Type.CODESETVERSION);
+	}
 }

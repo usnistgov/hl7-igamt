@@ -2,7 +2,7 @@ package gov.nist.hit.hl7.igamt.access.security;
 
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.access.common.ResourceAccessInfoFetcher;
-import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
+import gov.nist.hit.hl7.igamt.access.model.Action;
 import gov.nist.hit.hl7.igamt.access.model.AccessToken;
 import gov.nist.hit.hl7.igamt.access.model.CodeSetAccessInfo;
 import gov.nist.hit.hl7.igamt.api.security.domain.AccessKey;
@@ -33,7 +33,7 @@ public class APIAccessControlService {
 	@Autowired
 	AccessKeyService accessKeyService;
 
-	public boolean checkResourceAPIAccessPermission(Type type, String id, AccessLevel requested) throws APIResourceNotFoundException {
+	public boolean checkResourceAPIAccessPermission(Type type, String id, Action requested) throws APIResourceNotFoundException {
 		try {
 			switch(type) {
 				case CODESET:
@@ -59,10 +59,10 @@ public class APIAccessControlService {
 		}
 	}
 
-	public boolean checkResourceAPIAccess(Type type, String id, boolean requiresAPIKey, Function<AccessToken, Boolean> checkFn, AccessLevel requested) {
+	public boolean checkResourceAPIAccess(Type type, String id, boolean requiresAPIKey, Function<AccessToken, Boolean> checkFn, Action requested) {
 		AccessKey key = getAccessKey();
 		if(!requiresAPIKey) {
-			return accessControlService.evaluateAccessLevel(L(AccessLevel.READ), requested);
+			return requested.equals(Action.READ);
 		} else if(key != null) {
 			if(!key.isValid() || !isGranted(type, id, key)) {
 				return false;
@@ -94,7 +94,7 @@ public class APIAccessControlService {
 		return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
 	}
 
-	private Set<AccessLevel> L(AccessLevel... levels) {
+	private Set<Action> L(Action... levels) {
 		return new HashSet<>(Arrays.asList(levels));
 	}
 }

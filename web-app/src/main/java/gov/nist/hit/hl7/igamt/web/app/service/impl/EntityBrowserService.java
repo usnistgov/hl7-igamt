@@ -7,6 +7,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSet;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetVersion;
+import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionMetadata;
 import gov.nist.hit.hl7.igamt.valueset.service.CodeSetService;
 import gov.nist.hit.hl7.igamt.web.app.model.*;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissionType;
@@ -211,11 +212,11 @@ public class EntityBrowserService {
         CodeSetBrowserTreeNode node = new CodeSetBrowserTreeNode();
         node.setData(browserTreeNode);
         if(children) {
-            List<CodeSetVersionBrowserTreeNode> versions = cs.getCodeSetVersions()
+            List<CodeSetVersionMetadata> codeSetVersionMetadata = codeSetService.getCodeSetVersionMetadata(cs);
+            List<CodeSetVersionBrowserTreeNode> versions = codeSetVersionMetadata
                                                              .stream()
-                                                             .filter((v) -> v.getDateCommitted() != null)
+                                                             .filter(CodeSetVersionMetadata::isCommitted)
                                                              .map((v) -> this.codeSetVersionToTreeNode(v, cs.getLatest()))
-
                                                              .collect(Collectors.toList());
             Collections.reverse(versions);
             node.setChildren(versions);
@@ -223,7 +224,7 @@ public class EntityBrowserService {
         return node;
     }
 
-    public CodeSetVersionBrowserTreeNode codeSetVersionToTreeNode(CodeSetVersion version, String latestId) {
+    public CodeSetVersionBrowserTreeNode codeSetVersionToTreeNode(CodeSetVersionMetadata version, String latestId) {
         CodeSetVersionBrowserTreeNodeData data = new CodeSetVersionBrowserTreeNodeData();
         data.setId(version.getId());
         data.setLabel(version.getVersion());

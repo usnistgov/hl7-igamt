@@ -1,233 +1,231 @@
 package gov.nist.hit.hl7.igamt.valueset.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import org.bson.types.ObjectId;
+import com.google.common.base.Strings;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+import gov.nist.hit.hl7.igamt.valueset.exception.CodeSetCommitException;
+import gov.nist.hit.hl7.igamt.valueset.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Audience;
 import gov.nist.hit.hl7.igamt.common.base.domain.AudienceType;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.PrivateAudience;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicAudience;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
-import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
-import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSet;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetVersion;
-import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
-import gov.nist.hit.hl7.igamt.valueset.model.CodeSetCreateRequest;
-import gov.nist.hit.hl7.igamt.valueset.model.CodeSetInfo;
-import gov.nist.hit.hl7.igamt.valueset.model.CodeSetListItem;
-import gov.nist.hit.hl7.igamt.valueset.model.CodeSetMetadata;
-import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionContent;
-import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionInfo;
-import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionListInfo;
 import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetRepository;
 import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetVersionRepository;
 import gov.nist.hit.hl7.igamt.valueset.service.CodeSetService;
-import java.util.Iterator;
+
 import java.util.List;
 import java.util.Set;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 
 @Service
 public class CodeSetServiceImpl implements CodeSetService {
 	
 	@Autowired
 	CodeSetRepository codeSetRepo;
-	
 	@Autowired
 	CodeSetVersionRepository  codeSetVersionRepo;
+	@Autowired
+	MongoTemplate mongoTemplate;
+	private final Set<String> codeSetVersionMetadataFields = Arrays.stream(CodeSetVersionMetadata.class.getDeclaredFields())
+	                                                               .map(Field::getName)
+	                                                               .collect(Collectors.toSet());
+
+	@Override
+	public List<CodeSetVersionMetadata> getCodeSetVersionMetadata(CodeSet codeSet) {
+		AggregationOperation match = Aggregation.match(Criteria.where("_id").in(codeSet.getCodeSetVersions()));
+		AggregationOperation project = Aggregation.project(this.codeSetVersionMetadataFields.toArray(new String[0]));
+		Aggregation versionAggregation = Aggregation.newAggregation(match, project);
+		AggregationResults<CodeSetVersionMetadata> results = mongoTemplate.aggregate(
+				versionAggregation,
+				this.mongoTemplate.getCollectionName(CodeSetVersion.class),
+				CodeSetVersionMetadata.class
+		);
+		return results.getMappedResults();
+	}
 
 	@Override
 	public CodeSet createCodeSet(CodeSetCreateRequest codeSetCreateRequest, String username) {
-		
-		
 		CodeSet codeSet = new CodeSet();
 		codeSet.setDescription(codeSetCreateRequest.getDescription());
 		codeSet.setName(codeSetCreateRequest.getTitle());
-		codeSet.setCodeSetVersions(new HashSet<CodeSetVersion>());
-		codeSet.setAudience(new PrivateAudience(AudienceType.PRIVATE, username, new HashSet<String>()));
+		codeSet.setCodeSetVersions(new HashSet<>());
+		codeSet.setAudience(new PrivateAudience(AudienceType.PRIVATE, username, new HashSet<>()));
 		codeSet.setUsername(username);
 		CodeSetVersion starting = new CodeSetVersion();
-		starting.setVersion("1");		
-		codeSet.getCodeSetVersions().add(this.codeSetVersionRepo.save(starting));
-
-
+		starting.setVersion("");
+		this.codeSetVersionRepo.save(starting);
+		codeSet.getCodeSetVersions().add(starting.getId());
 		return this.codeSetRepo.save(codeSet);
 	}
 	
 	@Override
-	public CodeSetInfo getCodeSetInfo(String id, String username) throws ResourceNotFoundException, ForbiddenOperationException {
-		CodeSet codeSet = this.codeSetRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESET));
-			return this.toCodeSetInfo(codeSet, username);
+	public CodeSetInfo getCodeSetInfo(String id, boolean includeInProgress, boolean viewOnly) throws ResourceNotFoundException {
+		CodeSet codeSet = findCodeSetById(id);
+		return this.toCodeSetInfo(codeSet, includeInProgress, viewOnly);
 	}
 
-	private CodeSetInfo toCodeSetInfo(CodeSet codeSet, String username) {
-		
+	private CodeSetInfo toCodeSetInfo(CodeSet codeSet, boolean includeInProgress, boolean viewOnly) {
 		CodeSetInfo info = new CodeSetInfo();
 		info.setId(codeSet.getId());
 		CodeSetMetadata metadata = new CodeSetMetadata();
 		metadata.setDescription(codeSet.getDescription());
 		metadata.setTitle(codeSet.getName());
-		info.setExposed(codeSet.isExposed());
-		info.setDefaultVersion(username);
 		info.setDefaultVersion(codeSet.getLatest());
 		info.setDisableKeyProtection(codeSet.isDisableKeyProtection());
-		List<CodeSetVersionInfo> children = new ArrayList<CodeSetVersionInfo>();
-		children = this.generateChildren(codeSet.getCodeSetVersions(),  codeSet.getId() );
-		
-		
+		List<CodeSetVersionMetadata> codeSetVersionMetadata = getCodeSetVersionMetadata(codeSet)
+				.stream()
+				.filter((version) -> version.isCommitted() || (includeInProgress && !version.isCommitted()))
+				.collect(Collectors.toList());
+		List<CodeSetVersionInfo> children = this.toCodeSetVersionInfo(codeSetVersionMetadata, codeSet.getId() );
 		info.setChildren(children);	
 		info.setMetadata(metadata);
-		
+		info.setViewOnly(viewOnly);
 		return info;
-	
 	}
 
-	private List<CodeSetVersionInfo> generateChildren(Set<CodeSetVersion> codeSetVersions, String parentId) {
-		List<CodeSetVersionInfo> children = new ArrayList<CodeSetVersionInfo>();
-		if(codeSetVersions != null) {
-			for (CodeSetVersion version: codeSetVersions) {
-				
-				CodeSetVersionInfo info = new CodeSetVersionInfo();
-
-				this.setVersionInfo(version, info,  parentId);
-				children.add(info);
+	private List<CodeSetVersionInfo> toCodeSetVersionInfo(List<CodeSetVersionMetadata> codeSetVersionMetadata, String codeSetId) {
+		List<CodeSetVersionInfo> children = new ArrayList<>();
+		if(codeSetVersionMetadata != null) {
+			for (CodeSetVersionMetadata version: codeSetVersionMetadata) {
+				CodeSetVersionInfo codeSetVersionInfo = new CodeSetVersionInfo();
+				setVersionInfo(version, codeSetVersionInfo, codeSetId);
+				children.add(codeSetVersionInfo);
 			}
 		}
-		
 		return children.stream()
                 .sorted((v1, v2) -> v2.getDateCreated().compareTo(v1.getDateCreated()))
                 .collect(Collectors.toList());
-        
 	}
 
-	private void setVersionInfo(CodeSetVersion version, CodeSetVersionInfo codeSetVersionInfo,  String parent) {
-		
+	private void setVersionInfo(CodeSetVersionMetadata version,  CodeSetVersionInfo codeSetVersionInfo, String codeSetId) {
 		codeSetVersionInfo.setId(version.getId());
 		codeSetVersionInfo.setVersion(version.getVersion());
-		codeSetVersionInfo.setExposted(false);
 		codeSetVersionInfo.setComments(version.getComments());
-		codeSetVersionInfo.setParentId(parent);
+		codeSetVersionInfo.setParentId(codeSetId);
 		codeSetVersionInfo.setDateUpdated(version.getDateUpdated());
 		codeSetVersionInfo.setDateCreated(version.getDateCreated());
 		codeSetVersionInfo.setDateCommitted(version.getDateCommitted());
-		codeSetVersionInfo.setDeprecated(version.isDeprecated());
 	}
-	
-	
 
 	@Override
-	public CodeSetVersionContent getCodeSetVersionContent(String parentId, String codeSetVersionId) throws ResourceNotFoundException {
-		
-		CodeSetVersion codeSetVersion =	this.codeSetVersionRepo.findById(codeSetVersionId).orElseThrow(() -> new ResourceNotFoundException(codeSetVersionId, Type.CODESETVERSION));
-		CodeSetVersionContent ret = new CodeSetVersionContent();
-		this.setVersionInfo(codeSetVersion, ret,  parentId);
+	public CodeSetVersionContent getCodeSetVersionContent(String codeSetId, String codeSetVersionId) throws ResourceNotFoundException {
+		CodeSetVersion codeSetVersion = findCodeSetVersion(codeSetId, codeSetVersionId);
+		CodeSetVersionContent codeSetVersionContent = new CodeSetVersionContent();
+		this.setVersionInfo(codeSetVersion, codeSetVersionContent,  codeSetId);
 		if(codeSetVersion.getCodes() != null ) {
-			ret.setCodeSystems(codeSetVersion.getCodes().stream().map(x -> x.getCodeSystem()).collect(Collectors.toList()));
-
-		}else ret.setCodeSystems(new ArrayList<String>());
-		
-		ret.setCodes(codeSetVersion.getCodes());
-		return ret;
-	}
-
-	@Override
-	public CodeSetVersion saveCodeSetVersionContent(String id, String versionId, CodeSetVersionContent content, String username)
-			throws ResourceNotFoundException, ForbiddenOperationException {
-		CodeSetVersion codeSetVersion =	this.codeSetVersionRepo.findById(versionId).orElseThrow(() -> new ResourceNotFoundException(versionId, Type.CODESETVERSION));
-	
-		
-		applyCodeSet(content, codeSetVersion );
-		
-		return codeSetVersionRepo.save(codeSetVersion);
-		
-	}
-	
-	
-	@Override
-	public CodeSetVersion findById(String id)throws ResourceNotFoundException {
-		return	this.codeSetVersionRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESETVERSION));
-	
-		
-	}
-	
-	
-	@Override
-	public CodeSetVersion commit(String id, String versionId, CodeSetVersionContent content, String username)
-			throws ResourceNotFoundException, ForbiddenOperationException {
-		
-		CodeSet codeSet = this.codeSetRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESET));
-		CodeSetVersion codeSetVersion =	this.codeSetVersionRepo.findById(versionId).orElseThrow(() -> new ResourceNotFoundException(versionId, Type.CODESETVERSION));
-	
-		
-		applyCodeSet(content, codeSetVersion );
-		codeSetVersion.setDateCommitted(new Date());
-		
-		
-		if(content.isLatest()) {
-			codeSet.setLatest(versionId);
+			codeSetVersionContent.setCodeSystems(
+					codeSetVersion.getCodes().stream()
+					              .map(Code::getCodeSystem)
+					              .collect(Collectors.toList())
+			);
+		} else {
+			codeSetVersionContent.setCodeSystems(new ArrayList<>());
 		}
-		
+		codeSetVersionContent.setCodes(codeSetVersion.getCodes());
+		return codeSetVersionContent;
+	}
+
+	@Override
+	public CodeSetVersion saveCodeSetVersionContent(String codeSetId, String versionId, Set<Code> codes) throws ResourceNotFoundException, ForbiddenOperationException {
+		CodeSetVersion codeSetVersion =	findCodeSetVersion(codeSetId, versionId);
+		if(codeSetVersion.isCommitted()) {
+			throw new ForbiddenOperationException("This code set version is already committed.");
+		}
+		codeSetVersion.setCodes(codes);
+		return codeSetVersionRepo.save(codeSetVersion);
+	}
+
+	@Override
+	public CodeSetVersion findCodeSetVersionById(String id)throws ResourceNotFoundException {
+		return this.codeSetVersionRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESETVERSION));
+	}
+
+	@Override
+	public CodeSet findCodeSetById(String id)throws ResourceNotFoundException {
+		return this.codeSetRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESETVERSION));
+	}
+
+	@Override
+	public CodeSetVersion findCodeSetVersion(String codeSetId, String codeSetVersionId)throws ResourceNotFoundException {
+		CodeSet codeSet = this.codeSetRepo.findById(codeSetId).orElseThrow(() -> new ResourceNotFoundException(codeSetId, Type.CODESET));
+		if(!codeSet.getCodeSetVersions().contains(codeSetVersionId)) {
+			throw new ResourceNotFoundException(codeSetVersionId, Type.CODESETVERSION);
+		}
+		return findCodeSetVersionById(codeSetVersionId);
+	}
+
+	@Override
+	public CodeSetVersion commit(
+			String codeSetId,
+			String codeSetVersionId,
+			CodeSetVersionCommit commit
+	) throws ResourceNotFoundException, CodeSetCommitException {
+		CodeSet codeSet = this.codeSetRepo.findById(codeSetId).orElseThrow(() -> new ResourceNotFoundException(codeSetId, Type.CODESET));
+		if(!codeSet.getCodeSetVersions().contains(codeSetVersionId)) {
+			throw new ResourceNotFoundException(codeSetVersionId, Type.CODESETVERSION);
+		}
+		CodeSetVersion codeSetVersion = findCodeSetVersionById(codeSetVersionId);
+		// Validate version
+		if(commit.getVersion() == null) {
+			throw new CodeSetCommitException("CodeSet Version is required.");
+		}
+		String cleanedVersion = commit.getVersion().trim().toLowerCase();
+		if(cleanedVersion.isEmpty()) {
+			throw new CodeSetCommitException("CodeSet Version is required.");
+		}
+		CodeSetVersionMetadata duplicate = getCodeSetVersionMetadata(codeSet).stream().filter((version) -> version.isCommitted() && version.getVersion().equals(cleanedVersion))
+		                                  .findFirst()
+		                                  .orElse(null);
+		if(duplicate != null) {
+			throw new CodeSetCommitException("CodeSet Version number "+cleanedVersion+" already exists.");
+		}
+
+		// Check if already committed
+		if(codeSetVersion.isCommitted()) {
+			throw new CodeSetCommitException("CodeSet Version is already committed.");
+		}
+
+		codeSetVersion.setVersion(cleanedVersion);
+		codeSetVersion.setDateCommitted(new Date());
+		codeSetVersion.setComments(commit.getComments());
+		codeSetVersionRepo.save(codeSetVersion);
 		CodeSetVersion starting = new CodeSetVersion();
 		starting.setCodes(codeSetVersion.getCodes());
-		starting.setVersion(generateLatest(codeSet.getCodeSetVersions()));		
-		codeSet.getCodeSetVersions().add(this.codeSetVersionRepo.save(starting));
-		
+		starting.setVersion("");
+		this.codeSetVersionRepo.save(starting);
+
+		if(commit.isMarkAsLatestStable()) {
+			codeSet.setLatest(codeSetVersionId);
+		}
+		codeSet.getCodeSetVersions().add(starting.getId());
 		this.codeSetRepo.save(codeSet);
-		
-		return codeSetVersionRepo.save(codeSetVersion);
-		
-	}
-	
-
-	public void applyCodeSet(CodeSetVersionContent content, CodeSetVersion codeSetVersion) {
-		
-		codeSetVersion.setCodes(content.getCodes());
-		codeSetVersion.setComments(content.getComments());
-		codeSetVersion.setVersion(content.getVersion());
-		codeSetVersion.setExposed(content.isExposted());
-		
+		return codeSetVersion;
 	}
 
 	@Override
-	public List<CodeSet> findByUsername(String username) {
-		return null;
-	}
-
-	@Override
-	public List<CodeSet> findAll() {
-		return null;
-	}
-
-	@Override
-	public List<CodeSetListItem> convertToDisplayList(List<CodeSet> codesets) {
-		
-		List<CodeSetListItem> ret = new ArrayList<CodeSetListItem>();
-		
-		for (CodeSet codeSet : codesets) {
+	public List<CodeSetListItem> convertToDisplayList(List<CodeSet> codeSets) {
+		List<CodeSetListItem> codeSetListItems = new ArrayList<>();
+		for (CodeSet codeSet: codeSets) {
 			CodeSetListItem element = new CodeSetListItem();
 			element.setId(codeSet.getId());
 			element.setResourceType(Type.CODESET);
 			element.setTitle(codeSet.getName());
 			element.setDisableKeyProtection(codeSet.isDisableKeyProtection());
-
 			if(codeSet.getAudience() != null && codeSet.getAudience() instanceof PrivateAudience) {
 				element.setSharedUsers(((PrivateAudience) codeSet.getAudience()).getViewers());
 				PrivateAudience audience = (PrivateAudience) codeSet.getAudience();
@@ -236,28 +234,24 @@ public class CodeSetServiceImpl implements CodeSetService {
 				element.setUsername(audience.getEditor());
 			}
 			element.setChildren(generateChildrenInfo(codeSet));
-			ret.add(element);
+			codeSetListItems.add(element);
 		}
-		return ret;
+		return codeSetListItems;
 	}
-	
-
 
 	private List<CodeSetVersionListInfo> generateChildrenInfo(CodeSet codeSet) {
-		List<CodeSetVersionListInfo> ret = new ArrayList<CodeSetVersionListInfo>();
-		if(codeSet.getCodeSetVersions() != null) {
-			for( CodeSetVersion codeSetVersion: codeSet.getCodeSetVersions()) {
-				if(codeSetVersion.getDateCommitted() != null) {
+		List<CodeSetVersionListInfo> CodeSetVersionListInfo = new ArrayList<>();
+		List<CodeSetVersionMetadata> codeSetVersionMetadataList = getCodeSetVersionMetadata(codeSet);
+		for(CodeSetVersionMetadata codeSetVersionMetadata: codeSetVersionMetadataList) {
+			if(codeSetVersionMetadata.isCommitted()) {
 				CodeSetVersionListInfo info = new CodeSetVersionListInfo();
-				info.setDateCommitted(codeSetVersion.getDateCommitted());
-				info.setId(codeSetVersion.getId());
-				info.setVersion(codeSetVersion.getVersion());
-				ret.add(info);
-				}
-			}	
+				info.setDateCommitted(codeSetVersionMetadata.getDateCommitted());
+				info.setId(codeSetVersionMetadata.getId());
+				info.setVersion(codeSetVersionMetadata.getVersion());
+				CodeSetVersionListInfo.add(info);
+			}
 		}
-		
-		return ret;
+		return CodeSetVersionListInfo;
 	}
 
 	@Override
@@ -265,243 +259,164 @@ public class CodeSetServiceImpl implements CodeSetService {
 		return this.codeSetRepo.findByPrivateAudienceEditor(username);
 	}
 
-
-	
-	
 	@Override
 	public List<CodeSet> findAllPrivateCodeSet() {
 		return this.codeSetRepo.findAllPrivateCodeSet();
 	}
 
 	@Override
-	public void addCodeSetVersion(String id, CodeSetVersion from) throws ResourceNotFoundException {
-		CodeSet codeSet = this.codeSetRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESET));	
-		
-		
-		CodeSetVersion starting = new CodeSetVersion();
-		starting.setCodes(from.getCodes());
-		starting.setVersion(generateLatest(codeSet.getCodeSetVersions()));		
-		codeSet.getCodeSetVersions().add(this.codeSetVersionRepo.save(starting));
-		this.codeSetRepo.save(codeSet);
-		
-	}
-	
-	@Override
-	public void addCodeSetVersion(String id) throws ResourceNotFoundException {
-		CodeSet codeSet = this.codeSetRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESET));	
-		
-		CodeSetVersion starting = new CodeSetVersion();
-		starting.setVersion(generateLatest(codeSet.getCodeSetVersions()));		
-		codeSet.getCodeSetVersions().add(this.codeSetVersionRepo.save(starting));
-		 this.codeSetRepo.save(codeSet);
-	}
-
-	private String generateLatest(Set<CodeSetVersion> codeSetVersions) {
-		
-		return codeSetVersions.size()+1+"";
-	}
-
-	@Override
 	public List<CodeSet> findByPublicAudienceAndStatusPublished() {
-		// TODO Auto-generated method stub
 		return this.codeSetRepo.findByPublicAudienceAndStatusPublished();
 	}
-	
 
 	@Override
 	public List<CodeSet> findByPrivateAudienceViewer(String username) {
 		return this.codeSetRepo.findByPrivateAudienceViewer(username);
 	}
-	
+
+	@Override
+	public CodeSet saveCodeSetContent(String id, CodeSetInfo content) throws Exception {
+		CodeSet codeSet = findCodeSetById(id);
+		codeSet.setName(content.getMetadata().getTitle());
+		codeSet.setDescription(content.getMetadata().getDescription());
+		if(!Strings.isNullOrEmpty(content.getDefaultVersion())) {
+			List<CodeSetVersionMetadata> codeSetVersionMetadataList = getCodeSetVersionMetadata(codeSet);
+			CodeSetVersionMetadata found = codeSetVersionMetadataList.stream().filter((version) -> version.getId().equals(content.getDefaultVersion()))
+			                          .findFirst().orElse(null);
+			if(found == null || !found.isCommitted()) {
+				throw new Exception("Latest stable version is not found.");
+			}
+		}
+		codeSet.setLatest(content.getDefaultVersion());
+		codeSet.setDisableKeyProtection(content.isDisableKeyProtection());
+		return this.codeSetRepo.save(codeSet);
+	}
 	
 	@Override
-	public CodeSet saveCodeSetContent(String id, CodeSetInfo content, String username)
-			throws ResourceNotFoundException, ForbiddenOperationException {
-		CodeSet codeSet =	this.codeSetRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESET));
-		toCodeSetInfo(content,  codeSet);
-		
-		codeSet = this.codeSetRepo.save(codeSet);
-		
-		return codeSet;
-	
-
-		
-	}
-	
-	
-	private void toCodeSetInfo(CodeSetInfo info, CodeSet codeSet) {
-		
-		codeSet.setName(info.getMetadata().getTitle());
-		codeSet.setDescription(info.getMetadata().getDescription());
-		codeSet.setLatest(info.getDefaultVersion());
-		codeSet.setDisableKeyProtection(info.isDisableKeyProtection());
-		mergeCodeSetVersions(codeSet.getCodeSetVersions(),info.getChildren());		
-
-		codeSetRepo.save(codeSet);
-	
-	}
-	
-	private boolean mergeCodeSetVersions(Set<CodeSetVersion> children, List<CodeSetVersionInfo> infoChildren) {
-		boolean modified = false;
-	    Map<String, CodeSetVersionInfo> infoMap = infoChildren.stream()
-	            .collect(Collectors.toMap(CodeSetVersionInfo::getId, Function.identity()));
-
-	    Iterator<CodeSetVersion> iterator = children.iterator();
-	    while (iterator.hasNext()) {
-	        CodeSetVersion child = iterator.next();
-	        CodeSetVersionInfo info = infoMap.get(child.getId());
-	        if(!infoMap.containsKey(child.getId())) {
-	        	  iterator.remove();
-	        	  modified = true;
-	        	  codeSetVersionRepo.deleteById(child.getId());
-	        }
-	        else if (info.isDeprecated()) {
-	            child.setDeprecated(true);
-	        	codeSetVersionRepo.save(child);
-	        }
-	    }
-		return modified;
-	}
-
-	
-	@Override
-	public void updateViewers(String id, List<String> viewers, String username) throws Exception {
-		CodeSet codeSet =	this.codeSetRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESET));
-
-
-			if(codeSet.getUsername().equals(username)) {
-
-				// The owner can't be in the viewers list
-				if(viewers != null) {
-					viewers.remove(username);
-				}
-
-				Audience audience = codeSet.getAudience();
-
-				if(audience instanceof PrivateAudience) {
-					((PrivateAudience) audience).setViewers(new HashSet<>(viewers != null ? viewers : new ArrayList<>()));
-				} else {
-					throw new Exception("Invalid operation");
-				}
-
-			} else {
-				throw new ForbiddenOperationException();
-			}
-
-		this.codeSetRepo.save(codeSet);
-	}
-	@Override
-	public void  deleteCodeSet(String id, String username) throws ForbiddenOperationException, ResourceNotFoundException {
-		CodeSet codeSet =	this.codeSetRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESET));
-
-
-		if(codeSet.getUsername().equals(username)) {
-			if(codeSet.getCodeSetVersions() != null) {
-			for(CodeSetVersion version: codeSet.getCodeSetVersions()) {
-				this.codeSetVersionRepo.deleteById(version.getId());
-			}
-			this.codeSetRepo.delete(codeSet);
-			
-			}
-		} else {
-			throw new ForbiddenOperationException();
+	public void updateViewers(String id, List<String> viewers) throws Exception {
+		CodeSet codeSet = findCodeSetById(id);
+		// The owner can't be in the viewers list
+		if(viewers != null) {
+			viewers.remove(codeSet.getUsername());
 		}
 
-	
+		Audience audience = codeSet.getAudience();
+
+		if(audience instanceof PrivateAudience) {
+			((PrivateAudience) audience).setViewers(new HashSet<>(viewers != null ? viewers : new ArrayList<>()));
+		} else {
+			throw new Exception("Invalid operation");
+		}
+		this.codeSetRepo.save(codeSet);
 	}
-//	@Override
-//	public List<CodeSet> findByPublicAudienceAndStatusPublished() {
-//		return this.codeSetRepo.findByPublicAudienceAndStatusPublished();
-//	}
-//	
 
 	@Override
-	public CodeSet clone(String id, String username) throws ForbiddenOperationException, ResourceNotFoundException {
-		
-		CodeSet originalCodeSet =	this.codeSetRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESET));
+	public void deleteCodeSet(String codeSetId) throws ResourceNotFoundException {
+		CodeSet codeSet = findCodeSetById(codeSetId);
+		if(codeSet.getCodeSetVersions() != null) {
+			for(String versionId: codeSet.getCodeSetVersions()) {
+				this.codeSetVersionRepo.deleteById(versionId);
+			}
+			this.codeSetRepo.delete(codeSet);
+		}
+	}
 
-	    CodeSet clonedCodeSet = new CodeSet();
-	    clonedCodeSet.setAudience(new PrivateAudience(AudienceType.PRIVATE, username, new HashSet<String>()));
-	    clonedCodeSet.setExposed(originalCodeSet.isExposed());
+	@Override
+	public CodeSet clone(String codeSetId, boolean includeInProgress, String username) throws Exception {
+		CodeSet originalCodeSet = findCodeSetById(codeSetId);
+		CodeSet clonedCodeSet = new CodeSet();
+	    clonedCodeSet.setAudience(new PrivateAudience(AudienceType.PRIVATE, username, new HashSet<>()));
 	    clonedCodeSet.setLatest(originalCodeSet.getLatest());
 	    clonedCodeSet.setDateUpdated(originalCodeSet.getDateUpdated());
-	    clonedCodeSet.setSlug(originalCodeSet.getSlug());
-	    clonedCodeSet.setName(originalCodeSet.getName() + "[Clone]");
+	    clonedCodeSet.setName("[Clone] "+ originalCodeSet.getName());
 	    clonedCodeSet.setDescription(originalCodeSet.getDescription());
-	    clonedCodeSet.setUsername(originalCodeSet.getUsername());
-	    Set<CodeSetVersion> clonedVersions = new HashSet<>();
-	    for (CodeSetVersion originalVersion : originalCodeSet.getCodeSetVersions()) {
-	    	CodeSetVersion clonedVersion = this.codeSetVersionRepo.save(this.cloneVersion(originalVersion));
-	        clonedVersions.add(clonedVersion);
-	        
+	    clonedCodeSet.setUsername(username);
+	    Set<String> clonedVersionIds = new HashSet<>();
+	    for (String originalVersionId : originalCodeSet.getCodeSetVersions()) {
+			CodeSetVersion originalVersion = findCodeSetVersionById(originalVersionId);
+			if(originalVersion != null) {
+				if((!originalVersion.isCommitted() && includeInProgress) || originalVersion.isCommitted()) {
+					CodeSetVersion clonedVersion = this.codeSetVersionRepo.save(this.cloneVersion(originalVersion));
+					clonedVersionIds.add(clonedVersion.getId());
+				}
+			}
 	    }
-	    
-	    clonedCodeSet.setCodeSetVersions(clonedVersions);
+		if(!includeInProgress) {
+			CodeSetVersionContent latest = getLatestCodeVersion(codeSetId);
+			CodeSetVersion starting = new CodeSetVersion();
+			starting.setCodes(latest.getCodes());
+			starting.setVersion("");
+			this.codeSetVersionRepo.save(starting);
+			clonedVersionIds.add(starting.getId());
+		}
+
+	    clonedCodeSet.setCodeSetVersions(clonedVersionIds);
 	    return codeSetRepo.save(clonedCodeSet);
 	}
 
 	private CodeSetVersion cloneVersion(CodeSetVersion originalVersion) {
-		
 	    CodeSetVersion clonedVersion = new CodeSetVersion();
         clonedVersion.setVersion(originalVersion.getVersion());
-        clonedVersion.setExposed(originalVersion.isExposed());
         clonedVersion.setDateCommitted(originalVersion.getDateCommitted());
         clonedVersion.setDateCreated(originalVersion.getDateCreated());
         clonedVersion.setDateUpdated(originalVersion.getDateUpdated());
         clonedVersion.setComments(originalVersion.getComments());
         clonedVersion.setCodes(new HashSet<>(originalVersion.getCodes()));
-        clonedVersion.setDeprecated(originalVersion.isDeprecated());
-        
         return clonedVersion;
 	}
 
 	@Override
-	public CodeSet publish(String id, String username) throws ForbiddenOperationException, ResourceNotFoundException {
-		
-		CodeSet codeSet =	this.codeSetRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESET));
+	public CodeSet publish(String id) throws ResourceNotFoundException {
+		CodeSet codeSet = findCodeSetById(id);
 		codeSet.setAudience(new PublicAudience());
-
 	    return codeSetRepo.save(codeSet);
-
-	}
-	
-	
-	@Override
-	public CodeSetVersionContent getLatestCodeVersion(String parentId) throws ResourceNotFoundException {
-		
-		CodeSet codeSet = this.codeSetRepo.findById(parentId)
-				.orElseThrow(() -> new ResourceNotFoundException(parentId, Type.CODESET));
-		
-		CodeSetVersion codeSetVersion =	this.codeSetVersionRepo.findById(codeSet.getLatest()).orElseThrow(() -> new ResourceNotFoundException(codeSet.getLatest(), Type.CODESETVERSION));
-		
-		CodeSetVersionContent ret = new CodeSetVersionContent();
-		this.setVersionInfo(codeSetVersion, ret,  parentId);
-		ret.setParentName(codeSet.getName());
-
-		ret.setCodes(codeSetVersion.getCodes());
-		return ret;
 	}
 
 	@Override
-	public void deleteCodeSetVersion(String id, String versionId, String username) throws Exception {
-		CodeSet codeSet = this.codeSetRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESET));
-		
-		CodeSetVersion codeSetVersion =	this.codeSetVersionRepo.findById(versionId).orElseThrow(() -> new ResourceNotFoundException(versionId, Type.CODESETVERSION));
-		
-		if( codeSetVersion.getId().equals(codeSet.getLatest())) {
-			throw new Exception(" Cannot delete Default version");
+	public CodeSetVersionContent getLatestCodeVersion(String codeSetId) throws Exception {
+		CodeSet codeSet = findCodeSetById(codeSetId);
+		CodeSetVersion latestCodeSetVersion = null;
+		if(!Strings.isNullOrEmpty(codeSet.getLatest())) {
+			CodeSetVersion markedLatestCodeSetVersion = findCodeSetVersionById(codeSet.getLatest());
+			if(markedLatestCodeSetVersion != null && markedLatestCodeSetVersion.isCommitted()) {
+				latestCodeSetVersion = markedLatestCodeSetVersion;
+			}
+		} else {
+			List<CodeSetVersionMetadata> versions = getCodeSetVersionMetadata(codeSet);
+			CodeSetVersionMetadata mostRecentlyCommitted = versions.stream().filter(CodeSetVersionMetadata::isCommitted)
+			        .max(Comparator.comparing(CodeSetVersionMetadata::getDateCommitted))
+					.orElse(null);
+			if(mostRecentlyCommitted != null) {
+				latestCodeSetVersion = findCodeSetVersionById(mostRecentlyCommitted.getId());
+			}
 		}
-		codeSet.getCodeSetVersions().removeIf(x-> x.getId().equals(codeSetVersion.getId()));
-		this.codeSetRepo.save(codeSet);
-		this.codeSetVersionRepo.deleteById(versionId);
-		
-	}
-	
-	
-	
 
-	
+		if(latestCodeSetVersion == null) {
+			throw new Exception("No latest version found.");
+		}
+
+		CodeSetVersionContent codeSetVersionContent = new CodeSetVersionContent();
+		this.setVersionInfo(latestCodeSetVersion, codeSetVersionContent,  codeSetId);
+		codeSetVersionContent.setParentName(codeSet.getName());
+		codeSetVersionContent.setCodes(latestCodeSetVersion.getCodes());
+		return codeSetVersionContent;
+	}
+
+	@Override
+	public void deleteCodeSetVersion(String codeSetId, String codeSetVersionId) throws Exception {
+		CodeSet codeSet = this.codeSetRepo.findById(codeSetId).orElseThrow(() -> new ResourceNotFoundException(codeSetId, Type.CODESET));
+		if(!codeSet.getCodeSetVersions().contains(codeSetVersionId)) {
+			throw new ResourceNotFoundException(codeSetVersionId, Type.CODESETVERSION);
+		}
+		CodeSetVersion codeSetVersion = findCodeSetVersionById(codeSetVersionId);
+		if(codeSetVersion.getId().equals(codeSet.getLatest())) {
+			throw new Exception("Cannot delete the version marked as latest.");
+		}
+		if(!codeSetVersion.isCommitted()) {
+			throw new Exception("Cannot delete the version in progress.");
+		}
+		codeSet.getCodeSetVersions().remove(codeSetVersionId);
+		this.codeSetRepo.save(codeSet);
+		this.codeSetVersionRepo.deleteById(codeSetVersionId);
+	}
 }
