@@ -51,6 +51,7 @@ import 'codemirror/addon/fold/foldgutter';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/xml/xml';
+import { IgShareLinkDialogComponent } from './components/ig-share-link-dialog/ig-share-link-dialog.component';
 
 @NgModule({
   declarations: [
@@ -72,6 +73,7 @@ import 'codemirror/mode/xml/xml';
     IgTocFilterComponent,
     ManageProfileStructureComponent,
     IgVerificationComponent,
+    IgShareLinkDialogComponent,
   ],
   imports: [
     DamFrameworkModule.forRoot(),
@@ -92,7 +94,7 @@ import 'codemirror/mode/xml/xml';
     MatProgressSpinnerModule,
   ],
   entryComponents: [
-    IgEditContainerComponent, ManageProfileStructureComponent,
+    IgEditContainerComponent, ManageProfileStructureComponent, IgShareLinkDialogComponent,
   ],
   providers: [
     IgListService,

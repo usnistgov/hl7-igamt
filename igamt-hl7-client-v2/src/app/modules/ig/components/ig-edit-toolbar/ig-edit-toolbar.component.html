@@ -38,6 +38,11 @@
     Configuration
   </button>
 
+  <button *ngIf="!viewOnly" class="btn btn-sm btn-outline-dark toolbar-button" (click)="share()">
+    <i class="fa fa-external-link" aria-hidden="true"></i>
+    Export Share
+  </button>
+
   <button
     class="btn btn-info btn-sm toolbar-button"
     type="button"
@@ -180,10 +185,10 @@
       ></app-issue-badge>
     </div>
     <div style="margin-right: 5px;">
-      <app-issue-badge 
-        *ngIf="stats.informational" 
-        type="INFORMATIONAL" 
-        [number]="stats.informational" 
+      <app-issue-badge
+        *ngIf="stats.informational"
+        type="INFORMATIONAL"
+        [number]="stats.informational"
       ></app-issue-badge>
     </div>
   </div>

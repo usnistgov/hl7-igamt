@@ -1,13 +1,10 @@
 package gov.nist.hit.hl7.igamt.ig.domain;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupRegistry;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
@@ -17,7 +14,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
-import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentExportConfiguration;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
@@ -40,7 +36,7 @@ public class Ig extends DocumentStructure {
   private CoConstraintGroupRegistry coConstraintGroupRegistry = new CoConstraintGroupRegistry();
 //  private DocumentExportConfiguration lastUserConfiguration;
   private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
-  
+  private Map<String, ExportShareConfiguration> shareLinks = new HashMap<>();
   
 //  public DocumentExportConfiguration getLastUserConfiguration() {
 //    return lastUserConfiguration;
@@ -62,11 +58,9 @@ public class Ig extends DocumentStructure {
     return content;
   }
 
-
   public void setContent(Set<TextSection> content) {
     this.content = content;
   }
-
 
   @Override
   public int hashCode() {
@@ -75,7 +69,6 @@ public class Ig extends DocumentStructure {
 
   public Ig() {
     super();
-    // TODO Auto-generated constructor stub
     this.setType(Type.IGDOCUMENT);
   }
 
@@ -95,7 +88,6 @@ public class Ig extends DocumentStructure {
       }
     }
     return null;
-
   }
 
   public DatatypeRegistry getDatatypeRegistry() {
@@ -159,5 +151,11 @@ public class Ig extends DocumentStructure {
     return this.getName();
   }
 
+  public Map<String, ExportShareConfiguration> getShareLinks() {
+      return shareLinks;
+  }
 
+  public void setShareLinks(Map<String, ExportShareConfiguration> shareLinks) {
+      this.shareLinks = shareLinks;
+  }
 }
