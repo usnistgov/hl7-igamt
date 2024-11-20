@@ -76,6 +76,9 @@ public class PublicIgController {
 			Ig ig = igService.findById(id);
 			if(ig != null && ig.getShareLinks() != null && !ig.getShareLinks().isEmpty() && ig.getShareLinks().containsKey(exportId) && ig.getShareLinks().get(exportId) != null) {
 				String URL = request.getRequestURL() + "/content";
+				if(!URL.contains("https")){
+					URL = URL.replace("http", "https");
+				}
 				String page = IOUtils.resourceToString("/public-ig-loading.html", StandardCharsets.UTF_8);
 				String content = page.replace("{{URL}}", URL).replace("{{NAME}}", ig.getMetadata().getTitle());
 				response.setContentType("text/html");
