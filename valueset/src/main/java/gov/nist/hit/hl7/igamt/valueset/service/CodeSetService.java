@@ -62,4 +62,6 @@ public interface CodeSetService {
 	CodeSetVersionContent getLatestCodeVersion(String codeSetId) throws Exception;
 
 	void deleteCodeSetVersion(String id, String versionId) throws Exception;
+
+	List<CodeDelta> getCodeDelta(String codeSetId, String codeSetVersionId, String targetId) throws Exception;
 }

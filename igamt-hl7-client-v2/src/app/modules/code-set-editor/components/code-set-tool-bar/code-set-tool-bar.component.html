@@ -1,4 +1,4 @@
-<div style="width: 100%; display: flex; align-items: center; justify-content: flex-end;">
+<div style="width: 100%; display: flex; align-items: center; justify-content: flex-end;" *ngIf="!(viewOnly$ | async)">
   <app-dam-reset-button></app-dam-reset-button>
   <app-dam-save-button></app-dam-save-button>
 </div>

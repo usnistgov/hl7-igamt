@@ -1,26 +1,131 @@
-<h2 mat-dialog-title>Commit Version</h2>
-<form [formGroup]="metaDataForm" style="display: flex; flex-direction: column;">
-
-    <div class="form-group">
-      <label for="version" class="form-label-lg">Version</label>
-      <input type="text" class="form-control" id="version" name="version"
-             placeholder="Version" formControlName="version">
-      <div *ngIf="metaDataForm.controls.version.errors?.invalidVersion" class="alert alert-danger">
-        Version can only contain alphanumeric characters, dashes (-), and underscores (_).
+<div style="display: flex; gap: 20px; height: 100%;">
+  <div style="flex-grow: 1; height: 100%; border: 2px solid lightgray; border-radius: 4px; background-color: rgb(251 251 251);">
+    <div *ngIf="loading" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; flex-direction: column; gap: 5px;">
+      <h4>Loading Changes</h4>
+      <mat-spinner class="verification-progress" diameter="40"></mat-spinner>
+    </div>
+    <div *ngIf="!loading" style="display: flex; width: 100%; height: 100%; flex-direction: column; gap: 10px; padding: 10px;">
+      <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+      <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+        <span>Comparing with version</span>
+        <p-dropdown
+          [options]="versions"
+          [autoDisplayFirst]="false"
+          [(ngModel)]="compareTarget"
+          (ngModelChange)="onTargetChange($event)"
+        ></p-dropdown>
       </div>
-      <div *ngIf="metaDataForm.controls.version.errors?.required" class="alert alert-danger">
-        Version is required
+      <div *ngIf="delta && delta.length === 0" style="display: flex; flex-grow: 1; align-items: center; justify-content: center;">
+        <span>No changes have been made.</span>
+      </div>
+      <div *ngIf="delta && delta.length > 0" style="display: flex; flex-grow: 1; justify-content: center; margin-top: 40px;">
+        <p-table
+          [value]="delta"
+          [paginator]="true"
+          [rows]="20"
+          [rowsPerPageOptions]="[5, 10, 15, 20, 30, 40, 50]"
+        >
+          <ng-template let-columns pTemplate="header">
+              <tr>
+                <th>Change</th>
+                <th>Code</th>
+                <th>Is Pattern</th>
+                <th>Pattern Expression</th>
+                <th>Description</th>
+                <th>Code System</th>
+                <th>Usage</th>
+                <th>Comments</th>
+              </tr>
+          </ng-template>
+          <ng-template let-index="rowIndex" let-rowData pTemplate="body">
+            <tr [ngClass]="{'added': rowData.change === 'ADDED', 'removed': rowData.change === 'DELETED'}" style="border-top: 2px solid black;">
+              <td style="text-align: center; font-weight: bold;">
+                {{rowData.change}}
+              </td>
+              <td>
+                <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.value, row: rowData.change }"></ng-container>
+              </td>
+              <td>
+                <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.hasPattern, row: rowData.change, template: hasPattern }"></ng-container>
+              </td>
+              <td>
+                <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.pattern, row: rowData.change }"></ng-container>
+              </td>
+              <td>
+                <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.description, row: rowData.change }"></ng-container>
+              </td>
+              <td>
+                <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.codeSystem, row: rowData.change }"></ng-container>
+              </td>
+              <td>
+                <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.usage, row: rowData.change }"></ng-container>
+              </td>
+              <td>
+                <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.comments, row: rowData.change }"></ng-container>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
       </div>
     </div>
 
+  </div>
+  <div style="min-width: 500px; height: 100%; overflow-x: scroll;">
+    <h2 mat-dialog-title>Commit Version</h2>
+    <form [formGroup]="metaDataForm" style="display: flex; flex-direction: column;">
+      <div class="form-group">
+        <label for="version" class="form-label-lg">Version</label>
+        <input type="text" class="form-control" id="version" name="version" placeholder="Version" formControlName="version">
+        <div *ngIf="metaDataForm.controls.version.errors?.invalidVersion" style="color: red; font-size: 0.9em; margin-top: 3px;">
+          version can only contain alphanumeric characters, dots (.), dashes (-), and underscores (_).
+        </div>
+        <div *ngIf="metaDataForm.controls.version.errors?.required" style="color: red; font-size: 0.9em; margin-top: 3px;">
+          version is required
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="comments" class="form-label-lg">Commit Message</label>
+        <textarea style="min-width: 400px;" type="text" class="form-control" id="comments" name="comments" placeholder="Comment" formControlName="comments" rows="10"></textarea>
+      </div>
+      <p-checkbox binary="true" formControlName="latest" label="Mark as Latest Stable"></p-checkbox>
+    </form>
+    <mat-dialog-actions style="justify-content: flex-end;">
+      <button (click)="cancel()" class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
+      <button (click)="create()" [disabled]="metaDataForm.invalid" class="btn btn-sm btn-success">Done</button>
+    </mat-dialog-actions>
+  </div>
+</div>
 
-  <app-form-input formControlName="comments" id="comments" name="comments"
-    placeholder="Comments" label="Comments"> </app-form-input>
+<ng-template #hasPattern let-value>
+  <i *ngIf="value === true" class="fa fa-check"></i>
+  <i *ngIf="!value" class="fa fa-times"></i>
+</ng-template>
 
-  <p-checkbox binary="true" formControlName="latest" label="Mark as Latest Stable"></p-checkbox>
-</form>
-
-<mat-dialog-actions style="justify-content: flex-end;">
-  <button (click)="cancel()" class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
-  <button (click)="create()" [disabled]="metaDataForm.invalid" class="btn btn-sm btn-success">Done</button>
-</mat-dialog-actions>
+<ng-template #deltaValue let-value let-row="row" let-template="template">
+  <div style="width: 100%; height: 100%; text-align: center; font-weight: bold;">
+    <div *ngIf="value.current !== undefined && value.change !== 'NONE'" class="added">
+      <ng-container *ngIf="template">
+        <ng-container *ngTemplateOutlet="template; context: { $implicit: value.current }"></ng-container>
+      </ng-container>
+      <ng-container *ngIf="!template">
+        {{value.current}}
+      </ng-container>
+    </div>
+    <div class="removed" *ngIf="value.previous !== undefined && value.change !== 'NONE'">
+      <ng-container *ngIf="template">
+        <ng-container *ngTemplateOutlet="template; context: { $implicit: value.previous }"></ng-container>
+      </ng-container>
+      <ng-container *ngIf="!template">
+        {{value.previous}}
+      </ng-container>
+    </div>
+    <div *ngIf="value.change === 'NONE'">
+      <ng-container *ngIf="template">
+        <ng-container *ngTemplateOutlet="template; context: { $implicit: value.current }"></ng-container>
+      </ng-container>
+      <ng-container *ngIf="!template">
+        {{value.current}}
+      </ng-container>
+    </div>
+  </div>
+</ng-template>

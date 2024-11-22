@@ -28,19 +28,19 @@ export class ValueSetStructureComponent implements OnInit {
     private codeSetService: CodeSetServiceService,
   ) {
   }
-   _valueSet: IValueSet;
+  _valueSet: IValueSet;
 
   codesLoading: boolean;
   loadingError: string;
 
   @Input()
   set valueSet(valueSet) {
-      this._valueSet = valueSet;
-      this.codeSystemOptions = this.getCodeSystemOptions();
+    this._valueSet = valueSet;
+    this.codeSystemOptions = this.getCodeSystemOptions();
 
-      if (valueSet.sourceType === SourceType.INTERNAL_TRACKED) {
-        this.resolveInternal(this._valueSet.codeSetReference.codeSetId);
-      }
+    if (valueSet.sourceType === SourceType.INTERNAL_TRACKED) {
+      this.resolveInternal(this._valueSet.codeSetReference.codeSetId);
+    }
   }
   get valueSet() {
     return this._valueSet;
@@ -372,36 +372,36 @@ export class ValueSetStructureComponent implements OnInit {
     document.body.removeChild(link);
   }
 
-  resolveInternal(codeSetId: string, updateRef?: boolean ) {
-      this.codesLoading = true;
-      this.loadingError = null;
-      this.codeSetService.getCodeSetVersionLatest(codeSetId).pipe(
-        map((content) => {
-          this.valueSet.codes = content.codes;
-          this.codeSystemOptions = this.getCodeSystemOptions();
-          const codeSetLink: ILinkedCodeSetInfo = {};
-          codeSetLink.commitDate = content.dateCommitted;
-          codeSetLink.latest = true;
-          codeSetLink.parentName = content.parentName;
-          codeSetLink.version = content.version;
-          codeSetLink.latestFetched = new Date().toDateString();
+  resolveInternal(codeSetId: string, updateRef: boolean = false) {
+    this.codesLoading = true;
+    this.loadingError = null;
+    this.codeSetService.getCodeSetVersionLatest(codeSetId).pipe(
+      map((content) => {
+        this.valueSet.codes = content.codes;
+        this.codeSystemOptions = this.getCodeSystemOptions();
+        const codeSetLink: ILinkedCodeSetInfo = {};
+        codeSetLink.commitDate = content.dateCommitted;
+        codeSetLink.latest = true;
+        codeSetLink.parentName = content.parentName;
+        codeSetLink.version = content.version;
+        codeSetLink.latestFetched = new Date().toDateString();
 
-          this.valueSet.codeSetLink = codeSetLink;
-          if (updateRef) {
-            this.valueSet.sourceType = SourceType.INTERNAL_TRACKED;
-            this.updateAttribute(PropertyType.CODESETREFERENCE, { codeSetId });
-          }
-          this.loadingError = null;
+        this.valueSet.codeSetLink = codeSetLink;
+        if (updateRef) {
+          this.valueSet.sourceType = SourceType.INTERNAL_TRACKED;
+          this.updateAttribute(PropertyType.CODESETREFERENCE, { codeSetId });
+        }
+        this.loadingError = null;
 
-        }),
-        catchError((error) => {
-          this.loadingError =  error.error.text;
-          return of(EMPTY);
-        }),
-        finalize(() => {
-          this.codesLoading = false;
-        }),
-      ).subscribe();
+      }),
+      catchError((error) => {
+        this.loadingError = error.error.text;
+        return of(EMPTY);
+      }),
+      finalize(() => {
+        this.codesLoading = false;
+      }),
+    ).subscribe();
   }
 
   confirmDetach() {

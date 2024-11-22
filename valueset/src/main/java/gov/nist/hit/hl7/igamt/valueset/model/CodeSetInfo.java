@@ -10,6 +10,7 @@ public class CodeSetInfo {
 	private boolean disableKeyProtection;
 	private String defaultVersion;
 	private boolean viewOnly;
+	private boolean published;
 
 	public String getDefaultVersion() {
 		return defaultVersion;
@@ -61,5 +62,13 @@ public class CodeSetInfo {
 
 	public void setViewOnly(boolean viewOnly) {
 		this.viewOnly = viewOnly;
+	}
+
+	public boolean isPublished() {
+		return published;
+	}
+
+	public void setPublished(boolean published) {
+		this.published = published;
 	}
 }

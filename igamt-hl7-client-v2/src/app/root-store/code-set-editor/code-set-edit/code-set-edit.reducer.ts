@@ -1,15 +1,7 @@
 
-import { CodeSetEditActions, CodeSetEditActionTypes } from './code-set-edit.actions';
+import { CodeSetEditActions } from './code-set-edit.actions';
 
-export interface IState {
-
-}
-
-export const initialState: IState = {
-
-};
-
-export function reducer(state = initialState, action: CodeSetEditActions): IState {
+export function reducer(state = {}, action: CodeSetEditActions): {} {
 
   return state;
 

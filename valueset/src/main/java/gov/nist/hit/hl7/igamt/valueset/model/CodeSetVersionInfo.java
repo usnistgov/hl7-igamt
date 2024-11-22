@@ -16,6 +16,7 @@ public class CodeSetVersionInfo {
 	private Date dateCreated;
 	private Date dateCommitted;
 	private Date dateUpdated;
+	private boolean isLatestStable;
 
 	public Date getDateUpdated() {
 		return dateUpdated;
@@ -92,5 +93,13 @@ public class CodeSetVersionInfo {
 
 	public void setParentName(String parentName) {
 		this.parentName = parentName;
+	}
+
+	public boolean isLatestStable() {
+		return isLatestStable;
+	}
+
+	public void setLatestStable(boolean latestStable) {
+		isLatestStable = latestStable;
 	}
 }

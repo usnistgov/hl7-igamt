@@ -1,7 +1,6 @@
 package gov.nist.hit.hl7.igamt.valueset.model;
 
 public class CodeSetVersionCommit {
-	private String id;
 	private String comments;
 	private String version;
 	private boolean markAsLatestStable;
@@ -12,14 +11,6 @@ public class CodeSetVersionCommit {
 
 	public void setComments(String comments) {
 		this.comments = comments;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public boolean isMarkAsLatestStable() {

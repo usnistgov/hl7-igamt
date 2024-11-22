@@ -47,6 +47,22 @@ public class CodeSetAPIController {
 		}
 	}
 
+	@GetMapping(path="/codesets/{id}/versions/{version}/metadata")
+	@ResponseBody
+	@PreAuthorize("APIAccess('CODESET', #id, READ)")
+	public CodeSetMetadata getCodeSetVersionMetadata(
+			@PathVariable("id") String id,
+			@PathVariable("id") String version
+	) throws ResourceAPIException, ResourceNotFoundAPIException {
+		try {
+			return codeSetAPIService.getCodeSetMetadata(id);
+		}  catch(ResourceNotFoundAPIException exception) {
+			throw exception;
+		} catch(Exception exception) {
+			throw new ResourceAPIException("There has been an unexpected error while trying to retrieve code set");
+		}
+	}
+
 	@GetMapping(path="/codesets/{id}")
 	@ResponseBody
 	@PreAuthorize("APIAccess('CODESET', #id, READ)")

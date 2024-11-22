@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormControl, NgForm, Validators } from '@angular/forms';
 import { Guid } from 'guid-typescript';
 import { SelectItem } from 'primeng/api';
 import { CodeUsage } from 'src/app/modules/shared/constants/usage.enum';
@@ -93,6 +93,22 @@ export class CodeSetTableComponent implements OnInit {
     });
   }
 
+  setHasPattern(code: ICodes) {
+    code.hasPattern = true;
+    code.pattern = '';
+    // add pattern control to the form to make form validation work correctly
+    this.form.control.addControl('pattern' + code.id, new FormControl('', { validators: Validators.required, updateOn: 'blur' }));
+    this.changeCodes();
+  }
+
+  removeHasPattern(code: ICodes) {
+    code.hasPattern = false;
+    code.pattern = '';
+    // remove pattern control to the form to make form validation work correctly
+    this.form.control.removeControl('pattern' + code.id);
+    this.changeCodes();
+  }
+
   getCodeSystemOptions(): SelectItem[] {
     return this.codeSystems.map((codeSystem: string) => {
       return { label: codeSystem, value: codeSystem };
@@ -128,8 +144,6 @@ export class CodeSetTableComponent implements OnInit {
       hasPattern: false,
     });
     this.changeCodes();
-
-    // this.changes.emit(this.codeSetVersion.codes);
   }
 
   applyUsage(usage) {
@@ -146,7 +160,7 @@ export class CodeSetTableComponent implements OnInit {
   }
 
   changeCodes() {
-    this.changes.emit({ codes: this.codeSetVersion.codes, valid: this.form.valid});
+    this.changes.emit({ codes: this.codeSetVersion.codes, valid: this.form.valid });
   }
 
   addCodeSystemFormCode(code: ICodes) {

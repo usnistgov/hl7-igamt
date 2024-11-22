@@ -92,6 +92,7 @@ export class CodeSetBrowseDialogComponent implements OnInit {
   showDeprecated = false;
   @ViewChild('tt') treeTable: TreeTable;
   filterText: string;
+  includeVersions = false;
 
   constructor(
     public dialogRef: MatDialogRef<CodeSetBrowseDialogComponent>,
@@ -99,24 +100,24 @@ export class CodeSetBrowseDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: IBrowseDialogData,
   ) {
     this.browser = data;
+    this.includeVersions = this.browser.includeVersions;
     if (this.browser.scope.private) {
-      this.getTreeByScope(BrowserScope.PRIVATE, this.browser.includeVersions);
+      this.getTreeByScope(BrowserScope.PRIVATE);
     } else if (this.browser.scope.public) {
-      this.getTreeByScope(BrowserScope.PUBLIC, this.browser.includeVersions);
+      this.getTreeByScope(BrowserScope.PUBLIC);
     } else if (this.browser.scope.sharedWithMe) {
-      this.getTreeByScope(BrowserScope.SHARED, this.browser.includeVersions);
+      this.getTreeByScope(BrowserScope.SHARED);
     } else if (this.browser.scope.workspaces) {
-      this.getTreeByScope(this.scope = BrowserScope.WORKSPACES, this.browser.includeVersions);
+      this.getTreeByScope(BrowserScope.WORKSPACES);
     }
     this.selectionMode = data.selectionMode || 'multiple';
   }
 
   track = (n) => n.key;
 
-  getTreeByScope(scope: BrowserScope, includeVersions: boolean = false) {
+  getTreeByScope(scope: BrowserScope) {
     this.scope = scope;
-
-    this.http.get<IBrowserTreeNode[]>('/api/browser/codesets/' + scope, { params: { includeVersions: includeVersions.toString() } }).pipe(
+    this.http.get<IBrowserTreeNode[]>('/api/browser/codesets/' + scope, { params: { includeVersions: this.includeVersions.toString() } }).pipe(
       map((nodes) => {
         const n = this.processNodes(nodes);
         this.browserTree = [

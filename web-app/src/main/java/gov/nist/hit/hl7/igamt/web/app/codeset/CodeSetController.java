@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import gov.nist.hit.hl7.igamt.access.model.AccessPermission;
-import gov.nist.hit.hl7.igamt.access.model.AccessToken;
 import gov.nist.hit.hl7.igamt.access.model.Action;
 import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -50,7 +49,6 @@ import gov.nist.hit.hl7.igamt.valueset.service.impl.TableCSVGenerator;
 @RestController
 public class CodeSetController {
 
-
 	@Autowired
 	CodeSetService codeSetService;
 	@Autowired
@@ -85,15 +83,12 @@ public class CodeSetController {
 		return codeSetService.getCodeSetInfo(id, showInProgress, readOnly);
 	}
 
-
 	@RequestMapping(value = "/api/code-set/{id}/applyInfo", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
 	@PreAuthorize("AccessResource('CODESET', #id, WRITE)")
 	public ResponseMessage<?> saveCodeSet(
-			Authentication authentication,
 			@PathVariable("id") String id,  @RequestBody CodeSetInfo content
 	) throws Exception {
-		String username = authentication.getPrincipal().toString();
 		CodeSet ret =  codeSetService.saveCodeSetContent(id, content);
 		return new ResponseMessage<>(Status.SUCCESS, "Code Set Saved Successfully", ret.getId(), null);
 	}
@@ -140,7 +135,6 @@ public class CodeSetController {
 			@RequestBody CodeSetVersionCommit commit,
 			Authentication authentication
 	) throws ResourceNotFoundException, CodeSetCommitException {
-		String username = authentication.getPrincipal().toString();
 		CodeSetVersion ret = codeSetService.commit(id, versionId, commit);
 		return new ResponseMessage<>(Status.SUCCESS, "Code Set Committed Successfully", ret.getId(), null);
 	}

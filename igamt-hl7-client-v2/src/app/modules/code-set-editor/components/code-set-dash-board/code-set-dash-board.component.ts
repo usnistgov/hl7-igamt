@@ -117,7 +117,7 @@ export class CodeSetDashBoardComponent extends DamAbstractEditorComponent implem
           flatMap((message) => {
             return this.codeSetService.getCodeSetInfo(current.data.id).pipe(
               flatMap((codeSetInfo) => {
-                this.resourceSubject.next({ ...codeSetInfo });
+                this.resourceSubject.next(_.cloneDeep(codeSetInfo));
                 return [
                   ...this.codeSetService.getUpdateAction({ ...codeSetInfo }),
                   this.messageService.messageToAction(message),

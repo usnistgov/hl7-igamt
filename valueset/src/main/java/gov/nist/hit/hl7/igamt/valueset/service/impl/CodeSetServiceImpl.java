@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.exception.CodeSetCommitException;
 import gov.nist.hit.hl7.igamt.valueset.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,21 @@ public class CodeSetServiceImpl implements CodeSetService {
 		return results.getMappedResults();
 	}
 
+	public CodeSetVersionMetadata getCodeSetVersionMetadataInCodeSetById(CodeSet codeSet, String codeSetVersionId) {
+		if(codeSet.getCodeSetVersions().stream().noneMatch(codeSetVersionId::equals)) {
+			return null;
+		}
+		AggregationOperation match = Aggregation.match(Criteria.where("_id").is(codeSetVersionId));
+		AggregationOperation project = Aggregation.project(this.codeSetVersionMetadataFields.toArray(new String[0]));
+		Aggregation versionAggregation = Aggregation.newAggregation(match, project);
+		AggregationResults<CodeSetVersionMetadata> results = mongoTemplate.aggregate(
+				versionAggregation,
+				this.mongoTemplate.getCollectionName(CodeSetVersion.class),
+				CodeSetVersionMetadata.class
+		);
+		return results.getUniqueMappedResult();
+	}
+
 	@Override
 	public CodeSet createCodeSet(CodeSetCreateRequest codeSetCreateRequest, String username) {
 		CodeSet codeSet = new CodeSet();
@@ -91,11 +107,35 @@ public class CodeSetServiceImpl implements CodeSetService {
 				.stream()
 				.filter((version) -> version.isCommitted() || (includeInProgress && !version.isCommitted()))
 				.collect(Collectors.toList());
-		List<CodeSetVersionInfo> children = this.toCodeSetVersionInfo(codeSetVersionMetadata, codeSet.getId() );
+		List<CodeSetVersionInfo> children = this.toCodeSetVersionInfo(codeSetVersionMetadata, codeSet.getId());
+		String latestStableId = getLatestStableId(codeSet, codeSetVersionMetadata);
+		if(latestStableId != null) {
+			children.forEach((child) -> {
+				if(child.getId().equals(latestStableId)) {
+					child.setLatestStable(true);
+				}
+			});
+		}
 		info.setChildren(children);	
 		info.setMetadata(metadata);
 		info.setViewOnly(viewOnly);
+		info.setPublished(codeSet.getAudience() instanceof PublicAudience);
 		return info;
+	}
+
+	private String getLatestStableId(CodeSet codeSet, List<CodeSetVersionMetadata> codeSetVersions) {
+		if(!Strings.isNullOrEmpty(codeSet.getLatest())) {
+			CodeSetVersionMetadata codeSetVersionMetadata = getCodeSetVersionMetadataInCodeSetById(codeSet, codeSet.getLatest());
+			if(codeSetVersionMetadata != null) {
+				return codeSetVersionMetadata.getId();
+			}
+		} else {
+			CodeSetVersionMetadata mostRecent = getMostRecentlyCommitted(codeSetVersions);
+			if(mostRecent != null) {
+				return mostRecent.getId();
+			}
+		}
+		return null;
 	}
 
 	private List<CodeSetVersionInfo> toCodeSetVersionInfo(List<CodeSetVersionMetadata> codeSetVersionMetadata, String codeSetId) {
@@ -233,6 +273,7 @@ public class CodeSetServiceImpl implements CodeSetService {
 				element.setCurrentAuthor(audience.getEditor());
 				element.setUsername(audience.getEditor());
 			}
+			element.setPublished(codeSet.getAudience() instanceof PublicAudience);
 			element.setChildren(generateChildrenInfo(codeSet));
 			codeSetListItems.add(element);
 		}
@@ -331,6 +372,7 @@ public class CodeSetServiceImpl implements CodeSetService {
 	    clonedCodeSet.setName("[Clone] "+ originalCodeSet.getName());
 	    clonedCodeSet.setDescription(originalCodeSet.getDescription());
 	    clonedCodeSet.setUsername(username);
+		String latestStableId = originalCodeSet.getLatest();
 	    Set<String> clonedVersionIds = new HashSet<>();
 	    for (String originalVersionId : originalCodeSet.getCodeSetVersions()) {
 			CodeSetVersion originalVersion = findCodeSetVersionById(originalVersionId);
@@ -338,6 +380,9 @@ public class CodeSetServiceImpl implements CodeSetService {
 				if((!originalVersion.isCommitted() && includeInProgress) || originalVersion.isCommitted()) {
 					CodeSetVersion clonedVersion = this.codeSetVersionRepo.save(this.cloneVersion(originalVersion));
 					clonedVersionIds.add(clonedVersion.getId());
+					if(latestStableId != null && latestStableId.equals(originalVersionId)) {
+						clonedCodeSet.setLatest(clonedVersion.getId());
+					}
 				}
 			}
 	    }
@@ -383,9 +428,7 @@ public class CodeSetServiceImpl implements CodeSetService {
 			}
 		} else {
 			List<CodeSetVersionMetadata> versions = getCodeSetVersionMetadata(codeSet);
-			CodeSetVersionMetadata mostRecentlyCommitted = versions.stream().filter(CodeSetVersionMetadata::isCommitted)
-			        .max(Comparator.comparing(CodeSetVersionMetadata::getDateCommitted))
-					.orElse(null);
+			CodeSetVersionMetadata mostRecentlyCommitted = getMostRecentlyCommitted(versions);
 			if(mostRecentlyCommitted != null) {
 				latestCodeSetVersion = findCodeSetVersionById(mostRecentlyCommitted.getId());
 			}
@@ -400,6 +443,12 @@ public class CodeSetServiceImpl implements CodeSetService {
 		codeSetVersionContent.setParentName(codeSet.getName());
 		codeSetVersionContent.setCodes(latestCodeSetVersion.getCodes());
 		return codeSetVersionContent;
+	}
+
+	public CodeSetVersionMetadata getMostRecentlyCommitted(List<CodeSetVersionMetadata> versions) {
+		return versions.stream().filter(CodeSetVersionMetadata::isCommitted)
+		        .max(Comparator.comparing(CodeSetVersionMetadata::getDateCommitted))
+		        .orElse(null);
 	}
 
 	@Override
@@ -418,5 +467,181 @@ public class CodeSetServiceImpl implements CodeSetService {
 		codeSet.getCodeSetVersions().remove(codeSetVersionId);
 		this.codeSetRepo.save(codeSet);
 		this.codeSetVersionRepo.deleteById(codeSetVersionId);
+	}
+
+	@Override
+	public List<CodeDelta> getCodeDelta(String codeSetId, String codeSetVersionId, String targetId) throws Exception {
+		CodeSet codeSet = findCodeSetById(codeSetId);
+		List<CodeSetVersionMetadata> versions = getCodeSetVersionMetadata(codeSet);
+		CodeSetVersionMetadata sourceVersion = versions.stream().filter((v) -> v.getId().equals(codeSetVersionId)).findFirst().orElseThrow(() -> new ResourceNotFoundException(codeSetVersionId, Type.CODESETVERSION));
+		CodeSetVersionMetadata targetVersion = versions.stream().filter((v) -> v.getId().equals(targetId)).findFirst().orElseThrow(() -> new ResourceNotFoundException(targetId, Type.CODESETVERSION));
+
+		if(!targetVersion.isCommitted()) {
+			throw new Exception("You can only compare against a committed version");
+		}
+		if(sourceVersion.isCommitted() && sourceVersion.getDateCommitted().before(targetVersion.getDateCommitted())) {
+			throw new Exception("You can only compare against a previous version");
+		}
+		CodeSetVersion source = findCodeSetVersionById(sourceVersion.getId());
+		CodeSetVersion target = findCodeSetVersionById(targetVersion.getId());
+		return compareCodes(source.getCodes(), target.getCodes());
+	}
+
+	public List<CodeDelta> compareCodes(Set<Code> source, Set<Code> target) {
+		List<CodeDelta> codes = new ArrayList<>();
+		Set<Code> targetCopy = new HashSet<>(target);
+		for(Code code: source) {
+			Code compareTo = findCandidate(targetCopy, code);
+			if(compareTo != null) {
+				targetCopy.remove(compareTo);
+			}
+			codes.add(compare(code, compareTo));
+		}
+		for(Code code: targetCopy) {
+			codes.add(compare(null, code));
+		}
+		return codes;
+	}
+
+	public CodeDelta compare(Code source, Code target) {
+		CodeDelta delta = new CodeDelta();
+		delta.setChange(DeltaChange.NONE);
+
+		// Value
+		String sourceValue = source != null ? source.getValue() : null;
+		String targetValue = target != null ? target.getValue() : null;
+		PropertyDelta<String> value = compareStringValues(sourceValue, targetValue);
+		delta.setValue(value);
+		setChangeType(delta, value);
+
+		// Code System
+		String sourceCodeSystem = source != null ? source.getCodeSystem() : null;
+		String targetCodeSystem = target != null ? target.getCodeSystem() : null;
+		PropertyDelta<String> codeSystem = compareStringValues(sourceCodeSystem, targetCodeSystem);
+		delta.setCodeSystem(codeSystem);
+		setChangeType(delta, codeSystem);
+
+		// Description
+		String sourceDesc = source != null ? source.getDescription() : null;
+		String targetDesc = target != null ? target.getDescription() : null;
+		PropertyDelta<String> description = compareStringValues(sourceDesc, targetDesc);
+		delta.setDescription(description);
+		setChangeType(delta, description);
+
+		// Comments
+		String sourceComments = source != null ? source.getComments() : null;
+		String targetComments = target != null ? target.getComments() : null;
+		PropertyDelta<String> comments = compareStringValues(sourceComments, targetComments);
+		delta.setComments(comments);
+		setChangeType(delta, comments);
+
+		// Usage
+		CodeUsage sourceUsage = source != null ? source.getUsage() : null;
+		CodeUsage targetUsage = target != null ? target.getUsage() : null;
+		PropertyDelta<CodeUsage> usage = compareCodeUsageValues(sourceUsage, targetUsage);
+		delta.setUsage(usage);
+		setChangeType(delta, usage);
+
+		// Has Pattern
+		Boolean sourceHasPattern = source != null ? source.isHasPattern() : null;
+		Boolean targetHasPattern = target != null ? target.isHasPattern() : null;
+		PropertyDelta<Boolean> hasPattern = compareBooleanValues(sourceHasPattern, targetHasPattern);
+		delta.setHasPattern(hasPattern);
+		setChangeType(delta, hasPattern);
+
+		// Pattern
+		String sourcePattern = source != null ? source.getPattern() : null;
+		String targetPattern = target != null ? target.getPattern() : null;
+		PropertyDelta<String> pattern = compareStringValues(sourcePattern, targetPattern);
+		delta.setPattern(pattern);
+		setChangeType(delta, pattern);
+
+		if(source == null && target != null) {
+			delta.setChange(DeltaChange.DELETED);
+		} else if(target == null && source != null) {
+			delta.setChange(DeltaChange.ADDED);
+		}
+
+		return delta;
+	}
+
+	public void setChangeType(CodeDelta delta, PropertyDelta propertyDelta) {
+		if(!propertyDelta.getChange().equals(DeltaChange.NONE)) {
+			delta.setChange(DeltaChange.CHANGED);
+		}
+	}
+
+	public PropertyDelta<String> compareStringValues(String source, String target) {
+		PropertyDelta<String> delta = new PropertyDelta<>(source, target);
+		if(Strings.isNullOrEmpty(target) && !Strings.isNullOrEmpty(source)) {
+			delta.setChange(DeltaChange.ADDED);
+		} else if(!Strings.isNullOrEmpty(target) && Strings.isNullOrEmpty(source)) {
+			delta.setChange(DeltaChange.DELETED);
+		} else if(Strings.isNullOrEmpty(source) && Strings.isNullOrEmpty(target)) {
+			delta.setChange(DeltaChange.NONE);
+		} else if(source.equals(target)) {
+			delta.setChange(DeltaChange.NONE);
+		} else {
+			delta.setChange(DeltaChange.CHANGED);
+		}
+		return delta;
+	}
+
+	public PropertyDelta<CodeUsage> compareCodeUsageValues(CodeUsage source, CodeUsage target) {
+		PropertyDelta<CodeUsage> delta = new PropertyDelta<>(source, target);
+		if(target == null && source != null) {
+			delta.setChange(DeltaChange.ADDED);
+		} else if(target != null && source == null) {
+			delta.setChange(DeltaChange.DELETED);
+		} else if(target == null && source == null) {
+			delta.setChange(DeltaChange.NONE);
+		} else if(source.equals(target)) {
+			delta.setChange(DeltaChange.NONE);
+		} else {
+			delta.setChange(DeltaChange.CHANGED);
+		}
+		return delta;
+	}
+
+	public PropertyDelta<Boolean> compareBooleanValues(Boolean source, Boolean target) {
+		PropertyDelta<Boolean> delta = new PropertyDelta<>(source, target);
+		if((truthy(target) && truthy(source)) || (falsy(target) && falsy(source))) {
+			delta.setChange(DeltaChange.NONE);
+		} else {
+			delta.setChange(DeltaChange.CHANGED);
+		}
+		return delta;
+	}
+
+	public boolean truthy(Boolean b) {
+		return b != null && b;
+	}
+
+	public boolean falsy(Boolean b) {
+		return b == null || !b;
+	}
+
+	public Code findCandidate(Set<Code> list, Code code) {
+		List<Code> codeMatch = list.stream().filter((candidate) -> !Strings.isNullOrEmpty(code.getValue()) && !Strings.isNullOrEmpty(candidate.getValue()) && code.getValue().equals(candidate.getValue()))
+		                           .collect(Collectors.toList());
+		if(codeMatch.size() == 1) {
+			return codeMatch.get(0);
+		}
+		List<Code> codeSystemMatch = codeMatch.stream().filter((candidate) -> !Strings.isNullOrEmpty(code.getCodeSystem()) && !Strings.isNullOrEmpty(candidate.getCodeSystem()) && code.getCodeSystem().equals(candidate.getCodeSystem()))
+				.collect(Collectors.toList());
+		if(codeSystemMatch.size() == 1) {
+			return codeSystemMatch.get(0);
+		}
+		List<Code> idMatch = codeMatch.stream().filter((candidate) -> !Strings.isNullOrEmpty(code.getId()) && !Strings.isNullOrEmpty(candidate.getId()) && code.getId().equals(candidate.getId()))
+		                                      .collect(Collectors.toList());
+		if(idMatch.size() == 1) {
+			return idMatch.get(0);
+		} else if(codeSystemMatch.size() > 1) {
+			return codeSystemMatch.get(0);
+		} else if(codeMatch.size() > 1) {
+			return codeMatch.get(0);
+		} else {
+			return null;
+		}
 	}
 }

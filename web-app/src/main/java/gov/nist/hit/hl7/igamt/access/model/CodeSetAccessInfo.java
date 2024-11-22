@@ -6,6 +6,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import java.util.Date;
 
 public class CodeSetAccessInfo {
+	private String id;
 	private Audience audience;
 	private String username;
 	private Type type;
@@ -58,5 +59,13 @@ public class CodeSetAccessInfo {
 
 	public boolean isCodeSetVersion() {
 		return type.equals(Type.CODESETVERSION);
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 }

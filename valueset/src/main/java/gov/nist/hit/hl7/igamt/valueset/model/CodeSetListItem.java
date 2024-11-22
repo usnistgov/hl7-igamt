@@ -21,7 +21,8 @@ public class CodeSetListItem {
 	private String currentAuthor;
 	private Type resourceType;
 	private boolean disableKeyProtection;
-	private List<CodeSetVersionListInfo> children; 
+	private List<CodeSetVersionListInfo> children;
+	private boolean published;
 	
 	public CodeSetListItem() {
 		super();
@@ -132,4 +133,11 @@ public class CodeSetListItem {
 		this.disableKeyProtection = disableKeyProtection;
 	}
 
+	public boolean isPublished() {
+		return published;
+	}
+
+	public void setPublished(boolean published) {
+		this.published = published;
+	}
 }

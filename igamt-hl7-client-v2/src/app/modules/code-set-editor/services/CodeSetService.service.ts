@@ -6,7 +6,8 @@ import { map } from 'rxjs/operators';
 import { CodeSetLoadType } from 'src/app/root-store/code-set-editor/code-set-list/code-set-list.actions';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { LoadPayloadData, LoadResourcesInRepostory } from '../../dam-framework/store';
-import { ICodeSetInfo, ICodeSetListItem, ICodeSetVersionContent, ICodeSetVersionInfo } from '../models/code-set.models';
+import { ICodes } from '../../shared/models/value-set.interface';
+import { ICodeDelta, ICodeSetCommit, ICodeSetInfo, ICodeSetListItem, ICodeSetVersionContent } from '../models/code-set.models';
 
 @Injectable({
   providedIn: 'root',
@@ -22,16 +23,16 @@ export class CodeSetServiceService {
   readonly CODE_SET_END_POINT = '/api/code-set/';
   readonly CODE_SET_VERSION_END_POINT = '/code-set-version/';
 
-  saveDashBoard(id: string, data: ICodeSetInfo): Observable<Message<string>>  {
-    return this.http.post<Message<string>>(this.CODE_SET_END_POINT + id + '/applyInfo/' , data);
+  saveDashBoard(id: string, data: ICodeSetInfo): Observable<Message<string>> {
+    return this.http.post<Message<string>>(this.CODE_SET_END_POINT + id + '/applyInfo/', data);
   }
 
-  saveCodeSetVersion( codeSetId: string, versionId: string, resource: ICodeSetVersionContent): Observable<Message<string>>  {
-    return this.http.post<Message<string>>(this.CODE_SET_END_POINT + codeSetId + this.CODE_SET_VERSION_END_POINT + versionId, resource);
+  saveCodeSetVersion(codeSetId: string, versionId: string, codes: ICodes[]): Observable<Message<string>> {
+    return this.http.post<Message<string>>(this.CODE_SET_END_POINT + codeSetId + this.CODE_SET_VERSION_END_POINT + versionId, codes);
   }
 
-  commitCodeSetVersion( codeSetId: string, versionId: string, resource: ICodeSetVersionContent): Observable<Message<string>>  {
-    return this.http.post<Message<string>>(this.CODE_SET_END_POINT + codeSetId + this.CODE_SET_VERSION_END_POINT + versionId + '/commit', resource);
+  commitCodeSetVersion(codeSetId: string, versionId: string, codeSetCommit: ICodeSetCommit): Observable<Message<string>> {
+    return this.http.post<Message<string>>(this.CODE_SET_END_POINT + codeSetId + this.CODE_SET_VERSION_END_POINT + versionId + '/commit', codeSetCommit);
   }
 
   getCodeSetInfo(id: string): Observable<ICodeSetInfo> {
@@ -112,6 +113,10 @@ export class CodeSetServiceService {
 
   getCodeSetVersionLatest(codeSetId: string): Observable<ICodeSetVersionContent> {
     return this.http.get<ICodeSetVersionContent>(this.CODE_SET_END_POINT + codeSetId + '/latest');
+  }
+
+  getCodeSetDelta(codeSetId: string, sourceVersionId: string, targetVersionId: string): Observable<ICodeDelta[]> {
+    return this.http.get<ICodeDelta[]>(this.CODE_SET_END_POINT + codeSetId + '/compare/' + sourceVersionId + '/' + targetVersionId);
   }
 
 }

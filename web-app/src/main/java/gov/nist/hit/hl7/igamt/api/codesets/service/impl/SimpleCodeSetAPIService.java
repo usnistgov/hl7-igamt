@@ -5,13 +5,11 @@ import gov.nist.hit.hl7.igamt.access.exception.ResourceNotFoundAPIException;
 import gov.nist.hit.hl7.igamt.api.codesets.exception.LatestVersionNotFoundException;
 import gov.nist.hit.hl7.igamt.api.codesets.model.*;
 import gov.nist.hit.hl7.igamt.api.codesets.service.CodeSetAPIService;
-import gov.nist.hit.hl7.igamt.api.codesets.service.model.QueryCodeSetMetadata;
 import gov.nist.hit.hl7.igamt.api.codesets.service.model.QueryCodeSetVersionMetadata;
 import gov.nist.hit.hl7.igamt.api.security.domain.AccessKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSet;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetVersion;
-import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetRepository;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissionType;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceService;
 import org.apache.commons.io.IOUtils;
@@ -35,10 +33,7 @@ public class SimpleCodeSetAPIService implements CodeSetAPIService {
 	@Autowired
 	WorkspaceService workspaceService;
 	@Autowired
-	CodeSetRepository codeSetRepository;
-	@Autowired
 	MongoTemplate mongoTemplate;
-
 
 	private final Set<String> codeSetVersionMetadataFields = Arrays.stream(QueryCodeSetVersionMetadata.class.getDeclaredFields())
 	                                                        .map(Field::getName)
@@ -100,21 +95,21 @@ public class SimpleCodeSetAPIService implements CodeSetAPIService {
 		}
 
 		MatchOperation match = Aggregation.match(search);
-		List<QueryCodeSetMetadata> codeSetMetadata = getCodeSetMetadata(match);
-		return codeSetMetadata.stream().map(this::getCodeSetInfoFromCodeSetMetadata).collect(Collectors.toList());
+		List<CodeSet> codeSets = getCodeSetMetadata(match);
+		return codeSets.stream().map(this::getCodeSetInfoFromCodeSetMetadata).collect(Collectors.toList());
 	}
 
-	private CodeSetInfo getCodeSetInfoFromCodeSetMetadata(QueryCodeSetMetadata codeSetMetadata) {
+	private CodeSetInfo getCodeSetInfoFromCodeSetMetadata(CodeSet codeSet) {
 		CodeSetInfo codeSetInfo = new CodeSetInfo();
-		codeSetInfo.setName(codeSetMetadata.getName());
-		codeSetInfo.setId(codeSetMetadata.getId());
-		codeSetInfo.setLatestStableVersion(getLatestStableVersion(codeSetMetadata));
+		codeSetInfo.setName(codeSet.getName());
+		codeSetInfo.setId(codeSet.getId());
+		codeSetInfo.setLatestStableVersion(getLatestStableVersion(codeSet));
 		return codeSetInfo;
 	}
 
-	private Version getLatestStableVersion(QueryCodeSetMetadata codeSetMetadata) {
-		if(!Strings.isNullOrEmpty(codeSetMetadata.getLatest())) {
-			MatchOperation match = Aggregation.match(Criteria.where("_id").is(codeSetMetadata.getLatest()));
+	private Version getLatestStableVersion(CodeSet codeSet) {
+		if(!Strings.isNullOrEmpty(codeSet.getLatest())) {
+			MatchOperation match = Aggregation.match(Criteria.where("_id").is(codeSet.getLatest()));
 			QueryCodeSetVersionMetadata versionMetadata = one(getCodeSetVersionMetadata(match));
 			if(versionMetadata == null) {
 				return null;
@@ -125,9 +120,9 @@ public class SimpleCodeSetAPIService implements CodeSetAPIService {
 				version.setId(versionMetadata.getId());
 				return version;
 			}
-		} else if(codeSetMetadata.getVersions() != null && !codeSetMetadata.getVersions().isEmpty()) {
+		} else if(codeSet.getCodeSetVersions() != null && !codeSet.getCodeSetVersions().isEmpty()) {
 			AggregationOperation match = Aggregation.match(new Criteria().andOperator(
-					Criteria.where("_id").in(codeSetMetadata.getVersions()),
+					Criteria.where("_id").in(codeSet.getCodeSetVersions()),
 					Criteria.where("dateCommitted").ne(null)
 			));
 			AggregationOperation sort = Aggregation.sort(Sort.Direction.DESC, "dateCommitted");
@@ -147,20 +142,20 @@ public class SimpleCodeSetAPIService implements CodeSetAPIService {
 
 	@Override
 	public CodeSetMetadata getCodeSetMetadata(String codeSetId) throws ResourceNotFoundAPIException {
-		QueryCodeSetMetadata queryCodeSetMetadata = one(getCodeSetMetadata(Aggregation.match(Criteria.where("_id").is(codeSetId))));
-		if(queryCodeSetMetadata == null) {
+		CodeSet codeSet = one(getCodeSetMetadata(Aggregation.match(Criteria.where("_id").is(codeSetId))));
+		if(codeSet == null) {
 			throw new ResourceNotFoundAPIException("CodeSet with id " + codeSetId + " not found");
 		}
 
 		CodeSetMetadata codeSetMetadata = new CodeSetMetadata();
-		codeSetMetadata.setId(queryCodeSetMetadata.getId());
-		codeSetMetadata.setName(queryCodeSetMetadata.getName());
+		codeSetMetadata.setId(codeSet.getId());
+		codeSetMetadata.setName(codeSet.getName());
 
 
 		// Get code set versions
 		List<Version> versions = new ArrayList<>();
 		MatchOperation versionsMatch = Aggregation.match(new Criteria().andOperator(
-				Criteria.where("_id").in(queryCodeSetMetadata.getVersions()),
+				Criteria.where("_id").in(codeSet.getCodeSetVersions()),
 				Criteria.where("dateCommitted").ne(null)
 		));
 		List<QueryCodeSetVersionMetadata> versionsResult = getCodeSetVersionMetadata(versionsMatch);
@@ -176,9 +171,9 @@ public class SimpleCodeSetAPIService implements CodeSetAPIService {
 		codeSetMetadata.setVersions(versions);
 
 		// Latest Stable
-		if(!Strings.isNullOrEmpty(queryCodeSetMetadata.getLatest())){
+		if(!Strings.isNullOrEmpty(codeSet.getLatest())){
 			assert versionsResult != null;
-			QueryCodeSetVersionMetadata latest = versionsResult.stream().filter((version) -> version.getId().equals(queryCodeSetMetadata.getLatest())).findFirst().orElse(null);
+			QueryCodeSetVersionMetadata latest = versionsResult.stream().filter((version) -> version.getId().equals(codeSet.getLatest())).findFirst().orElse(null);
 			if(latest != null) {
 				Version version = new Version();
 				version.setVersion(latest.getVersion());
@@ -203,19 +198,9 @@ public class SimpleCodeSetAPIService implements CodeSetAPIService {
 		return results.getMappedResults();
 	}
 
-	public List<QueryCodeSetMetadata> getCodeSetMetadata(MatchOperation match) {
-		final String projectQuery;
-		try {
-			projectQuery = IOUtils.toString(
-					Objects.requireNonNull(SimpleCodeSetAPIService.class.getResourceAsStream("/project_code_set_metadata.json")),
-					StandardCharsets.UTF_8
-			);
-		} catch(IOException e) {
-			throw new RuntimeException(e);
-		}
-		AggregationOperation project = context -> Document.parse(projectQuery);
-		Aggregation aggregation = Aggregation.newAggregation(match, project);
-		AggregationResults<QueryCodeSetMetadata> results = this.mongoTemplate.aggregate(aggregation, this.mongoTemplate.getCollectionName(CodeSet.class), QueryCodeSetMetadata.class);
+	public List<CodeSet> getCodeSetMetadata(MatchOperation match) {
+		Aggregation aggregation = Aggregation.newAggregation(match);
+		AggregationResults<CodeSet> results = this.mongoTemplate.aggregate(aggregation, this.mongoTemplate.getCollectionName(CodeSet.class), CodeSet.class);
 		return results.getMappedResults();
 	}
 

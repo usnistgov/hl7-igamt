@@ -12,7 +12,9 @@
 
   </div>
   <h5 style="margin: 0;">
-    Code Set Version <span class="badge badge-primary"> {{(resource$ | async).version}}</span>
+    Code Set Version
+    <span class="badge badge-primary" *ngIf="(resource$ | async).dateCommitted"> {{(resource$ | async).version}}</span>
+    <span class="badge badge-primary" *ngIf="!(resource$ | async).dateCommitted">in progress</span>
   </h5>
   <div style="height: 100%; display: flex; justify-content: center; align-items: flex-end;">
     <span style="font-size: 0.75em; color: gray; margin-left: 10px;">

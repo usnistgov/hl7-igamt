@@ -172,7 +172,20 @@
                 justify-content: space-between;
               "
             >
-              {{ rowData.pattern }}
+              <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 3px;">
+                <div class="input-group" *ngIf="rowData.hasPattern">
+                  <input required type="text" class="form-control" placeholder="regular expression" [id]="'pattern' + rowData.id" [name]="'pattern' + rowData.id" [(ngModel)]="rowData.pattern" [ngModelOptions]="{updateOn: 'blur'}" (ngModelChange)="changeCodes()">
+                  <div class="input-group-append">
+                    <button (click)="removeHasPattern(rowData)" class="btn btn-outline-danger" type="button"><i class="fa fa-trash"></i></button>
+                  </div>
+                </div>
+                <div *ngIf="form.controls['pattern' + rowData.id]?.errors?.required" class="text-danger">
+                  Regular expression is required.
+                </div>
+              </div>
+              <button *ngIf="!rowData.hasPattern" (click)="setHasPattern(rowData)" class="btn btn-sm btn-primary">
+                <i class="fa fa-check"></i>
+              </button>
             </div>
             <div #anchor *ngSwitchCase="'codeSystem'">
               <div
@@ -190,10 +203,12 @@
                     [readonly]="viewOnly"
                     [style]="{ minWidth: '100%', maxWidth: '100%' }"
                     autoZIndex="true"
-                    (ngModelChange)="
-                      updateAttribute('CODES', codeSetVersion.codes)
-                    "
+                    (ngModelChange)="updateAttribute('CODES', codeSetVersion.codes)"
+                    required
                   ></p-dropdown>
+                  <div *ngIf="form.controls['codeSystem' + rowData.id]?.errors?.required" class="text-danger">
+                    Code system is required.
+                  </div>
                 </div>
                 <div class="dropdown-button-column">
                   <button
@@ -257,13 +272,11 @@
                 required
                 type="text"
                 pattern="^[^\s]+$"
-
               />
               <div *ngIf="form.controls['value' + rowData.id]?.errors?.required" class="text-danger">
                 Value is required.
               </div>
               <div *ngIf="form.controls['value' + rowData.id]?.errors?.pattern" class="text-danger">No spaces allowed.</div>
-
             </div>
             <div *ngSwitchCase="'comments'">
               <input
