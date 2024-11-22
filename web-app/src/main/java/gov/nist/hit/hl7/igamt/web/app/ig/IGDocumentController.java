@@ -7,15 +7,13 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import gov.nist.hit.hl7.igamt.access.active.NotifySave;
-import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
-import gov.nist.hit.hl7.igamt.access.model.AccessToken;
+import gov.nist.hit.hl7.igamt.access.model.AccessPermission;
+import gov.nist.hit.hl7.igamt.access.model.Action;
 import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
 import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
-import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
 import gov.nist.hit.hl7.igamt.display.model.*;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgVerificationIssuesList;
 import gov.nist.hit.hl7.igamt.ig.model.*;
-import gov.nist.hit.hl7.igamt.web.app.model.IgSubSet;
 import gov.nist.hit.hl7.igamt.web.app.service.LegacyIgSubSetService;
 import gov.nist.hit.hl7.igamt.web.app.service.impl.EntityBrowserService;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceDocumentManagementService;
@@ -124,7 +122,6 @@ import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.XMLSerializeServiceImpl;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
@@ -1231,14 +1228,17 @@ public class IGDocumentController extends BaseController {
 	@RequestMapping(value = "/api/igdocuments/{id}/state", method = RequestMethod.GET, produces = {
 	"application/json" })
 	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
-	public @ResponseBody IGDisplayInfo getState(@PathVariable("id") String id, Authentication authentication)
-			throws Exception {
+	public @ResponseBody IGDisplayInfo getState(
+			@PathVariable("id") String id,
+			UsernamePasswordAuthenticationToken authentication
+	) throws Exception {
 		Ig ig = findIgById(id);
 		IGDisplayInfo igDisplayInfo = displayInfoService.covertIgToDisplay(ig);
-		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) authentication;
-		AccessToken accessToken = new AccessToken(usernamePasswordAuthenticationToken.getName(), new HashSet<>(usernamePasswordAuthenticationToken.getAuthorities()));
-		Set<AccessLevel> accessLevel = this.accessControlService.checkDocumentAccessPermission(new DocumentAccessInfo(ig), accessToken);
-		ig.setSharePermission(accessLevel.contains(AccessLevel.ALL) || accessLevel.contains(AccessLevel.WRITE) ? SharePermission.WRITE : SharePermission.READ);
+		AccessPermission accessPermission = this.accessControlService.checkDocumentAccessPermission(
+				new DocumentAccessInfo(ig),
+				accessControlService.asAccessToken(authentication)
+		);
+		ig.setSharePermission(accessPermission.actionIsAllowed(Action.WRITE) ? SharePermission.WRITE : SharePermission.READ);
 		igDisplayInfo.setDocumentLocation(this.browserService.getDocumentLocationInformation(ig, authentication.getName()));
 		return igDisplayInfo;
 	}

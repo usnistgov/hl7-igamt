@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.valueset.model;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 
 public  class ExternalCode {
+
 	private String value;
 	private String codeSystem;
 	private String displayText; // description ?

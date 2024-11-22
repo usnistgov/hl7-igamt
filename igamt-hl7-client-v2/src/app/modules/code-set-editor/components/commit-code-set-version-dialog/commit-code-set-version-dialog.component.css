@@ -1,0 +1,16 @@
+.added {
+  background-color: lightgreen !important;
+}
+
+.removed {
+  background-color: lightpink !important;
+}
+
+
+td {
+  padding: 0 !important;
+}
+
+th {
+  word-wrap: break-word;
+}

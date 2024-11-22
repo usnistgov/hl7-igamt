@@ -1,7 +1,5 @@
 package gov.nist.hit.hl7.igamt.access.common;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
 import gov.nist.hit.hl7.igamt.access.model.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
@@ -21,22 +19,14 @@ import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetVersion;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetVersionRepository;
 import gov.nist.hit.hl7.igamt.workspace.domain.Workspace;
-import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -77,50 +67,20 @@ public class ResourceAccessInfoFetcher {
     }
 
     public CodeSetAccessInfo getCodeSetAccessInfoByCodeSetVersionId(String codeSetVersionId) throws ResourceNotFoundException {
-        List<AggregationOperation> pipeline = new ArrayList<>();
-        AggregationOperation mapCodeSetVersionsDBRefToObjectId = context -> {
-            BasicDBList arrayElemAtArgs = new BasicDBList();
-            arrayElemAtArgs.add(new BasicDBObject("$objectToArray", "$$this"));
-            arrayElemAtArgs.add(1);
-            return new Document(
-                    "$project",
-                    new BasicDBObject(
-                            "codeSetVersions",
-                            new BasicDBObject(
-                                    "$map",
-                                    new BasicDBObject(
-                                            "input",
-                                            new BasicDBObject(
-                                                    "$map",
-                                                    new BasicDBObject("input", "$codeSetVersions")
-                                                            .append("in", new BasicDBObject(
-                                                                    "$arrayElemAt",
-                                                                    arrayElemAtArgs
-                                                            ))
-                                            )
-                                    ).append("in", "$$this.v")
-                            )
-                    ).append("audience", 1).append("username", 1)
-            );
-        };
-        pipeline.add(mapCodeSetVersionsDBRefToObjectId);
-
-        // Match codeSetVersionId
-        ObjectId codeSetVersionIdObjId = new ObjectId(codeSetVersionId);
-        MatchOperation matchOperation = Aggregation.match(Criteria.where("codeSetVersions").is(codeSetVersionIdObjId));
-        pipeline.add(matchOperation);
-
-        Aggregation aggregation = Aggregation.newAggregation(pipeline);
-        AggregationResults<CodeSetAccessInfo> results = mongoTemplate.aggregate(aggregation, "codeSet", CodeSetAccessInfo.class);
-
-        if(results.getMappedResults().size() != 1) {
+        Query query = Query.query(Criteria.where("codeSetVersions").is(codeSetVersionId));
+        CodeSet codeSet = mongoTemplate.findOne(query, CodeSet.class);
+        if(codeSet == null) {
             throw new ResourceNotFoundException(codeSetVersionId, Type.CODESETVERSION);
         } else {
             CodeSetVersion version = codeSetVersionRepository.findById(codeSetVersionId).orElse(null);
             if(version == null) {
                 throw new ResourceNotFoundException(codeSetVersionId, Type.CODESETVERSION);
             }
-            CodeSetAccessInfo info = results.getMappedResults().get(0);
+            CodeSetAccessInfo info = new CodeSetAccessInfo();
+            info.setId(codeSetVersionId);
+            info.setAudience(codeSet.getAudience());
+            info.setUsername(codeSet.getUsername());
+            info.setDisableKeyProtection(codeSet.isDisableKeyProtection());
             info.setDateCommitted(version.getDateCommitted());
             info.setType(Type.CODESETVERSION);
             return info;

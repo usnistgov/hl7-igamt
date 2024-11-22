@@ -2,7 +2,7 @@ package gov.nist.hit.hl7.igamt.api.security.service;
 
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.access.exception.ResourceAccessDeniedException;
-import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
+import gov.nist.hit.hl7.igamt.access.model.Action;
 import gov.nist.hit.hl7.igamt.access.model.AccessToken;
 import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
 import gov.nist.hit.hl7.igamt.api.security.domain.AccessKey;
@@ -50,7 +50,7 @@ public class AccessKeyService {
 		AccessToken token = new AccessToken(username, Collections.emptySet());
 		for(Type type: resources.keySet()) {
 			for(String id: resources.get(type)) {
-				if(!accessControlService.checkResourceAccessPermission(type, id, token, AccessLevel.READ)) {
+				if(!accessControlService.checkResourceAccessPermission(type, id, token, Action.READ)) {
 					throw new ResourceAccessDeniedException("You do not have permission to access resource " + id + " of type "+ type);
 				}
 			}
@@ -96,7 +96,7 @@ public class AccessKeyService {
 		for(Type type: accessKey.getResources().keySet()) {
 			for(String id: accessKey.getResources().get(type)) {
 				try {
-					if(accessControlService.checkResourceAccessPermission(type, id, token, AccessLevel.READ)) {
+					if(accessControlService.checkResourceAccessPermission(type, id, token, Action.READ)) {
 						// API support only CODE SET
 						if(type.equals(Type.CODESET)) {
 							CodeSet codeSet = codeSetRepository.findById(id).orElse(null);

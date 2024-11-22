@@ -6,12 +6,31 @@
 
   <ng-template #titleBar>
     <div style="width: 100%; display: grid; grid-template-columns: 1fr auto; justify-content: space-between; align-items: center;">
-      <div *ngIf="codeSetInfo$ | async as codeSetInfo" style="width: 100%; display: flex; align-items: start; padding: 5px 20px; overflow: hidden; gap: 10px;">
-        <h2 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{codeSetInfo.metadata.title}}</h2>
-        <span *ngIf="codeSetInfo.disableKeyProtection" class="badge badge-danger" style="font-size: 0.8em;"><i class="fa fa-unlock"></i> API Access without API key</span>
+      <div *ngIf="codeSetInfo$ | async as codeSetInfo" style="width: 100%; display: flex; align-items: center; overflow: hidden; gap: 10px;">
+        <div *ngIf="codeSetInfo.published" class="status status-published" >
+          <i class="fa fa-globe" style="margin-right: 3px;"></i>
+          PUBLISHED
+        </div>
+        <h2 style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          {{codeSetInfo.metadata.title}}
+        </h2>
+        <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start; justify-content: space-between;">
+          <span *ngIf="codeSetInfo.disableKeyProtection" class="badge badge-danger" style="font-size: 0.8em;"><i class="fa fa-unlock"></i> API Access without API key</span>
+          <i *ngIf="codeSetInfo.metadata.description" [pTooltip]="codeSetInfo.metadata.description" tooltipPosition="bottom" class="fa fa-info-circle"></i>
+        </div>
       </div>
-      <div>
-        <app-input-copy type="text" [value]="codeSetURL" label="URL"></app-input-copy>
+      <div style="display: flex; align-items: stretch; justify-content: stretch; gap: 5px;">
+        <div style="width: 740px;">
+          <app-input-copy type="text" [value]="codeSetURL" label="URL"></app-input-copy>
+        </div>
+        <div *ngIf="viewOnly$ | async" class="view-only-badge">
+          <i class="fa fa-eye"></i>
+          <span style="margin-left: 10px;">View Mode</span>
+        </div>
+        <div *ngIf="!(viewOnly$ | async)" class="edit-mode-badge">
+          <i class="fa fa-pencil"></i>
+          <span style="margin-left: 10px;">Edit Mode</span>
+        </div>
       </div>
     </div>
   </ng-template>

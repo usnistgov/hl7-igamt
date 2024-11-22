@@ -4,7 +4,8 @@ import gov.nist.hit.hl7.igamt.access.security.APIAccessControlService;
 import gov.nist.hit.hl7.igamt.api.codesets.exception.ResourceAPIException;
 import gov.nist.hit.hl7.igamt.access.exception.ResourceNotFoundAPIException;
 import gov.nist.hit.hl7.igamt.api.codesets.model.*;
-import gov.nist.hit.hl7.igamt.api.codesets.service.CodeSetAPIService;
+import gov.nist.hit.hl7.igamt.api.codesets.service.impl.CodeSetAPIService;
+import gov.nist.hit.hl7.igamt.api.codesets.service.impl.SimpleCodeSetAPIService;
 import gov.nist.hit.hl7.igamt.api.security.domain.AccessKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 public class CodeSetAPIController {
 
 	@Autowired
-	CodeSetAPIService codeSetAPIService;
+	SimpleCodeSetAPIService codeSetAPIService;
 	@Autowired
 	APIAccessControlService apiAccessControlService;
 
@@ -26,11 +27,7 @@ public class CodeSetAPIController {
 		try {
 			AccessKey accessKey = apiAccessControlService.getAccessKey();
 			ResponseArray<CodeSetInfo> response = new ResponseArray<>();
-			if(accessKey != null) {
-				response.setList(codeSetAPIService.getAllUserAccessCodeSet(accessKey));
-			} else {
-				response.setList(new ArrayList<>());
-			}
+			response.setList(codeSetAPIService.getAllUserAccessCodeSet(accessKey));
 			return response;
 		} catch(Exception exception) {
 			throw new ResourceAPIException("There has been an unexpected error while trying to retrieve code sets");
@@ -41,6 +38,22 @@ public class CodeSetAPIController {
 	@ResponseBody
 	@PreAuthorize("APIAccess('CODESET', #id, READ)")
 	public CodeSetMetadata getCodeSetById(@PathVariable String id) throws ResourceAPIException, ResourceNotFoundAPIException {
+		try {
+			return codeSetAPIService.getCodeSetMetadata(id);
+		}  catch(ResourceNotFoundAPIException exception) {
+			throw exception;
+		} catch(Exception exception) {
+			throw new ResourceAPIException("There has been an unexpected error while trying to retrieve code set");
+		}
+	}
+
+	@GetMapping(path="/codesets/{id}/versions/{version}/metadata")
+	@ResponseBody
+	@PreAuthorize("APIAccess('CODESET', #id, READ)")
+	public CodeSetMetadata getCodeSetVersionMetadata(
+			@PathVariable("id") String id,
+			@PathVariable("id") String version
+	) throws ResourceAPIException, ResourceNotFoundAPIException {
 		try {
 			return codeSetAPIService.getCodeSetMetadata(id);
 		}  catch(ResourceNotFoundAPIException exception) {

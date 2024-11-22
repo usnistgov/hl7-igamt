@@ -5,6 +5,7 @@ import { GlobalSave } from './../../../modules/dam-framework/store/data/dam.acti
 import { CodeSetEditActions, CodeSetEditActionTypes, CodeSetEditResolverLoad, CodeSetEditResolverLoadFailure, CodeSetEditResolverLoadSuccess, OpenCodeSetDashboardEditor, OpenCodeSetVersionEditor } from './code-set-edit.actions';
 
 import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, switchMap, take } from 'rxjs/operators';
@@ -85,6 +86,10 @@ export class CodeSetEditEffects extends DamWidgetEffect {
     switchMap((action: OpenCodeSetDashboardEditor) => {
       return this.codeSetService.getCodeSetInfo(action.payload.id).pipe(
         flatMap((codeSetInfo) => {
+          if (codeSetInfo.viewOnly) {
+            this.router.navigate(['code-set', codeSetInfo.id, 'code-set-version', codeSetInfo.children[0].id]);
+          }
+
           return [
             ...this.codeSetService.getUpdateAction(codeSetInfo),
             new fromDAM.OpenEditor({
@@ -116,6 +121,7 @@ export class CodeSetEditEffects extends DamWidgetEffect {
     private codeSetService: CodeSetServiceService,
     private store: Store<any>,
     private message: MessageService,
+    private router: Router,
   ) {
     super(CODE_SET_EDIT_WIDGET_ID, actions$);
   }

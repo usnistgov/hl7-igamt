@@ -1,6 +1,6 @@
 package gov.nist.hit.hl7.igamt.service.verification.impl;
 
-import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
+import gov.nist.hit.hl7.igamt.access.model.Action;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
@@ -73,11 +73,20 @@ public class ValueSetVerificationService extends VerificationUtils {
 					)
 			);
 		}
-		if(userResourcePermissionService.hasPermission(Type.CODESET, valueset.getCodeSetReference().getCodeSetId(), AccessLevel.READ)) {
+		if(userResourcePermissionService.hasPermission(Type.CODESET, valueset.getCodeSetReference().getCodeSetId(), Action.READ)) {
 			try {
 				CodeSetVersionContent content = this.codeSetService.getLatestCodeVersion(valueset.getCodeSetReference().getCodeSetId());
 				return checkCodes(content.getCodes(), valueset.getId());
 			} catch(ResourceNotFoundException e) {
+				issues.add(
+						this.entry.InternalTrackedValuesetCodeSetNotFound(
+								getValueSetLocation("CodeSet Reference"),
+								valueset.getId(),
+								Type.VALUESET
+						)
+				);
+			} catch(Exception e) {
+				// May be in the future make it a different entry
 				issues.add(
 						this.entry.InternalTrackedValuesetCodeSetNotFound(
 								getValueSetLocation("CodeSet Reference"),

@@ -6,6 +6,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import java.util.Date;
 
 public class CodeSetAccessInfo {
+	private String id;
 	private Audience audience;
 	private String username;
 	private Type type;
@@ -50,5 +51,21 @@ public class CodeSetAccessInfo {
 
 	public void setDisableKeyProtection(boolean disableKeyProtection) {
 		this.disableKeyProtection = disableKeyProtection;
+	}
+
+	public boolean isCommitted() {
+		return dateCommitted != null;
+	}
+
+	public boolean isCodeSetVersion() {
+		return type.equals(Type.CODESETVERSION);
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 }

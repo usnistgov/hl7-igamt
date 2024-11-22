@@ -2,8 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { combineLatest, Observable, Subscription, throwError } from 'rxjs';
-import { catchError, flatMap, map, tap } from 'rxjs/operators';
+import { combineLatest, Observable, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { Message } from 'src/app/modules/dam-framework/models/messages/message.class';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
@@ -13,8 +13,7 @@ import * as fromRoot from 'src/app/root-store/index';
 import { ICodeSetListItem } from '../../models/code-set.models';
 import { CodeSetServiceService } from '../../services/CodeSetService.service';
 import { ICodeSetListItemControl } from '../code-set-editor-list-card/code-set-editor-list-card.component';
-import { DeleteCodeSetDialogComponent } from '../delete-code-set-dialog/delete-code-set-dialog.component';
-import { ClearCodeSetList, CodeSetLoadType, DeleteCodeSetListItemSuccess, LoadCodeSetList, SelectCodeSetListSortOption, SelectCodeSetListViewType, UpdatePendingInvitationCount } from './../../../../root-store/code-set-editor/code-set-list/code-set-list.actions';
+import { ClearCodeSetList, CodeSetLoadType, LoadCodeSetList, SelectCodeSetListSortOption, SelectCodeSetListViewType } from './../../../../root-store/code-set-editor/code-set-list/code-set-list.actions';
 import { MessageService } from './../../../dam-framework/services/message.service';
 import { ClearAll } from './../../../dam-framework/store/messages/messages.actions';
 
@@ -106,9 +105,6 @@ export class CodeSetEditorListComponent implements OnInit, OnDestroy {
                   return username !== item.username || item.type === 'PUBLIC';
                 },
                 hide: (item: ICodeSetListItem): boolean => {
-                  console.log(item);
-                  console.log(viewType);
-
                   return item.type === 'PUBLIC' || item.type === 'SHARED' || username !== item.username;
                 },
               },

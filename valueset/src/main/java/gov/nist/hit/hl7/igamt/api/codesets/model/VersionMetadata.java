@@ -6,15 +6,13 @@ public class VersionMetadata {
 
     private String version;
     private Date date;
-    private int numberOfCodes;
 
     public VersionMetadata() {
     }
 
-    public VersionMetadata(String version, Date date, int numberOfCodes) {
+    public VersionMetadata(String version, Date date) {
         this.version = version;
         this.date = date;
-        this.numberOfCodes = numberOfCodes;
     }
 
     public String getVersion() {
@@ -31,13 +29,5 @@ public class VersionMetadata {
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public int getNumberOfCodes() {
-        return numberOfCodes;
-    }
-
-    public void setNumberOfCodes(int numberOfCodes) {
-        this.numberOfCodes = numberOfCodes;
     }
 }

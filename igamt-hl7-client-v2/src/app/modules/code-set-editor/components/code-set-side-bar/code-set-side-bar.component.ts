@@ -1,14 +1,21 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { Observable, of } from 'rxjs';
-import { flatMap, tap } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, flatMap, map, tap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
-import { selectAllCodeSetVersions, selectCodeSetId } from 'src/app/root-store/code-set-editor/code-set-edit/code-set-edit.selectors';
+import { selectAllCodeSetVersions, selectCodeSetId, selectCodeSetIsViewOnly } from 'src/app/root-store/code-set-editor/code-set-edit/code-set-edit.selectors';
 import { ICodeSetInfo, ICodeSetVersionInfo } from '../../models/code-set.models';
 import { CodeSetServiceService } from '../../services/CodeSetService.service';
+
+export enum ListDisplay {
+  SINGLE_COMMITTED = 'SINGLE_COMMITTED',
+  TOP_COMMITTED = 'TOP_COMMITTED',
+  MIDDLE_COMMITTED = 'MIDDLE_COMMITTED',
+  BOTTOM_COMMITTED = 'BOTTOM_COMMITTED',
+  INPROGRESS = 'INPROGRESS',
+}
 
 @Component({
   selector: 'app-code-set-side-bar',
@@ -20,18 +27,61 @@ export class CodeSetSideBarComponent implements OnInit {
 
   isAdmin$: Observable<boolean>;
   codeSetId$: Observable<string>;
-  children$: Observable<ICodeSetVersionInfo[]>;
+  children$: Observable<Array<ICodeSetVersionInfo & { listDisplay: ListDisplay }>>;
+  viewOnly$: Observable<boolean>;
+  ListDisplay = ListDisplay;
 
   constructor(
-    private actions$: Actions,
     private store: Store<any>,
     private codeSetService: CodeSetServiceService,
     protected messageService: MessageService,
     private dialog: MatDialog,
   ) {
     this.codeSetId$ = this.store.select(selectCodeSetId);
-    this.children$ = this.store.select(selectAllCodeSetVersions);
-
+    this.children$ = this.store.select(selectAllCodeSetVersions).pipe(
+      map((children) => {
+        const list: Array<ICodeSetVersionInfo & { listDisplay: ListDisplay }> = [];
+        const inprogress = children.find((child) => !child.dateCommitted);
+        const hasInProgress = !!inprogress;
+        if (hasInProgress) {
+          list.push({
+            ...inprogress,
+            listDisplay: ListDisplay.INPROGRESS,
+          });
+        }
+        let i = 0;
+        const topIndex = hasInProgress ? 1 : 0;
+        const bottomIndex = children.length - 1;
+        children
+          .forEach((child, i) => {
+            if (child.dateCommitted) {
+              if (i === topIndex && i === bottomIndex) {
+                list.push({
+                  ...child,
+                  listDisplay: ListDisplay.SINGLE_COMMITTED,
+                });
+              } else if (i === topIndex && i < bottomIndex) {
+                list.push({
+                  ...child,
+                  listDisplay: ListDisplay.TOP_COMMITTED,
+                });
+              } else if (i > topIndex && i < bottomIndex) {
+                list.push({
+                  ...child,
+                  listDisplay: ListDisplay.MIDDLE_COMMITTED,
+                });
+              } else {
+                list.push({
+                  ...child,
+                  listDisplay: ListDisplay.BOTTOM_COMMITTED,
+                });
+              }
+            }
+          });
+        return list;
+      }),
+    );
+    this.viewOnly$ = this.store.select(selectCodeSetIsViewOnly);
   }
 
   updateCodeSetState(id: string): Observable<ICodeSetInfo> {
@@ -44,7 +94,7 @@ export class CodeSetSideBarComponent implements OnInit {
     );
   }
 
-  deleteCodeSetVersion(codeSetVersion: ICodeSetVersionInfo ) {
+  deleteCodeSetVersion(codeSetVersion: ICodeSetVersionInfo) {
     this.dialog.open(ConfirmDialogComponent, {
       data: {
         action: 'Delete Code Set Version',
@@ -57,6 +107,10 @@ export class CodeSetSideBarComponent implements OnInit {
             flatMap((message) => {
               this.store.dispatch(this.messageService.messageToAction(message));
               return this.updateCodeSetState(codeSetVersion.parentId);
+            }),
+            catchError((error) => {
+              this.store.dispatch(this.messageService.actionFromError(error));
+              return throwError(error);
             }),
           );
         }

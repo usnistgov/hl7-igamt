@@ -8,7 +8,13 @@
           <h6  [routerLink]="['/code-set', item.id]"  style="margin-left: 10px; margin-bottom: 0;" class="link">
             <strong>{{item.title}}</strong>
           </h6>
-          <span *ngIf="item.disableKeyProtection" class="badge badge-danger"><i class="fa fa-unlock"></i> API Access Without API Key</span>
+          <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-start; gap: 3px;">
+            <span *ngIf="item.disableKeyProtection" class="badge badge-danger"><i class="fa fa-unlock"></i> API Access Without API Key</span>
+            <div *ngIf="item.published" class="status status-published" style="display: flex; justify-content: center; align-items: center; margin-right: 0;" >
+              <i class="fa fa-globe" style="margin-right: 3px;"></i>
+              PUBLISHED
+            </div>
+          </div>
         </div>
         <span style="margin-left: 10px; color: #818181;">{{item.subtitle}}</span>
         <span *ngIf="item.username" style="margin-left: 10px; color: #818181;">
@@ -30,7 +36,6 @@
       </div>
 
     </div>
-
   </div>
 
   <!-- CARD FOOTER -->

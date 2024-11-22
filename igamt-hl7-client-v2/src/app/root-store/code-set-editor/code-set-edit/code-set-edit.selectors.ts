@@ -24,6 +24,20 @@ export const selectCodeSetMetadata = createSelector(
   },
 );
 
+export const selectCodeSetIsViewOnly = createSelector(
+  selectCodeSetInfo,
+  (state: ICodeSetInfo) => {
+    return state.viewOnly;
+  },
+);
+
+export const selectCodeSetIsPublic = createSelector(
+  selectCodeSetInfo,
+  (state: ICodeSetInfo) => {
+    return state.published;
+  },
+);
+
 export const selectCodeSetFolders = createSelector(
   selectCodeSetInfo,
   (state: ICodeSetInfo) => {
