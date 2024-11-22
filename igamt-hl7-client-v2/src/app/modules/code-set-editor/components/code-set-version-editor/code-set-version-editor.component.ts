@@ -228,7 +228,7 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
       next: (codes: ICodes[]) => {
         console.log(codes);
         if (codes) {
-          this.updateCodes(codes);
+          this.updateCodes({codes: codes, valid: true});
         }
       },
     });
