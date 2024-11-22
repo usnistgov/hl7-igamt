@@ -49,32 +49,33 @@ export class CodeSetSideBarComponent implements OnInit {
             listDisplay: ListDisplay.INPROGRESS,
           });
         }
-        const i = 0;
+        let i = 0;
         const topIndex = hasInProgress ? 1 : 0;
         const bottomIndex = children.length - 1;
         children
-          .filter((child) => !!child.dateCommitted)
-          .forEach((child) => {
-            if (i === topIndex && i === bottomIndex) {
-              list.push({
-                ...child,
-                listDisplay: ListDisplay.SINGLE_COMMITTED,
-              });
-            } else if (i === topIndex && i < bottomIndex) {
-              list.push({
-                ...child,
-                listDisplay: ListDisplay.TOP_COMMITTED,
-              });
-            } else if (i > topIndex && i < bottomIndex) {
-              list.push({
-                ...child,
-                listDisplay: ListDisplay.MIDDLE_COMMITTED,
-              });
-            } else {
-              list.push({
-                ...child,
-                listDisplay: ListDisplay.BOTTOM_COMMITTED,
-              });
+          .forEach((child, i) => {
+            if (child.dateCommitted) {
+              if (i === topIndex && i === bottomIndex) {
+                list.push({
+                  ...child,
+                  listDisplay: ListDisplay.SINGLE_COMMITTED,
+                });
+              } else if (i === topIndex && i < bottomIndex) {
+                list.push({
+                  ...child,
+                  listDisplay: ListDisplay.TOP_COMMITTED,
+                });
+              } else if (i > topIndex && i < bottomIndex) {
+                list.push({
+                  ...child,
+                  listDisplay: ListDisplay.MIDDLE_COMMITTED,
+                });
+              } else {
+                list.push({
+                  ...child,
+                  listDisplay: ListDisplay.BOTTOM_COMMITTED,
+                });
+              }
             }
           });
         return list;
