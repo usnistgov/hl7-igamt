@@ -83,6 +83,18 @@ public class CodeSetController {
 		return codeSetService.getCodeSetInfo(id, showInProgress, readOnly);
 	}
 
+	@RequestMapping(value = "/api/code-set/{id}/compare/{sourceVersionId}/{targetVersionId}", method = RequestMethod.GET, produces = { "application/json" })
+	@ResponseBody
+	@PreAuthorize("AccessResource('CODESETVERSION', #sourceVersionId, READ) && AccessResource('CODESETVERSION', #targetVersionId, READ)")
+	public List<CodeDelta> compare(
+			@PathVariable("id") String id,
+			@PathVariable("sourceVersionId") String sourceVersionId,
+			@PathVariable("targetVersionId") String targetVersionId
+	) throws Exception {
+		return codeSetService.getCodeDelta(id, sourceVersionId, targetVersionId);
+	}
+
+
 	@RequestMapping(value = "/api/code-set/{id}/applyInfo", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
 	@PreAuthorize("AccessResource('CODESET', #id, WRITE)")
