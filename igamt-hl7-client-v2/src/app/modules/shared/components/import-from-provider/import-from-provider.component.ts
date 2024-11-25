@@ -43,9 +43,12 @@ export class ImportFromProviderComponent implements OnInit {
   fetchedCodeSets: ICodeSetQueryResult[];
   selectedCodeSet: ICodeSetQueryMetaData;
   selectedCodeSetSourceType: SourceType = SourceType.EXTERNAL;
+  latestVersionNumberOfCodes: number;
+  fetchingVersionCodes: boolean = false;
+  latestVersion: string;
+  versionCodesCache:any = {} ;
 
   model: IAddingInfo;
-
   selectedVersion: any;
 
   constructor(public dialogRef: MatDialogRef<ImportFromProviderComponent>,
@@ -110,6 +113,11 @@ export class ImportFromProviderComponent implements OnInit {
                 this.model.name = this.selectedCodeSet.name;
                 this.model.fromProvider = true;
                 this.model.oid = oid;
+                this.latestVersion = this.versionInfo.version;
+
+                if (this.versionInfo) {
+                  this.fetchVersionMetadata(this.versionInfo.version);
+                }
 
             }),
             catchError((error) => {
@@ -124,6 +132,45 @@ export class ImportFromProviderComponent implements OnInit {
         ).subscribe();
     }, 500);
 
+  }
+  fetchVersionMetadata(version: string) {
+    this.model.includeChildren = false;
+
+    if (this.versionCodesCache[version]) {
+      this.versionInfo = {
+        ...this.versionInfo,
+        numberOfCodes: this.versionCodesCache[version],
+      };
+      return;
+    }
+
+    this.fetchingVersionCodes = true;
+
+    this.externalCodeSetService.fetchCodeSetVersionMetadata(this.data.url, this.model.oid, version, this.key).pipe(
+      tap((versionMetadata) => {
+        this.versionInfo = versionMetadata;
+        this.fetchingVersionCodes = false;
+
+        if (versionMetadata.numberOfCodes !== undefined) {
+          this.versionCodesCache[version] = versionMetadata.numberOfCodes;
+        }
+      }),
+      catchError((error) => {
+        console.error('Error fetching version metadata:', error);
+        this.errorSelected = error;
+        this.fetchingVersionCodes = false;
+        return of();
+      })
+    ).subscribe();
+
+  //}, 2000);
+
+  }
+
+  onVersionChange(selectedVersion: VersionInfo) {
+    if (selectedVersion) {
+      this.fetchVersionMetadata(selectedVersion.version);
+    }
   }
 
   cancel() {

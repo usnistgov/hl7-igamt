@@ -26,9 +26,6 @@
           <th class="header-padding">
             Value Sets
           </th>
-          <th style="width:65px">
-            #Codes
-          </th>
           <th class="header-padding" style="width:65px">
             As Is
           </th>
@@ -43,10 +40,6 @@
           <td>
               {{rowData.name}}
           </td>
-          <td style="width:65px">
-            <span class="badge badge-secondary">{{rowData?.latestStableVersion?.numberOfCodes}}</span>
-          </td>
-
           <td style="width:65px">
             <button class="btn-primary btn btn-sm" (click)="addAsIs(rowData)">
               <i class="fa fa-plus"></i>
@@ -102,10 +95,10 @@
     <tr>
       <td >
       <p-radioButton [(ngModel)]="versionMode" value="LATEST" inputId="latest"
-      name="versionMode"></p-radioButton> Track Latest
+      name="versionMode"></p-radioButton> Track Latest (Currently {{latestVersion}})
         </td>
         <td>
-          <span *ngIf="selectedCodeSet" class="badge badge-info">{{selectedCodeSet.latestStableVersion?.numberOfCodes}}</span>
+          <span *ngIf="selectedCodeSet" class="badge badge-info">{{versionCodesCache[latestVersion]}}</span>
         </td>
 
     </tr>
@@ -122,13 +115,17 @@
               optionLabel="version"
               placeholder="Select Version"
               name="defaultVersion"
-              dataKey="version">
+              dataKey="version"
+               (onChange)="onVersionChange($event.value)">
             </p-dropdown>
           </span>
       </td>
 
       <td>
-        <span *ngIf="versionInfo" class="badge badge-info">{{versionInfo?.numberOfCodes}}</span>
+        <span *ngIf="versionInfo && versionMode ==='SPECIFIC' && !fetchingVersionCodes" class="badge badge-info">{{versionInfo?.numberOfCodes}}</span>
+        <div *ngIf="fetchingVersionCodes" style="display: flex; align-items: center; justify-content: center; height: 100%;">
+          <mat-spinner  diameter="30"></mat-spinner>
+        </div>
       </td>
 
 
@@ -142,7 +139,7 @@
     </tr>
     <tr>
       <td colspan="2">
-        <p-checkbox [(ngModel)]="model.includeChildren" binary="true" name="IncludeCode" [disabled]="versionInfo?.numberOfCodes> limit"></p-checkbox>  <span> As Snapshot (Allowed only if number of codes < {{limit}}) </span>
+        <p-checkbox [(ngModel)]="model.includeChildren" binary="true" name="IncludeCode" [disabled]="versionInfo?.numberOfCodes> limit || fetchingVersionCodes"></p-checkbox>  <span> As Snapshot (Allowed only if number of codes < {{limit}}) </span>
       </td>
     </tr>
     </ng-container>

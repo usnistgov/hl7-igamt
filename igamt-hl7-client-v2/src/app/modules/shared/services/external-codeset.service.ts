@@ -11,6 +11,8 @@ export interface IVersion {
 export class VersionInfo {
   version: string;
   date: Date;
+  numberOfCodes?: number;
+
 }
 
 export interface ICodeSetQueryMetaData {
