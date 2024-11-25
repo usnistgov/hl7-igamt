@@ -406,12 +406,12 @@ export class ValueSetStructureComponent implements OnInit {
 
   confirmDetach() {
     this.valueSet.sourceType = SourceType.INTERNAL;
-    this.updateAttribute(PropertyType.CODESETREFERENCE, null);
     this.updateAttribute(PropertyType.CODES, this.valueSet.codes);
+    this.updateAttribute(PropertyType.CODESETREFERENCE, null);
   }
 
   detach() {
-    const message = 'Future updates to the code sets will not be reflected in this value sets. Are you sure you want to continue?';
+    const message = 'Future updates to the code set will not be reflected in this value sets anymore. Are you sure you want to proceed?';
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         question: message,
