@@ -185,10 +185,12 @@ export class CodeSetTableComponent implements OnInit {
   }
 
   importCSV() {
+    this.importCSVEvent.emit(this.codeSetVersion);
     this.changeCodes();
   }
   exportCSV() {
-    this.changeCodes();
+    this.exportCSVEvent.emit(this.codeSetVersion);
+
 
   }
   getUniqueCodeSystems(codes: ICodes[]): string[] {
