@@ -8,8 +8,11 @@ import gov.nist.hit.hl7.igamt.api.codesets.service.CodeSetAPIService;
 import gov.nist.hit.hl7.igamt.api.codesets.service.model.QueryCodeSetVersionMetadata;
 import gov.nist.hit.hl7.igamt.api.security.domain.AccessKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSet;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetVersion;
+import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetRepository;
+import gov.nist.hit.hl7.igamt.valueset.service.CodeSetService;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissionType;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceService;
 import org.apache.commons.io.IOUtils;
@@ -34,6 +37,10 @@ public class SimpleCodeSetAPIService implements CodeSetAPIService {
 	WorkspaceService workspaceService;
 	@Autowired
 	MongoTemplate mongoTemplate;
+	@Autowired
+	CodeSetService codeSetService;
+	@Autowired
+	CodeSetRepository codeSetRepository;
 
 	private final Set<String> codeSetVersionMetadataFields = Arrays.stream(QueryCodeSetVersionMetadata.class.getDeclaredFields())
 	                                                        .map(Field::getName)
@@ -268,5 +275,29 @@ public class SimpleCodeSetAPIService implements CodeSetAPIService {
 		codeSetQueryResult.setLatestStableVersion(codeSetMetadata.getLatestStableVersion());
 		codeSetQueryResult.setLatestStable(codeSetMetadata.getLatestStableVersion() != null && codeSetMetadata.getLatestStableVersion().getId().equals(targetVersion.getId()));
 		return codeSetQueryResult;
+	}
+
+	@Override
+	public CodeSetVersionMetadata getCodeSetVersionMetadata(String codeSetId, String version) throws ResourceNotFoundAPIException {
+		String cleanedVersion = version.toLowerCase().trim();
+		CodeSet codeSet = this.codeSetRepository.findById(codeSetId).orElseThrow(() -> new ResourceNotFoundAPIException("CodeSet with id " + codeSetId + " not found"));
+		List<gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionMetadata> versions = this.codeSetService.getCodeSetVersionMetadata(codeSet);
+		gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionMetadata match = versions.stream().filter((v) -> v.isCommitted() && v.getVersion().equals(cleanedVersion)).findFirst().orElse(null);
+		if(match == null) {
+			throw new ResourceNotFoundAPIException("CodeSet version '"+ cleanedVersion +"' not found");
+		}
+		try {
+			CodeSetVersion codeSetVersion = this.codeSetService.findCodeSetVersionById(match.getId());
+			gov.nist.hit.hl7.igamt.api.codesets.model.CodeSetVersionMetadata metadata = new gov.nist.hit.hl7.igamt.api.codesets.model.CodeSetVersionMetadata();
+			metadata.setId(codeSetId);
+			metadata.setVersion(cleanedVersion);
+			metadata.setDate(codeSetVersion.getDateCommitted());
+			metadata.setNumberOfCodes(codeSetVersion.getCodes().size());
+			metadata.setName(codeSet.getName());
+			return metadata;
+		} catch(ResourceNotFoundException e) {
+			throw new ResourceNotFoundAPIException("CodeSet version '"+ cleanedVersion +"' not found");
+		}
+
 	}
 }

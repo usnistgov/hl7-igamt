@@ -5,6 +5,7 @@ import gov.nist.hit.hl7.igamt.api.codesets.exception.LatestVersionNotFoundExcept
 import gov.nist.hit.hl7.igamt.api.codesets.model.CodeSetInfo;
 import gov.nist.hit.hl7.igamt.api.codesets.model.CodeSetMetadata;
 import gov.nist.hit.hl7.igamt.api.codesets.model.CodeSetQueryResult;
+import gov.nist.hit.hl7.igamt.api.codesets.model.CodeSetVersionMetadata;
 import gov.nist.hit.hl7.igamt.api.security.domain.AccessKey;
 
 import java.util.List;
@@ -13,4 +14,5 @@ public interface CodeSetAPIService {
 	List<CodeSetInfo> getAllUserAccessCodeSet(AccessKey accessKey);
 	CodeSetMetadata getCodeSetMetadata(String codeSetId) throws ResourceNotFoundAPIException;
 	CodeSetQueryResult getCodeSetByQuery(String codeSetId, String version, String value) throws ResourceNotFoundAPIException, LatestVersionNotFoundException;
+	CodeSetVersionMetadata getCodeSetVersionMetadata(String codeSetId, String version) throws ResourceNotFoundAPIException;
 }

@@ -4,20 +4,17 @@ import gov.nist.hit.hl7.igamt.access.security.APIAccessControlService;
 import gov.nist.hit.hl7.igamt.api.codesets.exception.ResourceAPIException;
 import gov.nist.hit.hl7.igamt.access.exception.ResourceNotFoundAPIException;
 import gov.nist.hit.hl7.igamt.api.codesets.model.*;
-import gov.nist.hit.hl7.igamt.api.codesets.service.impl.CodeSetAPIService;
-import gov.nist.hit.hl7.igamt.api.codesets.service.impl.SimpleCodeSetAPIService;
+import gov.nist.hit.hl7.igamt.api.codesets.service.CodeSetAPIService;
 import gov.nist.hit.hl7.igamt.api.security.domain.AccessKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-
 @RestController
 public class CodeSetAPIController {
 
 	@Autowired
-	SimpleCodeSetAPIService codeSetAPIService;
+	CodeSetAPIService codeSetAPIService;
 	@Autowired
 	APIAccessControlService apiAccessControlService;
 
@@ -50,12 +47,12 @@ public class CodeSetAPIController {
 	@GetMapping(path="/codesets/{id}/versions/{version}/metadata")
 	@ResponseBody
 	@PreAuthorize("APIAccess('CODESET', #id, READ)")
-	public CodeSetMetadata getCodeSetVersionMetadata(
+	public CodeSetVersionMetadata getCodeSetVersionMetadata(
 			@PathVariable("id") String id,
-			@PathVariable("id") String version
+			@PathVariable("version") String version
 	) throws ResourceAPIException, ResourceNotFoundAPIException {
 		try {
-			return codeSetAPIService.getCodeSetMetadata(id);
+			return codeSetAPIService.getCodeSetVersionMetadata(id, version);
 		}  catch(ResourceNotFoundAPIException exception) {
 			throw exception;
 		} catch(Exception exception) {
