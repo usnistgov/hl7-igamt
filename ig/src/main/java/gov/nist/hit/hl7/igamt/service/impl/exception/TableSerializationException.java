@@ -16,6 +16,10 @@ package gov.nist.hit.hl7.igamt.service.impl.exception;
 public class TableSerializationException extends SerializationException {
     private static String label = "Value Set";
 
+    public TableSerializationException(String message) {
+        super(new Exception(message), message);
+    }
+
     public TableSerializationException(Exception originalException, String location) {
         super(originalException, location);
     }

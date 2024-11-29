@@ -1252,22 +1252,30 @@ public class IGDocumentController extends BaseController {
 
 	@RequestMapping(value = "/api/igdocuments/{id}/valueset/{vsId}", method = RequestMethod.GET, produces = {
 	"application/json" })
-	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
-	public @ResponseBody Valueset getValueSetInIG(@PathVariable("id") String id ,@PathVariable("vsId") String vsId, Authentication authentication)
-			throws IGNotFoundException, ValuesetNotFoundException, ResourceNotFoundException {
-		return this.igService.getValueSetInIg(id, vsId);	
+	@PreAuthorize("AccessResource('VALUESET', #vsId, READ)")
+	public @ResponseBody Valueset getValueSetInIG(
+			@PathVariable("id") String id,
+			@PathVariable("vsId") String vsId
+	) throws ValuesetNotFoundException {
+		Valueset vs = this.valuesetService.findById(vsId);
+		if(vs == null) {
+			throw new ValuesetNotFoundException(id);
+		}
+		return vs;
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/valueset/{vsId}/resource", method = RequestMethod.GET, produces = {
 	"application/json" })
-	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
+	@PreAuthorize("AccessResource('VALUESET', #vsId, READ)")
 	public @ResponseBody Set<Valueset> getValueSetInIGAsResource(@PathVariable("id") String id ,@PathVariable("vsId") String vsId, Authentication authentication)
-			throws IGNotFoundException, ValuesetNotFoundException, ResourceNotFoundException {
-		HashSet<Valueset> ret = new HashSet<Valueset>();
-		Valueset vs = this.igService.getValueSetInIg(id, vsId);
-		ret.add(vs);
-		return ret;
-
+			throws ValuesetNotFoundException {
+		HashSet<Valueset> resources = new HashSet<>();
+		Valueset vs = this.valuesetService.findById(vsId);
+		if(vs == null) {
+			throw new ValuesetNotFoundException(id);
+		}
+		resources.add(vs);
+		return resources;
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/filter/", method = RequestMethod.POST, produces = {

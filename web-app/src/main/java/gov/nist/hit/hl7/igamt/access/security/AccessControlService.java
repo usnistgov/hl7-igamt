@@ -148,7 +148,7 @@ public class AccessControlService implements UserResourcePermissionService {
 
     public AccessPermission checkResourceAccessPermission(ResourceInfo resourceInfo, AccessToken token) throws ResourceNotFoundException {
         // If the resource is an HL7 resource, can READ only
-        if(resourceInfo.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
+        if(resourceInfo.getDomainInfo().getScope().equals(Scope.HL7STANDARD) || resourceInfo.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
             // Grant READ access
             return AccessPermission.withActions(Action.READ);
         }
