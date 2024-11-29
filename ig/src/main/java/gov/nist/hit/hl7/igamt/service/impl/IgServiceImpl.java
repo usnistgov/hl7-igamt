@@ -12,11 +12,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipOutputStream;
 
+import com.google.common.base.Strings;
+import gov.nist.hit.hl7.igamt.access.model.Action;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.model.IgProfileResourceSubSet;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
 import gov.nist.hit.hl7.igamt.ig.service.*;
+import gov.nist.hit.hl7.igamt.valueset.domain.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -120,10 +123,6 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.exception.CoConstraintXMLSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
-import gov.nist.hit.hl7.igamt.valueset.domain.Code;
-import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetLinkInfo;
-import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionContent;
 import gov.nist.hit.hl7.igamt.valueset.service.CodeSetService;
@@ -221,6 +220,9 @@ public class IgServiceImpl implements IgService {
 	
 	@Autowired
 	CodeSetService codeSetService;
+
+	@Autowired
+	UserResourcePermissionService resourcePermissionService;
 
 	@Override
 	public Ig findById(String id) {
@@ -843,61 +845,6 @@ public class IgServiceImpl implements IgService {
 	}
 
 	@Override
-	public Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException, ResourceNotFoundException {
-		Ig ig = this.findById(id);
-		if (ig == null) {
-			throw new IGNotFoundException(id);
-		}
-		Valueset vs = valueSetService.findById(vsId);
-
-		if (vs == null) {
-			throw new ValuesetNotFoundException(vsId);
-		}
-//		if (vs.getBindingIdentifier().equals("HL70396") && vs.getSourceType().equals(SourceType.EXTERNAL)) {
-//			vs.setCodes(fhirHandlerService.getValusetCodeForDynamicTable());
-//
-//		}
-//		if(vs.getSourceType().equals(SourceType.INTERNAL_TRACKED)){
-//			if(vs.getCodeSetReference() != null && vs.getCodeSetReference().getCodeSetId() != null) {
-//				
-//				CodeSetVersionContent content = this.codeSetService.getLatestCodeVersion(vs.getCodeSetReference().getCodeSetId());
-//				CodeSetLinkInfo link = new CodeSetLinkInfo();
-//				link.setLatest(true);
-//				link.setCommitDate(content.getDateCommitted());
-//				link.setParentName(content.getParentName());
-//				link.setVersion(content.getVersion());
-//				link.setLatestFetched(new Date());
-//				vs.setCodeSetLink(link);
-//				vs.setCodes(content.getCodes());
-//			}
-//		}
-//		
-//		// TODO Modify PHINVADS LOGIC
-//		if (vs.getDomainInfo() != null && vs.getDomainInfo().getScope() != null) {
-//			if (vs.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
-//				Config conf = this.configService.findOne();
-//				if (conf != null) {
-//					vs.setUrl(conf.getPhinvadsUrl() + vs.getOid());
-//				}
-//			}
-//		}
-//		if (ig.getValueSetRegistry().getCodesPresence() != null) {
-//			if (ig.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
-//				if (ig.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
-//					vs.setIncludeCodes(true);
-//				} else {
-//					vs.setIncludeCodes(false);
-//					vs.setCodes(new HashSet<Code>());
-//				}
-//			} else {
-//				vs.setIncludeCodes(true);
-//			}
-//		}
-		vs.getCodes().removeIf((x) -> x.isDeprecated());
-		return vs;
-	}
-
-	@Override
 	public IgDataModel generateDataModel(Ig ig) throws Exception {
 		IgDataModel igDataModel = new IgDataModel();
 		igDataModel.setModel(ig);
@@ -912,10 +859,25 @@ public class IgServiceImpl implements IgService {
 		Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap = new HashMap<String, ValuesetBindingDataModel>();
 
 		for (Link link : ig.getValueSetRegistry().getChildren()) {
-			Valueset vs = this.getValueSetInIg(ig.getId(), link.getId());
+			Valueset vs = this.valueSetService.findById(link.getId());
 			if (vs != null) {
 				ValuesetDataModel valuesetDataModel = new ValuesetDataModel();
 				valuesetDataModel.setModel(vs);
+				if(vs.getSourceType().equals(SourceType.INTERNAL_TRACKED)) {
+					CodeSetReference reference = vs.getCodeSetReference();
+					if(reference == null || Strings.isNullOrEmpty(reference.getCodeSetId())) {
+						throw new Exception("Internal Tracked value set "+ vs.getId()+ " is missing code set reference.");
+					}
+					if(resourcePermissionService.hasPermission(Type.CODESET, reference.getCodeSetId(), Action.READ)) {
+						if(Strings.isNullOrEmpty(reference.getVersionId())) {
+							valuesetDataModel.setReferencedCodeSet(codeSetService.getLatestCodeVersion(reference.getCodeSetId()));
+						} else {
+							valuesetDataModel.setReferencedCodeSet(codeSetService.getCodeSetVersionContent(reference.getCodeSetId(), reference.getVersionId()));
+						}
+					} else {
+						throw new Exception("Referenced code set "+ reference.getCodeSetId() +" from value set "+ vs.getId()+ " was not found.");
+					}
+				}
 				valuesetBindingDataModelMap.put(vs.getId(), new ValuesetBindingDataModel(vs));
 				valuesets.add(valuesetDataModel);
 			} else

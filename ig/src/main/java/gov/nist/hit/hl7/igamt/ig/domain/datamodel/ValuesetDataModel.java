@@ -14,31 +14,38 @@ package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 import java.io.Serializable;
 
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionContent;
 
 /**
  * @author jungyubw
- *
  */
-public class ValuesetDataModel implements Serializable, Comparable{
+public class ValuesetDataModel implements Serializable, Comparable<ValuesetDataModel> {
 
-  private Valueset model;
+	private Valueset model;
+	private CodeSetVersionContent referencedCodeSet;
 
-  public Valueset getModel() {
-    return model;
-  }
-
-  public void setModel(Valueset model) {
-    this.model = model;
-  }
-
-	@Override
-	public int compareTo(Object u) {
-		// TODO Auto-generated method stub
-		if (getModel().getLabel() == null || ((ValuesetDataModel) u).getModel().getLabel() == null) {
-		      return 0;
-		    }
-		    return getModel().getLabel().compareTo(((ValuesetDataModel) u).getModel().getLabel());
+	public Valueset getModel() {
+		return model;
 	}
 
+	public CodeSetVersionContent getReferencedCodeSet() {
+		return referencedCodeSet;
+	}
+
+	public void setReferencedCodeSet(CodeSetVersionContent referencedCodeSet) {
+		this.referencedCodeSet = referencedCodeSet;
+	}
+
+	public void setModel(Valueset model) {
+		this.model = model;
+	}
+
+	@Override
+	public int compareTo(ValuesetDataModel target) {
+		if(getModel().getLabel() == null || target.getModel().getLabel() == null) {
+			return 0;
+		}
+		return getModel().getLabel().compareTo(target.getModel().getLabel());
+	}
 
 }
