@@ -176,7 +176,7 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
     this.changes.pipe(
       take(1),
       tap((changes) => {
-        const updates = { ...changes } || {};
+        const updates = changes ? { ...changes } : {};
         updates[change.propertyType] = change;
         this.changes.next(updates);
         this.editorChange({ changes: updates }, true);

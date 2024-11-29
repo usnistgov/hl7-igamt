@@ -6,6 +6,8 @@ import { CodeUsage } from 'src/app/modules/shared/constants/usage.enum';
 import { IChange, PropertyType } from 'src/app/modules/shared/models/save-change';
 import { ICodes } from 'src/app/modules/shared/models/value-set.interface';
 import { ICodeSetVersionContent } from '../../models/code-set.models';
+import { MatDialog } from '@angular/material';
+import { ImportCodeCSVComponent } from 'src/app/modules/shared/components/import-code-csv/import-code-csv.component';
 
 @Component({
   selector: 'app-code-set-table',
@@ -15,8 +17,11 @@ import { ICodeSetVersionContent } from '../../models/code-set.models';
 export class CodeSetTableComponent implements OnInit {
 
   _codeSetVersion: ICodeSetVersionContent;
+
   codeSystems: string[] = [];
+
   @ViewChild('form') form!: NgForm;
+
   @Input()
   set codeSetVersion(codeSetVersion: ICodeSetVersionContent) {
     this._codeSetVersion = codeSetVersion;
@@ -24,10 +29,16 @@ export class CodeSetTableComponent implements OnInit {
     this._codeSetVersion.codeSystems = this.codeSystems;
     this.codeSystemOptions = this.getCodeSystemOptions();
     this.selectedCodes = [];
-
   }
+
   get codeSetVersion() {
     return this._codeSetVersion;
+  }
+
+  constructor(
+    private dialog: MatDialog,
+  ){
+
   }
 
   selectedCodes: ICodes[] = [];
@@ -61,6 +72,7 @@ export class CodeSetTableComponent implements OnInit {
   codeUsageOptions = [
     { label: 'R', value: 'R' }, { label: 'P', value: 'P' }, { label: 'E', value: 'E' },
   ];
+
 
   ngOnInit() {
     this.editMap[this.codeSetVersion.id] = false;
@@ -184,14 +196,17 @@ export class CodeSetTableComponent implements OnInit {
     this.updateAttribute(PropertyType.URL, value);
   }
 
-  importCSV() {
-    this.importCSVEvent.emit(this.codeSetVersion);
-    this.changeCodes();
+  importCSV($event) {
+    this.dialog.open(ImportCodeCSVComponent).afterClosed().subscribe((codes: ICodes[]) => {
+      if (codes) {
+        this.codeSetVersion.codes = codes;
+        this.changeCodes();
+      }
+    });
   }
+
   exportCSV() {
     this.exportCSVEvent.emit(this.codeSetVersion);
-
-
   }
   getUniqueCodeSystems(codes: ICodes[]): string[] {
     const codeSystems = codes.map((code) => code.codeSystem);

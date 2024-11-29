@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
@@ -21,6 +21,7 @@ import { CommitCodeSetVersionDialogComponent } from '../commit-code-set-version-
 import { EditorChange } from './../../../dam-framework/store/data/dam.actions';
 import { ImportCodeCSVComponent } from './../../../shared/components/import-code-csv/import-code-csv.component';
 import { ICodes } from './../../../shared/models/value-set.interface';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-code-set-version-editor',
@@ -46,6 +47,9 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
   versionURL: string;
   hasChanges: Observable<boolean>;
   codeSetVersions$: Observable<ICodeSetVersionInfo[]>;
+
+  @ViewChild('form') form!: NgForm;
+
 
   constructor(
     actions$: Actions,
@@ -241,19 +245,24 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
   }
 
   importCSV($event) {
-    this.dialog.open(ImportCodeCSVComponent, {
-    }).afterClosed().subscribe({
-      next: (codes: ICodes[]) => {
-        console.log(codes);
+      this.dialog.open(ImportCodeCSVComponent).afterClosed().subscribe((codes: ICodes[]) => {
         if (codes) {
-          this.updateCodes({ codes });
+          this.resource$.pipe(
+            take(1),
+            tap((resource) => {
+              this.resourceSubject.next({ ...resource, codes });
+            })
+          ).subscribe();
         }
-      },
-    });
+      });
   }
 
   exportCSV($event) {
     this.codeSetService.exportCSV($event.id);
+  }
+
+  isValid(){
+    return true;
   }
 
 }

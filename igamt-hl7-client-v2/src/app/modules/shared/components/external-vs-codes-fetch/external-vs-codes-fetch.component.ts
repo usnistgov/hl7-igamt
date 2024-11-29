@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { ExternalCodeSetService, ICodeSetQueryResult, IResponseError } from '../../services/external-codeset.service';
@@ -9,7 +9,7 @@ import { ExternalCodeSetService, ICodeSetQueryResult, IResponseError } from '../
     styleUrls: ['./external-vs-codes-fetch.component.css'],
 })
 
-export class ExternalVsCodesFetchComponent implements OnInit {
+export class ExternalVsCodesFetchComponent implements OnInit, OnChanges {
 
     @Input()
     URL: string;
@@ -48,6 +48,17 @@ export class ExternalVsCodesFetchComponent implements OnInit {
 
     constructor(private codeService: ExternalCodeSetService) { }
 
+    ngOnChanges(changes: SimpleChanges): void {
+      if (this.fetchOnInit && this.URL) {
+        this.fetch();
+      } else {
+        this.fetchedCodeSet = null;
+        this.codeSet.emit(null);
+        this.error = null;
+        this.loading = false;
+      }
+    }
+
     fetch() {
         this.loading = true;
         this.fetchDate = new Date();
@@ -77,7 +88,6 @@ export class ExternalVsCodesFetchComponent implements OnInit {
     }
 
     ngOnInit() {
-      console.log(this.fetchOnInit);
       if (this.fetchOnInit && this.URL) {
             this.fetch();
         }

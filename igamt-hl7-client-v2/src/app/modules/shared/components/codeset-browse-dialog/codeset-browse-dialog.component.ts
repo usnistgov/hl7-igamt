@@ -100,7 +100,7 @@ export class CodeSetBrowseDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: IBrowseDialogData,
   ) {
     this.browser = data;
-    this.includeVersions = this.browser.includeVersions;
+    this.includeVersions = this.browser.includeVersions || false;
     if (this.browser.scope.private) {
       this.getTreeByScope(BrowserScope.PRIVATE);
     } else if (this.browser.scope.public) {
