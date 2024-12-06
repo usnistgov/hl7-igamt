@@ -32,9 +32,9 @@
                 <thead>
                   <tr style="margin: 4px;">
                     <th (click)="openCodeSets[key.id] = !openCodeSets[key.id]">
-                      <i *ngIf="!openCodeSets[key.id]" class="fa fa-chevron-right"></i> 
+                      <i *ngIf="!openCodeSets[key.id]" class="fa fa-chevron-right"></i>
                       <i *ngIf="openCodeSets[key.id]" class="fa fa-chevron-down"></i>
-                      CodeSets ({{key.resources['CODESET'].length}})
+                      CodeSets ({{key.resources['CODESET']?.length}})
                     </th>
                   </tr>
                 </thead>
