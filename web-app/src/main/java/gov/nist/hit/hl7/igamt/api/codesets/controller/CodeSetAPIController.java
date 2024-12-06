@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin
 public class CodeSetAPIController {
 
 	@Autowired
@@ -27,6 +28,7 @@ public class CodeSetAPIController {
 			response.setList(codeSetAPIService.getAllUserAccessCodeSet(accessKey));
 			return response;
 		} catch(Exception exception) {
+			exception.printStackTrace();
 			throw new ResourceAPIException("There has been an unexpected error while trying to retrieve code sets");
 		}
 	}
@@ -40,6 +42,7 @@ public class CodeSetAPIController {
 		}  catch(ResourceNotFoundAPIException exception) {
 			throw exception;
 		} catch(Exception exception) {
+			exception.printStackTrace();
 			throw new ResourceAPIException("There has been an unexpected error while trying to retrieve code set");
 		}
 	}
@@ -56,6 +59,7 @@ public class CodeSetAPIController {
 		}  catch(ResourceNotFoundAPIException exception) {
 			throw exception;
 		} catch(Exception exception) {
+			exception.printStackTrace();
 			throw new ResourceAPIException("There has been an unexpected error while trying to retrieve code set");
 		}
 	}
@@ -73,6 +77,7 @@ public class CodeSetAPIController {
 		} catch(ResourceNotFoundAPIException exception) {
 			throw exception;
 		} catch(Exception exception) {
+			exception.printStackTrace();
 			throw new ResourceAPIException("There has been an unexpected error while trying to retrieve codes");
 		}
 	}
