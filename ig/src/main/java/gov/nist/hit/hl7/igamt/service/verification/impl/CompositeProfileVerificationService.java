@@ -6,7 +6,7 @@ import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtensionService
 import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.ProfileComponentsEvaluationResult;
-import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCompositeService;
+import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCreationService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -19,13 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 @Service
 public class CompositeProfileVerificationService extends VerificationUtils {
 	@Autowired
-	ConformanceProfileCompositeService composer;
+	ConformanceProfileCreationService composer;
 	@Autowired
 	ConformanceProfileVerificationService conformanceProfileVerificationService;
 	@Autowired
@@ -38,9 +39,26 @@ public class CompositeProfileVerificationService extends VerificationUtils {
 	DatatypeService datatypeService;
 	@Autowired
 	SegmentService segmentService;
+	@Autowired
+	DefaultVerificationEntryService verificationEntryBuilder;
 
 	public CompositeProfileVerificationResult verifyCompositeProfile(CompositeProfileStructure compositeProfile) {
-		ProfileComponentsEvaluationResult<ConformanceProfile> profileComponentsEvaluationResult = composer.create(compositeProfile);
+		ProfileComponentsEvaluationResult<ConformanceProfile> profileComponentsEvaluationResult;
+		try {
+			profileComponentsEvaluationResult = composer.create(compositeProfile);
+		} catch(Exception e) {
+			CompositeProfileVerificationResult result = new CompositeProfileVerificationResult();
+			result.setGenerated(new ArrayList<>());
+			result.setIssues(
+					Arrays.asList(
+						verificationEntryBuilder.CompositeProfileBuildIssue(
+								compositeProfile.getId(),
+								e.getMessage()
+						)
+					)
+			);
+			return result;
+		}
 		DataFragment<ConformanceProfile> generated = profileComponentsEvaluationResult.getResources();
 		String domainExtensionToken = this.domainExtensionService.put(generated.getContext(), generated.getPayload());
 		try {
@@ -58,7 +76,7 @@ public class CompositeProfileVerificationService extends VerificationUtils {
 			List<DisplayElement> displayElements = new ArrayList<>();
 			getGeneratedDatatypes(generated).forEach((datatype) -> {
 				List<IgamtObjectError> datatypeIssues = this.datatypeVerificationService.verifyDatatype(datatype);
-				if(datatypeIssues.size() > 0) {
+				if(! datatypeIssues.isEmpty()) {
 					// set the target of issue to the composite profile and sub-target to the generated flavor
 					datatypeIssues.forEach((issue) -> switchIssueTargetWithCompositeProfile(issue, compositeProfileContext));
 					DisplayElement displayElement = this.datatypeService.convertDatatype(datatype);
@@ -69,7 +87,7 @@ public class CompositeProfileVerificationService extends VerificationUtils {
 			});
 			getGeneratedSegments(generated).forEach((segment) -> {
 				List<IgamtObjectError> segmentIssues = this.segmentVerificationService.verifySegment(segment);
-				if(segmentIssues.size() > 0) {
+				if(! segmentIssues.isEmpty()) {
 					// set the target of issue to the composite profile and sub-target to the generated flavor
 					segmentIssues.forEach((issue) -> switchIssueTargetWithCompositeProfile(issue, compositeProfileContext));
 					DisplayElement displayElement = this.segmentService.convertSegment(segment);

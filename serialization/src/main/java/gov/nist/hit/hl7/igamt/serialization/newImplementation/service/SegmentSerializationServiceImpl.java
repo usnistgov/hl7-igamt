@@ -131,21 +131,20 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
     }
   }
     if(segment.isGenerated()) {
-        String compositionString= segment.getLabel() +" Composition = ";
+        StringBuilder compositionString= new StringBuilder(segment.getLabel() + " Composition = ");
         GeneratedResourceMetadata generatedResourceMetadata = igDataModel.getAllFlavoredSegmentDataModelsMap().get(segmentDataModel);
         Segment sourceSegment = segmentService.findById(generatedResourceMetadata.getSourceId());
-        if(generatedResourceMetadata != null) compositionString += sourceSegment.getLabel();
-        Set<GenerationDirective> generationDirectiveSet = generatedResourceMetadata.getGeneratedUsing();
+	    compositionString.append(sourceSegment.getLabel());
+	    List<GenerationDirective> generationDirectiveSet = generatedResourceMetadata.getGeneratedUsing();
         for(GenerationDirective generationDirective : generationDirectiveSet) {
-        	if(generationDirective.getType().equals(Type.PROFILECOMPONENT)) {
-        		ProfileComponent pc = profileComponentService.findById(generationDirective.getId());
-        		if(pc !=null) compositionString+= " + " + pc.getLabel();
-        }
+          ProfileComponent pc = profileComponentService.findById(generationDirective.getProfileComponentId());
+          if(pc !=null) {
+            compositionString.append(" + ").append(pc.getLabel());
+          }
         }
         segmentElement.addAttribute(
-				new Attribute("Composition", segment != null ? compositionString : "")
+				new Attribute("Composition", compositionString.toString())
 		);
-    
     }
     if(segment.getExt() != null) {
       segmentElement
