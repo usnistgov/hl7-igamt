@@ -1,4 +1,4 @@
-<div style="height: 100%;" ngbDropdown #dd="ngbDropdown" [autoClose]="false" container="body" (openChange)="onOpenChange($event)">
+<div style="height: 100%;" ngbDropdown class="toc-filter" #dd="ngbDropdown" [autoClose]="false" container="body" (openChange)="onOpenChange($event)">
   <button class="btn no-focus" style="
     color: gray;
     border-left: 2px solid lightgray;
@@ -48,6 +48,7 @@
                 appendTo="body"
                 [options]="conformanceProfileOptions"
                 [(ngModel)]="activeFilter.usedInConformanceProfiles.conformanceProfiles"
+                [panelStyleClass]="'toc-filter'"
                 [style]="{'width':'100%'}">
                 <ng-template let-id pTemplate="item">
                   <app-display-section style="display: inline-block;" [element]="conformanceProfilesMap[id.value]" [hideDescription]="true" [inline]="true" ></app-display-section>
@@ -67,6 +68,7 @@
           <tr>
             <td>
               <p-multiSelect
+              [panelStyleClass]="'toc-filter'"
               appendTo="usage"
               [options]="usages" [(ngModel)]="activeFilter.usedInConformanceProfiles.usages" [style]="{'width':'100%'}">
               <ng-template let-selected pTemplate="selectedItems">
@@ -101,6 +103,7 @@
         </label>
       </div>
       <p-multiSelect
+      [panelStyleClass]="'toc-filter'"
       appendTo="body"
       [options]="typeOptions" [(ngModel)]="activeFilter.filterByType.types" [style]="{'width':'100%'}">
       <ng-template let-selected pTemplate="selectedItems">
@@ -126,6 +129,7 @@
         </label>
       </div>
       <p-multiSelect
+      [panelStyleClass]="'toc-filter'"
       appendTo="body"
       [options]="scopeOptions" [(ngModel)]="activeFilter.filterByScope.scopes" [style]="{'width':'100%'}">
       <ng-template let-selected pTemplate="selectedItems">

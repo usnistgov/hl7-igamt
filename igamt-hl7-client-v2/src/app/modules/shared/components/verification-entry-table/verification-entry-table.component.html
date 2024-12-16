@@ -16,7 +16,7 @@
             <tr style="background-color: white;">
               <th colspan="2" [ngClass]="{ 'no-target-th': !item.target}">
                 <div style="display: flex; justify-content: flex-start; align-items: center;">
-                  <app-display-ref [element]="item.target" [documentId]="documentId" documentType="IGDOCUMENT"></app-display-ref>
+                  <app-display-ref *ngIf="item.target" [element]="item.target" [documentId]="documentId" documentType="IGDOCUMENT"></app-display-ref>
                   <ng-container *ngIf="item.subTarget" >
                     <div style="margin-left: 10px; margin-right: 10px;">
                       <i class="fa fa-chevron-right"></i>

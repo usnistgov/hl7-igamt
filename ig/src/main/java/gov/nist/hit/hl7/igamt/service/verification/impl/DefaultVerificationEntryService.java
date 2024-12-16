@@ -375,6 +375,19 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
+    public IgamtObjectError CoConstraintCellMissing(
+            String pathId, String locationName, String id, Type type, String headerName, String headerType
+    ) {
+        return new IgamtVerificationEntryBuilder("COCONSTRAINT_CELL_MISSING")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_ROW)
+                .message("Co-Constraint row is missing a cell for header "+ headerName +" of type "+headerType)
+                .entry();
+    }
+
+    @Override
     public IgamtObjectError CoConstraintIncompatibleHeaderAndCellType(String pathId, String name, String id, Type type, ColumnType header, ColumnType cell) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_CELL_INCOMPATIBLE_TYPE")
                 .fatal()

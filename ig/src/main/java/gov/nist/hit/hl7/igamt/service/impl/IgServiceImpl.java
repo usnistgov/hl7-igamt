@@ -9,14 +9,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.zip.ZipOutputStream;
 
+import com.google.common.base.Strings;
+import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
-import gov.nist.hit.hl7.igamt.ig.model.IgProfileResourceSubSet;
-import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.model.CoConstraintTableReference;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
+import gov.nist.hit.hl7.igamt.ig.model.*;
 import gov.nist.hit.hl7.igamt.ig.service.*;
+import gov.nist.hit.hl7.igamt.service.verification.impl.CoConstraintVerificationService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -35,7 +38,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.UpdateResult;
 import com.opencsv.CSVReader;
 
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintDependencyService;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
@@ -48,7 +50,6 @@ import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.UsageFilter;
-import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
@@ -60,9 +61,6 @@ import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileDependenc
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCompositeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileDependencyService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
@@ -72,7 +70,6 @@ import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItem;
@@ -82,7 +79,6 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.display.model.PublishingInfo;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CompositeProfileCreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileLabel;
 import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileSelectItem;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
@@ -98,8 +94,6 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.ImportValueSetException;
-import gov.nist.hit.hl7.igamt.ig.model.FilterIGInput;
-import gov.nist.hit.hl7.igamt.ig.model.FilterResponse;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
@@ -109,7 +103,6 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentDependencyService;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
-import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentLabel;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItem;
@@ -217,6 +210,13 @@ public class IgServiceImpl implements IgService {
 
 	@Autowired
 	IgDependencyService igDependencyService;
+
+	@Autowired
+	CoConstraintVerificationService coConstraintVerificationService;
+
+	@Autowired
+	ResourceSkeletonService resourceSkeletonService;
+
 
 	@Override
 	public Ig findById(String id) {
@@ -2092,6 +2092,109 @@ public class IgServiceImpl implements IgService {
 		File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + fileName);
 		multipart.transferTo(convFile);
 		return convFile;
+	}
+
+	@Override
+	public CoConstraintTable getCoConstraintTable(
+			ConformanceProfile conformanceProfile,
+			CoConstraintTableReference reference,
+			boolean removeDerivedIndicator
+	) {
+		if(conformanceProfile.getCoConstraintsBindings() != null && ! conformanceProfile.getCoConstraintsBindings().isEmpty()) {
+			CoConstraintBinding coConstraintBinding = conformanceProfile.getCoConstraintsBindings()
+			                                                            .stream()
+			                                                            .filter((binding) -> binding.getContext()
+			                                                                                        .getPathId()
+			                                                                                        .equals(reference.getContextPathId()))
+			                                                            .findFirst()
+			                                                            .orElse(null);
+			if(coConstraintBinding != null) {
+				CoConstraintBindingSegment coConstraintBindingSegment = coConstraintBinding.getBindings()
+				                                                                           .stream()
+				                                                                           .filter((segmentBinding) -> segmentBinding.getSegment()
+				                                                                                                                     .getPathId()
+				                                                                                                                     .equals(reference.getSegmentPathId()))
+				                                                                           .findFirst()
+				                                                                           .orElse(null);
+				if(coConstraintBindingSegment != null && coConstraintBindingSegment.getTables().size() > reference.getTableIndex()) {
+					CoConstraintTable table = coConstraintBindingSegment.getTables().get(reference.getTableIndex()).getValue();
+					if(removeDerivedIndicator) {
+						removeDerivedIndicatorFromCoConstraintsTable(table);
+					}
+					return table;
+				}
+			}
+		}
+		return null;
+	}
+
+	public void removeDerivedIndicatorFromCoConstraintsTable(CoConstraintTable coConstraintTable) {
+		if(coConstraintTable.getGroups() != null) {
+			coConstraintTable.getGroups().forEach((group) -> {
+				if(group instanceof CoConstraintGroupBindingContained) {
+					CoConstraintGroupBindingContained contained = (CoConstraintGroupBindingContained) group;
+					if(contained.getCoConstraints() != null) {
+						contained.getCoConstraints().forEach((cc) -> cc.setCloned(false));
+					}
+				}
+			});
+		}
+		if(coConstraintTable.getCoConstraints() != null) {
+			coConstraintTable.getCoConstraints().forEach((cc) -> cc.setCloned(false));
+		}
+	}
+
+	@Override
+	public List<IgamtObjectError> importCoConstraintTable(
+			ConformanceProfile conformanceProfile,
+			CoConstraintTableReference reference,
+			CoConstraintTable table
+	) throws Exception {
+		if(conformanceProfile.getCoConstraintsBindings() != null && ! conformanceProfile.getCoConstraintsBindings().isEmpty()) {
+			CoConstraintBinding coConstraintBinding = conformanceProfile.getCoConstraintsBindings()
+			                                                            .stream()
+			                                                            .filter((binding) -> binding.getContext()
+			                                                                                        .getPathId()
+			                                                                                        .equals(reference.getContextPathId()))
+			                                                            .findFirst()
+			                                                            .orElse(null);
+			if(coConstraintBinding != null) {
+				CoConstraintBindingSegment coConstraintBindingSegment = coConstraintBinding.getBindings()
+				                                                                           .stream()
+				                                                                           .filter((segmentBinding) -> segmentBinding.getSegment()
+				                                                                                                                     .getPathId()
+				                                                                                                                     .equals(reference.getSegmentPathId()))
+				                                                                           .findFirst()
+				                                                                           .orElse(null);
+				if(coConstraintBindingSegment != null) {
+					ResourceSkeleton conformanceProfileRs = new ResourceSkeleton(
+							new ResourceRef(Type.CONFORMANCEPROFILE, conformanceProfile.getId()),
+							this.resourceSkeletonService
+					);
+					String segmentPath = Strings.isNullOrEmpty(reference.getContextPathId()) ? reference.getSegmentPathId() : reference.getContextPathId() + "-" + reference.getSegmentPathId();
+					ResourceSkeletonBone segmentRef = conformanceProfileRs.get(segmentPath);
+					if(segmentRef != null) {
+						List<IgamtObjectError> entries = coConstraintVerificationService.checkCoConstraintTable(
+								new ResourceSkeleton(
+										segmentRef.getResourceRef(),
+										this.resourceSkeletonService
+								),
+								new CoConstraintVerificationService.TargetLocation("Table", ""),
+								table
+						);
+						if(entries.stream().noneMatch((e) -> e.getSeverity().equals("FATAL"))) {
+							CoConstraintTableConditionalBinding coConstraintTableConditionalBinding = new CoConstraintTableConditionalBinding();
+							coConstraintTableConditionalBinding.setId(UUID.randomUUID().toString());
+							coConstraintTableConditionalBinding.setValue(table);
+							coConstraintBindingSegment.getTables().add(coConstraintTableConditionalBinding);
+							this.conformanceProfileService.save(conformanceProfile);
+						}
+						return entries;
+					}
+				}
+			}
+		}
+		throw new Exception("The target location (context and segment) for this co-constraint table was not found");
 	}
 
 }

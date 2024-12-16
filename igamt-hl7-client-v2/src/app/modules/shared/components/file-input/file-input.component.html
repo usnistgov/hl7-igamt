@@ -1,0 +1,8 @@
+<div class="upload-section" *ngIf="!viewOnly">
+  <span *ngIf="file" class="upload-span filename">
+    <i class="fa fa-times clear" (click)="clear()"></i>
+    {{file.name}}
+  </span>
+  <span *ngIf="!file" class="upload-span upload-text">CLICK OR DROP HERE</span>
+  <input #fileInput class="upload file-upload" type="file" [accept]="accept">
+</div>

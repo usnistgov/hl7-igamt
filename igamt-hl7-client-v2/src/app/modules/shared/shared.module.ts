@@ -79,7 +79,7 @@ import { EntityBrowseDialogComponent } from './components/entity-browse-dialog/e
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
 import { FieldAddDialogComponent } from './components/field-add-dialog/field-add-dialog.component';
-import { FileExcelInputComponent } from './components/file-excel-input/file-excel-input.component';
+import { FileInputComponent } from './components/file-input/file-input.component';
 import { FileSelectInputComponent } from './components/file-select-input/file-select-input.component';
 import { FormInputComponent } from './components/form-input/form-input.component';
 import { CardinalityComponent } from './components/hl7-v2-tree/columns/cardinality/cardinality.component';
@@ -237,7 +237,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     SelectProfileComponentsComponent,
     AddPcToList,
     CsSubcontextComponent,
-    FileExcelInputComponent,
     GeneratedNamingDuplicationDirective,
     ImportStructureComponent,
     VerificationEntryTableComponent,
@@ -266,6 +265,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MetadataAttributeConfigComponent,
     ImportFromLibComponent,
     VerificationResultDisplayComponent,
+    FileInputComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -357,7 +357,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ResetPasswordRequestFormComponent,
     NewPasswordFromComponent,
     FileSelectInputComponent,
-    FileExcelInputComponent,
     EntityBagdeComponent,
     MetadataDateComponent,
     ScopeBadgeComponent,
@@ -472,6 +471,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ImportFromLibComponent,
     MatTooltipModule,
     VerificationResultDisplayComponent,
+    FileInputComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,

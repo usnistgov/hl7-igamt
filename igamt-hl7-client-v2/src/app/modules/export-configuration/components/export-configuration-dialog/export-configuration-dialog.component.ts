@@ -87,17 +87,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
         });
       }
     } else if (data.type === ProfileActionEventType.UNSELECT) {
-      //     this.checkedProfiles.set(data.profileId, false);
       this.unselectProfileAndDependencies(data.profileId);
-
-      //     // Iterate over checked profiles and call addProfileAndDependencies
-      //     this.checkedProfiles.forEach((isChecked, profileId) => {
-      //   if (isChecked) {
-      //     console.log('Adding profile id', profileId);
-      //     this.addProfileAndDependencies(profileId);
-
-      //   }
-      // });
     }
   }
 
@@ -148,7 +138,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
 
       // Step 3: Gather dependencies of all other checked profiles
       const otherCheckedProfiles = Array.from(this.checkedProfiles.keys())
-        .filter(id => this.checkedProfiles.get(id) === true && id !== profileId);
+        .filter((id) => this.checkedProfiles.get(id) === true && id !== profileId);
 
       if (otherCheckedProfiles.length === 0) {
         // No other profiles are checked, so remove all dependencies of the unselected profile
@@ -158,7 +148,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
         const profileDependencyRequests = otherCheckedProfiles.map((otherProfileId) => {
           return this.igTocFilterService.getResourceIdsForConformanceProfile(
             otherProfileId,
-            this.getUsagesToInclude(this.configuration.conformamceProfileExportConfiguration.segmentORGroupsMessageExport)
+            this.getUsagesToInclude(this.configuration.conformamceProfileExportConfiguration.segmentORGroupsMessageExport),
           );
         });
 
@@ -171,13 +161,13 @@ export class ExportConfigurationDialogComponent implements OnInit {
 
             // Step 6: Collect all dependencies from other checked profiles
             otherProfileResponses.forEach((otherResponse) => {
-              otherResponse.segments.forEach(segmentId => usedSegments.add(segmentId));
-              otherResponse.datatypes.forEach(datatypeId => usedDatatypes.add(datatypeId));
-              otherResponse.valueSets.forEach(valueSetId => usedValueSets.add(valueSetId));
+              otherResponse.segments.forEach((segmentId) => usedSegments.add(segmentId));
+              otherResponse.datatypes.forEach((datatypeId) => usedDatatypes.add(datatypeId));
+              otherResponse.valueSets.forEach((valueSetId) => usedValueSets.add(valueSetId));
             });
 
             return { usedSegments, usedDatatypes, usedValueSets };
-          })
+          }),
         ).subscribe(({ usedSegments, usedDatatypes, usedValueSets }) => {
           // Step 7: Remove dependencies only if they are not used by other profiles
           this.removeDependencies(response, usedSegments, usedDatatypes, usedValueSets);

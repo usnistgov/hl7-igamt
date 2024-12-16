@@ -24,6 +24,10 @@ export class FileSelectInputComponent implements ControlValueAccessor, OnInit {
   private preview: string | ArrayBuffer;
   @Input()
   viewOnly: boolean;
+  @Input()
+  accept = 'image/x-png,image/gif,image/jpeg';
+  @Input()
+  hasImagePreview = true;
 
   constructor(private host: ElementRef<HTMLInputElement>) { }
 

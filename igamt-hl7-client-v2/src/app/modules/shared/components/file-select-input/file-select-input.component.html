@@ -4,9 +4,9 @@
     {{file.name}}
   </span>
   <span *ngIf="!file" class="upload-span upload-text">CLICK OR DROP HERE</span>
-  <input #fileInput class="upload file-upload" type="file" accept="image/x-png,image/gif,image/jpeg">
+  <input #fileInput class="upload file-upload" type="file" [accept]="accept">
 </div>
-<div style="width: 100%; display: flex; justify-content: center; margin-top: 10px;" *ngIf="!viewOnly">
+<div style="width: 100%; display: flex; justify-content: center; margin-top: 10px;" *ngIf="!viewOnly && hasImagePreview">
   <div *ngIf="file && preview" style="display: flex; align-items: center; flex-direction: column; border: 2px dashed;">
       <span style="color: green;"><i class="fa fa-eye"></i> preview</span>
       <img [src]="preview" height="200" />

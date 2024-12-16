@@ -461,8 +461,8 @@ body .ui-dropdown-panel {
   max-width: fit-content !important;
 }
 
-.dropdown {
-  z-index: 10;
+.toc-filter {
+  z-index: 1050 !important;
 }
 
 block-ui-content {

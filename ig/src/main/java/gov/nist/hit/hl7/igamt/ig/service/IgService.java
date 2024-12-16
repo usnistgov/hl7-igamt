@@ -7,14 +7,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
-import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
-import gov.nist.hit.hl7.igamt.datatype.domain.Component;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.model.CoConstraintTableReference;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.model.IgProfileResourceSubSet;
-import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -144,4 +143,11 @@ public interface IgService {
   
   public Valueset importValuesetsFromCSV(String igId, MultipartFile csvFile) throws ImportValueSetException;
 
+  CoConstraintTable getCoConstraintTable(ConformanceProfile conformanceProfile, CoConstraintTableReference reference, boolean removeDerivedIndicator);
+
+  List<IgamtObjectError> importCoConstraintTable(
+          ConformanceProfile conformanceProfile,
+          CoConstraintTableReference reference,
+          CoConstraintTable table
+  ) throws Exception;
 }
