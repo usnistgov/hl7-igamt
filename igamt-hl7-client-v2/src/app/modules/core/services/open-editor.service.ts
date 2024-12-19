@@ -177,31 +177,20 @@ export class OpenEditorService {
               },
             });
 
-            this.store.dispatch(new LoadResourceReferences({ resourceType: Type.CONFORMANCEPROFILE, id: cp.conformanceProfileId }));
-            return RxjsStoreHelperService.listenAndReact(this.actions$, {
-              [IgamtLoadedResourcesActionTypes.LoadResourceReferencesSuccess]: {
-                do: (loadSuccess: LoadResourceReferencesSuccess) => {
-                  return of(new InsertResourcesInRepostory({
-                    collections: [{
-                      key: 'datatypes',
-                      values: [...cps.datatypes.map((dr) => dr.display)],
-                    }, {
-                      key: 'segments',
-                      values: [...cps.segments.map((dr) => dr.display)],
-                    }, {
-                      key: 'resources',
-                      values: [...[...cps.datatypes, ...cps.segments].map((dr) => dr.resource), ...cps.references],
-                    }],
-                  }), openEditor);
-                },
-              },
-              [IgamtLoadedResourcesActionTypes.LoadResourceReferencesFailure]: {
-                do: (loadFailure: LoadResourceReferencesFailure) => {
-                  return of(new OpenEditorFailure({ id: action.payload.id }));
-                },
-              },
-            });
+            return of(new InsertResourcesInRepostory({
+              collections: [{
+                key: 'datatypes',
+                values: [...cps.datatypes.map((dr) => dr.display)],
+              }, {
+                key: 'segments',
+                values: [...cps.segments.map((dr) => dr.display)],
+              }, {
+                key: 'resources',
+                values: [...[...cps.datatypes, ...cps.segments].map((dr) => dr.resource), ...cps.resources],
+              }],
+            }), openEditor);
           }),
+          catchError((err) => of(new OpenEditorFailure({ id: action.payload.id }))),
         );
       },
     );

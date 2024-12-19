@@ -120,21 +120,21 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
     }
     
     if(datatype.isGenerated()) {
-    String compositionString= datatype.getLabel() +" Composition = ";
-    GeneratedResourceMetadata generatedResourceMetadata = ((IgDataModel) documentStructureDataModel).getAllFlavoredDatatypeDataModelsMap().get(datatypeDataModel);
-    Datatype sourceDatatype = datatypeService.findById(generatedResourceMetadata.getSourceId());
-    if(generatedResourceMetadata != null) compositionString += sourceDatatype.getLabel();
-    Set<GenerationDirective> generationDirectiveSet = generatedResourceMetadata.getGeneratedUsing();
-    for(GenerationDirective generationDirective : generationDirectiveSet) {
-    	if(generationDirective.getType().equals(Type.PROFILECOMPONENT)) {
-    		ProfileComponent pc = profileComponentService.findById(generationDirective.getId());
-    		if(pc !=null) compositionString+= " + " + pc.getLabel();
+      StringBuilder compositionString= new StringBuilder(datatype.getLabel() + " Composition = ");
+      GeneratedResourceMetadata generatedResourceMetadata = ((IgDataModel) documentStructureDataModel).getAllFlavoredDatatypeDataModelsMap().get(datatypeDataModel);
+      Datatype sourceDatatype = datatypeService.findById(generatedResourceMetadata.getSourceId());
+      compositionString.append(sourceDatatype.getLabel());
+      List<GenerationDirective> generationDirectiveSet = generatedResourceMetadata.getGeneratedUsing();
+      for(GenerationDirective generationDirective : generationDirectiveSet) {
+        ProfileComponent pc = profileComponentService.findById(generationDirective.getProfileComponentId());
+        if(pc !=null) {
+          compositionString.append(" + ").append(pc.getLabel());
+        }
+      }
+      datatypeElement.addAttribute(
+              new Attribute("Composition", compositionString.toString())
+      );
     }
-    }
-    datatypeElement.addAttribute(
-			new Attribute("Composition", datatype != null ? compositionString : "")
-	);
-    }   
     datatypeElement
     .addAttribute(new Attribute("ext", datatype.getExt() != null ? datatype.getExt() : ""));
     datatypeElement

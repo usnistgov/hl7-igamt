@@ -107,8 +107,8 @@ public interface IgService {
   public Set<RelationShip> builAllRelations(Ig ig) ;
     
   UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass, boolean updateDate);
-  IgProfileResourceSubSet getIgProfileResourceSubSet(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws EntityNotFound;
-  Ig getIgProfileResourceSubSetAsIg(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws EntityNotFound;
+  IgProfileResourceSubSet getIgProfileResourceSubSet(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws Exception;
+  Ig getIgProfileResourceSubSetAsIg(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws Exception;
 
   public ProfileComponent createProfileComponent(Ig ig, String name, List<DisplayElement> children);
 

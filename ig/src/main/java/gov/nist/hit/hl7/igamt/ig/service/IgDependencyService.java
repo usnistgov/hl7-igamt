@@ -9,5 +9,5 @@ import java.util.Set;
 
 public interface IgDependencyService {
 	Set<ResourceRef> collectAllConformanceProfileDependencies(ConformanceProfile conformanceProfile) throws EntityNotFound;
-	Set<ResourceRef> collectAllCompositeProfileDependencies(CompositeProfileStructure compositeProfile) throws EntityNotFound;
+	Set<ResourceRef> collectAllCompositeProfileDependencies(CompositeProfileStructure compositeProfile) throws Exception;
 }
