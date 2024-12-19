@@ -1,15 +1,12 @@
 package gov.nist.hit.hl7.igamt.web.app.ig;
 
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
 import gov.nist.hit.hl7.igamt.web.app.model.IgSubSet;
-import gov.nist.hit.hl7.igamt.web.app.service.LegacyIgSubSetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 
-import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileState;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
-import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCompositeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
@@ -74,12 +69,6 @@ public class GVTConnectController extends BaseController {
   
   @Autowired
   InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
-  
-  @Autowired
-  ConformanceProfileCompositeService compose;
-
-  @Autowired
-  LegacyIgSubSetService legacyIgSubSetService;
 
 
   @RequestMapping(value = "/api/testing/login", method = RequestMethod.GET, produces = {"application/json"})
@@ -124,17 +113,18 @@ public class GVTConnectController extends BaseController {
       log.info("Exporting messages to GVT from IG Document with id=" + id);
 
       Ig ig = findIgById(id);
-
+      Set<String> conformanceProfileIds = reqIds.getConformanceProfilesId() != null ? new HashSet<>(Arrays.asList(reqIds.getConformanceProfilesId())) : new HashSet<>();
+      Set<String> compositeProfileIds = reqIds.getCompositeProfilesId() != null ? new HashSet<>(Arrays.asList(reqIds.getCompositeProfilesId())) : new HashSet<>();
   	  if (ig != null)  {
-  		  IgSubSet igSubSet = this.legacyIgSubSetService.makeIgSubSet(ig, reqIds);
-  		  IgDataModel igModel = this.igService.generateDataModel(igSubSet.getSubSet());
+          Ig subSetIg = this.igService.getIgProfileResourceSubSetAsIg(
+                  findIgById(id),
+                  conformanceProfileIds,
+                  compositeProfileIds
+          );
+  		  IgDataModel igModel = this.igService.generateDataModel(subSetIg);
   	      InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
   	      ResponseEntity<?> rsp = gvtService.send(content, authorization, url, domain);
-  	      Map<String, Object> res = (Map<String, Object>) rsp.getBody();
-  	      for(String token: igSubSet.getInMemoryDataTokens()) {
-				this.inMemoryDomainExtensionService.clear(token);
-          }
-  	      return res;
+  	      return  (Map<String, Object>) rsp.getBody();
   	  }
       return null;
     } catch (Exception e) {

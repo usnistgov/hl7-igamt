@@ -16,7 +16,6 @@ import gov.nist.hit.hl7.igamt.display.model.*;
 import gov.nist.hit.hl7.igamt.ig.domain.ExportShareConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgVerificationIssuesList;
 import gov.nist.hit.hl7.igamt.ig.model.*;
-import gov.nist.hit.hl7.igamt.web.app.service.LegacyIgSubSetService;
 import gov.nist.hit.hl7.igamt.web.app.service.impl.EntityBrowserService;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceDocumentManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +63,6 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
-import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCompositeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
@@ -192,9 +190,6 @@ public class IGDocumentController extends BaseController {
 	CompositeProfileStructureService compositeProfileService;
 
 	@Autowired
-	ConformanceProfileCompositeService compose;
-
-	@Autowired
 	InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
 
 	@Autowired
@@ -211,9 +206,6 @@ public class IGDocumentController extends BaseController {
 
 	@Autowired
 	WorkspaceDocumentManagementService workspaceDocumentManagementService;
-
-	@Autowired
-	LegacyIgSubSetService legacyIgSubSetService;
 
 	private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
 	private static final String SEGMENT_DELETED = "SEGMENT_DELETED";
@@ -1497,7 +1489,7 @@ public class IGDocumentController extends BaseController {
 
 	@RequestMapping(value = "/api/igdocuments/{igid}/preverification", method = RequestMethod.POST, produces = { "application/json" })
 	@PreAuthorize("AccessResource('IGDOCUMENT', #igid, READ)")
-	public @ResponseBody IgVerificationIssuesList preVerification(@PathVariable("igid") String igid, @RequestBody ReqId reqIds) throws EntityNotFound {
+	public @ResponseBody IgVerificationIssuesList preVerification(@PathVariable("igid") String igid, @RequestBody ReqId reqIds) throws Exception {
 		Ig ig = this.igService.findById(igid);
 		Set<String> selectedConformanceProfileIds = new HashSet<>(reqIds.getConformanceProfilesId() != null ? Arrays.asList(reqIds.getConformanceProfilesId()) : new ArrayList<>());
 		Set<String> selectedCompositeProfileIds = new HashSet<>(reqIds.getCompositeProfilesId() != null ? Arrays.asList(reqIds.getCompositeProfilesId()) : new ArrayList<>());

@@ -859,7 +859,17 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .entry();
 	}
 
-	@Override
+    @Override
+    public IgamtObjectError CompositeProfileBuildIssue(String compositeProfileId, String error) {
+        return new IgamtVerificationEntryBuilder("COMPOSITE_PROFILE_BUILD_ISSUE")
+                .fatal()
+                .handleByUser()
+                .target(compositeProfileId, Type.COMPOSITEPROFILE)
+                .message(String.format("Could not build conformance profile from composite profile due to: %s", error))
+                .entry();
+    }
+
+    @Override
 	public IgamtObjectError CardinalityInvalidRange(LocationInfo locationInfo, String id, Type type, String min, String max) {
 		return new IgamtVerificationEntryBuilder("CARDINALITY_INVALID_RANGE")
                 .fatal()

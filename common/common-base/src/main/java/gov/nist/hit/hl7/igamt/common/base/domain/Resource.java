@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import org.springframework.data.annotation.Transient;
 
+import java.util.List;
 import java.util.Set;
 
 public abstract class Resource extends AbstractDomain {
@@ -16,7 +17,7 @@ public abstract class Resource extends AbstractDomain {
   private String fixedExtension;
   private String structureIdentifier;
   @Transient
-  private Set<GenerationDirective> generatedUsing;
+  private List<GenerationDirective> generatedUsing;
   @Transient
   private boolean generated;
   
@@ -143,11 +144,11 @@ public abstract class Resource extends AbstractDomain {
     this.fixedExtension = fixedExtension;
   }
 
-  public Set<GenerationDirective> getGeneratedUsing() {
+  public List<GenerationDirective> getGeneratedUsing() {
     return generatedUsing;
   }
 
-  public void setGeneratedUsing(Set<GenerationDirective> generatedUsing) {
+  public void setGeneratedUsing(List<GenerationDirective> generatedUsing) {
     this.generatedUsing = generatedUsing;
   }
 

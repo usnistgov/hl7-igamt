@@ -106,8 +106,11 @@ public interface VerificationEntryService {
     IgamtObjectError Valueset_NotAllowedExtensibility_ImplementableProfile(Location info, String id, Type type, String extensibility);
     IgamtObjectError Valueset_NotAllowedStability_ConstrainableProfile(Location info, String id, Type type, String stability);
     IgamtObjectError Valueset_NotAllowedStability_ImplementableProfile(Location info, String id, Type type, String stability);
-    
-    
+
+    // Composite Profile
+    IgamtObjectError CompositeProfileBuildIssue(String compositeProfileId, String error);
+
+
     // Cardinality
     IgamtObjectError CardinalityInvalidRange(LocationInfo info, String id, Type type, String min, String max);
     IgamtObjectError CardinalityInvalidMaxCardinality(LocationInfo info, String id, Type type, String max);

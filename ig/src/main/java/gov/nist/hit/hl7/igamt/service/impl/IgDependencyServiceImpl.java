@@ -1,12 +1,13 @@
 package gov.nist.hit.hl7.igamt.service.impl;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtensionService;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.ProfileComponentsEvaluationResult;
-import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCompositeService;
+import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCreationService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileDependencyService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.wrappers.ConformanceProfileDependencies;
@@ -27,7 +28,7 @@ public class IgDependencyServiceImpl implements IgDependencyService {
 	@Autowired
 	InMemoryDomainExtensionService inMemoryDomainExtensionService;
 	@Autowired
-	ConformanceProfileCompositeService composer;
+	ConformanceProfileCreationService composer;
 
 
 	@Override
@@ -41,7 +42,7 @@ public class IgDependencyServiceImpl implements IgDependencyService {
 	}
 
 	@Override
-	public Set<ResourceRef> collectAllCompositeProfileDependencies(CompositeProfileStructure compositeProfile) throws EntityNotFound  {
+	public Set<ResourceRef> collectAllCompositeProfileDependencies(CompositeProfileStructure compositeProfile) throws Exception {
 		ProfileComponentsEvaluationResult<ConformanceProfile> profileComponentsEvaluationResult = composer.create(compositeProfile);
 		DataFragment<ConformanceProfile> generated = profileComponentsEvaluationResult.getResources();
 		String domainExtensionToken = this.inMemoryDomainExtensionService.put(generated.getContext(), generated.getPayload());

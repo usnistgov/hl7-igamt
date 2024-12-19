@@ -18,6 +18,9 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.conformanceprofile.model.CoConstraintTableReference;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.model.*;
+import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCreationService;
+import gov.nist.hit.hl7.igamt.ig.model.IgProfileResourceSubSet;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
 import gov.nist.hit.hl7.igamt.ig.service.*;
 import gov.nist.hit.hl7.igamt.service.verification.impl.CoConstraintVerificationService;
 import org.bson.types.ObjectId;
@@ -59,7 +62,6 @@ import gov.nist.hit.hl7.igamt.compositeprofile.domain.ProfileComponentsEvaluatio
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileDependencyService;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
-import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCompositeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileDependencyService;
@@ -158,7 +160,7 @@ public class IgServiceImpl implements IgService {
 	ConformanceStatementRepository conformanceStatementRepository;
 
 	@Autowired
-	ConformanceProfileCompositeService compose;
+	ConformanceProfileCreationService compose;
 
 	@Autowired
 	PredicateRepository predicateRepository;
@@ -1457,7 +1459,7 @@ public class IgServiceImpl implements IgService {
 		return ret;
 	}
 
-	public IgProfileResourceSubSet getIgProfileResourceSubSet(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws EntityNotFound {
+	public IgProfileResourceSubSet getIgProfileResourceSubSet(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws Exception {
 		IgProfileResourceSubSet igProfileResourceSubSet = new IgProfileResourceSubSet();
 		Set<ResourceRef> dependencies = new HashSet<>();
 		igProfileResourceSubSet.setConformanceProfiles(this.conformanceProfileService.findByIdIn(conformanceProfiles));
@@ -1491,7 +1493,7 @@ public class IgServiceImpl implements IgService {
 		return igProfileResourceSubSet;
 	}
 
-	public Ig getIgProfileResourceSubSetAsIg(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws EntityNotFound {
+	public Ig getIgProfileResourceSubSetAsIg(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws Exception {
 		IgProfileResourceSubSet resources = this.getIgProfileResourceSubSet(
 				ig,
 				conformanceProfiles,
