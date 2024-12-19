@@ -17,30 +17,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
-import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
-import gov.nist.hit.hl7.igamt.common.base.wrappers.Substitue;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureTreeModel;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfileMetadata;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileValidationException;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
-import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
 
 /**
  *

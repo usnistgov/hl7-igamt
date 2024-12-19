@@ -1,0 +1,30 @@
+<mat-dialog-content>
+  <h3 mat-dialog-title>Import Co-Constraint Table ({{format.toUpperCase()}})</h3>
+  <ng-container *ngIf="!loading">
+    <app-dam-alerts *ngIf="uploadResult" (close)="deleteMessage($event)" [messages]="[uploadResult.userMessage]"></app-dam-alerts>
+    <div *ngIf="!uploadResult">
+      <app-file-input [(ngModel)]="jsonFile" [accept]="files"></app-file-input>
+    </div>
+    <div *ngIf="uploadResult && !uploadResult.success && uploadResult.table">
+      <app-verification-entry-table [value]="uploadResult.table" documentId="aaa" ></app-verification-entry-table>
+    </div>
+  </ng-container>
+  <div *ngIf="loading" style="display: flex; align-items: center; justify-content: center; padding: 40px;">
+    <mat-spinner class="verification-progress" diameter="45"></mat-spinner>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <div style="display: flex; align-items: center; justify-content: flex-end; gap: 4px; width: 100%;">
+    <button class="btn btn-sm btn-primary" *ngIf="!uploadResult" [disabled]="!jsonFile || loading" (click)="import()">
+      <i class="fa fa-download"></i>
+      Import
+    </button>
+    <button class="btn btn-sm btn-secondary" *ngIf="uploadResult" [disabled]="loading" (click)="back()">
+      <i class="fa fa-chevron-left"></i>
+      Back
+    </button>
+    <button class="btn btn-sm btn-danger" (click)="cancel()" [disabled]="loading">
+      Close
+    </button>
+  </div>
+</mat-dialog-actions>

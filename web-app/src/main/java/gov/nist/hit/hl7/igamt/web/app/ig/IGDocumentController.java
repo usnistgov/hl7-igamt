@@ -1,4 +1,5 @@
 package gov.nist.hit.hl7.igamt.web.app.ig;
+
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -22,13 +23,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -1543,8 +1538,6 @@ public class IGDocumentController extends BaseController {
 			}
 		}
 		return ret;
-	
-		
-
 	}
+
 }

@@ -59,6 +59,7 @@ public interface VerificationEntryService {
     IgamtObjectError CoConstraintPrimaryUsageInvalid(String pathId, String locationName, String id, Type type, CoConstraintUsage usage);
     IgamtObjectError CoConstraintCardinalityInvalid(String pathId, String locationName, String id, Type type, boolean group, int min, String max);
     IgamtObjectError CoConstraintCardinalityAndUsageInvalid(String pathId, String locationName, String id, Type type, boolean group, int min, String max, CoConstraintUsage usage);
+    IgamtObjectError CoConstraintCellMissing(String pathId, String locationName, String id, Type type, String headerName, String headerType);
     IgamtObjectError CoConstraintIncompatibleHeaderAndCellType(String pathId, String name, String id, Type type, ColumnType header, ColumnType cell);
     IgamtObjectError CoConstraintCodeCellMissingCode(String pathId, String locationName, String id, Type type);
     IgamtObjectError CoConstraintCodeCellMissingCodeSystem(String pathId, String locationName, String id, Type type);

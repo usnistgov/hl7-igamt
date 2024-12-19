@@ -1,8 +1,6 @@
 package gov.nist.hit.hl7.igamt.coconstraints.model;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
-import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
 
 public class StructureElementRef {
     private String pathId;
