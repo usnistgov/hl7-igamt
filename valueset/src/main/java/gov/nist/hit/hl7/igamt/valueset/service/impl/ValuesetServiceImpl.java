@@ -365,6 +365,10 @@ public class ValuesetServiceImpl implements ValuesetService {
         displayElement.setResourceOrigin(valueset.getResourceOrigin());
         displayElement.setDerived(valueset.isDerived());
         displayElement.setSourceType(valueset.getSourceType());
+        displayElement.setStability(valueset.getStability());
+        if(valueset.getUrl() != null && !valueset.getUrl().isEmpty()) {
+            displayElement.setUrl(valueset.getUrl());
+        }
         return displayElement;
     }
 

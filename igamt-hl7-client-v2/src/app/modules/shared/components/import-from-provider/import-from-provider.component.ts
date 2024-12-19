@@ -62,7 +62,7 @@ export class ImportFromProviderComponent implements OnInit {
         type: this.data.type,
         ext: '',
         flavor : true,
-        url : ''};
+        url : null};
     }
 
   ngOnInit() {
@@ -188,7 +188,6 @@ export class ImportFromProviderComponent implements OnInit {
     console.log(this.fetchedCodeSets);
   }
   submit() {
-
     this.model.trackLatest = (this.versionMode === VersionMode.LATEST);
     this.model.domainInfo.version = this.versionInfo.version;
     if (!this.model.trackLatest) {

@@ -1,4 +1,7 @@
 <form #form="ngForm">
+
+  <pre>{{form.valid}}</pre>
+
   <div style="margin-top: 5px" class="vs-table" *ngIf="codeSetVersion">
     <p-table
       #dt1
@@ -11,8 +14,7 @@
       dataKey="id"
       [paginator]="true"
       [rows]="20"
-      [rowsPerPageOptions]="[5, 10, 15, 20, 30, 40, 50]"
-    >
+      [rowsPerPageOptions]="[5, 10, 15, 20, 30, 40, 50]">
       <ng-template pTemplate="caption">
         <div
           style="
@@ -174,7 +176,7 @@
             >
               <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 3px;">
                 <div class="input-group" *ngIf="rowData.hasPattern">
-                  <input required type="text" class="form-control" placeholder="regular expression" [id]="'pattern' + rowData.id" [name]="'pattern' + rowData.id" [(ngModel)]="rowData.pattern" [ngModelOptions]="{updateOn: 'blur'}" (ngModelChange)="changeCodes()">
+                  <input required type="text" class="form-control" placeholder="regular expression" [id]="'pattern' + rowData.id" [name]="'pattern' + rowData.id" [(ngModel)]="rowData.pattern" (onChange)="changeCodes()">
                   <div class="input-group-append">
                     <button (click)="removeHasPattern(rowData)" class="btn btn-outline-danger" type="button"><i class="fa fa-trash"></i></button>
                   </div>

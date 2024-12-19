@@ -31,6 +31,10 @@
                     <th>Version <span *ngIf="fetchedCodeSet.latestStable" class="badge badge-primary">latest</span></th>
                     <td>{{ fetchedCodeSet.version.version }} <span style="color: gray; font-size: 0.8em;"> - committed on {{ fetchedCodeSet.version.date | date:'medium' }}</span></td>
                 </tr>
+                <tr>
+                  <th>Number of codes</th>
+                  <td>{{ fetchedCodeSet?.codes?.length }} </td>
+              </tr>
             </tbody>
         </table>
         <p-table #dt [columns]="columns" [value]="fetchedCodeSet.codes" [paginator]="true" [rows]="10">

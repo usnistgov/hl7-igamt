@@ -14,7 +14,7 @@
     <span *ngIf="element.sourceType" class="badge badge-secondary" style="margin-left: 5px; margin-right: 5px">EXT</span>
   </div> -->
 
-  <app-scope-badge [scope]="element.domainInfo.scope" [version]="element.domainInfo.version" [resourceOrigin]='element.resourceOrigin' [flavor]="element.flavor" *ngIf="!ignoreScope" [sourceType]="element.sourceType">
+  <app-scope-badge [scope]="element.domainInfo.scope" [version]="element.domainInfo.version" [resourceOrigin]='element.resourceOrigin' [flavor]="element.flavor" *ngIf="!ignoreScope" [sourceType]="element.sourceType" [stability]="element.stability" [url]="element.url" >
   </app-scope-badge>
   <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"> &nbsp;{{ getDisplayLabel() }}
     <ng-container *ngIf=" !hideDescription && element.description">

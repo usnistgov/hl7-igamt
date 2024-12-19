@@ -411,7 +411,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 						// Set the codes
 						if(!skipCodesExport) {
-							addValueSetCodes(elmValueSetDefinition, t.getCodes());
+							addValueSetCodes(elmValueSetDefinition, codes);
 						}
 
 						if(t.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {

@@ -65,6 +65,24 @@ export class ValueSetStructureComponent implements OnInit {
   @Input()
   selectedColumns: any[];
 
+
+  columns = [
+    { field: 'value', header: 'Value', filterMatchMode: 'contains' },
+    { field: 'usage', header: 'Usage', filterMatchMode: 'contains' },
+    { field: 'description', header: 'Description', filterMatchMode: 'contains' },
+
+
+  ];
+
+  filterValues: { [key: string]: string } = {};
+
+  //dt1: any;
+
+  onFilter(field: string, matchMode: string, dt1: any) {
+    const filterValue = this.filterValues[field] || '';
+    dt1.filter(filterValue, field, matchMode);
+  }
+
   stabilityOptionsOptions = [
     this.notDefinedOption, { label: 'Dynamic', value: 'Dynamic' }, { label: 'Static', value: 'Static' },
   ];

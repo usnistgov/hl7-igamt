@@ -53,3 +53,10 @@ gvt:
    
 host:
    url: http://localhost:8090
+
+froala:
+  key: "TESTKEY"
+
+codes:
+  limit: 1000
+  phinvadURL: https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=

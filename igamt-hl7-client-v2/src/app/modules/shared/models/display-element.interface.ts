@@ -1,4 +1,5 @@
 import { ResourceOrigin } from '../constants/resource-origin.enum';
+import { Stability } from '../constants/stability.enum';
 import { Type } from '../constants/type.enum';
 import { IActiveInfo, Status } from './abstract-domain.interface';
 import { SourceType } from './adding-info';
@@ -35,4 +36,5 @@ export interface IDisplayElement {
   resourceOrigin?: ResourceOrigin;
   generated?: boolean;
   sourceType?: SourceType;
+  stability?: Stability;
 }

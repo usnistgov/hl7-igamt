@@ -584,18 +584,16 @@ public class CrudServiceImpl implements CrudService {
 		}
 		
 		if (elm.isIncludeChildren()) {
-			
-			
 			Set<Code> vsCodes = externalCodeService.getCodesByURL(elm.getUrl());
 
-			if(vsCodes.size()<= 500) {
+			if(vsCodes.size()<= 1000) {
 				
 			valueset.setCodes(vsCodes);
 			valueset.setCodeSystems(valuesetService.extractCodeSystemsFromCodes(vsCodes));
 			valueset.setSourceType(SourceType.INTERNAL);
+				valueset.setUrl(null);
 			} 
 		}
-		
 		valueset.setUsername(username);
 		valueset.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
 		valueset.setBindingIdentifier(elm.getName());

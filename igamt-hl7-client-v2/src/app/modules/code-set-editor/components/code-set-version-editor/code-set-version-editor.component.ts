@@ -22,6 +22,7 @@ import { EditorChange } from './../../../dam-framework/store/data/dam.actions';
 import { ImportCodeCSVComponent } from './../../../shared/components/import-code-csv/import-code-csv.component';
 import { ICodes } from './../../../shared/models/value-set.interface';
 import { NgForm } from '@angular/forms';
+import { CodeSetTableComponent } from '../code-set-table/code-set-table.component';
 
 @Component({
   selector: 'app-code-set-version-editor',
@@ -48,7 +49,7 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
   hasChanges: Observable<boolean>;
   codeSetVersions$: Observable<ICodeSetVersionInfo[]>;
 
-  @ViewChild('form') form!: NgForm;
+  @ViewChild('CodeSetTableComponent') child!: CodeSetTableComponent;
 
 
   constructor(
@@ -113,10 +114,11 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
   }
 
   editorChange(data: any, valid: boolean) {
+    valid = this.child.isValid();
     this.changeTime = new Date();
     this.store.dispatch(new EditorChange({
       data,
-      valid,
+      valid: valid,
       date: this.changeTime,
     }));
   }
@@ -141,12 +143,13 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
   }
 
   updateCodes(event: { codes: ICodes[], valid?: boolean }) {
+    console.log(event)
     this.resource$.pipe(
       take(1),
       tap((resource) => {
         this.resourceSubject.next({ ...resource, codes: event.codes });
 
-        this.editorChange({ data: { resource: { ...resource, codes: event } } }, event.valid);
+        this.editorChange({ data: { resource: { ...resource, codes: event.codes } } }, this.child.isValid());
       }),
     ).subscribe();
   }

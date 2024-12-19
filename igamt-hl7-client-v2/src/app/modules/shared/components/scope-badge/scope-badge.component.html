@@ -23,7 +23,7 @@
   </span>
 
   <span *ngSwitchCase="'PHINVADS'" class="badge scope-badge-phinvads">
-    PHIN <span style="font-size: 0.9em; font-weight: 300;"></span>
+    PHIN <span style="font-size: 0.9em; font-weight: 300;">{{version}}</span>
   </span>
   <span *ngSwitchCase="'SDTF'"
         class="badge scope-badge-dynamic">
@@ -33,8 +33,8 @@
     PUBLISHED
   </span>
 
-  <span class="badge  badge-secondary" *ngIf="sourceType && sourceType ==='EXTERNAL'" style ="margin-left: 5px;"> EXT </span>
+  <span class="badge  badge-secondary" *ngIf="url" style ="margin-left: 5px;"> EXT </span>
 
-  <span class="badge scope-badge-dynamic" *ngIf="sourceType && sourceType ==='INTERNAL_TRACKED' || sourceType ==='EXTERNAL_TRACKED'  " style ="margin-left: 5px;"> DYN </span>
+  <span class="badge scope-badge-dynamic" *ngIf="stability && stability ==='Dynamic' " style ="margin-left: 5px;"> DYN </span>
   </div>
 </ng-container>

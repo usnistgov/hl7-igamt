@@ -8,6 +8,7 @@ import { ICodes } from 'src/app/modules/shared/models/value-set.interface';
 import { ICodeSetVersionContent } from '../../models/code-set.models';
 import { MatDialog } from '@angular/material';
 import { ImportCodeCSVComponent } from 'src/app/modules/shared/components/import-code-csv/import-code-csv.component';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-code-set-table',
@@ -21,6 +22,8 @@ export class CodeSetTableComponent implements OnInit {
   codeSystems: string[] = [];
 
   @ViewChild('form') form!: NgForm;
+
+  valid: boolean = true;
 
   @Input()
   set codeSetVersion(codeSetVersion: ICodeSetVersionContent) {
@@ -36,7 +39,7 @@ export class CodeSetTableComponent implements OnInit {
   }
 
   constructor(
-    private dialog: MatDialog,
+    private dialog: MatDialog, private cdr: ChangeDetectorRef
   ){
 
   }
@@ -109,7 +112,7 @@ export class CodeSetTableComponent implements OnInit {
     code.hasPattern = true;
     code.pattern = '';
     // add pattern control to the form to make form validation work correctly
-    this.form.control.addControl('pattern' + code.id, new FormControl('', { validators: Validators.required, updateOn: 'blur' }));
+    //this.form.control.addControl('pattern' + code.id, new FormControl('', { validators: Validators.required, updateOn: 'blur' }));
     this.changeCodes();
   }
 
@@ -117,7 +120,7 @@ export class CodeSetTableComponent implements OnInit {
     code.hasPattern = false;
     code.pattern = '';
     // remove pattern control to the form to make form validation work correctly
-    this.form.control.removeControl('pattern' + code.id);
+    //this.form.control.removeControl('pattern' + code.id);
     this.changeCodes();
   }
 
@@ -155,7 +158,7 @@ export class CodeSetTableComponent implements OnInit {
       pattern: '',
       hasPattern: false,
     });
-    this.changeCodes();
+      this.changeCodes();
   }
 
   applyUsage(usage) {
@@ -163,6 +166,7 @@ export class CodeSetTableComponent implements OnInit {
       code.usage = usage;
     }
     this.updateAttribute(PropertyType.CODES, this.codeSetVersion.codes);
+
   }
 
   applyCodeSystem($event) {
@@ -172,7 +176,8 @@ export class CodeSetTableComponent implements OnInit {
   }
 
   changeCodes() {
-    this.changes.emit({ codes: this.codeSetVersion.codes, valid: this.form.valid });
+    console.log(this.valid);
+    this.changes.emit({ codes: this.codeSetVersion.codes, valid: this.valid });
   }
 
   addCodeSystemFormCode(code: ICodes) {
@@ -197,14 +202,19 @@ export class CodeSetTableComponent implements OnInit {
   }
 
   importCSV($event) {
+
     this.dialog.open(ImportCodeCSVComponent).afterClosed().subscribe((codes: ICodes[]) => {
       if (codes) {
         this.codeSetVersion.codes = codes;
+        this.cdr.detectChanges();
         this.changeCodes();
       }
     });
   }
 
+  isValid(){
+   return this.valid;
+  }
   exportCSV() {
     this.exportCSVEvent.emit(this.codeSetVersion);
   }
@@ -225,5 +235,14 @@ export class CodeSetTableComponent implements OnInit {
     link.click();
     document.body.removeChild(link);
   }
+
+
+  ngAfterViewInit() {
+    this.form.statusChanges.subscribe((status) => {
+       console.log(this.valid);
+      // this.changeCodes();
+    });
+  }
+
 
 }

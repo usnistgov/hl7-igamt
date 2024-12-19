@@ -4,13 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import gov.nist.diff.domain.DeltaAction;
-import gov.nist.hit.hl7.igamt.common.base.domain.ActiveInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.ResourceOrigin;
-import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
-import gov.nist.hit.hl7.igamt.common.base.domain.Status;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 
 public class DisplayElement {
 
@@ -40,6 +34,8 @@ public class DisplayElement {
   private boolean derived;
   private boolean generated;
   private SourceType sourceType;
+  private Stability stability;
+  private String url;
 
   public DisplayElement() {
   }
@@ -258,4 +254,19 @@ public SourceType getSourceType() {
 public void setSourceType(SourceType sourceType) {
 	this.sourceType = sourceType;
 }
+  public Stability getStability() {
+    return stability;
+  }
+
+  public void setStability(Stability stability) {
+    this.stability = stability;
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
 }

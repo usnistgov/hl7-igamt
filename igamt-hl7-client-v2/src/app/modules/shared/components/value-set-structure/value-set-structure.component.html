@@ -33,6 +33,7 @@
           name="contentDef" [style]="{'width':'100%'}">
         </p-dropdown>
       </td>
+
     </tr>
   </table>
   <hr />
@@ -58,13 +59,26 @@
             </button>
           </div>
           <div>
-            <button (click)="deleteCodes()" [disabled]="!selectedCodes.length" *ngIf="!viewOnly"
-              class="btn btn-sm btn-danger" style="margin-right:5px;" type="button">
-              <i class="fa fa-trash"></i> Delete Selected
-              <span class="badge badge-info">{{selectedCodes?.length }}</span>
-            </button>
-            <button (click)="addCode()" class="btn btn-sm btn-primary" type="button" *ngIf="!viewOnly"><i
-                class="fa fa-plus"></i> Add Code</button>
+
+            <div style="display: flex; flex-direction: row;">
+              <div style="display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 32px;
+            margin-right: 5px;
+            padding-right: 5px;
+            margin-left: 10px;">
+                <strong style="margin-right: 5px">Number of codes</strong>
+                <span class="badge badge-dark">{{ valueSet.codes?.length }}</span>
+              </div>
+              <button (click)="deleteCodes()" [disabled]="!selectedCodes.length" *ngIf="!viewOnly"
+                class="btn btn-sm btn-danger" style="margin-right:5px;" type="button">
+                <i class="fa fa-trash"></i> Delete Selected
+                <span class="badge badge-info">{{selectedCodes?.length }}</span>
+              </button>
+              <button (click)="addCode()" class="btn btn-sm btn-primary" type="button" *ngIf="!viewOnly"><i
+                  class="fa fa-plus"></i> Add Code</button>
+            </div>
           </div>
         </div>
       </div>
@@ -75,10 +89,14 @@
         <ng-template pTemplate="caption">
           <div class="codes-toolbar">
             <div class="column-filter">
+
               <p-multiSelect [(ngModel)]="selectedColumns" [options]="cols" [style]="{minWidth: '200px'}"
                 defaultLabel="Choose Columns" id="columns" name="columns" optionLabel="header"
                 selectedItemsLabel="{0} columns selected"></p-multiSelect>
+
+
             </div>
+
             <div *ngIf="!viewOnly" class="selected-codes-options">
 
               <div class="apply-usages" style="margin-right: 5px; margin-left: 10px;">
@@ -116,8 +134,8 @@
               <i class="fa fa-filter" style="width: 100%"></i>
             </th>
             <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" style="background:#c8c8c8;">
-              <input (input)="dt1.filter($event.target.value, col.field, col.filterMatchMode)"
-                [placeholder]="' Search by '+col.header" [value]="dt1.filters[col.field]?.value" pInputText type="text">
+              <input type="text" name=" 'SearchBy''col.header" [placeholder]="'Search by ' + col.header"
+                [(ngModel)]="filterValues[col.field]" (input)="onFilter(col.field, 'contains', dt1)" pInputText />
             </th>
           </tr>
         </ng-template>
@@ -233,24 +251,26 @@
 
       <table class="table table-sm table-bordered table-stripped" *ngIf="valueSet.codeSetLink">
         <tbody>
-            <tr>
-                <th style="background-color: lightgray;">Code Set</th>
-                <td>{{ valueSet.codeSetLink.parentName }}</td>
-            </tr>
-            <tr>
-              <th style="background-color: lightgray;">Version <span *ngIf="valueSet.codeSetLink.latest" class="badge badge-primary">latest</span></th>
-              <td>{{ valueSet.codeSetLink?.version }} <span style="color: gray; font-size: 0.8em;"> - committed on {{ valueSet.codeSetLink.commitDate | date:'medium' }}</span></td>
+          <tr>
+            <th style="background-color: lightgray;">Code Set</th>
+            <td>{{ valueSet.codeSetLink.parentName }}</td>
+          </tr>
+          <tr>
+            <th style="background-color: lightgray;">Version <span *ngIf="valueSet.codeSetLink.latest"
+                class="badge badge-primary">latest</span></th>
+            <td>{{ valueSet.codeSetLink?.version }} <span style="color: gray; font-size: 0.8em;"> - committed on {{
+                valueSet.codeSetLink.commitDate | date:'medium' }}</span></td>
           </tr>
         </tbody>
-       </table>
+      </table>
 
-       <div class="alert alert-danger" *ngIf="loadingError" >
+      <div class="alert alert-danger" *ngIf="loadingError">
         {{loadingError}}
-       </div>
+      </div>
 
-        <div *ngIf="codesLoading" style="display: flex; align-items: center; justify-content: center; height: 100%;">
-          <mat-spinner class="verification-progress" diameter="90"></mat-spinner>
-        </div>
+      <div *ngIf="codesLoading" style="display: flex; align-items: center; justify-content: center; height: 100%;">
+        <mat-spinner class="verification-progress" diameter="90"></mat-spinner>
+      </div>
 
       <p-table #dt1 [(selection)]="selectedCodes" [columns]="selectedColumns" [reorderableColumns]="true"
         sortField="value" [resizableColumns]="false" [value]="valueSet.codes" selectionMode="checkbox"
@@ -264,15 +284,15 @@
           </tr>
           <tr>
             <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" style="background:#c8c8c8;">
-              <input (input)="dt1.filter($event.target.value, col.field, col.filterMatchMode)"
-                [placeholder]="' Search by '+col.header" [value]="dt1.filters[col.field]?.value" pInputText type="text">
+              <input type="text" name=" 'SearchBy''col.header" [placeholder]="'Search by ' + col.header"
+                [(ngModel)]="filterValues[col.field]" (input)="onFilter(col.field,'contains', dt1)" pInputText />
             </th>
           </tr>
         </ng-template>
         <ng-template let-columns="columns" let-index="rowIndex" let-rowData pTemplate="body">
-          <tr  [pSelectableRow]="rowData">
+          <tr [pSelectableRow]="rowData">
             <td *ngFor="let col of columns" [ngSwitch]="col.field">
-              <div  *ngSwitchCase="'usage'">
+              <div *ngSwitchCase="'usage'">
                 {{rowData.usage}}
               </div>
               <div #anchor *ngSwitchCase="'pattern'"
