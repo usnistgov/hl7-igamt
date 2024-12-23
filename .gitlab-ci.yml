@@ -1,0 +1,64 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  DOCKER_IMAGE_PROD: "nist775hit/hl7-igamt-2-prod"
+  DOCKER_IMAGE_DEV: "nist775hit/hl7-igamt-2-dev"
+  DOCKER_DRIVER: overlay2
+  DOCKER_HOST: tcp://docker:2375  # Ensure Docker commands connect to the DinD service
+  DOCKER_TLS_CERTDIR: ""          # Disable TLS for Docker-in-Docker
+
+generate_jar:
+  stage: build
+  image: nist775hit/java-8-node-14:1.0
+  before_script:
+    - echo "Running pre-build cleanup..."
+    - cd ..
+    - rm -rf dependencies buildDependencies hl7-auth dependencies_*/ 
+  script:
+    - node -v
+    - npm -v
+    - mvn -v
+    - curl -fsSL https://raw.githubusercontent.com/usnistgov/hl7-build-toolkit/refs/heads/main/buildDependencies.js -o buildDependencies.js
+    - node buildDependencies.js hl7-igamt 
+
+  artifacts:
+    paths:
+      - bootstrap/target/hl7-igamt.jar
+    expire_in: 1 hour
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "ci-build-dev"'
+    - if: '$CI_COMMIT_BRANCH == "ci-build-prod"'
+
+build_and_push_docker_image_dev:
+  stage: deploy
+  image: docker:24.0.2
+  services:
+    - docker:24.0.2-dind
+  before_script:
+    - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+  script:
+    - cp bootstrap/target/hl7-igamt.jar .
+    - docker build -t "$DOCKER_IMAGE_DEV:latest" .
+    - docker push $DOCKER_IMAGE_DEV:latest
+  dependencies:
+    - generate_jar
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "ci-build-dev"'
+
+build_and_push_docker_image_prod:
+  stage: deploy
+  image: docker:24.0.2
+  services:
+    - docker:24.0.2-dind
+  before_script:
+    - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+  script:
+    - cp bootstrap/target/hl7-igamt.jar .
+    - docker build -t "$DOCKER_IMAGE_PROD:latest" .
+    - docker push $DOCKER_IMAGE_PROD:latest
+  dependencies:
+    - generate_jar
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "ci-build-prod"'
