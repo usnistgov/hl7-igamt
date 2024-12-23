@@ -28,18 +28,15 @@ import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 public class IgDataModel extends DocumentStructureDataModel implements Serializable{
 	
 	private Ig model;
-
 	private Set<DatatypeDataModel> datatypes = new HashSet<DatatypeDataModel>();
 	private Set<SegmentDataModel> segments = new HashSet<SegmentDataModel>();
 	private Set<ConformanceProfileDataModel> conformanceProfiles = new HashSet<ConformanceProfileDataModel>();
     private Set<ProfileComponentDataModel> profileComponents = new HashSet<ProfileComponentDataModel>();
     private Set<CompositeProfileDataModel> compositeProfile = new HashSet<CompositeProfileDataModel>();
 	private Set<ValuesetDataModel> valuesets = new HashSet<ValuesetDataModel>();
-	
 	private Map<SegmentDataModel, GeneratedResourceMetadata> allFlavoredSegmentDataModelsMap = new HashMap<>();
 	private Map<DatatypeDataModel, GeneratedResourceMetadata> allFlavoredDatatypeDataModelsMap = new HashMap<>();
-
-	
+	private Set<String> dataExtensionTokens = new HashSet<>();
 
 	public Ig getModel() {
 		return model;
@@ -81,26 +78,30 @@ public class IgDataModel extends DocumentStructureDataModel implements Serializa
 		this.segments = segments;
 	}
 
-	/**
-	 * @param id
-	 * @return
-	 */
 	public DatatypeDataModel findDatatype(String id) {
 		for (DatatypeDataModel dtModel : this.datatypes) {
 			if (dtModel.getModel().getId().equals(id))
 				return dtModel;
 		}
+		if(this.allFlavoredDatatypeDataModelsMap != null) {
+			return this.allFlavoredDatatypeDataModelsMap.keySet().stream()
+			                                           .filter((datatype) -> datatype.getModel().getId().equals(id))
+			                                           .findFirst()
+			                                           .orElse(null);
+		}
 		return null;
 	}
 
-	/**
-	 * @param id
-	 * @return
-	 */
 	public SegmentDataModel findSegment(String id) {
 		for (SegmentDataModel segModel : this.segments) {
 			if (segModel.getModel().getId().equals(id))
 				return segModel;
+		}
+		if(this.allFlavoredSegmentDataModelsMap != null) {
+			return this.allFlavoredSegmentDataModelsMap.keySet().stream()
+			                                    .filter((segment) -> segment.getModel().getId().equals(id))
+												.findFirst()
+												.orElse(null);
 		}
 		return null;
 	}
@@ -121,11 +122,6 @@ public class IgDataModel extends DocumentStructureDataModel implements Serializa
 		return null;
 	}
 
-	/**
-	 * @param value
-	 * @param version
-	 * @return
-	 */
 	public DatatypeDataModel findDatatype(String dtName, String version) {
 		for (DatatypeDataModel dtModel : this.datatypes) {
 			if (dtModel.getModel().getDomainInfo().getVersion().equals(version) && dtModel.getModel().getName().equals(dtName))
@@ -167,7 +163,12 @@ public class IgDataModel extends DocumentStructureDataModel implements Serializa
 			Map<DatatypeDataModel, GeneratedResourceMetadata> allFlavoredDatatypeDataModelsMap) {
 		this.allFlavoredDatatypeDataModelsMap = allFlavoredDatatypeDataModelsMap;
 	}
-	
-	
 
+	public Set<String> getDataExtensionTokens() {
+		return dataExtensionTokens;
+	}
+
+	public void setDataExtensionTokens(Set<String> dataExtensionTokens) {
+		this.dataExtensionTokens = dataExtensionTokens;
+	}
 }

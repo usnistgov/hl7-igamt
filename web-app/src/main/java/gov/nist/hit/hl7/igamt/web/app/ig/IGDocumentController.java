@@ -1408,12 +1408,6 @@ public class IGDocumentController extends BaseController {
 				newVS.getUpdateDate(), response);
 	}
 
-	@RequestMapping(value = "/api/igdocuments/{id}/grand", method = RequestMethod.GET, produces = {"application/json"})
-	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
-	public @ResponseBody IgDataModel getIgGrandObject(@PathVariable("id") String id, Authentication authentication) throws Exception {
-		return this.igService.generateDataModel(findIgById(id));
-	}
-
 	private String updateFileName(String str) {
 		return str.replaceAll(" ", "-").replaceAll("\\*", "-").replaceAll("\"", "-").replaceAll(":", "-").replaceAll(";", "-").replaceAll("=", "-").replaceAll(",", "-");
 	}
@@ -1421,19 +1415,25 @@ public class IGDocumentController extends BaseController {
 	@RequestMapping(value = "/api/export/ig/{id}/xml/validation", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
 	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
 	public void exportXML(@PathVariable("id") String id, FormData formData, HttpServletResponse response) throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		ReqId reqIds = mapper.readValue(formData.getJson(), ReqId.class);
-		Ig subSetIg = this.igService.getIgProfileResourceSubSetAsIg(
-				findIgById(id),
-				new HashSet<>(Arrays.asList(reqIds.getConformanceProfilesId())),
-				new HashSet<>(Arrays.asList(reqIds.getCompositeProfilesId()))
-		);
-		IgDataModel igModel = this.igService.generateDataModel(subSetIg);
-		InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
-		response.setContentType("application/zip");
-		response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
-		FileCopyUtils.copy(content, response.getOutputStream());
+		Set<String> dataExtensionTokens = new HashSet<>();
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			ReqId reqIds = mapper.readValue(formData.getJson(), ReqId.class);
+			Ig subSetIg = this.igService.getIgProfileResourceSubSetAsIg(
+					findIgById(id),
+					new HashSet<>(Arrays.asList(reqIds.getConformanceProfilesId())),
+					new HashSet<>(Arrays.asList(reqIds.getCompositeProfilesId()))
+			);
+			IgDataModel igModel = this.igService.generateDataModel(subSetIg);
+			dataExtensionTokens.addAll(igModel.getDataExtensionTokens());
+			InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
+			response.setContentType("application/zip");
+			response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
+			FileCopyUtils.copy(content, response.getOutputStream());
+		} finally {
+			dataExtensionTokens.forEach(token -> inMemoryDomainExtensionService.clear(token));
+		}
 	}
 
 

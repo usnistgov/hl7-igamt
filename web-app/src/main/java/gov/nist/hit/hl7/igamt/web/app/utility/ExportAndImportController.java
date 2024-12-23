@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
+import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtensionService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.model.CoConstraintTableReference;
 import gov.nist.hit.hl7.igamt.conformanceprofile.model.ExportedCoConstraintTable;
 import gov.nist.hit.hl7.igamt.export.domain.CoConstraintExcelExportFormData;
@@ -118,6 +119,9 @@ public class ExportAndImportController {
   @Autowired
   CoConstraintSerializationHelper coConstraintSerializationHelper;
 
+  @Autowired
+  InMemoryDomainExtensionService inMemoryDomainExtensionService;
+
 //  List<String> files = new ArrayList<String>();
 //  Path source = Paths.get(this.getClass().getResource("/").getPath());
   
@@ -131,7 +135,9 @@ public class ExportAndImportController {
       @PathVariable("format") String format,
       @RequestParam(required = false) String deltamode,
       HttpServletResponse response, FormData formData) throws ExportException {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	  Set<String> dataExtensionTokens = new HashSet<>();
+
+	  Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String username = authentication.getPrincipal().toString(); 
     System.out.println("IN controller");
     ExportedFile exportedFile = null;
@@ -140,8 +146,9 @@ public class ExportAndImportController {
       ExportConfiguration config = null;
       Ig ig = igService.findById(igId);		
       IgDataModel igDataModel = igService.generateDataModel(ig);
-//      ig = igDataModel.getModel();
-      ExportType type = ExportType.fromString(formData.getDocumentType());
+	  dataExtensionTokens.addAll(igDataModel.getDataExtensionTokens());
+
+	    ExportType type = ExportType.fromString(formData.getDocumentType());
       if(type == null) {
         throw new ExportException("Unspecified Export Type");
       }
@@ -212,6 +219,8 @@ public class ExportAndImportController {
     } catch (Exception e) {
       e.printStackTrace();
       throw new ExportException(e, "Error while sending back exported IG Document with id " + igId);
+    } finally {
+	    dataExtensionTokens.forEach(token -> inMemoryDomainExtensionService.clear(token));
     }
   }
 
@@ -315,12 +324,14 @@ public class ExportAndImportController {
       @PathVariable("type") ExportType type,
       HttpServletResponse response,
       FormData formData) throws ExportException {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	  Set<String> dataExtensionTokens = new HashSet<>();
+	  Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {
       try {
     	  Ig ig = igService.findById(documentId);		
           IgDataModel igDataModel = igService.generateDataModel(ig);
-          ig = igDataModel.getModel();
+	      dataExtensionTokens.addAll(igDataModel.getDataExtensionTokens());
+	      ig = igDataModel.getModel();
         String username = authentication.getPrincipal().toString();
         ExportedFile exportedFile= null;     
         ExportConfiguration exportConfiguration = exportConfigurationService.getConfigurationToApply(type, username);
@@ -334,6 +345,8 @@ public class ExportAndImportController {
         FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());		
       } catch (Exception e) {
         throw new ExportException(e, "Error while sending back exported  Document with id " + documentId);
+      } finally {
+	      dataExtensionTokens.forEach(token -> inMemoryDomainExtensionService.clear(token));
       }
     } else {
       throw new AuthenticationCredentialsNotFoundException("No Authentication");
