@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.web.app.ig;
 
+import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtensionService;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
@@ -21,7 +22,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Controller
 public class PublicIgController {
@@ -32,6 +35,8 @@ public class PublicIgController {
 	public IgNewExportService igExportService;
 	@Autowired
 	public ExportConfigurationService exportConfigurationService;
+	@Autowired
+	public InMemoryDomainExtensionService inMemoryDomainExtensionService;
 
 	@RequestMapping(value = "/public/ig/{igId}/{exportId}/content")
 	public @ResponseBody void getIg(
@@ -40,7 +45,7 @@ public class PublicIgController {
 			HttpServletResponse response,
 			HttpServletRequest request
 	) throws Exception {
-
+		Set<String> dataExtensionTokens = new HashSet<>();
 		try {
 			Ig ig = igService.findById(id);
 			if(ig != null && ig.getShareLinks() != null && !ig.getShareLinks().isEmpty() && ig.getShareLinks().containsKey(exportId)) {
@@ -49,6 +54,7 @@ public class PublicIgController {
 					ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(exportShareConfiguration.getConfigurationId());
 					ExportFilterDecision filterDecision = exportShareConfiguration.getExportDecision();
 					IgDataModel igDataModel = igService.generateDataModel(ig);
+					dataExtensionTokens.addAll(igDataModel.getDataExtensionTokens());
 					ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(ig.getUsername(), igDataModel, filterDecision, exportConfiguration.getId());
 					response.setContentType("text/html");
 					FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
@@ -62,6 +68,8 @@ public class PublicIgController {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.setContentType("text/html");
 			IOUtils.copy(Objects.requireNonNull(PublicIgController.class.getResourceAsStream("/public-ig-error.html")), response.getOutputStream());
+		} finally {
+			dataExtensionTokens.forEach(token -> inMemoryDomainExtensionService.clear(token));
 		}
 	}
 

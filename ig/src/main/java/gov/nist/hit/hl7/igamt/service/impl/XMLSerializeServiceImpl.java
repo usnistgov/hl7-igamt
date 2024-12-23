@@ -25,6 +25,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.*;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,17 +67,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeConstraints;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ComponentDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeBindingDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.FieldDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentBindingDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentRefOrGroupDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.ig.model.CoConstraintMappingLocation;
 import gov.nist.hit.hl7.igamt.ig.model.CoConstraintOBX3MappingValue;
 import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
@@ -175,11 +165,27 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 			for (ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
 				ms.appendChild(this.serializeConformanceProfile(cpModel, igModel, defaultHL7Version));
 			}
+			if(igModel.getCompositeProfile() != null && !igModel.getCompositeProfile().isEmpty()) {
+				for(CompositeProfileDataModel compositeProfile : igModel.getCompositeProfile()) {
+					if(compositeProfile.getConformanceProfileDataModel() != null) {
+						ms.appendChild(this.serializeConformanceProfile(
+								compositeProfile.getConformanceProfileDataModel(),
+								igModel,
+								defaultHL7Version
+						));
+					}
+				}
+			}
 			e.appendChild(ms);
 
 			Element ss = new Element("Segments");
 			for (SegmentDataModel sModel : igModel.getSegments()) {
 				ss.appendChild(this.serializeSegment(sModel, igModel, missingDts, defaultHL7Version));
+			}
+			if(igModel.getAllFlavoredSegmentDataModelsMap() != null) {
+				for(SegmentDataModel sModel: igModel.getAllFlavoredSegmentDataModelsMap().keySet()) {
+					ss.appendChild(this.serializeSegment(sModel, igModel, missingDts, defaultHL7Version));
+				}
 			}
 			e.appendChild(ss);
 
@@ -190,6 +196,12 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 			for (Datatype dt : missingDts) {
 				ds.appendChild(this.serializeSimpleDatatype(dt, igModel, defaultHL7Version));
+			}
+
+			if(igModel.getAllFlavoredDatatypeDataModelsMap() != null) {
+				for(DatatypeDataModel sModel: igModel.getAllFlavoredDatatypeDataModelsMap().keySet()) {
+					ss.appendChild(this.serializeDatatype(sModel, igModel, defaultHL7Version));
+				}
 			}
 
 			e.appendChild(ds);

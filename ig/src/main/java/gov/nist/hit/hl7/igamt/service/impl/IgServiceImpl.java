@@ -879,6 +879,25 @@ public class IgServiceImpl implements IgService {
 		return vs;
 	}
 
+	/**
+
+	*    This method will generate flavors for composite profiles and store them in the InMemoryDataExtensionService
+	*    These flavors need to be cleared from the memory to avoid having memory issues.
+	*    Here is the recommended pattern
+	*	 <pre> {@code
+	*		//[...]
+	*		Set<String> dataExtensionTokens = new HashSet<>();
+	*		try {
+	*			//[...]
+	*			IgDataModel igModel = this.igService.generateDataModel(subSetIg);
+	*		    dataExtensionTokens.addAll(igModel.getDataExtensionTokens());
+	*		    //[...]
+	*		} finally {
+	*			dataExtensionTokens.forEach(token -> inMemoryDomainExtensionService.clear(token));
+	*		}}
+	*	 </pre>
+	*	It is recommended to always use try { } finally { } to make sure the resources are cleared even if an exception occurs
+	 */
 	@Override
 	public IgDataModel generateDataModel(Ig ig) throws Exception {
 		IgDataModel igDataModel = new IgDataModel();
@@ -964,13 +983,15 @@ public class IgServiceImpl implements IgService {
 		for (Link link : ig.getCompositeProfileRegistry().getChildren()) {
 			CompositeProfileStructure cps = this.compositeProfileService.findById(link.getId());
 			if (cps != null) {
+				ProfileComponentsEvaluationResult<ConformanceProfile> profileComponentsEvaluationResult = compose.create(cps);
+				String token = inMemoryDomainExtensionService.put(profileComponentsEvaluationResult.getResources().getContext());
+				igDataModel.getDataExtensionTokens().add(token);
+
 				CompositeProfileDataModel compositeProfileDataModel = new CompositeProfileDataModel();
 				compositeProfileDataModel.putModel(cps, inMemoryDomainExtensionService, valuesetBindingDataModelMap,
 						this.conformanceStatementRepository, this.predicateRepository, this.segmentService);
 				compositeProfiles.add(compositeProfileDataModel);
 
-				ProfileComponentsEvaluationResult<ConformanceProfile> profileComponentsEvaluationResult = compose
-						.create(cps);
 
 				DataFragment<ConformanceProfile> df = profileComponentsEvaluationResult.getResources();
 				List<Datatype> flavoredDatatypes = df.getContext().getResources().stream()
