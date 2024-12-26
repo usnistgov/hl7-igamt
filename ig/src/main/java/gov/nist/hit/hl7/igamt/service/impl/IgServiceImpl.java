@@ -984,7 +984,10 @@ public class IgServiceImpl implements IgService {
 			CompositeProfileStructure cps = this.compositeProfileService.findById(link.getId());
 			if (cps != null) {
 				ProfileComponentsEvaluationResult<ConformanceProfile> profileComponentsEvaluationResult = compose.create(cps);
-				String token = inMemoryDomainExtensionService.put(profileComponentsEvaluationResult.getResources().getContext());
+				String token = inMemoryDomainExtensionService.put(
+						profileComponentsEvaluationResult.getResources().getContext(),
+						profileComponentsEvaluationResult.getResources().getPayload()
+				);
 				igDataModel.getDataExtensionTokens().add(token);
 
 				CompositeProfileDataModel compositeProfileDataModel = new CompositeProfileDataModel();
@@ -1093,6 +1096,21 @@ public class IgServiceImpl implements IgService {
 	public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds,
 			String[] compositeProfileIds) throws CloneNotSupportedException, IOException, ClassNotFoundException,
 			ProfileSerializationException, TableSerializationException, CoConstraintXMLSerializationException {
+
+		// Add composite profile generated resources to the IG's main list of resources
+		if(igModel.getAllFlavoredDatatypeDataModelsMap() != null) {
+			igModel.getDatatypes().addAll(igModel.getAllFlavoredDatatypeDataModelsMap().keySet());
+		}
+		if(igModel.getAllFlavoredSegmentDataModelsMap() != null) {
+			igModel.getSegments().addAll(igModel.getAllFlavoredSegmentDataModelsMap().keySet());
+		}
+		if(igModel.getCompositeProfile() != null) {
+			igModel.getCompositeProfile().forEach((composite) -> {
+				if(composite.getConformanceProfileDataModel() != null) {
+					igModel.getConformanceProfiles().add(composite.getConformanceProfileDataModel());
+				}
+			});
+		}
 
 		this.xmlSerializeService.normalizeIgModel(igModel, conformanceProfileIds);
 

@@ -2,6 +2,8 @@ package gov.nist.hit.hl7.igamt.compositeprofile.service.impl;
 
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtensionService;
+import gov.nist.hit.hl7.igamt.common.base.service.impl.DataExtension;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.*;
@@ -37,6 +39,8 @@ public class ComposeConformanceProfileService implements ConformanceProfileCreat
 	BindingService bindingService;
 	@Autowired
 	ChangeDirectiveService changeDirectiveService;
+	@Autowired
+	InMemoryDomainExtensionService inMemoryDomainExtensionService;
 
 	@Override
 	public ProfileComponentsEvaluationResult<ConformanceProfile> create(CompositeProfileStructure structure) throws Exception {
@@ -71,7 +75,39 @@ public class ComposeConformanceProfileService implements ConformanceProfileCreat
 		context.prune(ext);
 		target.setId(structure.getId() + '_' + ext);
 		target.setName(structure.getName());
+		// The following is necessary for makeLocationInfo to work, long term solution is to get rid of location info in bindings
+		String token = inMemoryDomainExtensionService.put(context, target);
+		try {
+			this.makeLocationInfo(target, context);
+		} finally {
+			inMemoryDomainExtensionService.clear(token);
+		}
 		return new ProfileComponentsEvaluationResult<>(new DataFragment<>(target, context), context.generatedResourceMetadataList);
+	}
+
+	private void makeLocationInfo(ConformanceProfile target, CompositeProfileDataExtension context) {
+		this.confProfileService.makeLocationInfo(target);
+		context.generatedResourceMetadataList.forEach((resourceMetadata) -> {
+			if(resourceMetadata.getType().equals(Segment.class)) {
+				Segment segment = context.get(
+						resourceMetadata.getGeneratedResourceId(),
+						Segment.class
+				);
+				this.segmentService.makeLocationInfo(segment);
+			} else if(resourceMetadata.getType().equals(ComplexDatatype.class)) {
+				ComplexDatatype datatype = context.get(
+						resourceMetadata.getGeneratedResourceId(),
+						ComplexDatatype.class
+				);
+				this.datatypeService.makeLocationInfo(datatype);
+			} else if(resourceMetadata.getType().equals(Datatype.class)) {
+				Datatype datatype = context.get(
+						resourceMetadata.getGeneratedResourceId(),
+						Datatype.class
+				);
+				this.datatypeService.makeLocationInfo(datatype);
+			}
+		});
 	}
 
 	private Set<ItemProperty> bindingsToItemProperty(Set<PropertyBinding> bindings) {
