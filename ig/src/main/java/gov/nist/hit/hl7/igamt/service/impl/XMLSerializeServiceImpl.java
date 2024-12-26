@@ -165,27 +165,11 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 			for (ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
 				ms.appendChild(this.serializeConformanceProfile(cpModel, igModel, defaultHL7Version));
 			}
-			if(igModel.getCompositeProfile() != null && !igModel.getCompositeProfile().isEmpty()) {
-				for(CompositeProfileDataModel compositeProfile : igModel.getCompositeProfile()) {
-					if(compositeProfile.getConformanceProfileDataModel() != null) {
-						ms.appendChild(this.serializeConformanceProfile(
-								compositeProfile.getConformanceProfileDataModel(),
-								igModel,
-								defaultHL7Version
-						));
-					}
-				}
-			}
 			e.appendChild(ms);
 
 			Element ss = new Element("Segments");
 			for (SegmentDataModel sModel : igModel.getSegments()) {
 				ss.appendChild(this.serializeSegment(sModel, igModel, missingDts, defaultHL7Version));
-			}
-			if(igModel.getAllFlavoredSegmentDataModelsMap() != null) {
-				for(SegmentDataModel sModel: igModel.getAllFlavoredSegmentDataModelsMap().keySet()) {
-					ss.appendChild(this.serializeSegment(sModel, igModel, missingDts, defaultHL7Version));
-				}
 			}
 			e.appendChild(ss);
 
@@ -196,12 +180,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 			for (Datatype dt : missingDts) {
 				ds.appendChild(this.serializeSimpleDatatype(dt, igModel, defaultHL7Version));
-			}
-
-			if(igModel.getAllFlavoredDatatypeDataModelsMap() != null) {
-				for(DatatypeDataModel sModel: igModel.getAllFlavoredDatatypeDataModelsMap().keySet()) {
-					ss.appendChild(this.serializeDatatype(sModel, igModel, defaultHL7Version));
-				}
 			}
 
 			e.appendChild(ds);
