@@ -49,7 +49,7 @@ build_and_push_docker_image_dev:
     - generate_jar
   rules:
     # - if: '$CI_COMMIT_BRANCH == "ci-build-test"'
-    - if: '$PROFILE == dev'
+    - if: '$PROFILE == "dev"'
     
 
 build_and_push_docker_image_prod:
@@ -67,7 +67,7 @@ build_and_push_docker_image_prod:
     - generate_jar
   rules:
     # - if: '$CI_COMMIT_BRANCH == "ci-build-test"'
-    - if: '$PROFILE == prod'
+    - if: '$PROFILE == "prod"'
 
 build_and_push_docker_image_test:
   stage: deploy
@@ -84,4 +84,4 @@ build_and_push_docker_image_test:
     - generate_jar
   rules:
     # - if: '$CI_COMMIT_BRANCH == "ci-build-test"'
-    - if: '$PROFILE == test'
+    - if: '$PROFILE == "test"'
