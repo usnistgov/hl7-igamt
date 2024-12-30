@@ -6,6 +6,7 @@ variables:
   DOCKER_IMAGE_PROD: "nist775hit/hl7-igamt-2-prod"
   DOCKER_IMAGE_DEV: "nist775hit/hl7-igamt-2-dev"
   DOCKER_IMAGE_TEST: "nist775hit/hl7-igamt-2-test"
+  
   DOCKER_DRIVER: overlay2
   DOCKER_HOST: tcp://docker:2375  # Ensure Docker commands connect to the DinD service
   DOCKER_TLS_CERTDIR: ""          # Disable TLS for Docker-in-Docker
@@ -28,9 +29,10 @@ generate_jar:
     paths:
       - bootstrap/target/hl7-igamt.jar
     expire_in: 1 hour
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "ci-build-dev"'
-    - if: '$CI_COMMIT_BRANCH == "ci-build-prod"'
+  when: manual
+    allow_failure: false 
+
+
 
 build_and_push_docker_image_dev:
   stage: deploy
@@ -41,12 +43,14 @@ build_and_push_docker_image_dev:
     - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
   script:
     - cp bootstrap/target/hl7-igamt.jar .
-    - docker build -t "$DOCKER_IMAGE_DEV:latest" .
-    - docker push $DOCKER_IMAGE_DEV:latest
+    - docker build -t "$DOCKER_IMAGE_DEV:latest" -t "$DOCKER_IMAGE_DEV:$CI_COMMIT_BRANCH"  .
+    - docker push $DOCKER_IMAGE_DEV:latest $DOCKER_IMAGE_DEV:$CI_COMMIT_BRANCH
   dependencies:
     - generate_jar
   rules:
-    - if: '$CI_COMMIT_BRANCH == "ci-build-dev"'
+    # - if: '$CI_COMMIT_BRANCH == "ci-build-test"'
+    - if: '$PROFILE == dev'
+    
 
 build_and_push_docker_image_prod:
   stage: deploy
@@ -62,7 +66,8 @@ build_and_push_docker_image_prod:
   dependencies:
     - generate_jar
   rules:
-    - if: '$CI_COMMIT_BRANCH == "ci-build-prod"'
+    # - if: '$CI_COMMIT_BRANCH == "ci-build-test"'
+    - if: '$PROFILE == prod'
 
 build_and_push_docker_image_test:
   stage: deploy
@@ -73,9 +78,10 @@ build_and_push_docker_image_test:
     - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
   script:
     - cp bootstrap/target/hl7-igamt.jar .
-    - docker build -t "$DOCKER_IMAGE_TEST:latest" .
-    - docker push $DOCKER_IMAGE_TEST:latest
+    - docker build -t "$DOCKER_IMAGE_TEST:latest" -t "$DOCKER_IMAGE_TEST:$CI_COMMIT_BRANCH" .
+    - docker push $DOCKER_IMAGE_TEST:latest $DOCKER_IMAGE_TEST:$CI_COMMIT_BRANCH
   dependencies:
     - generate_jar
   rules:
-    - if: '$CI_COMMIT_BRANCH == "ci-build-test"'
+    # - if: '$CI_COMMIT_BRANCH == "ci-build-test"'
+    - if: '$PROFILE == test'
