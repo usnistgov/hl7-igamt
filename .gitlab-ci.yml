@@ -44,11 +44,11 @@ build_and_push_docker_image_dev:
   script:
     - cp bootstrap/target/hl7-igamt.jar .
     - docker build -t "$DOCKER_IMAGE_DEV:latest" -t "$DOCKER_IMAGE_DEV:$CI_COMMIT_BRANCH"  .
-    - docker push $DOCKER_IMAGE_DEV:latest $DOCKER_IMAGE_DEV:$CI_COMMIT_BRANCH
+    - docker push $DOCKER_IMAGE_DEV:latest
+    - docker push $DOCKER_IMAGE_DEV:$CI_COMMIT_BRANCH
   dependencies:
     - generate_jar
   rules:
-    # - if: '$CI_COMMIT_BRANCH == "ci-build-test"'
     - if: '$PROFILE == "dev"'
     
 
@@ -61,12 +61,13 @@ build_and_push_docker_image_prod:
     - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
   script:
     - cp bootstrap/target/hl7-igamt.jar .
-    - docker build -t "$DOCKER_IMAGE_PROD:latest" .
+    - docker build -t "$DOCKER_IMAGE_PROD:latest" -t "$DOCKER_IMAGE_PROD:$CI_COMMIT_BRANCH" .
     - docker push $DOCKER_IMAGE_PROD:latest
+    - docker push $DOCKER_IMAGE_PROD:CI_COMMIT_BRANCH
+
   dependencies:
     - generate_jar
   rules:
-    # - if: '$CI_COMMIT_BRANCH == "ci-build-test"'
     - if: '$PROFILE == "prod"'
 
 build_and_push_docker_image_test:
@@ -79,9 +80,9 @@ build_and_push_docker_image_test:
   script:
     - cp bootstrap/target/hl7-igamt.jar .
     - docker build -t "$DOCKER_IMAGE_TEST:latest" -t "$DOCKER_IMAGE_TEST:$CI_COMMIT_BRANCH" .
-    - docker push $DOCKER_IMAGE_TEST:latest $DOCKER_IMAGE_TEST:$CI_COMMIT_BRANCH
+    - docker push $DOCKER_IMAGE_TEST:latest
+    - docker push $DOCKER_IMAGE_TEST:$CI_COMMIT_BRANCH
   dependencies:
     - generate_jar
   rules:
-    # - if: '$CI_COMMIT_BRANCH == "ci-build-test"'
     - if: '$PROFILE == "test"'
