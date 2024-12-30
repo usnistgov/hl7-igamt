@@ -29,8 +29,8 @@ generate_jar:
     paths:
       - bootstrap/target/hl7-igamt.jar
     expire_in: 1 hour
-  when: manual
-    allow_failure: false 
+  when: "manual"
+  allow_failure: false 
 
 
 
