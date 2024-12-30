@@ -5,6 +5,7 @@ stages:
 variables:
   DOCKER_IMAGE_PROD: "nist775hit/hl7-igamt-2-prod"
   DOCKER_IMAGE_DEV: "nist775hit/hl7-igamt-2-dev"
+  DOCKER_IMAGE_TEST: "nist775hit/hl7-igamt-2-test"
   DOCKER_DRIVER: overlay2
   DOCKER_HOST: tcp://docker:2375  # Ensure Docker commands connect to the DinD service
   DOCKER_TLS_CERTDIR: ""          # Disable TLS for Docker-in-Docker
@@ -62,3 +63,19 @@ build_and_push_docker_image_prod:
     - generate_jar
   rules:
     - if: '$CI_COMMIT_BRANCH == "ci-build-prod"'
+
+build_and_push_docker_image_test:
+  stage: deploy
+  image: docker:24.0.2
+  services:
+    - docker:24.0.2-dind
+  before_script:
+    - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+  script:
+    - cp bootstrap/target/hl7-igamt.jar .
+    - docker build -t "$DOCKER_IMAGE_TEST:latest" .
+    - docker push $DOCKER_IMAGE_TEST:latest
+  dependencies:
+    - generate_jar
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "ci-build-test"'
