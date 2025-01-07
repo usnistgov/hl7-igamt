@@ -43,9 +43,10 @@ build_and_push_docker_image_dev:
     - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
   script:
     - cp bootstrap/target/hl7-igamt.jar .
-    - docker build -t "$DOCKER_IMAGE_DEV:latest" -t "$DOCKER_IMAGE_DEV:$CI_COMMIT_BRANCH"  .
+    - TAG_NAME=$(echo "$CI_COMMIT_BRANCH" | sed 's|/|_|g')
+    - docker build -t "$DOCKER_IMAGE_DEV:latest" -t "$DOCKER_IMAGE_DEV:$TAG_NAME"  .
     - docker push $DOCKER_IMAGE_DEV:latest
-    - docker push $DOCKER_IMAGE_DEV:$CI_COMMIT_BRANCH
+    - docker push $DOCKER_IMAGE_DEV:$TAG_NAME
   dependencies:
     - generate_jar
   rules:
@@ -61,9 +62,10 @@ build_and_push_docker_image_prod:
     - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
   script:
     - cp bootstrap/target/hl7-igamt.jar .
-    - docker build -t "$DOCKER_IMAGE_PROD:latest" -t "$DOCKER_IMAGE_PROD:$CI_COMMIT_BRANCH" .
+    - TAG_NAME=$(echo "$CI_COMMIT_BRANCH" | sed 's|/|_|g')
+    - docker build -t "$DOCKER_IMAGE_PROD:latest" -t "$DOCKER_IMAGE_PROD:$TAG_NAME" .
     - docker push $DOCKER_IMAGE_PROD:latest
-    - docker push $DOCKER_IMAGE_PROD:CI_COMMIT_BRANCH
+    - docker push $DOCKER_IMAGE_PROD:TAG_NAME
 
   dependencies:
     - generate_jar
@@ -79,9 +81,10 @@ build_and_push_docker_image_test:
     - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
   script:
     - cp bootstrap/target/hl7-igamt.jar .
-    - docker build -t "$DOCKER_IMAGE_TEST:latest" -t "$DOCKER_IMAGE_TEST:$CI_COMMIT_BRANCH" .
+    - TAG_NAME=$(echo "$CI_COMMIT_BRANCH" | sed 's|/|_|g')
+    - docker build -t "$DOCKER_IMAGE_TEST:latest" -t "$DOCKER_IMAGE_TEST:$TAG_NAME" .
     - docker push $DOCKER_IMAGE_TEST:latest
-    - docker push $DOCKER_IMAGE_TEST:$CI_COMMIT_BRANCH
+    - docker push $DOCKER_IMAGE_TEST:$TAG_NAME
   dependencies:
     - generate_jar
   rules:
