@@ -536,12 +536,14 @@ public class ExportAndImportController {
 		String[] profiles = {profileId};
 		ReqId reqIds = new ReqId();
 		reqIds.setConformanceProfilesId(profiles);
+        reqIds.setCompositeProfilesId(profiles);
+
 		Ig ig = igService.findById(id);
 		if (ig != null)  {
 			Ig subSetIg = this.igService.getIgProfileResourceSubSetAsIg(
 					ig,
 					new HashSet<>(Arrays.asList(reqIds.getConformanceProfilesId())),
-					new HashSet<>()
+                    new HashSet<>(Arrays.asList(reqIds.getCompositeProfilesId()))
 			);
 			String xmlContent = igExportService.exportIgDocumentToDiffXml(subSetIg);
 			System.out.println(xmlContent);

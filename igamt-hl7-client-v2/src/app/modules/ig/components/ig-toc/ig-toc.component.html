@@ -229,6 +229,9 @@
            </div>
 
           <context-menu #cp [disabled]="viewOnly||delta">
+            <ng-template (execute)="exportDiffProfileXML(node)" contextMenuItem>
+              <i class="fa fa-download"></i> Export Diff. Profile XML
+            </ng-template>
             <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-remove"></i> Delete
             </ng-template>
