@@ -855,7 +855,16 @@ public class BootstrapApplication implements CommandLineRunner {
 			}
 		}
 	}
-	
+
+
+	@PostConstruct
+	void FindSecondLevelBinding() throws Exception{
+		System.out.println("FIND SECOND LEVEL BINDING");
+			this.dataFixer.findSecondLevelBinding();
+
+	}
+
+
 	
 
 }

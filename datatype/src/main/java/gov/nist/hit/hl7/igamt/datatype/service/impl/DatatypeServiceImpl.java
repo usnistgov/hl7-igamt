@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javafx.beans.binding.BooleanExpression;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -788,6 +789,16 @@ public class DatatypeServiceImpl implements DatatypeService {
 		if(d instanceof ComplexDatatype) {
 			this.applyChildrenChange(map, ((ComplexDatatype)d).getComponents());
 		} else if(d instanceof DateTimeDatatype) {
+			if(singlePropertyMap.containsKey(PropertyType.ALLOWEMPTY)){
+				ObjectMapper objectMapper = new ObjectMapper();
+				ChangeItemDomain content = singlePropertyMap.get(PropertyType.ALLOWEMPTY);
+
+				boolean allowEmpty = objectMapper.convertValue(content.getPropertyValue(), Boolean.class);
+
+				System.out.println(allowEmpty);
+				((DateTimeDatatype) d).setAllowEmpty(allowEmpty);
+//				((DateTimeDatatype) d).setAllowEmpty(true);
+			}
 			this.applyDTMChange(map, ((DateTimeDatatype)d));
 		}
 		applyChange.applyBindingChanges(map, d.getBinding(), Level.DATATYPE);

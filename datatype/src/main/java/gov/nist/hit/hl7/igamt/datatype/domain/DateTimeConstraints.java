@@ -28,8 +28,7 @@ public class DateTimeConstraints  implements Serializable {
   private String errorMessage;
   private String simplePattern;
   private String regex;
-  
-  
+
   public DateTimeConstraints() {
     super();
   }
@@ -70,8 +69,8 @@ public class DateTimeConstraints  implements Serializable {
   public void setRegex(String regex) {
     this.regex = regex;
   }
-  
-  
-  
-  
+
+
+
+
 }
