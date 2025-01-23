@@ -1,5 +1,4 @@
-<p-accordion>
-    <p-accordionTab header="Basic Structure" [selected]="true">
+
         <div class="ui-g">
             <div class="ui-g-6">
                 <p-table *ngIf="dateTimeConstraints" [value]="dateTimeConstraints.dateTimeComponentDefinitions">
@@ -35,10 +34,15 @@
                 </p-table>
             </div>
             <div class="ui-g-6">
-                <p-card header="Expected {{dtName}} Format and Constraint" [style]="{height: '100%'}" styleClass="ui-card-shadow">
-                    <p-header>
+
+            <p-card header="Advanced pattern configuration" styleClass="ui-card-shadow" *ngIf="!viewOnly">
+              <span style="margin-left: 5px;"> <p-checkbox [(ngModel)]="allowEmpty" (ngModelChange)="updateEmpty($event)" label="Allow the value '0000' for unknown date" [binary]="true"></p-checkbox> </span>
+
+            </p-card>
+                <p-card header="Expected {{dtName}} Format and Constraint" [style]="{'margin-top': '5px'}" styleClass="ui-card-shadow">
+                    <!-- <p-header>
                         <img [style.width.px]="getLogSize()" src="assets/{{dtName}} logo.png">
-                    </p-header>
+                    </p-header> -->
                     <table>
                         <tr>
                             <td>Pattern (R, RE: <b>bold</b>):</td>
@@ -56,8 +60,4 @@
                 </p-card>
             </div>
         </div>
-    </p-accordionTab>
-    <p-accordionTab header="Advance Structure" [disabled]="true">
-        To be implemented
-    </p-accordionTab>
-</p-accordion>
+

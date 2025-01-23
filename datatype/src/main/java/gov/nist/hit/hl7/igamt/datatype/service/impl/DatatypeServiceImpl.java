@@ -788,6 +788,16 @@ public class DatatypeServiceImpl implements DatatypeService {
 		if(d instanceof ComplexDatatype) {
 			this.applyChildrenChange(map, ((ComplexDatatype)d).getComponents());
 		} else if(d instanceof DateTimeDatatype) {
+			if(singlePropertyMap.containsKey(PropertyType.ALLOWEMPTY)){
+				ObjectMapper objectMapper = new ObjectMapper();
+				ChangeItemDomain content = singlePropertyMap.get(PropertyType.ALLOWEMPTY);
+
+				boolean allowEmpty = objectMapper.convertValue(content.getPropertyValue(), Boolean.class);
+
+				System.out.println(allowEmpty);
+				((DateTimeDatatype) d).setAllowEmpty(allowEmpty);
+//				((DateTimeDatatype) d).setAllowEmpty(true);
+			}
 			this.applyDTMChange(map, ((DateTimeDatatype)d));
 		}
 		applyChange.applyBindingChanges(map, d.getBinding(), Level.DATATYPE);
@@ -850,10 +860,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 			d.getBinding().getConformanceStatements().remove(toBeDeleted);
 	}
 
-	/**
-	 * @param hashSet
-	 * @return
-	 */
+
 	private Set<ValuesetBinding> convertDisplayValuesetBinding(
 			HashSet<DisplayValuesetBinding> displayValuesetBindings) {
 		if (displayValuesetBindings != null) {

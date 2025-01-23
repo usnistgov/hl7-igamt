@@ -66,10 +66,25 @@
       </div>
     </div>
   </p-panel>
+
+
+
+
   <div style="margin-top:5px" >
     <p-panel [toggleable]="true" collapseIcon="pi pi-fw pi-chevron-down" expandIcon="pi pi-fw pi-chevron-right"
              header="Content">
+
       <div *ngIf="valueSet.includeCodes">
+        <div style="display: flex; flex-direction: row;">
+          <div style="display: flex;
+                      align-items: center;
+                      justify-content: space-between;
+                      height: 32px;">
+            <strong style="margin-right: 5px">Number of codes</strong>
+            <span class="badge badge-dark">{{ valueSet.codes?.length }}</span>
+          </div>
+        </div>
+
         <p-table #dt1 [(selection)]="selectedCodes" [columns]="selectedColumns" [reorderableColumns]="true" sortField="value"
                  [resizableColumns]="false" [value]="valueSet.codes" selectionMode="checkbox" [paginator]="true" [rows]="50">
           <ng-template pTemplate="caption">
@@ -80,7 +95,8 @@
                                name="columns" optionLabel="header"
                                selectedItemsLabel="{0} columns selected"></p-multiSelect>
               </div>
-              <div *ngIf="!viewOnly" class="selected-codes-options">
+
+                <div *ngIf="!viewOnly" class="selected-codes-options">
                 <div>
                   <p-dropdown (onChange)="applyCodeSystem($event)" [editable]="true"  [disabled]="!selectedCodes.length"  [options]="codeSystemOptions"
                               placeholder="Apply Code System"></p-dropdown>

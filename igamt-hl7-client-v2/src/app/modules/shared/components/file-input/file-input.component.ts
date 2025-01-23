@@ -23,7 +23,7 @@ export class FileInputComponent implements ControlValueAccessor, OnInit {
   @Input()
   viewOnly: boolean;
   @Input()
-  accept: string = "";
+  accept = '';
   file: File;
 
   constructor(private host: ElementRef<HTMLInputElement>) { }

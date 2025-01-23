@@ -48,12 +48,14 @@ export class ConfigurationTocComponent implements OnInit {
       allowDrag: (node: TreeNode) => false,
       actionMapping: {
         mouse: {
-          click: (tree, node, event) => {
-            if (node.data && node.data.delta !== DeltaAction.DELETED) {
-              TREE_ACTIONS.TOGGLE_SELECTED(tree, node, event);
-              this.onSelect(node.data);
-            }
-          },
+          // click: (tree, node, event) => {
+          //   if (node.data && node.data.delta !== DeltaAction.DELETED) {
+          //     TREE_ACTIONS.TOGGLE_SELECTED(tree, node, event);
+          //     this.onSelect(node.data);
+          //   }
+          // },
+          click: () => { },
+
         },
       },
     };

@@ -17,7 +17,6 @@ public class ConfigServiceImpl implements ConfigService {
 
   @Override
   public Config findOne() {
-    // TODO Auto-generated method stub
     List<Config> constants = configRepository.findAll();
     if (constants != null && !constants.isEmpty()) {
       return constants.get(0);
@@ -28,7 +27,6 @@ public class ConfigServiceImpl implements ConfigService {
 
   @Override
   public Config save(Config shared) {
-    // TODO Auto-generated method stub
     return configRepository.save(shared);
   }
 
@@ -39,7 +37,6 @@ public boolean isCodedElement(String name) {
 
 @Override
 public void deleteAll() {
-	// TODO Auto-generated method stub
 	configRepository.deleteAll();
 }
 

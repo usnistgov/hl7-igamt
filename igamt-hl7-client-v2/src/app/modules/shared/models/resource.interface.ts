@@ -12,4 +12,5 @@ export interface IResource extends IAbstractDomain {
   fixedExtension?: string;
   structureIdentifier?: string;
   slicings?: ISlicing[];
+  allowEmpty?: any;
 }
