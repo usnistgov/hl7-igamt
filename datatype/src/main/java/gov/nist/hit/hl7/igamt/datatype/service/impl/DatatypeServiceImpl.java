@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javafx.beans.binding.BooleanExpression;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -861,10 +860,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 			d.getBinding().getConformanceStatements().remove(toBeDeleted);
 	}
 
-	/**
-	 * @param hashSet
-	 * @return
-	 */
+
 	private Set<ValuesetBinding> convertDisplayValuesetBinding(
 			HashSet<DisplayValuesetBinding> displayValuesetBindings) {
 		if (displayValuesetBindings != null) {

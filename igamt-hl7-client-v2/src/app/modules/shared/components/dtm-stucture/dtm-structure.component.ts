@@ -30,7 +30,7 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
     this.resource$ = of(resource);
 
     this.dateTimeConstraints = resource.dateTimeConstraints;
-    console.log("called");
+    console.log('called');
     console.log(resource.allowEmpty);
 
     this.allowEmpty = resource.allowEmpty;
@@ -78,8 +78,6 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
     this.dtName = resource.name;
     this.loadRegexDataAndUpdateAssertion();
     this.allowEmpty = resource.allowEmpty;
-
-
 
   }
 
@@ -257,35 +255,33 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
 
   }
 
-  toggleEmpty($event){
-    if($event){
+  toggleEmpty($event) {
+    if ($event) {
 
       this.dateTimeConstraints.simplePattern = this.dateTimeConstraints.simplePattern + ' or 0000';
-      console.log("Called");
+      console.log('Called');
 
       this.dateTimeConstraints.errorMessage =  this.replaceMessage(this.dateTimeConstraints.errorMessage);
 
-      this.dateTimeConstraints.regex = this.dateTimeConstraints.regex.replace("$", "|0000$");
+      this.dateTimeConstraints.regex = this.dateTimeConstraints.regex.replace('$', '|0000$');
 
     } else {
 
       this.dateTimeConstraints.simplePattern = this.dateTimeConstraints.simplePattern.replace(' or 0000.', '');
       this.dateTimeConstraints.simplePattern = this.dateTimeConstraints.simplePattern.replace(' or 0000', '');
 
-      this.dateTimeConstraints.errorMessage =  this.dateTimeConstraints.errorMessage.replace(" or 0000.", '.');
-      this.dateTimeConstraints.errorMessage =  this.dateTimeConstraints.errorMessage.replace(" or 0000", '.');
+      this.dateTimeConstraints.errorMessage =  this.dateTimeConstraints.errorMessage.replace(' or 0000.', '.');
+      this.dateTimeConstraints.errorMessage =  this.dateTimeConstraints.errorMessage.replace(' or 0000', '.');
 
-      this.dateTimeConstraints.regex = this.dateTimeConstraints.regex.replace("|0000$", "$");
+      this.dateTimeConstraints.regex = this.dateTimeConstraints.regex.replace('|0000$', '$');
     }
-    // this.updateChanges();
   }
 
   replaceMessage(str: string): string {
     return str.replace(/\.(?=[^\.]*$)/, ' or 0000.');
   }
 
-
-  updateEmpty($event){
+  updateEmpty($event) {
     this.toggleEmpty($event);
     this.changes.emit({
       location: this.dtName,
@@ -296,7 +292,6 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
       changeType: ChangeType.UPDATE,
     });
   }
-
 
   timeZoneUsageChange(event: any, location: string, target: any): void {
     this.loadRegexDataAndUpdateAssertion();

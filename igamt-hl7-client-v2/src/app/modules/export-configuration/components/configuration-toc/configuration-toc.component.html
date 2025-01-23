@@ -62,7 +62,7 @@
       <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
         <div style="display: flex; flex-direction: row; align-items: center;" *ngIf="filter.conformanceProfileFilterMap">
           <input type="checkbox" [(ngModel)]="filter.conformanceProfileFilterMap[node.id]" style="margin-right: 5px;" [disabled]="node.data.delta && node.data.delta === 'DELETED'">
-          <app-display-section [contextMenu]="conformanceProfileSelection" [element]="node.data" [inline]="true" [ngClass]="{
+          <app-display-section  (click)="onSelect(node.data)" [contextMenu]="conformanceProfileSelection" [element]="node.data" [inline]="true" [ngClass]="{
     'delta-changed':filter.changed[node.id],
     'delta-added':  filter.added[node.id]}"></app-display-section>
     <context-menu #conformanceProfileSelection>
