@@ -1560,7 +1560,8 @@ public class IgServiceImpl implements IgService {
 				resources.getCompositeProfiles()
 				         .stream()
 				         .map((cp) -> ig.getCompositeProfileRegistry().getLinkById(cp.getId()))
-				         .collect(Collectors.toSet())
+						.filter(Objects::nonNull)
+						.collect(Collectors.toSet())
 		);
 		// Conformance Profile Registry
 		ConformanceProfileRegistry conformanceProfileRegistry = new ConformanceProfileRegistry();
@@ -1569,7 +1570,8 @@ public class IgServiceImpl implements IgService {
 				resources.getConformanceProfiles()
 				         .stream()
 				         .map((cp) -> ig.getConformanceProfileRegistry().getLinkById(cp.getId()))
-				         .collect(Collectors.toSet())
+						.filter(Objects::nonNull)
+						.collect(Collectors.toSet())
 		);
 		// Segment Registry
 		SegmentRegistry segmentRegistry = new SegmentRegistry();
@@ -1578,7 +1580,8 @@ public class IgServiceImpl implements IgService {
 				resources.getSegments()
 				         .stream()
 				         .map((cp) -> ig.getSegmentRegistry().getLinkById(cp.getId()))
-				         .collect(Collectors.toSet())
+						.filter(Objects::nonNull)
+						.collect(Collectors.toSet())
 		);
 		// Datatype Registry
 		DatatypeRegistry datatypeRegistry = new DatatypeRegistry();
@@ -1587,7 +1590,8 @@ public class IgServiceImpl implements IgService {
 				resources.getDatatypes()
 				         .stream()
 				         .map((cp) -> ig.getDatatypeRegistry().getLinkById(cp.getId()))
-				         .collect(Collectors.toSet())
+						.filter(Objects::nonNull)
+						.collect(Collectors.toSet())
 		);
 		// Value Set Registry
 		ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
@@ -1596,7 +1600,8 @@ public class IgServiceImpl implements IgService {
 				resources.getValuesets()
 				         .stream()
 				         .map((cp) -> ig.getValueSetRegistry().getLinkById(cp.getId()))
-				         .collect(Collectors.toSet())
+						.filter(Objects::nonNull)
+						.collect(Collectors.toSet())
 		);
 		return subSetIg;
 	}
