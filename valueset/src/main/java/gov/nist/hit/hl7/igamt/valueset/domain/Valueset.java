@@ -37,7 +37,7 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 public class Valueset extends Resource {
 	
 	private String bindingIdentifier;
-	private String oid;
+	private String oid;  
 	private String intensionalComment;
 	private String url;
 	private Stability stability = Stability.Undefined;

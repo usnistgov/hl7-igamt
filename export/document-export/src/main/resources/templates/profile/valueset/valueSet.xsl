@@ -6,26 +6,16 @@
 	<xsl:import href="/templates/profile/valueset/valueSetAttributes.xsl" />
 	<xsl:import href="/templates/profile/valueset/codes.xsl" />
 	<xsl:import href="/templates/profile/valueset/codeSystems.xsl" />
-	<!-- <xsl:template match="Valueset" mode="toc">
-		<xsl:element name="a">
-			<xsl:attribute name="href">
-                <xsl:value-of select="concat('#{',@id,'}')" />
-            </xsl:attribute>
-			<xsl:choose>
-				<xsl:when test="@Name!=''">
-					<xsl:value-of select="concat(@BindingIdentifier,' - AAAA ',@Name)" />
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="@BindingIdentifier" />
-				</xsl:otherwise>
-			</xsl:choose>
-		</xsl:element>
-	</xsl:template> -->
 
 	<xsl:template match="Valueset">
 		<xsl:call-template name="PreDef" />
+		<xsl:element name="br" />
+
 		<xsl:call-template name="valueSetMetadata" />
+<!--		<xsl:if test="@sourceType = 'INTERNAL' or @sourceType = 'INTERNAL_TRACKED'">-->
+
 		<xsl:call-template name="valueSetAttributes" />
+<!--		</xsl:if>-->
 		<xsl:if test="normalize-space(@url)!=''">
 			<xsl:if test="$documentTargetFormat='docx'">
 				<xsl:element name="br" />
@@ -42,6 +32,25 @@
   						<xsl:text>_blank</xsl:text>
   					</xsl:attribute>
 					<xsl:value-of select="@url" />
+				</xsl:element>
+			</xsl:element>
+		</xsl:if>
+		<xsl:if test="normalize-space(@url)!=''">
+			<xsl:if test="$documentTargetFormat='docx'">
+				<xsl:element name="br" />
+			</xsl:if>
+			<xsl:element name="p">
+				<xsl:element name="b">
+					<xsl:text>Phinvad URL: </xsl:text>
+				</xsl:element>
+				<xsl:element name="a">
+					<xsl:attribute name="href">
+						<xsl:value-of select="@phinvadURL" />
+					</xsl:attribute>
+					<xsl:attribute name="target">
+						<xsl:text>_blank</xsl:text>
+					</xsl:attribute>
+					<xsl:value-of select="@phinvadURL" />
 				</xsl:element>
 			</xsl:element>
 		</xsl:if>

@@ -465,11 +465,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 //                 	ArrayList<Link> sorted = new ArrayList<>(valuesetRegistry.getChildren());
 //                	Collections.sort(sorted);
                     for (ValuesetDataModel valuesetDataModel : ValuesetDataModelList) {
-//                        ValuesetDataModel valuesetDataModel = igDataModel.getValuesets().stream()
-//                                .filter(vs -> valuesetLink.getId().equals(vs.getModel().getId())).findAny()
-//                                .orElseThrow(() -> new ValuesetNotFoundException(valuesetLink.getId()));
-                        // SerializableValuesetStructure serializableValuesetStructure =
-                        // valuesetsMap.get(valuesetLink.getId());
+
                         Element valuesetElement;
             			String scope = valuesetDataModel.getModel().getDomainInfo().getScope().name();
 
