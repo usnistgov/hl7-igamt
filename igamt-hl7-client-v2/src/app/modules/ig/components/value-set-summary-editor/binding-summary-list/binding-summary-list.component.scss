@@ -1,0 +1,51 @@
+:host {
+  display: block;
+}
+/* Scope styles to only the specific table */
+.custom-grouped-table {
+  border-collapse: collapse; /* Ensure borders align properly */
+  width: 100%;
+}
+
+/* Adjust row heights for alignment */
+.custom-grouped-table tbody tr {
+  height: 50px; /* Ensure uniform row heights */
+}
+
+/* Style cells in the table */
+.custom-grouped-table tbody tr td {
+  vertical-align: middle; /* Center align cell content */
+  text-align: center; /* Center the text horizontally */
+  white-space: nowrap; /* Prevent wrapping */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 8px; /* Add consistent padding */
+}
+
+/* Ensure rowspan cells align properly */
+.custom-grouped-table tbody tr td[rowspan] {
+  vertical-align: top; /* Align rowspan cells at the top */
+  padding-top: 10px; /* Add some spacing for better appearance */
+}
+
+/* Fix alignment of badges, icons, or custom components */
+.custom-grouped-table tbody tr td .badge,
+.custom-grouped-table tbody tr td app-display-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Optional: Add hover effects to rows */
+.custom-grouped-table tbody tr:hover {
+  background-color: #f9f9f9; /* Light gray background on hover */
+}
+
+/* Style the table header */
+.custom-grouped-table thead th {
+  background-color: #f0f0f0; /* Light gray header background */
+  text-align: center;
+  font-weight: bold;
+  padding: 10px;
+  border-bottom: 2px solid #ccc;
+}

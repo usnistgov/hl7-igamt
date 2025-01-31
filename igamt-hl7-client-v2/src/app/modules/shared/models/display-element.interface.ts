@@ -34,3 +34,9 @@ export interface IDisplayElement {
   resourceOrigin?: ResourceOrigin;
   generated?: boolean;
 }
+
+
+export interface SummaryElement {
+  id?: string;
+
+}

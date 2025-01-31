@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { IgEditActionTypes, IgEditResolverLoad, OpenConformanceStatementSummaryEditorNode, OpenIgMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
+import { IgEditActionTypes, IgEditResolverLoad, OpenConformanceStatementSummaryEditorNode, OpenIgMetadataEditorNode, OpenNarrativeEditorNode, OpenValueSetsSummaryEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
 import { ErrorPageComponent } from '../core/components/error-page/error-page.component';
 import { DamWidgetContainerComponent } from '../dam-framework/components/data-widget/dam-widget-container/dam-widget-container.component';
 import { AuthenticatedGuard } from '../dam-framework/guards/auth-guard.guard';
@@ -21,6 +21,7 @@ import { IgSectionEditorComponent } from './components/ig-section-editor/ig-sect
 import { IgVerificationComponent } from './components/ig-verification/ig-verification.component';
 import { DocumentSessionIdGuard } from './services/document-session-id.guard';
 import { IgCreateContext } from './services/ig-create-context.guard';
+import { ValueSetsSummaryEditorComponent } from './components/value-set-summary-editor/value-sets-summary-editor.component';
 
 const routes: Routes = [
   {
@@ -81,6 +82,25 @@ const routes: Routes = [
             saveTableOfContent: true,
           },
           action: OpenConformanceStatementSummaryEditorNode,
+          idKey: 'igId',
+        },
+        canDeactivate: [EditorDeactivateGuard],
+      },
+      {
+        path: 'value-sets-summary',
+        component: ValueSetsSummaryEditorComponent,
+        canActivate: [EditorActivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.VALUESETS_SUMMARY,
+            title: 'Value Set Summary',
+            resourceType: Type.VALUESETREGISTRY,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenValueSetsSummaryEditorNode,
           idKey: 'igId',
         },
         canDeactivate: [EditorDeactivateGuard],

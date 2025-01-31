@@ -12,6 +12,7 @@ import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
 import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
 import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
+import gov.nist.hit.hl7.igamt.common.base.util.BindingSummaryFilter;
 import gov.nist.hit.hl7.igamt.display.model.*;
 import gov.nist.hit.hl7.igamt.ig.domain.ExportShareConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgVerificationIssuesList;
@@ -261,6 +262,15 @@ public class IGDocumentController extends BaseController {
 		Ig igdoument = findIgById(id);
 		return igService.conformanceStatementsSummary(igdoument);
 	}
+
+
+	@RequestMapping(value = "/api/igdocuments/{id}/value-sets/summary",  method = RequestMethod.POST, produces = {"application/json" })
+	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
+	public List<BindingSummaryItem> getBindingSummary(@PathVariable("id") String id, @RequestBody BindingSummaryFilter filter, Authentication authentication) throws IGNotFoundException, ResourceNotFoundException {
+		Ig igdoument = findIgById(id);
+		return igService.getBindingSummary(igdoument,filter );
+	}
+
 
 	@RequestMapping(value = "/api/igdocuments/{type}/{id}/conformancestatement/assertion", method = RequestMethod.POST, produces = {"application/text" })
 	@PreAuthorize("AccessResource(#type, #id, READ)")

@@ -14,8 +14,12 @@ import java.util.zip.ZipOutputStream;
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.util.BindingSummaryFilter;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.conformanceprofile.model.CoConstraintTableReference;
+import gov.nist.hit.hl7.igamt.ig.binding.FlatResourceBinding;
+import gov.nist.hit.hl7.igamt.ig.binding.ValueSetBindingContainer;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.model.*;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCreationService;
@@ -218,6 +222,9 @@ public class IgServiceImpl implements IgService {
 
 	@Autowired
 	ResourceSkeletonService resourceSkeletonService;
+
+	@Autowired
+	ResourceBindingService resourcebindingService;
 
 
 	@Override
@@ -2242,5 +2249,80 @@ public class IgServiceImpl implements IgService {
 		}
 		throw new Exception("The target location (context and segment) for this co-constraint table was not found");
 	}
+
+	@Override
+	public List<BindingSummaryItem> getBindingSummary(Ig ig, BindingSummaryFilter filter) throws ResourceNotFoundException {
+		Map<ResourceRef, Boolean> processed = new HashMap<ResourceRef, Boolean>();
+		List<BindingSummaryItem> ret = new ArrayList<>();
+
+		if(filter !=null &&  filter.getConformanceProfiles() !=null && !filter.getConformanceProfiles().isEmpty()) {
+
+			for (String s : filter.getConformanceProfiles()) {
+
+				this.processBindingByType(new ResourceRef(Type.CONFORMANCEPROFILE, s), processed, ret, filter);
+			}
+		}
+		return ret;
+
+	}
+
+	void processBindingByType(ResourceRef ref,  Map<ResourceRef, Boolean> processed, List<BindingSummaryItem> ret, BindingSummaryFilter filter) throws ResourceNotFoundException {
+		ResourceSkeleton skeleton = new ResourceSkeleton(ref, this.resourceSkeletonService).get();
+		if(skeleton.getResourceBindings() != null) {
+			FlatResourceBinding flatResourceBinding = this.resourcebindingService.getFlatResourceBindings(skeleton.getResourceBindings());
+			Set<ValueSetBindingContainer> containers = flatResourceBinding.getValueSetBindingContainers();
+
+			for (ValueSetBindingContainer container : containers) {
+				if(container.getValue() != null){
+					//ResourceSkeletonBone child = skeleton.get(container.getPathId());
+					for(ValuesetBinding vs : container.getValue() ){
+						if(filter.getBindingStrengths().contains(vs.getStrength())){
+							if(vs.getValueSets() !=null) {
+								ResourceSkeletonBone child = skeleton.get(container.getPathId());
+								if (filter.getUsages().contains(child.getUsage())) {
+									for (String s : vs.getValueSets()) {
+										BindingSummaryItem item = new BindingSummaryItem();
+
+										item.setContext(skeleton.getResource());
+										item.setBinding(container.getValue());
+										item.setValueSet(s);
+										item.setBindingLocation(vs.getValuesetLocations());
+										item.setStrength(vs.getStrength());
+										item.setDatataype(child.getResource());
+										item.setLocationInfo(child.getLocationInfo());
+										item.setDatataype(child.getResource());
+										item.setStrength(vs.getStrength());
+										item.setUsage(child.getUsage());
+										ret.add(item);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		List<ResourceSkeletonBone>  children = skeleton.getChildren();
+		if(children != null) {
+			for (ResourceSkeletonBone child : children) {
+				if(filter.getUsages().contains(child.getUsage())){
+					this.processSkeletonBone(child, processed, ret, filter);
+				}
+			}
+		}
+
+	}
+
+	void processSkeletonBone(ResourceSkeletonBone child,  Map<ResourceRef, Boolean> processed, List<BindingSummaryItem> ret, BindingSummaryFilter filter) throws ResourceNotFoundException{
+		if(child.getResourceRef() != null) {
+			processed.put(child.getResourceRef(), true);
+			this.processBindingByType(child.getResourceRef(), processed, ret, filter );
+		} else if(child.getChildren() != null){
+			for(ResourceSkeletonBone childChild : child.getChildren()){
+				this.processSkeletonBone(childChild, processed, ret, filter );
+			}
+		}
+	}
+
 
 }

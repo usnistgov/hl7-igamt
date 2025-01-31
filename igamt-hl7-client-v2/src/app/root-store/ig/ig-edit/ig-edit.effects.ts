@@ -37,6 +37,7 @@ import {
   DeleteResourcesSuccess,
   OpenConformanceStatementSummaryEditorNode,
   OpenIgVerificationEditor,
+  OpenValueSetsSummaryEditorNode,
   RefreshUpdateInfo,
   UpdateDocumentConfig,
   UpdateDocumentConfigFailure,
@@ -297,6 +298,30 @@ export class IgEditEffects extends DamWidgetEffect {
       return combineLatest(
         this.store.select(selectIgDocument),
         this.igService.getConformanceStatementSummary(action.payload.id))
+        .pipe(
+          take(1),
+          map(([ig, cs]) => {
+            return new fromDAM.OpenEditor({
+              id: action.payload.id,
+              display: this.igService.igToIDisplayElement(ig),
+              editor: action.payload.editor,
+              initial: {
+                summary: cs,
+                changes: {},
+              },
+            });
+          }),
+        );
+    }),
+  );
+
+  @Effect()
+  openValueSetsEditorNode$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.OpenValueSetsSummaryEditorNode),
+    switchMap((action: OpenValueSetsSummaryEditorNode) => {
+      return combineLatest(
+        this.store.select(selectIgDocument),
+        this.igService.getValueSetsSummary(action.payload.id, {}))
         .pipe(
           take(1),
           map(([ig, cs]) => {

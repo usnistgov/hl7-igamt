@@ -8,11 +8,14 @@ import java.util.List;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.util.BindingSummaryFilter;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.model.CoConstraintTableReference;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
+import gov.nist.hit.hl7.igamt.ig.model.BindingSummaryItem;
 import gov.nist.hit.hl7.igamt.ig.model.IgProfileResourceSubSet;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -150,4 +153,6 @@ public interface IgService {
           CoConstraintTableReference reference,
           CoConstraintTable table
   ) throws Exception;
+
+  List<BindingSummaryItem> getBindingSummary(Ig ig, BindingSummaryFilter filter ) throws ResourceNotFoundException;
 }
