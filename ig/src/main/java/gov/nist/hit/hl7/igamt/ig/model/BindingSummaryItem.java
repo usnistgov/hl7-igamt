@@ -1,34 +1,30 @@
 package gov.nist.hit.hl7.igamt.ig.model;
-
-import gov.nist.diff.annotation.DeltaField;
-import gov.nist.diff.annotation.DeltaIdentity;
 import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetStrength;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 
 import java.util.HashSet;
-import java.util.List;
+
 import java.util.Set;
 
 public class BindingSummaryItem {
 
-    DisplayElement datataype;
+    DisplayElement datatype;
     LocationInfo locationInfo;
     DisplayElement context;
     Set<ValuesetBinding> binding;
     private String valueSet;
     private ValuesetStrength strength;
-    private DisplayElement valueSetDisplay;
+    private DisplayElement display;
     private Stability stability = Stability.Undefined;
     private Extensibility extensibility = Extensibility.Undefined;
     private ContentDefinition contentDefinition = ContentDefinition.Undefined;
-    private Set<Usage> usages;
+    private int numberOfCodes;
 
     public ContentDefinition getContentDefinition() {
         return contentDefinition;
@@ -54,22 +50,14 @@ public class BindingSummaryItem {
         this.stability = stability;
     }
 
-    public Set<Usage> getUsages() {
-        return usages;
+
+    public DisplayElement getDisplay() {
+        return display;
     }
 
-    public void setUsages(Set<Usage> usages) {
-        this.usages = usages;
+    public void setDisplay(DisplayElement display) {
+        this.display = display;
     }
-
-    public DisplayElement getValueSetDisplay() {
-        return valueSetDisplay;
-    }
-
-    public void setValueSetDisplay(DisplayElement valueSetDisplay) {
-        this.valueSetDisplay = valueSetDisplay;
-    }
-
     public Set<Integer> getBindingLocation() {
         return bindingLocation;
     }
@@ -124,12 +112,12 @@ public class BindingSummaryItem {
         this.context = context;
     }
 
-    public DisplayElement getDatataype() {
-        return datataype;
+    public DisplayElement getDatatype() {
+        return datatype;
     }
 
-    public void setDatataype(DisplayElement datataype) {
-        this.datataype = datataype;
+    public void setDatatype(DisplayElement datatype) {
+        this.datatype = datatype;
     }
 
     public LocationInfo getLocationInfo() {
@@ -140,14 +128,22 @@ public class BindingSummaryItem {
         this.locationInfo = locationInfo;
     }
 
-    public BindingSummaryItem(Set<ValuesetBinding> binding, Set<Integer> bindingLocation, DisplayElement context, DisplayElement datataype, LocationInfo locationInfo, ValuesetStrength strength, Usage usage, String valueSet) {
+    public BindingSummaryItem(Set<ValuesetBinding> binding, Set<Integer> bindingLocation, DisplayElement context, DisplayElement datatype, LocationInfo locationInfo, ValuesetStrength strength, Usage usage, String valueSet) {
         this.binding = binding;
         this.bindingLocation = bindingLocation;
         this.context = context;
-        this.datataype = datataype;
+        this.datatype = datatype;
         this.locationInfo = locationInfo;
         this.strength = strength;
         this.usage = usage;
         this.valueSet = valueSet;
+    }
+
+    public int getNumberOfCodes() {
+        return numberOfCodes;
+    }
+
+    public void setNumberOfCodes(int numberOfCodes) {
+        this.numberOfCodes = numberOfCodes;
     }
 }

@@ -320,17 +320,16 @@ export class IgEditEffects extends DamWidgetEffect {
     ofType(IgEditActionTypes.OpenValueSetsSummaryEditorNode),
     switchMap((action: OpenValueSetsSummaryEditorNode) => {
       return combineLatest(
-        this.store.select(selectIgDocument),
-        this.igService.getValueSetsSummary(action.payload.id, {}))
+        this.store.select(selectIgDocument))
         .pipe(
           take(1),
-          map(([ig, cs]) => {
+          map(([ig]) => {
             return new fromDAM.OpenEditor({
               id: action.payload.id,
               display: this.igService.igToIDisplayElement(ig),
               editor: action.payload.editor,
               initial: {
-                summary: cs,
+                summary: {},
                 changes: {},
               },
             });

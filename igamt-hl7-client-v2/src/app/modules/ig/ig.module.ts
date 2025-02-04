@@ -52,8 +52,8 @@ import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/xml/xml';
 import { IgShareLinkDialogComponent } from './components/ig-share-link-dialog/ig-share-link-dialog.component';
-import { ValueSetsSummaryEditorComponent } from './components/value-set-summary-editor/value-sets-summary-editor.component';
 import { BindingSummaryListComponent } from './components/value-set-summary-editor/binding-summary-list/binding-summary-list.component';
+import { ValueSetsSummaryEditorComponent } from './components/value-set-summary-editor/value-sets-summary-editor.component';
 
 @NgModule({
   declarations: [

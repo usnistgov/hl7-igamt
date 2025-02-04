@@ -1,208 +1,197 @@
-<p-panel header="Filters" [toggleable]="true" [(collapsed)]="filtersCollapsed">
-
-<div style="padding: 15px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 20px;">
-  <div style="display: flex; flex-direction: row; justify-content: space-between;">
-    <div>
-      <label> <Strong> Conformance Profiles </Strong></label>
-
-      <p-multiSelect
-        appendTo="body"
-        [options]="conformanceProfileOptions"
-        [(ngModel)]="activeFilter.conformanceProfiles"
-        [panelStyleClass]="'toc-filter'"
-        [style]="{'width':'100%'}">
-        <ng-template let-id pTemplate="item">
-          <app-display-section style="display: inline-block;" [element]="conformanceProfilesMap[id.value]" [hideDescription]="true" [inline]="true"></app-display-section>
-        </ng-template>
-        <ng-template let-selected pTemplate="selectedItems">
-          <span *ngIf="!selected || selected.length === 0">Any Conformance Profile</span>
-          <span *ngIf="selected && selected.length > 0">{{selected.length}} Conformance Profiles Selected</span>
-        </ng-template>
-      </p-multiSelect>
-    </div>
-
-    <div>
-      <label> <Strong> Usage </Strong></label>
-      <p-multiSelect
-        [panelStyleClass]="'toc-filter'"
-        [options]="usageOptions"
-        [(ngModel)]="activeFilter.usages"
-        [style]="{'width':'100%'}">
-        <ng-template let-selected pTemplate="selectedItems">
-          <span *ngIf="!selected || selected.length === 0">Any Usage</span>
-          <span *ngIf="selected && selected.length > 0">{{selected.length}} Usages Selected</span>
-        </ng-template>
-      </p-multiSelect>
-    </div>
-
-    <div>
-      <label> <Strong> Binding Strength </Strong></label>
-
-      <p-multiSelect
-        [panelStyleClass]="'toc-filter'"
-        [options]="bindingStrengthOptions"
-        [(ngModel)]="activeFilter.bindingStrengths"
-        [style]="{'width':'100%'}">
-        <ng-template let-selected pTemplate="selectedItems">
-          <span *ngIf="!selected || selected.length === 0">Any Strength</span>
-          <span *ngIf="selected && selected.length > 0">{{selected.length}} Strengths Selected</span>
-        </ng-template>
-      </p-multiSelect>
-    </div>
-
-    <div>
-      <label> <Strong> Scope </Strong></label>
-
-      <p-multiSelect
-        [panelStyleClass]="'toc-filter'"
-        [options]="scopeOptions"
-        [(ngModel)]="activeFilter.scopes"
-        [style]="{'width':'100%'}">
-        <ng-template let-selected pTemplate="selectedItems">
-          <span *ngIf="!selected || selected.length === 0">Any Scope</span>
-          <span *ngIf="selected && selected.length > 0">{{selected.length}} Scopes Selected</span>
-        </ng-template>
-      </p-multiSelect>
-    </div>
-    <div style="text-align: center; margin-top: 10px;display: flex; align-items: center;">
-      <button (click)="fetch()" class="btn btn-success btn-sm" style="margin: auto;">Load Summary</button>
+  <div style="padding: 15px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 10px;">
+    <div style="display: flex; flex-direction: row; justify-content: space-between;">
+      <div>
+        <label><strong>Conformance Profiles</strong></label>
+        <p-multiSelect appendTo="body" [options]="conformanceProfileOptions" [(ngModel)]="activeFilter.conformanceProfiles" [panelStyleClass]="'toc-filter'" [style]="{'width':'100%'}">
+          <ng-template let-id pTemplate="item">
+            <app-display-section style="display: inline-block;" [element]="conformanceProfilesMap[id.value]" [hideDescription]="true" [inline]="true"></app-display-section>
+          </ng-template>
+          <ng-template let-selected pTemplate="selectedItems">
+            <span *ngIf="!selected || selected.length === 0">Any Conformance Profile</span>
+            <span *ngIf="selected && selected.length > 0">{{selected.length}} Conformance Profiles Selected</span>
+          </ng-template>
+        </p-multiSelect>
+      </div>
+      <div>
+        <label><strong>Usage</strong></label>
+        <p-multiSelect [panelStyleClass]="'toc-filter'" [options]="usageOptions" [(ngModel)]="activeFilter.usages" [style]="{'width':'100%'}">
+          <ng-template let-selected pTemplate="selectedItems">
+            <span *ngIf="!selected || selected.length === 0">Any Usage</span>
+            <span *ngIf="selected && selected.length > 0">{{selected.length}} Usages Selected</span>
+          </ng-template>
+        </p-multiSelect>
+      </div>
+      <div>
+        <label><strong>Binding Strength</strong></label>
+        <p-multiSelect [panelStyleClass]="'toc-filter'" [options]="bindingStrengthOptions" [(ngModel)]="activeFilter.bindingStrengths" [style]="{'width':'100%'}">
+          <ng-template let-selected pTemplate="selectedItems">
+            <span *ngIf="!selected || selected.length === 0">Any Strength</span>
+            <span *ngIf="selected && selected.length > 0">{{selected.length}} Strengths Selected</span>
+          </ng-template>
+        </p-multiSelect>
+      </div>
+      <div>
+        <label><strong>Scope</strong></label>
+        <p-multiSelect [panelStyleClass]="'toc-filter'" [options]="scopeOptions" [(ngModel)]="activeFilter.scopes" [style]="{'width':'100%'}">
+          <ng-template let-selected pTemplate="selectedItems">
+            <span *ngIf="!selected || selected.length === 0">Any Scope</span>
+            <span *ngIf="selected && selected.length > 0">{{selected.length}} Scopes Selected</span>
+          </ng-template>
+        </p-multiSelect>
+      </div>
+      <div style="text-align: center; margin-top: 10px; display: flex; align-items: center; ">
+        <button (click)="fetch()" class="btn btn-success btn-sm" style="margin: auto;">Load </button>
+      </div>
     </div>
   </div>
-
+<div *ngIf="!loading" style="display: flex; justify-content: space-between">
+  <div style="margin-bottom: 10px;">
+    <p-checkbox binary="true" [(ngModel)]="isGrouped" (ngModelChange)="onGroupingChange()" label="Group by Value Set"></p-checkbox>
+  </div>
 </div>
-
-</p-panel>
-
-
 
 <div *ngIf="loading" style="display: flex; align-items: center; justify-content: center; height: 100%;">
   <mat-spinner class="verification-progress" diameter="90"></mat-spinner>
 </div>
 <div *ngIf="error" class="alert alert-danger">
-  {{error | json}}
+  {{ error | json }}
 </div>
-
-<ng-container *ngIf="!loading && !error">
-  <button (click)="toggleGrouping()" class="btn btn-secondary">
-    {{ isGrouped ? 'Show Flat View' : 'Group by Value Set' }}
-  </button>
-  <p-table
-    #dt
-    [value]="processedData"
-    [resizableColumns]="false"
-    [reorderableColumns]="false"
-    [scrollable]="true"
-    [paginator]="false"
-    class="custom-grouped-table"
-    [rows]="1000">
-
+<ng-container *ngIf="!loading">
+<ng-container *ngIf="isGrouped; else flatView">
+  <!-- <p-table #dtGrouped [value]="processedData" [resizableColumns]="false" [reorderableColumns]="false" [scrollable]="true" [paginator]="false" [rows]="100" [globalFilterFields]="['display.fixedName','context.description','locationInfo.name','usage','strength','bindingLocation']"> -->
+    <p-table #dtGrouped [value]="processedData" [resizableColumns]="true" [reorderableColumns]="true" [scrollable]="true" [globalFilterFields]="['display.variableName','datatype.fixedName','locationInfo.name','context.description','bindingLocation','usage','strength']" [filters]="filters" [paginator]="true" [rows]="100">
+    <ng-template pTemplate="caption">
+      <div class="table-header">
+        <div style="display: flex; flex-direction: row; justify-content: space-between;">
+          <div style="display: flex; flex-direction: row; justify-content: flex-start;">
+            <strong>Total Resource Bindings:</strong>
+            <span class="badge badge-info" style="height: 20px; margin-left: 5px;">{{ vsbList?.length }}</span>
+          </div>
+          <div style="display: flex; flex-direction: row; justify-content: flex-end;">
+            <button (click)="exportExcel()" class="btn btn-sm btn-secondary">
+              <i class="fa fa-table" style="margin-right: 5px"></i>Export to Excel
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-template>
     <ng-template pTemplate="header">
       <tr style="height: 50px;">
         <th pSortableColumn="valueSet" style="width: 15%;">Value Set <p-sortIcon field="valueSet"></p-sortIcon></th>
-        <th pSortableColumn="context.description" style="width: 20%;">Context <p-sortIcon field="context.description"></p-sortIcon></th>
-        <th pSortableColumn="locationInfo.name" style="width: 15%;">Location <p-sortIcon field="locationInfo.name"></p-sortIcon></th>
-        <th pSortableColumn="usage" style="width: 10%;">Usage <p-sortIcon field="usage"></p-sortIcon></th>
-        <th pSortableColumn="datataype.description" style="width: 15%;">Data Type <p-sortIcon field="datataype.description"></p-sortIcon></th>
-        <th pSortableColumn="strength" style="width: 10%;">Strength <p-sortIcon field="strength"></p-sortIcon></th>
-        <th pSortableColumn="bindingLocation" style="width: 15%;">Binding Location <p-sortIcon field="bindingLocation"></p-sortIcon></th>
+        <th style="width: 20%;">Context </th>
+        <th style="width: 15%;">Location </th>
+        <th style="width: 5%;">Usage </th>
+        <th style="width: 15%;">Data Type </th>
+        <th style="width: 5%;">Strength </th>
+        <th style="width: 5%;">Binding Location </th>
+        <th style="width: 10%;">Extensibility </th>
+
+        <th style="width: 10%;">Stability </th>
+
+      </tr>
+      <tr>
+        <th colspan="9">
+          <input pInputText type="text" (input)="onSearchChange($event)" placeholder="Search Value Set" style="width: 100%;" />
+        </th>
       </tr>
     </ng-template>
-
     <ng-template pTemplate="body" let-group>
       <ng-container *ngFor="let rowData of group.children; let i = index">
         <tr>
-          <!-- Display ValueSet only for the first row of the group with rowspan -->
-          <td *ngIf="i === 0" [attr.rowspan]="group.children.length" class="group-header" style="vertical-align: middle; text-align: center;">
-            {{ group.valueSet }} {{group.children.length}}
+          <td *ngIf="i === 0" [attr.rowspan]="group.children.length" style="vertical-align: middle; text-align: center;">
+            <app-display-section [element]="rowData.display" [hideDescription]="true"></app-display-section>
+            ({{ group.children.length }})
           </td>
-          <td style="height: 50px; width: 20%;"><app-display-section [element]="rowData.context" [hideDescription]="true"></app-display-section></td>
+          <td style="height: 50px; width: 20%;">
+            <app-display-section [element]="rowData.context" [hideDescription]="true"></app-display-section>
+          </td>
           <td style="height: 50px; width: 15%;">
             <app-entity-bagde [type]="rowData.locationInfo.type"></app-entity-bagde>
             {{ rowData.locationInfo.positionalPath }}.{{ rowData.locationInfo.name }}
           </td>
-          <td style="height: 50px; width: 10%;">{{ rowData.usage }}</td>
-          <td style="height: 50px; width: 15%;"><app-display-section [element]="rowData.datataype" [hideDescription]="true"></app-display-section></td>
-          <td style="height: 50px; width: 10%;">{{ rowData.strength }}</td>
-          <td style="height: 50px; width: 15%;">{{ rowData.bindingLocation }}</td>
+          <td style="height: 50px; width: 5%;">{{ rowData.usage }}</td>
+          <td style="height: 50px; width: 15%;">
+            <app-display-section [element]="rowData.datatype" [hideDescription]="true"></app-display-section>
+          </td>
+          <td style="height: 50px; width: 5%;">{{ rowData.strength }}</td>
+          <td style="height: 50px; width: 5%;">{{ rowData.bindingLocation }}</td>
+          <td style="height: 50px; width: 10%;">{{ rowData.extensibility }}</td>
+          <td style="height: 50px; width: 10%;">{{ rowData.stability }}</td>
+
+
         </tr>
       </ng-container>
     </ng-template>
-
     <ng-template pTemplate="emptymessage">
       <tr>
         <td colspan="7">No data found.</td>
       </tr>
     </ng-template>
-
   </p-table>
-
-
-<p-table
-  #dt
-  [value]="vsbList"
-  [resizableColumns]="true"
-  [reorderableColumns]="true"
-  [scrollable]="true"
-  [globalFilterFields]="['valueSet', 'datataype.description', 'locationInfo.name', 'context.description', 'bindingLocation', 'usage', 'strength']"
-  [filters]="filters"
-  [paginator]="true"
-  [rows]="10000" groupRowsBy="valueSet">
-
-  <ng-template pTemplate="caption">
-    <div class="table-header">
-      <div style="display: flex; flex-direction: row;  justify-content: space-between;">
-
-        <div style="display: flex; flex-direction: row;  justify-content: flex-start;">
-        <strong>
-          Total Resource Bindings:
-        </strong>
-          <span class="badge badge-info" style="height: 20px; margin-left: 5px;">{{vsbList?.length}}</span>
-         </div>
-         <div style="display: flex; flex-direction: row;  justify-content: flex-end ">
-             <button (click)="exportExcel()" class="btn btn-sm btn-secondary"> <i class="fa fa-table" style="margin-right: 5px"></i>Export to Excel</button>
+</ng-container>
+</ng-container>
+<ng-template #flatView>
+  <p-table #dtFlat [value]="vsbList" [resizableColumns]="true" [reorderableColumns]="true" [scrollable]="true" [globalFilterFields]="['display.variableName','datatype.fixedName','locationInfo.name','context.description','bindingLocation','usage','strength']" [filters]="filters" [paginator]="true" [rows]="100">
+    <ng-template pTemplate="caption">
+      <div class="table-header">
+        <div style="display: flex; flex-direction: row; justify-content: space-between;">
+          <div style="display: flex; flex-direction: row; justify-content: flex-start;">
+            <strong>Total Resource Bindings:</strong>
+            <span class="badge badge-info" style="height: 20px; margin-left: 5px;">{{ vsbList?.length }}</span>
+          </div>
+          <div style="display: flex; flex-direction: row; justify-content: flex-end;">
+            <button (click)="exportExcel()" class="btn btn-sm btn-secondary">
+              <i class="fa fa-table" style="margin-right: 5px"></i>Export to Excel
+            </button>
+          </div>
         </div>
       </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="display.variableName">Value Set <p-sortIcon field="display.variableName"></p-sortIcon></th>
+        <th>Context </th>
+        <th>Location</th>
+        <th>Usage</th>
+        <th>Data Type</th>
+        <th>Strength</th>
+        <th>Binding Location</th>
+        <th>Extensibility</th>
+        <th>Stability</th>
+      </tr>
+      <tr>
+        <th colspan="9">
+          <input pInputText type="text" (input)="dtFlat.filterGlobal($event.target.value, 'contains')" placeholder="Search..." style="width: 100%;" />
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData>
+      <tr>
+        <td>
+          <app-display-section [element]="rowData.display" [hideDescription]="true"></app-display-section>
 
-    </div>
-  </ng-template>
-
-  <ng-template pTemplate="header">
-    <tr>
-      <th pSortableColumn="valueSet">Value Set <p-sortIcon field="valueSet"></p-sortIcon></th>
-      <th pSortableColumn="datataype.description">Context <p-sortIcon field="datataype.description"></p-sortIcon></th>
-      <th pSortableColumn="locationInfo.name">Location <p-sortIcon field="locationInfo.name"></p-sortIcon></th>
-      <th pSortableColumn="context.description">Usage <p-sortIcon field="context.description"></p-sortIcon></th>
-      <th pSortableColumn="context.description">Data Type <p-sortIcon field="context.description"></p-sortIcon></th>
-      <th pSortableColumn="strength">Strength <p-sortIcon field="strength"></p-sortIcon></th>
-      <th pSortableColumn="bindingLocation">Binding Location <p-sortIcon field="bindingLocation"></p-sortIcon></th>
-    </tr>
-
-  </ng-template>
-
-
-  <ng-template pTemplate="body" let-rowData>
-    <tr>
-      <td><app-display-section [element]="allVs[rowData.valueSet]" [hideDescription]="true"></app-display-section></td>
-      <td><app-display-section [element]="rowData.context" [hideDescription]="true"></app-display-section></td>
-      <td>
-        <app-entity-bagde [type]="rowData.locationInfo.type"></app-entity-bagde>
-        {{ rowData.locationInfo.positionalPath }}.{{ rowData.locationInfo.name }}
-      </td>
-      <td>{{ rowData.usage }}</td>
-      <td><app-display-section [element]="rowData.datataype" [hideDescription]="true"></app-display-section></td>
-      <td>{{ rowData.strength }}</td>
-      <td>{{ rowData.bindingLocation }}</td>
-    </tr>
-  </ng-template>
-
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td colspan="7">No data found.</td>
-    </tr>
-  </ng-template>
-
-</p-table>
-
-</ng-container>
-
-
+        </td>
+        <td>
+          <app-display-section [element]="rowData.context" [hideDescription]="true"></app-display-section>
+        </td>
+        <td>
+          <app-entity-bagde [type]="rowData.locationInfo.type"></app-entity-bagde>
+          {{ rowData.locationInfo.positionalPath }}.{{ rowData.locationInfo.name }}
+        </td>
+        <td>{{ rowData.usage }}</td>
+        <td>
+          <app-display-section [element]="rowData.datatype" [hideDescription]="true"></app-display-section>
+        </td>
+        <td>{{ rowData.strength }}</td>
+        <td>{{ rowData.bindingLocation }}</td>
+        <td>{{ rowData.extensibility }}</td>
+        <td>{{ rowData.stability }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="9">No data found.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</ng-template>

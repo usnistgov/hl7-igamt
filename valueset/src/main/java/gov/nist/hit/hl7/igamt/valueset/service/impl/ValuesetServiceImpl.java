@@ -375,4 +375,22 @@ public class ValuesetServiceImpl implements ValuesetService {
 	private String str(String value) {
 		return value != null ? value : "";
 	}
+
+
+    @Override
+    public List<Valueset> findDisplayFormatByIds(Set<String> ids) {
+        Criteria where = Criteria.where("id").in(ids);
+        Query qry = Query.query(where);
+
+        qry.fields().exclude("codes");
+
+        List<Valueset> valueSets = mongoTemplate.find(qry, Valueset.class);
+
+        for (Valueset valueSet : valueSets) {
+            int count = (int)mongoTemplate.count(Query.query(Criteria.where("id").is(valueSet.getId())), Code.class);
+            valueSet.setNumberOfCodes(count);
+        }
+
+        return valueSets;
+    }
 }

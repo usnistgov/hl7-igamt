@@ -19,9 +19,9 @@ import { IgListContainerComponent } from './components/ig-list-container/ig-list
 import { IgMetadataEditorComponent } from './components/ig-metadata-editor/ig-metadata-editor.component';
 import { IgSectionEditorComponent } from './components/ig-section-editor/ig-section-editor.component';
 import { IgVerificationComponent } from './components/ig-verification/ig-verification.component';
+import { ValueSetsSummaryEditorComponent } from './components/value-set-summary-editor/value-sets-summary-editor.component';
 import { DocumentSessionIdGuard } from './services/document-session-id.guard';
 import { IgCreateContext } from './services/ig-create-context.guard';
-import { ValueSetsSummaryEditorComponent } from './components/value-set-summary-editor/value-sets-summary-editor.component';
 
 const routes: Routes = [
   {

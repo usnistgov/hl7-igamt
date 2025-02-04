@@ -35,8 +35,7 @@ export interface IDisplayElement {
   generated?: boolean;
 }
 
-
-export interface SummaryElement {
+export interface ISummaryElement {
   id?: string;
 
 }
