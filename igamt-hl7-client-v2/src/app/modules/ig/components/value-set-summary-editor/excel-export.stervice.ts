@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { saveAs } from 'file-saver';
 import { getLabel } from 'src/app/modules/shared/components/display-section/display-section.component';
+import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import * as XLSX from 'xlsx';
 import { Extensibility } from './../../../shared/constants/extensibility.enum';
 import { Stability } from './../../../shared/constants/stability.enum';
@@ -12,7 +13,7 @@ export class ExcelExportService {
 
   constructor() {}
 // tslint:disable-next-line: cognitive-complexity
-  exportToExcel(data: any[], fileName: string): void {
+  exportToExcel(data: any[], fileName: string, profiles: Record<string, IDisplayElement>): void {
     if (!data || data.length === 0) {
       console.warn('No data available to export.');
       return;
@@ -21,7 +22,9 @@ export class ExcelExportService {
     const formattedData = data.map((row) => ({
       'Value Set': row.display.variableName,
       'Context': row.context ? getLabel(row.context.fixedName, row.context.variableName) : '',
-      'Location': row.locationInfo ? `${row.locationInfo.positionalPath}.${row.locationInfo.name}` : '',
+      'Profile': row.message ? getLabel(profiles[row.message].fixedName, profiles[row.message].variableName) : '',
+
+      'Location': row.fullPath ? row.fullPath  : '',
       'Usage': row.usage ? row.usage : '',
       'Data Type': row.datatype ?  getLabel(row.datatype.fixedName, row.datatype.variableName) : '',
       'Strength': row.strength ? row.strength : '',
@@ -40,13 +43,13 @@ export class ExcelExportService {
   }
 
 // tslint:disable-next-line: cognitive-complexity
-   exportGroupedWithMerge(processedData: any[], fileName: string): void {
+   exportGroupedWithMerge(processedData: any[], fileName: string, profiles: Record<string, IDisplayElement> ): void {
     if (!processedData || processedData.length === 0) {
       console.log('No grouped data available to export.');
       return;
     }
 
-    const headers = ['Value Set', 'Context', 'Location', 'Usage', 'Data Type', 'Strength', 'Binding Location', 'Extensibility', 'Stability'];
+    const headers = ['Value Set', 'Context', 'Profile', 'Location', 'Usage', 'Data Type', 'Strength', 'Binding Location', 'Extensibility', 'Stability'];
     const exportData: any[][] = [];
     const merges: XLSX.Range[] = [];
     let rowIndex = 0;
@@ -57,7 +60,8 @@ export class ExcelExportService {
           exportData.push([
             `${child.display.variableName} (${group.children.length})`,
             child.context ? getLabel(child.context.fixedName, child.context.variableName) : '',
-            child.locationInfo ? `${child.locationInfo.positionalPath}.${child.locationInfo.name}` : '',
+            child.message ? getLabel(profiles[child.message].fixedName, profiles[child.message].variableName) : '',
+            child.fullPath  ? child.fullPath  : '',
             child.usage ? child.usage : '',
             child.datatype ? getLabel(child.datatype.fixedName, child.datatype.variableName) : '',
             child.strength ? child.strength : '',
@@ -77,7 +81,8 @@ export class ExcelExportService {
           exportData.push([
             '',
             child.context ? getLabel(child.context.fixedName, child.context.variableName) : '',
-            child.locationInfo ? `${child.locationInfo.positionalPath}.${child.locationInfo.name}` : '',
+            child.message ? getLabel(profiles[child.message].fixedName, profiles[child.message].variableName) : '',
+            child.fullPath  ? child.fullPath  : '',
             child.usage ? child.usage : '',
             child.datatype ? getLabel(child.datatype.fixedName, child.datatype.variableName)  : '',
             child.strength ? child.strength : '',

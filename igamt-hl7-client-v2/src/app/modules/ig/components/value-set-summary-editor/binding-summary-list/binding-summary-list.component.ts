@@ -87,6 +87,27 @@ export class BindingSummaryListComponent implements OnInit {
     }
   }
 
+  columnOptions = [
+    { label: 'Value Set', value: 'display.variableName' },
+    { label: 'Context', value: 'context' },
+    { label: 'Profile', value: 'profile' },
+    { label: 'Location', value: 'location' },
+    { label: 'Usage', value: 'usage' },
+    { label: 'Data Type', value: 'datatype' },
+    { label: 'Strength', value: 'strength' },
+    { label: 'Binding Location', value: 'bindingLocation' },
+    { label: 'Extensibility', value: 'extensibility' },
+    { label: 'Stability', value: 'stability' },
+  ];
+
+  // Default selected columns
+  selectedColumns = this.columnOptions.map((col) => col.value);
+
+  // Helper function to check if a column is selected
+  isColumnSelected(column: string): boolean {
+    return this.selectedColumns.includes(column);
+  }
+
   fetch() {
     this.loading = true;
     this.error = undefined;
@@ -119,9 +140,9 @@ export class BindingSummaryListComponent implements OnInit {
   exportExcel() {
     if (this.isGrouped) {
       console.log(this.processedData);
-      this.excelService.exportGroupedWithMerge(this.processedData, 'Grouped');
+      this.excelService.exportGroupedWithMerge(this.processedData, 'Grouped', this.conformanceProfilesMap);
     } else {
-      this.excelService.exportToExcel(this.vsbList, 'ResourceBindings');
+      this.excelService.exportToExcel(this.vsbList, 'ResourceBindings', this.conformanceProfilesMap);
     }
   }
   onSearchChange(event) {
@@ -143,7 +164,7 @@ export class BindingSummaryListComponent implements OnInit {
 
     listToGroup.forEach((row) => {
       if (!groupMap.has(row.valueSet)) {
-        groupMap.set(row.valueSet, { valueSet: row.display.variableName+row.valueSet, children: [] });
+        groupMap.set(row.valueSet, { valueSet: row.display.variableName + row.valueSet, children: [] });
       }
       groupMap.get(row.valueSet).children.push(row);
     });

@@ -2258,17 +2258,19 @@ public class IgServiceImpl implements IgService {
 		if(filter !=null &&  filter.getConformanceProfiles() !=null && !filter.getConformanceProfiles().isEmpty()) {
 
 			for (String s : filter.getConformanceProfiles()) {
-
-				this.processBindingByType(new ResourceRef(Type.CONFORMANCEPROFILE, s), processed, ret, filter, valueSets);
+				List<BindingSummaryItem> messageList = new ArrayList<>();
+				ResourceSkeleton skeleton = new ResourceSkeleton(new ResourceRef(Type.CONFORMANCEPROFILE, s), this.resourceSkeletonService).get();
+				this.processBindingByType(skeleton, processed, messageList, filter, valueSets, s);
+				ret.addAll(this.finalizeDisplay(messageList, valueSets, filter, s));
 			}
 		}
 
-		return this.finalizeDisplay(ret, valueSets, filter);
+		return ret;
 
 	}
 
-	void processBindingByType(ResourceRef ref,  Map<ResourceRef, Boolean> processed, List<BindingSummaryItem> ret, BindingSummaryFilter filter, Set<String> valueSets) throws ResourceNotFoundException {
-		ResourceSkeleton skeleton = new ResourceSkeleton(ref, this.resourceSkeletonService).get();
+	void processBindingByType(ResourceSkeleton skeleton,  Map<ResourceRef, Boolean> processed, List<BindingSummaryItem> ret, BindingSummaryFilter filter, Set<String> valueSets, String path) throws ResourceNotFoundException {
+		//ResourceSkeleton skeleton = new ResourceSkeleton(ref, this.resourceSkeletonService).get();
 		if(skeleton.getResourceBindings() != null) {
 			FlatResourceBinding flatResourceBinding = this.resourcebindingService.getFlatResourceBindings(skeleton.getResourceBindings());
 			Set<ValueSetBindingContainer> containers = flatResourceBinding.getValueSetBindingContainers();
@@ -2293,6 +2295,7 @@ public class IgServiceImpl implements IgService {
 										item.setDatatype(child.getResource());
 										item.setStrength(vs.getStrength());
 										item.setUsage(child.getUsage());
+										item.setFullPath(child.getLocationInfo().getHl7Path() + "[" +child.getLocationInfo().getName()+ "]" );
 										ret.add(item);
 									}
 								}
@@ -2306,25 +2309,25 @@ public class IgServiceImpl implements IgService {
 		if(children != null) {
 			for (ResourceSkeletonBone child : children) {
 				if(filter.getUsages().contains(child.getUsage())){
-					this.processSkeletonBone(child, processed, ret, filter, valueSets);
+					this.processSkeletonBone(child, processed, ret, filter, valueSets,  path );
 				}
 			}
 		}
 
 	}
 
-	void processSkeletonBone(ResourceSkeletonBone child,  Map<ResourceRef, Boolean> processed, List<BindingSummaryItem> ret, BindingSummaryFilter filter, Set<String> valueSets) throws ResourceNotFoundException{
+	void processSkeletonBone(ResourceSkeletonBone child,  Map<ResourceRef, Boolean> processed, List<BindingSummaryItem> ret, BindingSummaryFilter filter, Set<String> valueSets, String path) throws ResourceNotFoundException{
 		if(child.getResourceRef() != null) {
 			processed.put(child.getResourceRef(), true);
-			this.processBindingByType(child.getResourceRef(), processed, ret, filter, valueSets);
+			this.processBindingByType(child, processed, ret, filter, valueSets, path + "." + child.getLocationInfo().getHl7Path());
 		} else if(child.getChildren() != null){
 			for(ResourceSkeletonBone childChild : child.getChildren()){
-				this.processSkeletonBone(childChild, processed, ret, filter, valueSets);
+				this.processSkeletonBone(childChild, processed, ret, filter, valueSets, path + "." + child.getLocationInfo().getHl7Path());
 			}
 		}
 	}
 
-	public List<BindingSummaryItem>  finalizeDisplay(List<BindingSummaryItem> ret, Set<String> valueSets, BindingSummaryFilter filter) {
+	public List<BindingSummaryItem>  finalizeDisplay(List<BindingSummaryItem> ret, Set<String> valueSets, BindingSummaryFilter filter, String message) {
 		List<BindingSummaryItem> finalized = new ArrayList<BindingSummaryItem>();
 
 		List<Valueset> valueSetList = this.valueSetService.findByIdIn(valueSets);
@@ -2345,6 +2348,7 @@ public class IgServiceImpl implements IgService {
 				item.setExtensibility(vs.getExtensibility());
 				item.setStability(vs.getStability());
 				item.setNumberOfCodes(vs.getNumberOfCodes());
+				item.setMessage(message);
 				finalized.add(item);
 			}
 		}

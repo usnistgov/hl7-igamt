@@ -26,6 +26,22 @@ public class BindingSummaryItem {
     private ContentDefinition contentDefinition = ContentDefinition.Undefined;
     private int numberOfCodes;
 
+    public String getMessage() {
+        return message;
+    }
+
+    private String message;
+
+    public String getFullPath() {
+        return fullPath;
+    }
+
+    public void setFullPath(String fullPath) {
+        this.fullPath = fullPath;
+    }
+
+    private String fullPath;
+
     public ContentDefinition getContentDefinition() {
         return contentDefinition;
     }
@@ -145,5 +161,9 @@ public class BindingSummaryItem {
 
     public void setNumberOfCodes(int numberOfCodes) {
         this.numberOfCodes = numberOfCodes;
+    }
+
+    public void setMessage(String path) {
+        this.message = path;
     }
 }

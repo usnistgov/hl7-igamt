@@ -58,7 +58,6 @@
 </div>
 <ng-container *ngIf="!loading">
 <ng-container *ngIf="isGrouped; else flatView">
-  <!-- <p-table #dtGrouped [value]="processedData" [resizableColumns]="false" [reorderableColumns]="false" [scrollable]="true" [paginator]="false" [rows]="100" [globalFilterFields]="['display.fixedName','context.description','locationInfo.name','usage','strength','bindingLocation']"> -->
     <p-table #dtGrouped [value]="processedData" [resizableColumns]="true" [reorderableColumns]="true" [scrollable]="true" [globalFilterFields]="['display.variableName','datatype.fixedName','locationInfo.name','context.description','bindingLocation','usage','strength']" [filters]="filters" [paginator]="true" [rows]="100">
     <ng-template pTemplate="caption">
       <div class="table-header">
@@ -78,19 +77,20 @@
     <ng-template pTemplate="header">
       <tr style="height: 50px;">
         <th pSortableColumn="valueSet" style="width: 15%;">Value Set <p-sortIcon field="valueSet"></p-sortIcon></th>
-        <th style="width: 20%;">Context </th>
+        <th style="width: 10%;">Context </th>
+        <th style="width: 16%;">Profile </th>
         <th style="width: 15%;">Location </th>
         <th style="width: 5%;">Usage </th>
         <th style="width: 15%;">Data Type </th>
         <th style="width: 5%;">Strength </th>
         <th style="width: 5%;">Binding Location </th>
-        <th style="width: 10%;">Extensibility </th>
+        <th style="width: 7%;">Extensibility </th>
 
-        <th style="width: 10%;">Stability </th>
+        <th style="width: 7%;">Stability </th>
 
       </tr>
       <tr>
-        <th colspan="9">
+        <th colspan="10">
           <input pInputText type="text" (input)="onSearchChange($event)" placeholder="Search Value Set" style="width: 100%;" />
         </th>
       </tr>
@@ -102,12 +102,16 @@
             <app-display-section [element]="rowData.display" [hideDescription]="true"></app-display-section>
             ({{ group.children.length }})
           </td>
-          <td style="height: 50px; width: 20%;">
+          <td style="height: 50px; width: 10%;">
             <app-display-section [element]="rowData.context" [hideDescription]="true"></app-display-section>
           </td>
+          <td style="height: 50px; width: 16%;">
+            <app-display-section [element]="conformanceProfilesMap[rowData.message]" [hideDescription]="true"></app-display-section>
+          </td>
+
           <td style="height: 50px; width: 15%;">
             <app-entity-bagde [type]="rowData.locationInfo.type"></app-entity-bagde>
-            {{ rowData.locationInfo.positionalPath }}.{{ rowData.locationInfo.name }}
+                {{rowData.fullPath}}
           </td>
           <td style="height: 50px; width: 5%;">{{ rowData.usage }}</td>
           <td style="height: 50px; width: 15%;">
@@ -115,8 +119,8 @@
           </td>
           <td style="height: 50px; width: 5%;">{{ rowData.strength }}</td>
           <td style="height: 50px; width: 5%;">{{ rowData.bindingLocation }}</td>
-          <td style="height: 50px; width: 10%;">{{ rowData.extensibility }}</td>
-          <td style="height: 50px; width: 10%;">{{ rowData.stability }}</td>
+          <td style="height: 50px; width: 7%;">{{ rowData.extensibility }}</td>
+          <td style="height: 50px; width: 7%;">{{ rowData.stability }}</td>
 
 
         </tr>
@@ -151,6 +155,7 @@
       <tr>
         <th pSortableColumn="display.variableName">Value Set <p-sortIcon field="display.variableName"></p-sortIcon></th>
         <th>Context </th>
+        <th>Profile </th>
         <th>Location</th>
         <th>Usage</th>
         <th>Data Type</th>
@@ -169,14 +174,17 @@
       <tr>
         <td>
           <app-display-section [element]="rowData.display" [hideDescription]="true"></app-display-section>
-
         </td>
         <td>
           <app-display-section [element]="rowData.context" [hideDescription]="true"></app-display-section>
         </td>
         <td>
+          <app-display-section [element]="conformanceProfilesMap[rowData.message]" [hideDescription]="true"></app-display-section>
+        </td>
+        <td>
           <app-entity-bagde [type]="rowData.locationInfo.type"></app-entity-bagde>
-          {{ rowData.locationInfo.positionalPath }}.{{ rowData.locationInfo.name }}
+          {{ rowData.fullPath}}
+
         </td>
         <td>{{ rowData.usage }}</td>
         <td>
@@ -195,3 +203,4 @@
     </ng-template>
   </p-table>
 </ng-template>
+
