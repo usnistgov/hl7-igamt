@@ -38,3 +38,8 @@ export interface IDisplayElement {
   sourceType?: SourceType;
   stability?: Stability;
 }
+
+export interface ISummaryElement {
+  id?: string;
+
+}

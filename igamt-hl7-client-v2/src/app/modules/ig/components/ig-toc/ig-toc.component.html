@@ -116,7 +116,7 @@
 
         <ng-container *ngSwitchCase="'VALUESETREGISTRY'">
           <div #vsLib>
-            <span [contextMenu]="valueSetsContextMenu"> {{node.data.path}} {{node.data.variableName}} {{elementNumbers?elementNumbers.valueSets: node.children.length}} / {{node.children.length}}</span>
+            <span [contextMenu]="valueSetsContextMenu" routerLink="./value-sets-summary" routerLinkActive="active-node"  > {{node.data.path}} {{node.data.variableName}} {{elementNumbers?elementNumbers.valueSets: node.children.length}} / {{node.children.length}}</span>
             <context-menu #valueSetsContextMenu [disabled]="viewOnly||delta">
 
               <ng-template (execute)="createNew(node.data, 'VALUESET')" contextMenuItem [enabled]="!viewOnly&&!delta">
@@ -229,6 +229,9 @@
            </div>
 
           <context-menu #cp [disabled]="viewOnly||delta">
+            <ng-template (execute)="exportDiffProfileXML(node)" contextMenuItem>
+              <i class="fa fa-download"></i> Export Diff. Profile XML
+            </ng-template>
             <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-remove"></i> Delete
             </ng-template>

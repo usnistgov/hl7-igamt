@@ -1,4 +1,4 @@
-import {IConformanceProfile, IMessageProfileIdentifier} from './conformance-profile.interface';
+import { IConformanceProfile, IMessageProfileIdentifier } from './conformance-profile.interface';
 import { IDatatype } from './datatype.interface';
 import { IDisplayElement } from './display-element.interface';
 import { IResource } from './resource.interface';
@@ -21,7 +21,7 @@ export interface ICompositeProfileState {
   conformanceProfile: IResourceAndDisplay<IConformanceProfile>;
   datatypes: Array<IResourceAndDisplay<IDatatype>>;
   segments: Array<IResourceAndDisplay<ISegment>>;
-  references: IResource[];
+  resources: IResource[];
 }
 
 export interface IResourceAndDisplay<T extends IResource> {

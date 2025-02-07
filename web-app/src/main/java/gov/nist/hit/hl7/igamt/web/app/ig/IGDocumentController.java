@@ -1,4 +1,5 @@
 package gov.nist.hit.hl7.igamt.web.app.ig;
+
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -6,12 +7,15 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import gov.nist.hit.hl7.igamt.access.model.AccessPermission;
 import gov.nist.hit.hl7.igamt.access.model.Action;
 import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
 import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
+import gov.nist.hit.hl7.igamt.common.base.util.BindingSummaryFilter;
 import gov.nist.hit.hl7.igamt.display.model.*;
+import gov.nist.hit.hl7.igamt.ig.domain.ExportShareConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgVerificationIssuesList;
 import gov.nist.hit.hl7.igamt.ig.model.*;
 import gov.nist.hit.hl7.igamt.web.app.service.LegacyIgSubSetService;
@@ -22,13 +26,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -68,7 +66,6 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
-import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCompositeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
@@ -196,9 +193,6 @@ public class IGDocumentController extends BaseController {
 	CompositeProfileStructureService compositeProfileService;
 
 	@Autowired
-	ConformanceProfileCompositeService compose;
-
-	@Autowired
 	InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
 
 	@Autowired
@@ -215,9 +209,6 @@ public class IGDocumentController extends BaseController {
 
 	@Autowired
 	WorkspaceDocumentManagementService workspaceDocumentManagementService;
-
-	@Autowired
-	LegacyIgSubSetService legacyIgSubSetService;
 
 	private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
 	private static final String SEGMENT_DELETED = "SEGMENT_DELETED";
@@ -273,6 +264,15 @@ public class IGDocumentController extends BaseController {
 		Ig igdoument = findIgById(id);
 		return igService.conformanceStatementsSummary(igdoument);
 	}
+
+
+	@RequestMapping(value = "/api/igdocuments/{id}/value-sets/summary",  method = RequestMethod.POST, produces = {"application/json" })
+	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
+	public List<BindingSummaryItem> getBindingSummary(@PathVariable("id") String id, @RequestBody BindingSummaryFilter filter, Authentication authentication) throws IGNotFoundException, ResourceNotFoundException {
+		Ig igdoument = findIgById(id);
+		return igService.getBindingSummary(igdoument,filter );
+	}
+
 
 	@RequestMapping(value = "/api/igdocuments/{type}/{id}/conformancestatement/assertion", method = RequestMethod.POST, produces = {"application/text" })
 	@PreAuthorize("AccessResource(#type, #id, READ)")
@@ -543,6 +543,67 @@ public class IGDocumentController extends BaseController {
 
 		return new ResponseMessage<Object>(Status.SUCCESS, METATDATA_UPDATED, id, new Date());
 	}
+
+
+	@RequestMapping(value = {"/api/igdocuments/{id}/sharelink", "/api/igdocuments/{id}/sharelink/{linkId}"}, method = RequestMethod.POST, produces = {"application/json"})
+	@PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && AccessConfiguration(#exportShareConfiguration.configurationId, READ)")
+	public @ResponseBody ResponseMessage<String> saveShareLink(
+			@PathVariable("id") String id,
+			@PathVariable(value = "linkId", required = false) String linkId,
+			@RequestBody  ExportShareConfiguration exportShareConfiguration
+	) throws Exception {
+		Ig ig = findIgById(id);
+		if(ig.getShareLinks() == null) {
+			ig.setShareLinks(new HashMap<>());
+		}
+
+		if(!Strings.isNullOrEmpty(linkId) && !ig.getShareLinks().containsKey(linkId)) {
+			throw new Exception("Unknown link: "+ linkId);
+		}
+		String mapLinkId = Strings.isNullOrEmpty(linkId) ? UUID.randomUUID().toString() : linkId;
+
+		ig.getShareLinks().put(mapLinkId, exportShareConfiguration);
+		igService.save(ig);
+
+		return new ResponseMessage<>(Status.SUCCESS, "Link created successfully", mapLinkId, new Date());
+	}
+
+	@RequestMapping(value = "/api/igdocuments/{id}/sharelink/", method = RequestMethod.GET, produces = {"application/json"})
+	@PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+	public @ResponseBody Map<String, ExportShareConfiguration> getShareLink(
+			@PathVariable("id") String id
+	) throws Exception {
+		Ig ig = findIgById(id);
+		if(ig.getShareLinks() == null) {
+			return new HashMap<>();
+		} else {
+			return ig.getShareLinks();
+		}
+	}
+
+	@RequestMapping(value = "/api/igdocuments/{id}/sharelink/{linkId}", method = RequestMethod.DELETE, produces = {"application/json"})
+	@PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
+	public @ResponseBody ResponseMessage<String> deleteShareLink(
+			@PathVariable("id") String id,
+			@PathVariable(value = "linkId") String linkId
+	) throws Exception {
+		Ig ig = findIgById(id);
+
+		if(ig.getShareLinks() == null) {
+			ig.setShareLinks(new HashMap<>());
+		}
+
+		if(!Strings.isNullOrEmpty(linkId) && !ig.getShareLinks().containsKey(linkId)) {
+			throw new Exception("Unknown link: "+ linkId);
+		}
+
+		ig.getShareLinks().remove(linkId);
+
+		igService.save(ig);
+
+		return new ResponseMessage<>(Status.SUCCESS, "Link created deleted", null, new Date());
+	}
+
 
 	@RequestMapping(value = "/api/igdocuments/findMessageEvents/{scope}/{version:.+}", method = RequestMethod.GET, produces = {
 	"application/json" })
@@ -1373,12 +1434,6 @@ public class IGDocumentController extends BaseController {
 				newVS.getUpdateDate(), response);
 	}
 
-	@RequestMapping(value = "/api/igdocuments/{id}/grand", method = RequestMethod.GET, produces = {"application/json"})
-	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
-	public @ResponseBody IgDataModel getIgGrandObject(@PathVariable("id") String id, Authentication authentication) throws Exception {
-		return this.igService.generateDataModel(findIgById(id));
-	}
-
 	private String updateFileName(String str) {
 		return str.replaceAll(" ", "-").replaceAll("\\*", "-").replaceAll("\"", "-").replaceAll(":", "-").replaceAll(";", "-").replaceAll("=", "-").replaceAll(",", "-");
 	}
@@ -1386,19 +1441,25 @@ public class IGDocumentController extends BaseController {
 	@RequestMapping(value = "/api/export/ig/{id}/xml/validation", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
 	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
 	public void exportXML(@PathVariable("id") String id, FormData formData, HttpServletResponse response) throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		ReqId reqIds = mapper.readValue(formData.getJson(), ReqId.class);
-		Ig subSetIg = this.igService.getIgProfileResourceSubSetAsIg(
-				findIgById(id),
-				new HashSet<>(Arrays.asList(reqIds.getConformanceProfilesId())),
-				new HashSet<>(Arrays.asList(reqIds.getCompositeProfilesId()))
-		);
-		IgDataModel igModel = this.igService.generateDataModel(subSetIg);
-		InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
-		response.setContentType("application/zip");
-		response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
-		FileCopyUtils.copy(content, response.getOutputStream());
+		Set<String> dataExtensionTokens = new HashSet<>();
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			ReqId reqIds = mapper.readValue(formData.getJson(), ReqId.class);
+			Ig subSetIg = this.igService.getIgProfileResourceSubSetAsIg(
+					findIgById(id),
+					new HashSet<>(Arrays.asList(reqIds.getConformanceProfilesId())),
+					new HashSet<>(Arrays.asList(reqIds.getCompositeProfilesId()))
+			);
+			IgDataModel igModel = this.igService.generateDataModel(subSetIg);
+			dataExtensionTokens.addAll(igModel.getDataExtensionTokens());
+			InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
+			response.setContentType("application/zip");
+			response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
+			FileCopyUtils.copy(content, response.getOutputStream());
+		} finally {
+			dataExtensionTokens.forEach(token -> inMemoryDomainExtensionService.clear(token));
+		}
 	}
 
 
@@ -1454,7 +1515,7 @@ public class IGDocumentController extends BaseController {
 
 	@RequestMapping(value = "/api/igdocuments/{igid}/preverification", method = RequestMethod.POST, produces = { "application/json" })
 	@PreAuthorize("AccessResource('IGDOCUMENT', #igid, READ)")
-	public @ResponseBody IgVerificationIssuesList preVerification(@PathVariable("igid") String igid, @RequestBody ReqId reqIds) throws EntityNotFound {
+	public @ResponseBody IgVerificationIssuesList preVerification(@PathVariable("igid") String igid, @RequestBody ReqId reqIds) throws Exception {
 		Ig ig = this.igService.findById(igid);
 		Set<String> selectedConformanceProfileIds = new HashSet<>(reqIds.getConformanceProfilesId() != null ? Arrays.asList(reqIds.getConformanceProfilesId()) : new ArrayList<>());
 		Set<String> selectedCompositeProfileIds = new HashSet<>(reqIds.getCompositeProfilesId() != null ? Arrays.asList(reqIds.getCompositeProfilesId()) : new ArrayList<>());
@@ -1503,8 +1564,6 @@ public class IGDocumentController extends BaseController {
 			}
 		}
 		return ret;
-	
-		
-
 	}
+
 }

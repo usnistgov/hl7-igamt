@@ -51,6 +51,9 @@ import 'codemirror/addon/fold/foldgutter';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/xml/xml';
+import { IgShareLinkDialogComponent } from './components/ig-share-link-dialog/ig-share-link-dialog.component';
+import { BindingSummaryListComponent } from './components/value-set-summary-editor/binding-summary-list/binding-summary-list.component';
+import { ValueSetsSummaryEditorComponent } from './components/value-set-summary-editor/value-sets-summary-editor.component';
 
 @NgModule({
   declarations: [
@@ -72,6 +75,9 @@ import 'codemirror/mode/xml/xml';
     IgTocFilterComponent,
     ManageProfileStructureComponent,
     IgVerificationComponent,
+    IgShareLinkDialogComponent,
+    ValueSetsSummaryEditorComponent,
+    BindingSummaryListComponent,
   ],
   imports: [
     DamFrameworkModule.forRoot(),
@@ -92,7 +98,7 @@ import 'codemirror/mode/xml/xml';
     MatProgressSpinnerModule,
   ],
   entryComponents: [
-    IgEditContainerComponent, ManageProfileStructureComponent,
+    IgEditContainerComponent, ManageProfileStructureComponent, IgShareLinkDialogComponent,
   ],
   providers: [
     IgListService,
@@ -110,6 +116,7 @@ import 'codemirror/mode/xml/xml';
     IgSectionEditorComponent,
     IgMetadataEditorComponent,
     ManageProfileStructureComponent,
+    BindingSummaryListComponent,
   ],
 })
 export class IgModule {

@@ -86,6 +86,8 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     ret.setProfileComponents(convertPofileComponentRegistry(ig.getProfileComponentRegistry()));
     ret.setCompositeProfiles(convertCompositeProfileRegistry(ig.getCompositeProfileRegistry()));
     ret.setResourceVersionSyncToken(igService.getResourceVersionSyncToken(ig.getUpdateDate()));
+    // Exclude share links from state
+    ig.setShareLinks(null);
     return ret;
   }
 

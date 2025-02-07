@@ -82,6 +82,7 @@ public interface ValuesetService {
 //	public String findXMLRefIdById(String vsId, String defaultHL7Version);
 	public String findXMLRefIdById(Valueset vs, String defaultHL7Version);
 	List<Valueset> saveAll(Set<Valueset> valueSets) throws ForbiddenOperationException;
+	public List<Valueset> findDisplayFormatByIds(Set<String> ids);
 
 	Valueset findPreLoadedPHINVADS(String oid, String version);
 

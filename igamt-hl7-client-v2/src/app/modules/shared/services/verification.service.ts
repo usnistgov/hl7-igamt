@@ -293,7 +293,7 @@ export class VerificationService {
         const groupedEntryList = this.createEntryGroups(resources, entries, entriesByGroupId);
 
         return {
-          valid: (stats.error && stats.error > 0) || (stats.fatal && stats.fatal > 0),
+          valid: !(stats.error && stats.error > 0) && !(stats.fatal && stats.fatal > 0),
           stats,
           resources,
           codes,

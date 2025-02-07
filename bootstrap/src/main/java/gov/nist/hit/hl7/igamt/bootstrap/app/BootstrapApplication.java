@@ -419,20 +419,20 @@ public class BootstrapApplication implements CommandLineRunner {
 	}
 
 	//@PostConstruct
-	void classifyDatatypes() throws DatatypeNotFoundException {
-		datatypeClassificationService.deleteAll();
-		System.out.println("Classifying dts");
-		List<String> hl7Versions = sharedConstantService.findOne().getHl7Versions();
-		HashMap<EvolutionPropertie, Boolean> criterias1 = new HashMap<EvolutionPropertie, Boolean>();
-		criterias1.put(EvolutionPropertie.CPUSAGE, true);
-		criterias1.put(EvolutionPropertie.CPDATATYPE, true);
-		criterias1.put(EvolutionPropertie.CPNUMBER, true);
-		//		criterias1.put(EvolutionPropertie.CPDATATYPENAME, true);
-		datatypeClassifier.classify(hl7Versions,criterias1);
-
-		System.out.println("ENd of Classifying dts");
-
-	}
+//	void classifyDatatypes() throws DatatypeNotFoundException {
+//		datatypeClassificationService.deleteAll();
+//		System.out.println("Classifying dts");
+//		List<String> hl7Versions = sharedConstantService.findOne().getHl7Versions();
+//		HashMap<EvolutionPropertie, Boolean> criterias1 = new HashMap<EvolutionPropertie, Boolean>();
+//		criterias1.put(EvolutionPropertie.CPUSAGE, true);
+//		criterias1.put(EvolutionPropertie.CPDATATYPE, true);
+//		criterias1.put(EvolutionPropertie.CPNUMBER, true);
+//		//		criterias1.put(EvolutionPropertie.CPDATATYPENAME, true);
+//		datatypeClassifier.classify(hl7Versions,criterias1);
+//
+//		System.out.println("ENd of Classifying dts");
+//
+//	}
 
 	//    @PostConstruct
 	public void generateBindings() throws FileNotFoundException{
@@ -851,11 +851,11 @@ public class BootstrapApplication implements CommandLineRunner {
 	}
 
 	//@PostConstruct
-	void setWithDrawn() throws DatatypeNotFoundException {
-		this.dataFixer.setWithdrawnV2_9();
-		this.datatypeLibraryRepository.deleteAll();
-		this.classifyDatatypes();
-	}
+//	void setWithDrawn() throws DatatypeNotFoundException {
+//		this.dataFixer.setWithdrawnV2_9();
+//		this.datatypeLibraryRepository.deleteAll();
+//		this.classifyDatatypes();
+//	}
 
 	//@PostConstruct
 	void setProfileType() {
@@ -899,6 +899,16 @@ public class BootstrapApplication implements CommandLineRunner {
 		System.out.println("UPDATED PHINVADS");
 
 	}
+
+
+	//@PostConstruct
+//	void FindSecondLevelBinding() throws Exception{
+//		System.out.println("FIND SECOND LEVEL BINDING");
+//			this.dataFixer.findSecondLevelBinding();
+//
+//	}
+
+
 	
 
 }

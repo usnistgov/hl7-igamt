@@ -448,6 +448,9 @@ export class IgService {
   getConformanceStatementSummary(id: string): Observable<IConformanceStatement[]> {
     return this.http.get<IConformanceStatement[]>('api/igdocuments/' + id + '/conformancestatement/summary');
   }
+  getValueSetsSummary(id: string, filter: any): Observable<any[]> {
+    return this.http.post<any[]>('api/igdocuments/' + id + '/value-sets/summary', filter);
+  }
 
   loadTemplate(): Observable<IgTemplate[]> {
     return this.http.get<IgTemplate[]>('api/igdocuments/igTemplates');

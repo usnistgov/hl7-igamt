@@ -6,8 +6,7 @@
     'relative-label': !inline,
     'deprecated': element.activeInfo?.status=='DEPRECATED'
   }" style="cursor: pointer;"
-  [id]="'TOC-' + element.type + '-' + element.id"
->
+  [id]="'TOC-' + element.type + '-' + element.id">
   <app-entity-bagde [type]="element.type" *ngIf="!hideBadge"></app-entity-bagde>
 
   <!-- <div>
@@ -16,10 +15,12 @@
 
   <app-scope-badge [scope]="element.domainInfo.scope" [version]="element.domainInfo.version" [resourceOrigin]='element.resourceOrigin' [flavor]="element.flavor" *ngIf="!ignoreScope" [sourceType]="element.sourceType" [stability]="element.stability" [url]="element.url" >
   </app-scope-badge>
+
   <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"> &nbsp;{{ getDisplayLabel() }}
     <ng-container *ngIf=" !hideDescription && element.description">
          {{'- ' + element.description }}
     </ng-container>
+
   </span>
   <ng-container *ngIf="element.generated">
     <span  style="margin-left: 5px; margin-right: 5px;">(generated)</span>

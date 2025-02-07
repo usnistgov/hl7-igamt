@@ -1,8 +1,6 @@
 package gov.nist.hit.hl7.igamt.auth.config;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -18,11 +16,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
-
+@Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
   private final TokenAuthenticationService tokenService;
@@ -35,28 +29,18 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-    if(!this.pathMatcher.matches(request)) {
-      filterChain.doFilter(request, response);
-      return;
-    }
-
-    UsernamePasswordAuthenticationToken authentication;
     try {
-      authentication = tokenService.getAuthentication(request);
+      UsernamePasswordAuthenticationToken authentication = tokenService.getAuthentication(request);
       SecurityContextHolder.getContext().setAuthentication(authentication);
-
-      filterChain.doFilter(request, response);
-    } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException
-        | SignatureException | IllegalArgumentException | NoSuchAlgorithmException
-        | InvalidKeySpecException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch (Exception e) {
+      // Clear cookie
       Cookie authCookie = new Cookie("authCookie", "");
       authCookie.setPath("/api");
       authCookie.setMaxAge(0);
       response.addCookie(authCookie);
-      response.sendError(403);
-
+      // Clear Security Context
+      SecurityContextHolder.clearContext();
     }
+    filterChain.doFilter(request, response);
   }
 }

@@ -59,6 +59,7 @@ public interface VerificationEntryService {
     IgamtObjectError CoConstraintPrimaryUsageInvalid(String pathId, String locationName, String id, Type type, CoConstraintUsage usage);
     IgamtObjectError CoConstraintCardinalityInvalid(String pathId, String locationName, String id, Type type, boolean group, int min, String max);
     IgamtObjectError CoConstraintCardinalityAndUsageInvalid(String pathId, String locationName, String id, Type type, boolean group, int min, String max, CoConstraintUsage usage);
+    IgamtObjectError CoConstraintCellMissing(String pathId, String locationName, String id, Type type, String headerName, String headerType);
     IgamtObjectError CoConstraintIncompatibleHeaderAndCellType(String pathId, String name, String id, Type type, ColumnType header, ColumnType cell);
     IgamtObjectError CoConstraintCodeCellMissingCode(String pathId, String locationName, String id, Type type);
     IgamtObjectError CoConstraintCodeCellMissingCodeSystem(String pathId, String locationName, String id, Type type);
@@ -105,6 +106,11 @@ public interface VerificationEntryService {
     IgamtObjectError Valueset_NotAllowedExtensibility_ImplementableProfile(Location info, String id, Type type, String extensibility);
     IgamtObjectError Valueset_NotAllowedStability_ConstrainableProfile(Location info, String id, Type type, String stability);
     IgamtObjectError Valueset_NotAllowedStability_ImplementableProfile(Location info, String id, Type type, String stability);
+
+    // Composite Profile
+    IgamtObjectError CompositeProfileBuildIssue(String compositeProfileId, String error);
+
+
     IgamtObjectError ExternalValuesetMissingURL(Location info, String id, Type type);
     IgamtObjectError ExternalValuesetInvalidURL(Location info, String id, Type type, String URL);
     IgamtObjectError InternalTrackedValuesetMissingCodeSet(Location info, String id, Type type);

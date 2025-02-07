@@ -12,7 +12,13 @@ import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
+import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtensionService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.model.CoConstraintTableReference;
+import gov.nist.hit.hl7.igamt.conformanceprofile.model.ExportedCoConstraintTable;
 import gov.nist.hit.hl7.igamt.export.domain.CoConstraintExcelExportFormData;
 import gov.nist.hit.hl7.igamt.export.domain.ExportFormat;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
@@ -20,6 +26,7 @@ import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
 import gov.nist.hit.hl7.igamt.web.app.ig.FormData;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -77,7 +84,7 @@ import gov.nist.hit.hl7.igamt.serialization.newImplementation.service.SerializeC
 import gov.nist.hit.hl7.igamt.serialization.newImplementation.service.parser.ParserResults;
 
 @RestController
-public class ExportController {
+public class ExportAndImportController {
 
   @Autowired
   ExcelImportService excelImportService;
@@ -112,6 +119,9 @@ public class ExportController {
   @Autowired
   CoConstraintSerializationHelper coConstraintSerializationHelper;
 
+  @Autowired
+  InMemoryDomainExtensionService inMemoryDomainExtensionService;
+
 //  List<String> files = new ArrayList<String>();
 //  Path source = Paths.get(this.getClass().getResource("/").getPath());
   
@@ -125,7 +135,9 @@ public class ExportController {
       @PathVariable("format") String format,
       @RequestParam(required = false) String deltamode,
       HttpServletResponse response, FormData formData) throws ExportException {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	  Set<String> dataExtensionTokens = new HashSet<>();
+
+	  Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String username = authentication.getPrincipal().toString(); 
     System.out.println("IN controller");
     ExportedFile exportedFile = null;
@@ -134,8 +146,9 @@ public class ExportController {
       ExportConfiguration config = null;
       Ig ig = igService.findById(igId);		
       IgDataModel igDataModel = igService.generateDataModel(ig);
-//      ig = igDataModel.getModel();
-      ExportType type = ExportType.fromString(formData.getDocumentType());
+	  dataExtensionTokens.addAll(igDataModel.getDataExtensionTokens());
+
+	    ExportType type = ExportType.fromString(formData.getDocumentType());
       if(type == null) {
         throw new ExportException("Unspecified Export Type");
       }
@@ -206,6 +219,8 @@ public class ExportController {
     } catch (Exception e) {
       e.printStackTrace();
       throw new ExportException(e, "Error while sending back exported IG Document with id " + igId);
+    } finally {
+	    dataExtensionTokens.forEach(token -> inMemoryDomainExtensionService.clear(token));
     }
   }
 
@@ -309,12 +324,14 @@ public class ExportController {
       @PathVariable("type") ExportType type,
       HttpServletResponse response,
       FormData formData) throws ExportException {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	  Set<String> dataExtensionTokens = new HashSet<>();
+	  Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {
       try {
     	  Ig ig = igService.findById(documentId);		
           IgDataModel igDataModel = igService.generateDataModel(ig);
-          ig = igDataModel.getModel();
+	      dataExtensionTokens.addAll(igDataModel.getDataExtensionTokens());
+	      ig = igDataModel.getModel();
         String username = authentication.getPrincipal().toString();
         ExportedFile exportedFile= null;     
         ExportConfiguration exportConfiguration = exportConfigurationService.getConfigurationToApply(type, username);
@@ -328,76 +345,107 @@ public class ExportController {
         FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());		
       } catch (Exception e) {
         throw new ExportException(e, "Error while sending back exported  Document with id " + documentId);
+      } finally {
+	      dataExtensionTokens.forEach(token -> inMemoryDomainExtensionService.clear(token));
       }
     } else {
       throw new AuthenticationCredentialsNotFoundException("No Authentication");
     }
   }
 
-  @RequestMapping(value = "/api/export/coconstraintTable", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+  @RequestMapping(value = "/api/export/co-constraints-table", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
   @PreAuthorize("AccessResource('CONFORMANCEPROFILE', #formData.conformanceProfileId, READ)")
   public @ResponseBody void exportCoconstraintTable(CoConstraintExcelExportFormData formData, HttpServletResponse response) throws ExportException, JsonParseException, JsonMappingException, IOException, ResourceNotFoundException, PathNotFoundException {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if(formData.getJson() != null) {
       ObjectMapper mapper = new ObjectMapper();
       mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       CoConstraintTable coConstraintTable = mapper.readValue(formData.getJson(), CoConstraintTable.class);
-      if (authentication != null) {
-        String username = authentication.getPrincipal().toString();
-        ByteArrayOutputStream excelFile = serializeCoconstraintTableToExcel.exportToExcel(
-                formData.getConformanceProfileId(),
-                formData.getContextId(),
-                formData.getSegmentRef(),
-                coConstraintTable
-        );
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-disposition",
-            "attachment;filename=" + "CoConstraintsExcelFile.xlsx");
-        try {
-          response.getOutputStream().write(excelFile.toByteArray());
-        } catch (IOException e) {
-          throw new ExportException(e, "Error while sending back excel Document for coconstraintTable with id " + coConstraintTable.getId());
-        }
-      } else {
-        throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-      }
-    }
-
-  }
-
-
-  @RequestMapping(value="/api/import/coconstraintTable", method=RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  @PreAuthorize("AccessResource('CONFORMANCEPROFILE', #conformanceProfileID, WRITE)")
-  @ResponseBody
-  public ParserResults handleFileUpload(@RequestPart("file") MultipartFile file,
-      @RequestParam("segmentRef") String segmentRef,
-      @RequestParam("conformanceProfileID") String conformanceProfileID,
-      @RequestParam("igID") String igID,
-      @RequestParam("contextId") String contextId) throws IOException{
-    String message;
-    System.out.println("SegmentRef : " + 	        	 segmentRef);
-    System.out.println("conformanceProfileID : " + 	        	 conformanceProfileID);
-    System.out.println("contextId : " + 	        	 contextId);
-    System.out.println("igId : " + 	        	 igID);
-
-    InputStream stream = file.getInputStream();
-    try {
-      ParserResults parserResults = excelImportService.readFromExcel(stream, igID, conformanceProfileID, contextId, segmentRef);
-      //			return new ResponseMessage(Status.SUCCESS, "Table imported succesfully", conformanceProfileID, parserResults, new Date());
-      Optional<IgamtObjectError> match =  parserResults.getVerificationResult().getErrors().stream().filter((error) ->
-      { 
-        return error.getSeverity().equals("ERROR");
-
-      }).findFirst();
-      if(match.isPresent()) {
-        parserResults.setCoConstraintTable(null);
-      }
-      return parserResults;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
+	    ByteArrayOutputStream excelFile = serializeCoconstraintTableToExcel.exportToExcel(
+	            formData.getConformanceProfileId(),
+	            formData.getContextId(),
+	            formData.getSegmentRef(),
+	            coConstraintTable
+	    );
+	    response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+	    response.setHeader("Content-disposition",
+	        "attachment;filename=" + "CoConstraintsExcelFile.xlsx");
+	    try {
+	      response.getOutputStream().write(excelFile.toByteArray());
+	    } catch (IOException e) {
+	      throw new ExportException(e, "Error while sending back excel Document for coconstraintTable with id " + coConstraintTable.getId());
+	    }
     }
   }
+
+	@RequestMapping(value = "/api/export/co-constraints-table/json", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	@PreAuthorize("AccessResource('CONFORMANCEPROFILE', #reference.conformanceProfileId, READ)")
+	public void exportCoConstraints(CoConstraintTableReference reference, HttpServletResponse response) throws Exception {
+		ConformanceProfile profile = this.conformanceProfileService.findById(reference.getConformanceProfileId());
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+		CoConstraintTable table = this.igService.getCoConstraintTable(profile, reference, true);
+		if(table == null) {
+			throw new Exception("CoConstraint Table not found");
+		} else {
+			ExportedCoConstraintTable coConstraintTable = new ExportedCoConstraintTable();
+			coConstraintTable.setTable(table);
+			coConstraintTable.setContextPathId(reference.getContextPathId());
+			coConstraintTable.setSegmentPathId(reference.getSegmentPathId());
+			coConstraintTable.setConformanceProfileId(profile.getId());
+			response.setContentType("application/json");
+			response.setHeader(
+					HttpHeaders.CONTENT_DISPOSITION,
+					"attachment; filename=co-constraints-table.json"
+			);
+			objectMapper.writeValue(response.getWriter(), coConstraintTable);
+		}
+	}
+
+
+	@RequestMapping(value = "/api/import/co-constraints-table", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@NotifySave(id = "#id", type = "'CONFORMANCEPROFILE'")
+	@PreAuthorize("AccessResource('CONFORMANCEPROFILE', #id, WRITE) && ConcurrentSync('CONFORMANCEPROFILE', #id, ALLOW_SYNC_STRICT)")
+	public ResponseMessage<List<IgamtObjectError>> importCoConstraints(
+			@RequestPart("file") MultipartFile file,
+			@RequestParam("conformanceProfileId") String id,
+			@RequestParam("segmentPathId") String segmentPathId,
+			@RequestParam("contextPathId") String contextPathId,
+			@RequestParam("format") String format
+	) throws Exception {
+		ConformanceProfile profile = this.conformanceProfileService.findById(id);
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+		CoConstraintTable table = null;
+
+		if(format.equalsIgnoreCase("json")) {
+			table = objectMapper.readValue(file.getInputStream(), ExportedCoConstraintTable.class).getTable();
+		} else if(format.equalsIgnoreCase("excel")) {
+			table = excelImportService.readFromExcel(file.getInputStream(), profile.getDocumentInfo().getDocumentId(), id, contextPathId, segmentPathId);
+		}
+
+		try {
+			CoConstraintTableReference coConstraintTableReference = new CoConstraintTableReference();
+			coConstraintTableReference.setContextPathId(contextPathId);
+			coConstraintTableReference.setSegmentPathId(segmentPathId);
+			List<IgamtObjectError> entries = this.igService.importCoConstraintTable(
+					profile,
+					coConstraintTableReference,
+					table
+			);
+
+			boolean success = entries.stream().noneMatch((e) -> e.getSeverity().equals("FATAL"));
+			return new ResponseMessage<>(
+					success ? entries.isEmpty() ? ResponseMessage.Status.SUCCESS : ResponseMessage.Status.WARNING : ResponseMessage.Status.FAILED,
+					success ? entries.isEmpty() ? "Co-Constraint Table Successfully imported" : "Co-Constraint Table imported with issues" : "Co-Constraint Table Import Failed",
+					id,
+					entries,
+					new Date()
+			);
+		} catch(IOException e) {
+			throw new Exception("Invalid file format");
+		}
+	}
 
   @RequestMapping(value = "/api/export/library/{dlId}/quickWord", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
   // TODO Library
@@ -488,12 +536,14 @@ public class ExportController {
 		String[] profiles = {profileId};
 		ReqId reqIds = new ReqId();
 		reqIds.setConformanceProfilesId(profiles);
+        reqIds.setCompositeProfilesId(profiles);
+
 		Ig ig = igService.findById(id);
 		if (ig != null)  {
 			Ig subSetIg = this.igService.getIgProfileResourceSubSetAsIg(
 					ig,
 					new HashSet<>(Arrays.asList(reqIds.getConformanceProfilesId())),
-					new HashSet<>(Arrays.asList(reqIds.getCompositeProfilesId()))
+                    new HashSet<>(Arrays.asList(reqIds.getCompositeProfilesId()))
 			);
 			String xmlContent = igExportService.exportIgDocumentToDiffXml(subSetIg);
 			System.out.println(xmlContent);

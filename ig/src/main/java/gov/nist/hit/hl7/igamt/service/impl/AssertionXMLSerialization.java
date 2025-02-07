@@ -45,13 +45,13 @@ public class AssertionXMLSerialization {
             	}
 
             } else if (assertion.getSubject().getOccurenceType().equals("noOccurrence")) {
-            	occurenceStr = "Min=\"0\" Max\"0\"";
+            	occurenceStr = "Min=\"0\" Max=\"0\"";
             	strPath1Mode = "Path1Mode=\"0\"";
             } else if (assertion.getSubject().getOccurenceType().equals("exactlyOne")) {
-            	occurenceStr = "Min=\"1\" Max\"1\"";
+            	occurenceStr = "Min=\"1\" Max=\"1\"";
             	strPath1Mode = "Path1Mode=\"1\"";
             } else if (assertion.getSubject().getOccurenceType().equals("count")) {
-            	occurenceStr = "Min=\"" + assertion.getSubject().getOccurenceValue() + "\" Max\"" + assertion.getSubject().getOccurenceValue()+ "\"";
+            	occurenceStr = "Min=\"" + assertion.getSubject().getOccurenceValue() + "\" Max=\"" + assertion.getSubject().getOccurenceValue()+ "\"";
             	strPath1Mode = "Path1Mode=\"" + assertion.getSubject().getOccurenceValue() + "\"";
             } else if (assertion.getSubject().getOccurenceType().equals("all")) {
             	if(notAssertion) {

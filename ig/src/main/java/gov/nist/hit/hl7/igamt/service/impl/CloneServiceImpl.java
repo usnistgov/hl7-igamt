@@ -19,14 +19,10 @@ import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraint;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
+
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
@@ -38,7 +34,6 @@ import gov.nist.hit.hl7.igamt.common.slicing.service.SlicingService;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileDependencyService;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
-import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCompositeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileDependencyService;
@@ -104,9 +99,6 @@ public class CloneServiceImpl implements  CloneService {
 
 	@Autowired
 	ConformanceStatementRepository conformanceStatementRepository;
-
-	@Autowired
-	ConformanceProfileCompositeService compose;
 
 	@Autowired
 	PredicateRepository predicateRepository;

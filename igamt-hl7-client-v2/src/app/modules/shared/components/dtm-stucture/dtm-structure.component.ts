@@ -19,6 +19,7 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
 
   regexList: any;
   dtName: string;
+  allowEmpty: boolean;
 
   @Input()
   viewOnly: boolean;
@@ -27,7 +28,12 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
   set resource(resource: IResource) {
     this.regexList = null;
     this.resource$ = of(resource);
+
     this.dateTimeConstraints = resource.dateTimeConstraints;
+    console.log('called');
+    console.log(resource.allowEmpty);
+
+    this.allowEmpty = resource.allowEmpty;
 
     if (!this.dateTimeConstraints || !this.dateTimeConstraints.dateTimeComponentDefinitions) {
       if (resource.name === 'DTM') {
@@ -71,6 +77,8 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
     }
     this.dtName = resource.name;
     this.loadRegexDataAndUpdateAssertion();
+    this.allowEmpty = resource.allowEmpty;
+
   }
 
   @Output()
@@ -118,7 +126,6 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
     } else {
       this.updateAssertion();
     }
-
   }
 
   makeX(position: number) {
@@ -238,11 +245,52 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
   }
 
   private updateDateTimeConstraints(key: string) {
+
     if (this.regexList[key]) {
       this.dateTimeConstraints.simplePattern = this.regexList[key].format;
       this.dateTimeConstraints.errorMessage = this.regexList[key].errorMessage;
       this.dateTimeConstraints.regex = this.regexList[key].regex;
+      this.toggleEmpty(this.allowEmpty);
     }
+
+  }
+
+  toggleEmpty($event) {
+    if ($event) {
+
+      this.dateTimeConstraints.simplePattern = this.dateTimeConstraints.simplePattern + ' or 0000';
+      console.log('Called');
+
+      this.dateTimeConstraints.errorMessage =  this.replaceMessage(this.dateTimeConstraints.errorMessage);
+
+      this.dateTimeConstraints.regex = this.dateTimeConstraints.regex.replace('$', '|0000$');
+
+    } else {
+
+      this.dateTimeConstraints.simplePattern = this.dateTimeConstraints.simplePattern.replace(' or 0000.', '');
+      this.dateTimeConstraints.simplePattern = this.dateTimeConstraints.simplePattern.replace(' or 0000', '');
+
+      this.dateTimeConstraints.errorMessage =  this.dateTimeConstraints.errorMessage.replace(' or 0000.', '.');
+      this.dateTimeConstraints.errorMessage =  this.dateTimeConstraints.errorMessage.replace(' or 0000', '.');
+
+      this.dateTimeConstraints.regex = this.dateTimeConstraints.regex.replace('|0000$', '$');
+    }
+  }
+
+  replaceMessage(str: string): string {
+    return str.replace(/\.(?=[^\.]*$)/, ' or 0000.');
+  }
+
+  updateEmpty($event) {
+    this.toggleEmpty($event);
+    this.changes.emit({
+      location: this.dtName,
+      propertyType: PropertyType.ALLOWEMPTY,
+      propertyValue: this.allowEmpty,
+      oldPropertyValue: null,
+      position: null,
+      changeType: ChangeType.UPDATE,
+    });
   }
 
   timeZoneUsageChange(event: any, location: string, target: any): void {

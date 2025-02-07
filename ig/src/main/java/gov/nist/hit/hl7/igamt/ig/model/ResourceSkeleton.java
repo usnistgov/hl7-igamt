@@ -139,6 +139,11 @@ public class ResourceSkeleton {
 		return resourceBindings;
 	}
 
+    public List<ResourceSkeletonBone> getChildren() throws ResourceNotFoundException {
+        this.lazyLoad();
+        return children;
+    }
+
 	protected void setResourceBindings(ResourceBinding resourceBindings) {
 		this.resourceBindings = resourceBindings;
 	}

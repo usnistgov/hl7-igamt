@@ -7,14 +7,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.util.BindingSummaryFilter;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
-import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
-import gov.nist.hit.hl7.igamt.datatype.domain.Component;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.model.CoConstraintTableReference;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
+import gov.nist.hit.hl7.igamt.ig.model.BindingSummaryItem;
 import gov.nist.hit.hl7.igamt.ig.model.IgProfileResourceSubSet;
-import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -106,8 +108,8 @@ public interface IgService {
   public Set<RelationShip> builAllRelations(Ig ig) ;
     
   UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass, boolean updateDate);
-  IgProfileResourceSubSet getIgProfileResourceSubSet(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws EntityNotFound;
-  Ig getIgProfileResourceSubSetAsIg(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws EntityNotFound;
+  IgProfileResourceSubSet getIgProfileResourceSubSet(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws Exception;
+  Ig getIgProfileResourceSubSetAsIg(Ig ig, Set<String> conformanceProfiles, Set<String> compositeProfiles) throws Exception;
 
   public ProfileComponent createProfileComponent(Ig ig, String name, List<DisplayElement> children);
 
@@ -143,4 +145,13 @@ public interface IgService {
   
   public Valueset importValuesetsFromCSV(String igId, MultipartFile csvFile) throws ImportValueSetException;
 
+  CoConstraintTable getCoConstraintTable(ConformanceProfile conformanceProfile, CoConstraintTableReference reference, boolean removeDerivedIndicator);
+
+  List<IgamtObjectError> importCoConstraintTable(
+          ConformanceProfile conformanceProfile,
+          CoConstraintTableReference reference,
+          CoConstraintTable table
+  ) throws Exception;
+
+  List<BindingSummaryItem> getBindingSummary(Ig ig, BindingSummaryFilter filter ) throws ResourceNotFoundException;
 }

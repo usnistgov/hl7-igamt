@@ -40,7 +40,8 @@ export class CoConstraintEntityService {
 
   exportAsExcel(table: ICoConstraintTable, conformanceProfileId: string, contextId: string, segmentRef: string) {
     const form = document.createElement('form');
-    form.action = '/api/export/coconstraintTable';
+    form.target = '_blank';
+    form.action = '/api/export/co-constraints-table';
     form.method = 'POST';
 
     const json = document.createElement('input');
@@ -70,6 +71,43 @@ export class CoConstraintEntityService {
     form.style.display = 'none';
     document.body.appendChild(form);
     form.submit();
+    form.remove();
+  }
+
+  exportAsJson(conformanceProfileId: string, contextId: string, segmentRef: string, index: number) {
+    const form = document.createElement('form');
+    form.target = '_blank';
+    form.action = '/api/export/co-constraints-table/json';
+    form.method = 'POST';
+
+    const conformanceProfileIdElm = document.createElement('input');
+    conformanceProfileIdElm.type = 'hidden';
+    conformanceProfileIdElm.name = 'conformanceProfileId';
+    conformanceProfileIdElm.value = conformanceProfileId;
+    form.appendChild(conformanceProfileIdElm);
+
+    const contextIdElm = document.createElement('input');
+    contextIdElm.type = 'hidden';
+    contextIdElm.name = 'contextPathId';
+    contextIdElm.value = contextId;
+    form.appendChild(contextIdElm);
+
+    const segmentRefElm = document.createElement('input');
+    segmentRefElm.type = 'hidden';
+    segmentRefElm.name = 'segmentPathId';
+    segmentRefElm.value = segmentRef;
+    form.appendChild(segmentRefElm);
+
+    const tableIndex = document.createElement('input');
+    tableIndex.type = 'hidden';
+    tableIndex.name = 'tableIndex';
+    tableIndex.value = index + '';
+    form.appendChild(tableIndex);
+
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    form.submit();
+    form.remove();
   }
 
   mergeGroupWithTable(groupRef: ICoConstraintGroupBindingRef, ccTable: ICoConstraintTable & ICoConstraintGroup, group: ICoConstraintGroup) {

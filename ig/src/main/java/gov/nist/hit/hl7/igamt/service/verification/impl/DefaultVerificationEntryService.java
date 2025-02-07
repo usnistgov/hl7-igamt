@@ -375,6 +375,19 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
+    public IgamtObjectError CoConstraintCellMissing(
+            String pathId, String locationName, String id, Type type, String headerName, String headerType
+    ) {
+        return new IgamtVerificationEntryBuilder("COCONSTRAINT_CELL_MISSING")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_ROW)
+                .message("Co-Constraint row is missing a cell for header "+ headerName +" of type "+headerType)
+                .entry();
+    }
+
+    @Override
     public IgamtObjectError CoConstraintIncompatibleHeaderAndCellType(String pathId, String name, String id, Type type, ColumnType header, ColumnType cell) {
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_CELL_INCOMPATIBLE_TYPE")
                 .fatal()
@@ -846,6 +859,17 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .entry();
 	}
 
+    @Override
+    public IgamtObjectError CompositeProfileBuildIssue(String compositeProfileId, String error) {
+        return new IgamtVerificationEntryBuilder("COMPOSITE_PROFILE_BUILD_ISSUE")
+                .fatal()
+                .handleByUser()
+                .target(compositeProfileId, Type.COMPOSITEPROFILE)
+                .message(String.format("Could not build conformance profile from composite profile due to: %s", error))
+                .entry();
+    }
+
+    @Override
     @Override
     public IgamtObjectError ExternalValuesetMissingURL(Location l, String id, Type type) {
         return new IgamtVerificationEntryBuilder("VALUESET_MISSING_URL")

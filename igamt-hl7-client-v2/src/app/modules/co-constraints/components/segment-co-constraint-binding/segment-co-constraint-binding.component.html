@@ -53,9 +53,13 @@
             <i class="fa fa-trash"></i>
             Delete Segment
           </button>
-          <button ngbDropdownItem class="btn btn-sm" (click)="openImportDialog()" >
-            <i class="fa fa-download"></i>
+          <button *ngIf="!unsavedChanges" ngbDropdownItem class="btn btn-sm" (click)="importTable('excel')" >
+            <i class="fa fa-upload"></i>
             Import Table From Excel
+          </button>
+          <button *ngIf="!unsavedChanges" ngbDropdownItem class="btn btn-sm" (click)="importTable('json')" >
+            <i class="fa fa-upload"></i>
+            Import Table From JSON (Preferred Import Format)
           </button>
         </div>
       </div>
@@ -90,11 +94,11 @@
             <div ngbDropdownMenu>
               <button ngbDropdownItem *ngIf="!viewOnly" class="btn btn-sm" (click)="importCoConstraintGroup(i, segmentCoConstraint.display)" >
                 <i class="fa fa-arrow-down"></i>
-                Import Group
+                Use Co-Constraint Group
               </button>
               <button ngbDropdownItem *ngIf="!viewOnly" class="btn btn-sm" (click)="addCoConstraintGroup(i)">
                 <i class="fa fa-plus"></i>
-                Add Group
+                Add New Group
               </button>
               <button ngbDropdownItem *ngIf="!viewOnly" class="btn btn-sm" (click)="deleteTable(binding, i)" >
                 <i class="fa fa-trash"></i>
@@ -103,6 +107,10 @@
               <button ngbDropdownItem class="btn btn-sm" (click)="exportAsExcel(table.value)" *ngIf="!delta" >
                 <i class="fa fa-download"></i>
                 Export As Excel
+              </button>
+              <button ngbDropdownItem class="btn btn-sm" (click)="exportAsJson(table.value, i)" *ngIf="!delta" >
+                <i class="fa fa-download"></i>
+                Export As JSON (Preferred Import Format)
               </button>
             </div>
         </div>

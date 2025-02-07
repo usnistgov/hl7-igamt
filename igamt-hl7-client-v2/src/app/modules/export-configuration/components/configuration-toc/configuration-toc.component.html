@@ -55,14 +55,14 @@
           <input type="checkbox" [(ngModel)]="filter.datatypesFilterMap[node.id]" style="margin-right: 5px;" [disabled] ="node.data.delta && node.data.delta ==='DELETED'">
           <app-display-section [element]="node.data" [inline]="true"  [ngClass]="{
     'delta-changed':filter.changed[node.id],
-    'delta-added':  filter.added[node.id]}"></app-display-section>
+    'delta-added':  filter.added[node.id]}" (click)="onSelect(node.data)"></app-display-section>
         </div>
       </ng-container>
 
       <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
         <div style="display: flex; flex-direction: row; align-items: center;" *ngIf="filter.conformanceProfileFilterMap">
           <input type="checkbox" [(ngModel)]="filter.conformanceProfileFilterMap[node.id]" style="margin-right: 5px;" [disabled]="node.data.delta && node.data.delta === 'DELETED'">
-          <app-display-section [contextMenu]="conformanceProfileSelection" [element]="node.data" [inline]="true" [ngClass]="{
+          <app-display-section  (click)="onSelect(node.data)" [contextMenu]="conformanceProfileSelection" [element]="node.data" [inline]="true" [ngClass]="{
     'delta-changed':filter.changed[node.id],
     'delta-added':  filter.added[node.id]}"></app-display-section>
     <context-menu #conformanceProfileSelection>
@@ -85,7 +85,7 @@
           <input type="checkbox" [(ngModel)]="filter.segmentFilterMap[node.id]" style="margin-right: 5px;" [disabled]="node.data.delta && node.data.delta === 'DELETED'">
           <app-display-section [element]="node.data" [inline]="true" [ngClass]="{
     'delta-changed':filter.changed[node.id],
-    'delta-added':  filter.added[node.id]}"></app-display-section>
+    'delta-added':  filter.added[node.id]}" (click)="onSelect(node.data)"></app-display-section>
         </div>
       </ng-container>
 
@@ -94,14 +94,14 @@
           <input type="checkbox" [(ngModel)]="filter.valueSetFilterMap[node.id]" style="margin-right: 5px;" [disabled]="node.data.delta && node.data.delta === 'DELETED'">
           <app-display-section [element]="node.data" [inline]="true" [ngClass]="{
     'delta-changed':filter.changed[node.id],
-    'delta-added':  filter.added[node.id]}"></app-display-section>
+    'delta-added':  filter.added[node.id]}" (click)="onSelect(node.data)"></app-display-section>
         </div>
       </ng-container>
 
       <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
-        <div style="display: flex; flex-direction: row; align-items: center;" *ngIf="filter.profileComponentFilterMap">
+        <div style="display: flex; flex-direction: row; align-items: center;" *ngIf="filter.profileComponentFilterMap" (click)="onSelect(node.data)">
           <input type="checkbox" [(ngModel)]="filter.profileComponentFilterMap[node.id]" style="margin-right: 5px;" [disabled]="node.data.delta && node.data.delta === 'DELETED'">
-          <span  [ngClass]="{
+          <span (click)="onSelect(node.data)"  [ngClass]="{
             'delta-changed':filter.changed[node.id],
              'delta-added':  filter.added[node.id]}">
             <app-entity-bagde [type]="'PROFILECOMPONENT'" ></app-entity-bagde> {{node.data.variableName}}
@@ -113,7 +113,7 @@
       <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
         <div style="display: flex; flex-direction: row; align-items: center;" *ngIf="filter.compositeProfileFilterMap">
           <input type="checkbox" [(ngModel)]="filter.compositeProfileFilterMap[node.id]" style="margin-right: 5px;" [disabled]="node.data.delta && node.data.delta === 'DELETED'">
-          <span  [ngClass]="{
+          <span (click)="onSelect(node.data)"  [ngClass]="{
     'delta-changed':filter.changed[node.id],
     'delta-added':  filter.added[node.id]}">
             <app-entity-bagde [type]="'PROFILECOMPONENT'" ></app-entity-bagde> {{node.data.variableName}}
