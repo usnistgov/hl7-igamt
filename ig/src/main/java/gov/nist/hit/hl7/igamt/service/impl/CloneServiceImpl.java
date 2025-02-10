@@ -323,7 +323,6 @@ public class CloneServiceImpl implements  CloneService {
 						newCodesPresence.put(newKeys.get(key),reg.getCodesPresence().get(s));
 					}else {
 						newCodesPresence.put(s,reg.getCodesPresence().get(s));
-
 					}
 				}
 			}

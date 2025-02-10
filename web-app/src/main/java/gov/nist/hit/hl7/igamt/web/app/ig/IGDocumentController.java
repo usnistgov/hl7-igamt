@@ -18,7 +18,6 @@ import gov.nist.hit.hl7.igamt.display.model.*;
 import gov.nist.hit.hl7.igamt.ig.domain.ExportShareConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgVerificationIssuesList;
 import gov.nist.hit.hl7.igamt.ig.model.*;
-import gov.nist.hit.hl7.igamt.web.app.service.LegacyIgSubSetService;
 import gov.nist.hit.hl7.igamt.web.app.service.impl.EntityBrowserService;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceDocumentManagementService;
 import org.springframework.beans.factory.annotation.Autowired;

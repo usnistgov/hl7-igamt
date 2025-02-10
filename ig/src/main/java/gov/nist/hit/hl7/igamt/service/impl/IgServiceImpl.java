@@ -13,7 +13,6 @@ import java.util.zip.ZipOutputStream;
 
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
-import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.access.model.Action;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
@@ -235,25 +234,21 @@ public class IgServiceImpl implements IgService {
 
 	@Override
 	public Ig findById(String id) {
-		// TODO Auto-generated method stub
 		return igRepository.findById(id).orElse(null);
 	}
 
 	@Override
 	public List<Ig> findAll() {
-		// TODO Auto-generated method stub
 		return igRepository.findAll();
 	}
 
 	@Override
 	public void delete(String id) {
-		// TODO Auto-generated method stub
 		igRepository.findById(id);
 	}
 
 	@Override
 	public Ig save(Ig ig) {
-		// TODO Auto-generated method stub
 		ig.setUpdateDate(new Date());
 		return igRepository.save(ig);
 	}
@@ -2302,6 +2297,7 @@ public class IgServiceImpl implements IgService {
 			valueSetMap.put(vs.getId(), vs);
 			DisplayElement elm = this.valueSetService.convertValueSet(vs);
 			valueSetDisplayMap.put(vs.getId(), elm);
+
 		}
 
 		for (BindingSummaryItem item : ret) {

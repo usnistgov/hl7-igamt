@@ -870,7 +870,6 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
-    @Override
     public IgamtObjectError ExternalValuesetMissingURL(Location l, String id, Type type) {
         return new IgamtVerificationEntryBuilder("VALUESET_MISSING_URL")
                 .fatal()
