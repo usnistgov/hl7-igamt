@@ -1,12 +1,10 @@
 
 stages:
-  - deploy-prod
-  - deploy-dev
-  - deploy-test
+  - deploy
 
 
 deploy_dev:
-  stage: deploy-dev
+  stage: deploy
   script:
     - echo "Deploying igamt 2 dev environment in hit dev"
     - cd /sites/apps/igamt-2/hl7-igamt-infrastructure/containers/apps/dev/scripts
@@ -18,7 +16,7 @@ deploy_dev:
   allow_failure: false 
 
 deploy_test:
-  stage: deploy-test
+  stage: deploy
   script:
     - echo "Deploying igamt 2 test environment in hit dev"
     - cd /sites/apps/igamt-2/hl7-igamt-infrastructure/containers/apps/test/scripts
@@ -31,7 +29,7 @@ deploy_test:
 
 
 deploy_prod:
-  stage: deploy-prod
+  stage: deploy
   script:
     - echo "Deploying igamt 2 prod environment in hit dev"
     - cd /sites/apps/igamt-2/hl7-igamt-infrastructure/containers/apps/prod/scripts
