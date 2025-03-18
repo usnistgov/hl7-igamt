@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +35,6 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Level;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
@@ -1187,19 +1181,22 @@ public class DatatypeServiceImpl implements DatatypeService {
 	}
 
 	@Override
-	public String findXMLRefIdById(Datatype dt, String defaultHL7Version) {
-		if (defaultHL7Version != null && dt.getDomainInfo() != null && dt.getDomainInfo().getVersion() != null) {
-			if (defaultHL7Version.equals(dt.getDomainInfo().getVersion())) {
-				return dt.getLabel();
-			} else {
-				return this.str(dt.getLabel() + "_" + dt.getDomainInfo().getVersion().replaceAll("\\.", "-"));
-			}
-		} else {
-			return dt.getLabel();
+	public String getDatatypeIdentifier(Datatype resource, String defaultHL7Version) {
+		String identifier = str(resource.getLabel());
+		String resourceVersion = resource.getDomainInfo().getVersion();
+		boolean defaultVersionIsSet = defaultHL7Version != null && !defaultHL7Version.isEmpty();
+		boolean versionIsSet = resourceVersion != null && !resourceVersion.isEmpty();
+		boolean isDefaultHL7Version = defaultVersionIsSet && versionIsSet && defaultHL7Version.equals(resourceVersion);
+		if(versionIsSet && !isDefaultHL7Version) {
+			identifier = identifier + "_" + resourceVersion.replaceAll("\\.", "-");
 		}
+		return identifier;
 	}
-	
-	
+
+	public String findXMLRefIdById(Datatype datatype, String defaultHL7Version) {
+		return this.getDatatypeIdentifier(datatype, defaultHL7Version);
+	}
+
 	@Override
 	public void processAndSubstitute(Datatype resource, HashMap<RealKey, String> newKeys) {
 

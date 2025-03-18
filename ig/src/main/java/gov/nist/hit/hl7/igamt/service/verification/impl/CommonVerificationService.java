@@ -103,7 +103,7 @@ public class CommonVerificationService {
 				}
 			}
 
-			if(lengthType.equals(LengthType.UNSET)) {
+			if(lengthType.equals(LengthType.UNSET) && !element.getUsage().equals(Usage.X)) {
 				// Check length or conf length is set
 				results.add(this.verificationEntryService.LengthOrConfLengthMissing(location, id, type));
 			}

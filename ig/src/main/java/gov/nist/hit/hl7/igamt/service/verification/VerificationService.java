@@ -23,6 +23,7 @@ public interface VerificationService {
 	IgVerificationIssuesList verifyIg(Ig ig);
 	List<IgamtObjectError> verifyCoConstraintGroup(CoConstraintGroup coConstraintGroup);
 	IgVerificationIssuesList verify(
+			Ig ig,
 			List<CompositeProfileStructure> compositeProfiles,
 			List<ConformanceProfile> conformanceProfiles,
 			List<Segment> segments,

@@ -41,6 +41,6 @@ public interface XMLSerializeService {
 
   void generateIS(ZipOutputStream out, String xmlStr, String fileName) throws IOException;
 
-  void normalizeIgModel(IgDataModel igModel, String[] conformanceProfileIds) throws CloneNotSupportedException, ClassNotFoundException, IOException;
+  void normalizeIgModel(IgDataModel igModel, String[] conformanceProfileIds) throws Exception;
 
 }
