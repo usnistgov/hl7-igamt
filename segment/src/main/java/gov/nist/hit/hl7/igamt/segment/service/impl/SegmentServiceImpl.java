@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +38,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Level;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.Status;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
@@ -1224,19 +1218,22 @@ public class SegmentServiceImpl implements SegmentService {
 	private String str(String value) {
 		return value != null ? value : "";
 	}
-	
-	@Override
-	public String findXMLRefIdById(Segment s, String defaultHL7Version) {
-		if (defaultHL7Version != null && s.getDomainInfo() != null && s.getDomainInfo().getVersion() != null) {
-			if (defaultHL7Version.equals(s.getDomainInfo().getVersion())) {
-				return s.getLabel();
-			} else {
-				return this.str(s.getLabel() + "_" + s.getDomainInfo().getVersion().replaceAll("\\.", "-"));
-			}
-		} else {
-			return s.getLabel();
-		}
-	}
+
+  public String getSegmentIdentifier(Segment resource, String defaultHL7Version) {
+    String identifier = str(resource.getLabel());
+    String resourceVersion = resource.getDomainInfo().getVersion();
+    boolean defaultVersionIsSet = defaultHL7Version != null && !defaultHL7Version.isEmpty();
+    boolean versionIsSet = resourceVersion != null && !resourceVersion.isEmpty();
+    boolean isDefaultHL7Version = defaultVersionIsSet && versionIsSet && defaultHL7Version.equals(resourceVersion);
+    if(versionIsSet && !isDefaultHL7Version) {
+      identifier = identifier + "_" + resourceVersion.replaceAll("\\.", "-");
+    }
+    return identifier;
+  }
+
+  public String findXMLRefIdById(Segment segment, String defaultHL7Version) {
+    return getSegmentIdentifier(segment, defaultHL7Version);
+  }
 
   @Override
   public List<Segment> saveAll(Set<Segment> segments) throws ForbiddenOperationException {

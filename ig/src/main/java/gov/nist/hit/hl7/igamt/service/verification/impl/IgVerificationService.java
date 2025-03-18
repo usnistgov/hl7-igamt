@@ -1,10 +1,12 @@
 package gov.nist.hit.hl7.igamt.service.verification.impl;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
@@ -52,6 +54,7 @@ public class IgVerificationService {
 	VerificationEntryService entry;
 
 	public IgVerificationIssuesList verifyIg(Ig ig) {
+		String defaultHL7Version = igService.findDefaultHL7Version(ig);
 		IgVerificationIssuesList igVerificationIssuesList = new IgVerificationIssuesList();
 		// Implementation Guide
 		igVerificationIssuesList.setIg(verifyIgMetadata(ig));
@@ -63,6 +66,7 @@ public class IgVerificationService {
 				ig.getConformanceProfileRegistry(),
 				(id) -> this.conformanceProfileService.findById(id),
 				(resource) -> this.conformanceProfileVerificationService.verifyConformanceProfile(resource),
+				ConformanceProfile::getLabel,
 				false,
 				igVerificationIssuesList.getConformanceProfiles()
 		);
@@ -74,6 +78,7 @@ public class IgVerificationService {
 				ig.getSegmentRegistry(),
 				(id) -> this.segmentService.findById(id),
 				(resource) -> this.segmentVerificationService.verifySegment(resource),
+				(segment) -> this.segmentService.getSegmentIdentifier(segment, defaultHL7Version),
 				true,
 				igVerificationIssuesList.getSegments()
 		);
@@ -85,6 +90,7 @@ public class IgVerificationService {
 				ig.getDatatypeRegistry(),
 				(id) -> this.datatypeService.findById(id),
 				(datatype) -> this.datatypeVerificationService.verifyDatatype(datatype),
+				(dt) -> datatypeService.getDatatypeIdentifier(dt, defaultHL7Version),
 				true,
 				igVerificationIssuesList.getDatatypes()
 		);
@@ -96,6 +102,7 @@ public class IgVerificationService {
 				ig.getValueSetRegistry(),
 				(id) -> this.valuesetService.findById(id),
 				(resource) -> this.valueSetVerificationService.verifyValueSet(resource),
+				(vs) -> valuesetService.getBindingIdentifier(vs, defaultHL7Version),
 				true,
 				igVerificationIssuesList.getValueSets()
 		);
@@ -113,6 +120,7 @@ public class IgVerificationService {
 					}
 				},
 				(resource) -> this.coConstraintVerificationService.verifyCoConstraintGroup(resource),
+				CoConstraintGroup::getLabel,
 				false,
 				igVerificationIssuesList.getCoConstraintGroups()
 		);
@@ -132,27 +140,35 @@ public class IgVerificationService {
 		return igVerificationIssuesList;
 	}
 
-	public <T extends Resource> void processRegistry(DocumentStructure document, Type type, Registry registry, Function<String, T> getter, Function<T, List<IgamtObjectError>> verify, boolean checkDuplicateLabel, List<IgamtObjectError> container) {
-		Map<String, Set<String>> labels = new HashMap<>();
+	public <T extends Resource> void processRegistry(
+			DocumentStructure document,
+			Type type,
+			Registry registry,
+			Function<String, T> getter,
+			Function<T, List<IgamtObjectError>> verify,
+			Function<T, String> getLabel,
+			boolean checkDuplicateLabel,
+			List<IgamtObjectError> container
+	) {
+		Set<String> labels = new HashSet<>();
 		for(Link link: registry.getChildren()) {
 			T resource = getter.apply(link.getId());
 			container.addAll(verifyResource(document, resource, link.getId(), type));
 			if(resource != null) {
 				container.addAll(verify.apply(resource));
 				if(checkDuplicateLabel) {
-					String version = resource.getDomainInfo().getVersion();
-					String label = resource.getLabel().toLowerCase();
-					if(labels.containsKey(version) && labels.get(version).contains(label)) {
+					String label = getLabel.apply(resource);
+					if(labels.contains(label.toLowerCase())) {
 						container.add(
 								this.entry.DuplicateResourceIdentifier(
 										resource.getId(),
 										resource.getType(),
-										resource.getLabel(),
-										version
+										label,
+										resource.getDomainInfo().getVersion()
 								)
 						);
 					} else {
-						labels.computeIfAbsent(version, (key) -> new HashSet<>()).add(label);
+						labels.add(label.toLowerCase());
 					}
 				}
 			}

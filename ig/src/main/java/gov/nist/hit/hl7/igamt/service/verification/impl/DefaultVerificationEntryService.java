@@ -71,8 +71,8 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .fatal()
                 .handleByUser()
                 .target(resourceId, resourceType)
-                .locationInfo("resource.extension", "Resource Extension", PropertyType.EXT)
-                .message("Resource with label " + label + " from version "+ version +" has duplicate identifier.")
+                .locationInfo("resource.extension", "Resource Identifier", PropertyType.IDENTIFIER)
+                .message("Resource \"" + label + "\" has duplicate identifier (extension or identifier already in use).")
                 .entry();
     }
 

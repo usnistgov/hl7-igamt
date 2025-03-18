@@ -14,12 +14,14 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.service.impl;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.binding.domain.BindingSource;
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.ConditionalSlicing;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.OrderedSlicing;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.Slice;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeDependencyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -79,7 +81,6 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
 
   @Override
   public void updateDependencies(ConformanceProfile elm, HashMap<RealKey, String> newKeys) {
-    
     processAndSubstitute(elm, newKeys);
     if (elm.getBinding() != null) {
       this.bindingService.substitute(elm.getBinding(), newKeys);
@@ -116,35 +117,24 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
   }
 
   @Override
-  public ConformanceProfileDependencies process(ConformanceProfile resource, ConformanceProfileDependencies conformanceProfileDependencies, DependencyFilter filter) throws EntityNotFound {
+  public ConformanceProfileDependencies process(
+          ConformanceProfile resource,
+          ConformanceProfileDependencies conformanceProfileDependencies,
+          DependencyFilter filter
+  ) throws EntityNotFound {
     ResourceBindingProcessor rb = new ResourceBindingProcessor(new BindingSource(Type.CONFORMANCEPROFILE, resource.getId()), resource.getBinding());
-    Map<String, Slicing> slicingMap =  resource.getSlicings() != null ?  resource.getSlicings().stream().collect(
-            Collectors.toMap(Slicing::getPath, x -> x)) : new HashMap<>();
-
-    for(MsgStructElement segOrgroup:  resource.getChildren()) {
-      if(commonFilteringService.allow(filter.getUsageFilter(), segOrgroup)) {
-        if (segOrgroup instanceof SegmentRef) {
-
-          SegmentRef ref = (SegmentRef) segOrgroup;
-          if (ref.getRef() != null && ref.getRef().getId() != null ) {
-            this.segmentDependencyService.visit(ref.getRef().getId(), conformanceProfileDependencies.getSegments(), conformanceProfileDependencies, filter, rb, segOrgroup.getId());
-          }
-        } else if (segOrgroup instanceof Group) {
-
-          Group g = (Group) segOrgroup;
-          for (MsgStructElement child : g.getChildren()) {
-            processSegmentorGroup(child, conformanceProfileDependencies, filter, rb, g.getId());
-          }
-        }
-        if(slicingMap.containsKey(segOrgroup.getId())) {
-          this.processSlicing(slicingMap.get(segOrgroup.getId()), conformanceProfileDependencies, filter);
-        }
-      }
-    }
+    Map<String, Slicing> slicing =  resource.getSlicings() != null ?  resource.getSlicings().stream().collect(Collectors.toMap(Slicing::getPath, x -> x)) : new HashMap<>();
     if(resource.getCoConstraintsBindings() != null) {      
       this.processCoConstraintsBinding(resource.getCoConstraintsBindings(),conformanceProfileDependencies, filter);
     }
-    
+    processSegmentOrGroup(
+            resource.getChildren(),
+            slicing,
+            conformanceProfileDependencies,
+            filter,
+            rb,
+            ""
+    );
     return conformanceProfileDependencies;
   }
 
@@ -213,17 +203,42 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
     return dependencies;
   }
 
-  public void processSegmentorGroup(MsgStructElement segOrgroup,  ConformanceProfileDependencies used, DependencyFilter filter, ResourceBindingProcessor rb, String parent) throws EntityNotFound {
-    if(commonFilteringService.allow(filter.getUsageFilter(), segOrgroup)) {
-      if (segOrgroup instanceof SegmentRef) {
-        SegmentRef ref = (SegmentRef) segOrgroup;
-        if (ref.getRef() != null && ref.getRef().getId() != null ) {
-          this.segmentDependencyService.visit(ref.getRef().getId(), used.getSegments(), used, filter, rb, parent+'-'+ segOrgroup.getId());
+  public void processSegmentOrGroup(
+          Set<SegmentRefOrGroup> children,
+          Map<String, Slicing> slicing,
+          ConformanceProfileDependencies used,
+          DependencyFilter filter,
+          ResourceBindingProcessor rb,
+          String parent
+  ) throws EntityNotFound {
+    for(SegmentRefOrGroup segOrGroup:  children) {
+      if(commonFilteringService.allow(filter.getUsageFilter(), segOrGroup)) {
+        String elementId = Strings.isNullOrEmpty(parent) ? segOrGroup.getId() : parent + "-" + segOrGroup.getId();
+        if (segOrGroup instanceof SegmentRef) {
+          SegmentRef ref = (SegmentRef) segOrGroup;
+          if (ref.getRef() != null && ref.getRef().getId() != null ) {
+            this.segmentDependencyService.visit(
+                    ref.getRef().getId(),
+                    used.getSegments(),
+                    used,
+                    filter,
+                    rb,
+                    elementId
+            );
+          }
+        } else if (segOrGroup instanceof Group) {
+          Group g = (Group) segOrGroup;
+          processSegmentOrGroup(
+                  g.getChildren(),
+                  slicing,
+                  used,
+                  filter,
+                  rb,
+                  elementId
+          );
         }
-      } else if (segOrgroup instanceof Group) {
-        Group g = (Group) segOrgroup;
-        for (MsgStructElement child : g.getChildren()) {
-          processSegmentorGroup(child, used, filter, rb, parent+'-'+ child.getId() );
+        if(slicing.containsKey(elementId)) {
+          this.processSlicing(slicing.get(elementId), used, filter);
         }
       }
     }
@@ -302,7 +317,7 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
         }
 
       } else {
-        processSegmentorGroup(cp.getId(), segOrgroup, used, "");
+        processSegmentOrGroup(cp.getId(), segOrgroup, used, "");
       }
     }
     if (cp.getBinding() != null) {
@@ -329,8 +344,8 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
   }
 
 
-  private void processSegmentorGroup(String profileId, MsgStructElement segOrgroup, Set<RelationShip> used,
-      String path) {
+  private void processSegmentOrGroup(String profileId, MsgStructElement segOrgroup, Set<RelationShip> used,
+                                     String path) {
     // TODO Auto-generated method stub
     if (segOrgroup instanceof SegmentRef) {
       SegmentRef ref = (SegmentRef) segOrgroup;
@@ -347,7 +362,7 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
       Group g = (Group) segOrgroup;
       path += g.getName();
       for (MsgStructElement child : g.getChildren()) {
-        processSegmentorGroup(profileId, child, used, path);
+        processSegmentOrGroup(profileId, child, used, path);
       }
     }
   }

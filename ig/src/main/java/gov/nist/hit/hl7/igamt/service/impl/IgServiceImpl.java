@@ -1101,8 +1101,7 @@ public class IgServiceImpl implements IgService {
 
 	@Override
 	public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds,
-												String[] compositeProfileIds) throws CloneNotSupportedException, IOException, ClassNotFoundException,
-			ProfileSerializationException, TableSerializationException, CoConstraintXMLSerializationException {
+												String[] compositeProfileIds) throws Exception {
 
 		// Add composite profile generated resources to the IG's main list of resources
 		if(igModel.getAllFlavoredDatatypeDataModelsMap() != null) {
@@ -2010,20 +2009,23 @@ public class IgServiceImpl implements IgService {
 	@Override
 	public String findDefaultHL7VersionById(String id) {
 		Ig ig = this.findById(id);
+		return findDefaultHL7Version(ig);
+	}
 
+	public String findDefaultHL7Version(Ig ig) {
 		if (ig.getMetadata() != null && ig.getMetadata().getHl7Versions() != null
-				&& ig.getMetadata().getHl7Versions().size() > 0) {
+				&& !ig.getMetadata().getHl7Versions().isEmpty()) {
 			return ig.getMetadata().getHl7Versions().get(0);
 		}
 
 		if (ig.getConformanceProfileRegistry() != null && ig.getConformanceProfileRegistry().getChildren() != null
-				&& ig.getConformanceProfileRegistry().getChildren().size() > 0) {
+				&& !ig.getConformanceProfileRegistry().getChildren().isEmpty()) {
 			for (Link l : ig.getConformanceProfileRegistry().getChildren()) {
 				if (l.getDomainInfo() != null && l.getDomainInfo().getVersion() != null)
 					return l.getDomainInfo().getVersion();
 			}
 		}
-		return "NOTFOUND";
+		return null;
 	}
 
 	@Override

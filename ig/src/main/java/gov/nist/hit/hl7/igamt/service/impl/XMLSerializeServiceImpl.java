@@ -1460,134 +1460,38 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 	}
 
 	@Override
-	public void normalizeIgModel(IgDataModel igModel, String[] conformanceProfileIds)
-			throws CloneNotSupportedException, ClassNotFoundException, IOException {
-		Map<String, DatatypeDataModel> toBeAddedDTs = new HashMap<String, DatatypeDataModel>();
-		Map<String, SegmentDataModel> toBeAddedSegs = new HashMap<String, SegmentDataModel>();
-		Map<String, ValuesetDataModel> toBeAddedVSs = new HashMap<String, ValuesetDataModel>();
-
-		/*
-		 * for (DatatypeDataModel dtModel : igModel.getDatatypes()) { for (String key :
-		 * dtModel.getValuesetMap().keySet()) { List<String> pathList = new
-		 * LinkedList<String>(Arrays.asList(key.split("\\.")));
-		 * 
-		 * if (pathList.size() > 1) { ComponentDataModel cModel =
-		 * dtModel.findComponentDataModelByPosition(Integer.parseInt(pathList.remove(0))
-		 * );
-		 * 
-		 * DatatypeDataModel childDtModel =
-		 * igModel.findDatatype(cModel.getDatatype().getId()); if (childDtModel == null)
-		 * childDtModel = toBeAddedDTs.get(cModel.getDatatype().getId());
-		 * DatatypeDataModel copyDtModel =
-		 * XMLSerializeServiceImpl.cloneThroughJson(childDtModel); int randumNum = new
-		 * SecureRandom().nextInt(100000);
-		 * copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" +
-		 * randumNum); String ext = childDtModel.getModel().getExt(); if (ext == null)
-		 * ext = ""; copyDtModel.getModel().setExt(ext + "_A" + randumNum);
-		 * toBeAddedDTs.put(copyDtModel.getModel().getId(), copyDtModel);
-		 * cModel.getDatatype().setId(copyDtModel.getModel().getId());
-		 * cModel.getDatatype().setExt(ext + "_A" + randumNum);
-		 * updateChildDatatype(pathList, copyDtModel, igModel,
-		 * dtModel.getValuesetMap().get(key), toBeAddedDTs); } } }
-		 * 
-		 * for (SegmentDataModel segModel : igModel.getSegments()) { for (String key :
-		 * segModel.getValuesetMap().keySet()) { List<String> pathList = new
-		 * LinkedList<String>(Arrays.asList(key.split("\\.")));
-		 * 
-		 * if (pathList.size() > 1) { FieldDataModel fModel =
-		 * segModel.findFieldDataModelByPosition(Integer.parseInt(pathList.remove(0)));
-		 * 
-		 * DatatypeDataModel childDtModel =
-		 * igModel.findDatatype(fModel.getDatatype().getId()); if (childDtModel == null)
-		 * childDtModel = toBeAddedDTs.get(fModel.getDatatype().getId());
-		 * DatatypeDataModel copyDtModel =
-		 * XMLSerializeServiceImpl.cloneThroughJson(childDtModel);
-		 * 
-		 * int randumNum = new SecureRandom().nextInt(100000);
-		 * copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" +
-		 * randumNum); String ext = childDtModel.getModel().getExt(); if (ext == null)
-		 * ext = ""; copyDtModel.getModel().setExt(ext + "_A" + randumNum);
-		 * toBeAddedDTs.put(copyDtModel.getModel().getId(), copyDtModel);
-		 * fModel.getDatatype().setId(copyDtModel.getModel().getId());
-		 * fModel.getDatatype().setExt(ext + "_A" + randumNum);
-		 * 
-		 * updateChildDatatype(pathList, copyDtModel, igModel,
-		 * segModel.getValuesetMap().get(key), toBeAddedDTs); } } }
-		 * 
-		 * for (ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles())
-		 * { for (String key : cpModel.getValuesetMap().keySet()) { List<String>
-		 * pathList = new LinkedList<String>(Arrays.asList(key.split("\\.")));
-		 * SegmentRefOrGroupDataModel childModel =
-		 * cpModel.findChildByPosition(Integer.parseInt(pathList.remove(0)));
-		 * updateGroupOrSegmentRefModel(pathList, childModel, igModel,
-		 * cpModel.getValuesetMap().get(key), toBeAddedDTs, toBeAddedSegs); } }
-		 */
-
+	public void normalizeIgModel(IgDataModel igModel, String[] conformanceProfileIds) throws AmbiguousOBX3MappingException, PathNotFoundException, ResourceNotFoundException, IOException {
+		Map<String, SegmentDataModel> toBeAddedSegments = new HashMap<>();
 		for (ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
-			Set<String> vsIds = this.coConstraintSerializationHelper
-					.getCoConstraintReferencedValueSetIds(cpModel.getModel());
-			if (vsIds != null) {
-				for (String id : vsIds) {
-					Valueset vs = this.valuesetService.findById(id);
-					ValuesetDataModel vsdm = new ValuesetDataModel();
-					vsdm.setModel(vs);
-					toBeAddedVSs.put(vs.getBindingIdentifier(), vsdm);
+			Map<CoConstraintMappingLocation, Set<CoConstraintOBX3MappingValue>> maps = this.coConstraintSerializationHelper.getOBX3ToFlavorMap(cpModel.getModel());
+			for (CoConstraintMappingLocation coconLocation : maps.keySet()) {
+				SegmentDataModel sdm = igModel.findSegment(coconLocation.getFlavorId());
+				SegmentDataModel copySegModel = new SegmentDataModel();
+				copySegModel.setModel(sdm.getModel().clone());
+				copySegModel.setPredicateMap(sdm.getPredicateMap());
+				copySegModel.setConformanceStatements(sdm.getConformanceStatements());
+				copySegModel.setSingleCodeMap(sdm.getSingleCodeMap());
+				copySegModel.setValuesetMap(sdm.getValuesetMap());
+				copySegModel.setFieldDataModels(sdm.getFieldDataModels());
+				copySegModel.getModel().setId(copySegModel.getModel().getId() + "_COCON"
+						+ coconLocation.getLocationId().replaceAll("\\.", "_") + "_" + cpModel.getModel().getId());
+				String ext = copySegModel.getModel().getExt();
+				if (ext == null)
+					ext = "";
+				copySegModel.getModel().setExt(ext + "_COCON" + coconLocation.getLocationId().replaceAll("\\.", "_")
+						+ "_" + cpModel.getModel().getId());
 
-				}
-			}
+				this.inMemoryDomainExtensionService.put(copySegModel.getModel().getId(), copySegModel.getModel());
 
-			try {
-				Map<CoConstraintMappingLocation, Set<CoConstraintOBX3MappingValue>> maps = this.coConstraintSerializationHelper
-						.getOBX3ToFlavorMap(cpModel.getModel());
-
-				for (CoConstraintMappingLocation coconLocation : maps.keySet()) {
-					SegmentDataModel sdm = igModel.findSegment(coconLocation.getFlavorId());
-					SegmentDataModel copySegModel = new SegmentDataModel();
-					copySegModel.setModel(sdm.getModel().clone());
-					copySegModel.setPredicateMap(sdm.getPredicateMap());
-					copySegModel.setConformanceStatements(sdm.getConformanceStatements());
-					copySegModel.setSingleCodeMap(sdm.getSingleCodeMap());
-					copySegModel.setValuesetMap(sdm.getValuesetMap());
-					copySegModel.setFieldDataModels(sdm.getFieldDataModels());
-					copySegModel.getModel().setId(copySegModel.getModel().getId() + "_COCON"
-							+ coconLocation.getLocationId().replaceAll("\\.", "_") + "_" + cpModel.getModel().getId());
-					String ext = copySegModel.getModel().getExt();
-					if (ext == null)
-						ext = "";
-					copySegModel.getModel().setExt(ext + "_COCON" + coconLocation.getLocationId().replaceAll("\\.", "_")
-							+ "_" + cpModel.getModel().getId());
-
-					this.inMemoryDomainExtensionService.put(copySegModel.getModel().getId(), copySegModel.getModel());
-
-					toBeAddedSegs.put(copySegModel.getModel().getId(), copySegModel);
-					SegmentRefOrGroupDataModel srogdm = cpModel
-							.findSegmentRefOrGroupDataModelById(coconLocation.getLocationId().split("\\-"));
-					srogdm.getSegment().setId(srogdm.getSegment().getId() + "_COCON"
-							+ coconLocation.getLocationId().replaceAll("\\.", "_") + "_" + cpModel.getModel().getId());
-				}
-
-			} catch (AmbiguousOBX3MappingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ResourceNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (PathNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				toBeAddedSegments.put(copySegModel.getModel().getId(), copySegModel);
+				SegmentRefOrGroupDataModel srogdm = cpModel
+						.findSegmentRefOrGroupDataModelById(coconLocation.getLocationId().split("\\-"));
+				srogdm.getSegment().setId(srogdm.getSegment().getId() + "_COCON"
+						+ coconLocation.getLocationId().replaceAll("\\.", "_") + "_" + cpModel.getModel().getId());
 			}
 		}
-
-		for (String key : toBeAddedDTs.keySet()) {
-			igModel.getDatatypes().add(toBeAddedDTs.get(key));
-		}
-
-		for (String key : toBeAddedSegs.keySet()) {
-			igModel.getSegments().add(toBeAddedSegs.get(key));
-		}
-
-		for (String key : toBeAddedVSs.keySet()) {
-			igModel.getValuesets().add(toBeAddedVSs.get(key));
+		for (String key : toBeAddedSegments.keySet()) {
+			igModel.getSegments().add(toBeAddedSegments.get(key));
 		}
 	}
 
