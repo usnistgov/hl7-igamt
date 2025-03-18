@@ -908,7 +908,12 @@ public class BootstrapApplication implements CommandLineRunner {
 //
 //	}
 
+	//@PostConstruct
+	void findWrongLength(){
+//	this.dataFixer.findWrongLength();
+	this.dataFixer.findWrongLengthDatatype();
 
+	}
 	
 
 }
