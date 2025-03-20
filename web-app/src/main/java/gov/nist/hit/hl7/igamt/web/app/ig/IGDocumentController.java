@@ -1521,6 +1521,7 @@ public class IGDocumentController extends BaseController {
 		if (ig != null)  {
 			IgProfileResourceSubSet subSet = this.igService.getIgProfileResourceSubSet(ig, selectedConformanceProfileIds, selectedCompositeProfileIds);
 			return this.verificationService.verify(
+					ig,
 					subSet.getCompositeProfiles(),
 					subSet.getConformanceProfiles(),
 					subSet.getSegments(),

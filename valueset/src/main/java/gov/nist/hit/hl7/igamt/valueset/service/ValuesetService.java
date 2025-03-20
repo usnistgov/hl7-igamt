@@ -15,6 +15,7 @@ package gov.nist.hit.hl7.igamt.valueset.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 
@@ -79,9 +80,10 @@ public interface ValuesetService {
 	DisplayElement convertValueSet(Valueset valueset);
 	Set<DisplayElement> convertValueSets(Set<Valueset> valueSets);
 	Set<DisplayElement> convertValueSetRegistry(ValueSetRegistry registry);
-//	public String findXMLRefIdById(String vsId, String defaultHL7Version);
-	public String findXMLRefIdById(Valueset vs, String defaultHL7Version);
 	List<Valueset> saveAll(Set<Valueset> valueSets) throws ForbiddenOperationException;
+	String getBindingIdentifier(Valueset vs, String defaultHL7Version);
+	String findXMLRefIdById(Valueset valueset, String defaultHL7Version);
+
 	public List<Valueset> findDisplayFormatByIds(Set<String> ids);
 
 	Valueset findPreLoadedPHINVADS(String oid, String version);

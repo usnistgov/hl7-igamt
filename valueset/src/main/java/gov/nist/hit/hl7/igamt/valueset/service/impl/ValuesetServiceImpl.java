@@ -12,12 +12,10 @@
 package gov.nist.hit.hl7.igamt.valueset.service.impl;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.ResourceOrigin;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
@@ -387,23 +385,34 @@ public class ValuesetServiceImpl implements ValuesetService {
     	this.operationService.verifySave(valueSets);
     	return this.valuesetRepository.saveAll(valueSets);
     }
-	
-	@Override
-	public String findXMLRefIdById(Valueset vs, String defaultHL7Version) {
-		if (defaultHL7Version != null && vs.getDomainInfo() != null && vs.getDomainInfo().getVersion() != null
-				&& !vs.getBindingIdentifier().equals("HL70396")) {
-			if (defaultHL7Version.equals(vs.getDomainInfo().getVersion())) {
-				return this.str(vs.getBindingIdentifier());
-			} else {
-				return this
-						.str(vs.getBindingIdentifier() + "_" + vs.getDomainInfo().getVersion().replaceAll("\\.", "-"));
-			}
-		} else {
-			return this.str(vs.getBindingIdentifier());
-		}
-	}
 
-	private String str(String value) {
+    @Override
+    public String getBindingIdentifier(Valueset vs, String defaultHL7Version) {
+        boolean isHL7Origin = vs.getDomainInfo() != null &&
+                vs.getDomainInfo().getScope() != null &&
+                vs.getDomainInfo().getScope().equals(Scope.HL7STANDARD) &&
+                vs.getResourceOrigin() != null &&
+                vs.getResourceOrigin().equals(ResourceOrigin.HL7);
+        boolean hasHL7Type = vs.getHl7Type() != null && !vs.getHl7Type().isEmpty();
+        boolean isHL7 = isHL7Origin || hasHL7Type;
+        String identifier = str(vs.getBindingIdentifier());
+        String resourceVersion = isHL7 ? vs.getDomainInfo().getVersion() : null;
+        if(isHL7) {
+            boolean defaultVersionIsSet = defaultHL7Version != null && !defaultHL7Version.isEmpty();
+            boolean versionIsSet = resourceVersion != null && !resourceVersion.isEmpty();
+            boolean isDefaultHL7Version = defaultVersionIsSet && versionIsSet && defaultHL7Version.equals(resourceVersion);
+            if(versionIsSet && !isDefaultHL7Version) {
+                identifier = identifier + " v" + resourceVersion;
+            }
+        }
+        return identifier;
+    }
+
+    public String findXMLRefIdById(Valueset valueset, String defaultHL7Version) {
+        return this.getBindingIdentifier(valueset, defaultHL7Version);
+    }
+
+    private String str(String value) {
 		return value != null ? value : "";
 	}
 

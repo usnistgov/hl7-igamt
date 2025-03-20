@@ -99,7 +99,7 @@ public interface IgService {
 
   public IgDataModel generateDataModel(Ig ig) throws Exception;
 
-  public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds, String[] compositeProfileIds) throws CloneNotSupportedException, IOException, ClassNotFoundException, ProfileSerializationException, TableSerializationException, CoConstraintXMLSerializationException;
+  public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds, String[] compositeProfileIds) throws Exception;
   
   public Set<RelationShip> findUsage(Set<RelationShip> relations, Type type, String elementId);
   
@@ -116,6 +116,8 @@ public interface IgService {
   public CompositeProfileStructure createCompositeProfile(Ig ig,
                                                           CompositeProfileCreationWrapper wrapper);  
   public String findDefaultHL7VersionById(String id);
+
+  String findDefaultHL7Version(Ig ig);
 
   void removeChildren(String id);
 

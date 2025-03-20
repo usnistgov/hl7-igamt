@@ -1,0 +1,41 @@
+
+stages:
+  - deploy
+
+
+deploy_dev:
+  stage: deploy
+  script:
+    - echo "Deploying igamt 2 dev environment in hit dev"
+    - cd /sites/apps/igamt-2/hl7-igamt-infrastructure/containers/apps/dev/scripts
+    - bash start.sh
+  tags:
+    - hitdev
+    - shell
+  when: manual
+  allow_failure: false 
+
+deploy_test:
+  stage: deploy
+  script:
+    - echo "Deploying igamt 2 test environment in hit dev"
+    - cd /sites/apps/igamt-2/hl7-igamt-infrastructure/containers/apps/test/scripts
+    - bash start.sh
+  tags:
+    - hitdev
+    - shell
+  when: manual
+  allow_failure: false 
+
+
+deploy_prod:
+  stage: deploy
+  script:
+    - echo "Deploying igamt 2 prod environment in hit dev"
+    - cd /sites/apps/igamt-2/hl7-igamt-infrastructure/containers/apps/prod/scripts
+    - bash start.sh
+  tags:
+    - hitdev
+    - shell
+  when: manual
+  allow_failure: false 
