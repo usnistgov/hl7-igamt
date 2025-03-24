@@ -47,98 +47,98 @@ import nu.xom.Element;
 @Service
 public class SectionSerializationServiceImpl implements SectionSerializationService {
 
-    private Set<Element> conformanceStatements = new HashSet<>();
-    private Set<Element> predicates = new HashSet<>();
+	private Set<Element> conformanceStatements = new HashSet<>();
+	private Set<Element> predicates = new HashSet<>();
 
-    @Autowired
-    private IgDataModelSerializationService igDataModelSerializationService;
+	@Autowired
+	private IgDataModelSerializationService igDataModelSerializationService;
 
-    @Autowired
-    private DatatypeSerializationService datatypeSerializationService;
+	@Autowired
+	private DatatypeSerializationService datatypeSerializationService;
 
-    @Autowired
-    private SegmentSerializationService segmentSerializationService;
+	@Autowired
+	private SegmentSerializationService segmentSerializationService;
 
-    @Autowired
-    private ConformanceProfileSerializationService conformanceProfileSerializationService;
-    
-    @Autowired
-    private CompositeProfileSerializationService compositeProfileSerializationService;
-    
-    
-    @Autowired
-    private ProfileComponentSerializationService profileComponentSerializationService;
+	@Autowired
+	private ConformanceProfileSerializationService conformanceProfileSerializationService;
 
-    @Autowired
-    private ValuesetSerializationService valuesetSerializationService;
-    
-    @Autowired
-    private FroalaSerializationUtil frolaCleaning;
+	@Autowired
+	private CompositeProfileSerializationService compositeProfileSerializationService;
 
 
-    @Override
-    public Element SerializeSection(Section section, int level, DocumentStructureDataModel documentStructureDataModel,
-            ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
-            throws RegistrySerializationException {
-        Element serializedSection = null;
-        if(documentStructureDataModel instanceof IgDataModel) {
-        if (Type.TEXT.equals(section.getType()) && !exportConfiguration.getIgGeneralConfiguration().isNotMessageInfrastructure()) {
-            serializedSection = SerializeTextSection((TextSection) section, level, (IgDataModel) documentStructureDataModel, exportConfiguration);
-        } else
-        	if (Type.PROFILE.equals(section.getType())) {
-            serializedSection = SerializeProfile((TextSection) section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
-                    exportFilterDecision);
-        } 
-        	else if (Type.PROFILECOMPONENTREGISTRY.equals(section.getType())) {
-            serializedSection = SerializeProfileComponentRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
-                    exportFilterDecision);
-        } 
-         	else if (Type.COMPOSITEPROFILEREGISTRY.equals(section.getType())) {
-                serializedSection = SerializeCompositeProfileRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
-                        exportFilterDecision);
-            } 
-        else 
-        	if (Type.DATATYPEREGISTRY.equals(section.getType())) {
-            serializedSection = SerializeDatatypeRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
-                    exportFilterDecision);
-        } else if (Type.SEGMENTREGISTRY.equals(section.getType())) {
-            if (exportConfiguration.isIncludeSegmentTable()) {
-                serializedSection = SerializeSegmentRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
-                        exportFilterDecision);
-            }
-        } else if (Type.CONFORMANCEPROFILEREGISTRY.equals(section.getType())) {
-            if (exportConfiguration.isIncludeMessageTable()) {
-                serializedSection = SerializeConformanceProfileRegistry(section, level, (IgDataModel) documentStructureDataModel,
-                        exportConfiguration, exportFilterDecision);
-            }
-        } else if (Type.VALUESETREGISTRY.equals(section.getType())) {
-            if (exportConfiguration.isIncludeValuesetsTable()) {
-                serializedSection = SerializeValuesetRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
-                        exportFilterDecision);
-            }
-        }
-        } else if(documentStructureDataModel instanceof DatatypeLibraryDataModel) {
-        	if (Type.TEXT.equals(section.getType())) {
-                serializedSection = SerializeTextSection((TextSection) section, level, (DatatypeLibraryDataModel) documentStructureDataModel, exportConfiguration);
-            } else if (Type.PROFILE.equals(section.getType())) {
-                serializedSection = SerializeProfile((TextSection) section, level, (DatatypeLibraryDataModel) documentStructureDataModel, exportConfiguration,
-                        exportFilterDecision);
-            } else if (Type.DATATYPEREGISTRY.equals(section.getType())) {
-                serializedSection = SerializeDatatypeRegistry(section, level, (DatatypeLibraryDataModel) documentStructureDataModel, exportConfiguration,
-                        exportFilterDecision);
-            }
-        }
-        return serializedSection;
-    }
-    private Element SerializeCompositeProfileRegistry(Section section, int level,
-			IgDataModel igDataModel, ExportConfiguration exportConfiguration,
-			ExportFilterDecision exportFilterDecision) throws RegistrySerializationException 
-    {
-    		Registry compositeProfileRegistry = igDataModel.getModel().getCompositeProfileRegistry();
-            try {
-                Element compositeProfileRegistryElement = new Element("compositeProfileRegistryElement");
-                if (compositeProfileRegistry != null && !compositeProfileRegistry.getChildren().isEmpty()) {
-                                compositeProfileRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+	@Autowired
+	private ProfileComponentSerializationService profileComponentSerializationService;
+
+	@Autowired
+	private ValuesetSerializationService valuesetSerializationService;
+
+	@Autowired
+	private FroalaSerializationUtil frolaCleaning;
+
+
+	@Override
+	public Element SerializeSection(Section section, int level, DocumentStructureDataModel documentStructureDataModel,
+									ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
+			throws RegistrySerializationException {
+		Element serializedSection = null;
+		if(documentStructureDataModel instanceof IgDataModel) {
+			if (Type.TEXT.equals(section.getType()) && !exportConfiguration.getIgGeneralConfiguration().isNotMessageInfrastructure()) {
+				serializedSection = SerializeTextSection((TextSection) section, level, (IgDataModel) documentStructureDataModel, exportConfiguration);
+			} else
+			if (Type.PROFILE.equals(section.getType())) {
+				serializedSection = SerializeProfile((TextSection) section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
+						exportFilterDecision);
+			}
+			else if (Type.PROFILECOMPONENTREGISTRY.equals(section.getType())) {
+				serializedSection = SerializeProfileComponentRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
+						exportFilterDecision);
+			}
+			else if (Type.COMPOSITEPROFILEREGISTRY.equals(section.getType())) {
+				serializedSection = SerializeCompositeProfileRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
+						exportFilterDecision);
+			}
+			else
+			if (Type.DATATYPEREGISTRY.equals(section.getType())) {
+				serializedSection = SerializeDatatypeRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
+						exportFilterDecision);
+			} else if (Type.SEGMENTREGISTRY.equals(section.getType())) {
+				if (exportConfiguration.isIncludeSegmentTable()) {
+					serializedSection = SerializeSegmentRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
+							exportFilterDecision);
+				}
+			} else if (Type.CONFORMANCEPROFILEREGISTRY.equals(section.getType())) {
+				if (exportConfiguration.isIncludeMessageTable()) {
+					serializedSection = SerializeConformanceProfileRegistry(section, level, (IgDataModel) documentStructureDataModel,
+							exportConfiguration, exportFilterDecision);
+				}
+			} else if (Type.VALUESETREGISTRY.equals(section.getType())) {
+				if (exportConfiguration.isIncludeValuesetsTable()) {
+					serializedSection = SerializeValuesetRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
+							exportFilterDecision);
+				}
+			}
+		} else if(documentStructureDataModel instanceof DatatypeLibraryDataModel) {
+			if (Type.TEXT.equals(section.getType())) {
+				serializedSection = SerializeTextSection((TextSection) section, level, (DatatypeLibraryDataModel) documentStructureDataModel, exportConfiguration);
+			} else if (Type.PROFILE.equals(section.getType())) {
+				serializedSection = SerializeProfile((TextSection) section, level, (DatatypeLibraryDataModel) documentStructureDataModel, exportConfiguration,
+						exportFilterDecision);
+			} else if (Type.DATATYPEREGISTRY.equals(section.getType())) {
+				serializedSection = SerializeDatatypeRegistry(section, level, (DatatypeLibraryDataModel) documentStructureDataModel, exportConfiguration,
+						exportFilterDecision);
+			}
+		}
+		return serializedSection;
+	}
+	private Element SerializeCompositeProfileRegistry(Section section, int level,
+													  IgDataModel igDataModel, ExportConfiguration exportConfiguration,
+													  ExportFilterDecision exportFilterDecision) throws RegistrySerializationException
+	{
+		Registry compositeProfileRegistry = igDataModel.getModel().getCompositeProfileRegistry();
+		try {
+			Element compositeProfileRegistryElement = new Element("compositeProfileRegistryElement");
+			if (compositeProfileRegistry != null && !compositeProfileRegistry.getChildren().isEmpty()) {
+				compositeProfileRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
 
 //                	ArrayList<CompositeProfileDataModel> compositeProfileDataModelsList = new ArrayList<>();
 //                	for (Link compositeProfileLink : compositeProfileRegistry.getChildren()) {
@@ -150,67 +150,67 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 //    							.orElseThrow(() -> new ConformanceProfileNotFoundException(compositeProfileLink.getId()));
 //                		compositeProfileDataModelsList.add(compositeProfileModel);
 //                	}
-					List<CompositeProfileDataModel> compositeProfileDataModelsList = (igDataModel).getCompositeProfile().stream().collect(Collectors.toList());
-                	Collections.sort(compositeProfileDataModelsList);
+				List<CompositeProfileDataModel> compositeProfileDataModelsList = (igDataModel).getCompositeProfile().stream().collect(Collectors.toList());
+				Collections.sort(compositeProfileDataModelsList);
 
-                	for(CompositeProfileDataModel compositeProfileDataModel : compositeProfileDataModelsList) {
-    					boolean exportFilterDecisionNotSet = exportFilterDecision == null;
-    					boolean exportFilterDecisionIsTrue = exportFilterDecision != null
-    							&& exportFilterDecision.getCompositeProfileFilterMap() != null
-    							&& exportFilterDecision.getCompositeProfileFilterMap().containsKey(compositeProfileDataModel.getModel().getId())
-    							&& exportFilterDecision.getCompositeProfileFilterMap().get(compositeProfileDataModel.getModel().getId());
+				for(CompositeProfileDataModel compositeProfileDataModel : compositeProfileDataModelsList) {
+					boolean exportFilterDecisionNotSet = exportFilterDecision == null;
+					boolean exportFilterDecisionIsTrue = exportFilterDecision != null
+							&& exportFilterDecision.getCompositeProfileFilterMap() != null
+							&& exportFilterDecision.getCompositeProfileFilterMap().containsKey(compositeProfileDataModel.getModel().getId())
+							&& exportFilterDecision.getCompositeProfileFilterMap().get(compositeProfileDataModel.getModel().getId());
 
-    					if (exportFilterDecisionNotSet || exportFilterDecisionIsTrue) {
+					if (exportFilterDecisionNotSet || exportFilterDecisionIsTrue) {
 
-    						boolean configurationIsOverridden = !exportFilterDecisionNotSet
-    								&& exportFilterDecision.getOveriddedCompositeProfileMap() != null
-    								&& exportFilterDecision.getOveriddedCompositeProfileMap().containsKey(compositeProfileDataModel.getModel().getId());
+						boolean configurationIsOverridden = !exportFilterDecisionNotSet
+								&& exportFilterDecision.getOveriddedCompositeProfileMap() != null
+								&& exportFilterDecision.getOveriddedCompositeProfileMap().containsKey(compositeProfileDataModel.getModel().getId());
 
-    						CompositeProfileExportConfiguration compositeProfileExportConfiguration = configurationIsOverridden ?
-    								exportFilterDecision.getOveriddedCompositeProfileMap().get(compositeProfileDataModel.getModel().getId()) :
-    								exportConfiguration.getCompositeProfileExportConfiguration();
+						CompositeProfileExportConfiguration compositeProfileExportConfiguration = configurationIsOverridden ?
+								exportFilterDecision.getOveriddedCompositeProfileMap().get(compositeProfileDataModel.getModel().getId()) :
+								exportConfiguration.getCompositeProfileExportConfiguration();
 
 
-    						Element compositeProfileElement = compositeProfileSerializationService.serializeCompositeProfile(compositeProfileDataModel, igDataModel, level+1, 0, compositeProfileExportConfiguration, false);
+						Element compositeProfileElement = compositeProfileSerializationService.serializeCompositeProfile(compositeProfileDataModel, igDataModel, level+1, 0, compositeProfileExportConfiguration, false);
 
-    						if (compositeProfileElement != null) {
-    							compositeProfileRegistryElement.appendChild(compositeProfileElement);
-    						}
-    					}
-    				}
-                }
-                return compositeProfileRegistryElement;
-            } catch (Exception exception) {
-            	exception.printStackTrace();
-				throw new RegistrySerializationException(exception, section, null);
-            }
-    		
-    	
+						if (compositeProfileElement != null) {
+							compositeProfileRegistryElement.appendChild(compositeProfileElement);
+						}
+					}
+				}
+			}
+			return compositeProfileRegistryElement;
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			throw new RegistrySerializationException(exception, section, null);
+		}
+
+
 	}
 	private Element SerializeProfileComponentRegistry(
-    		Section section, int level, IgDataModel igDataModel,
+			Section section, int level, IgDataModel igDataModel,
 			ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision
 	) throws RegistrySerializationException {
-        Registry profileComponentRegistry = igDataModel.getModel().getProfileComponentRegistry();
-        try {
-            Element profileComponentRegistryElement = new Element("profileComponentRegistryElement");
+		Registry profileComponentRegistry = igDataModel.getModel().getProfileComponentRegistry();
+		try {
+			Element profileComponentRegistryElement = new Element("profileComponentRegistryElement");
 
-             if (profileComponentRegistry != null && !profileComponentRegistry.getChildren().isEmpty()) {
-                  profileComponentRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+			if (profileComponentRegistry != null && !profileComponentRegistry.getChildren().isEmpty()) {
+				profileComponentRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
 
-            	ArrayList<ProfileComponentDataModel> profileComponentDataModelsList = new ArrayList<>();
-            	for (Link profileComponentLink : profileComponentRegistry.getChildren()) {
+				ArrayList<ProfileComponentDataModel> profileComponentDataModelsList = new ArrayList<>();
+				for (Link profileComponentLink : profileComponentRegistry.getChildren()) {
 
-            		ProfileComponentDataModel profileComponentModel = igDataModel.getProfileComponents()
+					ProfileComponentDataModel profileComponentModel = igDataModel.getProfileComponents()
 							.stream()
 							.filter(dt -> profileComponentLink.getId().equals(dt.getModel().getId()))
 							.findAny()
 							.orElseThrow(() -> new ConformanceProfileNotFoundException(profileComponentLink.getId()));
-            		profileComponentDataModelsList.add(profileComponentModel);
-            	}
-            	Collections.sort(profileComponentDataModelsList);
+					profileComponentDataModelsList.add(profileComponentModel);
+				}
+				Collections.sort(profileComponentDataModelsList);
 
-            	for(ProfileComponentDataModel profileComponentDataModel : profileComponentDataModelsList) {
+				for(ProfileComponentDataModel profileComponentDataModel : profileComponentDataModelsList) {
 					boolean exportFilterDecisionNotSet = exportFilterDecision == null;
 					boolean exportFilterDecisionIsTrue = exportFilterDecision != null
 							&& exportFilterDecision.getProfileComponentFilterMap() != null
@@ -239,293 +239,289 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 						}
 					}
 				}
-            }
+			}
 			return profileComponentRegistryElement;
-        } catch (Exception exception) {
-        	exception.printStackTrace();
-            throw new RegistrySerializationException(exception, section, profileComponentRegistry);
-        }
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			throw new RegistrySerializationException(exception, section, profileComponentRegistry);
+		}
 	}
-	
 
 
-    public Element SerializeCommonSection(Section section, int level, DocumentStructureDataModel documentStructureDataModel,
-            ExportConfiguration exportConfiguration) {
-        Element sectionElement = igDataModelSerializationService.getElement(Type.SECTION, section.getPosition(),
-                section.getId(), section.getLabel());
-        if (section.getDescription() != null && !section.getDescription().isEmpty()) {
-            Element sectionContentElement = new Element("SectionContent");
-            sectionContentElement.appendChild(frolaCleaning.cleanFroalaInput(section.getDescription()));
-            sectionElement.appendChild(sectionContentElement);
-        }
-        sectionElement.addAttribute(new Attribute("type", section.getType() != null ? section.getType().name() : ""));
-        sectionElement.addAttribute(new Attribute("h", String.valueOf(level)));
-        return sectionElement;
-    }
 
-    @Override
-    public Element SerializeTextSection(TextSection section, int level, DocumentStructureDataModel documentStructureDataModel,
-            ExportConfiguration exportConfiguration) {
-        Element textSectionElement = SerializeCommonSection(section, level, documentStructureDataModel, exportConfiguration);
-        if (section.getChildren() != null) {
-        	List<TextSection> sectionChildren = section.getChildren().stream().collect(Collectors.toList());
-        	Collections.sort(sectionChildren);
-            for (TextSection child : sectionChildren) {
-                Element childElement = SerializeTextSection(child, level + 1, documentStructureDataModel, exportConfiguration);
-                if (childElement != null) {
-                    textSectionElement.appendChild(childElement);
-                }
-            }
-        }
-        return textSectionElement;
+	public Element SerializeCommonSection(Section section, int level, DocumentStructureDataModel documentStructureDataModel,
+										  ExportConfiguration exportConfiguration) {
+		Element sectionElement = igDataModelSerializationService.getElement(Type.SECTION, section.getPosition(),
+				section.getId(), section.getLabel());
+		if (section.getDescription() != null && !section.getDescription().isEmpty()) {
+			Element sectionContentElement = new Element("SectionContent");
+			sectionContentElement.appendChild(frolaCleaning.cleanFroalaInput(section.getDescription()));
+			sectionElement.appendChild(sectionContentElement);
+		}
+		sectionElement.addAttribute(new Attribute("type", section.getType() != null ? section.getType().name() : ""));
+		sectionElement.addAttribute(new Attribute("h", String.valueOf(level)));
+		return sectionElement;
+	}
 
-    }
-
-    @Override
-    public Element SerializeProfile(TextSection section, int level, DocumentStructureDataModel documentStructureDataModel,
-            ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
-            throws RegistrySerializationException {
-        Element profileElement = SerializeCommonSection(section, level, documentStructureDataModel, exportConfiguration);
-        if (section.getChildren() != null) {
-        	List<TextSection> sectionChildren = section.getChildren().stream().collect(Collectors.toList());
-        	Collections.sort(sectionChildren);
-            for (TextSection childSection : sectionChildren) {
-                if (childSection != null) {
-                    Element childSectionElement = SerializeSection(childSection, level + 1, documentStructureDataModel,
-                            exportConfiguration, exportFilterDecision);
-                    if (childSectionElement != null) {
-                        profileElement.appendChild(childSectionElement);
-                    }
-                }
-            }
-        }
-        return profileElement;
-    }
-   
-    @SuppressWarnings("unchecked")
 	@Override
-    public Element SerializeDatatypeRegistry(Section section, int level, DocumentStructureDataModel documentStructureDataModel,
-    		ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
-    				throws RegistrySerializationException {
-    	Registry datatypeRegistry = null;
-    	try {
-    		Element datatypeRegistryElement = SerializeCommonSection(section, level, documentStructureDataModel, exportConfiguration);
-    		if(documentStructureDataModel instanceof IgDataModel) {
-    			datatypeRegistry = ((IgDataModel) documentStructureDataModel).getModel().getDatatypeRegistry();
-    			if (datatypeRegistry != null) {
-    				if (!datatypeRegistry.getChildren().isEmpty()) {					
-    					List<DatatypeDataModel> datatypeDataModelsList = ((IgDataModel) documentStructureDataModel).getDatatypes().stream().collect(Collectors.toList());
-    					Collections.sort(datatypeDataModelsList);
-    					if(exportConfiguration.getCompositeProfileExportConfiguration().getGeneratedDatatypesFlavorsConfiguration().equals(GeneratedFlavorsConfiguration.NOEXPORT)) {
-    						datatypeDataModelsList = datatypeDataModelsList.stream().filter((s) -> {
-    								return !s.getModel().isGenerated();
-    							}).collect(Collectors.toList());
-    							Collections.sort(datatypeDataModelsList);    						
-        					Collections.sort(datatypeDataModelsList);
-    					}
+	public Element SerializeTextSection(TextSection section, int level, DocumentStructureDataModel documentStructureDataModel,
+										ExportConfiguration exportConfiguration) {
+		Element textSectionElement = SerializeCommonSection(section, level, documentStructureDataModel, exportConfiguration);
+		if (section.getChildren() != null) {
+			List<TextSection> sectionChildren = section.getChildren().stream().collect(Collectors.toList());
+			Collections.sort(sectionChildren);
+			for (TextSection child : sectionChildren) {
+				Element childElement = SerializeTextSection(child, level + 1, documentStructureDataModel, exportConfiguration);
+				if (childElement != null) {
+					textSectionElement.appendChild(childElement);
+				}
+			}
+		}
+		return textSectionElement;
 
-    					for(DatatypeDataModel datatypeDataModel : datatypeDataModelsList) {
-    							Element datatypeElement;
-    							if(!datatypeDataModel.getModel().isGenerated()) {
-    							if (exportFilterDecision != null && exportFilterDecision.getDatatypesFilterMap() != null
-        								&& exportFilterDecision.getDatatypesFilterMap().containsKey(datatypeDataModel.getModel().getId())
-        								&& exportFilterDecision.getDatatypesFilterMap().get(datatypeDataModel.getModel().getId())) {
-    							if (exportFilterDecision != null && exportFilterDecision.getOveriddedDatatypesMap() != null
-    									&& exportFilterDecision.getOveriddedDatatypesMap()
-    									.containsKey(datatypeDataModel.getModel().getId())) {
-    								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
-    										level + 1, 0,
-    										exportFilterDecision.getOveriddedDatatypesMap().get(datatypeDataModel.getModel().getId()),documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
-    							} else {
-    								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
-    										level + 1, 0,
-    										exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
-    							}
-    							if (datatypeElement != null) {
-    								datatypeRegistryElement.appendChild(datatypeElement);
-    							}
-    							}
-    						
-    					if(exportFilterDecision == null) {
+	}
+
+	@Override
+	public Element SerializeProfile(TextSection section, int level, DocumentStructureDataModel documentStructureDataModel,
+									ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
+			throws RegistrySerializationException {
+		Element profileElement = SerializeCommonSection(section, level, documentStructureDataModel, exportConfiguration);
+		if (section.getChildren() != null) {
+			List<TextSection> sectionChildren = section.getChildren().stream().collect(Collectors.toList());
+			Collections.sort(sectionChildren);
+			for (TextSection childSection : sectionChildren) {
+				if (childSection != null) {
+					Element childSectionElement = SerializeSection(childSection, level + 1, documentStructureDataModel,
+							exportConfiguration, exportFilterDecision);
+					if (childSectionElement != null) {
+						profileElement.appendChild(childSectionElement);
+					}
+				}
+			}
+		}
+		return profileElement;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Element SerializeDatatypeRegistry(Section section, int level, DocumentStructureDataModel documentStructureDataModel,
+											 ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
+			throws RegistrySerializationException {
+		Registry datatypeRegistry = null;
+		try {
+			Element datatypeRegistryElement = SerializeCommonSection(section, level, documentStructureDataModel, exportConfiguration);
+			if(documentStructureDataModel instanceof IgDataModel) {
+				datatypeRegistry = ((IgDataModel) documentStructureDataModel).getModel().getDatatypeRegistry();
+				if (datatypeRegistry != null) {
+					if (!datatypeRegistry.getChildren().isEmpty()) {
+						List<DatatypeDataModel> datatypeDataModelsList = ((IgDataModel) documentStructureDataModel).getDatatypes().stream().collect(Collectors.toList());
+						Collections.sort(datatypeDataModelsList);
+						if(exportConfiguration.getCompositeProfileExportConfiguration().getGeneratedDatatypesFlavorsConfiguration().equals(GeneratedFlavorsConfiguration.NOEXPORT)) {
+							datatypeDataModelsList = datatypeDataModelsList.stream().filter((s) -> {
+								return !s.getModel().isGenerated();
+							}).collect(Collectors.toList());
+							Collections.sort(datatypeDataModelsList);
+							Collections.sort(datatypeDataModelsList);
+						}
+
+						for(DatatypeDataModel datatypeDataModel : datatypeDataModelsList) {
+							Element datatypeElement;
+							if(!datatypeDataModel.getModel().isGenerated()) {
+								if (exportFilterDecision != null && exportFilterDecision.getDatatypesFilterMap() != null
+										&& exportFilterDecision.getDatatypesFilterMap().containsKey(datatypeDataModel.getModel().getId())
+										&& exportFilterDecision.getDatatypesFilterMap().get(datatypeDataModel.getModel().getId())) {
+									if (exportFilterDecision != null && exportFilterDecision.getOveriddedDatatypesMap() != null
+											&& exportFilterDecision.getOveriddedDatatypesMap()
+											.containsKey(datatypeDataModel.getModel().getId())) {
+										datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
+												level + 1, 0,
+												exportFilterDecision.getOveriddedDatatypesMap().get(datatypeDataModel.getModel().getId()),documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
+									} else {
+										datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
+												level + 1, 0,
+												exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
+									}
+									if (datatypeElement != null) {
+										datatypeRegistryElement.appendChild(datatypeElement);
+									}
+								}
+
+								if(exportFilterDecision == null) {
 //    							DatatypeDataModel datatypeDataModel = null;
-    //
+									//
 //    							datatypeDataModel = ((DatatypeLibraryDataModel) documentStructureDataModel).getDatatypes().stream()
 //    									.filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny()
-//    									.orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId())); 
+//    									.orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId()));
 
 
 //    							Element datatypeElement;
-    							datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
-    									level + 1, 0,
-    									exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
+									datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
+											level + 1, 0,
+											exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
 
-    							if (datatypeElement != null) {
-    								datatypeRegistryElement.appendChild(datatypeElement);
-    							}
+									if (datatypeElement != null) {
+										datatypeRegistryElement.appendChild(datatypeElement);
+									}
 
-    						}
-    							} else {
-    								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
-        									level + 1, 0,
-        									exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
+								}
+							} else {
+								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
+										level + 1, 0,
+										exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
 
-        							if (datatypeElement != null) {
-        								datatypeRegistryElement.appendChild(datatypeElement);
-        							}
-    							}
-    							}
-    					}
-    				}
-    			}else if(documentStructureDataModel instanceof DatatypeLibraryDataModel) {
-    			datatypeRegistry = ((DatatypeLibraryDataModel) documentStructureDataModel).getModel().getDatatypeRegistry();
-    			if (datatypeRegistry != null) {
-    				if (!datatypeRegistry.getChildren().isEmpty()) {					
-    					ArrayList<DatatypeDataModel> datatypeDataModelsList = new ArrayList<>();
+								if (datatypeElement != null) {
+									datatypeRegistryElement.appendChild(datatypeElement);
+								}
+							}
+						}
+					}
+				}
+			}else if(documentStructureDataModel instanceof DatatypeLibraryDataModel) {
+				datatypeRegistry = ((DatatypeLibraryDataModel) documentStructureDataModel).getModel().getDatatypeRegistry();
+				if (datatypeRegistry != null) {
+					if (!datatypeRegistry.getChildren().isEmpty()) {
+						ArrayList<DatatypeDataModel> datatypeDataModelsList = new ArrayList<>();
 
-    					for (Link datatypeLink : datatypeRegistry.getChildren()) {
-    						
-    							DatatypeDataModel datatypeDataModel = null;
+						for (Link datatypeLink : datatypeRegistry.getChildren()) {
 
-    							datatypeDataModel = ((DatatypeLibraryDataModel) documentStructureDataModel).getDatatypes().stream()
-    									.filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny()
-    									.orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId())); 
+							DatatypeDataModel datatypeDataModel = null;
 
-    							datatypeDataModelsList.add(datatypeDataModel);
-    						}
-    					
-    					Collections.sort(datatypeDataModelsList);
+							datatypeDataModel = ((DatatypeLibraryDataModel) documentStructureDataModel).getDatatypes().stream()
+									.filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny()
+									.orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId()));
 
-    					for(DatatypeDataModel datatypeDataModel : datatypeDataModelsList) {
-    							Element datatypeElement;
-    							if (exportFilterDecision != null && exportFilterDecision.getDatatypesFilterMap() != null
-        								&& exportFilterDecision.getDatatypesFilterMap().containsKey(datatypeDataModel.getModel().getId())
-        								&& exportFilterDecision.getDatatypesFilterMap().get(datatypeDataModel.getModel().getId())) {
-    							if (exportFilterDecision != null && exportFilterDecision.getOveriddedDatatypesMap() != null
-    									&& exportFilterDecision.getOveriddedDatatypesMap()
-    									.containsKey(datatypeDataModel.getModel().getId())) {
-    								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
-    										level + 1, 0,
-    										exportFilterDecision.getOveriddedDatatypesMap().get(datatypeDataModel.getModel().getId()),documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
-    							} else {
-    								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
-    										level + 1, 0,
-    										exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
-    							}
-    							if (datatypeElement != null) {
-    								datatypeRegistryElement.appendChild(datatypeElement);
-    							}
-    							}
-    						
-    					if(exportFilterDecision == null) {
+							datatypeDataModelsList.add(datatypeDataModel);
+						}
+
+						Collections.sort(datatypeDataModelsList);
+
+						for(DatatypeDataModel datatypeDataModel : datatypeDataModelsList) {
+							Element datatypeElement;
+							if (exportFilterDecision != null && exportFilterDecision.getDatatypesFilterMap() != null
+									&& exportFilterDecision.getDatatypesFilterMap().containsKey(datatypeDataModel.getModel().getId())
+									&& exportFilterDecision.getDatatypesFilterMap().get(datatypeDataModel.getModel().getId())) {
+								if (exportFilterDecision != null && exportFilterDecision.getOveriddedDatatypesMap() != null
+										&& exportFilterDecision.getOveriddedDatatypesMap()
+										.containsKey(datatypeDataModel.getModel().getId())) {
+									datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
+											level + 1, 0,
+											exportFilterDecision.getOveriddedDatatypesMap().get(datatypeDataModel.getModel().getId()),documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
+								} else {
+									datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
+											level + 1, 0,
+											exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
+								}
+								if (datatypeElement != null) {
+									datatypeRegistryElement.appendChild(datatypeElement);
+								}
+							}
+
+							if(exportFilterDecision == null) {
 //    							DatatypeDataModel datatypeDataModel = null;
-    //
+								//
 //    							datatypeDataModel = ((DatatypeLibraryDataModel) documentStructureDataModel).getDatatypes().stream()
 //    									.filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny()
-//    									.orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId())); 
+//    									.orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId()));
 
 
 //    							Element datatypeElement;
-    							datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
-    									level + 1, 0,
-    									exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
+								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
+										level + 1, 0,
+										exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
 
-    							if (datatypeElement != null) {
-    								datatypeRegistryElement.appendChild(datatypeElement);
-    							}
+								if (datatypeElement != null) {
+									datatypeRegistryElement.appendChild(datatypeElement);
+								}
 
-    						}}
-    					}
-    				}
-    			}   
-    		return datatypeRegistryElement;
-    		
-
-
-    	} catch (Exception exception) {
-    		throw new RegistrySerializationException(exception, section, datatypeRegistry);
-    	}
-    }
+							}}
+					}
+				}
+			}
+			return datatypeRegistryElement;
 
 
-    @Override
-    public Element SerializeValuesetRegistry(Section section, int level, IgDataModel igDataModel,
-            ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
-            throws RegistrySerializationException {
-        Registry valuesetRegistry = igDataModel.getModel().getValueSetRegistry();
-        try {
-            Element valuesetRegistryElement = new Element("valuesetRegistryElement");
-            if (valuesetRegistry != null) {
-                if (!valuesetRegistry.getChildren().isEmpty()) {
-                    valuesetRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
 
-                	List<ValuesetDataModel> ValuesetDataModelList = igDataModel.getValuesets().stream().collect(Collectors.toList());
+		} catch (Exception exception) {
+			throw new RegistrySerializationException(exception, section, datatypeRegistry);
+		}
+	}
+
+
+	@Override
+	public Element SerializeValuesetRegistry(Section section, int level, IgDataModel igDataModel,
+											 ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
+			throws RegistrySerializationException {
+		Registry valuesetRegistry = igDataModel.getModel().getValueSetRegistry();
+		try {
+			Element valuesetRegistryElement = new Element("valuesetRegistryElement");
+			if (valuesetRegistry != null) {
+				if (!valuesetRegistry.getChildren().isEmpty()) {
+					valuesetRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+
+					List<ValuesetDataModel> ValuesetDataModelList = igDataModel.getValuesets().stream().collect(Collectors.toList());
 					Collections.sort(ValuesetDataModelList);
 					System.out.println("s");
-                	
+
 //                 	ArrayList<Link> sorted = new ArrayList<>(valuesetRegistry.getChildren());
 //                	Collections.sort(sorted);
-                    for (ValuesetDataModel valuesetDataModel : ValuesetDataModelList) {
-//                        ValuesetDataModel valuesetDataModel = igDataModel.getValuesets().stream()
-//                                .filter(vs -> valuesetLink.getId().equals(vs.getModel().getId())).findAny()
-//                                .orElseThrow(() -> new ValuesetNotFoundException(valuesetLink.getId()));
-                        // SerializableValuesetStructure serializableValuesetStructure =
-                        // valuesetsMap.get(valuesetLink.getId());
-                        Element valuesetElement;
-            			String scope = valuesetDataModel.getModel().getDomainInfo().getScope().name();
+					for (ValuesetDataModel valuesetDataModel : ValuesetDataModelList) {
 
-                        if (exportFilterDecision != null && exportFilterDecision.getValueSetFilterMap() != null
-                                && exportFilterDecision.getValueSetFilterMap().containsKey(valuesetDataModel.getModel().getId())
-                                && exportFilterDecision.getValueSetFilterMap().get(valuesetDataModel.getModel().getId())) {
-                            
-                			String scope2 = valuesetDataModel.getModel().getDomainInfo().getScope().name();
+						Element valuesetElement;
+						String scope = valuesetDataModel.getModel().getDomainInfo().getScope().name();
 
-                            if (exportFilterDecision != null && exportFilterDecision.getOveriddedValueSetMap().keySet()
-                                    .contains(valuesetDataModel.getModel().getId())) {
-                    			String scope3 = valuesetDataModel.getModel().getDomainInfo().getScope().name();
+						if (exportFilterDecision != null && exportFilterDecision.getValueSetFilterMap() != null
+								&& exportFilterDecision.getValueSetFilterMap().containsKey(valuesetDataModel.getModel().getId())
+								&& exportFilterDecision.getValueSetFilterMap().get(valuesetDataModel.getModel().getId())) {
 
-                                valuesetElement = valuesetSerializationService.serializeValueSet(valuesetDataModel,
-                                        level + 1, 0,
-                                        exportFilterDecision.getOveriddedValueSetMap().get(valuesetDataModel.getModel().getId()), exportConfiguration.isDeltaMode());
-                            } else {
-                    			String scope4 = valuesetDataModel.getModel().getDomainInfo().getScope().name();
+							String scope2 = valuesetDataModel.getModel().getDomainInfo().getScope().name();
 
-                                valuesetElement = valuesetSerializationService.serializeValueSet(valuesetDataModel,
-                                        level + 1, 0,
-                                        exportConfiguration.getValueSetExportConfiguration(), exportConfiguration.isDeltaMode());
-                            }
-                            if (valuesetElement != null) {
-                                valuesetRegistryElement.appendChild(valuesetElement);
-                            }
-                        } else if(exportFilterDecision == null) {
-                            valuesetElement = valuesetSerializationService.serializeValueSet(valuesetDataModel,
-                                    level + 1, 0,
-                                    exportConfiguration.getValueSetExportConfiguration(), exportConfiguration.isDeltaMode());
-                            if (valuesetElement != null) {
-                                valuesetRegistryElement.appendChild(valuesetElement);
-                            }
-                        }
-                        
-                    }
-                }
-            }
-            return valuesetRegistryElement;
-        } catch (Exception exception) {
-            throw new RegistrySerializationException(exception, section, valuesetRegistry);
-        }
-    }
-    
+							if (exportFilterDecision != null && exportFilterDecision.getOveriddedValueSetMap().keySet()
+									.contains(valuesetDataModel.getModel().getId())) {
+								String scope3 = valuesetDataModel.getModel().getDomainInfo().getScope().name();
+
+								valuesetElement = valuesetSerializationService.serializeValueSet(valuesetDataModel,
+										level + 1, 0,
+										exportFilterDecision.getOveriddedValueSetMap().get(valuesetDataModel.getModel().getId()), exportConfiguration.isDeltaMode());
+							} else {
+								String scope4 = valuesetDataModel.getModel().getDomainInfo().getScope().name();
+
+								valuesetElement = valuesetSerializationService.serializeValueSet(valuesetDataModel,
+										level + 1, 0,
+										exportConfiguration.getValueSetExportConfiguration(), exportConfiguration.isDeltaMode());
+							}
+							if (valuesetElement != null) {
+								valuesetRegistryElement.appendChild(valuesetElement);
+							}
+						} else if(exportFilterDecision == null) {
+							valuesetElement = valuesetSerializationService.serializeValueSet(valuesetDataModel,
+									level + 1, 0,
+									exportConfiguration.getValueSetExportConfiguration(), exportConfiguration.isDeltaMode());
+							if (valuesetElement != null) {
+								valuesetRegistryElement.appendChild(valuesetElement);
+							}
+						}
+
+					}
+				}
+			}
+			return valuesetRegistryElement;
+		} catch (Exception exception) {
+			throw new RegistrySerializationException(exception, section, valuesetRegistry);
+		}
+	}
 
 
-    @Override
-    public Element SerializeConformanceProfileRegistry(Section section, int level, IgDataModel igDataModel,
-            ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
-            throws RegistrySerializationException {
-        Registry conformanceProfileRegistry = igDataModel.getModel().getConformanceProfileRegistry();
-        try {
-            Element conformanceProfileRegistryElement = SerializeCommonSection(section, level, igDataModel,
-                    exportConfiguration);
-            if (conformanceProfileRegistry != null) {
-				if (!conformanceProfileRegistry.getChildren().isEmpty()) {					
+
+	@Override
+	public Element SerializeConformanceProfileRegistry(Section section, int level, IgDataModel igDataModel,
+													   ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
+			throws RegistrySerializationException {
+		Registry conformanceProfileRegistry = igDataModel.getModel().getConformanceProfileRegistry();
+		try {
+			Element conformanceProfileRegistryElement = SerializeCommonSection(section, level, igDataModel,
+					exportConfiguration);
+			if (conformanceProfileRegistry != null) {
+				if (!conformanceProfileRegistry.getChildren().isEmpty()) {
 //					ArrayList<ConformanceProfileDataModel> conformanceProfileDataModelsList = new ArrayList<>();
 
 //					for (Link conformanceProfileLink : conformanceProfileRegistry.getChildren()) {
@@ -533,7 +529,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 //
 //							conformanceProfileModel = igDataModel.getConformanceProfiles().stream()
 //									.filter(dt -> conformanceProfileLink.getId().equals(dt.getModel().getId())).findAny()
-//									.orElseThrow(() -> new ConformanceProfileNotFoundException(conformanceProfileLink.getId())); 
+//									.orElseThrow(() -> new ConformanceProfileNotFoundException(conformanceProfileLink.getId()));
 //
 //							conformanceProfileDataModelsList.add(conformanceProfileModel);
 ////						}
@@ -546,10 +542,10 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 //					Collections.sort(conformanceProfileDataModelsList);
 
 					for(ConformanceProfileDataModel conformanceProfileDataModel : conformanceProfileDataModelsList) {
-							Element conformanceProfileElement;
-							if (exportFilterDecision != null && exportFilterDecision.getConformanceProfileFilterMap() != null
-									&& exportFilterDecision.getConformanceProfileFilterMap().containsKey(conformanceProfileDataModel.getModel().getId())
-									&& exportFilterDecision.getConformanceProfileFilterMap().get(conformanceProfileDataModel.getModel().getId())) {
+						Element conformanceProfileElement;
+						if (exportFilterDecision != null && exportFilterDecision.getConformanceProfileFilterMap() != null
+								&& exportFilterDecision.getConformanceProfileFilterMap().containsKey(conformanceProfileDataModel.getModel().getId())
+								&& exportFilterDecision.getConformanceProfileFilterMap().get(conformanceProfileDataModel.getModel().getId())) {
 							if (exportFilterDecision != null && exportFilterDecision.getOveriddedConformanceProfileMap() != null
 									&& exportFilterDecision.getOveriddedConformanceProfileMap()
 									.containsKey(conformanceProfileDataModel.getModel().getId())) {
@@ -565,10 +561,10 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 							if (conformanceProfileElement != null) {
 								conformanceProfileRegistryElement.appendChild(conformanceProfileElement);
 							}
-							}
-						
-					if(exportFilterDecision == null) {
-						conformanceProfileElement = conformanceProfileSerializationService.serializeConformanceProfile(conformanceProfileDataModel,igDataModel,
+						}
+
+						if(exportFilterDecision == null) {
+							conformanceProfileElement = conformanceProfileSerializationService.serializeConformanceProfile(conformanceProfileDataModel,igDataModel,
 									level + 1, 0,
 									exportConfiguration.getConformamceProfileExportConfiguration(), exportConfiguration.isDeltaMode());
 
@@ -577,31 +573,31 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 							}
 
 						}}
-					}
 				}
-            return conformanceProfileRegistryElement;
-        } catch (Exception exception) {
-        	exception.printStackTrace();
-            throw new RegistrySerializationException(exception, section, conformanceProfileRegistry);
-        }
+			}
+			return conformanceProfileRegistryElement;
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			throw new RegistrySerializationException(exception, section, conformanceProfileRegistry);
+		}
 
-    }
+	}
 
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	@Override
-    public Element SerializeSegmentRegistry(Section section, int level, IgDataModel igDataModel,
-            ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
-            throws RegistrySerializationException {
-        Registry segmentRegistry = igDataModel.getModel().getSegmentRegistry();
-        try {
-            Element segmentRegistryElement = new Element("segmentRegistryElement");
-            if(segmentRegistry != null) {
-				if (!segmentRegistry.getChildren().isEmpty()) {	
-		             segmentRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+	public Element SerializeSegmentRegistry(Section section, int level, IgDataModel igDataModel,
+											ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
+			throws RegistrySerializationException {
+		Registry segmentRegistry = igDataModel.getModel().getSegmentRegistry();
+		try {
+			Element segmentRegistryElement = new Element("segmentRegistryElement");
+			if(segmentRegistry != null) {
+				if (!segmentRegistry.getChildren().isEmpty()) {
+					segmentRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
 
 					List<SegmentDataModel> segmentDataModelsList = igDataModel.getSegments().stream().collect(Collectors.toList());
 					Collections.sort(segmentDataModelsList);
-	
+
 					if(exportConfiguration.getCompositeProfileExportConfiguration().getGeneratedSegmentsFlavorsConfiguration().equals(GeneratedFlavorsConfiguration.NOEXPORT)) {
 						segmentDataModelsList = segmentDataModelsList.stream().filter((s) -> {
 							return !s.getModel().isGenerated();
@@ -609,52 +605,52 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 						Collections.sort(segmentDataModelsList);
 					}
 					for(SegmentDataModel segmentDataModel : segmentDataModelsList) {
-							Element segmentElement;
-							if(!segmentDataModel.getModel().isGenerated()) {
+						Element segmentElement;
+						if(!segmentDataModel.getModel().isGenerated()) {
 							if (exportFilterDecision != null && exportFilterDecision.getSegmentFilterMap() != null
 									&& exportFilterDecision.getSegmentFilterMap().containsKey(segmentDataModel.getModel().getId())
 									&& exportFilterDecision.getSegmentFilterMap().get(segmentDataModel.getModel().getId())) {
-							if (exportFilterDecision != null && exportFilterDecision.getOveriddedSegmentMap() != null
-									&& exportFilterDecision.getOveriddedSegmentMap()
-									.containsKey(segmentDataModel.getModel().getId())) {
-								segmentElement = segmentSerializationService.serializeSegment(igDataModel,segmentDataModel,
-										level + 1, 0, exportFilterDecision.getOveriddedSegmentMap().get(segmentDataModel.getModel().getId()), exportFilterDecision, exportConfiguration.isDeltaMode());
-							} else {
-								segmentElement = segmentSerializationService.serializeSegment(igDataModel, segmentDataModel,
-										level + 1, 0,
-										exportConfiguration.getSegmentExportConfiguration(), exportFilterDecision, exportConfiguration.isDeltaMode());
+								if (exportFilterDecision != null && exportFilterDecision.getOveriddedSegmentMap() != null
+										&& exportFilterDecision.getOveriddedSegmentMap()
+										.containsKey(segmentDataModel.getModel().getId())) {
+									segmentElement = segmentSerializationService.serializeSegment(igDataModel,segmentDataModel,
+											level + 1, 0, exportFilterDecision.getOveriddedSegmentMap().get(segmentDataModel.getModel().getId()), exportFilterDecision, exportConfiguration.isDeltaMode());
+								} else {
+									segmentElement = segmentSerializationService.serializeSegment(igDataModel, segmentDataModel,
+											level + 1, 0,
+											exportConfiguration.getSegmentExportConfiguration(), exportFilterDecision, exportConfiguration.isDeltaMode());
+								}
+								if (segmentElement != null) {
+									segmentRegistryElement.appendChild(segmentElement);
+								}
 							}
-							if (segmentElement != null) {
-								segmentRegistryElement.appendChild(segmentElement);
-							}
-							}
-					if(exportFilterDecision == null) {
-						segmentElement = segmentSerializationService.serializeSegment(igDataModel,segmentDataModel,
-									level + 1, 0,
-									exportConfiguration.getSegmentExportConfiguration(),exportFilterDecision , exportConfiguration.isDeltaMode());
-
-							if (segmentElement != null) {
-								segmentRegistryElement.appendChild(segmentElement);
-							}
-						}
-							} else {
+							if(exportFilterDecision == null) {
 								segmentElement = segmentSerializationService.serializeSegment(igDataModel,segmentDataModel,
 										level + 1, 0,
-										exportConfiguration.getSegmentExportConfiguration(),exportFilterDecision , false);
+										exportConfiguration.getSegmentExportConfiguration(),exportFilterDecision , exportConfiguration.isDeltaMode());
 
 								if (segmentElement != null) {
 									segmentRegistryElement.appendChild(segmentElement);
 								}
 							}
+						} else {
+							segmentElement = segmentSerializationService.serializeSegment(igDataModel,segmentDataModel,
+									level + 1, 0,
+									exportConfiguration.getSegmentExportConfiguration(),exportFilterDecision , false);
+
+							if (segmentElement != null) {
+								segmentRegistryElement.appendChild(segmentElement);
+							}
 						}
 					}
 				}
-            return segmentRegistryElement;
-        } catch (Exception exception) {
-            throw new RegistrySerializationException(exception, section, segmentRegistry);
-        }
+			}
+			return segmentRegistryElement;
+		} catch (Exception exception) {
+			throw new RegistrySerializationException(exception, section, segmentRegistry);
+		}
 
-    }
+	}
 
 
 
