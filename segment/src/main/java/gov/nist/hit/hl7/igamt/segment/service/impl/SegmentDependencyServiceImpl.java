@@ -20,7 +20,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
+import gov.nist.hit.hl7.igamt.common.base.service.RequestScopeCache;
 import gov.nist.hit.hl7.igamt.common.binding.domain.BindingSource;
+import gov.nist.hit.hl7.igamt.datatype.service.ConformanceStatementDependencyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -69,6 +71,8 @@ public class SegmentDependencyServiceImpl implements SegmentDependencyService {
   CommonFilteringService commonFilteringService;
   @Autowired
   SlicingService slicingService;
+  @Autowired
+  ConformanceStatementDependencyService conformanceStatementDependencyService;
 
   @Override
   public void updateDependencies(Segment elm, HashMap<RealKey, String> newKeys) {
@@ -108,6 +112,7 @@ public class SegmentDependencyServiceImpl implements SegmentDependencyService {
     Map<String, Slicing> slicingMap =  segment.getSlicings() != null ?  segment.getSlicings()
                                                                                .stream()
                                                                                .collect(Collectors.toMap(Slicing::getPath, x -> x)) : new HashMap<>();
+    this.conformanceStatementDependencyService.processResource(segment.getBinding(), segment.getDocumentInfo(), used);
     for (Field f : segment.getChildren()) {
       String pathId = path != null? path + '-' + f.getId(): f.getId();
       if(commonFilteringService.allow(filter.getUsageFilter(), f)) {

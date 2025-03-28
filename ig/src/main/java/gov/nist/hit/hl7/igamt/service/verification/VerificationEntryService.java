@@ -91,6 +91,8 @@ public interface VerificationEntryService {
     IgamtObjectError FreeTextAssertionScriptMissing(Location location, String id, Type type);
     IgamtObjectError FreeTextAssertionXMLInvalid(Location location, String id, Type type, String xmlError);
     IgamtObjectError FreeTextAssertionXMLLegacyValueSet(Location location, String id, Type type);
+    IgamtObjectError FreeTextAssertionXMLLegacyValueSetInvalidReference(Location location, String id, Type type, String bindingIdentifier);
+
     IgamtObjectError DuplicateConformanceStatementIdentifier(Location location, String id, Type type, String identifier);
 
     // Value Sets
