@@ -134,6 +134,9 @@
               <ng-template (execute)="deleteUnused(node.data)" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-remove"></i> Delete Unreferenced
               </ng-template>
+              <ng-template (execute)="onGroupValueSet(node.data)" contextMenuItem [enabled]="!viewOnly&&!delta">
+                <i class="fa fa-compress"></i> Group Value Sets
+              </ng-template>
             </context-menu>
           </div>
         </ng-container>

@@ -83,6 +83,7 @@ import { SourceType } from './../../../shared/models/adding-info';
 import { VerificationService } from './../../../shared/services/verification.service';
 import { ITypedSection } from './../ig-toc/ig-toc.component';
 import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
+import { GroupValueSetComponent } from 'src/app/modules/shared/components/group-value-set/group-value-set.component';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -864,6 +865,23 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
         );
       }),
     ).subscribe();
+  }
+
+  groupValueSet($event){
+
+    const dialogRef = this.dialog.open(GroupValueSetComponent, {
+      data: $event,
+    });
+
+    dialogRef.afterClosed().pipe(
+     filter((result) => result !== undefined),
+     take(1),
+     map((result) => {
+     if (result) {
+      //this.store.dispatch(new fromIgDocumentEdit.GroupValueSets(result));
+      }
+          }),
+      ).subscribe();
   }
 
 }

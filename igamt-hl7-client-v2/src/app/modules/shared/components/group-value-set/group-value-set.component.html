@@ -1,0 +1,43 @@
+<h3 mat-dialog-title>Group Value Set</h3>
+
+<div mat-dialog-content>
+  <div class="group-container">
+    <div
+      class="group-column"
+      *ngFor="let group of groupNames">
+
+      <h4>{{ group }}</h4>
+
+      <div
+        [id]="group"
+        cdkDropList
+        [cdkDropListData]="groupedData[group]"
+        class="drop-list"
+        [cdkDropListConnectedTo]="getConnectedDropLists(group)"
+        (cdkDropListDropped)="drop($event, group)">
+        
+        <div
+          class="item"
+          *ngFor="let item of groupedData[group]"
+          cdkDrag>
+          <app-display-section [element]="item"></app-display-section>
+        </div>
+      </div>
+
+      <button
+        *ngIf="group !== 'Others'"
+        pButton
+        type="button"
+        icon="pi pi-trash"
+        label="Delete Group"
+        class="p-button-danger mt-2"
+        (click)="deleteGroup(group)">
+      </button>
+    </div>
+  </div>
+</div>
+
+<mat-dialog-actions style="justify-content: flex-end; margin-top: 10px;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="done()" class="btn btn-sm btn-success">Done</button>
+</mat-dialog-actions>

@@ -1,0 +1,28 @@
+.group-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    overflow-x: auto;
+    padding: 10px 0;
+  }
+  
+  .group-column {
+    flex: 1 1 200px;
+    min-width: 200px;
+    max-width: 250px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .drop-list {
+    min-height: 150px;
+    border: 1px dashed #ccc;
+    padding: 5px;
+    background-color: #fff;
+  }
+  
+  .item {
+    margin-bottom: 5px;
+  }

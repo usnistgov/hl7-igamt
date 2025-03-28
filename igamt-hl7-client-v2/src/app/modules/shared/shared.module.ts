@@ -162,6 +162,7 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { GroupValueSetComponent } from './components/group-value-set/group-value-set.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -283,6 +284,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ExternalVsCodesFetchComponent,
     FetchCodesDialogComponent,
     ImportFromProviderComponent,
+    GroupValueSetComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -348,7 +350,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ConfirmDialogModule,
     MatProgressSpinnerModule,
     CodemirrorModule,
-    TieredMenuModule,
+    TieredMenuModule
   ],
   exports: [
     MatExpansionModule,
@@ -496,6 +498,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ExternalVsCodesFetchComponent,
     FetchCodesDialogComponent,
     FileInputComponent,
+    GroupValueSetComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -542,6 +545,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     BuildValueSetComponent,
     FetchCodesDialogComponent,
     ImportFromProviderComponent,
+    GroupValueSetComponent,
   ],
 })
 export class SharedModule {

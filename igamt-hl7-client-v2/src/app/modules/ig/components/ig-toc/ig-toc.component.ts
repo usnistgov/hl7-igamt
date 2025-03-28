@@ -26,7 +26,7 @@ import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { NodeHelperService } from '../../../shared/services/node-helper.service';
 import { ValueSetService } from '../../../value-set/service/value-set.service';
-import { IgDocument } from '../../models/ig/ig-document.class';
+import { IgDocument, IGroupValueSetWrapper } from '../../models/ig/ig-document.class';
 import { IgService } from '../../services/ig.service';
 import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
 import { IContent } from './../../../shared/models/content.interface';
@@ -100,6 +100,9 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   manageProfileStructure = new EventEmitter<IContent[]>();
   @Output()
   addUserDataTypes = new EventEmitter<IAddWrapper>();
+
+  @Output()
+  groupValueSet = new EventEmitter<IGroupValueSetWrapper>();
 
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
@@ -364,6 +367,10 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   addFromProvider(providerId: string) {
     this.addChildrenFromProvider.emit(providerId);
+  }
+
+  onGroupValueSet($event : IDisplayElement[]){
+    this.groupValueSet.emit({all: $event, groups: []});
   }
 
 }
