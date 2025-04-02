@@ -1,0 +1,124 @@
+@import '../../../../../assets/variables';
+
+:host {
+  display: contents;
+}
+
+.side-bar {
+  height: 100%;
+  display: grid;
+  gap: 2px;
+  grid-template-columns: [bar] minmax(min-content, 2fr);
+  grid-template-rows: [editors-row] minmax(min-content, max-content) [header-row] minmax(min-content, 40px) [container-row] auto;
+  overflow: hidden;
+}
+
+.editors {
+  grid-column: bar;
+  grid-row: editors-row;
+}
+
+.codeset-version-list-item {
+  display: flex; align-items: center; padding: 0;
+}
+
+.nav-active-link {
+  background-color: $nist_light_yellow;
+}
+
+.filter {
+  grid-column: bar;
+  grid-row: header-row;
+  background-color: white;
+  display: flex;
+  align-items: center;
+}
+
+.list {
+  grid-column: 1;
+  background-color: rgb(255, 246, 232);
+  grid-row: container-row;
+  overflow: scroll;
+  display: flex;
+}
+
+.list-group-item {
+  cursor: pointer;
+}
+
+.list-group-item:hover {
+  background-color: rgb(243, 243, 243);
+}
+
+.version-ball {
+  position: absolute;
+  left: 10px;
+  top: 15px;
+  width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  text-align: center;
+  font-weight: bold;
+  vertical-align: middle;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: blue;
+}
+
+.version-committed {
+  background-color: #37e0d0;
+}
+
+.version-latest-stable {
+  background-color: #f860ff;
+  border: 1px solid blue;
+  color: white;
+  font-size: 9px;
+  font-weight: bold;
+}
+
+.version-inprogress {
+  background-color: #dddddd;
+  border: 2px dashed #93a5ff;
+}
+
+.version-text {
+  text-overflow: ellipsis;
+  max-width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.version-line {
+  position: absolute;
+  width: 4px;
+  background-color: gray;
+  left: 18px;
+}
+
+.version-line-top {
+  height: 50%;
+  bottom: 0;
+}
+
+.version-line-middle {
+  height: 100%;
+}
+
+.version-line-bottom {
+  height: 50%;
+  top: 0;
+}
+
+.version-line-single {
+  display: none;
+}
+
+.version-icon {
+  height: 100%;
+  min-height: 50px;
+  width: 40px;
+  position: relative;
+}

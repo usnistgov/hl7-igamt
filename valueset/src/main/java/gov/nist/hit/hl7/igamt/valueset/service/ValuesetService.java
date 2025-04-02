@@ -21,6 +21,8 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.ResourceOrigin;
+import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
@@ -73,7 +75,7 @@ public interface ValuesetService {
 	
 	public Set<String> extractCodeSystemsFromCodes(Set<Code> codes);
 
-	public Valueset findExternalPhinvadsByOid(String oid);
+	//public Valueset findExternalPhinvadsByOid(String oid);
 
 	DisplayElement convertValueSet(Valueset valueset);
 	Set<DisplayElement> convertValueSets(Set<Valueset> valueSets);
@@ -83,4 +85,11 @@ public interface ValuesetService {
 	String findXMLRefIdById(Valueset valueset, String defaultHL7Version);
 
 	public List<Valueset> findDisplayFormatByIds(Set<String> ids);
+
+	Valueset findPreLoadedPHINVADS(String oid, String version);
+
+	Valueset findTrackedPHINVADS(String oid);
+
+
+	List<Valueset> findBySourceTypeAndResourceOrigin(SourceType type, ResourceOrigin origin);
 }

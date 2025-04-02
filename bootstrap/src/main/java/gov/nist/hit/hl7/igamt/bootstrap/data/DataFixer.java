@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import io.swagger.models.auth.In;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -722,5 +724,34 @@ public class DataFixer {
             DTNAME =  f.get().getRef().getId();
         }
         System.out.println(segment.getId()+ "," + DTNAME + "," + elementId + ","+ childId );
+    }
+
+    public void findWrongLength() {
+        System.out.println("Segment,HL7 Version, filed Position, Data Type");
+        List<Segment> segments = segmentsService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
+        for (Segment s : segments) {
+            for (Field f : s.getChildren()) {
+                if(f.getMax() != null && !f.getMax().equals("0") && !f.getUsage().equals(Usage.X)){
+                    if(f.getMaxLength() != null && f.getMaxLength().equals("0")){
+                        System.out.println(s.getName() + "," + s.getDomainInfo().getVersion() + "," + f.getPosition()+"," + f.getRef().getId());
+                    }
+                }
+            }
+        }
+    }
+
+    public void findWrongLengthDatatype() {
+        System.out.println("Datatype, HL7 Version, Component Position, Data Type");
+        List<Datatype> datatypes = datatypeService.findByDomainInfoScope(Scope.HL7STANDARD.toString()).stream().filter(x -> x instanceof  ComplexDatatype).collect(Collectors.toList());
+        for (Datatype d : datatypes) {
+            ComplexDatatype complexDatatype = (ComplexDatatype) d;
+            for (Component cp : complexDatatype.getComponents()) {
+                if(!cp.getUsage().equals(Usage.X)){
+                    if(cp.getMaxLength() != null && cp.getMaxLength().equals("0")){
+                        System.out.println(complexDatatype.getName() + "," + complexDatatype.getDomainInfo().getVersion() + "," + cp.getPosition()  +"," + cp.getRef().getId());
+                    }
+                }
+            }
+        }
     }
 }

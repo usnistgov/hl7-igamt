@@ -21,7 +21,8 @@
 
 <ng-template #defaultHeader let-active let-options="options">
     <h5 style="display: inline;" class="title-text">
-      <app-scope-badge *ngIf="active.display.domainInfo" [scope]="active.display.domainInfo.scope" [version]="active.display.domainInfo.version" [flavor]="active.display.flavor"></app-scope-badge>
+      <app-scope-badge *ngIf="active.display.domainInfo" [scope]="active.display.domainInfo.scope" [version]="active.display.domainInfo.version" [flavor]="active.display.flavor" [sourceType]="active.display?.sourceType" [url]="active?.display.url" [stability]="active.display?.stability" [resourceOrigin]="active.display?.resourceOrigin"></app-scope-badge>
+
       <app-entity-bagde [type]="active.display.type"></app-entity-bagde>
       <span *ngIf="active.display.type !== 'IGDOCUMENT'" >
         <span *ngIf="active.display.path"> {{active.display.path}} </span>
@@ -36,6 +37,5 @@
         <i class="fa fa-chevron-right" style="font-size: 1em; margin-right: 10px; margin-left: 10px;"></i>
         <h5 style="display: inline;" class="title-text"> {{active.editor.title}} </h5>
       </div>
-
     </ng-container>
 </ng-template>

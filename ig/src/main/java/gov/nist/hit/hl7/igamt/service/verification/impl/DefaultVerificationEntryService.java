@@ -870,6 +870,50 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
+    public IgamtObjectError ExternalValuesetMissingURL(Location l, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("VALUESET_MISSING_URL")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(l.getPathId(), l.getName(), PropertyType.URL)
+                .message("External value set has missing URL.")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError ExternalValuesetInvalidURL(Location l, String id, Type type, String URL) {
+        return new IgamtVerificationEntryBuilder("VALUESET_INVALID_URL")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(l.getPathId(), l.getName(), PropertyType.URL)
+                .message("External value set has invalid URL '"+ URL+"'")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError InternalTrackedValuesetMissingCodeSet(Location l, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("VALUESET_MISSING_CODESETREFERENCE")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(l.getPathId(), l.getName(), PropertyType.CODESETREFERENCE)
+                .message("Value set missing code set reference.")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError InternalTrackedValuesetCodeSetNotFound(Location l, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("VALUESET_INVALID_CODESETREFERENCE")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(l.getPathId(), l.getName(), PropertyType.CODESETREFERENCE)
+                .message("Value set has reference to code set not found.")
+                .entry();
+    }
+
+    @Override
 	public IgamtObjectError CardinalityInvalidRange(LocationInfo locationInfo, String id, Type type, String min, String max) {
 		return new IgamtVerificationEntryBuilder("CARDINALITY_INVALID_RANGE")
                 .fatal()

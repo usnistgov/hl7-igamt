@@ -5,5 +5,12 @@
     "secure": false,
     "logLevel": "debug",
     "ws": true
+  },
+  "/codesets/*": {
+    "target": "http://localhost:9000",
+    "changeOrigin": false,
+    "secure": false,
+    "logLevel": "debug",
+    "ws": true
   }
 }

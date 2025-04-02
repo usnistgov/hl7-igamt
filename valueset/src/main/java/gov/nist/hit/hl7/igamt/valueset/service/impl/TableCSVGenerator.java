@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.valueset.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
@@ -145,4 +146,36 @@ public class TableCSVGenerator {
         return result;
 
     }
+    
+    public String generate(Set<Code> codes) {
+    	
+    	String csvString = "";
+		List<String> values = new ArrayList<String>();
+
+		
+		values = new ArrayList<String>();
+		values.add("value");
+		values.add("pattern");
+		values.add("description");
+		values.add("codeSystem");
+		values.add("usage");
+		values.add("comments");
+		csvString = this.writeLine(csvString, values, ',', '"');
+		
+		for(Code c: codes){
+			values = new ArrayList<String>();
+			values.add(c.getValue());
+			values.add(c.getPattern());
+			values.add(c.getDescription());
+			values.add(c.getCodeSystem());
+			if(c.getUsage() == null) c.setUsage(CodeUsage.P);
+			values.add(c.getUsage().toString());
+			values.add(c.getComments());
+			csvString = this.writeLine(csvString, values, ',', '"');	
+		}
+		return csvString;
+	}
+    	
+    
+    
 }

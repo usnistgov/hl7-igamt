@@ -9,7 +9,11 @@
   [id]="'TOC-' + element.type + '-' + element.id">
   <app-entity-bagde [type]="element.type" *ngIf="!hideBadge"></app-entity-bagde>
 
-  <app-scope-badge [scope]="element.domainInfo.scope" [version]="element.domainInfo.version" [resourceOrigin]='element.resourceOrigin' [flavor]="element.flavor" *ngIf="!ignoreScope">
+  <!-- <div>
+    <span *ngIf="element.sourceType" class="badge badge-secondary" style="margin-left: 5px; margin-right: 5px">EXT</span>
+  </div> -->
+
+  <app-scope-badge [scope]="element.domainInfo.scope" [version]="element.domainInfo.version" [resourceOrigin]='element.resourceOrigin' [flavor]="element.flavor" *ngIf="!ignoreScope" [sourceType]="element.sourceType" [stability]="element.stability" [url]="element.url" >
   </app-scope-badge>
 
   <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"> &nbsp;{{ getDisplayLabel() }}

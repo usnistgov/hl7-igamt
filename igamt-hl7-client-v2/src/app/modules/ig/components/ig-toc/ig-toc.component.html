@@ -125,7 +125,7 @@
               <ng-template (execute)="import(node.data, 'VALUESET', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Add HL7 Value Sets
               </ng-template>
-              <ng-template (execute)="import(node.data, 'VALUESET', 'PHINVADS')" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <ng-template (execute)="addFromProvider('PHINVADS')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Add PHINVADS Value Sets
               </ng-template>
               <ng-template (execute)="importCSV(node.data, 'VALUESET', 'USER')" contextMenuItem [enabled]="!viewOnly&&!delta">

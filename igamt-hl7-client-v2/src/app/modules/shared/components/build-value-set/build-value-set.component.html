@@ -1,0 +1,93 @@
+<h2 mat-dialog-title>Build New Value Set</h2>
+<mat-dialog-content>
+  <form #form='ngForm'>
+
+
+
+    <div class="form-group">
+      <label> <strong> Binging Identifier </strong> </label>
+      <input [(ngModel)]="model.name" [domainInfo]="{scope:'USER',version:null}" [existing]="data.existing"
+        [fixedName]="model.ext" [scope]="data.scope" [type]="data.type" appNamingConvention appNamingDuplication
+        class="form-control" id="variableName" name="variableName" required style="width: 100%" type="text" />
+      <div *ngIf="form.controls['variableName'] && form.controls['variableName'].errors"
+        style="color:red; font-size: 11px">
+        <div *ngIf="form.controls['variableName'].errors.required">
+          <span>*Binding Identifier is required</span>
+        </div>
+        <div *ngIf="form.controls['variableName'].errors.duplicated">
+          <span> *Binding Identifier is duplicated</span>
+        </div>
+        <div *ngIf="form.controls['variableName'].errors.invalidConvention">
+          <span> {{form.controls['variableName'].errors.invalidConvention}}</span>
+        </div>
+      </div>
+    </div>
+
+
+    <table class="table table-bordered" width="100%">
+      <tr style="background-color: #efeded;">
+        <th colspan="2">Value Set Attributes</th>
+      </tr>
+      <tr>
+        <td><strong>Extensibility:</strong></td>
+        <td>
+          <p-dropdown [(ngModel)]="model.extensibility" [options]="extensibilityOptions" id="extensibility"
+            name="extensibility"></p-dropdown>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Stability:</strong></td>
+        <td>
+          <p-dropdown [(ngModel)]="model.stability" [options]="stabilityOptionsOptions" id="stability"
+            name="stability"></p-dropdown>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Content Definition:</strong></td>
+        <td>
+          <p-dropdown [(ngModel)]="model.contentDefinition" [options]="contentDefinitionOptions" id="contentDef"
+            name="contentDef"></p-dropdown>
+        </td>
+      </tr>
+
+      <tr style="background-color: #efeded;">
+        <th colspan="2">Code Management</th>
+      </tr>
+      <tr>
+        <td colspan="2">
+
+          <p-radioButton [(ngModel)]="model.sourceType" value="INTERNAL" inputId="internal"
+            name="sourceType"></p-radioButton>
+          Internal (Codes Managed inside the IG Document)
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"><p-radioButton [(ngModel)]="model.sourceType" value="EXTERNAL" inputId="external"
+            name="sourceType"></p-radioButton>
+          External (Codes Managed outside of the IG Document)</td>
+      </tr>
+
+    </table>
+
+
+    <div class="form-group" *ngIf="model.sourceType ==='EXTERNAL'">
+      <label> <strong> Code Set URL </strong> </label>
+
+      <input [(ngModel)]="model.url" class="form-control" id="url" name="url"
+        placeholder="Enter Code set URL" required type="url" width="100%" />
+      <div *ngIf="form.controls['url'] && form.controls['url'].invalid" class="input-form-invalid-feedback"
+        style="margin-left: 10px;">
+        <span style="color:red"> Enter a valid URL</span>
+      </div>
+    </div>
+
+
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions style=" display: flex;justify-content: space-between">
+  <p-checkbox [(ngModel)]="redirect" binary="true" label="redirect to the flavor"></p-checkbox>
+  <div style="justify-content: flex-end; margin-left: 5px;">
+    <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+    <button (click)="submit()" [disabled]="form&& form.invalid" class="btn btn-sm btn-success">Submit</button>
+  </div>
+</mat-dialog-actions>

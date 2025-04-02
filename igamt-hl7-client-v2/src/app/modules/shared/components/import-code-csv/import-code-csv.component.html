@@ -1,0 +1,66 @@
+
+<h2 mat-dialog-title>Upload Codes From CSV </h2>
+
+<mat-dialog-content class="mat-typography dialog-content">
+  <div *ngIf="uploadStep" class="upload-step">
+    <div class="upload-drop-zone"
+         (drop)="onFileDrop($event)"
+         (dragover)="onDragOver($event)"
+         (dragleave)="onDragLeave($event)">
+      <input type="file" #fileInput accept=".csv" (change)="fileInputChange(fileInput.files)" hidden>
+      <button mat-stroked-button (click)="fileInput.click()" class="upload-btn">
+        Select File
+      </button>
+      <p *ngIf="!fileToUpload">or Drag and Drop a File Here</p>
+      <p *ngIf="fileToUpload">{{fileToUpload.name}}</p>
+    </div>
+    <button *ngIf="fileToUpload"  color="warn" class="remove-btn" (click)="removeFile()">
+      close
+    </button>
+  </div>
+
+  <div *ngIf="reviewStep" class="review-step">
+    <p-table [value]="codes" [(selection)]="selectedCodes" dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30]">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 3em;">
+            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+          </th>
+          <th>Value</th>
+          <th>Pattern</th>
+          <th>Description</th>
+          <th>Code System</th>
+          <th>Usage</th>
+          <th>Comments</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-code let-selected="selected">
+        <tr>
+          <td><p-tableCheckbox [value]="code"></p-tableCheckbox></td>
+          <td>{{code.value}}</td>
+          <td>{{code.pattern}}</td>
+          <td>{{code.description}}</td>
+          <td>{{code.codeSystem}}</td>
+          <td>{{code.usage}}</td>
+          <td>{{code.comments}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <div *ngIf="errorStep" class="error-step">
+    Error during file upload: {{errorMessage}}
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+
+
+
+  <button mat-button [mat-dialog-close] class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
+  <button *ngIf="uploadStep"  class="btn btn-sm btn-secondary" style="margin-right: 5px;" (click)="uploadFile()" [disabled]="!fileToUpload" class="btn btn-sm btn-primary">
+    Preview
+  </button>
+  <button *ngIf="reviewStep" color="accent" (click)="submit()" class="btn btn-sm btn-success">
+    Finish
+  </button>
+</mat-dialog-actions>

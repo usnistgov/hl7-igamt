@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.web.app.resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import gov.nist.hit.hl7.igamt.access.active.NotifySave;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import org.apache.commons.io.IOUtils;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +72,7 @@ public class ValuesetController extends BaseController {
 	
 	@Autowired
 	FhirHandlerService fhirHandlerService;
-
+	
 	private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
 
 	public ValuesetController() {
@@ -84,14 +86,22 @@ public class ValuesetController extends BaseController {
 				valuesetService.findByDomainInfoScopeAndDomainInfoVersion(scope, version));
 	}
 
-	@RequestMapping(value = "/api/valuesets/{scope}/info", method = RequestMethod.GET, produces = {
-	"application/json" })
-	// TODO
-	public @ResponseBody ResponseMessage<List<Valueset>> findDisplayFormatByScope(
-			@PathVariable String scope, Authentication authentication) {
-		return new ResponseMessage<List<Valueset>>(Status.SUCCESS, "", "", null, false, null,
-				valuesetService.findDisplayFormatByScope(scope));
-	}
+//	@RequestMapping(value = "/api/valuesets/{scope}/info", method = RequestMethod.GET, produces = {
+//	"application/json" })
+//	// TODO
+//	public @ResponseBody ResponseMessage<List<Valueset>> findDisplayFormatByScope(
+//			@PathVariable String scope, Authentication authentication) {
+//		
+//		List<Valueset> ret = new ArrayList<Valueset>();
+//		
+//		if(scope.equals(Scope.PHINVADS.toString())){
+//			ret = codeSetAdapterService.getAllAvailablePhinvads();
+//		}
+//		List<Valueset> vs =  valuesetService.findDisplayFormatByScope(scope);
+//		
+//		return new ResponseMessage<List<Valueset>>(Status.SUCCESS, "", "", null, false, null,
+//				ret);
+//	}
 
 	@RequestMapping(value = "/api/valuesets/{id}/resources", method = RequestMethod.GET, produces = {
 	"application/json" })
@@ -139,6 +149,33 @@ public class ValuesetController extends BaseController {
 		
 		
 		InputStream content = IOUtils.toInputStream(new TableCSVGenerator().generate(valueset), "UTF-8");
+		response.setContentType("text/xml");
+		response.setHeader("Content-disposition", "attachment;filename=" + valueset.getBindingIdentifier()
+		+ "-" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".csv");
+		FileCopyUtils.copy(content, response.getOutputStream());
+	}
+	
+	
+	@RequestMapping(value = "/api/valuesets/export-code-csv/{id}", method = RequestMethod.POST, produces = "text/xml", consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	@PreAuthorize("AccessResource('VALUESET', #tableId, READ)")
+	public void exportCodeCSV(@PathVariable("id") String tableId, HttpServletRequest request,
+			HttpServletResponse response) throws IOException, ValuesetNotFoundException {
+		log.info("Export table " + tableId);
+		Valueset valueset = findById(tableId);
+		
+		if (valueset == null) {
+			throw new ValuesetNotFoundException(tableId);
+		}
+		
+		if (valueset.getBindingIdentifier().equals("HL70396") && valueset.getSourceType().equals(SourceType.EXTERNAL)) {
+			valueset.setCodes(fhirHandlerService.getValusetCodeForDynamicTable());
+
+		}
+
+		valueset.getCodes().removeIf((x) -> x.isDeprecated());
+		
+		
+		InputStream content = IOUtils.toInputStream(new TableCSVGenerator().generate(valueset.getCodes()), "UTF-8");
 		response.setContentType("text/xml");
 		response.setHeader("Content-disposition", "attachment;filename=" + valueset.getBindingIdentifier()
 		+ "-" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".csv");

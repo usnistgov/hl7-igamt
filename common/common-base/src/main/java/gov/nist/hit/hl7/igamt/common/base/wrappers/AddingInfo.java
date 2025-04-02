@@ -2,14 +2,19 @@ package gov.nist.hit.hl7.igamt.common.base.wrappers;
 
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CodeType;
+import gov.nist.hit.hl7.igamt.common.base.domain.ContentDefinition;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Extensibility;
 import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Role;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
+import gov.nist.hit.hl7.igamt.common.base.domain.Stability;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
+
 public class AddingInfo {
-	
+
 	private String originalId;
 	private String id;
 	private String name;
@@ -28,7 +33,14 @@ public class AddingInfo {
 	private String fixedExtension;
 	private ProfileType profileType;
 	private Role role;
+	private Stability stability = Stability.Undefined;
+	private Extensibility extensibility = Extensibility.Undefined;
+	private ContentDefinition contentDefinition = ContentDefinition.Undefined;
+	private CodeType codeType;
+	private boolean fromProvider; // do not look in DB
+	private boolean trackLatest;
 	
+
 	public Role getRole() {
 		return role;
 	}
@@ -120,23 +132,59 @@ public class AddingInfo {
 	public void setOid(String oid) {
 		this.oid = oid;
 	}
-  public List<Substitue> getSubstitutes() {
-    return substitutes;
-  }
-  public void setSubstitutes(List<Substitue> substitutes) {
-    this.substitutes = substitutes;
-  }
-  public String getFixedExtension() {
-    return fixedExtension;
-  }
-  public void setFixedExtension(String fixedExtension) {
-    this.fixedExtension = fixedExtension;
-  }
-public ProfileType getProfileType() {
-	return profileType;
-}
-public void setProfileType(ProfileType profileType) {
-	this.profileType = profileType;
-} 
+	public List<Substitue> getSubstitutes() {
+		return substitutes;
+	}
+	public void setSubstitutes(List<Substitue> substitutes) {
+		this.substitutes = substitutes;
+	}
+	public String getFixedExtension() {
+		return fixedExtension;
+	}
+	public void setFixedExtension(String fixedExtension) {
+		this.fixedExtension = fixedExtension;
+	}
+	public ProfileType getProfileType() {
+		return profileType;
+	}
+	public void setProfileType(ProfileType profileType) {
+		this.profileType = profileType;
+	}
+	public CodeType getCodeType() {
+		return codeType;
+	}
+	public void setCodeType(CodeType codeType) {
+		this.codeType = codeType;
+	}
+	public ContentDefinition getContentDefinition() {
+		return contentDefinition;
+	}
+	public void setContentDefinition(ContentDefinition contentDefinition) {
+		this.contentDefinition = contentDefinition;
+	}
+	public Extensibility getExtensibility() {
+		return extensibility;
+	}
+	public void setExtensibility(Extensibility extensibility) {
+		this.extensibility = extensibility;
+	}
+	public Stability getStability() {
+		return stability;
+	}
+	public void setStability(Stability stability) {
+		this.stability = stability;
+	}
+	public boolean isFromProvider() {
+		return fromProvider;
+	}
+	public void setFromProvider(boolean fromProvider) {
+		this.fromProvider = fromProvider;
+	}
+	public boolean isTrackLatest() {
+		return trackLatest;
+	}
+	public void setTrackLatest(boolean trackLatest) {
+		this.trackLatest = trackLatest;
+	}
 	
 }

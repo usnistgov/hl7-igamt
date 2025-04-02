@@ -7,6 +7,12 @@ public class WorkspaceAudience extends Audience {
         super(AudienceType.WORKSPACE);
     }
 
+    public WorkspaceAudience(String workspaceId, String folderId) {
+        super(AudienceType.WORKSPACE);
+        this.workspaceId = workspaceId;
+        this.folderId = folderId;
+    }
+
     public String getWorkspaceId() {
         return workspaceId;
     }

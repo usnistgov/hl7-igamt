@@ -1,0 +1,27 @@
+{
+  "$match": {
+    "$or": [
+      {
+        "$and": [
+          { "codes.hasPattern": { "$eq": false } },
+          { "codes.value": { "$eq": "{{VALUE}}" } }
+        ]
+      },
+      {
+        "$and": [
+          { "codes.hasPattern": { "$eq": true } },
+          {
+            "$expr": {
+              "$regexMatch": {
+                "input": "A",
+                "regex": {
+                  "$concat": ["^", "$codes.pattern", { "$literal": "$" }]
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

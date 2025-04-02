@@ -12,15 +12,17 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
     private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
     private final AccessControlService accessControlService;
     private final SynchronizedAccessService synchronizedAccessService;
+    private final APIAccessControlService apiAccessControlService;
 
-    public CustomMethodSecurityExpressionHandler(AccessControlService accessControlService, SynchronizedAccessService synchronizedAccessService){
+    public CustomMethodSecurityExpressionHandler(AccessControlService accessControlService, SynchronizedAccessService synchronizedAccessService, APIAccessControlService apiAccessControlService){
         this.accessControlService = accessControlService;
         this.synchronizedAccessService = synchronizedAccessService;
+        this.apiAccessControlService = apiAccessControlService;
     }
 
     @Override
     protected MethodSecurityExpressionOperations createSecurityExpressionRoot(Authentication authentication, MethodInvocation invocation) {
-        CustomMethodSecurityExpressionRoot root = new CustomMethodSecurityExpressionRoot(authentication, accessControlService, synchronizedAccessService);
+        CustomMethodSecurityExpressionRoot root = new CustomMethodSecurityExpressionRoot(authentication, accessControlService, synchronizedAccessService, apiAccessControlService);
         root.setPermissionEvaluator(getPermissionEvaluator());
         root.setTrustResolver(this.trustResolver);
         root.setRoleHierarchy(getRoleHierarchy());

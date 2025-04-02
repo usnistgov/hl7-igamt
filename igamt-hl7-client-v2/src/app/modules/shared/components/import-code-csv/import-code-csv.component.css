@@ -1,0 +1,52 @@
+.dialog-content {
+  min-width: 300px;
+}
+
+.upload-step,
+.review-step,
+.error-step {
+  position: relative;
+  text-align: center;
+}
+
+.upload-drop-zone {
+  border: 2px dashed #90A4AE;
+  border-radius: 4px;
+  padding: 20px;
+  transition: border-color 0.3s;
+  background-color: #dcf6ff;
+}
+
+.upload-drop-zone:hover {
+  border-color: #78909C;
+}
+
+.upload-btn {
+  margin-top: 10px;
+}
+
+.remove-btn {
+  position: absolute;
+  top: -28px;
+  right: -28px;
+}
+
+.review-step p-table {
+  margin-top: 10px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 24px;
+}
+
+.dialog-actions .action-btn:not(:last-child) {
+  margin-right: 8px;
+}
+
+.error-step mat-error {
+  display: block;
+  text-align: center;
+  color: #D32F2F;
+}

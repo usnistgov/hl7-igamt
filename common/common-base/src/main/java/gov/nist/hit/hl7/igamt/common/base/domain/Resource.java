@@ -124,7 +124,7 @@ public abstract class Resource extends AbstractDomain {
  // abstract String getSectionTitle();
   
   public String getPublicationDateString() {
-    String s = null;
+    String s = "";
     if(this.getPublicationInfo() !=null && this.getPublicationInfo().getPublicationDate() !=null) {
       s = this.getPublicationInfo().getPublicationDate().toString();
       if(this.getActiveInfo() !=null && this.getActiveInfo().getStatus() !=null && this.getActiveInfo().getStatus().equals(ActiveStatus.DEPRECATED)) {

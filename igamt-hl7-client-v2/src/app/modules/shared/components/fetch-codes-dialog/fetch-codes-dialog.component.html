@@ -1,0 +1,14 @@
+<h3 mat-dialog-title>Import Code From URL</h3>
+<div mat-dialog-body>
+  <div class="input-group" style="margin-bottom: 10px;">
+    <div class="input-group-prepend">
+        <strong class="input-group-text">URL</strong>
+    </div>
+    <input type="text" class="form-control" [(ngModel)]="url">
+  </div>
+  <app-external-vs-codes-fetch [URL]="url" (codeSet)="setCodeSet($event)" ></app-external-vs-codes-fetch>
+</div>
+<mat-dialog-actions style="justify-content: flex-end; margin-top: 10px;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="done()" [disabled]="!codeSet" class="btn btn-sm btn-success">Done</button>
+</mat-dialog-actions>

@@ -2,13 +2,13 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EffectsModule } from '@ngrx/effects';
-import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { BlockUIModule } from 'ng-block-ui';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { CodeSetEditorModule } from './modules/code-set-editor/code-set-editor.module';
 import { CoreModule } from './modules/core/core.module';
 import { DamRoutingModule } from './modules/dam-framework/dam-framework.module';
 import { WorkspaceModule } from './modules/workspace/workspace.module';
@@ -36,6 +36,7 @@ import { UserConfigEffects } from './root-store/user-config/user-config.effects'
     CoreModule,
     BlockUIModule.forRoot(),
     WorkspaceModule,
+    CodeSetEditorModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

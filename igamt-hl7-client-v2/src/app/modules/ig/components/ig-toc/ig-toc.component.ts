@@ -82,6 +82,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @Output()
   addChildren = new EventEmitter<IAddWrapper>();
   @Output()
+  addChildrenFromProvider =  new EventEmitter<string>();
+  @Output()
   addCustom = new EventEmitter<IAddWrapper>();
   @Output()
   addMessages = new EventEmitter<IAddWrapper>();
@@ -358,6 +360,10 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
   deleteUnused(registryNode) {
     this.checkUnused.emit({ children: registryNode.children, type: registryNode.type });
+  }
+
+  addFromProvider(providerId: string) {
+    this.addChildrenFromProvider.emit(providerId);
   }
 
 }

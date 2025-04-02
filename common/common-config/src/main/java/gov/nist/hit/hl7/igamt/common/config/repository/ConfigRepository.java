@@ -7,5 +7,4 @@ import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 
 @Repository
 public interface ConfigRepository extends MongoRepository<Config, String> {
-
 }

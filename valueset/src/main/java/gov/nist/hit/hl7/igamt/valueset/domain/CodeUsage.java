@@ -11,11 +11,39 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.domain;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+
 /**
  * @author jungyubw
  *
  */
 public enum CodeUsage {
 
-  R,P,E;
+	R("R"),P("P"),E("E");
+
+
+	CodeUsage(String value) {
+		this.value = value;
+	}
+
+	private final String value;
+
+	public String getValue() {
+		return value;
+	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return this.value;
+	}
+
+	public static CodeUsage fromString(String text) {
+		for (CodeUsage t : CodeUsage.values()) {
+			if (t.value.equalsIgnoreCase(text)) {
+				return t;
+			}
+		}
+		return null;
+	}
 }

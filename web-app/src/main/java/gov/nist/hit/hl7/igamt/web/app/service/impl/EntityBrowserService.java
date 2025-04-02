@@ -5,6 +5,10 @@ import gov.nist.hit.hl7.igamt.common.base.model.EntityLocation;
 import gov.nist.hit.hl7.igamt.common.base.model.EntityLocationType;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeSet;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetVersion;
+import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionMetadata;
+import gov.nist.hit.hl7.igamt.valueset.service.CodeSetService;
 import gov.nist.hit.hl7.igamt.web.app.model.*;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissionType;
 import gov.nist.hit.hl7.igamt.workspace.model.FolderInfo;
@@ -24,6 +28,9 @@ public class EntityBrowserService {
 
     @Autowired
     WorkspaceService workspaceService;
+
+    @Autowired
+    CodeSetService codeSetService;
 
     public Set<EntityLocation> getDocumentLocationInformation(String id, DocumentType type, String username) throws Exception {
         if(DocumentType.IGDOCUMENT.equals(type)) {
@@ -170,6 +177,63 @@ public class EntityBrowserService {
         BrowserTreeNode node = new BrowserTreeNode();
         node.setChildren(children);
         node.setData(browserTreeNode);
+        return node;
+    }
+
+    public List<CodeSetBrowserTreeNode> getCodeSetTreeNodeByScope(CodeSetBrowserScope scope, String username, boolean includeVersions) {
+        switch (scope) {
+            case PUBLIC:
+                return this.getBrowserTreeNodePublicCodeSetList(username, includeVersions);
+            case PRIVATE:
+                return this.getBrowserTreeNodePrivateCodeSetList(username, includeVersions);
+            default:
+                return new ArrayList<>();
+        }
+    }
+
+    private List<CodeSetBrowserTreeNode> getBrowserTreeNodePublicCodeSetList(String username, boolean includeVersions) {
+        return codeSetService.findByPublicAudienceAndStatusPublished().stream().map(cs -> {
+            return this.codeSetToTreeNode(cs, !cs.getUsername().equals(username), includeVersions);
+        }).collect(Collectors.toList());
+    }
+
+    private List<CodeSetBrowserTreeNode> getBrowserTreeNodePrivateCodeSetList(String username, boolean includeVersions) {
+        return codeSetService.findByPrivateAudienceEditor(username).stream().map(cs -> this.codeSetToTreeNode(cs, false, includeVersions)).collect(Collectors.toList());
+    }
+
+    public CodeSetBrowserTreeNode codeSetToTreeNode(CodeSet cs, boolean readOnly, boolean children) {
+        CodeSetBrowserTreeNodeData browserTreeNode = new CodeSetBrowserTreeNodeData();
+        browserTreeNode.setId(cs.getId());
+        browserTreeNode.setLabel(cs.getName());
+        browserTreeNode.setType(Type.CODESET);
+        browserTreeNode.setDateUpdated(cs.getDateUpdated());
+        browserTreeNode.setReadOnly(readOnly);
+        browserTreeNode.setLatestId(cs.getLatest());
+        CodeSetBrowserTreeNode node = new CodeSetBrowserTreeNode();
+        node.setData(browserTreeNode);
+        if(children) {
+            List<CodeSetVersionMetadata> codeSetVersionMetadata = codeSetService.getCodeSetVersionMetadata(cs);
+            List<CodeSetVersionBrowserTreeNode> versions = codeSetVersionMetadata
+                                                             .stream()
+                                                             .filter(CodeSetVersionMetadata::isCommitted)
+                                                             .map((v) -> this.codeSetVersionToTreeNode(v, cs.getLatest()))
+                                                             .collect(Collectors.toList());
+            Collections.reverse(versions);
+            node.setChildren(versions);
+        }
+        return node;
+    }
+
+    public CodeSetVersionBrowserTreeNode codeSetVersionToTreeNode(CodeSetVersionMetadata version, String latestId) {
+        CodeSetVersionBrowserTreeNodeData data = new CodeSetVersionBrowserTreeNodeData();
+        data.setId(version.getId());
+        data.setLabel(version.getVersion());
+        data.setType(Type.CODESETVERSION);
+        data.setDateCommitted(version.getDateCommitted());
+        data.setReadOnly(true);
+        data.setLatestStable(version.getId().equals(latestId));
+        CodeSetVersionBrowserTreeNode node = new CodeSetVersionBrowserTreeNode();
+        node.setData(data);
         return node;
     }
 

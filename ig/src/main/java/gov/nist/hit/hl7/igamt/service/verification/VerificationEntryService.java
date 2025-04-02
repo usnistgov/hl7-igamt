@@ -111,6 +111,12 @@ public interface VerificationEntryService {
     IgamtObjectError CompositeProfileBuildIssue(String compositeProfileId, String error);
 
 
+    IgamtObjectError ExternalValuesetMissingURL(Location info, String id, Type type);
+    IgamtObjectError ExternalValuesetInvalidURL(Location info, String id, Type type, String URL);
+    IgamtObjectError InternalTrackedValuesetMissingCodeSet(Location info, String id, Type type);
+    IgamtObjectError InternalTrackedValuesetCodeSetNotFound(Location info, String id, Type type);
+
+
     // Cardinality
     IgamtObjectError CardinalityInvalidRange(LocationInfo info, String id, Type type, String min, String max);
     IgamtObjectError CardinalityInvalidMaxCardinality(LocationInfo info, String id, Type type, String max);

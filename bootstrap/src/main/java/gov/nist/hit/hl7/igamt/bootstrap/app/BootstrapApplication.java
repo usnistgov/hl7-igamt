@@ -14,9 +14,14 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.ig.data.fix.PcConformanceStatementsIdFixes;
 
+import gov.nist.hit.hl7.igamt.valueset.domain.*;
+import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetRepository;
+import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetVersionRepository;
 import org.bson.types.ObjectId;
+import org.hl7.fhir.r4.model.Enumerations.ResourceType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -28,15 +33,19 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opencsv.exceptions.CsvValidationException;
+
 import ca.uhn.fhir.context.FhirContext;
 //import gov.nist.hit.hl7.igamt.bootstrap.data.CodeFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConfigCreator;
@@ -54,16 +63,6 @@ import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
@@ -112,12 +111,10 @@ import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.IgServiceImpl;
 import gov.nist.hit.hl7.igamt.service.verification.impl.SimpleResourceBindingVerificationService;
-import gov.nist.hit.hl7.igamt.valueset.domain.Code;
-import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 @SpringBootApplication
-//@EnableMongoAuditing
+@EnableMongoAuditing
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class,
 		DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @EnableMongoRepositories("gov.nist.hit.hl7")
@@ -140,6 +137,10 @@ public class BootstrapApplication implements CommandLineRunner {
 
 	@Autowired
 	ConfigService sharedConstantService;
+	@Autowired
+	CodeSetRepository codeSetRepository;
+	@Autowired
+	CodeSetVersionRepository codeSetVeRepository;
 	@Autowired
 	IgTemplateRepository igTemplateRepository;
 	//
@@ -274,6 +275,13 @@ public class BootstrapApplication implements CommandLineRunner {
 		templateMessage.setFrom(env.getProperty(EMAIL_FROM));
 		templateMessage.setSubject(env.getProperty(EMAIL_SUBJECT));
 		return templateMessage;
+	}
+	
+	public class RestTemplateConfig {
+	    @Bean
+	    public RestTemplate restTemplate() {
+	        return new RestTemplate();
+	    }
 	}
 
 	@Bean()
@@ -855,6 +863,57 @@ public class BootstrapApplication implements CommandLineRunner {
 			}
 		}
 	}
+	//@PostConstruct
+	void updatePHinvads() throws ForbiddenOperationException{
+		List<Valueset> phinvads = this.valuesetService.findByDomainInfoScope(Scope.PHINVADS.toString());
+		String url = "https://hl7v2-codesets-adapter.nist.gov/api/v1/phinvads/codesets/";
+		for ( Valueset vs : phinvads) {
+			vs.setUrl(url + vs.getOid());
+			vs.setSourceType(SourceType.EXTERNAL_TRACKED);
+			this.valuesetService.save(vs);
+		}
+		List<Valueset> users = this.valuesetService.findByDomainInfoScope(Scope.USER.toString());
+		
+		
+		for ( Valueset vs : users) {
+			if(vs.getOid() != null) {
+		    vs.setResourceOrigin(ResourceOrigin.PHINVADS);
+			String oidURL =url + vs.getOid();
+
+			if(vs.getDomainInfo().getVersion() != null) {
+				oidURL = oidURL+ "?version="+vs.getDomainInfo().getVersion();
+			} 
+			if(vs.getSourceType().equals(SourceType.EXTERNAL)) {
+				vs.setUrl(oidURL);
+			}
+			this.valuesetService.save(vs);
+			}
+		}
+		System.out.println("UPDATED PHINVADS");
+
+	}
+	//@PostConstruct
+//	void createHL70396(){
+//		CodeSet codeSet = new CodeSet();
+//		codeSet.setId("HL70396V2-x");
+//		CodeSetVersion codeSetVersion = new CodeSetVersion();
+//		codeSetVersion.setDateCommitted(new Date());
+//		codeSetVersion.setVersion("1");
+//
+//		Valueset original = this.valuesetService.findById("HL70396V2-x");
+//
+//		codeSetVersion.setCodes(original.getCodes());
+//		CodeSetVersion version = this.codeSetVeRepository.save(codeSetVersion);
+//
+//		codeSet.setCodeSetVersions(new HashSet<String>() {{
+//			add(version.getId());
+//		}});
+//		PublicAudience audience = new PublicAudience();
+//
+//		this.codeSetRepository.save(codeSet);
+//
+//
+//	}
 
 
 	//@PostConstruct
@@ -864,7 +923,12 @@ public class BootstrapApplication implements CommandLineRunner {
 //
 //	}
 
+	//@PostConstruct
+	void findWrongLength(){
+//	this.dataFixer.findWrongLength();
+	this.dataFixer.findWrongLengthDatatype();
 
+	}
 	
 
 }

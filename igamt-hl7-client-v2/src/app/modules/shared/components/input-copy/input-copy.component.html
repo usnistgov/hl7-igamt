@@ -1,0 +1,12 @@
+<div class="input-group">
+    <div *ngIf="label" class="input-group-prepend">
+        <strong style="border: 1px solid #007bff;" class="input-group-text">{{label}}</strong>
+    </div>
+    <input style="background-color: rgb(250 250 250); border: 1px solid #007bff;" [type]="type" class="form-control input-shadow" [value]="value" [disabled]="true">
+    <div class="input-group-append">
+        <button class="btn btn-outline-primary" type="button"  (click)="copy()">
+            <i class="fa fa-clone" aria-hidden="true"></i>
+            {{ copied ? "Copied!" : "Copy" }}
+        </button>
+    </div>
+</div>

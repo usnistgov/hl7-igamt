@@ -9,7 +9,13 @@ public class PrivateAudience extends Audience {
         super(AudienceType.PRIVATE);
     }
 
-    public String getEditor() {
+    public PrivateAudience(AudienceType type, String editor, Set<String> viewers) {
+		super(type);
+		this.editor = editor;
+		this.viewers = viewers;
+	}
+
+	public String getEditor() {
         return editor;
     }
 

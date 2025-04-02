@@ -9,7 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.access.active.NotifySave;
-import gov.nist.hit.hl7.igamt.access.model.AccessLevel;
+import gov.nist.hit.hl7.igamt.access.model.AccessPermission;
+import gov.nist.hit.hl7.igamt.access.model.Action;
 import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
 import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
 import gov.nist.hit.hl7.igamt.common.base.util.BindingSummaryFilter;
@@ -1218,6 +1219,7 @@ public class IGDocumentController extends BaseController {
 				info.setTargetResourceId(objects.getValueSets().stream().findAny().get().getId());
 			}
 		}
+		//info.setTargetResourceId(info.getValueSets().stream().findFirst().get().getId());
 		return new ResponseMessage<IGDisplayInfo>(Status.SUCCESS, "", "Value Sets Added Succesfully", ig.getId(), false,
 				ig.getUpdateDate(), info);
 	}
@@ -1286,12 +1288,17 @@ public class IGDocumentController extends BaseController {
 	@RequestMapping(value = "/api/igdocuments/{id}/state", method = RequestMethod.GET, produces = {
 	"application/json" })
 	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
-	public @ResponseBody IGDisplayInfo getState(@PathVariable("id") String id, Authentication authentication)
-			throws Exception {
+	public @ResponseBody IGDisplayInfo getState(
+			@PathVariable("id") String id,
+			UsernamePasswordAuthenticationToken authentication
+	) throws Exception {
 		Ig ig = findIgById(id);
 		IGDisplayInfo igDisplayInfo = displayInfoService.covertIgToDisplay(ig);
-		Set<AccessLevel> accessLevel = this.accessControlService.checkDocumentAccessPermission(new DocumentAccessInfo(ig), (UsernamePasswordAuthenticationToken) authentication);
-		ig.setSharePermission(accessLevel.contains(AccessLevel.ALL) || accessLevel.contains(AccessLevel.WRITE) ? SharePermission.WRITE : SharePermission.READ);
+		AccessPermission accessPermission = this.accessControlService.checkDocumentAccessPermission(
+				new DocumentAccessInfo(ig),
+				accessControlService.asAccessToken(authentication)
+		);
+		ig.setSharePermission(accessPermission.actionIsAllowed(Action.WRITE) ? SharePermission.WRITE : SharePermission.READ);
 		igDisplayInfo.setDocumentLocation(this.browserService.getDocumentLocationInformation(ig, authentication.getName()));
 		return igDisplayInfo;
 	}
@@ -1305,22 +1312,30 @@ public class IGDocumentController extends BaseController {
 
 	@RequestMapping(value = "/api/igdocuments/{id}/valueset/{vsId}", method = RequestMethod.GET, produces = {
 	"application/json" })
-	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
-	public @ResponseBody Valueset getValueSetInIG(@PathVariable("id") String id ,@PathVariable("vsId") String vsId, Authentication authentication)
-			throws IGNotFoundException, ValuesetNotFoundException {
-		return this.igService.getValueSetInIg(id, vsId);	
+	@PreAuthorize("AccessResource('VALUESET', #vsId, READ)")
+	public @ResponseBody Valueset getValueSetInIG(
+			@PathVariable("id") String id,
+			@PathVariable("vsId") String vsId
+	) throws ValuesetNotFoundException {
+		Valueset vs = this.valuesetService.findById(vsId);
+		if(vs == null) {
+			throw new ValuesetNotFoundException(id);
+		}
+		return vs;
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/valueset/{vsId}/resource", method = RequestMethod.GET, produces = {
 	"application/json" })
-	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
+	@PreAuthorize("AccessResource('VALUESET', #vsId, READ)")
 	public @ResponseBody Set<Valueset> getValueSetInIGAsResource(@PathVariable("id") String id ,@PathVariable("vsId") String vsId, Authentication authentication)
-			throws IGNotFoundException, ValuesetNotFoundException {
-		HashSet<Valueset> ret = new HashSet<Valueset>();
-		Valueset vs = this.igService.getValueSetInIg(id, vsId);
-		ret.add(vs);
-		return ret;
-
+			throws ValuesetNotFoundException {
+		HashSet<Valueset> resources = new HashSet<>();
+		Valueset vs = this.valuesetService.findById(vsId);
+		if(vs == null) {
+			throw new ValuesetNotFoundException(id);
+		}
+		resources.add(vs);
+		return resources;
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/filter/", method = RequestMethod.POST, produces = {

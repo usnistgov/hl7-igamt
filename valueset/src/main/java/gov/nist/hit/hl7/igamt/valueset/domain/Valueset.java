@@ -11,21 +11,22 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.domain;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CodeType;
+import gov.nist.hit.hl7.igamt.common.base.domain.ContentDefinition;
+import gov.nist.hit.hl7.igamt.common.base.domain.Extensibility;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
+import gov.nist.hit.hl7.igamt.common.base.domain.Stability;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 
 /**
  * @author jungyubw
@@ -33,6 +34,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
  */
 @Document(collection = "valueset")
 public class Valueset extends Resource {
+
 	private String bindingIdentifier;
 	private String oid;
 	private String intensionalComment;
@@ -42,14 +44,23 @@ public class Valueset extends Resource {
 	private ContentDefinition contentDefinition = ContentDefinition.Undefined;
 	private SourceType sourceType = SourceType.INTERNAL;
 	private int numberOfCodes;
-	private String hl7Type; 
+	private String hl7Type;
 	@org.springframework.data.annotation.Transient
 	private boolean includeCodes;
 	private boolean isFlavor;
 	private List<ChangeReason> changeLogs;
 	private Set<String> codeSystems = new HashSet<String>();
 	private Set<Code> codes = new HashSet<Code>();
-	
+
+	private CodeType codeType;
+	private Date snapshotDate;
+
+	private CodeSetReference codeSetReference;
+
+	@org.springframework.data.annotation.Transient
+	private CodeSetLinkInfo codeSetLink;
+
+
 	public boolean isIncludeCodes() {
 		return includeCodes;
 	}
@@ -61,7 +72,7 @@ public class Valueset extends Resource {
 	public int getNumberOfCodes() {
 		return numberOfCodes;
 	}
-	
+
 
 	public Valueset() {
 		super();
@@ -216,8 +227,38 @@ public class Valueset extends Resource {
 
 	public void setChangeLogs(List<ChangeReason> changeLogs) {
 		this.changeLogs = changeLogs;
+	}
+
+	public CodeType getCodeType() {
+		return codeType;
+	}
+
+	public void setCodeType(CodeType codeType) {
+		this.codeType = codeType;
+	}
+
+	public Date getSnapshotDate() {
+		return snapshotDate;
+	}
+
+	public void setSnapshotDate(Date snapshotDate) {
+		this.snapshotDate = snapshotDate;
+	}
+
+	public CodeSetReference getCodeSetReference() {
+		return codeSetReference;
+	}
+
+	public void setCodeSetReference(CodeSetReference codeSetReference) {
+		this.codeSetReference = codeSetReference;
 	};
-	
-	
+
+	public CodeSetLinkInfo getCodeSetLink() {
+		return codeSetLink;
+	}
+
+	public void setCodeSetLink(CodeSetLinkInfo codeSetLink) {
+		this.codeSetLink = codeSetLink;
+	}
 
 }

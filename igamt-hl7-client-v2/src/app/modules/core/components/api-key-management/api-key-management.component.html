@@ -1,0 +1,73 @@
+<div class="api-keys-layout">
+  <app-dam-alerts-container></app-dam-alerts-container>
+  <div class="api-keys-card">
+    <div class="page-title" style="display: flex; justify-content: space-between;">
+      <h4>
+        <i class="fa fa-key"></i> API Keys Management
+      </h4>
+      <button class="btn btn-sm btn-primary" [routerLink]="['create']" >
+        <i class="fa fa-plus"></i>
+        Create API Key
+      </button>
+    </div>
+    <ng-container *ngIf="keys$ | async as keys" >
+      <div *ngIf="!keys || keys.length === 0" style="text-align: center;">
+        <span style="color: gray;">You do not have any API Key, to access code sets through IGAMT's Code Set API create an API key that grants access to the code sets you want access.</span>
+      </div>
+      <table *ngIf="keys && keys.length > 0" class="table table-sm table-bordered table-stripped" style="background-color: white;">
+        <thead>
+          <tr>
+            <th>Key</th>
+            <th style="width: 200px;">Date Created</th>
+            <th style="width: 200px;">Expiration</th>
+            <th style="width: 200px;">Status</th>
+            <th style="width: 100px;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let key of keys" style="border-top: 2px solid black;">
+            <td>
+              <h5 style="margin-left: 5px; margin-top: 10px; margin-bottom: 10px;">{{key.name}}</h5>
+              <table class="table table-sm table-bordered table-stripped" style="margin-bottom: 0; background-color: #f2f2f2f2;">
+                <thead>
+                  <tr style="margin: 4px;">
+                    <th (click)="openCodeSets[key.id] = !openCodeSets[key.id]">
+                      <i *ngIf="!openCodeSets[key.id]" class="fa fa-chevron-right"></i>
+                      <i *ngIf="openCodeSets[key.id]" class="fa fa-chevron-down"></i>
+                      CodeSets ({{key.resources['CODESET']?.length}})
+                    </th>
+                  </tr>
+                </thead>
+                <tbody *ngIf="openCodeSets[key.id]">
+                  <tr>
+                    <td>
+                      <ul class="list-group">
+                        <li *ngFor="let item of key.resources['CODESET']; let i = index" class="list-group-item list-item" style="display: flex; align-items: center; justify-content: space-between;">
+                          <span>
+                            <app-entity-bagde [type]="'CODESET'"></app-entity-bagde>
+                            <strong style="margin-left: 10px">{{item.variableName}}</strong>
+                          </span>
+                        </li>
+                      </ul>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td style="text-align: center; vertical-align: middle;">{{key.createdAt | date:'medium'}}</td>
+            <td style="text-align: center; vertical-align: middle;">{{key.expireAt ? expiresIn(key.expireAt) : 'never'}}</td>
+            <td style="text-align: center; vertical-align: middle;" >
+              <span [class]="key.expired ? 'expired' : 'active'">{{ key.expired ? 'Expired' : 'Active' }}</span>
+            </td>
+            <td style="text-align: center; vertical-align: middle;">
+              <button class="btn btn-sm btn-danger" (click)="deleteAPIKey(key)">
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+
+  </div>
+</div>

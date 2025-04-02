@@ -2,7 +2,7 @@
   <div style="position: relative;">
     <img height="45px" src="../../../../../assets/nist_logo.png">
     <a class="navbar-brand toolbar-name"> Implementation Guide Authoring and Management Tool
-      <span class="toolname-abbrv">(IGAMT-2) v2.8.2</span>
+      <span class="toolname-abbrv">(IGAMT-2) v2.9</span>
     </a>
   </div>
   <nav class="nav-links-bar navbar navbar-expand-sm fixed-top">
@@ -70,6 +70,19 @@
         </div>
       </li>
 
+      <li [ngClass]="{'active': isCodeSet | async }" class="nav-item" ngbDropdown>
+        <span class="nav-link" ngbDropdownToggle>Code Sets</span>
+        <div ngbDropdownMenu>
+          <button [routerLink]="[ '/code-set/create']" ngbDropdownItem routerLinkActive="active-dropdown">
+            Create new Code Set
+          </button>
+          <button [routerLink]="[ '/code-set/list']" ngbDropdownItem
+                  routerLinkActive="active-dropdown">
+            Code Set List
+          </button>
+        </div>
+      </li>
+
 
 
       <li [ngClass]="{'active': isConfig | async }" class="nav-item" ngbDropdown>
@@ -78,9 +91,6 @@
           <button [routerLink]="[ '/export-configuration']" [queryParams]="{type: 'IGDOCUMENT'}" ngbDropdownItem routerLinkActive="active-dropdown">
             Export Configuration
           </button>
-          <!-- <button (click)="openConfig()" ngbDropdownItem >
-            Other Configurations
-          </button> -->
         </div>
       </li>
 
@@ -105,6 +115,9 @@
         <div ngbDropdownMenu>
           <button [routerLink]="[ '/user-profile']" ngbDropdownItem routerLinkActive="active-dropdown">
             <span><i class="fa fa-user"></i> My Profile </span>
+          </button>
+          <button [routerLink]="['/keys']" ngbDropdownItem routerLinkActive="active-dropdown">
+            <span><i class="fa fa-key"></i> API Key </span>
           </button>
           <button  *ngIf="isAdmin | async" [routerLink]="[ '/user-management']" ngbDropdownItem routerLinkActive="active-dropdown">
             <span><i class="fa fa-cog"></i> Management Users </span>

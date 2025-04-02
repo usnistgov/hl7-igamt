@@ -1,0 +1,63 @@
+<div style="width: 100%; display: flex; flex-direction: column; background-color: #f9fdff; border: 2px solid lightgray; border-radius: 3px; padding: 5px;">
+    <div class="alert alert-danger" style="margin-bottom: 5px;" *ngIf="error">
+        {{ error.error.message }}
+    </div>
+    <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 15px;">
+        <div>
+            <span style="color: gray;" *ngIf="!loading && fetchDate">Last fetched on {{fetchDate | date:'medium'}}</span>
+            <mat-spinner *ngIf="loading" class="verification-progress" diameter="30" ></mat-spinner>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: flex-end;">
+            <div class="input-group" style="width: 500px;">
+                <div class="input-group-prepend">
+                    <strong class="input-group-text">API Key</strong>
+                </div>
+                <input type="password" class="form-control" [ngClass]="{ 'use-key': useKey}" [(ngModel)]="key">
+            </div>
+            <button class="btn btn-outline-primary" style="margin-left: 10px;" [disabled]="!URL" (click)="fetch()">
+                <i class="fa fa-download"></i>
+                Fetch Codes
+            </button>
+        </div>
+    </div>
+    <div *ngIf="fetchedCodeSet" style="margin-top: 10px;" >
+        <table class="table table-sm table-bordered table-stripped" style="background-color: white;">
+            <tbody>
+                <tr>
+                    <th>Code Set</th>
+                    <td>{{ fetchedCodeSet.name }}</td>
+                </tr>
+                <tr>
+                    <th>Version <span *ngIf="fetchedCodeSet.latestStable" class="badge badge-primary">latest</span></th>
+                    <td>{{ fetchedCodeSet.version.version }} <span style="color: gray; font-size: 0.8em;"> - committed on {{ fetchedCodeSet.version.date | date:'medium' }}</span></td>
+                </tr>
+                <tr>
+                  <th>Number of codes</th>
+                  <td>{{ fetchedCodeSet?.codes?.length }} </td>
+              </tr>
+            </tbody>
+        </table>
+        <p-table #dt [columns]="columns" [value]="fetchedCodeSet.codes" [paginator]="true" [rows]="10">
+            <ng-template pTemplate="header" let-cols>
+                <tr>
+                    <th *ngFor="let col of cols" [pSortableColumn]="col.field">
+                        <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                        {{col.label}}
+                    </th>
+                </tr>
+                <tr>
+                    <th *ngFor="let col of cols">
+                        <input style="width: 100%;" [placeholder]="'Search by '+ col.label.toLowerCase()" pInputText type="text" (input)="dt.filter($event.target.value, col.field, col.filterMatchMode)">
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-cols="columns">
+                <tr>
+                    <td *ngFor="let col of cols">
+                        {{rowData[col.field]}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

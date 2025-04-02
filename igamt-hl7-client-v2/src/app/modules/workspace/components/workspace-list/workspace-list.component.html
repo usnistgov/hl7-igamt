@@ -16,7 +16,7 @@
       </label>
       <label class="btn-light no-focus" ngbButtonLabel>
         <input [queryParams]="{ type : 'PENDING' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="PENDING">
-        Invitations 
+        Invitations
         <span *ngIf="pendingCount | async as count" class="badge badge-danger">{{ count }}</span>
       </label>
       <label *ngIf="isAdmin | async" class="btn-light no-focus" ngbButtonLabel>
