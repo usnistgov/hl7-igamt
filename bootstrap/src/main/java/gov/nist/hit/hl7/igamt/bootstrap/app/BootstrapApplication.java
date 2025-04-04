@@ -14,8 +14,12 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.ig.data.fix.PcConformanceStatementsIdFixes;
 
+import gov.nist.hit.hl7.igamt.valueset.domain.*;
+import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetRepository;
+import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetVersionRepository;
 import org.bson.types.ObjectId;
 import org.hl7.fhir.r4.model.Enumerations.ResourceType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,18 +63,6 @@ import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
-import gov.nist.hit.hl7.igamt.common.base.domain.ResourceOrigin;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
-import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
@@ -119,9 +111,6 @@ import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.IgServiceImpl;
 import gov.nist.hit.hl7.igamt.service.verification.impl.SimpleResourceBindingVerificationService;
-import gov.nist.hit.hl7.igamt.valueset.domain.Code;
-import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 @SpringBootApplication
@@ -148,6 +137,10 @@ public class BootstrapApplication implements CommandLineRunner {
 
 	@Autowired
 	ConfigService sharedConstantService;
+	@Autowired
+	CodeSetRepository codeSetRepository;
+	@Autowired
+	CodeSetVersionRepository codeSetVeRepository;
 	@Autowired
 	IgTemplateRepository igTemplateRepository;
 	//
@@ -899,6 +892,28 @@ public class BootstrapApplication implements CommandLineRunner {
 		System.out.println("UPDATED PHINVADS");
 
 	}
+	//@PostConstruct
+//	void createHL70396(){
+//		CodeSet codeSet = new CodeSet();
+//		codeSet.setId("HL70396V2-x");
+//		CodeSetVersion codeSetVersion = new CodeSetVersion();
+//		codeSetVersion.setDateCommitted(new Date());
+//		codeSetVersion.setVersion("1");
+//
+//		Valueset original = this.valuesetService.findById("HL70396V2-x");
+//
+//		codeSetVersion.setCodes(original.getCodes());
+//		CodeSetVersion version = this.codeSetVeRepository.save(codeSetVersion);
+//
+//		codeSet.setCodeSetVersions(new HashSet<String>() {{
+//			add(version.getId());
+//		}});
+//		PublicAudience audience = new PublicAudience();
+//
+//		this.codeSetRepository.save(codeSet);
+//
+//
+//	}
 
 
 	//@PostConstruct

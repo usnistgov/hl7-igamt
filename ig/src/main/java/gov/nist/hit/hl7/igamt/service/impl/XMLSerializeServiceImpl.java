@@ -2261,7 +2261,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					}
 				}
 			}
-			if (seb.getChildren() != null) {
+			if (seb.getChildren() != null && seb.getLocationInfo() != null) {
 				String instancePositionPath = positionPath + "." + seb.getLocationInfo().getPosition();
 				String childPathId = pathId + "-" + seb.getElementId();
 				this.generateElmSingleCodeBinding(parentElm, seb.getChildren(), childPathId, instancePositionPath, defaultHL7Version, igModel, cpdm);
@@ -2532,8 +2532,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 				}
 			}
-			if (seb.getChildren() != null) {
+			if (seb.getChildren() != null && seb.getLocationInfo() != null) {
+
 				String instancePositionPath = positionPath + "." + seb.getLocationInfo().getPosition();
+
 				String childPathId = pathId + "-" + seb.getElementId();
 				this.generateElmValueSetBinding(parentElm, seb.getChildren(), childPathId, instancePositionPath, defaultHL7Version, igModel, cpdm);
 			}
