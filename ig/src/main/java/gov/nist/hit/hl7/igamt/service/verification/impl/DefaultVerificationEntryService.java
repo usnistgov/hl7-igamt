@@ -702,6 +702,17 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
+    public IgamtObjectError FreeTextAssertionXMLLegacyValueSetInvalidReference(Location location, String id, Type type, String bindingIdentifier) {
+        return new IgamtVerificationEntryBuilder("FREETEXT_SCRIPT_LEGACY_VALUESET_REFERENCE")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location)
+                .message("'ValueSet' expression used in the assertion's XML has reference to nonexistent value set binding identifier '"+bindingIdentifier+"'")
+                .entry();
+    }
+
+    @Override
     public IgamtObjectError DuplicateConformanceStatementIdentifier(Location location, String id, Type type, String identifier) {
         return new IgamtVerificationEntryBuilder("CS_DUPLICATE_IDENTIFIER")
                 .error()
