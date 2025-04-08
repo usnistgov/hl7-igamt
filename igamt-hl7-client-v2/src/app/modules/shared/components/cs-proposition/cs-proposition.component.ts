@@ -40,6 +40,12 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
   clearSubjectNode: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   @Input()
+  set referenceChangeMap(referenceChangeMap: Record<string, string>) {
+    this.subject.setReferenceChangeMap(referenceChangeMap);
+    this.compare.setReferenceChangeMap(referenceChangeMap);
+  }
+
+  @Input()
   predicateMode: boolean;
   @Input()
   set strength(str: ConformanceStatementStrength) {
@@ -226,7 +232,14 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     ).pipe(
       flatMap(() => {
         return combineLatest(
-          this.findNode(this.subject.getValue().path, token.payload.getValue().effectiveTree).pipe(
+          this.findNode(
+            this.subject.getValue().path,
+            token.payload.getValue().effectiveTree,
+            {
+              transformer: this.transformer,
+              useProfileComponentRef: true,
+            },
+          ).pipe(
             tap((node) => {
               if (node) {
                 this.subject.setNode(node, token.payload.getValue().effectiveTree);
@@ -235,7 +248,14 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
               this.subjectOccurrenceList = this.getAllowedOccurrenceList(this.subject, this.assertion);
             }),
           ),
-          this.findNode(this.compare.getValue().path, token.payload.getValue().effectiveTree).pipe(
+          this.findNode(
+            this.compare.getValue().path,
+            token.payload.getValue().effectiveTree,
+            {
+              transformer: this.transformer,
+              useProfileComponentRef: true,
+            },
+          ).pipe(
             tap((node) => {
               if (node) {
                 this.compare.setNode(node, token.payload.getValue().effectiveTree);

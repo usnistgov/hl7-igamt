@@ -12,6 +12,7 @@ import { Hl7Config, IValueSetBindingConfigMap } from '../../models/config.class'
 import { IPath } from '../../models/cs.interface';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { IPredicate } from '../../models/predicate.interface';
+import { IItemProperty } from '../../models/profile.component';
 import { IResource } from '../../models/resource.interface';
 import { IChange, ILocationChangeLog, PropertyType } from '../../models/save-change';
 import { ISlicing } from '../../models/slicing';
@@ -90,6 +91,7 @@ export interface IHL7v2TreeNodeData {
   rootPath: IPath;
   slicing?: ISlicing;
   resourcePathId?: string;
+  profileComponentOverrides?: BehaviorSubject<Partial<Record<PropertyType, IItemProperty>>>;
 }
 
 export interface IHL7v2TreeNode extends TreeNode {
@@ -286,11 +288,16 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   }
 
   resolveReference(node: IHL7v2TreeNode, expanded?: string[]) {
-    const subscription = this.treeService.resolveReference(node, this.repository, this.viewOnly, () => {
-      this.nodes = [...this.nodes];
-    }, (children: IHL7v2TreeNode[]) => {
-      this.recoverExpandState(children, expanded);
-      return children;
+    const subscription = this.treeService.resolveReference(node, this.repository, {
+      viewOnly: this.viewOnly,
+      then: () => {
+        this.nodes = [...this.nodes];
+      },
+      transform: (children: IHL7v2TreeNode[]) => {
+        this.recoverExpandState(children, expanded);
+        return of(children);
+      },
+      useProfileComponentRef: true,
     });
     if (subscription) {
       this.treeSubscriptions.push(subscription);

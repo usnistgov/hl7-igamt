@@ -26,7 +26,7 @@ export class PathService {
     return pathOf(elms);
   }
 
-  pathToString(path: IPath) {
+  pathToString(path: IPath): string {
     if (!path) {
       return '';
     } else {

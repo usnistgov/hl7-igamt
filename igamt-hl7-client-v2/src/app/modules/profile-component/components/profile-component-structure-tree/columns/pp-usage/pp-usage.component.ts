@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material';
 import * as _ from 'lodash';
 import { Observable, of } from 'rxjs';
 import { flatMap, map, take, tap } from 'rxjs/operators';
+import { ProfileComponentService } from 'src/app/modules/profile-component/services/profile-component.service';
 import { CsDialogComponent } from 'src/app/modules/shared/components/cs-dialog/cs-dialog.component';
 import { IUsageOption } from 'src/app/modules/shared/components/hl7-v2-tree/columns/usage/usage.component';
 import { IHL7v2TreeNode, IStringValue } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
@@ -10,7 +11,7 @@ import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { Usage } from 'src/app/modules/shared/constants/usage.enum';
 import { Hl7Config } from 'src/app/modules/shared/models/config.class';
 import { IPredicate } from 'src/app/modules/shared/models/predicate.interface';
-import { IItemProperty, IPropertyPredicate, IPropertyUsage } from 'src/app/modules/shared/models/profile.component';
+import { IItemProperty, IProfileComponentContext, IProfileComponentItem, IPropertyPredicate, IPropertyUsage } from 'src/app/modules/shared/models/profile.component';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import { PropertyType } from 'src/app/modules/shared/models/save-change';
 import { ElementNamingService } from 'src/app/modules/shared/services/element-naming.service';
@@ -49,6 +50,8 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
     target: string,
   };
   predicateBindingContext: IBindingContext;
+  @Input()
+  profileComponentContext: IProfileComponentContext;
 
   @Input()
   set payload({ usage, predicates }: { usage: IStringValue, predicates: Array<IBinding<IPredicate>> }) {
@@ -61,7 +64,7 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
   }
 
   @Input()
-  set usages({ original, config, userConfig }: { original: Usage, config: Hl7Config,  userConfig: IUserConfig}) {
+  set usages({ original, config, userConfig }: { original: Usage, config: Hl7Config, userConfig: IUserConfig }) {
     const includeW = original === 'W';
     const includeB = original === 'B';
     const includeIX = (this.usage && this.usage.value === 'IX' || userConfig.includeIX);
@@ -74,6 +77,7 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
     private pathService: PathService,
     private elementNamingService: ElementNamingService,
     private structureElementBindingService: StructureElementBindingService,
+    private profileComponentService: ProfileComponentService,
     dialog: MatDialog,
   ) {
     super(
@@ -127,9 +131,9 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
     return this.context === Type.CONFORMANCEPROFILE && this.usage.value === Usage.C ? {
       resource: Type.CONFORMANCEPROFILE,
     } : {
-        resource: this.type === Type.FIELD ? Type.SEGMENT : Type.DATATYPE,
-        element: this.type === Type.COMPONENT ? Type.FIELD : this.type === Type.SUBCOMPONENT ? Type.COMPONENT : undefined,
-      };
+      resource: this.type === Type.FIELD ? Type.SEGMENT : Type.DATATYPE,
+      element: this.type === Type.COMPONENT ? Type.FIELD : this.type === Type.SUBCOMPONENT ? Type.COMPONENT : undefined,
+    };
   }
 
   predicateTargetLocation(ctx: IBindingContext) {
@@ -137,9 +141,9 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
       location: '',
       target: this.location,
     } : {
-        location: this.getParentLocation(),
-        target: this.elementId,
-      };
+      location: this.getParentLocation(),
+      target: this.elementId,
+    };
   }
 
   activate() {
@@ -172,10 +176,13 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
     );
   }
 
-  getPredicateTarget({ location, target }): Observable<{ resource: IResource, name: string }> {
+  getPredicateTarget({ location, target }): Observable<{ resource: IResource, name: string, items: IProfileComponentItem[] }> {
     if (location) {
       const pathObj = this.pathService.getPathFromPathId(location);
-      return this.treeService.getNodeByPath(this.tree[0].children, pathObj, this.repository).pipe(
+      return this.treeService.getNodeByPath(this.tree[0].children, pathObj, this.repository, {
+        transformer: this.profileComponentService.getProfileComponentItemTransformer(this.profileComponentContext),
+        useProfileComponentRef: true,
+      }).pipe(
         take(1),
         flatMap((node) => {
           if (node.data.type === Type.GROUP) {
@@ -183,11 +190,14 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
               map((name) => ({
                 name,
                 resource: this.resource,
+                items: this.profileComponentContext.profileComponentItems,
               })),
             );
           }
 
-          return node.$hl7V2TreeHelpers.ref$.pipe(
+          return this.treeService.getNodeRef(node, this.repository, {
+            useProfileComponentRef: true,
+          }).pipe(
             take(1),
             flatMap((ref) => {
               return this.repository.fetchResource(ref.type, ref.id).pipe(
@@ -197,6 +207,7 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
                     map((name) => ({
                       name,
                       resource,
+                      items: this.profileComponentService.getFilteredItems(this.profileComponentContext.profileComponentItems, location),
                     })),
                   );
                 }),
@@ -210,6 +221,7 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
         map((name) => ({
           name,
           resource: this.resource,
+          items: this.profileComponentContext.profileComponentItems,
         })),
       );
     }
@@ -217,21 +229,21 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
 
   createPredicateDialog() {
     this.getPredicateTarget(this.predicateBindingLocation).pipe(
-      tap(({ resource, name }) => {
-        this.openDialog(`Create Predicate for ${name}`, resource, undefined);
+      tap(({ resource, name, items }) => {
+        this.openDialog(`Create Predicate for ${name}`, resource, undefined, items);
       }),
     ).subscribe();
   }
 
   editPredicateDialog(predicate: IPredicate) {
     this.getPredicateTarget(this.predicateBindingLocation).pipe(
-      tap(({ resource, name }) => {
-        this.openDialog(`Create Predicate for ${name}`, resource, predicate);
+      tap(({ resource, name, items }) => {
+        this.openDialog(`Create Predicate for ${name}`, resource, predicate, items);
       }),
     ).subscribe();
   }
 
-  openDialog(title: string, resource: IResource, predicate: IPredicate) {
+  openDialog(title: string, resource: IResource, predicate: IPredicate, items: IProfileComponentItem[]) {
     const dialogRef = this.dialog.open(CsDialogComponent, {
       maxWidth: '95vw',
       maxHeight: '90vh',
@@ -241,6 +253,8 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
         predicateElementId: this.predicateBindingLocation.target,
         resource: of(resource),
         payload: predicate ? _.cloneDeep(predicate) : undefined,
+        transformer: this.profileComponentService.getProfileComponentItemTransformerUsingItemList(items),
+        referenceChangeMap: this.profileComponentService.getRefChangeMapByItemList(items),
       },
     });
 

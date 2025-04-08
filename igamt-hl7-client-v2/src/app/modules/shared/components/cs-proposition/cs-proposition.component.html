@@ -98,7 +98,7 @@
       <form #statementValues="ngForm">
         <ng-container [ngSwitch]="assertion.complement.complementKey">
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_VALUE">
-            contain the value <input #valueInput="ngModel" name="value" class="form-control" type="text" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" style="margin-left: 5px; margin-right: 5px;" required pattern="[\s]*[\S].*"> 
+            contain the value <input #valueInput="ngModel" name="value" class="form-control" type="text" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" style="margin-left: 5px; margin-right: 5px;" required pattern="[\s]*[\S].*">
             <ng-container *ngTemplateOutlet="caseSensitive; context : { $implicit : assertion.complement}" ></ng-container>
           </ng-container>
           <ng-container *ngSwitchCase="_propositionType.NOT_CONTAINS_VALUE">
@@ -283,7 +283,7 @@
       </ng-container>
       <ng-container *ngIf="subjectOccurrenceList.length === 0 && subject.repeatMax === 0 && (subject.value && subject.value.occurenceType)">
         <button class="btn btn-sm btn-danger" (click)="removeOccurrence(subject)">
-          <i class="fa fa-trash"></i> Remove target occurrence 
+          <i class="fa fa-trash"></i> Remove target occurrence
         </button>
       </ng-container>
     </td>
@@ -297,6 +297,7 @@
           [resourceType]="resourceType"
           [repository]="repository"
           [clear]="clearSubjectNode"
+          [transformer]="transformer"
           (selection)="targetElement($event)"
         ></app-structure-tree>
       </div>
@@ -332,6 +333,7 @@
           [resourceType]="resourceType"
           [repository]="repository"
           [clear]="clearCompareNode"
+          [transformer]="transformer"
           (selection)="comparativeElement($event)"
         ></app-structure-tree>
       </div>
@@ -345,5 +347,5 @@
 
 
 <ng-template #caseSensitive let-complement>
-  <div style="display: inline-flex; margin-left: 8px; margin-right: 8px;"> <span> ( </span> <p-inputSwitch name="case" (onChange)="changeCase(complement, $event)" [ngModel]="!complement.ignoreCase"></p-inputSwitch> <span *ngIf="!complement.ignoreCase" style="margin-left: 5px;"> Case Sensitive )</span> <span *ngIf="complement.ignoreCase" style="margin-left: 5px;"> Case Insensitive )</span></div> 
+  <div style="display: inline-flex; margin-left: 8px; margin-right: 8px;"> <span> ( </span> <p-inputSwitch name="case" (onChange)="changeCase(complement, $event)" [ngModel]="!complement.ignoreCase"></p-inputSwitch> <span *ngIf="!complement.ignoreCase" style="margin-left: 5px;"> Case Sensitive )</span> <span *ngIf="complement.ignoreCase" style="margin-left: 5px;"> Case Insensitive )</span></div>
 </ng-template>
