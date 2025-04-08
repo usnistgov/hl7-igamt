@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { throwError } from 'rxjs';
 import { catchError, flatMap, map, take, tap } from 'rxjs/operators';
 import { ISubContext, ISubject } from '../../models/cs.interface';
@@ -21,6 +21,11 @@ export class CsSubcontextComponent extends CsStatementComponent<ISubContext> {
   subject: StatementTarget;
 
   occurences: IOption[] = [];
+
+  @Input()
+  set referenceChangeMap(referenceChangeMap: Record<string, string>) {
+    this.subject.setReferenceChangeMap(referenceChangeMap);
+  }
 
   constructor(
     elementNamingService: ElementNamingService,
@@ -62,14 +67,20 @@ export class CsSubcontextComponent extends CsStatementComponent<ISubContext> {
     this.subject.setSubject(token.value.payload as ISubject, token.payload.getValue().effectiveContext, this.res, this.repository).pipe(
       flatMap(() => {
         this.updateTokenStatus();
-        return this.findNode(this.subject.getValue().path, token.payload.getValue().effectiveTree).pipe(
-          tap((node) => {
-            if (node) {
-              this.subject.setNode(node, token.payload.getValue().effectiveTree);
-              this.occurences = this.getAllowedOccurrenceList(this.subject, null);
-            }
-          }),
-        );
+        return this.findNode(
+          this.subject.getValue().path,
+          token.payload.getValue().effectiveTree,
+          {
+            transformer: this.transformer,
+            useProfileComponentRef: true,
+          }).pipe(
+            tap((node) => {
+              if (node) {
+                this.subject.setNode(node, token.payload.getValue().effectiveTree);
+                this.occurences = this.getAllowedOccurrenceList(this.subject, null);
+              }
+            }),
+          );
       }),
       catchError((e) => {
         return throwError(e);

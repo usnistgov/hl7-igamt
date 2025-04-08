@@ -14,6 +14,7 @@ import { ICoConstraintBindingContext, ICoConstraintBindingSegment } from '../../
 import { IConformanceProfile } from '../../shared/models/conformance-profile.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IHL7EditorMetadata } from '../../shared/models/editor.enum';
+import { IProfileComponentContext } from '../../shared/models/profile.component';
 import { ChangeType } from '../../shared/models/save-change';
 import { PathService } from '../../shared/services/path.service';
 import { StoreResourceRepositoryService } from '../../shared/services/resource-repository.service';
@@ -56,6 +57,10 @@ export abstract class CoConstraintEditorService extends AbstractEditorComponent 
 
   s_changes: Subscription;
   openPanelId: string;
+
+  transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>;
+  referenceChangeMap: Record<string, string> = {};
+  profileComponentContext?: IProfileComponentContext;
 
   constructor(
     protected actions$: Actions,
@@ -126,6 +131,8 @@ export abstract class CoConstraintEditorService extends AbstractEditorComponent 
       data: {
         structure: this.structure,
         repository: this.repository,
+        transformer: this.transformer,
+        referenceChange: this.referenceChangeMap,
       },
     });
 

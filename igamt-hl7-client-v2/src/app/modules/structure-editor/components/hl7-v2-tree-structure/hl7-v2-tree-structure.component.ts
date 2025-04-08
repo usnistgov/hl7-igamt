@@ -469,11 +469,16 @@ export class Hl7V2TreeStructureComponent implements OnInit, OnDestroy {
   }
 
   resolveReference(node: IHL7v2TreeNode, expanded?: string[]) {
-    const subscription = this.treeService.resolveReference(node, this.repository, this.viewOnly, () => {
-      this.nodes = [...this.nodes];
-    }, (children: IHL7v2TreeNode[]) => {
-      this.recoverExpandState(children, expanded);
-      return children;
+    const subscription = this.treeService.resolveReference(node, this.repository, {
+      viewOnly: this.viewOnly,
+      then: () => {
+        this.nodes = [...this.nodes];
+      },
+      transform: (children: IHL7v2TreeNode[]) => {
+        this.recoverExpandState(children, expanded);
+        return of(children);
+      },
+      useProfileComponentRef: true,
     });
     if (subscription) {
       this.treeSubscriptions.push(subscription);

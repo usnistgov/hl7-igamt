@@ -39,7 +39,6 @@
   [value]="value"
   [treeView]="treeView"
   [tree]="profileComponentItemList.nodes$ | async"
-  [refChangeMap]="profileComponentItemList.refChangeMap"
   [nodes]="profileComponentItemList.itemList$ | async"
   [resource]="resource$ | async"
   [documentRef]="documentRef$ | async"
@@ -52,6 +51,7 @@
   (changes)="changeItemProperty($event)"
   (removeItem)="removeItem($event)"
   [config]="config | async"
-  [bindingConfig]= "bindingConfig | async"
+  [bindingConfig]="bindingConfig | async"
+  [profileComponentContext]="profileComponentItemList.context$ | async"
   [username]="username | async">
 </app-profile-component-structure-tree>
