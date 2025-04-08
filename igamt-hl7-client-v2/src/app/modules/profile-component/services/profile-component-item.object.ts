@@ -1,22 +1,20 @@
 import * as _ from 'lodash';
 import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
-import { flatMap, map, take, tap } from 'rxjs/operators';
+import { map, mergeMap, take } from 'rxjs/operators';
 import { IHL7v2TreeNode } from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { IProfileComponentContext, IProfileComponentItem } from '../../shared/models/profile.component';
 import { IResource } from '../../shared/models/resource.interface';
-import { PropertyType } from '../../shared/models/save-change';
 import { AResourceRepositoryService } from '../../shared/services/resource-repository.service';
 import { IItemLocation, IProfileComponentChange } from '../components/profile-component-structure-tree/profile-component-structure-tree.component';
-import { ProfileComponentRefChange } from './profile-component-ref-change.object';
 import { IHL7v2TreeProfileComponentNode, ProfileComponentService } from './profile-component.service';
 
 export class ProfileComponentItemList {
   public items$: BehaviorSubject<IProfileComponentItem[]>;
   public context$: BehaviorSubject<IProfileComponentContext>;
   public nodes$: BehaviorSubject<IHL7v2TreeNode[]>;
+  public unresolved$: BehaviorSubject<IProfileComponentItem[]>;
   public change$: Subject<IProfileComponentContext>;
   public itemList$: Observable<IHL7v2TreeProfileComponentNode[]>;
-  public refChangeMap: ProfileComponentRefChange;
 
   constructor(
     context: IProfileComponentContext,
@@ -28,29 +26,59 @@ export class ProfileComponentItemList {
     this.items$ = new BehaviorSubject(context.profileComponentItems);
     this.context$ = new BehaviorSubject(context);
     this.nodes$ = new BehaviorSubject(nodes);
+    this.unresolved$ = new BehaviorSubject([]);
     this.change$ = new Subject();
-    this.refChangeMap = new ProfileComponentRefChange(context.profileComponentItems);
 
     this.itemList$ = combineLatest(
-      this.items$,
-      this.refChangeMap.value$,
+      this.context$,
     ).pipe(
-      flatMap(([its, rc]) => {
-        return this.ppService.getHL7V2ProfileComponentItemNode(
-          resource,
-          repository,
-          this.nodes$.getValue(),
-          its,
-          rc,
-        ).pipe(
-          tap(() => this.nodeUpdate()),
-        );
+      mergeMap(([context]) => {
+        return this.updateTree(context, this.nodes$.getValue()).pipe(
+          mergeMap((nodes) => {
+            return this.ppService.getHL7V2ProfileComponentItemNode(
+              resource,
+              repository,
+              this.nodes$.getValue(),
+              context,
+            ).pipe(
+              map((result) => {
+                this.unresolved$.next(result.notfound);
+                this.nodes$.next(nodes);
+                this.unresolved$.next(result.notfound);
+                return result.nodes;
+              })
+            )
+          })
+        )
       }),
     );
   }
 
-  private nodeUpdate() {
-    this.nodes$.next(this.nodes$.getValue());
+  private updateTree(context: IProfileComponentContext, nodes: IHL7v2TreeNode[]): Observable<IHL7v2TreeNode[]> {
+    const transformer = this.ppService.getProfileComponentItemTransformer(context);
+    const recursiveTransform = (nodes: IHL7v2TreeNode[]): Observable<IHL7v2TreeNode[]> => {
+      const nodes$ = nodes.map((node) => {
+        if (node.children && node.children.length > 0) {
+          return recursiveTransform(node.children).pipe(
+            map((children) => {
+              node.children = children;
+              return node;
+            })
+          );
+        } else {
+          return of(node);
+        }
+      })
+      return combineLatest(nodes$).pipe(
+        take(1),
+        mergeMap((nodesWithChildrenProcessed) => {
+          return transformer(nodesWithChildrenProcessed);
+        }),
+      );
+    }
+    return recursiveTransform(nodes).pipe(
+      take(1),
+    )
   }
 
   getContextValue(): IProfileComponentContext {
@@ -63,17 +91,6 @@ export class ProfileComponentItemList {
 
   applyPropertyChange(change: IProfileComponentChange) {
     this.ppService.applyChange(change, this.context$.getValue());
-    const property = change.property;
-    // If it changes structure
-    if (change.type === PropertyType.DATATYPE || change.type === PropertyType.SEGMENTREF) {
-      (change.unset ? of(undefined) : this.ppService.getResourceRef(property, this.repository)).pipe(
-        take(1),
-        map((ref) => {
-          this.refChangeMap.insert(change.path, ref);
-        }),
-      ).subscribe();
-    }
-
     const value = this.getContextValue();
     this.context$.next(value);
     this.change$.next(value);
@@ -89,7 +106,6 @@ export class ProfileComponentItemList {
 
   removeItem(location: IItemLocation) {
     this.ppService.removeBindings(location, this.context$.getValue());
-    this.refChangeMap.clear(location.path);
     const itemsList = this.getItemsValue();
     const index = itemsList.findIndex((elm) => elm.path === location.path);
     if (index !== -1) {

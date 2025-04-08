@@ -8,6 +8,7 @@ import { ElementNamingService } from '../../../shared/services/element-naming.se
 import { AResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from '../../../shared/services/tree-filter.service';
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-data-header-dialog',
@@ -24,6 +25,8 @@ export class DataHeaderDialogComponent implements OnInit {
   selectedNodeName: string;
   type: CoConstraintColumnType;
   editMode: boolean;
+  transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>;
+
   treeFilter: IHL7v2TreeFilter = {
     hide: false,
     restrictions: [
@@ -65,6 +68,7 @@ export class DataHeaderDialogComponent implements OnInit {
     this.excludePaths = data.excludePaths;
     this.repository = data.repository;
     this.segment = data.segment;
+    this.transformer = data.transformer;
     if (data.excludePaths) {
       this.treeFilter.restrictions.push({
         criterion: RestrictionType.PATH,

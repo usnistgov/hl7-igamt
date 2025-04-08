@@ -10,13 +10,14 @@ import { IConformanceProfile, IGroup, IHL7MessageProfile, IMessageStructure, IMs
 import { IPath } from '../models/cs.interface';
 import { IComponent, IDatatype } from '../models/datatype.interface';
 import { IResource } from '../models/resource.interface';
-import { IChangeLog, ILocationChangeLog } from '../models/save-change';
+import { IChangeLog, ILocationChangeLog, PropertyType } from '../models/save-change';
 import { IField, ISegment } from '../models/segment.interface';
 import { IStructureElement, ISubStructElement } from '../models/structure-element.interface';
 import { BindingService } from './binding.service';
 import { PathService } from './path.service';
 import { AResourceRepositoryService, IRefData, IRefDataInfo } from './resource-repository.service';
 import { IBinding, IBindingContext, StructureElementBindingService } from './structure-element-binding.service';
+import { IItemProperty, IPropertyDatatype, IPropertyRef } from '../models/profile.component';
 
 @Injectable({
   providedIn: 'root',
@@ -54,9 +55,22 @@ export class Hl7V2TreeService {
     }
   }
 
-  resolveReference(node: IHL7v2TreeNode, repository: AResourceRepositoryService, viewOnly: boolean, then?: () => void, transform?: (children: IHL7v2TreeNode[]) => IHL7v2TreeNode[]): Subscription {
+  resolveReference(node: IHL7v2TreeNode, repository: AResourceRepositoryService, options?: {
+    viewOnly?: boolean,
+    then?: () => void,
+    transform?: (children: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>,
+    useProfileComponentRef?: boolean;
+  }): Subscription {
     if (node.data.ref && node.$hl7V2TreeHelpers && (!node.$hl7V2TreeHelpers.treeChildrenSubscription || node.$hl7V2TreeHelpers.treeChildrenSubscription.closed)) {
-      node.$hl7V2TreeHelpers.treeChildrenSubscription = node.data.ref.asObservable().pipe(
+      const viewOnly = options ? !!options.viewOnly : true;
+      const then = options ? options.then : undefined;
+      const transform = options ? options.transform : undefined;
+      const useProfileComponentRef = options ? !!options.useProfileComponentRef : false;
+      node.$hl7V2TreeHelpers.treeChildrenSubscription = this.getNodeRef(
+        node,
+        repository,
+        { useProfileComponentRef }
+      ).pipe(
         filter((ref) => ref.type === Type.DATATYPE || ref.type === Type.SEGMENT),
         switchMap((ref) => {
           return repository.fetchResource(ref.type, ref.id).pipe(
@@ -65,12 +79,12 @@ export class Hl7V2TreeService {
                 case Type.DATATYPE:
                   return this.formatDatatype(resource as IDatatype, repository, viewOnly, false, node).pipe(
                     take(1),
-                    tap(this.addChildren(node, then, transform)),
+                    mergeMap(this.addChildren(node, then, transform)),
                   );
                 case Type.SEGMENT:
                   return this.formatSegment(resource as ISegment, repository, viewOnly, false, node).pipe(
                     take(1),
-                    tap(this.addChildren(node, then, transform)),
+                    mergeMap(this.addChildren(node, then, transform)),
                     tap(() => node.data.name = (resource as ISegment).name),
                   );
               }
@@ -83,23 +97,24 @@ export class Hl7V2TreeService {
     return undefined;
   }
 
-  loadNodeChildren(node: IHL7v2TreeNode, repository: AResourceRepositoryService, refChange?: IResourceRef): Observable<IHL7v2TreeNode[]> {
+  loadNodeChildren(node: IHL7v2TreeNode, repository: AResourceRepositoryService, options?: {
+    viewOnly?: boolean,
+    changeable?: boolean,
+    useProfileComponentRef?: boolean;
+    then?: () => void,
+    transform?: (children: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>,
+  }): Observable<IHL7v2TreeNode[]> {
     if (!node.data.ref) {
       return of(node.children);
     }
-
-    const add = (nodes: IHL7v2TreeNode[]) => {
-      if (nodes && nodes.length > 0) {
-        node.children = nodes;
-        node.leaf = false;
-      } else {
-        node.children = [];
-        node.leaf = true;
-      }
-      return nodes;
-    };
-
-    return (refChange ? of(refChange) : node.data.ref).pipe(
+    const viewOnly = options ? !!options.viewOnly : true;
+    const changeable = options ? !!options.changeable : false;
+    const then = options ? options.then : undefined;
+    const transform = options ? options.transform : undefined;
+    const useProfileComponentRef = options ? !!options.useProfileComponentRef : false;
+    return this.getNodeRef(node, repository, {
+      useProfileComponentRef
+    }).pipe(
       take(1),
       flatMap((ref) => {
         return repository.fetchResource(ref.type, ref.id).pipe(
@@ -107,15 +122,15 @@ export class Hl7V2TreeService {
           mergeMap((resource) => {
             switch (ref.type) {
               case Type.DATATYPE:
-                return this.formatDatatype(resource as IDatatype, repository, true, false, node).pipe(
+                return this.formatDatatype(resource as IDatatype, repository, viewOnly, changeable, node).pipe(
                   take(1),
-                  map((ns) => add(ns)),
+                  mergeMap(this.addChildren(node, then, transform)),
                 );
               case Type.SEGMENT:
-                return this.formatSegment(resource as ISegment, repository, true, false, node).pipe(
+                return this.formatSegment(resource as ISegment, repository, viewOnly, changeable, node).pipe(
                   take(1),
                   tap(() => node.data.name = (resource as ISegment).name),
-                  map((ns) => add(ns)),
+                  mergeMap(this.addChildren(node, then, transform)),
                 );
             }
           }),
@@ -124,21 +139,66 @@ export class Hl7V2TreeService {
     );
   }
 
-  addChildren(node: IHL7v2TreeNode, then?: () => void, transform?: (children: IHL7v2TreeNode[]) => IHL7v2TreeNode[]): (nodes: IHL7v2TreeNode[]) => void {
+  getNodeRef(node: IHL7v2TreeNode, repository: AResourceRepositoryService, options?: {
+    useProfileComponentRef?: boolean;
+  }): Observable<IResourceRef> {
+    const useProfileComponentRef = options ? !!options.useProfileComponentRef : false;
+    return combineLatest(
+      node.data.ref,
+      node.data.profileComponentOverrides ? node.data.profileComponentOverrides.asObservable() : of({}),
+    ).pipe(
+      mergeMap(([ref, properties]) => {
+        const reference = node.data.type === Type.SEGMENTREF ? properties[PropertyType.SEGMENTREF] : properties[PropertyType.DATATYPE];
+        if (useProfileComponentRef && reference) {
+          return this.getResourceRefFromItemProperty(reference, repository);
+        }
+        return of(ref);
+      }),
+    )
+  }
+
+  getResourceRefFromItemProperty(property: IItemProperty, repository: AResourceRepositoryService): Observable<IResourceRef> {
+    const type = property.propertyKey === PropertyType.DATATYPE ? Type.DATATYPE : Type.SEGMENT;
+    const id = property.propertyKey === PropertyType.DATATYPE ? (property as IPropertyDatatype).datatypeId
+      : (property as IPropertyRef).ref;
+    return repository.getRefData([id], type).pipe(
+      take(1),
+      map((refData) => {
+        return {
+          type,
+          id,
+          name: refData[id].name,
+          version: refData[id].version,
+        };
+      }),
+    );
+  }
+
+  addChildren(node: IHL7v2TreeNode, then?: () => void, transform?: (children: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>): (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]> {
     return (nodes: IHL7v2TreeNode[]) => {
-      if (nodes && nodes.length > 0) {
-        node.children = transform ? transform(nodes) : nodes;
-        node.leaf = false;
-      } else {
-        node.children = [];
-        node.expanded = true;
-        node.leaf = true;
-      }
-      node.$hl7V2TreeHelpers.children$.next(node.children);
-      if (then) {
-        then();
-      }
-    };
+      const children$ = transform ? transform(nodes) : of(nodes);
+      return children$.pipe(
+        take(1),
+        map((children) => {
+          if (children && children.length > 0) {
+            node.children = children;
+            node.expanded = true;
+            node.leaf = false;
+          } else {
+            node.children = [];
+            node.expanded = true;
+            node.leaf = true;
+          }
+          if (node.$hl7V2TreeHelpers && node.$hl7V2TreeHelpers.children$) {
+            node.$hl7V2TreeHelpers.children$.next(node.children);
+          }
+          if (then) {
+            then();
+          }
+          return children;
+        })
+      );
+    }
   }
 
   formatStructureElement(
@@ -185,6 +245,7 @@ export class Hl7V2TreeService {
       pathId,
       slicing: resource.slicings ? resource.slicings.find((x) => x.path === resourcePathId) : null,
       bindings: elementBindings,
+      profileComponentOverrides: new BehaviorSubject({}),
       resourcePathId,
     };
   }
@@ -620,22 +681,37 @@ export class Hl7V2TreeService {
     return node ? (node.parent && node.parent.data.type === Type.COMPONENT) ? Type.SUBCOMPONENT : node.data.type : undefined;
   }
 
-  getNodeByPath(children: IHL7v2TreeNode[], fullPath: IPath, repository: AResourceRepositoryService): Observable<IHL7v2TreeNode> {
+  getNodeByPath(children: IHL7v2TreeNode[], fullPath: IPath, repository: AResourceRepositoryService, options?: {
+    transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>,
+    useProfileComponentRef?: boolean,
+    failOnNotFound?: boolean
+  }): Observable<IHL7v2TreeNode | null> {
+    const failOnNotFound = options && options.failOnNotFound !== undefined ? options.failOnNotFound : true;
+    const useProfileComponentRef = options && options.useProfileComponentRef !== undefined ? options.useProfileComponentRef : false;
+    const transform = options && options.transformer ? options.transformer : undefined;
     const inner = (nodes: IHL7v2TreeNode[], path: IPath) => {
       if (path) {
         // Get current node based on current node in path's ID
         const elm = nodes.filter((e: IHL7v2TreeNode) => e.data.id === path.elementId);
         if (!elm || elm.length !== 1) {
           // If no node found for current node in path then the path is unresolvable
-          return throwError({
-            message: 'path not found ' + this.pathService.pathToString(fullPath),
-          });
+          if (failOnNotFound) {
+            return throwError({
+              message: 'path not found ' + this.pathService.pathToString(fullPath),
+            });
+          } else {
+            return of(null);
+          }
         } else {
           const node = elm[0];
           // if current node in path has children
           if (path.child) {
             // load tree node children
-            return this.loadNodeChildren(node, repository).pipe(
+            return this.loadNodeChildren(node, repository, {
+              viewOnly: true,
+              transform,
+              useProfileComponentRef,
+            }).pipe(
               take(1),
               flatMap((elms) => {
                 // recursive call using the children list and the child path

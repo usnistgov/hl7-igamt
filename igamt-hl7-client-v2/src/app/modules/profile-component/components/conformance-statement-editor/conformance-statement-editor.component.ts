@@ -5,7 +5,7 @@ import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Guid } from 'guid-typescript';
 import * as _ from 'lodash';
 import { BehaviorSubject, combineLatest, Observable, of, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, pluck, take, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, pluck, take, tap, withLatestFrom } from 'rxjs/operators';
 import { AbstractEditorComponent } from 'src/app/modules/core/components/abstract-editor-component/abstract-editor-component.component';
 import { Message } from 'src/app/modules/dam-framework/models/messages/message.class';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
@@ -294,31 +294,42 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
 
   editItem(item: IPropertyConformanceStatement) {
     if (item.change === ChangeType.ADD && item.payload) {
-      const dialogRef = this.dialog.open(CsDialogComponent, {
-        maxWidth: '95vw',
-        maxHeight: '90vh',
-        data: {
-          title: 'Edit Conformance Statement',
-          resource: this.selectedResource$,
-          payload: _.cloneDeep(item.payload),
-        },
-      });
+      this.store.select(selectProfileComponentContext).pipe(
+        take(1),
+        mergeMap((context) => {
+          const transformer = this.pcService.getProfileComponentItemTransformer(context);
+          const referenceChangeMap = this.pcService.getRefChangeMap(context);
 
-      dialogRef.afterClosed().subscribe(
-        (cs: IConformanceStatement) => {
-          if (cs) {
-            const itemList = this.items$.getValue();
-            const editList = itemList.map((i) => {
-              return i.payload.id !== cs.id ? i : {
-                ...item,
-                payload: cs,
-              };
-            });
-            this.items$.next([...editList]);
-            this.registerChange([...editList]);
-          }
-        },
-      );
+
+          const dialogRef = this.dialog.open(CsDialogComponent, {
+            maxWidth: '95vw',
+            maxHeight: '90vh',
+            data: {
+              title: 'Edit Conformance Statement',
+              resource: this.selectedResource$,
+              payload: _.cloneDeep(item.payload),
+              transformer,
+              referenceChangeMap,
+            },
+          });
+
+          return dialogRef.afterClosed().pipe(
+            tap((cs: IConformanceStatement) => {
+              if (cs) {
+                const itemList = this.items$.getValue();
+                const editList = itemList.map((i) => {
+                  return i.payload.id !== cs.id ? i : {
+                    ...item,
+                    payload: cs,
+                  };
+                });
+                this.items$.next([...editList]);
+                this.registerChange([...editList]);
+              }
+            },
+            ));
+        })
+      ).subscribe();
     }
 
   }
@@ -328,23 +339,33 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
   }
 
   createCs() {
-    const dialogRef = this.dialog.open(CsDialogComponent, {
-      maxWidth: '95vw',
-      maxHeight: '90vh',
-      data: {
-        title: 'Create Conformance Statement',
-        resource: this.selectedResource$,
-      },
-    });
+    this.store.select(selectProfileComponentContext).pipe(
+      take(1),
+      mergeMap((context) => {
+        const transformer = this.pcService.getProfileComponentItemTransformer(context);
+        const referenceChangeMap = this.pcService.getRefChangeMap(context);
 
-    dialogRef.afterClosed().subscribe(
-      (cs: IConformanceStatement) => {
-        if (cs) {
-          cs.id = Guid.create().toString();
-          this.addItem(cs, ChangeType.ADD);
-        }
-      },
-    );
+        const dialogRef = this.dialog.open(CsDialogComponent, {
+          maxWidth: '95vw',
+          maxHeight: '90vh',
+          data: {
+            title: 'Create Conformance Statement',
+            resource: this.selectedResource$,
+            transformer,
+            referenceChangeMap,
+          },
+        });
+
+        return dialogRef.afterClosed().pipe(
+          tap((cs: IConformanceStatement) => {
+            if (cs) {
+              cs.id = Guid.create().toString();
+              this.addItem(cs, ChangeType.ADD);
+            }
+          }),
+        );
+      })
+    ).subscribe();
   }
 
   registerChange(items: IPropertyConformanceStatement[]) {

@@ -3,11 +3,10 @@ import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, pluck, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
+import { catchError, concatMap, flatMap, map, mergeMap, pluck, take, tap } from 'rxjs/operators';
 import { CoConstraintEntityService } from 'src/app/modules/co-constraints/services/co-constraint-entity.service';
 import { CoConstraintEditorService } from 'src/app/modules/conformance-profile/services/co-constraint-editor.service';
-import { ConformanceProfileService } from 'src/app/modules/conformance-profile/services/conformance-profile.service';
 import { Message, MessageType } from 'src/app/modules/dam-framework/models/messages/message.class';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { EditorSave } from 'src/app/modules/dam-framework/store';
@@ -21,9 +20,10 @@ import { Hl7V2TreeService } from 'src/app/modules/shared/services/hl7-v2-tree.se
 import { PathService } from 'src/app/modules/shared/services/path.service';
 import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import { selectContextById } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
-import { selectSelectedProfileComponent } from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
+import { selectProfileComponentContext, selectSelectedProfileComponent } from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { IConformanceProfile } from '../../../shared/models/conformance-profile.interface';
 import { ProfileComponentService } from '../../services/profile-component.service';
+import { IHL7v2TreeNode } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
 
 export const PC_CC_EDITOR_METADATA = {
   id: EditorID.PC_CONFP_CTX_CC,
@@ -52,7 +52,6 @@ export class CoConstraintsEditorComponent extends CoConstraintEditorService impl
     dialog: MatDialog,
     store: Store<any>,
     repository: StoreResourceRepositoryService,
-    private conformanceProfileService: ConformanceProfileService,
     private messageService: MessageService,
     private treeService: Hl7V2TreeService,
     pathService: PathService,
@@ -83,43 +82,55 @@ export class CoConstraintsEditorComponent extends CoConstraintEditorService impl
     );
 
     this.s_workspace = this.currentSynchronized$.pipe(
-      tap((data) => {
-        const resource: IConformanceProfile = data.resource;
-        const profileComponent: ICoConstraintBindingContext[] = data.profileComponent;
+      mergeMap((data) => {
+        return this.store.select(selectProfileComponentContext).pipe(
+          take(1),
+          tap((profileComponentContext) => {
+            const resource: IConformanceProfile = data.resource;
+            const profileComponent: ICoConstraintBindingContext[] = data.profileComponent;
+            this.profileComponentContext = profileComponentContext;
+            this.transformer = this.pcService.getProfileComponentItemTransformer(profileComponentContext);
+            this.referenceChangeMap = this.pcService.getRefChangeMap(profileComponentContext);
 
-        // -- Set CP
-        this.conformanceProfile.next(resource);
+            // -- Set CP
+            this.conformanceProfile.next(resource);
 
-        // -- Set Tree
-        this.s_tree = this.treeService.getTree(resource, this.repository, true, true, (value) => {
-          this.structure = [
-            {
-              data: {
-                id: resource.id,
-                pathId: resource.id,
-                name: resource.name,
-                type: resource.type,
-                rootPath: { elementId: resource.id },
-                position: 0,
-              },
-              expanded: true,
-              children: [...value],
-              parent: undefined,
-            },
-          ];
-        });
+            // -- Set Tree
+            this.s_tree = this.treeService.getTree(resource, this.repository, true, true, (value) => {
+              this.pcService.applyTransformer(value, this.transformer).pipe(
+                take(1),
+                tap((value: IHL7v2TreeNode[]) => {
+                  this.structure = [
+                    {
+                      data: {
+                        id: resource.id,
+                        pathId: resource.id,
+                        name: resource.name,
+                        type: resource.type,
+                        rootPath: { elementId: resource.id },
+                        position: 0,
+                      },
+                      expanded: true,
+                      children: [...value],
+                      parent: undefined,
+                    },
+                  ];
+                })
+              ).subscribe();
+            });
 
-        if (profileComponent) {
-          if (profileComponent.length > 0) {
-            this.openPanel(profileComponent[0].context.pathId);
-          }
-          this.profileComponentActive$.next(true);
-          this.bindings.next(profileComponent);
-          this.bindingsSync.next(profileComponent);
-        } else {
-          this.pickResourceBindings(resource, false);
-        }
-
+            if (profileComponent) {
+              if (profileComponent.length > 0) {
+                this.openPanel(profileComponent[0].context.pathId);
+              }
+              this.profileComponentActive$.next(true);
+              this.bindings.next(profileComponent);
+              this.bindingsSync.next(profileComponent);
+            } else {
+              this.pickResourceBindings(resource, false);
+            }
+          })
+        );
       }),
     ).subscribe();
   }

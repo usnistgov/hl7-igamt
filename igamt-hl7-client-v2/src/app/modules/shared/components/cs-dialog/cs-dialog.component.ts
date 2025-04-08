@@ -24,6 +24,7 @@ import { PatternDialogComponent } from '../pattern-dialog/pattern-dialog.compone
 import { ConformanceStatementStrength } from './../../models/conformance-statements.domain';
 import { IAssertion } from './../../models/cs.interface';
 import { IStatementTokenPayload } from './cs-statement.component';
+import { ProfileComponentService } from 'src/app/modules/profile-component/services/profile-component.service';
 
 export type AssertionContainer = IAssertionConformanceStatement | IFreeTextConformanceStatement | IPredicate;
 
@@ -77,6 +78,7 @@ export class CsDialogComponent implements OnDestroy {
     private treeService: Hl7V2TreeService,
     private elementNamingService: ElementNamingService,
     private pathService: PathService,
+    private profileComponentService: ProfileComponentService,
     public dialogRef: MatDialogRef<CsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public repository: StoreResourceRepositoryService,
@@ -94,6 +96,9 @@ export class CsDialogComponent implements OnDestroy {
     this.title = data.title;
     this.excludePaths = data.excludePaths || [];
     this.hideFreeText = data.hideFreeText;
+    this.transformer = data.transformer;
+
+    this.referenceChangeMap = data.referenceChangeMap;
 
     this.predicateElementId = data.predicateElementId;
     if (this.predicateMode && this.predicateElementId) {
@@ -119,29 +124,33 @@ export class CsDialogComponent implements OnDestroy {
         this.resourceType = resource.type;
         this.resource = resource;
         this.treeService.getTree(resource, this.repository, true, true, (value) => {
-          this.structure = [
-            {
-              data: {
-                id: resource.id,
-                pathId: resource.id,
-                name: resource.name,
-                type: resource.type,
-                rootPath: { elementId: resource.id },
-                position: 0,
-              },
-              children: [...value],
-              parent: undefined,
-            },
-          ];
-          this.context = this.structure;
-          this.contextName = resource.name;
-          this.contextType = resource.type;
-          if (!this.assertionMode) {
-            this.conformanceStatement = data.payload;
-          } else {
-            this.setAssertion(data.assertion, data.context);
-          }
-
+          this.profileComponentService.applyTransformer(value, this.transformer).pipe(
+            take(1),
+            tap((value: IHL7v2TreeNode[]) => {
+              this.structure = [
+                {
+                  data: {
+                    id: resource.id,
+                    pathId: resource.id,
+                    name: resource.name,
+                    type: resource.type,
+                    rootPath: { elementId: resource.id },
+                    position: 0,
+                  },
+                  children: [...value],
+                  parent: undefined,
+                },
+              ];
+              this.context = this.structure;
+              this.contextName = resource.name;
+              this.contextType = resource.type;
+              if (!this.assertionMode) {
+                this.conformanceStatement = data.payload;
+              } else {
+                this.setAssertion(data.assertion, data.context);
+              }
+            })
+          ).subscribe();
         });
       },
     );
@@ -212,6 +221,8 @@ export class CsDialogComponent implements OnDestroy {
   activeStatement = 0;
   alive = true;
   hideFreeText = false;
+  transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>;
+  referenceChangeMap: Record<string, string> = {};
 
   @ViewChild('csForm', { read: NgForm }) form: NgForm;
 
@@ -273,7 +284,15 @@ export class CsDialogComponent implements OnDestroy {
       this.pathService.straightConcatPath(effectiveContext, pathValue) : undefined;
 
     // Get the effective Tree for the token
-    const tree$ = (!effectiveContext ? of(this.structure) : this.treeService.getNodeByPath(this.context[0].children, effectiveContext, this.repository).pipe(
+    const tree$ = (!effectiveContext ? of(this.structure) : this.treeService.getNodeByPath(
+      this.context[0].children,
+      effectiveContext,
+      this.repository,
+      {
+        transformer: this.transformer,
+        useProfileComponentRef: true,
+      }
+    ).pipe(
       map((node) => [node]),
     ));
 
@@ -304,7 +323,9 @@ export class CsDialogComponent implements OnDestroy {
       this.structure = [
         node,
       ];
-      this.elementNamingService.getStringNameFromPath(this.cs.context, this.resource, this.repository).pipe(
+      this.elementNamingService.getStringNameFromPath(this.cs.context, this.resource, this.repository, {
+        referenceChange: this.referenceChangeMap,
+      }).pipe(
         take(1),
         map((value) => {
           this.contextName = value;

@@ -12,7 +12,7 @@ import { IHL7v2TreeFilter, ITreeRestriction, RestrictionType } from '../../servi
 import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 import { IToken, Statement } from '../pattern-dialog/cs-pattern.domain';
 import { VerbType } from './../../models/conformance-statements.domain';
-import { IConformanceStatement, ISimpleAssertion } from './../../models/cs.interface';
+import { ISimpleAssertion } from './../../models/cs.interface';
 import { IOption, SHALL_NOT_OCCURRENCES, SHALL_OCCURRENCES, TARGET_OCCURRENCES } from './cs-statement.constants';
 
 export interface IStatementTokenPayload {
@@ -77,6 +77,8 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
   valueChange: EventEmitter<T>;
   @Input()
   repository: AResourceRepositoryService;
+  @Input()
+  transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>;
 
   res: IResource;
   _occurrenceType = OccurrenceType;
@@ -147,10 +149,21 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
     }
   }
 
-  findNode(path: IPath, tree: IHL7v2TreeNode[]): Observable<IHL7v2TreeNode> {
-    return path ? this.treeService.loadNodeChildren(tree[0], this.repository).pipe(
+  findNode(path: IPath, tree: IHL7v2TreeNode[], options?: {
+    transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>,
+    useProfileComponentRef?: boolean,
+  }): Observable<IHL7v2TreeNode> {
+    const transformer = options ? options.transformer : undefined;
+    const useProfileComponentRef = options ? !!options.useProfileComponentRef : false;
+    return path ? this.treeService.loadNodeChildren(tree[0], this.repository, {
+      useProfileComponentRef,
+      transform: transformer,
+    }).pipe(
       flatMap((children) => {
-        return this.treeService.getNodeByPath(children, path, this.repository).pipe(
+        return this.treeService.getNodeByPath(children, path, this.repository, {
+          useProfileComponentRef,
+          transformer: transformer,
+        }).pipe(
           catchError(() => {
             return of(undefined);
           }),

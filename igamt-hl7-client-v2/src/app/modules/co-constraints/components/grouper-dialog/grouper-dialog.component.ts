@@ -6,6 +6,7 @@ import { ElementNamingService } from 'src/app/modules/shared/services/element-na
 import { AResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from 'src/app/modules/shared/services/tree-filter.service';
 import { DataHeaderDialogComponent } from '../data-header-dialog/data-header-dialog.component';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-grouper-dialog',
@@ -20,6 +21,8 @@ export class GrouperDialogComponent implements OnInit {
   segment: IResource;
   selectedNode: IHL7v2TreeNode;
   selectedNodeName: string;
+  transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>;
+
   treeFilter: IHL7v2TreeFilter = {
     hide: false,
     restrictions: [
@@ -44,6 +47,8 @@ export class GrouperDialogComponent implements OnInit {
     this.excludePaths = data.excludePaths;
     this.repository = data.repository;
     this.segment = data.segment;
+    this.transformer = data.transformer;
+
     if (data.excludePaths) {
       this.treeFilter.restrictions.push({
         criterion: RestrictionType.PATH,

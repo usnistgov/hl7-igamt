@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { isObservable, Observable, of } from 'rxjs';
 import { catchError, flatMap, map, take } from 'rxjs/operators';
 import { ElementNamingService, IPathInfo } from 'src/app/modules/shared/services/element-naming.service';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
@@ -8,6 +8,7 @@ import { ICoConstraintBindingContext, ICoConstraintBindingSegment } from '../../
 import { IConformanceProfile } from '../../../shared/models/conformance-profile.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
+import { IProfileComponentContext } from 'src/app/modules/shared/models/profile.component';
 
 export interface IExpansionPanelView {
   [key: string]: boolean;
@@ -46,7 +47,19 @@ export class ContextCoConstraintBindingComponent implements OnInit, OnChanges {
   @Input()
   documentRef: IDocumentRef;
   @Input()
-  conformanceProfile: Observable<IConformanceProfile>;
+  set conformanceProfile(cp: IConformanceProfile | Observable<IConformanceProfile>) {
+    this._conformanceProfile = isObservable(cp) ? cp : of(cp);
+  }
+  @Input()
+  profileComponentContext?: IProfileComponentContext;
+  @Input()
+  transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>;
+  @Input()
+  referenceChangeMap: Record<string, string> = {};
+  _conformanceProfile: Observable<IConformanceProfile>;
+  get conformanceProfile() {
+    return this._conformanceProfile;
+  }
   @Input()
   set open(id: string) {
     this.openPanel(id);
@@ -137,9 +150,11 @@ export class ContextCoConstraintBindingComponent implements OnInit, OnChanges {
   }
 
   getContext(binding: ICoConstraintBindingContext): Observable<IContextCoConstraint> {
-    return this.conformanceProfile.pipe(
+    return (this.conformanceProfile as Observable<IConformanceProfile>).pipe(
       flatMap((conformanceProfile) => {
-        return this.elementNamingService.getPathInfoFromPath(conformanceProfile, this.repository, binding.context.path).pipe(
+        return this.elementNamingService.getPathInfoFromPath(conformanceProfile, this.repository, binding.context.path, {
+          referenceChange: this.referenceChangeMap,
+        }).pipe(
           take(1),
           map((pathInfo) => {
             const name = this.elementNamingService.getStringNameFromPathInfo(pathInfo);

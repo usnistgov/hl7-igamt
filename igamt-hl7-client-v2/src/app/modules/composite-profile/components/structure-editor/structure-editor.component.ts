@@ -9,7 +9,7 @@ import { Message } from 'src/app/modules/dam-framework/models/messages/message.c
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { EditorSave } from 'src/app/modules/dam-framework/store';
 import { selectUsername } from 'src/app/modules/dam-framework/store/authentication';
-import { HL7v2TreeColumnType } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import { HL7v2TreeColumnType, IHL7v2TreeNode } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { IDocumentRef } from 'src/app/modules/shared/models/abstract-domain.interface';
 import { ICompositeProfileState, IResourceAndDisplay } from 'src/app/modules/shared/models/composite-profile';
@@ -24,6 +24,7 @@ import { selectAllDatatypes, selectAllSegments, selectCompositeProfileById } fro
 import { selectIgConfig, selectValueSetsNodes } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
 import { IUserConfig } from './../../../shared/models/config.class';
+import { Hl7V2TreeService } from 'src/app/modules/shared/services/hl7-v2-tree.service';
 
 export type GroupOptions = Array<{
   label: string,
@@ -63,11 +64,12 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
   selected: IResourceAndDisplay<any>;
   activeTab: GeneratedFlavorTabs;
   tabs: GeneratedFlavorTabs[] = [];
+  structure: IHL7v2TreeNode[];
   public userConfig: Observable<IUserConfig>;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
-    private messageService: MessageService,
+    private treeService: Hl7V2TreeService,
     actions$: Actions,
     store: Store<any>,
   ) {
@@ -186,21 +188,39 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
   }
 
   selectItem(elm: IResourceAndDisplay<any>) {
-    switch (elm.display.type) {
-      case Type.DATATYPE:
-      case Type.SEGMENT:
-        this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS];
-        if (elm.resource.name === 'OBX') {
-          this.tabs.push(GeneratedFlavorTabs.DYNAMIC_MAPPING);
-        }
-        break;
-      case Type.CONFORMANCEPROFILE:
-        this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS, GeneratedFlavorTabs.COCONSTRAINTS];
-        break;
-    }
-    if (!this.tabs.includes(this.activeTab)) {
-      this.activeTab = GeneratedFlavorTabs.STRUCTURE;
-    }
+    this.treeService.getTree(elm.resource, this.repository, true, false, (value) => {
+      switch (elm.display.type) {
+        case Type.DATATYPE:
+        case Type.SEGMENT:
+          this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS];
+          if (elm.resource.name === 'OBX') {
+            this.tabs.push(GeneratedFlavorTabs.DYNAMIC_MAPPING);
+          }
+          break;
+        case Type.CONFORMANCEPROFILE:
+          this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS, GeneratedFlavorTabs.COCONSTRAINTS];
+          break;
+      }
+      if (!this.tabs.includes(this.activeTab)) {
+        this.activeTab = GeneratedFlavorTabs.STRUCTURE;
+      }
+      this.structure = [
+        {
+          data: {
+            id: elm.resource.id,
+            pathId: elm.resource.id,
+            name: elm.resource.name,
+            type: elm.resource.type,
+            rootPath: { elementId: elm.resource.id },
+            position: 0,
+          },
+          expanded: true,
+          children: [...value],
+          parent: undefined,
+        },
+      ];
+    })
+
   }
 
   editorDisplayNode(): Observable<IDisplayElement> {

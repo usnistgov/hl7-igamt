@@ -8,6 +8,7 @@
         [filter]="contextFilter"
         [repository]="repository"
         (selection)="selectContext($event)"
+        [transformer]="transformer"
       ></app-structure-tree>
     </div>
   </div>
@@ -29,6 +30,7 @@
           [filter]="segmentFilter"
           [repository]="repository"
           (selection)="selectSegment($event)"
+          [transformer]="transformer"
         ></app-structure-tree>
       </div>
     </div>
@@ -43,9 +45,5 @@
 
   <div style="width: 100%; display: flex; justify-content: flex-end; margin-top: 10px;">
     <button class="btn btn-sm btn-success" (click)="finish()" [disabled]="!selectedSegmentNode || !selectedContextNode" > Finish </button>
-    <!-- <button style="margin-left: 5px;" *ngIf="step === 1" class="btn btn-sm btn-primary" (click)="next()" [disabled]="!selectedSegmentNode || !selectedContextNode" >
-      Next
-      <i class="fa fa-chevron-right"></i>
-    </button> -->
   </div>
 </div>

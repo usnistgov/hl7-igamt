@@ -10,10 +10,8 @@ import { IResource } from '../models/resource.interface';
 import { ElementNamingService, IPathInfo } from './element-naming.service';
 import { PathService } from './path.service';
 import { AResourceRepositoryService } from './resource-repository.service';
-
-export class StatementService {
-
-}
+import { IPropertyCardinalityMax, IPropertyCardinalityMin } from '../models/profile.component';
+import { PropertyType } from '../models/save-change';
 
 export class StatementTarget {
   public name: string;
@@ -26,6 +24,13 @@ export class StatementTarget {
   public value: ISubject;
   public context: IPath;
   public occurrenceValuesMap = {};
+  public referenceChangeMap: Record<string, string> = {};
+
+  setReferenceChangeMap(map: Record<string, string>) {
+    this.referenceChangeMap = {
+      ...map
+    };
+  }
 
   getValue(): ISubject {
     return this.value;
@@ -183,7 +188,7 @@ export class StatementTarget {
   getNodeRepeatMax(node: IHL7v2TreeNode, root: IHL7v2TreeNode) {
     const loop = (n: IHL7v2TreeNode) => {
       if (n && n.data !== root.data) {
-        const r = this.getMax(n.data.cardinality);
+        const r = this.getMax(n);
         return (r === 0 ? 1 : r) * loop(n.parent);
       }
       return 1;
@@ -197,7 +202,7 @@ export class StatementTarget {
 
     const findRepeat = (n: IHL7v2TreeNode) => {
       if (n && n.data !== root.data) {
-        if (this.getMax(n.data.cardinality) > 0) {
+        if (this.getMax(n) > 0) {
           return true;
         } else {
           return findRepeat(n.parent);
@@ -210,7 +215,12 @@ export class StatementTarget {
     return findRepeat(field ? field.parent : node.parent);
   }
 
-  getMax(cardinality: ICardinalityRange) {
+  getMax(node: IHL7v2TreeNode) {
+    const cardinality: ICardinalityRange = this.applyCardinalityOverrides(
+      node.data.cardinality,
+      node.data.profileComponentOverrides ? node.data.profileComponentOverrides.getValue()[PropertyType.CARDINALITYMIN] as IPropertyCardinalityMin : undefined,
+      node.data.profileComponentOverrides ? node.data.profileComponentOverrides.getValue()[PropertyType.CARDINALITYMAX] as IPropertyCardinalityMax : undefined,
+    );
     if (!cardinality) {
       return 0;
     } else if (cardinality.max === '*') {
@@ -220,6 +230,22 @@ export class StatementTarget {
     } else {
       return +cardinality.max;
     }
+  }
+
+  applyCardinalityOverrides(
+    cardinality?: ICardinalityRange,
+    minProperty?: IPropertyCardinalityMin,
+    maxProperty?: IPropertyCardinalityMax
+  ): ICardinalityRange {
+    if (cardinality) {
+      const min = minProperty ? minProperty.min : cardinality.min;
+      const max = maxProperty ? maxProperty.max : cardinality.max;
+      return {
+        min,
+        max,
+      };
+    }
+    return null;
   }
 
   getFieldFrom(node: IHL7v2TreeNode): IHL7v2TreeNode {
@@ -247,7 +273,9 @@ export class StatementTarget {
       return of({ name: '', nodeInfo: undefined, resourceDisplay: undefined });
     }
 
-    return this.elementNamingService.getPathInfoFromPath(resource, repository, path).pipe(
+    return this.elementNamingService.getPathInfoFromPath(resource, repository, path, {
+      referenceChange: this.referenceChangeMap,
+    }).pipe(
       take(1),
       flatMap((pathInfo) => {
         const name = this.elementNamingService.getStringNameFromPathInfo(startFrom ? this.elementNamingService.getStartPathInfo(pathInfo, startFrom) : pathInfo);
