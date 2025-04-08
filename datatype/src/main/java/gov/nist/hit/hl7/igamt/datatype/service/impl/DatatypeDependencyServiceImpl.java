@@ -17,13 +17,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.common.base.service.RequestScopeCache;
 import gov.nist.hit.hl7.igamt.common.binding.domain.BindingSource;
+import gov.nist.hit.hl7.igamt.datatype.service.ConformanceStatementDependencyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonFilteringService;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
@@ -53,6 +53,8 @@ public class DatatypeDependencyServiceImpl implements DatatypeDependencyService 
   BindingService bindingService;
   @Autowired
   CommonFilteringService commonFilteringService;
+  @Autowired
+  ConformanceStatementDependencyService conformanceStatementDependencyService;
 
   @Override
   public void updateDependencies(Datatype resource, HashMap<RealKey, String> newKeys) {
@@ -86,6 +88,7 @@ public class DatatypeDependencyServiceImpl implements DatatypeDependencyService 
 
   @Override
   public void process(Datatype datatype, DatatypeDependencies used, DependencyFilter filter,  ResourceBindingProcessor rb, String path, Set<String> visited) throws EntityNotFound {
+    this.conformanceStatementDependencyService.processResource(datatype.getBinding(), datatype.getDocumentInfo(), used);
     if (datatype instanceof ComplexDatatype) {
       ComplexDatatype complex =  (ComplexDatatype)datatype;
       for (Component c : complex.getComponents()) {

@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.service.verification.impl;
 
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
+import gov.nist.hit.hl7.igamt.common.base.service.RequestScopeCache;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.*;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.complement.ComplementKey;
@@ -10,7 +11,9 @@ import gov.nist.hit.hl7.igamt.ig.domain.verification.Location;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
 import gov.nist.hit.hl7.v2.schemas.utils.HL7v2SchemaResourceResolver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -38,6 +41,7 @@ import java.util.stream.Stream;
 
 @Service
 public class AssertionVerificationService extends VerificationUtils {
+
     private final Set<String> TEMPORAL_DT = new HashSet<>(Arrays.asList("DT", "DTM", "TM"));
     private final Set<String> NUMERICAL_DT = new HashSet<>(Arrays.asList("NM", "SI"));
     private final Set<String> OCCURRENCE_TYPES = new HashSet<>(Arrays.asList("atLeast", "instance", "exactlyOne", "count", "all"));
@@ -45,6 +49,9 @@ public class AssertionVerificationService extends VerificationUtils {
     private final Schema predicateSchema;
     static final Predicate<String> valueListPattern = Pattern.compile("^[0-9a-zA-Z\\-_.\\\\]+( +[0-9a-zA-Z\\-_.\\\\]+)*$").asPredicate();
     static final Predicate<String> valuePattern = Pattern.compile("^[\\s]*[\\S].*$").asPredicate();
+
+    @Autowired
+    private RequestScopeCache requestScopeCache;
 
     public AssertionVerificationService() throws SAXException {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -134,17 +141,24 @@ public class AssertionVerificationService extends VerificationUtils {
             entries.add(throughException);
         }
 
-        if(entries.size() == 0) {
+        if(entries.isEmpty()) {
             entries.addAll(this.checkForLegacyValueSetAssertion(location, skeleton, xml));
         }
         return entries;
     }
 
     public List<IgamtObjectError> checkForLegacyValueSetAssertion(Location location, ResourceSkeleton skeleton, String xml) throws XPathExpressionException {
+        List<IgamtObjectError> issues = new ArrayList<>();
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList nodeList = (NodeList) xPath.compile("//ValueSet").evaluate(new InputSource(new StringReader(xml)), XPathConstants.NODESET);
         if(nodeList.getLength() > 0) {
-            return Arrays.asList(
+            String parentId = skeleton.getResource().getParentId();
+            if(parentId != null && !parentId.isEmpty()) {
+                issues.addAll(
+                        this.checkLegacyValueSetAssertionReference(location, skeleton, xml)
+                );
+            }
+            issues.add(
                     this.entry.FreeTextAssertionXMLLegacyValueSet(
                             location,
                             skeleton.getResource().getId(),
@@ -152,7 +166,31 @@ public class AssertionVerificationService extends VerificationUtils {
                     )
             );
         }
-        return this.NoErrors();
+        return issues;
+    }
+
+    public List<IgamtObjectError> checkLegacyValueSetAssertionReference(Location location, ResourceSkeleton skeleton, String xml) throws XPathExpressionException {
+        List<IgamtObjectError> issues = new ArrayList<>();
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        NodeList nodeList = (NodeList) xPath.compile("//ValueSet/@ValueSetID").evaluate(new InputSource(new StringReader(xml)), XPathConstants.NODESET);
+        if(nodeList.getLength() > 0) {
+            Map<String, String> igBindingIdentifiers = requestScopeCache.getImplementationGuideBindingIdentifierMap(skeleton.getResource().getParentId());
+            for(int i = 0; i < nodeList.getLength(); i++) {
+                Node n = nodeList.item(i);
+                String bindingIdentifier = n.getNodeValue();
+                if(!igBindingIdentifiers.containsKey(bindingIdentifier)) {
+                    issues.add(
+                            this.entry.FreeTextAssertionXMLLegacyValueSetInvalidReference(
+                                location,
+                                skeleton.getResource().getId(),
+                                skeleton.getResource().getType(),
+                                bindingIdentifier
+                            )
+                    );
+                }
+            }
+        }
+        return issues;
     }
 
     public List<IgamtObjectError> checkIfThenAssertion(ResourceSkeleton skeleton, Location location, IfThenAssertion assertion) {
@@ -174,7 +212,6 @@ public class AssertionVerificationService extends VerificationUtils {
     }
 
     public List<IgamtObjectError> checkSubContextAssertion(ResourceSkeleton skeleton, Location location, SubContextAssertion assertion) {
-
         return this.getTargetAndVerify(
                 skeleton,
                 null,
