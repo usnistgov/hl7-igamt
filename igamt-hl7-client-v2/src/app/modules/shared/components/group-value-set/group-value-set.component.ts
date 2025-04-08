@@ -13,18 +13,38 @@ export class GroupValueSetComponent implements OnInit {
 
   // Fixed headers for grouping
   default_groupNames = ['HL7', 'USER', 'External', 'Others'];
+
+  custom = false;
+
+  newGroupName: string = '';
+
   groupNames: string[] = [];
   groupedData: { [key: string]: IDisplayElement[] } = {};
+
+
+  
 
   constructor(
     public dialogRef: MatDialogRef<GroupValueSetComponent>,
     public http: HttpClient,
-    @Inject(MAT_DIALOG_DATA) public data: { all: any }
+    @Inject(MAT_DIALOG_DATA) public data: { all: any, groups: any[] }
   ) {}
 
   ngOnInit(): void {
-    console.log(this.groupedData);
-    console.log(this.data.all.children);
+
+    if(this.data.groups.length) {
+        this.custom = true;
+
+    }
+    else {
+
+        this.buildDefaultGroupedData();
+    }
+
+  }
+
+
+  buildDefaultGroupedData(){
 
     this.default_groupNames.forEach(group => this.groupedData[group] = []);
 
@@ -44,8 +64,9 @@ export class GroupValueSetComponent implements OnInit {
 
       }
     }
-
+    
     this.groupNames = [...this.default_groupNames];
+
   }
 
   cancel(): void {
@@ -71,6 +92,7 @@ export class GroupValueSetComponent implements OnInit {
       }
     }
   }
+  
 
   deleteGroup(group: string): void {
     this.groupedData[group] = [];
@@ -78,4 +100,19 @@ export class GroupValueSetComponent implements OnInit {
   getConnectedDropLists(currentGroup: string): string[] {
     return this.groupNames.filter(group => group !== currentGroup);
   }
+
+  customize(){
+    this.custom = true;
+
+  }
+
+  addGroup() {
+    if (!this.groupNames.includes(this.newGroupName)) {
+      this.groupNames.push(this.newGroupName);
+      this.groupedData[this.newGroupName] = [];
+      this.newGroupName = '';
+    }
+  }
+
+
 }

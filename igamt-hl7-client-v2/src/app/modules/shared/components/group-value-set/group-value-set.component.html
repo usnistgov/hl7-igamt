@@ -1,12 +1,110 @@
 <h3 mat-dialog-title>Group Value Set</h3>
 
 <div mat-dialog-content>
+
+    <ng-container *ngIf="custom">
+        <div style="margin-bottom: 16px;">
+            <label>Add Group:</label>
+            <input type="text" [(ngModel)]="newGroupName" placeholder="Enter group name" />
+            <button class="btn btn-primary btn-sm" (click)="addGroup()">Add New Group</button>
+          </div>
+          
+        
+          <div class="group-container">
+            <div
+              class="group-column"
+              *ngFor="let group of groupNames">
+          
+              <!-- Sticky Header for Group -->
+              <div class="group-header">
+                <h4>{{ group }}</h4>
+                <button class="btn btn-sm btn-light" (click)="clearGroup(group)">Clear</button>
+                <!-- Add more buttons if needed -->
+              </div>
+          
+              <!-- Scrollable Items List -->
+              <div
+                [id]="group"
+                cdkDropList
+                [cdkDropListData]="groupedData[group]"
+                class="drop-list"
+                [cdkDropListConnectedTo]="getConnectedDropLists(group)"
+                (cdkDropListDropped)="drop($event, group)">
+                
+                <div
+                  class="item"
+                  *ngFor="let item of groupedData[group]"
+                  cdkDrag>
+                  <app-display-section [element]="item" [hideDescription]="true"></app-display-section>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+    </ng-container>
+
+    <ng-container *ngIf="!custom">
+
+        <div style="margin-bottom: 16px; display: flex; flex-direction: row; justify-content: flex-end;" >
+           <button (click)="customize()"> <i class="fa fa-pencil"></i>Customize grouping</button> 
+        </div>
+          
+        
+          <div class="group-container">
+            <div
+              class="group-column"
+              *ngFor="let group of groupNames">
+          
+              <!-- Sticky Header for Group -->
+              <div class="group-header">
+                <h4>{{ group }}</h4>
+              </div>
+          
+              <!-- Scrollable Items List -->
+              <div
+                [id]="group">
+            
+                <div
+                  *ngFor="let item of groupedData[group]">
+                  <app-display-section [element]="item"></app-display-section>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+    </ng-container>
+
+<mat-dialog-actions style="justify-content: flex-end; margin-top: 10px;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="done()" class="btn btn-sm btn-success">Done</button>
+</mat-dialog-actions>
+
+
+
+
+<!-- 
+<div mat-dialog-content>
+
+
+    <div style="margin-bottom: 16px;">
+        <label>Add Group:</label>
+        <input type="text" [(ngModel)]="newGroupName" placeholder="Enter group name" />
+        <button class="btn btn-primary btn-sm" (click)="addGroup()">Add</button>
+      </div>
+      
+    
+
+
+
   <div class="group-container">
     <div
       class="group-column"
       *ngFor="let group of groupNames">
 
-      <h4>{{ group }}</h4>
+      <h4>{{ group }}  </h4>
 
       <div
         [id]="group"
@@ -23,21 +121,6 @@
           <app-display-section [element]="item"></app-display-section>
         </div>
       </div>
-
-      <button
-        *ngIf="group !== 'Others'"
-        pButton
-        type="button"
-        icon="pi pi-trash"
-        label="Delete Group"
-        class="p-button-danger mt-2"
-        (click)="deleteGroup(group)">
-      </button>
     </div>
   </div>
-</div>
-
-<mat-dialog-actions style="justify-content: flex-end; margin-top: 10px;">
-  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
-  <button (click)="done()" class="btn btn-sm btn-success">Done</button>
-</mat-dialog-actions>
+</div> -->
