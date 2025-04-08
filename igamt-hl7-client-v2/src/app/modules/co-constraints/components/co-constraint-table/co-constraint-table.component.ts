@@ -5,6 +5,8 @@ import { MatDialog } from '@angular/material';
 import * as _ from 'lodash';
 import { combineLatest, Observable, of, Subject } from 'rxjs';
 import { catchError, filter, map, take, tap } from 'rxjs/operators';
+import { ProfileComponentService } from 'src/app/modules/profile-component/services/profile-component.service';
+import { IProfileComponentItem } from 'src/app/modules/shared/models/profile.component';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { SegmentService } from '../../../segment/services/segment.service';
 import { ICardinalityRange, IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
@@ -32,8 +34,6 @@ import { CoConstraintEntityService } from '../../services/co-constraint-entity.s
 import { DataHeaderDialogComponent } from '../data-header-dialog/data-header-dialog.component';
 import { GrouperDialogComponent } from '../grouper-dialog/grouper-dialog.component';
 import { NarrativeHeaderDialogComponent } from '../narrative-header-dialog/narrative-header-dialog.component';
-import { IProfileComponentItem } from 'src/app/modules/shared/models/profile.component';
-import { ProfileComponentService } from 'src/app/modules/profile-component/services/profile-component.service';
 
 export enum CoConstraintAction {
   ADD_GROUP,
@@ -231,7 +231,7 @@ export class CoConstraintTableComponent implements OnInit {
       {
         transformer,
         useProfileComponentRef: true,
-      }
+      },
     ).pipe(
       map((node) => {
         const resourceRef = node.data.ref.getValue();
@@ -419,7 +419,7 @@ export class CoConstraintTableComponent implements OnInit {
         const transformer = this.items ? this.profileComponentService.getProfileComponentItemTransformerUsingItemList(this.items) : null;
         this.profileComponentService.applyTransformer(value, transformer).pipe(
           take(1),
-          tap((value: IHL7v2TreeNode[]) => {
+          tap((nodes: IHL7v2TreeNode[]) => {
             this.structure = [
               {
                 data: {
@@ -431,13 +431,13 @@ export class CoConstraintTableComponent implements OnInit {
                   position: 0,
                 },
                 expanded: true,
-                children: [...value],
+                children: [...nodes],
                 parent: undefined,
               },
             ];
-          })
+          }),
         ).subscribe();
-      })
+      });
       if (segment.name === 'OBX') {
         this.initOptions();
       }

@@ -300,7 +300,6 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
           const transformer = this.pcService.getProfileComponentItemTransformer(context);
           const referenceChangeMap = this.pcService.getRefChangeMap(context);
 
-
           const dialogRef = this.dialog.open(CsDialogComponent, {
             maxWidth: '95vw',
             maxHeight: '90vh',
@@ -328,7 +327,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
               }
             },
             ));
-        })
+        }),
       ).subscribe();
     }
 
@@ -364,7 +363,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
             }
           }),
         );
-      })
+      }),
     ).subscribe();
   }
 

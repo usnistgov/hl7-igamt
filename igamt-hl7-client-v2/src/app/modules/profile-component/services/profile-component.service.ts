@@ -53,7 +53,7 @@ export interface IProfileComponentItemLocation {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProfileComponentService {
 
@@ -218,7 +218,7 @@ export class ProfileComponentService {
   }
 
   applyTransformer(
-    nodes: IHL7v2TreeNode[],
+    nodeList: IHL7v2TreeNode[],
     transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>,
   ): Observable<IHL7v2TreeNode[]> {
     const recursiveTransform = (nodes: IHL7v2TreeNode[]): Observable<IHL7v2TreeNode[]> => {
@@ -228,22 +228,22 @@ export class ProfileComponentService {
             map((children) => {
               node.children = children;
               return node;
-            })
+            }),
           );
         } else {
           return of(node);
         }
-      })
+      });
       return combineLatest(nodes$).pipe(
         take(1),
         mergeMap((nodesWithChildrenProcessed) => {
           return transformer(nodesWithChildrenProcessed);
         }),
       );
-    }
-    return transformer ? recursiveTransform(nodes).pipe(
+    };
+    return transformer ? recursiveTransform(nodeList).pipe(
       take(1),
-    ) : of(nodes);
+    ) : of(nodeList);
   }
 
   getProfileComponentItemTransformer(profileComponentContext: IProfileComponentContext) {
@@ -253,9 +253,9 @@ export class ProfileComponentService {
           this.profileComponentApplyService.apply(node, profileComponentContext);
         }
         return of(node);
-      })
+      });
       return combineLatest(nodes$);
-    }
+    };
   }
 
   getProfileComponentItemTransformerUsingItemList(items: IProfileComponentItem[]) {
@@ -265,13 +265,14 @@ export class ProfileComponentService {
           this.profileComponentApplyService.applyItems(node, items);
         }
         return of(node);
-      })
+      });
       return combineLatest(nodes$);
-    }
+    };
   }
 
   getNodeByPath(children: IHL7v2TreeNode[], fullPath: IPath, repository: AResourceRepositoryService, profileComponentContext?: IProfileComponentContext): Observable<IHL7v2TreeNode> {
-    const inner = (nodes: IHL7v2TreeNode[], path: IPath, profileComponentContext?: IProfileComponentContext) => {
+    const ppTransformer = this.getProfileComponentItemTransformer(profileComponentContext);
+    const inner = (nodes: IHL7v2TreeNode[], path: IPath) => {
       if (path) {
         // Get current node based on current node in path's ID
         const elm = nodes.filter((e: IHL7v2TreeNode) => e.data.id === path.elementId);
@@ -282,17 +283,16 @@ export class ProfileComponentService {
           const node = elm[0];
           // if current node in path has children
           if (path.child) {
-            const ppTransformer = this.getProfileComponentItemTransformer(profileComponentContext);
             // load tree node children
             return this.treeService.loadNodeChildren(node, repository, {
               viewOnly: true,
               transform: ppTransformer,
-              useProfileComponentRef: true
+              useProfileComponentRef: true,
             }).pipe(
               take(1),
               flatMap((elms) => {
                 // recursive call using the children list and the child path
-                return inner(elms, path.child, profileComponentContext);
+                return inner(elms, path.child);
               }),
             );
           } else {
@@ -306,30 +306,12 @@ export class ProfileComponentService {
         return of(null);
       }
     };
-    return inner(children, fullPath, profileComponentContext);
+    return inner(children, fullPath);
   }
 
   getRefChangeMap(profileComponentContext: IProfileComponentContext): Record<string, string> {
-    return profileComponentContext.profileComponentItems.reduce((acc, item) => {
-      const reference = item
-        .itemProperties
-        .filter((item) => item.propertyKey === PropertyType.DATATYPE || item.propertyKey === PropertyType.SEGMENTREF)
-        .map((item) => {
-          switch (item.propertyKey) {
-            case PropertyType.DATATYPE:
-              return (item as IPropertyDatatype).datatypeId;
-            case PropertyType.SEGMENTREF:
-              return (item as IPropertyRef).ref;
-          }
-        })
-        .pop();
-      return {
-        ...acc,
-        [item.path]: reference
-      };
-    }, {})
+    return this.getRefChangeMapByItemList(profileComponentContext.profileComponentItems);
   }
-
 
   getFilteredItems(allItems: IProfileComponentItem[], from: string): IProfileComponentItem[] {
     const filtered: IProfileComponentItem[] = [];
@@ -337,8 +319,8 @@ export class ProfileComponentService {
       if (item.path.startsWith(`${from}-`)) {
         const path = item.path.substring(from.length + 1);
         filtered.push({
-          path: path,
-          itemProperties: item.itemProperties
+          path,
+          itemProperties: item.itemProperties,
         });
       }
     }
@@ -349,31 +331,31 @@ export class ProfileComponentService {
     return items.reduce((acc, item) => {
       const reference = item
         .itemProperties
-        .filter((item) => item.propertyKey === PropertyType.DATATYPE || item.propertyKey === PropertyType.SEGMENTREF)
-        .map((item) => {
-          switch (item.propertyKey) {
+        .filter((itemProp) => itemProp.propertyKey === PropertyType.DATATYPE || itemProp.propertyKey === PropertyType.SEGMENTREF)
+        .map((itemProp) => {
+          switch (itemProp.propertyKey) {
             case PropertyType.DATATYPE:
-              return (item as IPropertyDatatype).datatypeId;
+              return (itemProp as IPropertyDatatype).datatypeId;
             case PropertyType.SEGMENTREF:
-              return (item as IPropertyRef).ref;
+              return (itemProp as IPropertyRef).ref;
           }
         })
         .pop();
       return {
         ...acc,
-        [item.path]: reference
+        [item.path]: reference,
       };
-    }, {})
+    }, {});
   }
 
   getHL7V2ProfileComponentItemNode(
     resource: IResource,
     repository: AResourceRepositoryService,
     nodes: IHL7v2TreeNode[],
-    profileComponentContext: IProfileComponentContext
+    profileComponentContext: IProfileComponentContext,
   ): Observable<{
     notfound: IProfileComponentItem[],
-    nodes: IHL7v2TreeProfileComponentNode[]
+    nodes: IHL7v2TreeProfileComponentNode[],
   }> {
     const items = profileComponentContext.profileComponentItems || [];
     const references = this.getRefChangeMap(profileComponentContext);
@@ -391,7 +373,7 @@ export class ProfileComponentService {
           flatMap((node) => {
             if (!node) {
               return of({
-                item: item,
+                item,
                 node: null,
               });
             }
@@ -402,7 +384,7 @@ export class ProfileComponentService {
               map((pathInfo) => {
                 const name = this.elementNamingService.getStringNameFromPathInfo(pathInfo);
                 return {
-                  item: item,
+                  item,
                   node: {
                     ...node,
                     data: {
@@ -413,7 +395,7 @@ export class ProfileComponentService {
                         pathInfo: this.getLeaf(pathInfo),
                       },
                     },
-                  }
+                  },
                 };
               }),
             );
@@ -422,18 +404,18 @@ export class ProfileComponentService {
       }),
     ).pipe(
       map((list) => {
-        const nodes = list
+        const found = list
           .filter((elm) => elm.node)
           .map((elm) => elm.node);
         const notfound = list
           .filter((elm) => !elm.node)
           .map((elm) => elm.item);
-        nodes.sort((a, b) => {
+        found.sort((a, b) => {
           return this.comparePositionalId(a.data.location.positionalPath, b.data.location.positionalPath);
         });
         return {
           notfound,
-          nodes,
+          nodes: found,
         };
       }),
     ) : of({

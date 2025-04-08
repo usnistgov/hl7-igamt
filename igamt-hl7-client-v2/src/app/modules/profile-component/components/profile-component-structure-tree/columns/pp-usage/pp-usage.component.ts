@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material';
 import * as _ from 'lodash';
 import { Observable, of } from 'rxjs';
 import { flatMap, map, take, tap } from 'rxjs/operators';
+import { ProfileComponentService } from 'src/app/modules/profile-component/services/profile-component.service';
 import { CsDialogComponent } from 'src/app/modules/shared/components/cs-dialog/cs-dialog.component';
 import { IUsageOption } from 'src/app/modules/shared/components/hl7-v2-tree/columns/usage/usage.component';
 import { IHL7v2TreeNode, IStringValue } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
@@ -20,7 +21,6 @@ import { AResourceRepositoryService } from 'src/app/modules/shared/services/reso
 import { IBinding, IBindingContext, StructureElementBindingService } from 'src/app/modules/shared/services/structure-element-binding.service';
 import { PPColumn } from '../pp-column.component';
 import { IUserConfig } from './../../../../../shared/models/config.class';
-import { ProfileComponentService } from 'src/app/modules/profile-component/services/profile-component.service';
 
 export interface IUsageAndPredicate {
   usage: IStringValue;

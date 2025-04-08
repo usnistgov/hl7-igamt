@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { isObservable, Observable, of } from 'rxjs';
 import { catchError, flatMap, map, take } from 'rxjs/operators';
+import { IProfileComponentContext } from 'src/app/modules/shared/models/profile.component';
 import { ElementNamingService, IPathInfo } from 'src/app/modules/shared/services/element-naming.service';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
@@ -8,7 +9,6 @@ import { ICoConstraintBindingContext, ICoConstraintBindingSegment } from '../../
 import { IConformanceProfile } from '../../../shared/models/conformance-profile.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
-import { IProfileComponentContext } from 'src/app/modules/shared/models/profile.component';
 
 export interface IExpansionPanelView {
   [key: string]: boolean;
@@ -50,6 +50,9 @@ export class ContextCoConstraintBindingComponent implements OnInit, OnChanges {
   set conformanceProfile(cp: IConformanceProfile | Observable<IConformanceProfile>) {
     this._conformanceProfile = isObservable(cp) ? cp : of(cp);
   }
+  get conformanceProfile(): IConformanceProfile | Observable<IConformanceProfile> {
+    return this._conformanceProfile;
+  }
   @Input()
   profileComponentContext?: IProfileComponentContext;
   @Input()
@@ -57,9 +60,7 @@ export class ContextCoConstraintBindingComponent implements OnInit, OnChanges {
   @Input()
   referenceChangeMap: Record<string, string> = {};
   _conformanceProfile: Observable<IConformanceProfile>;
-  get conformanceProfile() {
-    return this._conformanceProfile;
-  }
+
   @Input()
   set open(id: string) {
     this.openPanel(id);

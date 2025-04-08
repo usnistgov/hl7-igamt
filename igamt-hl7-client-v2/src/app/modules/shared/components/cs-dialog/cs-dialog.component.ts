@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import * as _ from 'lodash';
 import { BehaviorSubject, from, Observable, of, Subject, Subscription } from 'rxjs';
 import { concatMap, finalize, flatMap, map, skip, take, takeWhile, tap } from 'rxjs/operators';
+import { ProfileComponentService } from 'src/app/modules/profile-component/services/profile-component.service';
 import * as vk from 'vkbeautify';
 import { xml as xmlFormat } from 'vkbeautify';
 import { Type } from '../../constants/type.enum';
@@ -24,7 +25,6 @@ import { PatternDialogComponent } from '../pattern-dialog/pattern-dialog.compone
 import { ConformanceStatementStrength } from './../../models/conformance-statements.domain';
 import { IAssertion } from './../../models/cs.interface';
 import { IStatementTokenPayload } from './cs-statement.component';
-import { ProfileComponentService } from 'src/app/modules/profile-component/services/profile-component.service';
 
 export type AssertionContainer = IAssertionConformanceStatement | IFreeTextConformanceStatement | IPredicate;
 
@@ -126,7 +126,7 @@ export class CsDialogComponent implements OnDestroy {
         this.treeService.getTree(resource, this.repository, true, true, (value) => {
           this.profileComponentService.applyTransformer(value, this.transformer).pipe(
             take(1),
-            tap((value: IHL7v2TreeNode[]) => {
+            tap((nodes: IHL7v2TreeNode[]) => {
               this.structure = [
                 {
                   data: {
@@ -137,7 +137,7 @@ export class CsDialogComponent implements OnDestroy {
                     rootPath: { elementId: resource.id },
                     position: 0,
                   },
-                  children: [...value],
+                  children: [...nodes],
                   parent: undefined,
                 },
               ];
@@ -149,7 +149,7 @@ export class CsDialogComponent implements OnDestroy {
               } else {
                 this.setAssertion(data.assertion, data.context);
               }
-            })
+            }),
           ).subscribe();
         });
       },
@@ -291,7 +291,7 @@ export class CsDialogComponent implements OnDestroy {
       {
         transformer: this.transformer,
         useProfileComponentRef: true,
-      }
+      },
     ).pipe(
       map((node) => [node]),
     ));

@@ -12,6 +12,7 @@ import { Hl7Config, IValueSetBindingConfigMap } from '../../models/config.class'
 import { IPath } from '../../models/cs.interface';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { IPredicate } from '../../models/predicate.interface';
+import { IItemProperty } from '../../models/profile.component';
 import { IResource } from '../../models/resource.interface';
 import { IChange, ILocationChangeLog, PropertyType } from '../../models/save-change';
 import { ISlicing } from '../../models/slicing';
@@ -20,7 +21,6 @@ import { AResourceRepositoryService } from '../../services/resource-repository.s
 import { IBindingContext, IElementBinding } from '../../services/structure-element-binding.service';
 import { IBindingLocationInfo } from '../binding-selector/binding-selector.component';
 import { IUserConfig } from './../../models/config.class';
-import { IItemProperty } from '../../models/profile.component';
 
 export enum HL7v2TreeColumnType {
   USAGE = 'Usage',

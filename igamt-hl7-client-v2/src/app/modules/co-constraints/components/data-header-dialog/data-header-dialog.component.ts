@@ -1,5 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
 import { CoConstraintColumnType } from 'src/app/modules/shared/models/co-constraint.interface';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
@@ -8,7 +9,6 @@ import { ElementNamingService } from '../../../shared/services/element-naming.se
 import { AResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from '../../../shared/services/tree-filter.service';
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-data-header-dialog',

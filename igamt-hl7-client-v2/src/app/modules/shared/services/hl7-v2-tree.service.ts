@@ -9,6 +9,7 @@ import { IStructureElementBinding } from '../models/binding.interface';
 import { IConformanceProfile, IGroup, IHL7MessageProfile, IMessageStructure, IMsgStructElement, ISegmentRef } from '../models/conformance-profile.interface';
 import { IPath } from '../models/cs.interface';
 import { IComponent, IDatatype } from '../models/datatype.interface';
+import { IItemProperty, IPropertyDatatype, IPropertyRef } from '../models/profile.component';
 import { IResource } from '../models/resource.interface';
 import { IChangeLog, ILocationChangeLog, PropertyType } from '../models/save-change';
 import { IField, ISegment } from '../models/segment.interface';
@@ -17,7 +18,6 @@ import { BindingService } from './binding.service';
 import { PathService } from './path.service';
 import { AResourceRepositoryService, IRefData, IRefDataInfo } from './resource-repository.service';
 import { IBinding, IBindingContext, StructureElementBindingService } from './structure-element-binding.service';
-import { IItemProperty, IPropertyDatatype, IPropertyRef } from '../models/profile.component';
 
 @Injectable({
   providedIn: 'root',
@@ -69,7 +69,7 @@ export class Hl7V2TreeService {
       node.$hl7V2TreeHelpers.treeChildrenSubscription = this.getNodeRef(
         node,
         repository,
-        { useProfileComponentRef }
+        { useProfileComponentRef },
       ).pipe(
         filter((ref) => ref.type === Type.DATATYPE || ref.type === Type.SEGMENT),
         switchMap((ref) => {
@@ -113,7 +113,7 @@ export class Hl7V2TreeService {
     const transform = options ? options.transform : undefined;
     const useProfileComponentRef = options ? !!options.useProfileComponentRef : false;
     return this.getNodeRef(node, repository, {
-      useProfileComponentRef
+      useProfileComponentRef,
     }).pipe(
       take(1),
       flatMap((ref) => {
@@ -154,7 +154,7 @@ export class Hl7V2TreeService {
         }
         return of(ref);
       }),
-    )
+    );
   }
 
   getResourceRefFromItemProperty(property: IItemProperty, repository: AResourceRepositoryService): Observable<IResourceRef> {
@@ -196,9 +196,9 @@ export class Hl7V2TreeService {
             then();
           }
           return children;
-        })
+        }),
       );
-    }
+    };
   }
 
   formatStructureElement(
@@ -684,7 +684,7 @@ export class Hl7V2TreeService {
   getNodeByPath(children: IHL7v2TreeNode[], fullPath: IPath, repository: AResourceRepositoryService, options?: {
     transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>,
     useProfileComponentRef?: boolean,
-    failOnNotFound?: boolean
+    failOnNotFound?: boolean,
   }): Observable<IHL7v2TreeNode | null> {
     const failOnNotFound = options && options.failOnNotFound !== undefined ? options.failOnNotFound : true;
     const useProfileComponentRef = options && options.useProfileComponentRef !== undefined ? options.useProfileComponentRef : false;

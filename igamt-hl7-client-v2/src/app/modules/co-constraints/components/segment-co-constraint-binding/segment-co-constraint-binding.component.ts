@@ -9,6 +9,8 @@ import { combineLatest, Observable, of, Subscription, throwError } from 'rxjs';
 import { catchError, flatMap, map, take, tap } from 'rxjs/operators';
 import { DamWidgetComponent } from 'src/app/modules/dam-framework';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
+import { ProfileComponentService } from 'src/app/modules/profile-component/services/profile-component.service';
+import { IProfileComponentContext, IProfileComponentItem } from 'src/app/modules/shared/models/profile.component';
 import { UserMessage } from '../../../dam-framework/models/messages/message.class';
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
@@ -36,8 +38,6 @@ import { CoConstraintGroupSelectorComponent } from '../co-constraint-group-selec
 import { CoConstraintImportDialogComponent } from '../co-constraint-import-dialog/co-constraint-import-dialog.component';
 import { CoConstraintAction, CoConstraintTableComponent } from '../co-constraint-table/co-constraint-table.component';
 import { IContextCoConstraint } from './../context-co-constraint-binding/context-co-constraint-binding.component';
-import { IProfileComponentContext, IProfileComponentItem } from 'src/app/modules/shared/models/profile.component';
-import { ProfileComponentService } from 'src/app/modules/profile-component/services/profile-component.service';
 
 export interface ISegmentCoConstraint {
   resolved: boolean;
@@ -301,7 +301,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit, OnDestroy {
       {
         transformer: this.transformer,
         useProfileComponentRef: true,
-      }
+      },
     ).pipe(
       take(1),
       flatMap((segmentRef) => {
@@ -365,7 +365,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit, OnDestroy {
         const pathId = this.pathService.pathToString(path);
         const items = this.profileComponentContext ? this.profileComponentService.getFilteredItems(
           this.profileComponentContext.profileComponentItems,
-          pathId
+          pathId,
         ) : [];
         return {
           resolved: true,

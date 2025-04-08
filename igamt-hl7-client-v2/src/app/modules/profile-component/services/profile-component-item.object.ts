@@ -32,29 +32,29 @@ export class ProfileComponentItemList {
     this.itemList$ = combineLatest(
       this.context$,
     ).pipe(
-      mergeMap(([context]) => {
-        return this.updateTree(context, this.nodes$.getValue()).pipe(
-          mergeMap((nodes) => {
+      mergeMap(([currentContext]) => {
+        return this.updateTree(currentContext, this.nodes$.getValue()).pipe(
+          mergeMap((updatedNodes) => {
             return this.ppService.getHL7V2ProfileComponentItemNode(
               resource,
               repository,
               this.nodes$.getValue(),
-              context,
+              currentContext,
             ).pipe(
               map((result) => {
                 this.unresolved$.next(result.notfound);
-                this.nodes$.next(nodes);
+                this.nodes$.next(updatedNodes);
                 this.unresolved$.next(result.notfound);
                 return result.nodes;
-              })
-            )
-          })
-        )
+              }),
+            );
+          }),
+        );
       }),
     );
   }
 
-  private updateTree(context: IProfileComponentContext, nodes: IHL7v2TreeNode[]): Observable<IHL7v2TreeNode[]> {
+  private updateTree(context: IProfileComponentContext, nodeList: IHL7v2TreeNode[]): Observable<IHL7v2TreeNode[]> {
     const transformer = this.ppService.getProfileComponentItemTransformer(context);
     const recursiveTransform = (nodes: IHL7v2TreeNode[]): Observable<IHL7v2TreeNode[]> => {
       const nodes$ = nodes.map((node) => {
@@ -63,22 +63,22 @@ export class ProfileComponentItemList {
             map((children) => {
               node.children = children;
               return node;
-            })
+            }),
           );
         } else {
           return of(node);
         }
-      })
+      });
       return combineLatest(nodes$).pipe(
         take(1),
         mergeMap((nodesWithChildrenProcessed) => {
           return transformer(nodesWithChildrenProcessed);
         }),
       );
-    }
-    return recursiveTransform(nodes).pipe(
+    };
+    return recursiveTransform(nodeList).pipe(
       take(1),
-    )
+    );
   }
 
   getContextValue(): IProfileComponentContext {

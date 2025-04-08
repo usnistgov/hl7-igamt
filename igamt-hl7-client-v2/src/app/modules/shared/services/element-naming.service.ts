@@ -224,7 +224,7 @@ export class ElementNamingService {
         // Get child's reference
         const reference = referenceChange[pathId] && next.ref ? {
           id: referenceChange[pathId],
-          type: next.ref.type
+          type: next.ref.type,
         } : next.ref;
 
         // Add child to pathInfo

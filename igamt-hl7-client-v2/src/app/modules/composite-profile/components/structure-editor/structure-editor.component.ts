@@ -18,13 +18,13 @@ import { ConstraintType } from 'src/app/modules/shared/models/cs.interface';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
 import { IChange } from 'src/app/modules/shared/models/save-change';
+import { Hl7V2TreeService } from 'src/app/modules/shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import { getHl7ConfigState, selectBindingConfig } from 'src/app/root-store/config/config.reducer';
 import { selectAllDatatypes, selectAllSegments, selectCompositeProfileById } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { selectIgConfig, selectValueSetsNodes } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
 import { IUserConfig } from './../../../shared/models/config.class';
-import { Hl7V2TreeService } from 'src/app/modules/shared/services/hl7-v2-tree.service';
 
 export type GroupOptions = Array<{
   label: string,
@@ -219,7 +219,7 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
           parent: undefined,
         },
       ];
-    })
+    });
 
   }
 

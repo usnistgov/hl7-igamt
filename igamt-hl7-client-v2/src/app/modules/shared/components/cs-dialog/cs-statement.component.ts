@@ -162,7 +162,7 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
       flatMap((children) => {
         return this.treeService.getNodeByPath(children, path, this.repository, {
           useProfileComponentRef,
-          transformer: transformer,
+          transformer,
         }).pipe(
           catchError(() => {
             return of(undefined);

@@ -1,22 +1,22 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import {
   IHL7v2TreeNode,
-  IResourceRef
-} from "../../shared/components/hl7-v2-tree/hl7-v2-tree.component";
+  IResourceRef,
+} from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import {
   IItemProperty,
   IProfileComponentContext,
   IProfileComponentItem,
   IPropertyCardinalityMax,
   IPropertyCardinalityMin,
-  IPropertyUsage
-} from "../../shared/models/profile.component";
-import { BehaviorSubject } from "rxjs";
-import { PathService } from "../../shared/services/path.service";
-import { PropertyType } from "../../shared/models/save-change";
+  IPropertyUsage,
+} from '../../shared/models/profile.component';
+import { PropertyType } from '../../shared/models/save-change';
+import { PathService } from '../../shared/services/path.service';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export class ProfileComponentApplyService {
 
@@ -34,8 +34,8 @@ export class ProfileComponentApplyService {
     const properties: Record<PropertyType, IItemProperty> = propertyList.reduce((acc, item) => {
       return {
         ...acc,
-        [item.propertyKey]: item
-      }
+        [item.propertyKey]: item,
+      };
     }, {} as Record<PropertyType, IItemProperty>);
     node.data.profileComponentOverrides.next(properties);
   }
@@ -52,16 +52,16 @@ export class ProfileComponentApplyService {
     if (properties[PropertyType.CARDINALITYMAX] && properties[PropertyType.CARDINALITYMIN]) {
       node.data.cardinality = {
         min: (properties[PropertyType.CARDINALITYMIN] as IPropertyCardinalityMin).min,
-        max: (properties[PropertyType.CARDINALITYMAX] as IPropertyCardinalityMax).max
-      }
+        max: (properties[PropertyType.CARDINALITYMAX] as IPropertyCardinalityMax).max,
+      };
     }
   }
 
   public applyUsage(node: IHL7v2TreeNode, properties: Record<PropertyType, IItemProperty>) {
     if (properties[PropertyType.USAGE]) {
       node.data.usage = {
-        value: (properties[PropertyType.USAGE] as IPropertyUsage).usage
-      }
+        value: (properties[PropertyType.USAGE] as IPropertyUsage).usage,
+      };
     }
   }
 

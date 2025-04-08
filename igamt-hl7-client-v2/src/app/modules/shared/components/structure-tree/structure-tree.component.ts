@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TreeNode } from 'primeng/primeng';
 import { Observable, of, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Type } from '../../constants/type.enum';
 import { IPath } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';
@@ -9,7 +10,6 @@ import { AResourceRepositoryService } from '../../services/resource-repository.s
 import { TreeCloneService } from '../../services/tree-clone.service';
 import { IHL7v2TreeFilter, TreeFilterService } from '../../services/tree-filter.service';
 import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
-import { map } from 'rxjs/operators';
 
 export interface IStructureTreeSelect {
   node: IHL7v2TreeNode;
@@ -170,7 +170,7 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
       transform: (nodes: IHL7v2TreeNode[]) => {
         const chain = this.transformer ? this.transformer(nodes) : of(nodes);
         return chain.pipe(
-          map((transformed) => this.treeFilterService.filterTree(transformed, this.restrictions))
+          map((transformed) => this.treeFilterService.filterTree(transformed, this.restrictions)),
         );
       },
       useProfileComponentRef: true,

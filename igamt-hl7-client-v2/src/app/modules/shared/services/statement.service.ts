@@ -6,12 +6,12 @@ import { Type } from '../constants/type.enum';
 import { OccurrenceType } from '../models/conformance-statements.domain';
 import { IPath, ISubject } from '../models/cs.interface';
 import { IDisplayElement } from '../models/display-element.interface';
+import { IPropertyCardinalityMax, IPropertyCardinalityMin } from '../models/profile.component';
 import { IResource } from '../models/resource.interface';
+import { PropertyType } from '../models/save-change';
 import { ElementNamingService, IPathInfo } from './element-naming.service';
 import { PathService } from './path.service';
 import { AResourceRepositoryService } from './resource-repository.service';
-import { IPropertyCardinalityMax, IPropertyCardinalityMin } from '../models/profile.component';
-import { PropertyType } from '../models/save-change';
 
 export class StatementTarget {
   public name: string;
@@ -26,9 +26,9 @@ export class StatementTarget {
   public occurrenceValuesMap = {};
   public referenceChangeMap: Record<string, string> = {};
 
-  setReferenceChangeMap(map: Record<string, string>) {
+  setReferenceChangeMap(refChangeMap: Record<string, string>) {
     this.referenceChangeMap = {
-      ...map
+      ...refChangeMap,
     };
   }
 
@@ -235,7 +235,7 @@ export class StatementTarget {
   applyCardinalityOverrides(
     cardinality?: ICardinalityRange,
     minProperty?: IPropertyCardinalityMin,
-    maxProperty?: IPropertyCardinalityMax
+    maxProperty?: IPropertyCardinalityMax,
   ): ICardinalityRange {
     if (cardinality) {
       const min = minProperty ? minProperty.min : cardinality.min;

@@ -1,12 +1,12 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { Observable } from 'rxjs';
 import { IHL7v2TreeNode } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import { ElementNamingService } from 'src/app/modules/shared/services/element-naming.service';
 import { AResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from 'src/app/modules/shared/services/tree-filter.service';
 import { DataHeaderDialogComponent } from '../data-header-dialog/data-header-dialog.component';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-grouper-dialog',
