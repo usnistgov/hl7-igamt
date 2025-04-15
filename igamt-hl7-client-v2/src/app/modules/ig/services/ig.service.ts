@@ -482,4 +482,12 @@ export class IgService {
   updateConfig(id: string, config: IDocumentConfig): Observable<any> {
     return this.http.post<IDocumentConfig>(this.IG_END_POINT + id + '/update-config', config);
   }
+
+
+  groupValueSets(id: string, groups: any): Observable<any> {
+    console.log("groups");
+    console.log(JSON.stringify(groups));
+
+    return this.http.post<any>(this.IG_END_POINT + id + '/group-value-sets',  {groupedData: groups});
+  }
 }

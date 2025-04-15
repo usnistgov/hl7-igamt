@@ -11,6 +11,10 @@ import { IDisplayElement } from '../../models/display-element.interface';
 })
 export class GroupValueSetComponent implements OnInit {
 
+    editingGroup: string | null = null;
+editedGroupName: string = '';
+
+
   // Fixed headers for grouping
   default_groupNames = ['HL7', 'USER', 'External', 'Others'];
 
@@ -50,6 +54,7 @@ export class GroupValueSetComponent implements OnInit {
 
     for (const item of this.data.all.children) {
       const scope = item.domainInfo.scope;
+      
       if (item.domainInfo.scope ==='HL7STANDARD') {
         
         this.groupedData['HL7'].push(item);
@@ -74,7 +79,20 @@ export class GroupValueSetComponent implements OnInit {
   }
 
   done(): void {
-    this.dialogRef.close(this.groupedData);
+    console.log(this.groupedData);
+    let groupedMap = {};
+
+    for (const group of Object.keys(this.groupedData)) {
+
+      let ids = this.groupedData[group].map(item => item.id);
+
+      //groupedMap.set(group, ids);
+      groupedMap[group] = ids;
+
+    }
+    console.log(groupedMap);
+
+   this.dialogRef.close(groupedMap);
   }
 
   drop(event: CdkDragDrop<IDisplayElement[]>, group: string): void {
@@ -112,6 +130,36 @@ export class GroupValueSetComponent implements OnInit {
       this.groupedData[this.newGroupName] = [];
       this.newGroupName = '';
     }
+  }
+
+
+  startEditingGroup(group: string): void {
+    this.editingGroup = group;
+    this.editedGroupName = group;
+  }
+  
+  cancelEditing(): void {
+    this.editingGroup = null;
+    this.editedGroupName = '';
+  }
+  
+  renameGroup(oldName: string): void {
+    const newName = this.editedGroupName.trim();
+  
+    if (!newName || newName === oldName || this.groupNames.includes(newName)) {
+      this.cancelEditing();
+      return;
+    }
+  
+    const index = this.groupNames.indexOf(oldName);
+    if (index !== -1) {
+      this.groupNames[index] = newName;
+    }
+  
+    this.groupedData[newName] = this.groupedData[oldName];
+    delete this.groupedData[oldName];
+  
+    this.cancelEditing();
   }
 
 

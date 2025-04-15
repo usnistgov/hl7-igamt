@@ -9,6 +9,8 @@ export interface IDocument extends IAbstractDomain {
   draft?: boolean;
   deprecated?: boolean;
   documentConfig?: IDocumentConfig;
+  valueSetGroups?: any;
+
 }
 
 export interface IDocumentConfig {

@@ -3,10 +3,10 @@
 <div mat-dialog-content>
 
     <ng-container *ngIf="custom">
-        <div style="margin-bottom: 16px;">
+        <div class="form-control">
             <label>Add Group:</label>
             <input type="text" [(ngModel)]="newGroupName" placeholder="Enter group name" />
-            <button class="btn btn-primary btn-sm" (click)="addGroup()">Add New Group</button>
+            <button class="btn btn-primary btn-sm" (click)="addGroup()" [disabled]="newGroupName.length<1">Add New Group</button>
           </div>
           
         
@@ -15,14 +15,28 @@
               class="group-column"
               *ngFor="let group of groupNames">
           
-              <!-- Sticky Header for Group -->
               <div class="group-header">
-                <h4>{{ group }}</h4>
-                <button class="btn btn-sm btn-light" (click)="clearGroup(group)">Clear</button>
-                <!-- Add more buttons if needed -->
+
+                <div *ngIf="editingGroup !== group" style="display: flex; flex-direction: row; justify-content: flex-start;">
+                    
+                    <h4>{{ group }}</h4>
+                    <button class="btn btn-sm btn-info" (click)="startEditingGroup(group)" style="height: 30px; width: 30px;"><i class="fa fa-pencil"></i></button>
+                </div>
+                <div *ngIf="editingGroup === group">
+                    <input type="text"
+                           [(ngModel)]="editedGroupName"
+                           (keyup.enter)="renameGroup(group)"
+                           (blur)="renameGroup(group)"
+                           class="form-control form-control-sm"
+                           placeholder="New group name" />
+                    <button class="btn btn-sm btn-success"
+                            [disabled]="!editedGroupName || groupNames.includes(editedGroupName.trim())"
+                            (click)="renameGroup(group)"> Save </button>
+                    <button class="btn btn-sm btn-secondary" (click)="cancelEditing()">Cancel</button>
+                </div>
+
               </div>
           
-              <!-- Scrollable Items List -->
               <div
                 [id]="group"
                 cdkDropList
@@ -54,15 +68,12 @@
         
           <div class="group-container">
             <div
-              class="group-column"
-              *ngFor="let group of groupNames">
+              class="group-column" *ngFor="let group of groupNames">
           
-              <!-- Sticky Header for Group -->
               <div class="group-header">
                 <h4>{{ group }}</h4>
               </div>
           
-              <!-- Scrollable Items List -->
               <div
                 [id]="group">
             
@@ -73,7 +84,6 @@
               </div>
             </div>
           </div>
-
 
     </ng-container>
 

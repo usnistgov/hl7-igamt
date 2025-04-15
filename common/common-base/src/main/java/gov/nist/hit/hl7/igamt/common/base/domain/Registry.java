@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 
 public class Registry implements Serializable{
 
-
-
   private Set<Link> children = new HashSet<Link>();
   protected Type type;
 

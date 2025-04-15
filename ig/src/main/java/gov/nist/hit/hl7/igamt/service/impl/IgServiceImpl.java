@@ -850,6 +850,8 @@ public class IgServiceImpl implements IgService {
 
 	@Override
 	public IgDataModel generateDataModel(Ig ig) throws Exception {
+
+		Ig ig1 = this.igRepository.findById(ig.getId()).get();
 		IgDataModel igDataModel = new IgDataModel();
 		igDataModel.setModel(ig);
 
@@ -1560,6 +1562,7 @@ public class IgServiceImpl implements IgService {
 		// Value Set Registry
 		ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
 		subSetIg.setValueSetRegistry(valueSetRegistry);
+		subSetIg.getValueSetRegistry().setGroupedData(ig.getValueSetRegistry().getGroupedData());
 		valueSetRegistry.setChildren(
 				resources.getValuesets()
 						.stream()

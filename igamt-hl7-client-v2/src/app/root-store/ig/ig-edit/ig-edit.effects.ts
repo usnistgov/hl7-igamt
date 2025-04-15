@@ -35,6 +35,8 @@ import {
   DeleteResources,
   DeleteResourcesFailure,
   DeleteResourcesSuccess,
+  GroupValueSets,
+  GroupValueSetsSuccess,
   OpenConformanceStatementSummaryEditorNode,
   OpenIgVerificationEditor,
   OpenValueSetsSummaryEditorNode,
@@ -969,6 +971,46 @@ export class IgEditEffects extends DamWidgetEffect {
       );
     }),
   );
+
+
+  @Effect()
+  GroupValueSets$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.GroupValueSets),
+    switchMap((action: GroupValueSets) => {
+      this.store.dispatch(new fromDAM.TurnOnLoader({
+        blockUI: true,
+      }));
+      return this.igService.groupValueSets(action.payload.id, action.payload.groups).pipe(
+        take(1),
+        flatMap((groups: any) => {
+          return [
+            new fromDAM.TurnOffLoader(),
+            new GroupValueSetsSuccess(action.payload.groups),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new fromDAM.TurnOffLoader(),
+          );
+        }),
+      );
+    }),
+  );
+
+  @Effect()
+  GroupValueSetsSuccess$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.GroupValueSetsSuccess),
+    mergeMap((action: GroupValueSetsSuccess) => {
+      return this.store.select(fromDAM.selectPayloadData).pipe(
+        take(1),
+        map((ig) => {
+          return new LoadPayloadData({ ... ig, valueSetRegistry: {...ig.valueSetRegistry , GroupedData: action.payload}});
+        }),
+      );
+    }),
+  );
+
+
 
   finalizeAdd(toDoo: Observable<Action>) {
     return combineLatest(

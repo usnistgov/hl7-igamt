@@ -1,3 +1,4 @@
+import { GroupValueSets } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { AfterViewInit, Component, Input, OnDestroy, OnInit, SystemJsNgModuleLoader, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, ChildrenOutletContexts, Router } from '@angular/router';
@@ -867,21 +868,62 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     ).subscribe();
   }
 
-  groupValueSet($event){
+  // groupValueSet($event){
 
-    const dialogRef = this.dialog.open(GroupValueSetComponent, {
-      data: $event,
-    });
 
-    dialogRef.afterClosed().pipe(
-     filter((result) => result !== undefined),
-     take(1),
-     map((result) => {
-     if (result) {
-      //this.store.dispatch(new fromIgDocumentEdit.GroupValueSets(result));
-      }
-          }),
-      ).subscribe();
+
+  //   const dialogRef = this.dialog.open(GroupValueSetComponent, {
+  //     data: $event,
+  //   });
+
+  //   dialogRef.afterClosed().pipe(
+  //    filter((result) => result !== undefined),
+  //    take(1),
+  //    map((result) => {
+  //    if (result) {
+
+  //     const groupedMap = new Map<string, string[]>();
+
+  //     for (const group of Object.keys(result)) {
+  //         const ids = result[group].map(item => item.id);
+  //           groupedMap.set(group, ids);
+  //     }
+  //     console.log(groupedMap);
+
+  //     this.store.dispatch(new GroupValueSets(groupedMap));
+
+  //     }
+  //         }),
+  //     ).subscribe();
+  // }
+
+
+
+  groupValueSet($event) {
+    this.documentRef$.pipe(
+      take(1),
+      concatMap((documentRef: IDocumentRef) => {
+
+        const dialogRef = this.dialog.open(GroupValueSetComponent, {
+          data: $event,
+        });
+
+        return dialogRef.afterClosed().pipe(
+          filter((result) => result !== undefined),
+          take(1),
+          map((result) => {
+            if (result) {
+
+              console.log(result);
+              this.store.dispatch(new GroupValueSets({ id: documentRef.documentId, groups: result}));
+            }
+          })
+        );
+      })
+    ).subscribe();
   }
+
+
+
 
 }

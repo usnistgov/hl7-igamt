@@ -13,6 +13,7 @@ import gov.nist.hit.hl7.igamt.access.model.AccessPermission;
 import gov.nist.hit.hl7.igamt.access.model.Action;
 import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
 import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.util.BindingSummaryFilter;
 import gov.nist.hit.hl7.igamt.display.model.*;
 import gov.nist.hit.hl7.igamt.ig.domain.ExportShareConfiguration;
@@ -35,18 +36,6 @@ import com.mongodb.client.result.UpdateResult;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.impl.SimpleCoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
-import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentConfig;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.Section;
-import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
-import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
@@ -1547,7 +1536,19 @@ public class IGDocumentController extends BaseController {
 
 		return config;
 	}
-	
+
+
+	@RequestMapping(value = "/api/igdocuments/{igId}/group-value-sets", method = RequestMethod.POST, produces = {
+			"application/json" })
+	@PreAuthorize("AccessResource('IGDOCUMENT', #igId, WRITE) && ConcurrentSync('IGDOCUMENT', #igId, ALLOW_SYNC_STRICT)")
+	public @ResponseBody GroupedId groupValueSets(@PathVariable("igId") String igId, @RequestBody GroupedId groupedId,
+												Authentication authentication) throws IGNotFoundException, EntityNotFound, ForbiddenOperationException, IGUpdateException {
+		Ig ig = findIgById(igId);
+		ig.getValueSetRegistry().setGroupedData(groupedId);
+		this.igService.save(ig);
+		return ig.getValueSetRegistry().getGroupedData();
+	}
+
 	@RequestMapping(value = "/api/datatypes/{dtId}/used-children", method = RequestMethod.GET, produces = {
 	"application/json" })
 	public @ResponseBody List<DisplayElement> findDTChildren(@PathVariable("dtId") String dtId,

@@ -14,17 +14,12 @@ package gov.nist.hit.hl7.igamt.service.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.*;
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
@@ -339,108 +334,213 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 		Element elmNoValidation = new Element("NoValidation");
 
-		Element elmValueSetDefinitionsExternal = new Element("ExternalValueSetDefinitions");
-		Element elmValueSetDefinitionsHL7Base = new Element("ValueSetDefinitions");
-		elmValueSetDefinitionsHL7Base.addAttribute(new Attribute("Group", "HL7_base"));
-		elmValueSetDefinitionsHL7Base.addAttribute(new Attribute("Order", "1"));
-		Element elmValueSetDefinitionsHL7HL7Profile = new Element("ValueSetDefinitions");
-		elmValueSetDefinitionsHL7HL7Profile.addAttribute(new Attribute("Group", "HL7_Profile"));
-		elmValueSetDefinitionsHL7HL7Profile.addAttribute(new Attribute("Order", "2"));
-		Element elmValueSetDefinitionsHL7External = new Element("ValueSetDefinitions");
-		elmValueSetDefinitionsHL7External.addAttribute(new Attribute("Group", "External"));
-		elmValueSetDefinitionsHL7External.addAttribute(new Attribute("Order", "3"));
-		Element elmValueSetDefinitionsHL7Other = new Element("ValueSetDefinitions");
-		elmValueSetDefinitionsHL7Other.addAttribute(new Attribute("Group", "Others"));
-		elmValueSetDefinitionsHL7Other.addAttribute(new Attribute("Order", "4"));
+//		Element elmValueSetDefinitionsExternal = new Element("ExternalValueSetDefinitions");
+//		Element elmValueSetDefinitionsHL7Base = new Element("ValueSetDefinitions");
+//		elmValueSetDefinitionsHL7Base.addAttribute(new Attribute("Group", "HL7_Base"));
+//		elmValueSetDefinitionsHL7Base.addAttribute(new Attribute("Order", "1"));
+//		Element elmValueSetDefinitionsHL7HL7Profile = new Element("ValueSetDefinitions");
+//		elmValueSetDefinitionsHL7HL7Profile.addAttribute(new Attribute("Group", "HL7_Profile"));
+//		elmValueSetDefinitionsHL7HL7Profile.addAttribute(new Attribute("Order", "2"));
+//		Element elmValueSetDefinitionsHL7External = new Element("ValueSetDefinitions");
+//		elmValueSetDefinitionsHL7External.addAttribute(new Attribute("Group", "External"));
+//		elmValueSetDefinitionsHL7External.addAttribute(new Attribute("Order", "3"));
+//		Element elmValueSetDefinitionsHL7Other = new Element("ValueSetDefinitions");
+//		elmValueSetDefinitionsHL7Other.addAttribute(new Attribute("Group", "Others"));
+//		elmValueSetDefinitionsHL7Other.addAttribute(new Attribute("Order", "4"));
+//
+//		for (ValuesetDataModel vsm : igModel.getValuesets()) {
+//			try {
+//				Valueset t = vsm.getModel();
+//				if(t != null) {
+//					boolean isExternal = t.getSourceType().equals(SourceType.EXTERNAL) || t.getSourceType().equals(SourceType.EXTERNAL_TRACKED);
+//					if(isExternal) {
+//						if(Strings.isNullOrEmpty(t.getUrl())) {
+//							throw new TableSerializationException("External value set " + t.getId() + " is missing a URL");
+//						} else {
+//							Element externalValueSetDefinition = new Element("ValueSetDefinition");
+//							addValueSetDefinitionAttributes(t, defaultHL7Version, externalValueSetDefinition);
+//							externalValueSetDefinition.addAttribute(new Attribute("URL", t.getUrl()));
+//							elmValueSetDefinitionsExternal.appendChild(externalValueSetDefinition);
+//						}
+//					} else {
+//
+//						// Get the codes (either from code set or from the value set)
+//						Set<Code> codes;
+//						if(t.getSourceType().equals(SourceType.INTERNAL_TRACKED)) {
+//							if(vsm.getReferencedCodeSet() != null) {
+//								codes = vsm.getReferencedCodeSet().getCodes();
+//							} else {
+//								throw new TableSerializationException("Internal value set " + t.getId() + " link to code set could not resolved.");
+//							}
+//						} else {
+//							codes = t.getCodes();
+//						}
+//
+//						boolean noCodes = codes == null || codes.isEmpty();
+//						boolean sizeOverLimit = !noCodes && codes.size() > limitSizeOfVS;
+//						boolean isPlaceholder = !noCodes && codes.size() == 1 && codes.iterator().next().getValue().equals("...");
+//						boolean skipValidation = noCodes || sizeOverLimit || isPlaceholder;
+//						boolean skipCodesExport = noCodes || sizeOverLimit;
+//
+//						// If conditions are met we will add this value set to the list of value sets with no validation support
+//						if(skipValidation) {
+//							Element elmBindingIdentifier = new Element("BindingIdentifier");
+//							elmBindingIdentifier.appendChild(this.valuesetService.findXMLRefIdById(t, defaultHL7Version));
+//							elmNoValidation.appendChild(elmBindingIdentifier);
+//						}
+//
+//						Element elmValueSetDefinition = new Element("ValueSetDefinition");
+//
+//						// Set Metadata
+//						addValueSetDefinitionAttributes(t, defaultHL7Version, elmValueSetDefinition);
+//
+//						// Set the codes
+//						if(!skipCodesExport) {
+//							addValueSetCodes(elmValueSetDefinition, codes);
+//						}
+//
+//						if(t.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
+//							elmValueSetDefinitionsHL7Base.appendChild(elmValueSetDefinition);
+//						} else if(t.getDomainInfo().getScope().equals(Scope.USER)) {
+//							elmValueSetDefinitionsHL7HL7Profile.appendChild(elmValueSetDefinition);
+//						} else if(t.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+//							elmValueSetDefinitionsHL7External.appendChild(elmValueSetDefinition);
+//						} else {
+//							elmValueSetDefinitionsHL7Other.appendChild(elmValueSetDefinition);
+//						}
+//					}
+//				}
+//			} catch(Exception e){
+//				throw new TableSerializationException(e, vsm.getModel().getId());
+//			}
+//		}
+//
+//		elmTableLibrary.appendChild(elmMetaData);
+//		elmTableLibrary.appendChild(elmNoValidation);
+//
+//		if(elmValueSetDefinitionsExternal.getChildCount() > 0) {
+//			elmTableLibrary.appendChild(elmValueSetDefinitionsExternal);
+//		}
+//		if (elmValueSetDefinitionsHL7Base.getChildCount() > 0) {
+//			elmTableLibrary.appendChild(elmValueSetDefinitionsHL7Base);
+//		}
+//		if (elmValueSetDefinitionsHL7HL7Profile.getChildCount() > 0) {
+//			elmTableLibrary.appendChild(elmValueSetDefinitionsHL7HL7Profile);
+//		}
+//		if (elmValueSetDefinitionsHL7External.getChildCount() > 0) {
+//			elmTableLibrary.appendChild(elmValueSetDefinitionsHL7External);
+//		}
+//		if (elmValueSetDefinitionsHL7Other.getChildCount() > 0) {
+//			elmTableLibrary.appendChild(elmValueSetDefinitionsHL7Other);
+//		}
+		Ig ig = igModel.getModel();
 
-		for (ValuesetDataModel vsm : igModel.getValuesets()) {
+		this.processValueSetGroups(igModel.getValuesets(),igModel.getModel().getValueSetRegistry().getGroupedData(), elmNoValidation, elmTableLibrary, elmMetaData, defaultHL7Version);
+
+		return elmTableLibrary;
+	}
+
+
+
+
+	public void processValueSetGroups(Collection<ValuesetDataModel> valueSetDataModels, GroupedId groups, Element elmNoValidation,Element elmTableLibrary, Element elmMetaData,  String defaultHL7Version) throws TableSerializationException {
+		Map<String, ValuesetDataModel> valueSetMap = valueSetDataModels.stream()
+				.filter(vsm -> vsm.getModel() != null && vsm.getModel().getId() != null)
+				.collect(Collectors.toMap(
+						vsm -> vsm.getModel().getId(),
+						vsm -> vsm
+				));
+
+		Map<String, String> valueSetIdToGroup = new HashMap<>();
+		groups.getGroupedData().forEach((group, ids) -> {
+			for (String id : ids) {
+				valueSetIdToGroup.put(id, group);
+			}
+		});
+
+		Map<String, Element> groupedElements = new HashMap<>();
+
+		for (Map.Entry<String, String> entry : valueSetIdToGroup.entrySet()) {
+			String valueSetId = entry.getKey();
+			String group = entry.getValue();
+
+			ValuesetDataModel vsm = valueSetMap.get(valueSetId);
+			if (vsm == null) continue;
+
 			try {
 				Valueset t = vsm.getModel();
-				if(t != null) {
-					boolean isExternal = t.getSourceType().equals(SourceType.EXTERNAL) || t.getSourceType().equals(SourceType.EXTERNAL_TRACKED);
-					if(isExternal) {
-						if(Strings.isNullOrEmpty(t.getUrl())) {
-							throw new TableSerializationException("External value set " + t.getId() + " is missing a URL");
+				if (t == null) continue;
+
+				boolean isExternal = t.getSourceType().equals(SourceType.EXTERNAL) || t.getSourceType().equals(SourceType.EXTERNAL_TRACKED);
+
+				Element elmValueSetDefinition = new Element("ValueSetDefinition");
+
+				if (isExternal) {
+					if (Strings.isNullOrEmpty(t.getUrl())) {
+						throw new TableSerializationException("External value set " + t.getId() + " is missing a URL");
+					}
+					addValueSetDefinitionAttributes(t, defaultHL7Version, elmValueSetDefinition);
+					elmValueSetDefinition.addAttribute(new Attribute("URL", t.getUrl()));
+				} else {
+					// Determine codes
+					Set<Code> codes;
+					if (t.getSourceType().equals(SourceType.INTERNAL_TRACKED)) {
+						if (vsm.getReferencedCodeSet() != null) {
+							codes = vsm.getReferencedCodeSet().getCodes();
 						} else {
-							Element externalValueSetDefinition = new Element("ValueSetDefinition");
-							addValueSetDefinitionAttributes(t, defaultHL7Version, externalValueSetDefinition);
-							externalValueSetDefinition.addAttribute(new Attribute("URL", t.getUrl()));
-							elmValueSetDefinitionsExternal.appendChild(externalValueSetDefinition);
+							throw new TableSerializationException("Internal value set " + t.getId() + " link to code set could not resolved.");
 						}
 					} else {
+						codes = t.getCodes();
+					}
 
-						// Get the codes (either from code set or from the value set)
-						Set<Code> codes;
-						if(t.getSourceType().equals(SourceType.INTERNAL_TRACKED)) {
-							if(vsm.getReferencedCodeSet() != null) {
-								codes = vsm.getReferencedCodeSet().getCodes();
-							} else {
-								throw new TableSerializationException("Internal value set " + t.getId() + " link to code set could not resolved.");
-							}
-						} else {
-							codes = t.getCodes();
-						}
+					boolean noCodes = codes == null || codes.isEmpty();
+					boolean sizeOverLimit = !noCodes && codes.size() > limitSizeOfVS;
+					boolean isPlaceholder = !noCodes && codes.size() == 1 && codes.iterator().next().getValue().equals("...");
+					boolean skipValidation = noCodes || sizeOverLimit || isPlaceholder;
+					boolean skipCodesExport = noCodes || sizeOverLimit;
 
-						boolean noCodes = codes == null || codes.isEmpty();
-						boolean sizeOverLimit = !noCodes && codes.size() > limitSizeOfVS;
-						boolean isPlaceholder = !noCodes && codes.size() == 1 && codes.iterator().next().getValue().equals("...");
-						boolean skipValidation = noCodes || sizeOverLimit || isPlaceholder;
-						boolean skipCodesExport = noCodes || sizeOverLimit;
+					if (skipValidation) {
+						Element elmBindingIdentifier = new Element("BindingIdentifier");
+						elmBindingIdentifier.appendChild(this.valuesetService.findXMLRefIdById(t, defaultHL7Version));
+						elmNoValidation.appendChild(elmBindingIdentifier);
+					}
 
-						// If conditions are met we will add this value set to the list of value sets with no validation support
-						if(skipValidation) {
-							Element elmBindingIdentifier = new Element("BindingIdentifier");
-							elmBindingIdentifier.appendChild(this.valuesetService.findXMLRefIdById(t, defaultHL7Version));
-							elmNoValidation.appendChild(elmBindingIdentifier);
-						}
+					addValueSetDefinitionAttributes(t, defaultHL7Version, elmValueSetDefinition);
 
-						Element elmValueSetDefinition = new Element("ValueSetDefinition");
-
-						// Set Metadata
-						addValueSetDefinitionAttributes(t, defaultHL7Version, elmValueSetDefinition);
-
-						// Set the codes
-						if(!skipCodesExport) {
-							addValueSetCodes(elmValueSetDefinition, codes);
-						}
-
-						if(t.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
-							elmValueSetDefinitionsHL7Base.appendChild(elmValueSetDefinition);
-						} else if(t.getDomainInfo().getScope().equals(Scope.USER)) {
-							elmValueSetDefinitionsHL7HL7Profile.appendChild(elmValueSetDefinition);
-						} else if(t.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
-							elmValueSetDefinitionsHL7External.appendChild(elmValueSetDefinition);
-						} else {
-							elmValueSetDefinitionsHL7Other.appendChild(elmValueSetDefinition);
-						}
+					if (!skipCodesExport) {
+						addValueSetCodes(elmValueSetDefinition, codes);
 					}
 				}
-			} catch(Exception e){
+
+				// Add to group element
+				Element groupElement = groupedElements.computeIfAbsent(group, g -> {
+					Element e = new Element("ValueSetDefinitions");
+					e.addAttribute(new Attribute("Group", g));
+					return e;
+				});
+				groupElement.appendChild(elmValueSetDefinition);
+
+			} catch (Exception e) {
 				throw new TableSerializationException(e, vsm.getModel().getId());
 			}
 		}
 
+		// Add metadata and no-validation sections
 		elmTableLibrary.appendChild(elmMetaData);
 		elmTableLibrary.appendChild(elmNoValidation);
 
-		if(elmValueSetDefinitionsExternal.getChildCount() > 0) {
-			elmTableLibrary.appendChild(elmValueSetDefinitionsExternal);
+		// Add all group blocks to the table library
+		for (Element groupElement : groupedElements.values()) {
+			if (groupElement.getChildCount() > 0) {
+				elmTableLibrary.appendChild(groupElement);
+			}
 		}
-		if (elmValueSetDefinitionsHL7Base.getChildCount() > 0) {
-			elmTableLibrary.appendChild(elmValueSetDefinitionsHL7Base);
-		}
-		if (elmValueSetDefinitionsHL7HL7Profile.getChildCount() > 0) {
-			elmTableLibrary.appendChild(elmValueSetDefinitionsHL7HL7Profile);
-		}
-		if (elmValueSetDefinitionsHL7External.getChildCount() > 0) {
-			elmTableLibrary.appendChild(elmValueSetDefinitionsHL7External);
-		}
-		if (elmValueSetDefinitionsHL7Other.getChildCount() > 0) {
-			elmTableLibrary.appendChild(elmValueSetDefinitionsHL7Other);
-		}
-
-		return elmTableLibrary;
 	}
+
+
+
+
 
 	public void addValueSetCodes(Element element, Set<Code> codes) {
 		for(Code c : codes) {
@@ -2604,4 +2704,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 			return this.findDatatype(igModel, Arrays.copyOfRange(paths, 1, paths.length), srogdm);
 		}
 	}
+
+
+
 }
