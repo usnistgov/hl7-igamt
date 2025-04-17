@@ -4,4 +4,5 @@ import {ILink} from './link.interface';
 export interface IRegistry {
   children: ILink[];
   type: Type;
+  groupedData?: any;
 }

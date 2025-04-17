@@ -1004,7 +1004,7 @@ export class IgEditEffects extends DamWidgetEffect {
       return this.store.select(fromDAM.selectPayloadData).pipe(
         take(1),
         map((ig) => {
-          return new LoadPayloadData({ ... ig, valueSetRegistry: {...ig.valueSetRegistry , GroupedData: action.payload}});
+          return new LoadPayloadData({ ... ig, valueSetRegistry: {...ig.valueSetRegistry , groupedData: action.payload}});
         }),
       );
     }),

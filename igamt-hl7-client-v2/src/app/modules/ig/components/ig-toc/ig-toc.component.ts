@@ -370,7 +370,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
 
   onGroupValueSet($event : IDisplayElement[]){
-    this.groupValueSet.emit({all: $event, groups: []});
+    this.groupValueSet.emit({valueSets: $event});
   }
 
 }

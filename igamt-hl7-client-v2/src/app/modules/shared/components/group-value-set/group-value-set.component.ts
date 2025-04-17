@@ -12,7 +12,8 @@ import { IDisplayElement } from '../../models/display-element.interface';
 export class GroupValueSetComponent implements OnInit {
 
     editingGroup: string | null = null;
-editedGroupName: string = '';
+    editedGroupName: string = '';
+    valueSetMap: { [key: string]: IDisplayElement } = {};
 
 
   // Fixed headers for grouping
@@ -31,16 +32,23 @@ editedGroupName: string = '';
   constructor(
     public dialogRef: MatDialogRef<GroupValueSetComponent>,
     public http: HttpClient,
-    @Inject(MAT_DIALOG_DATA) public data: { all: any, groups: any[] }
+    @Inject(MAT_DIALOG_DATA) public data: { valueSets: any[], groupedData: any }
   ) {}
 
   ngOnInit(): void {
 
-    if(this.data.groups.length) {
-        this.custom = true;
 
+
+    for (const vs of this.data.valueSets) {
+        this.valueSetMap[vs.id] = vs;
     }
-    else {
+
+    if(this.data.groupedData &&  this.data.groupedData.custom) {
+
+    
+       this.custom = true;
+       this.buildFromExisting(this.data.groupedData);
+    }else {
 
         this.buildDefaultGroupedData();
     }
@@ -49,10 +57,56 @@ editedGroupName: string = '';
 
 
   buildDefaultGroupedData(){
+   this.default_groupNames =  ['HL7_Base', 'HL7_Profile', 'External', 'Others'];
 
     this.default_groupNames.forEach(group => this.groupedData[group] = []);
 
-    for (const item of this.data.all.children) {
+    for (const item of this.data.valueSets) {
+      const scope = item.domainInfo.scope;
+      
+      if (item.domainInfo.scope ==='HL7STANDARD') {
+        
+        this.groupedData['HL7_Base'].push(item);
+
+      } else if(item.domainInfo.scope ==='USER') {
+
+        this.groupedData['HL7_Profile'].push(item);
+
+      } else {
+
+        this.groupedData['Others'].push(item);
+
+      }
+    }
+    
+    this.groupNames = [...this.default_groupNames];
+
+  }
+
+
+  buildFromExisting(groupedData){
+    console.log("CALLED EXIST");
+    this.groupNames =  groupedData.groupNames;
+    this.groupNames = [... groupedData.groupNames];
+
+    
+    this.groupNames.forEach(group => {
+
+        this.groupedData[group] = [];
+        
+        for(const vsId of groupedData.groupedData[group]) { 
+            this.groupedData[group].push(this.valueSetMap[vsId]);
+        }
+
+    }
+        
+    
+    
+    );
+
+    
+
+    for (const item of this.data.valueSets) {
       const scope = item.domainInfo.scope;
       
       if (item.domainInfo.scope ==='HL7STANDARD') {
@@ -70,29 +124,26 @@ editedGroupName: string = '';
       }
     }
     
-    this.groupNames = [...this.default_groupNames];
 
   }
+
 
   cancel(): void {
     this.dialogRef.close();
   }
 
   done(): void {
-    console.log(this.groupedData);
     let groupedMap = {};
 
     for (const group of Object.keys(this.groupedData)) {
 
       let ids = this.groupedData[group].map(item => item.id);
 
-      //groupedMap.set(group, ids);
       groupedMap[group] = ids;
 
     }
-    console.log(groupedMap);
 
-   this.dialogRef.close(groupedMap);
+   this.dialogRef.close({groupedData: groupedMap, groupNames: this.groupNames, custom: this.custom});
   }
 
   drop(event: CdkDragDrop<IDisplayElement[]>, group: string): void {

@@ -107,7 +107,7 @@ export interface IIgVerificationReport {
 
 export interface IGroupValueSetWrapper {
   groups?: IValueSetGroups[]; // if already grouped
-  all: IDisplayElement[];
+  valueSets: IDisplayElement[];
 }
 
 export interface IValueSetGroups {

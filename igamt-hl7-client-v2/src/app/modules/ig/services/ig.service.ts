@@ -485,9 +485,7 @@ export class IgService {
 
 
   groupValueSets(id: string, groups: any): Observable<any> {
-    console.log("groups");
-    console.log(JSON.stringify(groups));
 
-    return this.http.post<any>(this.IG_END_POINT + id + '/group-value-sets',  {groupedData: groups});
+    return this.http.post<any>(this.IG_END_POINT + id + '/group-value-sets',  groups);
   }
 }

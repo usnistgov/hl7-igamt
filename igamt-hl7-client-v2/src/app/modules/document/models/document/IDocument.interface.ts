@@ -10,6 +10,7 @@ export interface IDocument extends IAbstractDomain {
   deprecated?: boolean;
   documentConfig?: IDocumentConfig;
   valueSetGroups?: any;
+  valueSetRegistry?: any; // helper only
 
 }
 

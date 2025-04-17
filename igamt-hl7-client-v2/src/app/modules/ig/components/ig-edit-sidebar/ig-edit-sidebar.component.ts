@@ -85,6 +85,7 @@ import { VerificationService } from './../../../shared/services/verification.ser
 import { ITypedSection } from './../ig-toc/ig-toc.component';
 import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
 import { GroupValueSetComponent } from 'src/app/modules/shared/components/group-value-set/group-value-set.component';
+import { IDocument } from 'src/app/modules/document/models/document/IDocument.interface';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -868,44 +869,16 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     ).subscribe();
   }
 
-  // groupValueSet($event){
-
-
-
-  //   const dialogRef = this.dialog.open(GroupValueSetComponent, {
-  //     data: $event,
-  //   });
-
-  //   dialogRef.afterClosed().pipe(
-  //    filter((result) => result !== undefined),
-  //    take(1),
-  //    map((result) => {
-  //    if (result) {
-
-  //     const groupedMap = new Map<string, string[]>();
-
-  //     for (const group of Object.keys(result)) {
-  //         const ids = result[group].map(item => item.id);
-  //           groupedMap.set(group, ids);
-  //     }
-  //     console.log(groupedMap);
-
-  //     this.store.dispatch(new GroupValueSets(groupedMap));
-
-  //     }
-  //         }),
-  //     ).subscribe();
-  // }
-
-
 
   groupValueSet($event) {
-    this.documentRef$.pipe(
-      take(1),
-      concatMap((documentRef: IDocumentRef) => {
 
+     console.log($event);
+
+    this.store.select(selectIgDocument).pipe(
+      take(1),
+      concatMap((document: IgDocument) => {
         const dialogRef = this.dialog.open(GroupValueSetComponent, {
-          data: $event,
+          data: {groupedData: document.valueSetRegistry.groupedData, valueSets: $event.valueSets.children },
         });
 
         return dialogRef.afterClosed().pipe(
@@ -915,7 +888,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
             if (result) {
 
               console.log(result);
-              this.store.dispatch(new GroupValueSets({ id: documentRef.documentId, groups: result}));
+              this.store.dispatch(new GroupValueSets({ id: document.id, groups: result}));
             }
           })
         );
