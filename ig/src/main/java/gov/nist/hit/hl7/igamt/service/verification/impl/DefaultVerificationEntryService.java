@@ -236,6 +236,16 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
+    public IgamtObjectError InconsequentialCodeUsage(String pathId, String name, LocationInfo target, PropertyType prop, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("INCONSEQUENTIAL_R_CODE_USAGE")
+                .warning()
+                .target(id, type)
+                .locationInfo(pathId, name, prop)
+                .message("Value Set Binding with S (Suggested) binding strength contains codes with R (required) usage.")
+                .entry();
+    }
+
+    @Override
     public IgamtObjectError OBX2MessageValueSetBindingNotAllowed(
             String pathId, LocationInfo info, String id, Type type
     ) {
@@ -1034,7 +1044,29 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .entry();
 	}
 
-	@Override
+    @Override
+    public IgamtObjectError LengthInvalidRUsage(LocationInfo locationInfo, String id, Type type, String length) {
+        return new IgamtVerificationEntryBuilder("LENGTH_INVALID_R_USAGE")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.LENGTH)
+                .message(String.format("The target element has R (Required) Usage and a minimum length of '%s'. The minimum length shall be greater than 0", length))
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError LengthInvalidXUsage(LocationInfo locationInfo, String id, Type type, String minLength, String maxLength) {
+        return new IgamtVerificationEntryBuilder("LENGTH_INVALID_X_USAGE")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.LENGTH)
+                .message(String.format("The target element has X (Excluded) Usage and a length range of [%s..%s]. The length shall be [0..0]", minLength, maxLength))
+                .entry();
+    }
+
+    @Override
 	public IgamtObjectError LengthInvalidRange(LocationInfo locationInfo, String id, Type type, String minLength, String maxLength) {
 		return new IgamtVerificationEntryBuilder("LENGTH_INVALID_RANGE")
                 .fatal()
