@@ -878,7 +878,15 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
       take(1),
       concatMap((document: IgDocument) => {
         const dialogRef = this.dialog.open(GroupValueSetComponent, {
-          data: {groupedData: document.valueSetRegistry.groupedData, valueSets: $event.valueSets.children },
+          data: {groupedData: document.valueSetRegistry.groupedData, valueSets: $event.valueSets.children,
+          width: '600px',
+          height: '700px',
+          panelClass: 'custom-dialog-container',
+          disableClose: true,
+          autoFocus: true,
+          hasBackdrop: true,
+          backdropClass: 'custom-backdrop-class',
+ },
         });
 
         return dialogRef.afterClosed().pipe(

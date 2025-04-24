@@ -1,136 +1,153 @@
 <h3 mat-dialog-title>Group Value Set</h3>
 
 <div mat-dialog-content>
+  <ng-container *ngIf="custom">
+   
 
-    <ng-container *ngIf="custom">
-        <div class="form-control">
-            <label>Add Group:</label>
-            <input type="text" [(ngModel)]="newGroupName" placeholder="Enter group name" />
-            <button class="btn btn-primary btn-sm" (click)="addGroup()" [disabled]="newGroupName.length<1">Add New Group</button>
+    <div style="height: 100%; width: 100%;">
+
+          <button class="btn btn-sm btn-light" (click)="showTypeGroupTable = !showTypeGroupTable">
+            {{ showTypeGroupTable ? 'Default Groups' : 'Show Default Groups' }}
+          </button>
+          <div>
+          <table *ngIf="showTypeGroupTable" class="type-group-table" >
+            <thead>
+              <tr>
+                <th>  Value Set Type  </th>
+                <th>  Assign to Group </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let type of valueSetTypes">
+                <td>{{ type.label }}</td>
+                <td>
+                  <select [(ngModel)]="typeToGroupMap[type.value]">
+                    <option [ngValue]="null" disabled>Select Group</option>
+                    <option *ngFor="let group of groupNames" [value]="group">
+                      {{ group }}
+                    </option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                    <div style="display: flex; flex-direction: row; justify-content: center;">
+
+                        <button class="btn btn-sm btn-info" (click)="redistribute()"> Apply </button>
+
+
+                    </div>
+
+
+                </td>
+              </tr>
+            </tbody>
+          </table>
           </div>
-          
         
-          <div class="group-container">
-            <div
-              class="group-column"
-              *ngFor="let group of groupNames">
-          
-              <div class="group-header">
+     
 
-                <div *ngIf="editingGroup !== group" style="display: flex; flex-direction: row; justify-content: flex-start;">
-                    
-                    <h4>{{ group }}</h4>
-                    <button class="btn btn-sm btn-info" (click)="startEditingGroup(group)" style="height: 30px; width: 30px;"><i class="fa fa-pencil"></i></button>
-                </div>
-                <div *ngIf="editingGroup === group">
-                    <input type="text"
-                           [(ngModel)]="editedGroupName"
-                           (keyup.enter)="renameGroup(group)"
-                           (blur)="renameGroup(group)"
-                           class="form-control form-control-sm"
-                           placeholder="New group name" />
-                    <button class="btn btn-sm btn-success"
-                            [disabled]="!editedGroupName || groupNames.includes(editedGroupName.trim())"
-                            (click)="renameGroup(group)"> Save </button>
-                    <button class="btn btn-sm btn-secondary" (click)="cancelEditing()">Cancel</button>
-                </div>
+          <div style="margin-bottom: 16px;" style="display: flex; flex-direction: row; justify-content: flex-end;">
+            <input
+              type="text"
+              [(ngModel)]="newGroupName"
+              placeholder="Enter group name"
+            />
+            <button
+              class="btn btn-primary btn-sm"
+              (click)="addGroup()"
+              [disabled]="newGroupName.length < 1">
+              <i class="fa fa-plus"></i>
+            </button>
+          </div>
+    <div class="group-container" cdkDropList [cdkDropListData]="groupNames" (cdkDropListDropped)="dropGroup($event)"   [cdkDropListConnectedTo]="[groupDropListId]"   [id]="groupDropListId">
+      <div class="group-column group-drag" *ngFor="let group of groupNames" cdkDrag>
+        <div class="group-header">
+            <div cdkDragHandle class="drag-icon"><i class="fa fa-bars"></i></div>
 
-              </div>
-          
-              <div
-                [id]="group"
-                cdkDropList
-                [cdkDropListData]="groupedData[group]"
-                class="drop-list"
-                [cdkDropListConnectedTo]="getConnectedDropLists(group)"
-                (cdkDropListDropped)="drop($event, group)">
-                
-                <div
-                  class="item"
-                  *ngFor="let item of groupedData[group]"
-                  cdkDrag>
-                  <app-display-section [element]="item" [hideDescription]="true"></app-display-section>
-                </div>
-              </div>
-            </div>
+          <div *ngIf="editingGroup !== group" style="width: 100%;">
+            <h4 style="display: inline-block; margin-right: 8px;">
+              {{ group }}
+            </h4>
+            <button *ngIf="isNotDefault(group)"
+              class="btn btn-sm btn-info"
+              (click)="startEditingGroup(group)"
+              style="height: 30px; width: 30px;">
+              <i class="fa fa-pencil"></i>
+            </button>
+
+            <button *ngIf="isNotDefault(group)"
+            class="btn btn-sm btn-danger"
+            (click)="deleteGroup(group)"
+            style="height: 30px; width: 30px;">
+            <i class="fa fa-remove"></i>
+            </button>
           </div>
 
-
-
-    </ng-container>
-
-    <ng-container *ngIf="!custom">
-
-        <div style="margin-bottom: 16px; display: flex; flex-direction: row; justify-content: flex-end;" >
-           <button (click)="customize()"> <i class="fa fa-pencil"></i>Customize grouping</button> 
+          <div *ngIf="editingGroup === group" style="width: 100%;">
+            <input
+              type="text"
+              [(ngModel)]="editedGroupName"
+              (keyup.enter)="renameGroup(group)"
+              (blur)="renameGroup(group)"
+              class="form-control form-control-sm"
+              placeholder="New group name"
+            />
+            <button
+              class="btn btn-sm btn-success"
+              [disabled]="!editedGroupName || groupNames.includes(editedGroupName.trim())"
+              (click)="renameGroup(group)">
+              Save
+            </button>
+          </div>
         </div>
-          
-        
-          <div class="group-container">
-            <div
-              class="group-column" *ngFor="let group of groupNames">
-          
-              <div class="group-header">
-                <h4>{{ group }}</h4>
-              </div>
-          
-              <div
-                [id]="group">
-            
-                <div
-                  *ngFor="let item of groupedData[group]">
-                  <app-display-section [element]="item"></app-display-section>
-                </div>
-              </div>
-            </div>
-          </div>
 
-    </ng-container>
+        <div
+          [id]="group"
+          cdkDropList
+          [cdkDropListData]="groupedData[group]"
+          class="drop-list"
+          [cdkDropListConnectedTo]="getConnectedDropLists(group)"
+          (cdkDropListDropped)="drop($event, group)"
+        >
+          <div
+            class="item"
+            *ngFor="let item of groupedData[group]"
+            cdkDrag
+          >
+            <app-display-section [element]="item" [hideDescription]="true"></app-display-section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!custom">
+    <div style="margin-bottom: 16px; display: flex; justify-content: flex-end;">
+      <button (click)="customize()">
+        <i class="fa fa-pencil"></i> Customize grouping
+      </button>
+    </div>
+
+    <!-- Read-Only Group Columns -->
+    <div class="group-container">
+      <div class="group-column" *ngFor="let group of groupNames">
+        <div class="group-header">
+          <h4>{{ group }}</h4>
+        </div>
+        <div class="drop-list">
+          <div *ngFor="let item of groupedData[group]">
+            <app-display-section [element]="item"></app-display-section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
 
 <mat-dialog-actions style="justify-content: flex-end; margin-top: 10px;">
   <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
   <button (click)="done()" class="btn btn-sm btn-success">Done</button>
 </mat-dialog-actions>
-
-
-
-
-<!-- 
-<div mat-dialog-content>
-
-
-    <div style="margin-bottom: 16px;">
-        <label>Add Group:</label>
-        <input type="text" [(ngModel)]="newGroupName" placeholder="Enter group name" />
-        <button class="btn btn-primary btn-sm" (click)="addGroup()">Add</button>
-      </div>
-      
-    
-
-
-
-  <div class="group-container">
-    <div
-      class="group-column"
-      *ngFor="let group of groupNames">
-
-      <h4>{{ group }}  </h4>
-
-      <div
-        [id]="group"
-        cdkDropList
-        [cdkDropListData]="groupedData[group]"
-        class="drop-list"
-        [cdkDropListConnectedTo]="getConnectedDropLists(group)"
-        (cdkDropListDropped)="drop($event, group)">
-        
-        <div
-          class="item"
-          *ngFor="let item of groupedData[group]"
-          cdkDrag>
-          <app-display-section [element]="item"></app-display-section>
-        </div>
-      </div>
-    </div>
-  </div>
-</div> -->

@@ -1,8 +1,10 @@
+import { SourceType } from './../../models/adding-info';
 import { HttpClient } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { IDisplayElement } from '../../models/display-element.interface';
+import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-group-value-set',
@@ -15,9 +17,27 @@ export class GroupValueSetComponent implements OnInit {
     editedGroupName: string = '';
     valueSetMap: { [key: string]: IDisplayElement } = {};
 
+    groupDropListId = 'group-drop-list';
+
+
+    valueSetTypes = [
+        { label: 'HL7STANDARD', value: 'HL7STANDARD' },
+        { label: 'USER', value: 'USER' },
+        { label: 'EXTERNAL', value: 'EXTERNAL' }
+      ];
+
+
+      typeToGroupMap: { [type: string]: string } = {
+        HL7STANDARD: '',
+        USER: '',
+        EXTERNAL: ''
+      };
+
+    groupDropdownOptions: { label: string; value: string }[] = [];
+
 
   // Fixed headers for grouping
-  default_groupNames = ['HL7', 'USER', 'External', 'Others'];
+  default_groupNames = [];
 
   custom = false;
 
@@ -27,10 +47,35 @@ export class GroupValueSetComponent implements OnInit {
   groupedData: { [key: string]: IDisplayElement[] } = {};
 
 
+
+  rules = {
+    hl7Group: 'HL7_Base',
+    externalGroup: 'External',
+    userGroup: 'HL7_Profile',
+    unassignedGroup: 'Others'
+  };
+  
+
+
+  ruleOptions = [
+    { label: 'HL7STANDARD (scope)', value: 'HL7STANDARD' },
+    { label: 'EXTERNAL', value: 'EXTERNAL' },
+    { label: 'EXTERNAL_TRACKED', value: 'EXTERNAL_TRACKED' },
+    { label: 'USER', value: 'USER' },
+    { label: 'USER_TRACKED', value: 'USER_TRACKED' }
+  ];
+
+  groupRules: { [group: string]: string[] } = {};
+
+  previousGroupedData: { [key: string]: string[] } = {};
+
+
   
 
   constructor(
     public dialogRef: MatDialogRef<GroupValueSetComponent>,
+    private dialog: MatDialog,
+    
     public http: HttpClient,
     @Inject(MAT_DIALOG_DATA) public data: { valueSets: any[], groupedData: any }
   ) {}
@@ -43,18 +88,32 @@ export class GroupValueSetComponent implements OnInit {
         this.valueSetMap[vs.id] = vs;
     }
 
+    
     if(this.data.groupedData &&  this.data.groupedData.custom) {
 
-    
        this.custom = true;
        this.buildFromExisting(this.data.groupedData);
-    }else {
+       this.typeToGroupMap = this.data.groupedData.defaultMap;
+
+    } else {
 
         this.buildDefaultGroupedData();
     }
 
+    this.groupDropdownOptions = this.groupNames.map(g => ({ label: g, value: g }));
+
   }
 
+
+  dropGroup(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.groupNames, event.previousIndex, event.currentIndex);
+  
+    const newGroupedData: { [key: string]: any[] } = {};
+    for (const group of this.groupNames) {
+      newGroupedData[group] = this.groupedData[group];
+    }
+    this.groupedData = newGroupedData;
+  }
 
   buildDefaultGroupedData(){
    this.default_groupNames =  ['HL7_Base', 'HL7_Profile', 'External', 'Others'];
@@ -63,8 +122,16 @@ export class GroupValueSetComponent implements OnInit {
 
     for (const item of this.data.valueSets) {
       const scope = item.domainInfo.scope;
+      const sourceType = item.sourceType;
+      console.log(sourceType);
+
       
-      if (item.domainInfo.scope ==='HL7STANDARD') {
+      console.log(item);
+      if(item.sourceType !== SourceType.INTERNAL && item.sourceType !==SourceType.INTERNAL_TRACKED){
+        this.groupedData['External'].push(item);
+
+      }
+      else if (item.domainInfo.scope ==='HL7STANDARD') {
         
         this.groupedData['HL7_Base'].push(item);
 
@@ -143,7 +210,8 @@ export class GroupValueSetComponent implements OnInit {
 
     }
 
-   this.dialogRef.close({groupedData: groupedMap, groupNames: this.groupNames, custom: this.custom});
+   this.dialogRef.close({groupedData: groupedMap, groupNames: this.groupNames, custom: this.custom, defaultMap: this.typeToGroupMap});
+
   }
 
   drop(event: CdkDragDrop<IDisplayElement[]>, group: string): void {
@@ -163,15 +231,17 @@ export class GroupValueSetComponent implements OnInit {
   }
   
 
-  deleteGroup(group: string): void {
-    this.groupedData[group] = [];
-  }
+
   getConnectedDropLists(currentGroup: string): string[] {
     return this.groupNames.filter(group => group !== currentGroup);
   }
 
   customize(){
     this.custom = true;
+
+    this.typeToGroupMap['HL7STANDARD'] = 'HL7_Base';
+    this.typeToGroupMap['USER'] = 'HL7_Profile';
+    
 
   }
 
@@ -193,6 +263,16 @@ export class GroupValueSetComponent implements OnInit {
     this.editingGroup = null;
     this.editedGroupName = '';
   }
+
+  isNotDefault(group: string) {
+
+    if(group.toLocaleLowerCase() ==='Others'.toLocaleLowerCase()){
+      return false;
+    }
+    return true;
+  
+  }
+
   
   renameGroup(oldName: string): void {
     const newName = this.editedGroupName.trim();
@@ -213,5 +293,104 @@ export class GroupValueSetComponent implements OnInit {
     this.cancelEditing();
   }
 
+
+
+
+
+  deleteGroup(group: string): void {
+    if (!this.isNotDefault(group)) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        question: `Are you sure you want to delete the group "${group}"?`,
+        action: 'Delete Group',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((answer) => {
+      if (answer) {
+        if (!this.groupedData['Others']) {
+          this.groupNames.push('Others');
+          this.groupedData['Others'] = [];
+        }
+        
+        if (this.groupedData[group] && this.groupedData[group].length > 0) {
+          this.groupedData['Others'] = [...this.groupedData['Others'], ...this.groupedData[group]];
+        }
+        
+        const index = this.groupNames.indexOf(group);
+        if (index !== -1) {
+          this.groupNames.splice(index, 1);
+        }
+        
+        delete this.groupedData[group];
+      }
+    });
+    }
+
+  
+
+
+
+  redistribute(): void {
+    this.previousGroupedData = JSON.parse(JSON.stringify(this.groupedData));
+  
+    for (const group of this.groupNames) {
+      this.groupedData[group] = [];
+    }
+  
+    const assigned = new Set<string>();
+  
+    for (const vs of this.data.valueSets) {
+      const id = vs.id;
+      if (!id) continue;
+  
+      let type: string | null = null;
+  
+      if (vs.domainInfo && vs.domainInfo.scope === 'HL7STANDARD') {
+        type = 'HL7STANDARD';
+      } else if (vs.domainInfo && vs.domainInfo.scope === 'USER') {
+        type = 'USER';
+      } else if (vs.sourceType === 'EXTERNAL' || vs.sourceType === 'EXTERNAL_TRACKED') {
+        type = 'EXTERNAL';
+      }
+  
+      const targetGroup = type ? this.typeToGroupMap[type] : null;
+  
+      if (targetGroup && this.groupedData[targetGroup]) {
+        this.groupedData[targetGroup].push(this.valueSetMap[id]);
+        assigned.add(id);
+      }
+    }
+  
+    const unassignedGroup = this.groupNames.includes('Others') ? 'Others' : null;
+    if (unassignedGroup) {
+      for (const vs of this.data.valueSets) {
+        const id = vs.id;
+        if (id && !assigned.has(id)) {
+          this.groupedData[unassignedGroup].push(this.valueSetMap[id]);
+        }
+      }
+    }
+  }
+  
+  
+  
+  
+
+
+
+
+
+
+  
+  restore(): void {
+    this.groupedData = JSON.parse(JSON.stringify(this.previousGroupedData));
+  }
+
+
+  
 
 }

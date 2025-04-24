@@ -6,10 +6,19 @@ import java.util.Map;
 public class GroupedId {
 
     List<String> groupNames;
+    private Map<ValueSetType, String> defaultMap;
 
     boolean custom;
     public List<String> getGroupNames() {
         return groupNames;
+    }
+
+    public Map<ValueSetType, String> getDefaultMap() {
+        return defaultMap;
+    }
+
+    public void setDefaultMap(Map<ValueSetType, String> defaultMap) {
+        this.defaultMap = defaultMap;
     }
 
     public void setGroupNames(List<String> groupNames) {
