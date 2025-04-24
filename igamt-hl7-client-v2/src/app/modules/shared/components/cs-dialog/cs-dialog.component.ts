@@ -9,7 +9,7 @@ import * as vk from 'vkbeautify';
 import { xml as xmlFormat } from 'vkbeautify';
 import { Type } from '../../constants/type.enum';
 import { ConditionalUsageOptions } from '../../constants/usage.enum';
-import { ConstraintType, IAssertionConformanceStatement, IFreeTextConformanceStatement, IPath } from '../../models/cs.interface';
+import { AssertionMode, ConstraintType, IAssertionConformanceStatement, IFreeTextConformanceStatement, IPath } from '../../models/cs.interface';
 import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
 import { ConformanceStatementService } from '../../services/conformance-statement.service';
@@ -466,13 +466,25 @@ export class CsDialogComponent implements OnDestroy {
     });
 
     if (this.cs.type === ConstraintType.ASSERTION) {
-      this.descriptionService.updateAssertionDescription((this.cs as IAssertionConformanceStatement).assertion);
+      const cs = (this.cs as IAssertionConformanceStatement);
+      this.descriptionService.updateAssertionDescription(cs.assertion);
+      cs.assertion.description = `${this.capitalize(cs.assertion.description.trim())}`;
+      if (cs.assertion.description && cs.assertion.description !== '_' && !cs.assertion.description.startsWith('(')) {
+        cs.assertion.description = `${cs.assertion.description}.`;
+      }
       if (this.predicateMode) {
         const desc = (this.cs as IAssertionConformanceStatement).assertion.description;
         const noIf = desc && desc.startsWith('If');
         (this.cs as IAssertionConformanceStatement).assertion.description = !noIf ? 'If ' + (this.cs as IAssertionConformanceStatement).assertion.description : desc;
       }
     }
+  }
+
+  capitalize(value: string): string {
+    if (value) {
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+    return value;
   }
 
   updatePattern(pattern: Pattern) {

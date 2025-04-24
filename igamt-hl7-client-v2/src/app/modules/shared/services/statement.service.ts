@@ -65,8 +65,15 @@ export class StatementTarget {
     }>,
   ) {
     for (const item of occurrenceTypeValues) {
-      this.occurrenceValuesMap[item.value] = item.label;
+      this.occurrenceValuesMap[item.value] = this.firstLetterToLowerCase(item.label);
     }
+  }
+
+  firstLetterToLowerCase(value: string): string {
+    if (value) {
+      return value.charAt(0).toLowerCase() + value.slice(1);
+    }
+    return value;
   }
 
   setValue(subject: ISubject) {
@@ -305,7 +312,8 @@ export class StatementTarget {
       take(1),
       map((subject) => {
         const occurenceTarget = this.getOccurenceLiteral(this.value);
-        return `${occurenceTarget} ${this.valueOrBlank(subject.name)}`;
+        const element = this.valueOrBlank(subject.name);
+        return occurenceTarget ? `${occurenceTarget} ${element}` : `${element}`;
       }),
     );
   }
@@ -316,7 +324,7 @@ export class StatementTarget {
         case OccurrenceType.COUNT:
           return `${elm.occurenceValue ? elm.occurenceValue : '#'} occurrence${+elm.occurenceValue > 1 ? 's' : ''} of`;
         case OccurrenceType.INSTANCE:
-          return `The ${elm.occurenceValue ? this.getLiteralForNumber(+elm.occurenceValue) : '#'} occurrence of`;
+          return `the ${elm.occurenceValue ? this.getLiteralForNumber(+elm.occurenceValue) : '#'} occurrence of`;
         default:
           return this.occurrenceValuesMap[elm.occurenceType];
       }
