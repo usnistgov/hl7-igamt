@@ -40,6 +40,12 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
   clearSubjectNode: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   @Input()
+  set referenceChangeMap(referenceChangeMap: Record<string, string>) {
+    this.subject.setReferenceChangeMap(referenceChangeMap);
+    this.compare.setReferenceChangeMap(referenceChangeMap);
+  }
+
+  @Input()
   predicateMode: boolean;
   @Input()
   set strength(str: ConformanceStatementStrength) {
@@ -162,9 +168,9 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     this.compare = new StatementTarget(elementNamingService, pathService, allOccurrenceOptions);
     this.map(allVerbs);
     this.map(allOccurrenceOptions);
-    this.map(this.declarative_statements);
+    this.map(this.declarative_statements, true);
     this.map(this.comparative_statements);
-    this.map(this.proposition_statements);
+    this.map(this.proposition_statements, true);
   }
 
   validateValueList() {
@@ -226,7 +232,14 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     ).pipe(
       flatMap(() => {
         return combineLatest(
-          this.findNode(this.subject.getValue().path, token.payload.getValue().effectiveTree).pipe(
+          this.findNode(
+            this.subject.getValue().path,
+            token.payload.getValue().effectiveTree,
+            {
+              transformer: this.transformer,
+              useProfileComponentRef: true,
+            },
+          ).pipe(
             tap((node) => {
               if (node) {
                 this.subject.setNode(node, token.payload.getValue().effectiveTree);
@@ -235,7 +248,14 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
               this.subjectOccurrenceList = this.getAllowedOccurrenceList(this.subject, this.assertion);
             }),
           ),
-          this.findNode(this.compare.getValue().path, token.payload.getValue().effectiveTree).pipe(
+          this.findNode(
+            this.compare.getValue().path,
+            token.payload.getValue().effectiveTree,
+            {
+              transformer: this.transformer,
+              useProfileComponentRef: true,
+            },
+          ).pipe(
             tap((node) => {
               if (node) {
                 this.compare.setNode(node, token.payload.getValue().effectiveTree);
@@ -254,10 +274,22 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     this.change();
   }
 
-  map(list: Array<{ label: string, value: string }>) {
+  map(list: Array<{ label: string, value: string }>, normalize: boolean = false) {
     for (const item of list) {
-      this.labelsMap[item.value] = item.label;
+      this.labelsMap[item.value] = normalize ? this.normalizeDescription(item.label) : item.label;
     }
+  }
+
+  normalizeDescription(value: string) {
+    const dotless = value.endsWith('.') ? value.substring(0, value.length - 1) : value;
+    return this.firstLetterToLowerCase(dotless);
+  }
+
+  firstLetterToLowerCase(value: string): string {
+    if (value) {
+      return value.charAt(0).toLowerCase() + value.slice(1);
+    }
+    return value;
   }
 
   getAllowedStatements(subject: StatementTarget, statementType: LeafStatementType, mode: StatementType) {
@@ -308,7 +340,9 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
       map(([node, compNode]) => {
         const verb = this.labelsMap[this.assertion.verbKey];
         const statement = this.getStatementLiteral(this.assertion.complement);
-        this.assertion.description = `${node} ${this.csType === LeafStatementType.DECLARATION ? this.valueOrBlank(verb).toLowerCase() : ''} ${this.valueOrBlank(statement)} ${this.statementType === StatementType.COMPARATIVE ? compNode : ''}`;
+        const comparative = this.statementType === StatementType.COMPARATIVE ? ` ${compNode}` : '';
+        const declarative = this.csType === LeafStatementType.DECLARATION ? `${this.valueOrBlank(verb).toLowerCase()} ` : '';
+        this.assertion.description = `${node} ${declarative}${this.valueOrBlank(statement)}${comparative}`;
         Object.assign(this.assertion.subject, {
           ...this.subject.value,
         });
@@ -341,40 +375,40 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     if (complement) {
       switch (complement.complementKey) {
         case DeclarativeType.CONTAINS_VALUE:
-          return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\' ${this.getCaseStr(complement)}.`;
+          return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\' ${this.getCaseStr(complement)}`;
         case PropositionType.NOT_CONTAINS_VALUE:
-          return `does not contain the value \'${this.valueOrBlank(complement.value)}\' ${this.getCaseStr(complement)}.`;
+          return `does not contain the value \'${this.valueOrBlank(complement.value)}\' ${this.getCaseStr(complement)}`;
         case DeclarativeType.CONTAINS_VALUE_DESC:
-          return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}) ${this.getCaseStr(complement)}.`;
+          return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}) ${this.getCaseStr(complement)}`;
         case PropositionType.NOT_CONTAINS_VALUE_DESC:
-          return `does not contain the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}) ${this.getCaseStr(complement)}.`;
+          return `does not contain the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}) ${this.getCaseStr(complement)}`;
         case DeclarativeType.CONTAINS_CODE:
-          return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\' drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
+          return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\' drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'`;
         case DeclarativeType.CONTAINS_CODE_DESC:
-          return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}) drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
+          return `contain${add_s} the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}) drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'`;
         case DeclarativeType.CONTAINS_VALUES:
-          return `contain${add_s} one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}] ${this.getCaseStr(complement)}.`;
+          return `contain${add_s} one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}] ${this.getCaseStr(complement)}`;
         case DeclarativeType.CONTAINS_VALUES_DESC:
           const values = complement.values.map((v) => '\'' + v + '\'').map((val, i) => {
             return `${val} (${complement.descs[i]})`;
           });
-          return `contain${add_s} one of the values in the list: [${this.valueOrBlank(values.join(','))}] ${this.getCaseStr(complement)}.`;
+          return `contain${add_s} one of the values in the list: [${this.valueOrBlank(values.join(','))}] ${this.getCaseStr(complement)}`;
         case PropositionType.NOT_CONTAINS_VALUES:
-          return `does not contain one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}] ${this.getCaseStr(complement)}.`;
+          return `does not contain one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}] ${this.getCaseStr(complement)}`;
         case DeclarativeType.CONTAINS_CODES:
-          return `contain${add_s} one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}] drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
+          return `contain${add_s} one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}] drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'`;
         case DeclarativeType.CONTAINS_CODES_DESC:
           const _values = complement.values.map((v) => `\'${v}\'`).map((val, i) => {
             return `${val} (${complement.descs[i]})`;
           });
-          return `contain${add_s} one of the values in the list: [${this.valueOrBlank(_values.join(','))}] drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
+          return `contain${add_s} one of the values in the list: [${this.valueOrBlank(_values.join(','))}] drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'`;
         case DeclarativeType.CONTAINS_REGEX:
-          return `match${add_es} the regular expression \'${this.valueOrBlank(complement.value)}\'.`;
+          return `match${add_es} the regular expression \'${this.valueOrBlank(complement.value)}\'`;
         case PropositionType.NOT_CONTAINS_VALUES_DESC:
           const __values = complement.values.map((v) => `\'${v}\'`).map((val, i) => {
             return `${val} (${complement.descs[i]})`;
           });
-          return `does not contain one of the values in the list: [${this.valueOrBlank(__values.join(','))}] ${this.getCaseStr(complement)}.`;
+          return `does not contain one of the values in the list: [${this.valueOrBlank(__values.join(','))}] ${this.getCaseStr(complement)}`;
         default:
           return this.labelsMap[complement.complementKey];
       }

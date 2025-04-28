@@ -9,6 +9,8 @@ import { combineLatest, Observable, of, Subscription, throwError } from 'rxjs';
 import { catchError, flatMap, map, take, tap } from 'rxjs/operators';
 import { DamWidgetComponent } from 'src/app/modules/dam-framework';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
+import { ProfileComponentService } from 'src/app/modules/profile-component/services/profile-component.service';
+import { IProfileComponentContext, IProfileComponentItem } from 'src/app/modules/shared/models/profile.component';
 import { UserMessage } from '../../../dam-framework/models/messages/message.class';
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
@@ -44,6 +46,7 @@ export interface ISegmentCoConstraint {
   display?: IDisplayElement;
   pathInfo?: IPathInfo;
   name?: string;
+  items?: IProfileComponentItem[];
 }
 
 @Component({
@@ -93,6 +96,12 @@ export class SegmentCoConstraintBindingComponent implements OnInit, OnDestroy {
   segmentCoConstraint$: Observable<ISegmentCoConstraint>;
   unsavedChanges: boolean;
   changesSubscription: Subscription;
+  @Input()
+  transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>;
+  @Input()
+  referenceChangeMap: Record<string, string> = {};
+  @Input()
+  profileComponentContext?: IProfileComponentContext;
 
   @Input()
   set value(binding: ICoConstraintBindingSegment) {
@@ -112,6 +121,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit, OnDestroy {
     private pathService: PathService,
     private elementNamingService: ElementNamingService,
     private widget: DamWidgetComponent,
+    private profileComponentService: ProfileComponentService,
     protected ccService: CoConstraintEntityService) {
     this.valueChange = new EventEmitter<ICoConstraintBindingSegment>();
     this.delete = new EventEmitter<boolean>();
@@ -207,6 +217,10 @@ export class SegmentCoConstraintBindingComponent implements OnInit, OnDestroy {
         context: context.path,
         assertion: conditional.condition,
         resource: this.conformanceProfile,
+        transformer: this.transformer,
+        referenceChangeMap: this.referenceChangeMap,
+        repository: this.repository,
+        structure: this.structure,
         excludePaths: [this.binding.segment.pathId],
         hideFreeText: true,
       },
@@ -284,6 +298,10 @@ export class SegmentCoConstraintBindingComponent implements OnInit, OnDestroy {
       this.structure[0].children,
       path,
       this.repository,
+      {
+        transformer: this.transformer,
+        useProfileComponentRef: true,
+      },
     ).pipe(
       take(1),
       flatMap((segmentRef) => {
@@ -320,7 +338,9 @@ export class SegmentCoConstraintBindingComponent implements OnInit, OnDestroy {
   getTargetPathName(path: IPath, startFrom: string): Observable<{ pathInfo: IPathInfo, name: string }> {
     return this.conformanceProfile.pipe(
       flatMap((conformanceProfile) => {
-        return this.elementNamingService.getPathInfoFromPath(conformanceProfile, this.repository, path).pipe(
+        return this.elementNamingService.getPathInfoFromPath(conformanceProfile, this.repository, path, {
+          referenceChange: this.referenceChangeMap,
+        }).pipe(
           take(1),
           map((pathInfo) => {
             const name = this.elementNamingService.getStringNameFromPathInfo(this.elementNamingService.getStartPathInfo(pathInfo, startFrom));
@@ -342,12 +362,18 @@ export class SegmentCoConstraintBindingComponent implements OnInit, OnDestroy {
       this.getTargetPathName(path, segmentPath.elementId),
     ).pipe(
       map(([{ segment, display }, { name, pathInfo }]) => {
+        const pathId = this.pathService.pathToString(path);
+        const items = this.profileComponentContext ? this.profileComponentService.getFilteredItems(
+          this.profileComponentContext.profileComponentItems,
+          pathId,
+        ) : [];
         return {
           resolved: true,
           segment,
           display,
           pathInfo,
           name,
+          items,
         };
       }),
       catchError((error) => {

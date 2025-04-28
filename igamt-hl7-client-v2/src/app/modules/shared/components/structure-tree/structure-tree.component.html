@@ -8,12 +8,33 @@
   [propagateSelectionDown]="false"
   [(selection)]="selectedNode">
   <ng-template let-node pTemplate="default">
-    <app-entity-bagde [type]="node.data.type" ></app-entity-bagde>
-    <span [ngClass]="{'disabled-tree-item': !node.selectable}">
-      <span *ngIf="node.data.position"> {{node.data.position}}.</span> {{node.data.name}}
-      <span *ngIf="node.data.usage"> - {{node.data.usage.value === 'CAB' ? 'C(A/B)' : node.data.usage.value}} </span>
-      <span *ngIf="node.data.cardinality"> [{{node.data.cardinality.min}}..{{node.data.cardinality.max}}] </span>
-    </span>
+    <ng-container *ngIf="{ overrides: node.data.profileComponentOverrides | async } as pc" >
+      <app-entity-bagde [type]="node.data.type" ></app-entity-bagde>
+      <span [ngClass]="{'disabled-tree-item': !node.selectable}">
+        <span *ngIf="node.data.position"> {{node.data.position}}.</span> {{node.data.name}}
+        <ng-template *ngTemplateOutlet="usage; context: { $implicit: node.data.usage, pc: (pc.overrides || {})['USAGE']  }" ></ng-template>
+        <ng-template *ngTemplateOutlet="cardinality; context: { $implicit: node.data.cardinality, cmin: (pc.overrides || {})['CARDINALITYMIN'], cmax:  (pc.overrides || {})['CARDINALITYMAX'] }" ></ng-template>
+      </span>
+    </ng-container>
   </ng-template>
 </p-tree>
 
+<ng-template #usage let-usage let-pc="pc">
+  <span *ngIf="usage">
+    -
+    <span *ngIf="pc && pc.usage" >{{pc.usage === 'CAB' ? 'C(A/B)' : pc.usage}}</span>
+    <span *ngIf="!pc || !pc.usage">{{usage.value === 'CAB' ? 'C(A/B)' : usage.value}} </span>
+  </span>
+</ng-template>
+
+<ng-template #cardinality let-cardinality let-cmin="cmin" let-cmax="cmax">
+  <span *ngIf="cardinality">
+    [
+    <span *ngIf="cmin && !!cmin.min">{{cmin.min}}</span>
+    <span *ngIf="!cmin || !cmin.min">{{cardinality.min}}</span>
+    ..
+    <span *ngIf="cmax && !!cmax.max">{{cmax.max}}</span>
+    <span *ngIf="!cmax || !cmax.max">{{cardinality.max}}</span>
+    ]
+  </span>
+</ng-template>

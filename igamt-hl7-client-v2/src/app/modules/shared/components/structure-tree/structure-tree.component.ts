@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TreeNode } from 'primeng/primeng';
-import { Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Type } from '../../constants/type.enum';
 import { IPath } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';
@@ -43,6 +44,8 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
       }
     });
   }
+  @Input()
+  transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>;
 
   @Input()
   configuration: {
@@ -104,8 +107,8 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
   }
 
   @Input()
-  set tree(str: TreeNode[]) {
-    const clone = this.treeCloneService.cloneViewTree(str);
+  set tree(tree: TreeNode[]) {
+    const clone = this.treeCloneService.cloneViewTree(tree);
     this.doFilter(clone as IHL7v2TreeNode[]);
   }
 
@@ -156,13 +159,21 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
   }
 
   onNodeExpand(event, then?: (nodes: TreeNode[]) => void) {
-    const subs = this.treeService.resolveReference(event.node, this.repository, true, () => {
-      this.structure = [...this.structure];
-      if (then) {
-        then(this.structure);
-      }
-    }, (nodes: IHL7v2TreeNode[]) => {
-      return this.treeFilterService.filterTree(nodes, this.restrictions);
+    const subs = this.treeService.resolveReference(event.node, this.repository, {
+      viewOnly: true,
+      then: () => {
+        this.structure = [...this.structure];
+        if (then) {
+          then(this.structure);
+        }
+      },
+      transform: (nodes: IHL7v2TreeNode[]) => {
+        const chain = this.transformer ? this.transformer(nodes) : of(nodes);
+        return chain.pipe(
+          map((transformed) => this.treeFilterService.filterTree(transformed, this.restrictions)),
+        );
+      },
+      useProfileComponentRef: true,
     });
     if (subs) {
       this.treeSubscriptions.push(subs);

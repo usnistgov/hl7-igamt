@@ -186,6 +186,7 @@ export abstract class ProfileComponentContextStructureEditor<T extends IProfileC
         data: {
           structure: this.nodes,
           repository: this.repository,
+          transformer: this.pcService.getProfileComponentItemTransformer(this.profileComponentItemList.getContextValue()),
           selectedPaths: this.profileComponentItemList.context$.getValue().profileComponentItems
             .map((elm) => {
               return elm.path;

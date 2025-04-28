@@ -22,6 +22,7 @@ import gov.nist.hit.hl7.igamt.common.slicing.domain.OrderedSlicing;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.Slice;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
+import gov.nist.hit.hl7.igamt.datatype.service.ConformanceStatementDependencyService;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeDependencyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -76,8 +77,9 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
   
   @Autowired
   BindingService bindingService;
-  
 
+  @Autowired
+  ConformanceStatementDependencyService conformanceStatementDependencyService;
 
   @Override
   public void updateDependencies(ConformanceProfile elm, HashMap<RealKey, String> newKeys) {
@@ -127,6 +129,7 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
     if(resource.getCoConstraintsBindings() != null) {      
       this.processCoConstraintsBinding(resource.getCoConstraintsBindings(),conformanceProfileDependencies, filter);
     }
+    this.conformanceStatementDependencyService.processResource(resource.getBinding(), resource.getDocumentInfo(), conformanceProfileDependencies);
     processSegmentOrGroup(
             resource.getChildren(),
             slicing,
@@ -157,14 +160,17 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
   }
 
   @Override
-  public void processCoConstraintsBinding(List<CoConstraintBinding> coConstraintsBindings,
-      ConformanceProfileDependencies conformanceProfileDependencies, DependencyFilter filter) throws EntityNotFound {
+  public void processCoConstraintsBinding(
+          List<CoConstraintBinding> coConstraintsBindings,
+          ConformanceProfileDependencies conformanceProfileDependencies,
+          DependencyFilter filter
+  ) throws EntityNotFound {
     for(CoConstraintBinding binding:coConstraintsBindings) {
       if(binding.getBindings()!=null) {
         for(CoConstraintBindingSegment segBinding: binding.getBindings()) {
           if(segBinding.getTables() !=null) {
-            for( CoConstraintTableConditionalBinding CoConstraintTableConditionalBinding : segBinding.getTables()) {
-              if(CoConstraintTableConditionalBinding.getValue() !=null) {
+            for(CoConstraintTableConditionalBinding CoConstraintTableConditionalBinding : segBinding.getTables()) {
+              if(CoConstraintTableConditionalBinding.getValue() != null) {
                 this.process(CoConstraintTableConditionalBinding.getValue(), conformanceProfileDependencies, filter);
               }
             }

@@ -506,7 +506,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 		for(Code c : codes) {
 			Element elmValueElement = new Element("ValueElement");
 			elmValueElement.addAttribute(new Attribute("Value", this.str(c.getValue())));
-			elmValueElement.addAttribute(new Attribute("DisplayName", c.getDescription()));
+			elmValueElement.addAttribute(new Attribute("DisplayName", c.getDescription()!=null? c.getDescription(): ""));
 			if(c.getCodeSystem() != null && !c.getCodeSystem().isEmpty())
 				elmValueElement.addAttribute(new Attribute("CodeSystem", this.str(c.getCodeSystem())));
 			if(c.getUsage() != null)

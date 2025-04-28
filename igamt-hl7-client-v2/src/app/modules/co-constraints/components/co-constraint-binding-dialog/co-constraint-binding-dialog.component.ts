@@ -63,6 +63,8 @@ export class CoConstraintBindingDialogComponent implements OnInit {
   };
 
   compatibleGroups$: Observable<IDisplayElement[]>;
+  transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>;
+  referenceChangeMap: Record<string, string> = {};
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -72,6 +74,8 @@ export class CoConstraintBindingDialogComponent implements OnInit {
     this.structure = data.structure;
     this.excludePaths = data.excludePaths;
     this.repository = data.repository;
+    this.transformer = data.transformer;
+    this.referenceChangeMap = data.referenceChangeMap;
   }
 
   selectContext($event) {

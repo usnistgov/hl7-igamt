@@ -253,7 +253,6 @@ public class BootstrapApplication implements CommandLineRunner {
 	@Autowired
 	DatatypeLibraryRepository datatypeLibraryRepository;
 
-
 	@Bean
 	public JavaMailSenderImpl mailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -923,11 +922,15 @@ public class BootstrapApplication implements CommandLineRunner {
 //
 //	}
 
-	//@PostConstruct
+	@PostConstruct
 	void findWrongLength(){
 //	this.dataFixer.findWrongLength();
-	this.dataFixer.findWrongLengthDatatype();
+	//this.dataFixer.findWrongLengthDatatype();
+		//this.dataFixer.findWrongLengthForXCSV();
+		//this.dataFixer.findWrongLengthForDatatypeXCSV();
+		//this.dataFixer.findWrongLengthForX();
 
+		this.dataFixer.fixLength();
 	}
 	
 

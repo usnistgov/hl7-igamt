@@ -65,6 +65,8 @@ public class PublicIgController {
 				IOUtils.copy(Objects.requireNonNull(PublicIgController.class.getResourceAsStream("/public-ig-not-found.html")), response.getOutputStream());
 			}
 		} catch(Exception e) {
+			System.out.println("ERROR ACCESSING SHARE LINK: " + e.getMessage() + "\n" + e.getStackTrace());
+			e.printStackTrace();
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.setContentType("text/html");
 			IOUtils.copy(Objects.requireNonNull(PublicIgController.class.getResourceAsStream("/public-ig-error.html")), response.getOutputStream());

@@ -17,11 +17,10 @@ import { Type } from '../../../shared/constants/type.enum';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { Hl7Config, IValueSetBindingConfigMap } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IItemProperty, IProfileComponentBinding, IProfileComponentItem } from '../../../shared/models/profile.component';
+import { IItemProperty, IProfileComponentBinding, IProfileComponentContext, IProfileComponentItem } from '../../../shared/models/profile.component';
 import { IChange, PropertyType } from '../../../shared/models/save-change';
 import { AResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { IBindingContext } from '../../../shared/services/structure-element-binding.service';
-import { ProfileComponentRefChange } from '../../services/profile-component-ref-change.object';
 import { ProfileComponentStructureTreeItemMap } from '../../services/profile-component-structure-tree-item-map.object';
 import { IUserConfig } from './../../../shared/models/config.class';
 
@@ -80,6 +79,9 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   @Input()
   config: Hl7Config;
   treeExpandedNodes: string[];
+  @Input()
+  profileComponentContext: IProfileComponentContext;
+
   public userConfig: Observable<IUserConfig>;
 
   @Input()
@@ -137,9 +139,6 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   }
 
   @Input()
-  refChangeMap: ProfileComponentRefChange;
-
-  @Input()
   set nodes(nodes: IHL7V2ProfileComponentItemNode[]) {
     this.nodes$.next(nodes);
   }
@@ -186,11 +185,11 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
       filter((config) => !!config),
     );
 
-    this.activeNodes$ = combineLatest([
+    this.activeNodes$ = combineLatest(
       this.treeView$,
       this.tree$,
       this.nodes$,
-    ]).pipe(
+    ).pipe(
       map(([tv, tree, nodes]) => {
         if (tv) { return tree[0].children; }
         return this.prune(nodes);
@@ -243,8 +242,7 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   }
 
   onNodeExpand({ node }: { node: IHL7v2TreeNode }) {
-    const ref = this.refChangeMap ? this.refChangeMap.getPath(node.data.pathId) : node.data.ref.getValue();
-    this.treeService.loadNodeChildren(node, this.repository, ref).pipe(
+    this.treeService.loadNodeChildren(node, this.repository, { viewOnly: true, useProfileComponentRef: true }).pipe(
       take(1),
     ).subscribe();
   }
