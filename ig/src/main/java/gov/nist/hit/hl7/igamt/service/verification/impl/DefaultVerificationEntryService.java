@@ -925,6 +925,18 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
+    public IgamtObjectError InternalTrackedValuesetNotPublicCodeSet(Location l, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("VALUESET_CODESETREFERENCE_NOT_ALLOWED")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(l.getPathId(), l.getName(), PropertyType.CODESETREFERENCE)
+                .message("Value set has reference to code set that is not public.")
+                .entry();
+    }
+
+
+    @Override
 	public IgamtObjectError CardinalityInvalidRange(LocationInfo locationInfo, String id, Type type, String min, String max) {
 		return new IgamtVerificationEntryBuilder("CARDINALITY_INVALID_RANGE")
                 .fatal()

@@ -117,6 +117,8 @@ public interface VerificationEntryService {
     IgamtObjectError ExternalValuesetInvalidURL(Location info, String id, Type type, String URL);
     IgamtObjectError InternalTrackedValuesetMissingCodeSet(Location info, String id, Type type);
     IgamtObjectError InternalTrackedValuesetCodeSetNotFound(Location info, String id, Type type);
+    IgamtObjectError InternalTrackedValuesetNotPublicCodeSet(Location info, String id, Type type);
+
 
 
     // Cardinality
