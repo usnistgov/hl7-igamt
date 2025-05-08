@@ -70,6 +70,7 @@ public class CommonVerificationService {
 			}
 		} else {
 			if(lengthType.equals(LengthType.Length)) {
+				boolean lengthIsValid = true;
 				// Check if length range is valid
 				if (!this.isNullOrNA(minLength) && !this.isNullOrNA(maxLength)) {
 					if (!maxLength.equals("*")) {
@@ -80,6 +81,7 @@ public class CommonVerificationService {
 							if (minLengthInt > maxLengthInt) {
 								results.add(this.verificationEntryService.LengthInvalidRange(location, id, type, minLength,
 								                                                             maxLength));
+								lengthIsValid = false;
 							}
 						}
 					}
@@ -88,11 +90,24 @@ public class CommonVerificationService {
 				// Check max length is valid value
 				if (this.isNullOrNA(maxLength) || !this.isIntOrStar(maxLength)) {
 					results.add(this.verificationEntryService.LengthInvalidMaxLength(location, id, type, nullToEmpty(maxLength)));
+					lengthIsValid = false;
 				}
 
 				// Check min length is valid value
 				if (this.isNullOrNA(minLength) || !this.isInt(minLength)) {
 					results.add(this.verificationEntryService.LengthInvalidMinLength(location, id, type, nullToEmpty(minLength)));
+					lengthIsValid = false;
+				}
+
+				// Check Usage and Length Compatibility
+				if(lengthIsValid) {
+					int minLengthInt = Integer.parseInt(minLength);
+					if(element.getUsage().equals(Usage.R) && minLengthInt == 0) {
+						results.add(this.verificationEntryService.LengthInvalidRUsage(location, id, type, minLength));
+					}
+					if(element.getUsage().equals(Usage.X) && (!maxLength.equals("0") || !minLength.equals("0"))) {
+						results.add(this.verificationEntryService.LengthInvalidXUsage(location, id, type, minLength, maxLength));
+					}
 				}
 			}
 
