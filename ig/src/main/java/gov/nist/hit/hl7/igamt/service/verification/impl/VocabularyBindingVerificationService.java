@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetStrength;
+import gov.nist.hit.hl7.igamt.common.base.model.TriStateBoolean;
 import gov.nist.hit.hl7.igamt.common.binding.domain.SingleCodeBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingInfo;
@@ -11,6 +13,7 @@ import gov.nist.hit.hl7.igamt.common.config.domain.BindingLocationOption;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.Location;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
+import gov.nist.hit.hl7.igamt.service.IgRequestScopeCache;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,8 @@ public class VocabularyBindingVerificationService extends VerificationUtils {
 
     @Autowired
     ValuesetService valuesetService;
+    @Autowired
+    IgRequestScopeCache igRequestScopeCache;
 
     public List<IgamtObjectError> verifyValueSetBinding(ResourceSkeleton resourceSkeleton, String pathId, Set<ValuesetBinding> valuesetBindings) {
         List<IgamtObjectError> errors = new ArrayList<>();
@@ -92,6 +97,22 @@ public class VocabularyBindingVerificationService extends VerificationUtils {
                                                     Type.VALUESET
                                             )
                                     );
+                                }
+                            }
+                            if(vsBinding.getStrength() != null && vsBinding.getStrength().equals(ValuesetStrength.S)) {
+                                for(String vsId: vsBinding.getValueSets()) {
+                                    if(this.igRequestScopeCache.valueSetHasRequiredUsageCodes(vsId).equals(TriStateBoolean.TRUE)) {
+                                        errors.add(
+                                                this.entry.InconsequentialCodeUsage(
+                                                        pathId,
+                                                        target.getLocationInfo().getHl7Path(),
+                                                        target.getLocationInfo(),
+                                                        PropertyType.VALUESET,
+                                                        resourceSkeleton.getResource().getId(),
+                                                        resourceSkeleton.getResource().getType()
+                                                )
+                                        );
+                                    }
                                 }
                             }
                         }
@@ -211,7 +232,7 @@ public class VocabularyBindingVerificationService extends VerificationUtils {
     }
 
     public boolean existsValueSet(String vsId) {
-        return this.valuesetService.findById(vsId) != null;
+        return this.igRequestScopeCache.valueSetExists(vsId);
     }
 
     public boolean isOBX_2(String resourceName, int position) {
