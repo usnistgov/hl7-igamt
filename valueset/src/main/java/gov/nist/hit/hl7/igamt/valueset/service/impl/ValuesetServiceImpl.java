@@ -19,6 +19,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.ResourceOrigin;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.service.impl.UserResourcePermissionService;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,7 +36,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nist.hit.hl7.igamt.common.base.domain.ContentDefinition;
 import gov.nist.hit.hl7.igamt.common.base.domain.Extensibility;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.ResourceOrigin;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Stability;
@@ -46,7 +46,6 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetReference;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.repository.ValuesetRepository;
-//import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.resource.change.service.OperationService;
 
@@ -62,14 +61,12 @@ public class ValuesetServiceImpl implements ValuesetService {
 
     @Autowired
     private MongoTemplate mongoTemplate;
-//    
-//    @Autowired
-//    private FhirHandlerService fhirHandlerService;
     
     @Autowired
     private OperationService operationService;
 
-
+    @Autowired
+    private UserResourcePermissionService userResourcePermissionService;
 
 	@Override
     public Valueset findById(String id) {
@@ -78,14 +75,14 @@ public class ValuesetServiceImpl implements ValuesetService {
 
     @Override
     public Valueset create(Valueset valueset) {
-        valueset.setId(new String());
+        valueset.setId("");
         valueset = valuesetRepository.save(valueset);
         return valueset;
     }
 
     @Override
     public Valueset createFromLegacy(Valueset valueset, String legacyId) {
-        valueset.setId(new String(legacyId));
+        valueset.setId(legacyId);
         valueset = valuesetRepository.save(valueset);
         return valueset;
     }
@@ -131,7 +128,6 @@ public class ValuesetServiceImpl implements ValuesetService {
     @Override
     public List<Valueset> findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(String scope,
                                                                                         String version, String bindingIdentifier) {
-        // TODO Auto-generated method stub
         return valuesetRepository.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(scope,
                 version, bindingIdentifier);
     }
@@ -139,7 +135,6 @@ public class ValuesetServiceImpl implements ValuesetService {
     @Override
     public List<Valueset> findByDomainInfoVersionAndBindingIdentifier(String version,
                                                                       String bindingIdentifier) {
-        // TODO Auto-generated method stub
         return valuesetRepository.findByDomainInfoVersionAndBindingIdentifier(version,
                 bindingIdentifier);
     }
@@ -147,31 +142,18 @@ public class ValuesetServiceImpl implements ValuesetService {
     @Override
     public List<Valueset> findByDomainInfoScopeAndBindingIdentifier(String scope,
                                                                     String bindingIdentifier) {
-        // TODO Auto-generated method stub
         return valuesetRepository.findByDomainInfoScopeAndBindingIdentifier(scope, bindingIdentifier);
     }
 
-
     @Override
     public Valueset getLatestById(String id) {
-        // TODO Auto-generated method stub Query query = new Query();
         Query query = new Query();
-
         query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
-        Valueset valueset = mongoTemplate.findOne(query, Valueset.class);
-        return valueset;
+	    return mongoTemplate.findOne(query, Valueset.class);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#findDisplayFormatByScopeAndVersion(java
-     * .lang.String, java.lang.String)
-     */
     @Override
     public List<Valueset> findDisplayFormatByScopeAndVersion(String scope, String version) {
-        // TODO Auto-generated method stub
         Criteria where = Criteria.where("domainInfo.scope").is(scope);
         where.andOperator(Criteria.where("domainInfo.version").is(version));
         Query qry = Query.query(where);
@@ -180,27 +162,20 @@ public class ValuesetServiceImpl implements ValuesetService {
         qry.fields().include("name");
         qry.fields().include("bindingIdentifier");
         qry.fields().include("numberOfCodes");
-        List<Valueset> valueSets = mongoTemplate.find(qry, Valueset.class);
-        return valueSets;
+	    return mongoTemplate.find(qry, Valueset.class);
     }
 
     @Override
     public List<Valueset> findDisplayFormatByScope(String scope) {
-        // TODO Auto-generated method stub
-//        if (scope.equals("PHINVADS")) {
-//        	return fhirHandlerService.getPhinvadsValuesets();
-//        } else {
-            Criteria where = Criteria.where("domainInfo.scope").is(scope);
-            Query qry = Query.query(where);
-            qry.fields().include("domainInfo");
-            qry.fields().include("id");
-            qry.fields().include("name");
-            qry.fields().include("bindingIdentifier");
-            qry.fields().include("bindingIdentifier");
-            qry.fields().include("numberOfCodes");
-            List<Valueset> valueSets = mongoTemplate.find(qry, Valueset.class);
-            return valueSets;
-       // }
+        Criteria where = Criteria.where("domainInfo.scope").is(scope);
+        Query qry = Query.query(where);
+        qry.fields().include("domainInfo");
+        qry.fields().include("id");
+        qry.fields().include("name");
+        qry.fields().include("bindingIdentifier");
+        qry.fields().include("bindingIdentifier");
+        qry.fields().include("numberOfCodes");
+	    return mongoTemplate.find(qry, Valueset.class);
     }
 
     private boolean exist(String codeSystemId, Set<String> codeSystemIds) {
@@ -213,13 +188,12 @@ public class ValuesetServiceImpl implements ValuesetService {
 
     @Override
     public List<Valueset> findByIdIn(Set<String> ids) {
-        // TODO Auto-generated method stub
         return valuesetRepository.findByIdIn(ids);
     }
 
     @Override
     public void applyChanges(Valueset s, List<ChangeItemDomain> cItems)
-            throws JsonProcessingException, IOException, ForbiddenOperationException {
+            throws IOException, ForbiddenOperationException {
         Collections.sort(cItems);
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -228,7 +202,6 @@ public class ValuesetServiceImpl implements ValuesetService {
             if (item.getPropertyType().equals(PropertyType.PREDEF)) {
                 item.setOldPropertyValue(s.getPreDef());
                 s.setPreDef((String) item.getPropertyValue());
-
             } else if (item.getPropertyType().equals(PropertyType.POSTDEF)) {
                 item.setOldPropertyValue(s.getPostDef());
                 s.setPostDef((String) item.getPropertyValue());
@@ -244,65 +217,53 @@ public class ValuesetServiceImpl implements ValuesetService {
             } else if (item.getPropertyType().equals(PropertyType.CODES)) {
                 String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
                 item.setOldPropertyValue(s.getCodes());
-                Set<Code> codes = mapper.readValue(jsonInString, new TypeReference<Set<Code>>() {
-                });
+                Set<Code> codes = mapper.readValue(jsonInString, new TypeReference<Set<Code>>() {});
                 s.setCodes(codes);
             } else if (item.getPropertyType().equals(PropertyType.CODESYSTEM)) {
-
                 String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
                 item.setOldPropertyValue(s.getCodeSystems());
-                Set<String> codeSystems = mapper.readValue(jsonInString, new TypeReference<Set<String>>() {
-                });
+                Set<String> codeSystems = mapper.readValue(jsonInString, new TypeReference<Set<String>>() {});
                 s.setCodeSystems(codeSystems);
             } else if (item.getPropertyType().equals(PropertyType.URL)) {
                 item.setOldPropertyValue(s.getUrl());
                 s.setUrl((String) item.getPropertyValue());
-
             } else if (item.getPropertyType().equals(PropertyType.INTENSIONALCOMMENT)) {
                 item.setOldPropertyValue(s.getIntensionalComment());
                 s.setIntensionalComment((String) item.getPropertyValue());
-
             } else if (item.getPropertyType().equals(PropertyType.STABILITY)) {
                 item.setOldPropertyValue(s.getStability());
                 s.setStability(Stability.fromValue((String) item.getPropertyValue()));
-
             } else if (item.getPropertyType().equals(PropertyType.EXTENSIBILITY)) {
                 item.setOldPropertyValue(s.getExtensibility());
                 s.setExtensibility(Extensibility.fromValue((String) item.getPropertyValue()));
-
             } else if (item.getPropertyType().equals(PropertyType.CONTENTDEFINITION)) {
                 item.setOldPropertyValue(s.getIntensionalComment());
                 s.setContentDefinition(ContentDefinition.fromValue((String) item.getPropertyValue()));
-            }
-            else if (item.getPropertyType().equals(PropertyType.NAME)) {
+            } else if (item.getPropertyType().equals(PropertyType.NAME)) {
                 item.setOldPropertyValue(s.getName());
                 s.setName((String) item.getPropertyValue());
-                
-            }else if (item.getPropertyType().equals(PropertyType.CODESETREFERENCE)) {
-            	
-       
+            } else if (item.getPropertyType().equals(PropertyType.CODESETREFERENCE)) {
                 if(item.getPropertyValue() == null) {
                   s.setSourceType(SourceType.INTERNAL);
                   s.setCodeSetReference(null);
-                }else {
-                  String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-                  CodeSetReference ref = mapper.readValue(jsonInString, CodeSetReference.class);
-                  s.setSourceType(SourceType.INTERNAL_TRACKED);
-                  s.setCodeSetReference(ref);
+                } else {
+                    String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+                    CodeSetReference ref = mapper.readValue(jsonInString, CodeSetReference.class);
+                    if(this.userResourcePermissionService.isPublic(Type.CODESET, ref.getCodeSetId())) {
+                        s.setSourceType(SourceType.INTERNAL_TRACKED);
+                        s.setCodeSetReference(ref);
+                    } else {
+                        throw new ForbiddenOperationException("Value Sets can only be linked to a public Code Set.");
+                    }
                 }
-               
-            }else if (item.getPropertyType().equals(PropertyType.CHANGEREASON)) {
-
+            } else if (item.getPropertyType().equals(PropertyType.CHANGEREASON)) {
                 String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
                 item.setOldPropertyValue(s.getChangeLogs());
-                List<ChangeReason> changeLogs = mapper.readValue(jsonInString, new TypeReference<List<ChangeReason>>() {
-                });
+                List<ChangeReason> changeLogs = mapper.readValue(jsonInString, new TypeReference<List<ChangeReason>>() {});
                 s.setChangeLogs(changeLogs);
             }
-
         }
         this.save(s);
-
     }
 
 	@Override
@@ -321,8 +282,7 @@ public class ValuesetServiceImpl implements ValuesetService {
         Criteria where = Criteria.where("oid").is(oid);
         where.andOperator(Criteria.where("domainInfo.scope").is(Scope.PHINVADS),Criteria.where("isFlavor").is(false), Criteria.where("sourceType").is(SourceType.EXTERNAL), Criteria.where("domainInfo.version").is(version) );
         Query qry = Query.query(where);
-        Valueset valueSet = mongoTemplate.findOne(qry, Valueset.class);
-        return valueSet;
+	    return mongoTemplate.findOne(qry, Valueset.class);
     }
     
     @Override
@@ -330,8 +290,7 @@ public class ValuesetServiceImpl implements ValuesetService {
         Criteria where = Criteria.where("oid").is(oid);
         where.andOperator(Criteria.where("domainInfo.scope").is(Scope.PHINVADS),Criteria.where("isFlavor").is(false), Criteria.where("sourceType").is(SourceType.EXTERNAL_TRACKED));
         Query qry = Query.query(where);
-        Valueset valueSet = mongoTemplate.findOne(qry, Valueset.class);
-        return valueSet;
+	    return mongoTemplate.findOne(qry, Valueset.class);
     }
 
     @Override
@@ -426,16 +385,12 @@ public class ValuesetServiceImpl implements ValuesetService {
     public List<Valueset> findDisplayFormatByIds(Set<String> ids) {
         Criteria where = Criteria.where("id").in(ids);
         Query qry = Query.query(where);
-
         qry.fields().exclude("codes");
-
         List<Valueset> valueSets = mongoTemplate.find(qry, Valueset.class);
-
         for (Valueset valueSet : valueSets) {
             int count = (int)mongoTemplate.count(Query.query(Criteria.where("id").is(valueSet.getId())), Code.class);
             valueSet.setNumberOfCodes(count);
         }
-
         return valueSets;
     }
 }

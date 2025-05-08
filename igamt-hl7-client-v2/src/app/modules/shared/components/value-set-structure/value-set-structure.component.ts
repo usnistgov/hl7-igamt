@@ -320,7 +320,6 @@ export class ValueSetStructureComponent implements OnInit {
       data: {
         browserType: BrowseType.ENTITY,
         scope: {
-          private: true,
           public: true,
         },
         types: [Type.CODESET],

@@ -75,6 +75,15 @@ public class ValueSetVerificationService extends VerificationUtils {
 		}
 		if(userResourcePermissionService.hasPermission(Type.CODESET, valueset.getCodeSetReference().getCodeSetId(), Action.READ)) {
 			try {
+				if(!userResourcePermissionService.isPublic(Type.CODESET, valueset.getCodeSetReference().getCodeSetId())) {
+					issues.add(
+							this.entry.InternalTrackedValuesetNotPublicCodeSet(
+									getValueSetLocation("CodeSet Reference"),
+									valueset.getId(),
+									Type.VALUESET
+							)
+					);
+				}
 				CodeSetVersionContent content = this.codeSetService.getLatestCodeVersion(valueset.getCodeSetReference().getCodeSetId());
 				return checkCodes(content.getCodes(), valueset.getId());
 			} catch(ResourceNotFoundException e) {
