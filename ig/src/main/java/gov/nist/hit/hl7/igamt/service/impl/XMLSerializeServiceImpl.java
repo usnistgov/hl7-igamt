@@ -431,7 +431,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 				boolean isExternal = t.getSourceType().equals(SourceType.EXTERNAL) || t.getSourceType().equals(SourceType.EXTERNAL_TRACKED);
 
-				Element elmValueSetDefinition = new Element("ValueSetDefinition");
+				Element elmValueSetDefinition = new Element( isExternal? "ExternalValueSetDefinition" :"ValueSetDefinition");
+
+
 
 				if (isExternal) {
 					if (Strings.isNullOrEmpty(t.getUrl())) {
@@ -440,7 +442,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					addValueSetDefinitionAttributes(t, defaultHL7Version, elmValueSetDefinition);
 					elmValueSetDefinition.addAttribute(new Attribute("URL", t.getUrl()));
 				} else {
-					// Determine codes
 					Set<Code> codes;
 					if (t.getSourceType().equals(SourceType.INTERNAL_TRACKED)) {
 						if (vsm.getReferencedCodeSet() != null) {
