@@ -151,12 +151,17 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       flatMap(([messages, cps, igId]) => {
         return this.dialog.open(ExportXmlDialogComponent, {
           disableClose: true,
+          maxWidth: '95vw',
+          maxHeight: '95vh',
           data: { conformanceProfiles: messages, compositeProfiles: cps, igId },
         }).afterClosed().pipe(
           filter((x) => x !== undefined),
           take(1),
           map((result) => {
-            this.igService.exportXML(igId, result);
+            this.igService.exportXML(igId, result.selected, {
+              rememberExternalValueSetExportMode: result.rememberExternalValueSetExportMode,
+              externalValueSetsExportMode: result.externalValueSetsExportMode,
+            });
           }),
         );
       }),

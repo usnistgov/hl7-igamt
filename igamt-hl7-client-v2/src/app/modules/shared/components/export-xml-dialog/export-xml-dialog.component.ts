@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, TemplateRef, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { throwError } from 'rxjs';
 import { catchError, flatMap, map, take } from 'rxjs/operators';
@@ -11,20 +11,60 @@ import { VerificationService } from '../../services/verification.service';
 import { ISelectedIds } from '../select-resource-ids/select-resource-ids.component';
 import { IVerificationResultDisplay, VerificationDisplayActiveTypeSelector } from '../verification-result-display/verification-result-display.component';
 
+export enum ExportStepType {
+  PROFILE_SELECTION = "PROFILE_SELECTION",
+  VERIFICATION = "VERIFICATION",
+  EXTERNAL_VALUESET_CONFIGURATION = "EXTERNAL_VALUESET_CONFIGURATION"
+}
+
+export enum ExternalValueSetExportType {
+  EXTERNAL = "EXTERNAL",
+  EXCLUDED = "EXCLUDED",
+  SNAPSHOT = "SNAPSHOT"
+}
+
 @Component({
   selector: 'app-export-xml-dialog',
   templateUrl: './export-xml-dialog.component.html',
   styleUrls: ['./export-xml-dialog.component.css'],
 })
-export class ExportXmlDialogComponent implements OnInit {
-  step = 0;
+export class ExportXmlDialogComponent {
+  current = ExportStepType.PROFILE_SELECTION;
   ids: ISelectedIds = { conformanceProfilesId: [], compositeProfilesId: [] };
   verificationResult: IVerificationResultDisplay;
+  externalValueSets: {
+    display: IDisplayElement;
+    URL: string;
+  }[] = [];
   verificationInProgress = false;
   verificationFailed = false;
   verificationErrorMessage: string;
+  verified = false;
   hasFatal = false;
   hasErrors = false;
+  exportTypeMap = {};
+  rememberExternalValueSetExportMode = false;
+  externalValueSetsTypeCount = {
+    external: 0,
+    excluded: 0,
+    snapshot: 0,
+  };
+
+  @ViewChild('profileSelection')
+  profileSelection: TemplateRef<any>;
+  @ViewChild('profileSelectionActions')
+  profileSelectionActions: TemplateRef<any>;
+
+  @ViewChild('profileVerification')
+  profileVerification: TemplateRef<any>;
+  @ViewChild('profileVerificationActions')
+  profileVerificationActions: TemplateRef<any>;
+
+  @ViewChild('externalValueSetsConfiguration')
+  externalValueSetsConfiguration: TemplateRef<any>;
+  @ViewChild('externalValueSetsConfigurationActions')
+  externalValueSetsConfigurationActions: TemplateRef<any>;
+
   activeSelector: VerificationDisplayActiveTypeSelector = (data) => {
     if (data.conformanceProfiles && data.conformanceProfiles.entries && data.conformanceProfiles.entries.length > 0) {
       return Type.CONFORMANCEPROFILE;
@@ -33,6 +73,28 @@ export class ExportXmlDialogComponent implements OnInit {
       return Type.COMPOSITEPROFILE;
     }
     return undefined;
+  }
+
+  getStepTemplate(step: ExportStepType) {
+    switch (step) {
+      case ExportStepType.PROFILE_SELECTION:
+        return this.profileSelection;
+      case ExportStepType.VERIFICATION:
+        return this.profileVerification;
+      case ExportStepType.EXTERNAL_VALUESET_CONFIGURATION:
+        return this.externalValueSetsConfiguration;
+    }
+  }
+
+  getStepActions(step: ExportStepType) {
+    switch (step) {
+      case ExportStepType.PROFILE_SELECTION:
+        return this.profileSelectionActions;
+      case ExportStepType.VERIFICATION:
+        return this.profileVerificationActions;
+      case ExportStepType.EXTERNAL_VALUESET_CONFIGURATION:
+        return this.externalValueSetsConfigurationActions;
+    }
   }
 
   constructor(
@@ -44,27 +106,68 @@ export class ExportXmlDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: IExportXmlDialogData) {
 
   }
-  ngOnInit() {
-    this.step = 0;
-  }
 
   cancel() {
     this.dialogRef.close();
   }
 
+  updateTypeCount() {
+    if (!this.externalValueSets) {
+      return;
+    }
+    let external = 0;
+    let excluded = 0;
+    let snapshot = 0;
+    for (const evs of this.externalValueSets) {
+      switch (this.exportTypeMap[evs.display.id]) {
+        case 'EXCLUDED':
+          excluded++;
+          break;
+        case 'SNAPSHOT':
+          snapshot++;
+          break;
+        case 'EXTERNAL':
+        default:
+          external++;
+      }
+    }
+    this.externalValueSetsTypeCount = {
+      excluded,
+      external,
+      snapshot
+    }
+  }
+
   verify() {
-    this.step = 1;
+    this.current = ExportStepType.VERIFICATION;
     this.verificationInProgress = true;
     this.verificationFailed = false;
     this.verificationErrorMessage = '';
-    this.http.post<any>('/api/igdocuments/' + this.data.igId + '/preverification', this.ids).pipe(
-      flatMap((report) => {
+    this.externalValueSets = [];
+    this.verified = false;
+    this.exportTypeMap = {};
+    this.externalValueSetsTypeCount = {
+      external: 0,
+      excluded: 0,
+      snapshot: 0,
+    };
+    this.http.post<any>('/api/igdocuments/' + this.data.igId + '/preverification', { ids: this.ids, exportType: 'xml' }).pipe(
+      flatMap((result) => {
+        const report = result.verificationIssues;
+        const externalValueSetExportModes = result.externalValueSetExportModes || {};
+        this.externalValueSets = result.externalValueSetReferences || [];
         return this.verificationService.verificationReportToDisplay(report, this.repository).pipe(
           take(1),
           map((verificationResult) => {
             this.verificationResult = verificationResult;
             this.setVerificationFlags(verificationResult);
             this.verificationInProgress = false;
+            this.verified = true;
+            this.exportTypeMap = {};
+            for (const vs of this.externalValueSets) {
+              this.exportTypeMap[vs.display.id] = externalValueSetExportModes[vs.display.id];
+            }
+            this.updateTypeCount();
           }),
         );
       }),
@@ -72,10 +175,30 @@ export class ExportXmlDialogComponent implements OnInit {
         this.verificationInProgress = false;
         this.verificationFailed = true;
         this.verificationErrorMessage = this.message.fromError(e).message;
-        this.step = 0;
+        this.externalValueSets = [];
+        this.verified = false;
+        this.current = ExportStepType.PROFILE_SELECTION;
+        this.exportTypeMap = {};
         return throwError(e);
       }),
     ).subscribe();
+  }
+
+  configureExternalValueSets() {
+    this.current = ExportStepType.EXTERNAL_VALUESET_CONFIGURATION;
+  }
+
+  setExportType(id: string, type: ExternalValueSetExportType) {
+    this.exportTypeMap[id] = type;
+    this.updateTypeCount();
+  }
+
+  setAllExportType(type: ExternalValueSetExportType) {
+    this.exportTypeMap = {};
+    for (const vs of this.externalValueSets) {
+      this.exportTypeMap[vs.display.id] = type;
+    }
+    this.updateTypeCount();
   }
 
   setVerificationFlags(result: IVerificationResultDisplay) {
@@ -104,7 +227,11 @@ export class ExportXmlDialogComponent implements OnInit {
   }
 
   submit() {
-    this.dialogRef.close(this.ids);
+    this.dialogRef.close({
+      selected: this.ids,
+      externalValueSetsExportMode: this.exportTypeMap,
+      rememberExternalValueSetExportMode: this.rememberExternalValueSetExportMode,
+    });
   }
   selectConformanceProfiles(ids: string[]) {
     this.ids = { ...this.ids, conformanceProfilesId: ids };
@@ -112,6 +239,10 @@ export class ExportXmlDialogComponent implements OnInit {
 
   selectCompositeProfiles(ids: string[]) {
     this.ids = { ...this.ids, compositeProfilesId: ids };
+  }
+
+  goto(to: ExportStepType) {
+    this.current = to;
   }
 }
 export interface IExportXmlDialogData {

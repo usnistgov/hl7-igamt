@@ -118,11 +118,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItem;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentDependencyService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
-import gov.nist.hit.hl7.igamt.service.impl.exception.CoConstraintXMLSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
-import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionContent;
 import gov.nist.hit.hl7.igamt.valueset.service.CodeSetService;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
@@ -2108,6 +2104,17 @@ public class IgServiceImpl implements IgService {
 			}
 		}
 		throw new Exception("The target location (context and segment) for this co-constraint table was not found");
+	}
+
+	@Override
+	public List<ExternalValueSetReference> getExternalValueSets(IgProfileResourceSubSet subSet) {
+		List<Valueset> externals = subSet.getValuesets()
+		                                 .stream()
+		                                 .filter(vs -> vs.getSourceType() != null && vs.getSourceType().equals(SourceType.EXTERNAL) && !Strings.isNullOrEmpty(vs.getUrl()))
+		                                 .collect(Collectors.toList());
+		return externals.stream()
+		         .map((e) -> new ExternalValueSetReference(this.valueSetService.convertValueSet(e), e.getUrl()))
+		         .collect(Collectors.toList());
 	}
 
 	@Override

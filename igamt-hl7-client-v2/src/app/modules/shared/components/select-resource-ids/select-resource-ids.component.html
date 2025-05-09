@@ -1,3 +1,11 @@
+<div *ngIf="resources && resources.length > 0" style="display: flex; gap: 5px; margin-bottom: 5px;">
+  <button class="btn btn-sm btn-primary" (click)="toggleAll(true)">
+    Select All
+  </button>
+  <button class="btn btn-sm btn-primary" (click)="toggleAll(false)">
+    Unselect All
+  </button>
+</div>
 <div *ngFor="let elm of resources" class="form-inline" >
   <p-checkbox [style]= "{'margin-right': '5px'}" [name]="elm.id" [value]="elm.id"  [(ngModel)]="ids" [inputId]="elm.id" (ngModelChange)="emit()"></p-checkbox>
   <app-display-section  [element]="elm">

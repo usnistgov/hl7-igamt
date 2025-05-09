@@ -108,7 +108,8 @@ export class ExportToolComponent implements OnInit {
     this.verificationFailed = false;
     this.verificationErrorMessage = '';
     this.http.post<any>('/api/igdocuments/' + this.data.igId + '/preverification', this.ids).pipe(
-      flatMap((report) => {
+      flatMap((result) => {
+        const report = result.verificationIssues;
         return this.verificationService.verificationReportToDisplay(report, this.repository).pipe(
           take(1),
           map((verificationResult) => {

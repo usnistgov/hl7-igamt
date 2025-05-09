@@ -1,13 +1,21 @@
-.dialog-container {
-    max-height: 65vh;
-    overflow: hidden;
-    display: grid;
-    grid-template-rows: min-content 1fr;
+:host {
+  display: contents;
 }
 
-.report-container {
-    overflow: hidden;
-    height: 100%;
+.dialog-container {
+    gap: 10px;
     display: grid;
-    grid-template-rows: min-content 1fr;
+    grid-template-rows: min-content min-content min-content min-content;
+}
+
+.ext-vs-set-all {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 1px solid lightgray;
+  width: fit-content;
+  border-radius: 5px;
+  background-color: aliceblue;
 }

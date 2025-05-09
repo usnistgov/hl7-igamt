@@ -32,6 +32,7 @@ import { INarrative } from '../components/ig-section-editor/ig-section-editor.co
 import { IDocumentDisplayInfo, IIgUpdateInfo, IIgVerificationReport } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
+import { ExternalValueSetExportType } from '../../shared/components/export-xml-dialog/export-xml-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -317,14 +318,27 @@ export class IgService {
     return this.http.post<string[]>(this.IG_END_POINT + documentId + '/' + registryType + '/deleteResources', ids);
   }
 
-  exportXML(igId: string, selectedIds: ISelectedIds) {
+  exportXML(
+    igId: string,
+    selectedIds: ISelectedIds,
+    externalValueSetExportConfiguration: {
+      rememberExternalValueSetExportMode: boolean,
+      externalValueSetsExportMode: Record<string, ExternalValueSetExportType>,
+    } = {
+        rememberExternalValueSetExportMode: false,
+        externalValueSetsExportMode: {}
+      }) {
     const form = document.createElement('form');
     form.action = this.EXPORT_URL + igId + '/xml/validation';
     form.method = 'POST';
     const json = document.createElement('input');
     json.type = 'hidden';
     json.name = 'json';
-    json.value = JSON.stringify(selectedIds);
+    json.value = JSON.stringify({
+      selected: selectedIds,
+      externalValueSetsExportMode: externalValueSetExportConfiguration.externalValueSetsExportMode,
+      rememberExternalValueSetExportMode: externalValueSetExportConfiguration.rememberExternalValueSetExportMode
+    });
     form.appendChild(json);
     form.style.display = 'none';
     document.body.appendChild(form);
