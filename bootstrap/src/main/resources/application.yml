@@ -58,5 +58,5 @@ froala:
   key: "TESTKEY"
 
 codes:
-  limit: 1000
+  limit: 5000
   phinvadURL: https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=

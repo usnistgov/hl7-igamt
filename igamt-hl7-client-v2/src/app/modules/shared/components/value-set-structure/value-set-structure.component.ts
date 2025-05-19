@@ -79,7 +79,8 @@ export class ValueSetStructureComponent implements OnInit {
   //dt1: any;
 
   onFilter(field: string, matchMode: string, dt1: any) {
-    const filterValue = this.filterValues[field] || '';
+  const filterValue = this.filterValues[field] || '';
+
     dt1.filter(filterValue, field, matchMode);
   }
 

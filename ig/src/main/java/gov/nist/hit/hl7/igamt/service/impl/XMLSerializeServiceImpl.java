@@ -133,7 +133,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 	@Autowired
 	CoConstraintSerializationHelper coConstraintSerializationHelper;
 
-	private static final int limitSizeOfVS = 1000;
+	private static final int limitSizeOfVS = 5000;
 
 	public static  String schemaVersion = "1.7.0";
 	public static  String schemaURL = "https://raw.githubusercontent.com/usnistgov/hl7-v2-schemas/"+ schemaVersion + "/src/main/resources/hl7-v2-schemas/";
