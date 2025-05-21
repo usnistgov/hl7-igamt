@@ -872,7 +872,6 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
 
   groupValueSet($event) {
 
-     console.log($event);
 
     this.store.select(selectIgDocument).pipe(
       take(1),
@@ -886,15 +885,13 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
           autoFocus: true,
           hasBackdrop: true,
           backdropClass: 'custom-backdrop-class',
- },
+              },
         });
-
         return dialogRef.afterClosed().pipe(
           filter((result) => result !== undefined),
           take(1),
           map((result) => {
             if (result) {
-
               console.log(result);
               this.store.dispatch(new GroupValueSets({ id: document.id, groups: result}));
             }
@@ -903,8 +900,5 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
       })
     ).subscribe();
   }
-
-
-
 
 }

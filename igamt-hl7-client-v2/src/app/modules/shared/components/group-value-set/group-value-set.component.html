@@ -19,7 +19,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let type of valueSetTypes">
-                <td>{{ type.label }}</td>
+                <td>  <span class="{{type.class}} badge">  {{ type.label }}</span></td>
                 <td>
                   <select [(ngModel)]="typeToGroupMap[type.value]">
                     <option [ngValue]="null" disabled>Select Group</option>

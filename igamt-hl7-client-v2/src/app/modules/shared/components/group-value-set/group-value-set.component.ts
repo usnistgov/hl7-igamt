@@ -21,9 +21,9 @@ export class GroupValueSetComponent implements OnInit {
 
 
     valueSetTypes = [
-        { label: 'HL7STANDARD', value: 'HL7STANDARD' },
-        { label: 'USER', value: 'USER' },
-        { label: 'EXTERNAL', value: 'EXTERNAL' }
+        { label: 'HL7STANDARD', value: 'HL7STANDARD', class:"scope-badge-hl7" },
+        { label: 'USER', value: 'USER', class:"scope-badge-user" },
+        { label: 'EXTERNAL', value: 'EXTERNAL',class:"scope-badge-external"  }
       ];
 
 
@@ -82,20 +82,21 @@ export class GroupValueSetComponent implements OnInit {
 
   ngOnInit(): void {
 
-
-
     for (const vs of this.data.valueSets) {
         this.valueSetMap[vs.id] = vs;
     }
 
     
-    if(this.data.groupedData &&  this.data.groupedData.custom) {
+    if(this.data.groupedData && this.data.groupedData.custom) {
 
+        console.log("BUILDING FROM EXISTING");
        this.custom = true;
        this.buildFromExisting(this.data.groupedData);
        this.typeToGroupMap = this.data.groupedData.defaultMap;
 
     } else {
+
+        console.log("BUILDING FROM DEFAULT");
 
         this.buildDefaultGroupedData();
     }
@@ -152,7 +153,6 @@ export class GroupValueSetComponent implements OnInit {
 
 
   buildFromExisting(groupedData){
-    console.log("CALLED EXIST");
     this.groupNames =  groupedData.groupNames;
     this.groupNames = [... groupedData.groupNames];
 
@@ -164,33 +164,9 @@ export class GroupValueSetComponent implements OnInit {
         for(const vsId of groupedData.groupedData[group]) { 
             this.groupedData[group].push(this.valueSetMap[vsId]);
         }
-
     }
-        
-    
     
     );
-
-    
-
-    for (const item of this.data.valueSets) {
-      const scope = item.domainInfo.scope;
-      
-      if (item.domainInfo.scope ==='HL7STANDARD') {
-        
-        this.groupedData['HL7'].push(item);
-
-      } else if(item.domainInfo.scope ==='USER') {
-
-        this.groupedData['USER'].push(item);
-
-      } else {
-
-        this.groupedData['Others'].push(item);
-
-      }
-    }
-    
 
   }
 
@@ -209,8 +185,9 @@ export class GroupValueSetComponent implements OnInit {
       groupedMap[group] = ids;
 
     }
+    console.log({groupedData: groupedMap, groupNames: this.groupNames, custom: this.custom, defaultMap: this.typeToGroupMap});
 
-   this.dialogRef.close({groupedData: groupedMap, groupNames: this.groupNames, custom: this.custom, defaultMap: this.typeToGroupMap});
+    this.dialogRef.close({groupedData: groupedMap, groupNames: this.groupNames, custom: this.custom, defaultMap: this.typeToGroupMap});
 
   }
 
@@ -351,11 +328,13 @@ export class GroupValueSetComponent implements OnInit {
   
       if (vs.domainInfo && vs.domainInfo.scope === 'HL7STANDARD') {
         type = 'HL7STANDARD';
-      } else if (vs.domainInfo && vs.domainInfo.scope === 'USER') {
-        type = 'USER';
-      } else if (vs.sourceType === 'EXTERNAL' || vs.sourceType === 'EXTERNAL_TRACKED') {
+      }
+      else if (vs.sourceType === 'EXTERNAL' || vs.sourceType === 'EXTERNAL_TRACKED') {
         type = 'EXTERNAL';
       }
+      else if (vs.domainInfo && vs.domainInfo.scope === 'USER') {
+        type = 'USER';
+      } 
   
       const targetGroup = type ? this.typeToGroupMap[type] : null;
   
@@ -375,22 +354,9 @@ export class GroupValueSetComponent implements OnInit {
       }
     }
   }
-  
-  
-  
-  
-
-
-
-
-
-
-  
+    
   restore(): void {
     this.groupedData = JSON.parse(JSON.stringify(this.previousGroupedData));
-  }
-
-
-  
+  }  
 
 }
