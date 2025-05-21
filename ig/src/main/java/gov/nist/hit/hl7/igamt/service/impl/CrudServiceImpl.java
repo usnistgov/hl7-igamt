@@ -586,7 +586,7 @@ public class CrudServiceImpl implements CrudService {
 		if (elm.isIncludeChildren()) {
 			Set<Code> vsCodes = externalCodeService.getCodesByURL(elm.getUrl());
 
-			if(vsCodes.size()<= 1000) {
+			if(vsCodes.size()<= 5000) {
 				
 			valueset.setCodes(vsCodes);
 			valueset.setCodeSystems(valuesetService.extractCodeSystemsFromCodes(vsCodes));

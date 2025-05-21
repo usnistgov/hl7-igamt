@@ -19,7 +19,7 @@ export class ImportFromProviderComponent implements OnInit {
 
   versionMode = VersionMode.LATEST;
   redirect = true;
-  limit = 500;
+  limit = 5000;
   step = 1;
   versionInfo: VersionInfo;
   notDefinedOption = { label: 'Not defined', value: 'Undefined' };
