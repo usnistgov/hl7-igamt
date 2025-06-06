@@ -45,6 +45,7 @@ public interface VerificationEntryService {
     IgamtObjectError MultipleValueSetNotAllowed(String pathId, LocationInfo info, String id, Type type);
     IgamtObjectError InvalidBindingLocation(String pathId, String locationName, LocationInfo target, PropertyType prop, String id, Type type, Set<Integer> bindingLocations, String reason);
     IgamtObjectError OBX2MessageValueSetBindingNotAllowed(String pathId, LocationInfo info, String id, Type type);
+    IgamtObjectError InconsequentialCodeUsage(String pathId, String locationName, LocationInfo target, PropertyType prop, String id, Type type);
 
     // Co-Constraints
     IgamtObjectError CoConstraintTargetIsNotSegment(String pathId, String locationName, String id, Type type, String path, String pathQualifier);
@@ -117,6 +118,8 @@ public interface VerificationEntryService {
     IgamtObjectError ExternalValuesetInvalidURL(Location info, String id, Type type, String URL);
     IgamtObjectError InternalTrackedValuesetMissingCodeSet(Location info, String id, Type type);
     IgamtObjectError InternalTrackedValuesetCodeSetNotFound(Location info, String id, Type type);
+    IgamtObjectError InternalTrackedValuesetNotPublicCodeSet(Location info, String id, Type type);
+
 
 
     // Cardinality
@@ -133,6 +136,8 @@ public interface VerificationEntryService {
     IgamtObjectError LengthOrConfLengthMissing(LocationInfo info, String id, Type type);
     IgamtObjectError LengthInvalidMaxLength(LocationInfo info, String id, Type type, String maxLength);
     IgamtObjectError LengthInvalidMinLength(LocationInfo info, String id, Type type, String minLength);
+    IgamtObjectError LengthInvalidRUsage(LocationInfo info, String id, Type type, String length);
+    IgamtObjectError LengthInvalidXUsage(LocationInfo info, String id, Type type, String minLength, String maxLength);
     IgamtObjectError LengthInvalidRange(LocationInfo info, String id, Type type, String minLength, String maxLength);
     IgamtObjectError ConfLengthNotAllowed(LocationInfo info, String id, Type type);
     IgamtObjectError LengthNotAllowed(LocationInfo info, String id, Type type);

@@ -863,14 +863,14 @@ public class IgServiceImpl implements IgService {
 					if(reference == null || Strings.isNullOrEmpty(reference.getCodeSetId())) {
 						throw new Exception("Internal Tracked value set "+ vs.getId()+ " is missing code set reference.");
 					}
-					if(resourcePermissionService.hasPermission(Type.CODESET, reference.getCodeSetId(), Action.READ)) {
+					if(resourcePermissionService.isPublic(Type.CODESET, reference.getCodeSetId())) {
 						if(Strings.isNullOrEmpty(reference.getVersionId())) {
 							valuesetDataModel.setReferencedCodeSet(codeSetService.getLatestCodeVersion(reference.getCodeSetId()));
 						} else {
 							valuesetDataModel.setReferencedCodeSet(codeSetService.getCodeSetVersionContent(reference.getCodeSetId(), reference.getVersionId()));
 						}
 					} else {
-						throw new Exception("Referenced code set "+ reference.getCodeSetId() +" from value set "+ vs.getId()+ " was not found.");
+						throw new Exception("Referenced code set from value set "+ vs.getBindingIdentifier()+ " is not public.");
 					}
 				} else if(vs.getSourceType().equals(SourceType.EXTERNAL) || vs.getSourceType().equals(SourceType.EXTERNAL_TRACKED)) {
 					ExternalValueSetExportMode externalValueSetExportMode = configuration.getExternalValueSetExportMode().get(vs.getId());
