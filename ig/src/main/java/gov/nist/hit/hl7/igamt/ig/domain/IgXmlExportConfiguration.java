@@ -3,11 +3,18 @@ package gov.nist.hit.hl7.igamt.ig.domain;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Id;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Document
 public class IgXmlExportConfiguration {
+	public static final Set<String> authorizedExportTargetType = new HashSet<>(Arrays.asList(
+		"xml",
+		"GVT",
+		"GVT-DEV",
+		"IZ-TOOL-DEV",
+		"IZ-TOOL"
+	));
+
 	@Id
 	private String id;
 	private String igId;

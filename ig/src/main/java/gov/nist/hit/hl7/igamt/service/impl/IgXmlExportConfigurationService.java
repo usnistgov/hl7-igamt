@@ -32,7 +32,10 @@ public class IgXmlExportConfigurationService {
 			String username,
 			String type,
 			Map<String, ExternalValueSetExportMode> externalValueSetExportModeMap
-	) {
+	) throws Exception {
+		if(!IgXmlExportConfiguration.authorizedExportTargetType.contains(type)) {
+			throw new Exception("Invalid XML export target type '"+ type +"'");
+		}
 		IgXmlExportConfiguration configuration = getConfiguration(igId, username);
 		if(configuration != null) {
 			configuration.getExternalValueSetXmlExportMode().put(type, externalValueSetExportModeMap);
