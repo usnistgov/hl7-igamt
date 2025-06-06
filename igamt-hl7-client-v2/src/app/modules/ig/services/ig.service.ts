@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
+import { map } from 'rxjs/operators';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { TableOfContentSave } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import { Message } from '../../dam-framework/models/messages/message.class';
@@ -17,6 +18,7 @@ import {
 import { IgTOCNodeHelper } from '../../document/services/ig-toc-node-helper.service';
 import { ExportTypes } from '../../export-configuration/models/export-types';
 import { IgTemplate } from '../../shared/components/derive-dialog/derive-dialog.component';
+import { ExternalValueSetExportType } from '../../shared/components/export-xml-dialog/export-xml-dialog.component';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { CloneModeEnum } from '../../shared/constants/clone-mode.enum';
 import { Scope } from '../../shared/constants/scope.enum';
@@ -32,7 +34,6 @@ import { INarrative } from '../components/ig-section-editor/ig-section-editor.co
 import { IDocumentDisplayInfo, IIgUpdateInfo, IIgVerificationReport } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
-import { ExternalValueSetExportType } from '../../shared/components/export-xml-dialog/export-xml-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -318,31 +319,37 @@ export class IgService {
     return this.http.post<string[]>(this.IG_END_POINT + documentId + '/' + registryType + '/deleteResources', ids);
   }
 
-  exportXML(
+  exportXMLInline(
     igId: string,
     selectedIds: ISelectedIds,
+    exportType: string,
+    filename: string,
     externalValueSetExportConfiguration: {
       rememberExternalValueSetExportMode: boolean,
       externalValueSetsExportMode: Record<string, ExternalValueSetExportType>,
     } = {
         rememberExternalValueSetExportMode: false,
-        externalValueSetsExportMode: {}
+        externalValueSetsExportMode: {},
       }) {
-    const form = document.createElement('form');
-    form.action = this.EXPORT_URL + igId + '/xml/validation';
-    form.method = 'POST';
-    const json = document.createElement('input');
-    json.type = 'hidden';
-    json.name = 'json';
-    json.value = JSON.stringify({
+    const exportURL = this.EXPORT_URL + igId + '/xml/validation';
+    const json = JSON.stringify({
       selected: selectedIds,
       externalValueSetsExportMode: externalValueSetExportConfiguration.externalValueSetsExportMode,
-      rememberExternalValueSetExportMode: externalValueSetExportConfiguration.rememberExternalValueSetExportMode
+      rememberExternalValueSetExportMode: externalValueSetExportConfiguration.rememberExternalValueSetExportMode,
+      exportType,
     });
-    form.appendChild(json);
-    form.style.display = 'none';
-    document.body.appendChild(form);
-    form.submit();
+    return this.http.post(exportURL, { json }, {
+      responseType: 'blob',
+    }).pipe(
+      map((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      }),
+    );
   }
 
   export(igId, decision: any, format: string, configId: string, exportType: ExportTypes) {
@@ -429,8 +436,29 @@ export class IgService {
     };
   }
 
-  exportToTesting(igId: string, selectedIds: ISelectedIds, username: string, password: string, tool: IConnectingInfo, targetDomain: string) {
-    return this.http.post('/api/testing/' + igId + '/push/' + targetDomain, selectedIds, this.getGvtOptions(username, password, tool));
+  exportToTesting(
+    igId: string,
+    selectedIds: ISelectedIds,
+    exportType: string,
+    externalValueSetExportConfiguration: {
+      rememberExternalValueSetExportMode: boolean,
+      externalValueSetsExportMode: Record<string, ExternalValueSetExportType>,
+    },
+    username: string,
+    password: string,
+    tool: IConnectingInfo,
+    targetDomain: string,
+  ) {
+    return this.http.post(
+      '/api/testing/' + igId + '/push/' + targetDomain,
+      {
+        selected: selectedIds,
+        externalValueSetsExportMode: externalValueSetExportConfiguration.externalValueSetsExportMode,
+        rememberExternalValueSetExportMode: externalValueSetExportConfiguration.rememberExternalValueSetExportMode,
+        exportType,
+      },
+      this.getGvtOptions(username, password, tool),
+    );
   }
 
   private prepareUrl(igId: string, type: string): string {

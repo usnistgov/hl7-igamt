@@ -6,8 +6,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -21,23 +20,21 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 @Service
 public class ExternalCodeService {
 
-
 	@Autowired
 	private RestTemplate restTemplate;
-	
-	//http://hit-dev-admin.nist.gov:19070/api/v1/phinvads/codesets
-
 
 	public List<CodesetResponse> getAllByURL(String url) {
-		
-
 		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.set("User-Agent", "NIST IGAMT");
+			HttpEntity<Void> entity = new HttpEntity<>(headers);
 			ResponseEntity<List<CodesetResponse>> response = restTemplate.exchange(
 					url,
 					HttpMethod.GET,
-					null,
+					entity,
 					new ParameterizedTypeReference<List<CodesetResponse>>() {}
-					);
+			);
 			return response.getBody();
 		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw new RuntimeException("API call failed", e);
@@ -47,18 +44,19 @@ public class ExternalCodeService {
 			throw new RuntimeException("Unexpected error occurred", e);
 		}
 	}
-	
-	
-	public CodesetResponse getOneByURL(String url) {
-		
 
+	public CodesetResponse getOneByURL(String url) {
 		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.set("User-Agent", "NIST IGAMT");
+			HttpEntity<Void> entity = new HttpEntity<>(headers);
 			ResponseEntity<CodesetResponse> response = restTemplate.exchange(
 					url,
 					HttpMethod.GET,
-					null,
+					entity,
 					CodesetResponse.class
-					);
+			);
 			return response.getBody();
 		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw new RuntimeException("API call failed", e);
@@ -69,14 +67,9 @@ public class ExternalCodeService {
 		}
 	}
 	
-	
-	
-	
 	public Set<Code> getCodesByURL(String url) {
-		
 		CodesetResponse response = this.getOneByURL(url);
 		Set<Code> codes = new HashSet<Code>();
-		
 		if(response.getCodes() != null) {
 			for (ExternalCode ext: response.getCodes() ) {
 				Code internalCode = new Code();
@@ -84,18 +77,13 @@ public class ExternalCodeService {
 				internalCode.setDescription(ext.getDisplayText());
 				internalCode.setUsage(ext.getUsage());
 				internalCode.setValue(ext.getValue());
+				internalCode.setHasPattern(ext.isPattern());
+				if(ext.isPattern()) {
+					internalCode.setPattern(ext.getRegularExpression());
+				}
 				codes.add(internalCode);
 			}
-			
 		}
 		return codes;
-		
 	}
-	
-	
-
-	
-
-
-
 }

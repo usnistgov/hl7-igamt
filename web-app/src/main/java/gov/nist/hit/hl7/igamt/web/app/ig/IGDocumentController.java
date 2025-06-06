@@ -18,6 +18,7 @@ import gov.nist.hit.hl7.igamt.common.base.util.BindingSummaryFilter;
 import gov.nist.hit.hl7.igamt.display.model.*;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.*;
 import gov.nist.hit.hl7.igamt.ig.domain.*;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModelConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgVerificationIssuesList;
 import gov.nist.hit.hl7.igamt.ig.model.*;
 import gov.nist.hit.hl7.igamt.service.impl.IgXmlExportConfigurationService;
@@ -1435,9 +1436,14 @@ public class IGDocumentController extends BaseController {
 		return str.replaceAll(" ", "-").replaceAll("\\*", "-").replaceAll("\"", "-").replaceAll(":", "-").replaceAll(";", "-").replaceAll("=", "-").replaceAll(",", "-");
 	}
 
-	@RequestMapping(value = "/api/export/ig/{id}/xml/validation", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	@RequestMapping(value = "/api/export/ig/{id}/xml/validation", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/json")
 	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
-	public void exportXML(@PathVariable("id") String id, FormData formData, HttpServletResponse response, @AuthenticationPrincipal Principal user) throws Exception {
+	public void exportXML(
+			@PathVariable("id") String id,
+			@RequestBody FormData formData,
+			HttpServletResponse response,
+			@AuthenticationPrincipal Principal user
+	) throws Exception {
 		Set<String> dataExtensionTokens = new HashSet<>();
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -1453,11 +1459,13 @@ public class IGDocumentController extends BaseController {
 				this.igXmlExportConfigurationService.saveExternalValueSetExportConfiguration(
 						id,
 						user.getName(),
-						"xml",
+						xmlExportRequest.getExportType(),
 						xmlExportRequest.getExternalValueSetsExportMode()
 				);
 			}
-			IgDataModel igModel = this.igService.generateDataModel(subSetIg);
+			IgDataModelConfiguration igDataModelConfiguration = new IgDataModelConfiguration();
+			igDataModelConfiguration.setExternalValueSetExportMode(xmlExportRequest.getExternalValueSetsExportMode());
+			IgDataModel igModel = this.igService.generateDataModel(subSetIg, igDataModelConfiguration);
 			dataExtensionTokens.addAll(igModel.getDataExtensionTokens());
 			InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
 			response.setContentType("application/zip");

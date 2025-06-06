@@ -14,7 +14,6 @@ package gov.nist.hit.hl7.igamt.service.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,6 +24,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import gov.nist.hit.hl7.igamt.ig.domain.ExternalValueSetExportMode;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.*;
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
@@ -34,7 +34,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 
-// import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.binding.domain.SingleCodeBinding;
@@ -358,7 +357,11 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 				Valueset t = vsm.getModel();
 				if(t != null) {
 					boolean isExternal = t.getSourceType().equals(SourceType.EXTERNAL) || t.getSourceType().equals(SourceType.EXTERNAL_TRACKED);
-					if(isExternal) {
+					boolean serializeAsExternal = vsm.getExternalValueSetExportMode() == null || vsm.getExternalValueSetExportMode().equals(ExternalValueSetExportMode.EXTERNAL);
+					boolean serializeAsSnapshot = vsm.getExternalValueSetExportMode() != null && vsm.getExternalValueSetExportMode().equals(ExternalValueSetExportMode.SNAPSHOT);
+					boolean serializeAsExcluded = vsm.getExternalValueSetExportMode() != null && vsm.getExternalValueSetExportMode().equals(ExternalValueSetExportMode.EXCLUDED);
+
+					if(isExternal && serializeAsExternal) {
 						if(Strings.isNullOrEmpty(t.getUrl())) {
 							throw new TableSerializationException("External value set " + t.getId() + " is missing a URL");
 						} else {
@@ -368,8 +371,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 							elmValueSetDefinitionsExternal.appendChild(externalValueSetDefinition);
 						}
 					} else {
-
-						// Get the codes (either from code set or from the value set)
 						Set<Code> codes;
 						if(t.getSourceType().equals(SourceType.INTERNAL_TRACKED)) {
 							if(vsm.getReferencedCodeSet() != null) {
@@ -377,15 +378,17 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 							} else {
 								throw new TableSerializationException("Internal value set " + t.getId() + " link to code set could not resolved.");
 							}
+						} else if(isExternal && serializeAsSnapshot) {
+							codes = vsm.getSnapshot();
+						} else if(isExternal && serializeAsExcluded) {
+							codes = new HashSet<>();
 						} else {
 							codes = t.getCodes();
 						}
 
 						boolean noCodes = codes == null || codes.isEmpty();
-						boolean sizeOverLimit = !noCodes && codes.size() > limitSizeOfVS;
 						boolean isPlaceholder = !noCodes && codes.size() == 1 && codes.iterator().next().getValue().equals("...");
-						boolean skipValidation = noCodes || sizeOverLimit || isPlaceholder;
-						boolean skipCodesExport = noCodes || sizeOverLimit;
+						boolean skipValidation = noCodes || isPlaceholder;
 
 						// If conditions are met we will add this value set to the list of value sets with no validation support
 						if(skipValidation) {
@@ -400,7 +403,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 						addValueSetDefinitionAttributes(t, defaultHL7Version, elmValueSetDefinition);
 
 						// Set the codes
-						if(!skipCodesExport) {
+						if(!noCodes) {
 							addValueSetCodes(elmValueSetDefinition, codes);
 						}
 

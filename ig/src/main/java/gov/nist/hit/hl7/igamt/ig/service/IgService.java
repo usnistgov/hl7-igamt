@@ -14,6 +14,8 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.model.CoConstraintTableReference;
+import gov.nist.hit.hl7.igamt.ig.domain.IgXmlExportConfiguration;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModelConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.model.*;
 import org.springframework.stereotype.Service;
@@ -93,6 +95,8 @@ public interface IgService {
   public IgDocumentConformanceStatement convertDomainToConformanceStatement(Ig igdoument);
 
   public IGContentMap collectData(Ig igdoument);
+
+  public IgDataModel generateDataModel(Ig ig, IgDataModelConfiguration configuration) throws Exception;
 
   public IgDataModel generateDataModel(Ig ig) throws Exception;
 

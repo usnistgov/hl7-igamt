@@ -1,19 +1,22 @@
 <div class="dialog-container">
   <h2 mat-dialog-title style="margin: 0;" >Export XML</h2>
   <div>
-    <div *ngIf="verified && !hasFatal && !hasErrors && !verificationFailed && !verificationInProgress" class="alert alert-success">
+    <div *ngIf="verified && !hasFatal && !hasErrors && !verificationFailed && !verificationInProgress && current !== 'BUNDLE_GENERATION'" class="alert alert-success">
       Your selected profile(s) have passed the verification.
     </div>
     <div *ngIf="verified && hasFatal" class="alert alert-danger">
       Your selected profile(s) have fatal errors, please fix your profiles and try again.
     </div>
-    <div *ngIf="verified && !hasFatal && hasErrors" class="alert alert-danger">
+    <div *ngIf="verified && !hasFatal && hasErrors && current !== 'BUNDLE_GENERATION'" class="alert alert-danger">
       Your selected profile(s) have errors, please fix your profiles.
     </div>
     <div *ngIf="verificationFailed" class="alert alert-danger">
       {{verificationErrorMessage}}
     </div>
-    <div *ngIf="externalValueSets && externalValueSets.length > 0 && !hasFatal" style="color: black;" class="alert alert-info">
+    <div *ngIf="generationFailed" class="alert alert-danger">
+      {{generationErrorMessage}}
+    </div>
+    <div *ngIf="externalValueSets && externalValueSets.length > 0 && !hasFatal && current !== 'BUNDLE_GENERATION'" style="color: black;" class="alert alert-info">
       Your profiles reference external value sets, message validation against these value sets will perform network calls to external value set services in order to check for code validity.
       You can customize how these value sets are exported to fit your use case.
       <div *ngIf="current !== 'EXTERNAL_VALUESET_CONFIGURATION'">
@@ -56,7 +59,7 @@
       <mat-spinner class="verification-progress" diameter="50"></mat-spinner>
     </div>
   </div>
-  <div *ngIf="!verificationInProgress && verificationResult" class="report-container">
+  <div *ngIf="!verificationInProgress && verificationResult && displayTable" class="report-container">
     <div style="padding: 10px; border-radius: 4px;border: 1px solid lightgray;background: #f7f7f7;">
       <div><app-issue-badge type="FATAL" label="FATAL"></app-issue-badge> - IGAMT cannot generate the XML; Downstream tools would not be able to process XML.</div>
       <div><app-issue-badge type="ERROR" label="ERROR"></app-issue-badge> - IGAMT can generate the XML; User should fix errors before exporting the XML and using downstream tools.</div>
@@ -95,7 +98,7 @@
     <strong>{{ externalValueSetsTypeCount.external }}</strong> external, <strong>{{ externalValueSetsTypeCount.excluded }}</strong> excluded from the validation (empty), <strong>{{ externalValueSetsTypeCount.snapshot }}</strong> snapshot.
   </div>
   <div style="margin-top: 10px; margin-bottom: 10px;">
-    <p-checkbox [(ngModel)]="rememberExternalValueSetExportMode" [binary]="true" label="Remember this configuration" name="remember"  ></p-checkbox>
+    <p-checkbox [(ngModel)]="rememberExternalValueSetExportMode" [binary]="true" [label]="'Remember this configuration for export to '+ exportType" name="remember"  ></p-checkbox>
   </div>
   <p-table [value]="externalValueSets" [paginator]="true" [rows]="5">
     <ng-template pTemplate="header" let-columns>
@@ -130,4 +133,16 @@
     <button *ngIf="!hasFatal && !hasErrors" (click)="submit()" class="btn btn-sm btn-success">Submit</button>
     <button *ngIf="!hasFatal && hasErrors" (click)="submit()" class="btn btn-sm btn-warning">Proceed anyway</button>
   </div>
+</ng-template>
+
+<ng-template #bundleGeneration>
+  <div *ngIf="generationInProgress" style="display: flex; align-items: center; justify-content: center; flex-direction:  column;">
+    <span>Please wait while we generate your profiles xml bundle</span>
+    <div style="margin-top: 40px;">
+      <mat-spinner class="verification-progress" diameter="50"></mat-spinner>
+    </div>
+  </div>
+</ng-template>
+<ng-template #bundleGenerationActions>
+  <button *ngIf="!generationInProgress" (click)="backFromGeneration()" class="btn btn-sm btn-primary" style="margin-right: 5px;">Back</button>
 </ng-template>

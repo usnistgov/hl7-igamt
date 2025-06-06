@@ -8,6 +8,7 @@ public class XmlExportRequest {
 	private ReqId selected;
 	private Map<String, ExternalValueSetExportMode> externalValueSetsExportMode;
 	private boolean rememberExternalValueSetExportMode;
+	private String exportType;
 
 	public Map<String, ExternalValueSetExportMode> getExternalValueSetsExportMode() {
 		return externalValueSetsExportMode;
@@ -31,5 +32,13 @@ public class XmlExportRequest {
 
 	public void setRememberExternalValueSetExportMode(boolean rememberExternalValueSetExportMode) {
 		this.rememberExternalValueSetExportMode = rememberExternalValueSetExportMode;
+	}
+
+	public String getExportType() {
+		return exportType;
+	}
+
+	public void setExportType(String exportType) {
+		this.exportType = exportType;
 	}
 }

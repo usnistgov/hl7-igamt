@@ -1,9 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Inject, TemplateRef, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { throwError } from 'rxjs';
-import { catchError, flatMap, map, take } from 'rxjs/operators';
+import { EMPTY, from, Subscription, throwError } from 'rxjs';
+import { catchError, flatMap, map, take, tap } from 'rxjs/operators';
+import { IMessage } from 'src/app/modules/dam-framework/models/messages/message.class';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
+import { IgService } from 'src/app/modules/ig/services/ig.service';
 import { Type } from '../../constants/type.enum';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { StoreResourceRepositoryService } from '../../services/resource-repository.service';
@@ -12,15 +14,16 @@ import { ISelectedIds } from '../select-resource-ids/select-resource-ids.compone
 import { IVerificationResultDisplay, VerificationDisplayActiveTypeSelector } from '../verification-result-display/verification-result-display.component';
 
 export enum ExportStepType {
-  PROFILE_SELECTION = "PROFILE_SELECTION",
-  VERIFICATION = "VERIFICATION",
-  EXTERNAL_VALUESET_CONFIGURATION = "EXTERNAL_VALUESET_CONFIGURATION"
+  PROFILE_SELECTION = 'PROFILE_SELECTION',
+  VERIFICATION = 'VERIFICATION',
+  EXTERNAL_VALUESET_CONFIGURATION = 'EXTERNAL_VALUESET_CONFIGURATION',
+  BUNDLE_GENERATION = 'BUNDLE_GENERATION',
 }
 
 export enum ExternalValueSetExportType {
-  EXTERNAL = "EXTERNAL",
-  EXCLUDED = "EXCLUDED",
-  SNAPSHOT = "SNAPSHOT"
+  EXTERNAL = 'EXTERNAL',
+  EXCLUDED = 'EXCLUDED',
+  SNAPSHOT = 'SNAPSHOT',
 }
 
 @Component({
@@ -32,13 +35,17 @@ export class ExportXmlDialogComponent {
   current = ExportStepType.PROFILE_SELECTION;
   ids: ISelectedIds = { conformanceProfilesId: [], compositeProfilesId: [] };
   verificationResult: IVerificationResultDisplay;
-  externalValueSets: {
+  externalValueSets: Array<{
     display: IDisplayElement;
     URL: string;
-  }[] = [];
+  }> = [];
+  displayTable = false;
   verificationInProgress = false;
   verificationFailed = false;
   verificationErrorMessage: string;
+  generationInProgress = false;
+  generationFailed = false;
+  generationErrorMessage: string;
   verified = false;
   hasFatal = false;
   hasErrors = false;
@@ -49,6 +56,8 @@ export class ExportXmlDialogComponent {
     excluded: 0,
     snapshot: 0,
   };
+  exportType = 'xml';
+  generationSubscription: Subscription;
 
   @ViewChild('profileSelection')
   profileSelection: TemplateRef<any>;
@@ -64,6 +73,11 @@ export class ExportXmlDialogComponent {
   externalValueSetsConfiguration: TemplateRef<any>;
   @ViewChild('externalValueSetsConfigurationActions')
   externalValueSetsConfigurationActions: TemplateRef<any>;
+
+  @ViewChild('bundleGeneration')
+  bundleGeneration: TemplateRef<any>;
+  @ViewChild('bundleGenerationActions')
+  bundleGenerationActions: TemplateRef<any>;
 
   activeSelector: VerificationDisplayActiveTypeSelector = (data) => {
     if (data.conformanceProfiles && data.conformanceProfiles.entries && data.conformanceProfiles.entries.length > 0) {
@@ -83,6 +97,8 @@ export class ExportXmlDialogComponent {
         return this.profileVerification;
       case ExportStepType.EXTERNAL_VALUESET_CONFIGURATION:
         return this.externalValueSetsConfiguration;
+      case ExportStepType.BUNDLE_GENERATION:
+        return this.bundleGeneration;
     }
   }
 
@@ -94,6 +110,8 @@ export class ExportXmlDialogComponent {
         return this.profileVerificationActions;
       case ExportStepType.EXTERNAL_VALUESET_CONFIGURATION:
         return this.externalValueSetsConfigurationActions;
+      case ExportStepType.BUNDLE_GENERATION:
+        return this.bundleGenerationActions;
     }
   }
 
@@ -103,11 +121,15 @@ export class ExportXmlDialogComponent {
     private verificationService: VerificationService,
     private repository: StoreResourceRepositoryService,
     private message: MessageService,
+    private igService: IgService,
     @Inject(MAT_DIALOG_DATA) public data: IExportXmlDialogData) {
 
   }
 
   cancel() {
+    if (this.generationSubscription) {
+      this.generationSubscription.unsubscribe();
+    }
     this.dialogRef.close();
   }
 
@@ -134,8 +156,8 @@ export class ExportXmlDialogComponent {
     this.externalValueSetsTypeCount = {
       excluded,
       external,
-      snapshot
-    }
+      snapshot,
+    };
   }
 
   verify() {
@@ -143,6 +165,9 @@ export class ExportXmlDialogComponent {
     this.verificationInProgress = true;
     this.verificationFailed = false;
     this.verificationErrorMessage = '';
+    this.generationInProgress = false;
+    this.generationFailed = false;
+    this.generationErrorMessage = '';
     this.externalValueSets = [];
     this.verified = false;
     this.exportTypeMap = {};
@@ -151,6 +176,7 @@ export class ExportXmlDialogComponent {
       excluded: 0,
       snapshot: 0,
     };
+    this.displayTable = false;
     this.http.post<any>('/api/igdocuments/' + this.data.igId + '/preverification', { ids: this.ids, exportType: 'xml' }).pipe(
       flatMap((result) => {
         const report = result.verificationIssues;
@@ -160,6 +186,7 @@ export class ExportXmlDialogComponent {
           take(1),
           map((verificationResult) => {
             this.verificationResult = verificationResult;
+            this.displayTable = !this.tableIsEmpty(verificationResult);
             this.setVerificationFlags(verificationResult);
             this.verificationInProgress = false;
             this.verified = true;
@@ -186,6 +213,17 @@ export class ExportXmlDialogComponent {
 
   configureExternalValueSets() {
     this.current = ExportStepType.EXTERNAL_VALUESET_CONFIGURATION;
+  }
+
+  tableIsEmpty(verificationTable: IVerificationResultDisplay) {
+    const ig = !verificationTable.ig || verificationTable.ig.entries.length === 0;
+    const cp = !verificationTable.conformanceProfiles || verificationTable.conformanceProfiles.entries.length === 0;
+    const composite = !verificationTable.compositeProfiles || verificationTable.compositeProfiles.entries.length === 0;
+    const segments = !verificationTable.segments || verificationTable.segments.entries.length === 0;
+    const datatypes = !verificationTable.datatypes || verificationTable.datatypes.entries.length === 0;
+    const valueSets = !verificationTable.valueSets || verificationTable.valueSets.entries.length === 0;
+    const coConstraintGroups = !verificationTable.coConstraintGroups || verificationTable.coConstraintGroups.entries.length === 0;
+    return ig && cp && composite && segments && datatypes && valueSets && coConstraintGroups;
   }
 
   setExportType(id: string, type: ExternalValueSetExportType) {
@@ -227,12 +265,51 @@ export class ExportXmlDialogComponent {
   }
 
   submit() {
-    this.dialogRef.close({
-      selected: this.ids,
-      externalValueSetsExportMode: this.exportTypeMap,
-      rememberExternalValueSetExportMode: this.rememberExternalValueSetExportMode,
-    });
+    this.current = ExportStepType.BUNDLE_GENERATION;
+    this.generationInProgress = true;
+    this.generationFailed = false;
+    this.generationErrorMessage = '';
+    const filename = this.data.title + ' ' + (new Date()).toUTCString() + '.zip';
+    this.generationSubscription = this.igService.exportXMLInline(
+      this.data.igId,
+      this.ids,
+      this.exportType,
+      filename,
+      {
+        externalValueSetsExportMode: this.exportTypeMap,
+        rememberExternalValueSetExportMode: this.rememberExternalValueSetExportMode,
+      },
+    ).pipe(
+      tap(() => {
+        this.generationInProgress = false;
+        this.generationFailed = false;
+        this.generationErrorMessage = '';
+        this.dialogRef.close();
+      }),
+      catchError((e) => {
+        this.generationInProgress = false;
+        this.generationFailed = true;
+        if (e.error && e.error instanceof Blob) {
+          return from(e.error.text()).pipe(
+            map((errorTxt: string) => {
+              const message: IMessage<string> = JSON.parse(errorTxt);
+              this.generationErrorMessage = message.text;
+            }),
+          );
+        }
+        this.generationErrorMessage = 'XML Bundle Generation failed due to an unexpected error.';
+        return EMPTY;
+      }),
+    ).subscribe();
   }
+
+  backFromGeneration() {
+    if (this.generationSubscription) {
+      this.generationSubscription.unsubscribe();
+    }
+    this.goto(ExportStepType.VERIFICATION);
+  }
+
   selectConformanceProfiles(ids: string[]) {
     this.ids = { ...this.ids, conformanceProfilesId: ids };
   }
@@ -248,5 +325,6 @@ export class ExportXmlDialogComponent {
 export interface IExportXmlDialogData {
   conformanceProfiles?: IDisplayElement[];
   compositeProfiles?: IDisplayElement[];
-  igId?: string;
+  igId: string;
+  title: string;
 }

@@ -1,18 +1,18 @@
 package gov.nist.hit.hl7.igamt.web.app.ig;
 
 import java.io.InputStream;
+import java.security.Principal;
 import java.util.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
-import gov.nist.hit.hl7.igamt.web.app.model.IgSubSet;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.XmlExportRequest;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModelConfiguration;
+import gov.nist.hit.hl7.igamt.service.impl.IgXmlExportConfigurationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -22,10 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
-
-import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
-import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
-import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
@@ -33,44 +29,26 @@ import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.model.GVTDomain;
 import gov.nist.hit.hl7.igamt.ig.service.GVTService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
-import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.exception.GVTExportException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.GVTLoginException;
-import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+
 
 @RestController
 public class GVTConnectController extends BaseController {
 
 	Logger log = LoggerFactory.getLogger(GVTConnectController.class);
 
-
 	@Autowired
 	private GVTService gvtService;
-
-	@Autowired
-	ConformanceProfileService conformanceProfileService;
-
-	@Autowired
-	DatatypeService datatypeService;
-
-	@Autowired
-	SegmentService segmentService;
-
-	@Autowired
-	ValuesetService valuesetService;
-
-	@Autowired
-	CoConstraintSerializationHelper coConstraintSerializationHelper;
 
 	@Autowired
 	IgService igService;
 
 	@Autowired
-	CompositeProfileStructureService compositeProfileService;
-
-	@Autowired
 	InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
 
+	@Autowired
+	IgXmlExportConfigurationService igXmlExportConfigurationService;
 
 	@RequestMapping(value = "/api/testing/login", method = RequestMethod.GET, produces = {"application/json"})
 	public boolean validCredentials(
@@ -79,13 +57,11 @@ public class GVTConnectController extends BaseController {
 	) throws GVTLoginException {
 		log.info("Logging to " + host);
 		try {
-			// SSLHL7v2ResourceClient client = new SSLHL7v2ResourceClient(host, authorization);
 			return gvtService.validCredentials(authorization, host);
 		} catch(Exception e) {
 			throw new GVTLoginException(e.getMessage());
 		}
 	}
-
 
 	@RequestMapping(value = "/api/testing/domains", method = RequestMethod.GET, produces = {"application/json"})
 	public List<GVTDomain> getDomains(
@@ -99,9 +75,7 @@ public class GVTConnectController extends BaseController {
 	public ResponseEntity<?> createDomain(
 			@RequestHeader("target-auth") String authorization,
 			@RequestHeader("target-url") String url,
-			@RequestBody HashMap<String, String> params,
-			HttpServletRequest request,
-			HttpServletResponse response
+			@RequestBody HashMap<String, String> params
 	) throws GVTExportException {
 		try {
 			log.info("Creating domain with name " + params.get("name") + ", key=" + params.get("key") + ",url=" + url);
@@ -121,27 +95,32 @@ public class GVTConnectController extends BaseController {
 	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
 	public Map<String, Object> exportToGVT(
 			@PathVariable("id") String id,
-			@RequestBody ReqId reqIds,
+			@RequestBody XmlExportRequest xmlExportRequest,
 			@PathVariable("domain") String domain,
 			@RequestHeader("target-auth") String authorization,
 			@RequestHeader("target-url") String url,
-			HttpServletRequest request,
-			HttpServletResponse response
+			@AuthenticationPrincipal Principal user
 	) throws GVTExportException {
 		Set<String> dataExtensionTokens = new HashSet<>();
 		try {
 			log.info("Exporting messages to GVT from IG Document with id=" + id);
-
-			Ig ig = findIgById(id);
-			Set<String> conformanceProfileIds = reqIds.getConformanceProfilesId() != null ? new HashSet<>(Arrays.asList(
-					reqIds.getConformanceProfilesId())) : new HashSet<>();
-			Set<String> compositeProfileIds = reqIds.getCompositeProfilesId() != null ? new HashSet<>(Arrays.asList(
-					reqIds.getCompositeProfilesId())) : new HashSet<>();
-			Ig subSetIg = this.igService.getIgProfileResourceSubSetAsIg(findIgById(id),
-			                                                            conformanceProfileIds,
-			                                                            compositeProfileIds
+			ReqId reqIds = xmlExportRequest.getSelected();
+			Ig subSetIg = this.igService.getIgProfileResourceSubSetAsIg(
+					findIgById(id),
+					new HashSet<>(Arrays.asList(reqIds.getConformanceProfilesId())),
+					new HashSet<>(Arrays.asList(reqIds.getCompositeProfilesId()))
 			);
-			IgDataModel igModel = this.igService.generateDataModel(subSetIg);
+			if(xmlExportRequest.isRememberExternalValueSetExportMode()) {
+				this.igXmlExportConfigurationService.saveExternalValueSetExportConfiguration(
+						id,
+						user.getName(),
+						xmlExportRequest.getExportType(),
+						xmlExportRequest.getExternalValueSetsExportMode()
+				);
+			}
+			IgDataModelConfiguration igDataModelConfiguration = new IgDataModelConfiguration();
+			igDataModelConfiguration.setExternalValueSetExportMode(xmlExportRequest.getExternalValueSetsExportMode());
+			IgDataModel igModel = this.igService.generateDataModel(subSetIg, igDataModelConfiguration);
 			dataExtensionTokens.addAll(igModel.getDataExtensionTokens());
 			InputStream content = this.igService.exportValidationXMLByZip(
 					igModel,

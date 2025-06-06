@@ -21,6 +21,8 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.conformanceprofile.model.CoConstraintTableReference;
 import gov.nist.hit.hl7.igamt.ig.binding.FlatResourceBinding;
 import gov.nist.hit.hl7.igamt.ig.binding.ValueSetBindingContainer;
+import gov.nist.hit.hl7.igamt.ig.domain.*;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.*;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.model.*;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCreationService;
@@ -29,6 +31,7 @@ import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
 import gov.nist.hit.hl7.igamt.ig.service.*;
 import gov.nist.hit.hl7.igamt.valueset.domain.*;
 import gov.nist.hit.hl7.igamt.service.verification.impl.CoConstraintVerificationService;
+import gov.nist.hit.hl7.igamt.valueset.service.impl.ExternalCodeService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -51,16 +54,13 @@ import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintDependencyServic
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
-import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
-import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.UsageFilter;
-import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
@@ -88,18 +88,6 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.display.model.PublishingInfo;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CompositeProfileCreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
-import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileLabel;
-import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileSelectItem;
-import gov.nist.hit.hl7.igamt.ig.domain.Ig;
-import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.CompositeProfileDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ProfileComponentDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.ImportValueSetException;
@@ -224,9 +212,11 @@ public class IgServiceImpl implements IgService {
 	@Autowired
 	ResourceBindingService resourcebindingService;
 
-
 	@Autowired
 	UserResourcePermissionService resourcePermissionService;
+
+	@Autowired
+	ExternalCodeService externalCodeService;
 
 	@Override
 	public Ig findById(String id) {
@@ -846,6 +836,11 @@ public class IgServiceImpl implements IgService {
 
 	@Override
 	public IgDataModel generateDataModel(Ig ig) throws Exception {
+		return generateDataModel(ig, new IgDataModelConfiguration());
+	}
+
+	@Override
+	public IgDataModel generateDataModel(Ig ig, IgDataModelConfiguration configuration) throws Exception {
 		IgDataModel igDataModel = new IgDataModel();
 		igDataModel.setModel(ig);
 
@@ -876,6 +871,19 @@ public class IgServiceImpl implements IgService {
 						}
 					} else {
 						throw new Exception("Referenced code set "+ reference.getCodeSetId() +" from value set "+ vs.getId()+ " was not found.");
+					}
+				} else if(vs.getSourceType().equals(SourceType.EXTERNAL) || vs.getSourceType().equals(SourceType.EXTERNAL_TRACKED)) {
+					ExternalValueSetExportMode externalValueSetExportMode = configuration.getExternalValueSetExportMode().get(vs.getId());
+					if(externalValueSetExportMode != null) {
+						valuesetDataModel.setExternalValueSetExportMode(externalValueSetExportMode);
+						if(externalValueSetExportMode.equals(ExternalValueSetExportMode.SNAPSHOT)) {
+							try {
+								Set<Code> codes = this.externalCodeService.getCodesByURL(vs.getUrl());
+								valuesetDataModel.setSnapshot(codes);
+							} catch (Exception e) {
+								throw new Exception("Fetching a snapshot of value set '"+ vs.getBindingIdentifier()+"' from URL "+ vs.getUrl()+" has failed.", e);
+							}
+						}
 					}
 				}
 				valuesetBindingDataModelMap.put(vs.getId(), new ValuesetBindingDataModel(vs));
@@ -2110,7 +2118,7 @@ public class IgServiceImpl implements IgService {
 	public List<ExternalValueSetReference> getExternalValueSets(IgProfileResourceSubSet subSet) {
 		List<Valueset> externals = subSet.getValuesets()
 		                                 .stream()
-		                                 .filter(vs -> vs.getSourceType() != null && vs.getSourceType().equals(SourceType.EXTERNAL) && !Strings.isNullOrEmpty(vs.getUrl()))
+		                                 .filter(vs -> vs.getSourceType() != null && (vs.getSourceType().equals(SourceType.EXTERNAL) || vs.getSourceType().equals(SourceType.EXTERNAL_TRACKED)) && !Strings.isNullOrEmpty(vs.getUrl()))
 		                                 .collect(Collectors.toList());
 		return externals.stream()
 		         .map((e) -> new ExternalValueSetReference(this.valueSetService.convertValueSet(e), e.getUrl()))
