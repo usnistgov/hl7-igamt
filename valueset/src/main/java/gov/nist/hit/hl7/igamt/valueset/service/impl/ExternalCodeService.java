@@ -66,7 +66,7 @@ public class ExternalCodeService {
 			throw new RuntimeException("Unexpected error occurred", e);
 		}
 	}
-	
+
 	public Set<Code> getCodesByURL(String url) {
 		CodesetResponse response = this.getOneByURL(url);
 		Set<Code> codes = new HashSet<Code>();

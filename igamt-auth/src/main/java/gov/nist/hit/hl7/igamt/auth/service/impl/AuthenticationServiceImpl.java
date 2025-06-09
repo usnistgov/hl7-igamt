@@ -138,6 +138,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-type", "application/json");
+			headers.set("User-Agent", "NIST IGAMT");
 			RestTemplate restTemplate = new RestTemplate();
 			HttpEntity<FindUserRequest> request = new HttpEntity<>(user, this.getCookiesHeaders(req));
 
@@ -165,6 +166,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-type", "application/json");
+			headers.set("User-Agent", "NIST IGAMT");
 			HttpEntity<LoginRequest> request = new HttpEntity<>(user);
 			System.out.println(env.getProperty(AUTH_URL));
 			ResponseEntity<ConnectionResponseMessage<UserResponse>> call = restTemplate.exchange(
@@ -205,8 +207,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-type", "application/json");
+			headers.set("User-Agent", "NIST IGAMT");
 			RestTemplate restTemplate = new RestTemplate();
-			HttpEntity<RegistrationRequest> request = new HttpEntity<>(user);
+			HttpEntity<RegistrationRequest> request = new HttpEntity<>(user, headers);
 
 			ResponseEntity<ConnectionResponseMessage<UserResponse>> response = restTemplate.exchange(
 					env.getProperty(AUTH_URL) + "/api/tool/register", HttpMethod.POST, request,
@@ -237,10 +240,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-type", "application/json");
+			headers.set("User-Agent", "NIST IGAMT");
 			RestTemplate restTemplate = new RestTemplate();
 			ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest();
 			changePasswordRequest.setUsername(username);
-			HttpEntity<ChangePasswordRequest> request = new HttpEntity<ChangePasswordRequest>(changePasswordRequest);
+			HttpEntity<ChangePasswordRequest> request = new HttpEntity<ChangePasswordRequest>(changePasswordRequest, headers);
 			ResponseEntity<ConnectionResponseMessage<PasswordResetTokenResponse>> response = restTemplate.exchange(
 					env.getProperty(AUTH_URL) + "/api/tool/password/reset", HttpMethod.POST, request,
 					new ParameterizedTypeReference<ConnectionResponseMessage<PasswordResetTokenResponse>>() {
@@ -264,9 +268,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-type", "application/json");
+			headers.set("User-Agent", "NIST IGAMT");
 			RestTemplate restTemplate = new RestTemplate();
 
-			HttpEntity<String> request = new HttpEntity<String>(token);
+			HttpEntity<String> request = new HttpEntity<String>(token, headers);
 			ResponseEntity<Boolean> response = restTemplate.exchange(
 					env.getProperty(AUTH_URL) + "/api/tool/password/validatetoken", HttpMethod.POST, request,
 					Boolean.class);
@@ -296,9 +301,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-type", "application/json");
+			headers.set("User-Agent", "NIST IGAMT");
 			RestTemplate restTemplate = new RestTemplate();
 			HttpEntity<ChangePasswordConfirmRequest> request = new HttpEntity<ChangePasswordConfirmRequest>(
-					requestObject);
+					requestObject, headers);
 			ResponseEntity<ConnectionResponseMessage<PasswordResetTokenResponse>> response = restTemplate.exchange(
 					env.getProperty(AUTH_URL) + "/api/tool/password/reset/confirm", HttpMethod.POST, request,
 					new ParameterizedTypeReference<ConnectionResponseMessage<PasswordResetTokenResponse>>() {
