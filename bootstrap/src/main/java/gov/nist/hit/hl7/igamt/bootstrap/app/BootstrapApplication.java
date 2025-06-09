@@ -922,7 +922,7 @@ public class BootstrapApplication implements CommandLineRunner {
 //
 //	}
 
-	//@PostConstruct
+	@PostConstruct
 	void findWrongLength(){
 //	this.dataFixer.findWrongLength();
 	//this.dataFixer.findWrongLengthDatatype();
@@ -930,7 +930,8 @@ public class BootstrapApplication implements CommandLineRunner {
 		//this.dataFixer.findWrongLengthForDatatypeXCSV();
 		//this.dataFixer.findWrongLengthForX();
 
-		this.dataFixer.fixLength();
+		//this.dataFixer.fixLength();
+		this.dataFixer.findRLengthSegmentPB();
 	}
 	
 
