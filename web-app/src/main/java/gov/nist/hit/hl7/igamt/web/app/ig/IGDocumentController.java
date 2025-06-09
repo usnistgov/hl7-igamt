@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.web.app.ig;
 
 import java.io.InputStream;
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,15 +16,19 @@ import gov.nist.hit.hl7.igamt.access.model.DocumentAccessInfo;
 import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
 import gov.nist.hit.hl7.igamt.common.base.util.BindingSummaryFilter;
 import gov.nist.hit.hl7.igamt.display.model.*;
-import gov.nist.hit.hl7.igamt.ig.domain.ExportShareConfiguration;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.*;
+import gov.nist.hit.hl7.igamt.ig.domain.*;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModelConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgVerificationIssuesList;
 import gov.nist.hit.hl7.igamt.ig.model.*;
+import gov.nist.hit.hl7.igamt.service.impl.IgXmlExportConfigurationService;
 import gov.nist.hit.hl7.igamt.web.app.service.impl.EntityBrowserService;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceDocumentManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -80,15 +85,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CoConstraintGroupCreateWrapper;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CompositeProfileCreationWrapper;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreateChildResponse;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ProfileComponentCreateWrapper;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
-import gov.nist.hit.hl7.igamt.ig.domain.Ig;
-import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
-import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.CloneException;
@@ -208,6 +204,9 @@ public class IGDocumentController extends BaseController {
 
 	@Autowired
 	WorkspaceDocumentManagementService workspaceDocumentManagementService;
+
+	@Autowired
+	IgXmlExportConfigurationService igXmlExportConfigurationService;
 
 	private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
 	private static final String SEGMENT_DELETED = "SEGMENT_DELETED";
@@ -1437,20 +1436,36 @@ public class IGDocumentController extends BaseController {
 		return str.replaceAll(" ", "-").replaceAll("\\*", "-").replaceAll("\"", "-").replaceAll(":", "-").replaceAll(";", "-").replaceAll("=", "-").replaceAll(",", "-");
 	}
 
-	@RequestMapping(value = "/api/export/ig/{id}/xml/validation", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	@RequestMapping(value = "/api/export/ig/{id}/xml/validation", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/json")
 	@PreAuthorize("AccessResource('IGDOCUMENT', #id, READ)")
-	public void exportXML(@PathVariable("id") String id, FormData formData, HttpServletResponse response) throws Exception {
+	public void exportXML(
+			@PathVariable("id") String id,
+			@RequestBody FormData formData,
+			HttpServletResponse response,
+			@AuthenticationPrincipal Principal user
+	) throws Exception {
 		Set<String> dataExtensionTokens = new HashSet<>();
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			ReqId reqIds = mapper.readValue(formData.getJson(), ReqId.class);
+			XmlExportRequest xmlExportRequest = mapper.readValue(formData.getJson(), XmlExportRequest.class);
+			ReqId reqIds = xmlExportRequest.getSelected();
 			Ig subSetIg = this.igService.getIgProfileResourceSubSetAsIg(
 					findIgById(id),
 					new HashSet<>(Arrays.asList(reqIds.getConformanceProfilesId())),
 					new HashSet<>(Arrays.asList(reqIds.getCompositeProfilesId()))
 			);
-			IgDataModel igModel = this.igService.generateDataModel(subSetIg);
+			if(xmlExportRequest.isRememberExternalValueSetExportMode()) {
+				this.igXmlExportConfigurationService.saveExternalValueSetExportConfiguration(
+						id,
+						user.getName(),
+						xmlExportRequest.getExportType(),
+						xmlExportRequest.getExternalValueSetsExportMode()
+				);
+			}
+			IgDataModelConfiguration igDataModelConfiguration = new IgDataModelConfiguration();
+			igDataModelConfiguration.setExternalValueSetExportMode(xmlExportRequest.getExternalValueSetsExportMode());
+			IgDataModel igModel = this.igService.generateDataModel(subSetIg, igDataModelConfiguration);
 			dataExtensionTokens.addAll(igModel.getDataExtensionTokens());
 			InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
 			response.setContentType("application/zip");
@@ -1514,13 +1529,18 @@ public class IGDocumentController extends BaseController {
 
 	@RequestMapping(value = "/api/igdocuments/{igid}/preverification", method = RequestMethod.POST, produces = { "application/json" })
 	@PreAuthorize("AccessResource('IGDOCUMENT', #igid, READ)")
-	public @ResponseBody IgVerificationIssuesList preVerification(@PathVariable("igid") String igid, @RequestBody ReqId reqIds) throws Exception {
+	public @ResponseBody ExportPrepareResult preVerification(
+			@PathVariable("igid") String igid,
+			@RequestBody ExportPreVerification preVerification,
+			@AuthenticationPrincipal Principal user
+	) throws Exception {
 		Ig ig = this.igService.findById(igid);
+		ReqId reqIds = preVerification.getIds();
 		Set<String> selectedConformanceProfileIds = new HashSet<>(reqIds.getConformanceProfilesId() != null ? Arrays.asList(reqIds.getConformanceProfilesId()) : new ArrayList<>());
 		Set<String> selectedCompositeProfileIds = new HashSet<>(reqIds.getCompositeProfilesId() != null ? Arrays.asList(reqIds.getCompositeProfilesId()) : new ArrayList<>());
 		if (ig != null)  {
 			IgProfileResourceSubSet subSet = this.igService.getIgProfileResourceSubSet(ig, selectedConformanceProfileIds, selectedCompositeProfileIds);
-			return this.verificationService.verify(
+			IgVerificationIssuesList verificationIssuesList = this.verificationService.verify(
 					ig,
 					subSet.getCompositeProfiles(),
 					subSet.getConformanceProfiles(),
@@ -1528,6 +1548,13 @@ public class IGDocumentController extends BaseController {
 					subSet.getDatatypes(),
 					subSet.getValuesets(),
 					null
+			);
+			Map<String, ExternalValueSetExportMode> configuration = igXmlExportConfigurationService
+					.getExternalValueSetExportModeMap(ig.getId(), user.getName(), preVerification.getExportType());
+			return new ExportPrepareResult(
+					this.igService.getExternalValueSets(subSet),
+					verificationIssuesList,
+					configuration
 			);
 		}
 		return null;

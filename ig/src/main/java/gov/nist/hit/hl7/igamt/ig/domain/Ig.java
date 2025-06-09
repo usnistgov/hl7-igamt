@@ -34,17 +34,8 @@ public class Ig extends DocumentStructure {
   private CompositeProfileRegistry compositeProfileRegistry = new CompositeProfileRegistry();
   private ConformanceProfileRegistry conformanceProfileRegistry = new ConformanceProfileRegistry();
   private CoConstraintGroupRegistry coConstraintGroupRegistry = new CoConstraintGroupRegistry();
-//  private DocumentExportConfiguration lastUserConfiguration;
   private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
   private Map<String, ExportShareConfiguration> shareLinks = new HashMap<>();
-  
-//  public DocumentExportConfiguration getLastUserConfiguration() {
-//    return lastUserConfiguration;
-//  }
-
-//  public void setLastUserConfiguration(DocumentExportConfiguration lastUserConfiguration) {
-//    this.lastUserConfiguration = lastUserConfiguration;
-//  }
 
   public DocumentMetadata getMetadata() {
     return metadata;

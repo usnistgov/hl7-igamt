@@ -1,52 +1,148 @@
-<h2 mat-dialog-title>Export XML</h2>
 <div class="dialog-container">
-  <div *ngIf="step === 1 && !hasFatal && !hasErrors && !verificationFailed && !verificationInProgress" class="alert alert-success">
-    Your selected profile(s) have passed the verification.
-  </div>
-  <div *ngIf="step === 1 && hasFatal" class="alert alert-danger">
-    Your selected profile(s) have fatal errors, please fix your profiles and try again.
-  </div>
-  <div *ngIf="step === 1 && !hasFatal && hasErrors" class="alert alert-danger">
-    Your selected profile(s) have errors, please fix your profiles.
-  </div>
-  <div *ngIf="step === 0 && verificationFailed" class="alert alert-danger">
-    {{verificationErrorMessage}}
-  </div>
-  <div *ngIf="step === 0">
-    <label> <strong> Select Conformance Profiles </strong> </label>
-    <app-select-resource-ids [resources]="data.conformanceProfiles" (selected)="selectConformanceProfiles($event)"></app-select-resource-ids>
-    <br/>
-    <label> <strong> Select Composite Profiles </strong> </label>
-    <app-select-resource-ids [resources]="data.compositeProfiles" (selected)="selectCompositeProfiles($event)"></app-select-resource-ids>
-  </div>
-  <div *ngIf="step === 1" style="overflow: hidden;">
-    <div *ngIf="verificationInProgress" style="display: flex; align-items: center; justify-content: center; flex-direction:  column;">
-        <span>Please wait while we verify your profiles</span>
-        <div style="margin-top: 40px;">
-          <mat-spinner class="verification-progress" diameter="50"></mat-spinner>
-        </div>
+  <h2 mat-dialog-title style="margin: 0;" >Export XML</h2>
+  <div>
+    <div *ngIf="verified && !hasFatal && !hasErrors && !verificationFailed && !verificationInProgress && current !== 'BUNDLE_GENERATION'" class="alert alert-success">
+      Your selected profile(s) have passed the verification.
     </div>
-    <div *ngIf="!verificationInProgress && verificationResult" class="report-container">
-      <div style="padding: 10px; border-radius: 4px;border: 1px solid lightgray;background: #f7f7f7;">
-        <div><app-issue-badge type="FATAL" label="FATAL"></app-issue-badge> - IGAMT cannot generate the XML; Downstream tools would not be able to process XML.</div>
-        <div><app-issue-badge type="ERROR" label="ERROR"></app-issue-badge> - IGAMT can generate the XML; User should fix errors before exporting the XML and using downstream tools.</div>
-        <div><app-issue-badge type="WARNING" label="WARNING"></app-issue-badge>  - User should consider providing correct values; Not necessary for downstream tools process.</div>
-        <div><app-issue-badge type="INFORMATIONAL" label="INFORMATIONAL"></app-issue-badge> - User should consider changing the value.</div>
-      </div>
-      <div style="overflow: hidden; width: 80vw;">
-        <app-verification-result-display [verificationResult]="verificationResult" [activeSelector]="activeSelector" [showEmpty]="false"></app-verification-result-display>
-      </div>
+    <div *ngIf="verified && hasFatal" class="alert alert-danger">
+      Your selected profile(s) have fatal errors, please fix your profiles and try again.
     </div>
+    <div *ngIf="verified && !hasFatal && hasErrors && current !== 'BUNDLE_GENERATION'" class="alert alert-danger">
+      Your selected profile(s) have errors, please fix your profiles.
+    </div>
+    <div *ngIf="verificationFailed" class="alert alert-danger">
+      {{verificationErrorMessage}}
+    </div>
+    <div *ngIf="generationFailed" class="alert alert-danger">
+      {{generationErrorMessage}}
+    </div>
+    <div *ngIf="externalValueSets && externalValueSets.length > 0 && !hasFatal && current !== 'BUNDLE_GENERATION'" style="color: black;" class="alert alert-info">
+      Your profiles reference external value sets, message validation against these value sets will perform network calls to external value set services in order to check for code validity.
+      You can customize how these value sets are exported to fit your use case.
+      <div *ngIf="current !== 'EXTERNAL_VALUESET_CONFIGURATION'">
+        <strong>{{ externalValueSetsTypeCount.external }}</strong> external, <strong>{{ externalValueSetsTypeCount.excluded }}</strong> excluded from the validation (empty), <strong>{{ externalValueSetsTypeCount.snapshot }}</strong> snapshot.
+      </div>
+      <ul *ngIf="current === 'EXTERNAL_VALUESET_CONFIGURATION'" >
+        <li><strong>External:</strong> Validation will require network access and will perform an HTTP call to the value set service URL to check for a code's validity (this option might result in slower validation performances).</li>
+        <li><strong>Excluded From Validation (Empty)</strong>: Bindings to this value set will not be validated and will only serve as placeholders for documentation purposes.</li>
+        <li><strong>Snapshot:</strong> A snapshot of the value set will be fetched and exported in that XML, some value sets can be extermely large which will result in large exported files.</li>
+      </ul>
+      <button *ngIf="current !== 'EXTERNAL_VALUESET_CONFIGURATION'" (click)="configureExternalValueSets()" class="btn btn-sm btn-info">Configure External Value Sets</button>
+    </div>
+  </div>
+  <div [ngStyle]="current === 'VERIFICATION' ? {'overflow': 'hidden'} : {}">
+    <ng-container *ngTemplateOutlet="getStepTemplate(current)" ></ng-container>
+  </div>
+  <div style="justify-content: flex-end; width: 100%; display: flex;">
+    <button *ngIf="!verificationInProgress" (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+    <ng-container *ngTemplateOutlet="getStepActions(current)" ></ng-container>
   </div>
 </div>
-<mat-dialog-actions style="justify-content: flex-end;">
-  <button *ngIf="!verificationInProgress" (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
-  <div *ngIf="step === 0">
-    <button (click)="verify()" [disabled]="!(ids.conformanceProfilesId?.length > 0 || ids.compositeProfilesId?.length > 0)" class="btn btn-sm btn-success">Select</button>
+
+
+<ng-template #profileSelection >
+  <label *ngIf="data.conformanceProfiles && data.conformanceProfiles.length > 0"> <strong> Select Conformance Profiles </strong> </label>
+  <app-select-resource-ids [resources]="data.conformanceProfiles" (selected)="selectConformanceProfiles($event)"></app-select-resource-ids>
+  <br/>
+  <label *ngIf="data.conformanceProfiles && data.compositeProfiles.length > 0"> <strong> Select Composite Profiles </strong> </label>
+  <app-select-resource-ids [resources]="data.compositeProfiles" (selected)="selectCompositeProfiles($event)"></app-select-resource-ids>
+</ng-template>
+<ng-template #profileSelectionActions >
+  <button (click)="verify()" [disabled]="!(ids.conformanceProfilesId?.length > 0 || ids.compositeProfilesId?.length > 0)" class="btn btn-sm btn-success">Select</button>
+</ng-template>
+
+
+<ng-template #profileVerification >
+  <div *ngIf="verificationInProgress" style="display: flex; align-items: center; justify-content: center; flex-direction:  column;">
+    <span>Please wait while we verify your profiles</span>
+    <div style="margin-top: 40px;">
+      <mat-spinner class="verification-progress" diameter="50"></mat-spinner>
+    </div>
   </div>
-  <div *ngIf="step === 1 && !verificationInProgress">
+  <div *ngIf="!verificationInProgress && verificationResult && displayTable" class="report-container">
+    <div style="padding: 10px; border-radius: 4px;border: 1px solid lightgray;background: #f7f7f7;">
+      <div><app-issue-badge type="FATAL" label="FATAL"></app-issue-badge> - IGAMT cannot generate the XML; Downstream tools would not be able to process XML.</div>
+      <div><app-issue-badge type="ERROR" label="ERROR"></app-issue-badge> - IGAMT can generate the XML; User should fix errors before exporting the XML and using downstream tools.</div>
+      <div><app-issue-badge type="WARNING" label="WARNING"></app-issue-badge>  - User should consider providing correct values; Not necessary for downstream tools process.</div>
+      <div><app-issue-badge type="INFORMATIONAL" label="INFORMATIONAL"></app-issue-badge> - User should consider changing the value.</div>
+    </div>
+    <div style="overflow: hidden;">
+      <app-verification-result-display [verificationResult]="verificationResult" [activeSelector]="activeSelector" [showEmpty]="false"></app-verification-result-display>
+    </div>
+  </div>
+</ng-template>
+<ng-template #profileVerificationActions >
+  <div *ngIf="!verificationInProgress">
+    <button *ngIf="!hasFatal && externalValueSets && externalValueSets.length > 0" (click)="configureExternalValueSets()" style="margin-right: 5px;" class="btn btn-sm btn-info">Configure External Value Sets</button>
     <button *ngIf="!hasFatal && !hasErrors" (click)="submit()" class="btn btn-sm btn-success">Submit</button>
     <button *ngIf="!hasFatal && hasErrors" (click)="submit()" class="btn btn-sm btn-warning">Proceed anyway</button>
   </div>
-</mat-dialog-actions>
+</ng-template>
 
+
+<ng-template #externalValueSetsConfiguration >
+  <h5 style="margin-bottom: 10px;">Configure External Value Sets Export</h5>
+  <div class="ext-vs-set-all">
+    <strong style="margin-left: 5px; margin-right: 10px;">Set All</strong>
+    <button class="btn btn-sm btn-primary" (click)="setAllExportType('EXTERNAL')">
+      External
+    </button>
+    <button class="btn btn-sm btn-primary" style="margin-left: 3px;" (click)="setAllExportType('EXCLUDED')">
+      Excluded From Validation (Empty)
+    </button>
+    <button class="btn btn-sm btn-primary" style="margin-left: 3px;" (click)="setAllExportType('SNAPSHOT')">
+      Snapshot
+    </button>
+  </div>
+  <div style="margin-top: 10px;">
+    <strong>{{ externalValueSetsTypeCount.external }}</strong> external, <strong>{{ externalValueSetsTypeCount.excluded }}</strong> excluded from the validation (empty), <strong>{{ externalValueSetsTypeCount.snapshot }}</strong> snapshot.
+  </div>
+  <div style="margin-top: 10px; margin-bottom: 10px;">
+    <p-checkbox [(ngModel)]="rememberExternalValueSetExportMode" [binary]="true" [label]="'Remember this configuration for export to '+ exportType" name="remember"  ></p-checkbox>
+  </div>
+  <p-table [value]="externalValueSets" [paginator]="true" [rows]="5">
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th>External Value Set</th>
+        <th>Export Type</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData>
+      <tr>
+        <td>
+          <app-display-section [element]="rowData.display"></app-display-section>
+        </td>
+        <td>
+          <button class="btn btn-sm" (click)="setExportType(rowData.display.id, 'EXTERNAL')" [ngClass]="exportTypeMap[rowData.display.id] === 'EXTERNAL' || !exportTypeMap[rowData.display.id]  ? 'btn-success selected':'btn-light'">
+            External
+          </button>
+          <button class="btn btn-sm" style="margin-left: 3px;" (click)="setExportType(rowData.display.id, 'EXCLUDED')" [ngClass]="exportTypeMap[rowData.display.id] === 'EXCLUDED' ? 'btn-primary selected':'btn-light'">
+            Excluded From Validation (Empty)
+          </button>
+          <button class="btn btn-sm" style="margin-left: 3px;" (click)="setExportType(rowData.display.id, 'SNAPSHOT')" [ngClass]="exportTypeMap[rowData.display.id] === 'SNAPSHOT' ? 'btn-primary selected':'btn-light'">
+            Snapshot
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</ng-template>
+<ng-template #externalValueSetsConfigurationActions >
+  <div>
+    <button (click)="goto('VERIFICATION')" class="btn btn-sm btn-primary" style="margin-right: 5px;" >Back</button>
+    <button *ngIf="!hasFatal && !hasErrors" (click)="submit()" class="btn btn-sm btn-success">Submit</button>
+    <button *ngIf="!hasFatal && hasErrors" (click)="submit()" class="btn btn-sm btn-warning">Proceed anyway</button>
+  </div>
+</ng-template>
+
+<ng-template #bundleGeneration>
+  <div *ngIf="generationInProgress" style="display: flex; align-items: center; justify-content: center; flex-direction:  column;">
+    <span>Please wait while we generate your profiles xml bundle</span>
+    <div style="margin-top: 40px;">
+      <mat-spinner class="verification-progress" diameter="50"></mat-spinner>
+    </div>
+  </div>
+</ng-template>
+<ng-template #bundleGenerationActions>
+  <button *ngIf="!generationInProgress" (click)="backFromGeneration()" class="btn btn-sm btn-primary" style="margin-right: 5px;">Back</button>
+</ng-template>
