@@ -40,7 +40,7 @@ export class CodeSetTableComponent implements OnInit {
 
   constructor(
     private dialog: MatDialog, private cdr: ChangeDetectorRef
-  ){
+  ) {
 
   }
 
@@ -64,18 +64,15 @@ export class CodeSetTableComponent implements OnInit {
   existingChangeReason: any[];
   @Input()
   viewOnly: boolean;
-
   codeSystemOptions: any[] = [];
   @Input()
   cols: any[];
   @Input()
   selectedColumns: any[];
   editMap = {};
-
   codeUsageOptions = [
     { label: 'R', value: 'R' }, { label: 'P', value: 'P' }, { label: 'E', value: 'E' },
   ];
-
 
   ngOnInit() {
     this.editMap[this.codeSetVersion.id] = false;
@@ -91,7 +88,6 @@ export class CodeSetTableComponent implements OnInit {
 
   addCodeSystem(targetId: string) {
     if (!this.codeSetVersion.codeSystems) {
-
       this.codeSetVersion.codeSystems = [];
       this.codeSystemOptions = [];
     }
@@ -158,7 +154,7 @@ export class CodeSetTableComponent implements OnInit {
       pattern: '',
       hasPattern: false,
     });
-      this.changeCodes();
+    this.changeCodes();
   }
 
   applyUsage(usage) {
@@ -176,7 +172,6 @@ export class CodeSetTableComponent implements OnInit {
   }
 
   changeCodes() {
-    console.log(this.valid);
     this.changes.emit({ codes: this.codeSetVersion.codes, valid: this.valid });
   }
 
@@ -197,12 +192,12 @@ export class CodeSetTableComponent implements OnInit {
     // change if we add other attributes
     this.changeCodes();
   }
+
   updateURl(value) {
     this.updateAttribute(PropertyType.URL, value);
   }
 
   importCSV($event) {
-
     this.dialog.open(ImportCodeCSVComponent).afterClosed().subscribe((codes: ICodes[]) => {
       if (codes) {
         this.codeSetVersion.codes = codes;
@@ -212,8 +207,8 @@ export class CodeSetTableComponent implements OnInit {
     });
   }
 
-  isValid(){
-   return this.valid;
+  isValid() {
+    return this.valid;
   }
   exportCSV() {
     this.exportCSVEvent.emit(this.codeSetVersion);
@@ -237,12 +232,5 @@ export class CodeSetTableComponent implements OnInit {
   }
 
 
-  ngAfterViewInit() {
-    this.form.statusChanges.subscribe((status) => {
-       console.log(this.valid);
-      // this.changeCodes();
-    });
-  }
-
-
+  ngAfterViewInit() { }
 }

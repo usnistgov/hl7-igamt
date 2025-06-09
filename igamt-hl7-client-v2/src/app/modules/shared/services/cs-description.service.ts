@@ -29,13 +29,6 @@ export class CsDescriptionService {
 
   }
 
-  firstLetterToLowerCase(value: string): string {
-    if (value) {
-      return value.charAt(0).toLowerCase() + value.slice(1);
-    }
-    return value;
-  }
-
   updateOperatorDescription(assertion: IOperatorAssertion) {
     const descriptions = assertion.assertions.map((a) => {
       this.updateAssertionDescription(a);
@@ -54,7 +47,7 @@ export class CsDescriptionService {
   updateIfThenDescription(assertion: IIfThenAssertion) {
     this.updateAssertionDescription(assertion.ifAssertion);
     this.updateAssertionDescription(assertion.thenAssertion);
-    assertion.description = `If ${assertion.ifAssertion.description ? assertion.ifAssertion.description : '_'} then ${this.firstLetterToLowerCase(assertion.thenAssertion.description ? assertion.thenAssertion.description : '_')}`;
+    assertion.description = `If ${assertion.ifAssertion.description ? assertion.ifAssertion.description : '_'} then ${assertion.thenAssertion.description ? assertion.thenAssertion.description : '_'}`;
   }
 
   updateNotDescription(assertion: INotAssertion) {
@@ -64,6 +57,6 @@ export class CsDescriptionService {
 
   updateSubContextDescription(assertion: ISubContextAssertion) {
     this.updateAssertionDescription(assertion.child);
-    assertion.description = `${assertion.child.description} IN ${this.firstLetterToLowerCase(assertion.context.description ? assertion.context.description : '_')}`;
+    assertion.description = `${assertion.child.description} IN ${assertion.context.description ? assertion.context.description : '_'}`;
   }
 }

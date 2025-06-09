@@ -143,7 +143,6 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
   }
 
   updateCodes(event: { codes: ICodes[], valid?: boolean }) {
-    console.log(event)
     this.resource$.pipe(
       take(1),
       tap((resource) => {
@@ -248,23 +247,23 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
   }
 
   importCSV($event) {
-      this.dialog.open(ImportCodeCSVComponent).afterClosed().subscribe((codes: ICodes[]) => {
-        if (codes) {
-          this.resource$.pipe(
-            take(1),
-            tap((resource) => {
-              this.resourceSubject.next({ ...resource, codes });
-            })
-          ).subscribe();
-        }
-      });
+    this.dialog.open(ImportCodeCSVComponent).afterClosed().subscribe((codes: ICodes[]) => {
+      if (codes) {
+        this.resource$.pipe(
+          take(1),
+          tap((resource) => {
+            this.resourceSubject.next({ ...resource, codes });
+          })
+        ).subscribe();
+      }
+    });
   }
 
   exportCSV($event) {
     this.codeSetService.exportCSV($event.id);
   }
 
-  isValid(){
+  isValid() {
     return true;
   }
 

@@ -292,6 +292,9 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
       viewOnly: this.viewOnly,
       then: () => {
         this.nodes = [...this.nodes];
+        if (!this.treeExpandedNodes.includes(node.data.pathId)) {
+          this.treeExpandedNodes.push(node.data.pathId);
+        }
       },
       transform: (children: IHL7v2TreeNode[]) => {
         this.recoverExpandState(children, expanded);
