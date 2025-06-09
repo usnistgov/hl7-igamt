@@ -177,6 +177,8 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       take(1),
       map(([conformanceProfiles, tools, compositeProfiles, igId]) => {
         const dialogRef = this.dialog.open(ExportToolComponent, {
+          maxWidth: '95vw',
+          maxHeight: '95vh',
           disableClose: true,
           data: { conformanceProfiles, tools, compositeProfiles, igId },
         });
