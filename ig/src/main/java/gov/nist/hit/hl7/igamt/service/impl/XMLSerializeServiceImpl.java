@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import gov.nist.hit.hl7.igamt.ig.domain.ExternalValueSetExportMode;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.*;
 import com.google.common.base.Strings;
@@ -429,12 +430,12 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 				if (t == null) continue;
 
 				boolean isExternal = t.getSourceType().equals(SourceType.EXTERNAL) || t.getSourceType().equals(SourceType.EXTERNAL_TRACKED);
+				boolean serializeAsExternal = vsm.getExternalValueSetExportMode() == null || vsm.getExternalValueSetExportMode().equals(ExternalValueSetExportMode.EXTERNAL);
+				boolean serializeAsSnapshot = vsm.getExternalValueSetExportMode() != null && vsm.getExternalValueSetExportMode().equals(ExternalValueSetExportMode.SNAPSHOT);
+				boolean serializeAsExcluded = vsm.getExternalValueSetExportMode() != null && vsm.getExternalValueSetExportMode().equals(ExternalValueSetExportMode.EXCLUDED);
+				Element elmValueSetDefinition = new Element(serializeAsExternal ? "ExternalValueSetDefinition" :"ValueSetDefinition");
 
-				Element elmValueSetDefinition = new Element( isExternal? "ExternalValueSetDefinition" :"ValueSetDefinition");
-
-
-
-				if (isExternal) {
+				if (isExternal && serializeAsExternal) {
 					if (Strings.isNullOrEmpty(t.getUrl())) {
 						throw new TableSerializationException("External value set " + t.getId() + " is missing a URL");
 					}
@@ -448,15 +449,17 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 						} else {
 							throw new TableSerializationException("Internal value set " + t.getId() + " link to code set could not resolved.");
 						}
+					} else if(isExternal && serializeAsSnapshot) {
+						codes = vsm.getSnapshot();
+					} else if(isExternal && serializeAsExcluded) {
+						codes = new HashSet<>();
 					} else {
 						codes = t.getCodes();
 					}
 
 					boolean noCodes = codes == null || codes.isEmpty();
-					boolean sizeOverLimit = !noCodes && codes.size() > limitSizeOfVS;
 					boolean isPlaceholder = !noCodes && codes.size() == 1 && codes.iterator().next().getValue().equals("...");
-					boolean skipValidation = noCodes || sizeOverLimit || isPlaceholder;
-					boolean skipCodesExport = noCodes || sizeOverLimit;
+					boolean skipValidation = noCodes || isPlaceholder;
 
 					if (skipValidation) {
 						Element elmBindingIdentifier = new Element("BindingIdentifier");
@@ -466,7 +469,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 					addValueSetDefinitionAttributes(t, defaultHL7Version, elmValueSetDefinition);
 
-					if (!skipCodesExport) {
+					if (!noCodes) {
 						addValueSetCodes(elmValueSetDefinition, codes);
 					}
 				}
