@@ -14,9 +14,10 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.model.CoConstraintTableReference;
+import gov.nist.hit.hl7.igamt.ig.domain.IgXmlExportConfiguration;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModelConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
-import gov.nist.hit.hl7.igamt.ig.model.BindingSummaryItem;
-import gov.nist.hit.hl7.igamt.ig.model.IgProfileResourceSubSet;
+import gov.nist.hit.hl7.igamt.ig.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,8 +45,6 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.ImportValueSetException;
-import gov.nist.hit.hl7.igamt.ig.model.FilterIGInput;
-import gov.nist.hit.hl7.igamt.ig.model.FilterResponse;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.service.impl.exception.CoConstraintXMLSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
@@ -97,6 +96,8 @@ public interface IgService {
 
   public IGContentMap collectData(Ig igdoument);
 
+  public IgDataModel generateDataModel(Ig ig, IgDataModelConfiguration configuration) throws Exception;
+
   public IgDataModel generateDataModel(Ig ig) throws Exception;
 
   public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds, String[] compositeProfileIds) throws Exception;
@@ -145,7 +146,7 @@ public interface IgService {
   List<Ig> findByPublicAudienceAndStatusPublished();
   List<Ig> findAllPrivateIGs();
   
-  public Valueset importValuesetsFromCSV(String igId, MultipartFile csvFile) throws ImportValueSetException;
+  Valueset importValuesetsFromCSV(String igId, MultipartFile csvFile) throws ImportValueSetException;
 
   CoConstraintTable getCoConstraintTable(ConformanceProfile conformanceProfile, CoConstraintTableReference reference, boolean removeDerivedIndicator);
 
@@ -154,6 +155,8 @@ public interface IgService {
           CoConstraintTableReference reference,
           CoConstraintTable table
   ) throws Exception;
+
+  List<ExternalValueSetReference> getExternalValueSets(IgProfileResourceSubSet subSet) throws Exception;
 
   List<BindingSummaryItem> getBindingSummary(Ig ig, BindingSummaryFilter filter ) throws ResourceNotFoundException;
 }

@@ -6,10 +6,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -23,28 +20,21 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 @Service
 public class ExternalCodeService {
 
-
 	@Autowired
 	private RestTemplate restTemplate;
-	
-	//http://hit-dev-admin.nist.gov:19070/api/v1/phinvads/codesets
-
 
 	public List<CodesetResponse> getAllByURL(String url) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("User-Agent", "IGAMT");
-		headers.set("Accept", "application/json");
-		headers.set("Accept-Language", "en-US,en;q=0.9");
-
-		HttpEntity<Void> entity = new HttpEntity<>(headers);
-
 		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.set("User-Agent", "NIST IGAMT");
+			HttpEntity<Void> entity = new HttpEntity<>(headers);
 			ResponseEntity<List<CodesetResponse>> response = restTemplate.exchange(
 					url,
 					HttpMethod.GET,
 					entity,
 					new ParameterizedTypeReference<List<CodesetResponse>>() {}
-					);
+			);
 			return response.getBody();
 		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw new RuntimeException("API call failed", e);
@@ -54,39 +44,13 @@ public class ExternalCodeService {
 			throw new RuntimeException("Unexpected error occurred", e);
 		}
 	}
-	
-	
-//	public CodesetResponse getOneByURL(String url) {
-//
-//
-//		try {
-//			ResponseEntity<CodesetResponse> response = restTemplate.exchange(
-//					url,
-//					HttpMethod.GET,
-//					null,
-//					CodesetResponse.class
-//					);
-//			return response.getBody();
-//		} catch (HttpClientErrorException | HttpServerErrorException e) {
-//			System.out.println("Status code: " + e.getStatusCode());
-//			System.out.println("Response body: " + e.getResponseBodyAsString());
-//			System.out.println("Response body: " + e.getResponseBodyAsString());
-//			throw new RuntimeException("API call failed", e);
-//		} catch (RestClientException e) {
-//			throw new RuntimeException("API connection failed", e);
-//		} catch (Exception e) {
-//			throw new RuntimeException("Unexpected error occurred", e);
-//		}
-//	}
 
 	public CodesetResponse getOneByURL(String url) {
 		try {
 			HttpHeaders headers = new HttpHeaders();
-			headers.set("User-Agent", "Mozilla/5.0"); // Mimic a browser
-			headers.set("Accept", "application/json");
-
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.set("User-Agent", "NIST IGAMT");
 			HttpEntity<Void> entity = new HttpEntity<>(headers);
-
 			ResponseEntity<CodesetResponse> response = restTemplate.exchange(
 					url,
 					HttpMethod.GET,
@@ -106,10 +70,8 @@ public class ExternalCodeService {
 	}
 
 	public Set<Code> getCodesByURL(String url) {
-		
 		CodesetResponse response = this.getOneByURL(url);
 		Set<Code> codes = new HashSet<Code>();
-		
 		if(response.getCodes() != null) {
 			for (ExternalCode ext: response.getCodes() ) {
 				Code internalCode = new Code();
@@ -117,10 +79,13 @@ public class ExternalCodeService {
 				internalCode.setDescription(ext.getDisplayText());
 				internalCode.setUsage(ext.getUsage());
 				internalCode.setValue(ext.getValue());
+				internalCode.setHasPattern(ext.isPattern());
+				if(ext.isPattern()) {
+					internalCode.setPattern(ext.getRegularExpression());
+				}
 				codes.add(internalCode);
 			}
 		}
 		return codes;
 	}
-
 }

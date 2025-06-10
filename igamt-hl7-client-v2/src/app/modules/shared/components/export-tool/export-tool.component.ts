@@ -1,22 +1,29 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Inject, OnInit, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Store } from '@ngrx/store';
-import { throwError } from 'rxjs';
+import { Subscription, throwError } from 'rxjs';
 import { catchError, flatMap, map, take } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
-import { MessageType, UserMessage } from '../../../dam-framework/models/messages/message.class';
-import { AddMessage, ClearAll } from '../../../dam-framework/store/messages/messages.actions';
 import { IgService } from '../../../ig/services/ig.service';
 import { Type } from '../../constants/type.enum';
 import { IConnectingInfo } from '../../models/config.class';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { StoreResourceRepositoryService } from '../../services/resource-repository.service';
 import { VerificationService } from '../../services/verification.service';
+import { ExternalValueSetExportType } from '../export-xml-dialog/export-xml-dialog.component';
 import { ISelectedIds } from '../select-resource-ids/select-resource-ids.component';
 import { IVerificationResultDisplay, VerificationDisplayActiveTypeSelector } from '../verification-result-display/verification-result-display.component';
+
+export enum ToolExportStepType {
+  TOOL_LOGIN = 'TOOL_LOGIN',
+  PROFILE_SELECTION = 'PROFILE_SELECTION',
+  VERIFICATION = 'VERIFICATION',
+  EXTERNAL_VALUESET_CONFIGURATION = 'EXTERNAL_VALUESET_CONFIGURATION',
+  BUNDLE_GENERATION = 'BUNDLE_GENERATION',
+}
 
 @Component({
   selector: 'app-export-tool',
@@ -25,34 +32,6 @@ import { IVerificationResultDisplay, VerificationDisplayActiveTypeSelector } fro
   encapsulation: ViewEncapsulation.None,
 })
 export class ExportToolComponent implements OnInit {
-  step = 0;
-  ids: ISelectedIds = { conformanceProfilesId: [], compositeProfilesId: [] };
-  verificationResult: IVerificationResultDisplay;
-  verificationInProgress = false;
-  exportInProgress = false;
-  verificationFailed = false;
-  verificationErrorMessage: string;
-  hasFatal = false;
-  hasErrors = false;
-  username: string;
-  password: string;
-  tool: IConnectingInfo;
-  hasDomains = false;
-  domains: any[];
-  selectedToolScope: { domain: string };
-  redirectUrl: string;
-  HTMLErrorReport: string;
-  exportError: string;
-  exportFailed = false;
-  activeSelector: VerificationDisplayActiveTypeSelector = (data) => {
-    if (data.conformanceProfiles && data.conformanceProfiles.entries && data.conformanceProfiles.entries.length > 0) {
-      return Type.CONFORMANCEPROFILE;
-    }
-    if (data.compositeProfiles && data.compositeProfiles.entries && data.compositeProfiles.entries.length > 0) {
-      return Type.COMPOSITEPROFILE;
-    }
-    return undefined;
-  }
 
   constructor(
     private http: HttpClient,
@@ -65,56 +44,177 @@ export class ExportToolComponent implements OnInit {
     private store: Store<any>) {
 
   }
+  current = ToolExportStepType.PROFILE_SELECTION;
+  ids: ISelectedIds = { conformanceProfilesId: [], compositeProfilesId: [] };
+  verificationResult: IVerificationResultDisplay;
+  externalValueSets: Array<{
+    display: IDisplayElement;
+    URL: string;
+  }> = [];
+  verificationInProgress = false;
+  verificationFailed = false;
+  verificationErrorMessage: string;
+  generationInProgress = false;
+  generationFailed = false;
+  generationErrorMessage: string;
+  verified = false;
+  hasFatal = false;
+  hasErrors = false;
+  exportTypeMap = {};
+  exportType = '';
+  rememberExternalValueSetExportMode = false;
+  externalValueSetsTypeCount = {
+    external: 0,
+    excluded: 0,
+    snapshot: 0,
+  };
+  generationSubscription: Subscription;
+  displayTable = false;
+  username: string;
+  password: string;
+  tool: IConnectingInfo;
+  hasDomains = false;
+  domainsError = '';
+  domains: any[];
+  selectedToolScope: { domain: string };
+  redirectUrl: string;
+  HTMLErrorReport: string;
+  exportInProgress = false;
+  exportError: string;
+  exportFailed = false;
 
-  back() {
-    if (this.step !== 0) {
-      switch (this.step) {
-        case 1:
-          this.selectedToolScope = undefined;
-          this.ids = { conformanceProfilesId: [], compositeProfilesId: [] };
-          break;
-        case 2:
-          this.ids = { conformanceProfilesId: [], compositeProfilesId: [] };
-          this.verificationResult = undefined;
-          this.verificationInProgress = false;
-          this.verificationFailed = false;
-          this.verificationErrorMessage = undefined;
-          this.hasFatal = false;
-          this.hasErrors = false;
-          break;
-        case 3:
-          this.exportInProgress = false;
-          this.redirectUrl = undefined;
-          this.HTMLErrorReport = undefined;
-          this.exportError = undefined;
-          this.exportFailed = false;
-          break;
-      }
-      this.step = this.step - 1;
+  @ViewChild('toolLogin')
+  toolLogin: TemplateRef<any>;
+  @ViewChild('toolLoginActions')
+  toolLoginActions: TemplateRef<any>;
+
+  @ViewChild('profileSelection')
+  profileSelection: TemplateRef<any>;
+  @ViewChild('profileSelectionActions')
+  profileSelectionActions: TemplateRef<any>;
+
+  @ViewChild('profileVerification')
+  profileVerification: TemplateRef<any>;
+  @ViewChild('profileVerificationActions')
+  profileVerificationActions: TemplateRef<any>;
+
+  @ViewChild('externalValueSetsConfiguration')
+  externalValueSetsConfiguration: TemplateRef<any>;
+  @ViewChild('externalValueSetsConfigurationActions')
+  externalValueSetsConfigurationActions: TemplateRef<any>;
+
+  @ViewChild('bundleGeneration')
+  bundleGeneration: TemplateRef<any>;
+  @ViewChild('bundleGenerationActions')
+  bundleGenerationActions: TemplateRef<any>;
+  activeSelector: VerificationDisplayActiveTypeSelector = (data) => {
+    if (data.conformanceProfiles && data.conformanceProfiles.entries && data.conformanceProfiles.entries.length > 0) {
+      return Type.CONFORMANCEPROFILE;
+    }
+    if (data.compositeProfiles && data.compositeProfiles.entries && data.compositeProfiles.entries.length > 0) {
+      return Type.COMPOSITEPROFILE;
+    }
+    return undefined;
+  }
+
+  getStepTemplate(step: ToolExportStepType) {
+    switch (step) {
+      case ToolExportStepType.TOOL_LOGIN:
+        return this.toolLogin;
+      case ToolExportStepType.PROFILE_SELECTION:
+        return this.profileSelection;
+      case ToolExportStepType.VERIFICATION:
+        return this.profileVerification;
+      case ToolExportStepType.EXTERNAL_VALUESET_CONFIGURATION:
+        return this.externalValueSetsConfiguration;
+      case ToolExportStepType.BUNDLE_GENERATION:
+        return this.bundleGeneration;
     }
   }
 
-  selectConformanceProfiles(ids: string[]) {
-    this.ids = { ...this.ids, conformanceProfilesId: ids };
+  getStepActions(step: ToolExportStepType) {
+    switch (step) {
+      case ToolExportStepType.TOOL_LOGIN:
+        return this.toolLoginActions;
+      case ToolExportStepType.PROFILE_SELECTION:
+        return this.profileSelectionActions;
+      case ToolExportStepType.VERIFICATION:
+        return this.profileVerificationActions;
+      case ToolExportStepType.EXTERNAL_VALUESET_CONFIGURATION:
+        return this.externalValueSetsConfigurationActions;
+      case ToolExportStepType.BUNDLE_GENERATION:
+        return this.bundleGenerationActions;
+    }
   }
 
-  selectCompositeProfiles(ids: string[]) {
-    this.ids = { ...this.ids, compositeProfilesId: ids };
+  cancel() {
+    if (this.generationSubscription) {
+      this.generationSubscription.unsubscribe();
+    }
+    this.dialogRef.close();
+  }
+
+  updateTypeCount() {
+    if (!this.externalValueSets) {
+      return;
+    }
+    let external = 0;
+    let excluded = 0;
+    let snapshot = 0;
+    for (const evs of this.externalValueSets) {
+      switch (this.exportTypeMap[evs.display.id]) {
+        case 'EXCLUDED':
+          excluded++;
+          break;
+        case 'SNAPSHOT':
+          snapshot++;
+          break;
+        case 'EXTERNAL':
+        default:
+          external++;
+      }
+    }
+    this.externalValueSetsTypeCount = {
+      excluded,
+      external,
+      snapshot,
+    };
   }
 
   verify() {
-    this.step = 2;
+    this.current = ToolExportStepType.VERIFICATION;
     this.verificationInProgress = true;
     this.verificationFailed = false;
     this.verificationErrorMessage = '';
-    this.http.post<any>('/api/igdocuments/' + this.data.igId + '/preverification', this.ids).pipe(
-      flatMap((report) => {
+    this.generationInProgress = false;
+    this.generationFailed = false;
+    this.generationErrorMessage = '';
+    this.externalValueSets = [];
+    this.verified = false;
+    this.exportTypeMap = {};
+    this.externalValueSetsTypeCount = {
+      external: 0,
+      excluded: 0,
+      snapshot: 0,
+    };
+    this.http.post<any>('/api/igdocuments/' + this.data.igId + '/preverification', { ids: this.ids, exportType: this.tool.label }).pipe(
+      flatMap((result) => {
+        const report = result.verificationIssues;
+        const externalValueSetExportModes = result.externalValueSetExportModes || {};
+        this.externalValueSets = result.externalValueSetReferences || [];
         return this.verificationService.verificationReportToDisplay(report, this.repository).pipe(
           take(1),
           map((verificationResult) => {
             this.verificationResult = verificationResult;
+            this.displayTable = !this.tableIsEmpty(verificationResult);
             this.setVerificationFlags(verificationResult);
             this.verificationInProgress = false;
+            this.verified = true;
+            this.exportTypeMap = {};
+            for (const vs of this.externalValueSets) {
+              this.exportTypeMap[vs.display.id] = externalValueSetExportModes[vs.display.id];
+            }
+            this.updateTypeCount();
           }),
         );
       }),
@@ -122,10 +222,41 @@ export class ExportToolComponent implements OnInit {
         this.verificationInProgress = false;
         this.verificationFailed = true;
         this.verificationErrorMessage = this.message.fromError(e).message;
-        this.step = 1;
+        this.externalValueSets = [];
+        this.verified = false;
+        this.current = ToolExportStepType.PROFILE_SELECTION;
+        this.exportTypeMap = {};
         return throwError(e);
       }),
     ).subscribe();
+  }
+
+  tableIsEmpty(verificationTable: IVerificationResultDisplay) {
+    const ig = !verificationTable.ig || verificationTable.ig.entries.length === 0;
+    const cp = !verificationTable.conformanceProfiles || verificationTable.conformanceProfiles.entries.length === 0;
+    const composite = !verificationTable.compositeProfiles || verificationTable.compositeProfiles.entries.length === 0;
+    const segments = !verificationTable.segments || verificationTable.segments.entries.length === 0;
+    const datatypes = !verificationTable.datatypes || verificationTable.datatypes.entries.length === 0;
+    const valueSets = !verificationTable.valueSets || verificationTable.valueSets.entries.length === 0;
+    const coConstraintGroups = !verificationTable.coConstraintGroups || verificationTable.coConstraintGroups.entries.length === 0;
+    return ig && cp && composite && segments && datatypes && valueSets && coConstraintGroups;
+  }
+
+  configureExternalValueSets() {
+    this.current = ToolExportStepType.EXTERNAL_VALUESET_CONFIGURATION;
+  }
+
+  setExportType(id: string, type: ExternalValueSetExportType) {
+    this.exportTypeMap[id] = type;
+    this.updateTypeCount();
+  }
+
+  setAllExportType(type: ExternalValueSetExportType) {
+    this.exportTypeMap = {};
+    for (const vs of this.externalValueSets) {
+      this.exportTypeMap[vs.display.id] = type;
+    }
+    this.updateTypeCount();
   }
 
   setVerificationFlags(result: IVerificationResultDisplay) {
@@ -154,16 +285,26 @@ export class ExportToolComponent implements OnInit {
   }
 
   submit() {
-    this.step = 3;
-    this.store.dispatch(new fromDAM.TurnOnLoader({ blockUI: false }));
+    this.current = ToolExportStepType.BUNDLE_GENERATION;
     this.exportInProgress = true;
     this.redirectUrl = undefined;
     this.HTMLErrorReport = undefined;
     this.exportError = undefined;
     this.exportFailed = false;
-    this.igService.exportToTesting(this.data.igId, this.ids, this.username, this.password, this.tool, this.selectedToolScope.domain).subscribe(
+    this.generationSubscription = this.igService.exportToTesting(
+      this.data.igId,
+      this.ids,
+      this.tool.label,
+      {
+        externalValueSetsExportMode: this.exportTypeMap,
+        rememberExternalValueSetExportMode: this.rememberExternalValueSetExportMode,
+      },
+      this.username,
+      this.password,
+      this.tool,
+      this.selectedToolScope.domain,
+    ).subscribe(
       (response: any) => {
-        this.store.dispatch(new fromDAM.TurnOffLoader());
         this.exportInProgress = false;
         if (response.token) {
           this.redirectUrl = this.tool.url + this.tool.redirectToken + '?x=' + encodeURIComponent(response.token) + '&y=' + encodeURIComponent(btoa(this.username + ':' + this.password)) + '&d=' + encodeURIComponent(this.selectedToolScope.domain);
@@ -176,24 +317,46 @@ export class ExportToolComponent implements OnInit {
       },
       (response: HttpErrorResponse) => {
         this.exportInProgress = false;
-        this.store.dispatch(new fromDAM.TurnOffLoader());
-        this.store.dispatch(new AddMessage(new UserMessage(MessageType.FAILED, response.error.text)));
+        this.exportError = response.error.text;
+        this.exportFailed = true;
       });
+  }
+
+  backFromGeneration() {
+    if (this.generationSubscription) {
+      this.generationSubscription.unsubscribe();
+    }
+    this.goto(ToolExportStepType.VERIFICATION);
+  }
+
+  goto(to: ToolExportStepType) {
+    this.current = to;
+  }
+
+  selectConformanceProfiles(ids: string[]) {
+    this.ids = { ...this.ids, conformanceProfilesId: ids };
+  }
+
+  selectCompositeProfiles(ids: string[]) {
+    this.ids = { ...this.ids, compositeProfilesId: ids };
   }
 
   loadDomain() {
     this.hasDomains = false;
+    this.domainsError = '';
     this.store.dispatch(new fromDAM.TurnOnLoader({ blockUI: false }));
     this.igService.loadDomain(this.username, this.password, this.tool).subscribe((x) => {
       this.domains = x;
+      this.exportType = this.tool.label;
       this.hasDomains = true;
       this.store.dispatch(new fromDAM.TurnOffLoader());
-      this.store.dispatch(new ClearAll());
-      this.step = 1;
+      this.current = ToolExportStepType.PROFILE_SELECTION;
     }, (response: HttpErrorResponse) => {
       this.hasDomains = false;
+      this.domainsError = response.error.text;
       this.store.dispatch(new fromDAM.TurnOffLoader());
-      this.store.dispatch(new AddMessage(new UserMessage(MessageType.FAILED, response.error.text)));
+    }, () => {
+      this.store.dispatch(new fromDAM.TurnOffLoader());
     });
   }
 
@@ -210,12 +373,9 @@ export class ExportToolComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.step = 0;
+    this.current = ToolExportStepType.TOOL_LOGIN;
   }
 
-  cancel() {
-    this.dialogRef.close();
-  }
 }
 export interface IExportToolDialogComponent {
 

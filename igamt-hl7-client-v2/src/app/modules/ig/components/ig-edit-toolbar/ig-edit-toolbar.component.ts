@@ -145,20 +145,21 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     combineLatest(
       this.getMessages(),
       this.getCompositeProfies(),
-      this.getIgId(),
+      this.store.select(fromIgDocumentEdit.selectIgDocument),
     ).pipe(
       take(1),
-      flatMap(([messages, cps, igId]) => {
+      flatMap(([messages, cps, ig]) => {
         return this.dialog.open(ExportXmlDialogComponent, {
           disableClose: true,
-          data: { conformanceProfiles: messages, compositeProfiles: cps, igId },
-        }).afterClosed().pipe(
-          filter((x) => x !== undefined),
-          take(1),
-          map((result) => {
-            this.igService.exportXML(igId, result);
-          }),
-        );
+          maxWidth: '95vw',
+          maxHeight: '95vh',
+          data: {
+            conformanceProfiles: messages,
+            compositeProfiles: cps,
+            igId: ig.id,
+            title: ig.metadata.title,
+          },
+        }).afterClosed();
       }),
     ).subscribe();
   }
@@ -176,6 +177,8 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       take(1),
       map(([conformanceProfiles, tools, compositeProfiles, igId]) => {
         const dialogRef = this.dialog.open(ExportToolComponent, {
+          maxWidth: '95vw',
+          maxHeight: '95vh',
           disableClose: true,
           data: { conformanceProfiles, tools, compositeProfiles, igId },
         });

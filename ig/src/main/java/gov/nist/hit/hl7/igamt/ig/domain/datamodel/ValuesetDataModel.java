@@ -12,7 +12,10 @@
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
 import java.io.Serializable;
+import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.ig.domain.ExternalValueSetExportMode;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionContent;
 
@@ -23,6 +26,8 @@ public class ValuesetDataModel implements Serializable, Comparable<ValuesetDataM
 
 	private Valueset model;
 	private CodeSetVersionContent referencedCodeSet;
+	private ExternalValueSetExportMode externalValueSetExportMode;
+	private Set<Code> snapshot;
 
 	public Valueset getModel() {
 		return model;
@@ -48,4 +53,19 @@ public class ValuesetDataModel implements Serializable, Comparable<ValuesetDataM
 		return getModel().getLabel().compareTo(target.getModel().getLabel());
 	}
 
+	public ExternalValueSetExportMode getExternalValueSetExportMode() {
+		return externalValueSetExportMode;
+	}
+
+	public void setExternalValueSetExportMode(ExternalValueSetExportMode externalValueSetExportMode) {
+		this.externalValueSetExportMode = externalValueSetExportMode;
+	}
+
+	public Set<Code> getSnapshot() {
+		return snapshot;
+	}
+
+	public void setSnapshot(Set<Code> snapshot) {
+		this.snapshot = snapshot;
+	}
 }

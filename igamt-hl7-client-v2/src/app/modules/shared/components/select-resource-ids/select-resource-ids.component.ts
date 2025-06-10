@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {IDisplayElement} from '../../models/display-element.interface';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { IDisplayElement } from '../../models/display-element.interface';
 
 @Component({
   selector: 'app-select-resource-ids',
@@ -16,6 +16,15 @@ export class SelectResourceIdsComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+  }
+
+  toggleAll(select: boolean) {
+    if (select) {
+      this.ids = this.resources.map((r) => r.id);
+    } else {
+      this.ids = [];
+    }
+    this.emit();
   }
 
   emit() {
