@@ -433,7 +433,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 				boolean serializeAsExternal = vsm.getExternalValueSetExportMode() == null || vsm.getExternalValueSetExportMode().equals(ExternalValueSetExportMode.EXTERNAL);
 				boolean serializeAsSnapshot = vsm.getExternalValueSetExportMode() != null && vsm.getExternalValueSetExportMode().equals(ExternalValueSetExportMode.SNAPSHOT);
 				boolean serializeAsExcluded = vsm.getExternalValueSetExportMode() != null && vsm.getExternalValueSetExportMode().equals(ExternalValueSetExportMode.EXCLUDED);
-				Element elmValueSetDefinition = new Element(serializeAsExternal ? "ExternalValueSetDefinition" :"ValueSetDefinition");
+				Element elmValueSetDefinition = new Element(isExternal && serializeAsExternal ? "ExternalValueSetDefinition" :"ValueSetDefinition");
 
 				if (isExternal && serializeAsExternal) {
 					if (Strings.isNullOrEmpty(t.getUrl())) {
