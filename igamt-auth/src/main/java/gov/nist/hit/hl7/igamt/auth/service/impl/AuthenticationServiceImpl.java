@@ -136,9 +136,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	@Override
 	public FindUserResponse findUser(HttpServletRequest req, FindUserRequest user) throws AuthenticationException {
 		try {
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-type", "application/json");
-			headers.set("User-Agent", "NIST IGAMT");
 			RestTemplate restTemplate = new RestTemplate();
 			HttpEntity<FindUserRequest> request = new HttpEntity<>(user, this.getCookiesHeaders(req));
 
@@ -378,6 +375,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Override
 	public ArrayList<String> getAllUsernames(HttpServletRequest req) {
+
 		ResponseEntity<ArrayList<String>> response = restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/usernames",
 				HttpMethod.GET, new HttpEntity<String>(this.getCookiesHeaders(req)), new ParameterizedTypeReference<ArrayList<String>>() {});
 		return response.getBody();
@@ -457,6 +455,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		Cookie cookies[] = req.getCookies();
 		
 		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-type", "application/json");
+		headers.set("User-Agent", "NIST IGAMT");
 
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
@@ -464,7 +464,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 					headers.add("Cookie", "authCookie=" + cookie.getValue());
 				}
 			}
-		} 
+		}
+
+		System.out.println("Headers:");
+		System.out.println("User-Agent: " + String.join(", ", headers.get("User-Agent")));
 		return headers;
 		
 	}
