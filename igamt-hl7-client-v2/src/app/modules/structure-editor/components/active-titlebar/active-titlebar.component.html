@@ -21,7 +21,7 @@
       <span *ngIf="active.display.type !== 'IGDOCUMENT'" >
         <span *ngIf="active.display.path"> {{active.display.path}} </span>
         <span>&nbsp;{{active.display.fixedName}}</span>
-        <span *ngIf="active.display.fixedName && active.display.variableName">_</span>
+        <span *ngIf="active.display.fixedName && active.display.variableName">#</span>
           <span>{{active.display.variableName}}</span>
       </span>
       <span *ngIf="active.display.type === 'IGDOCUMENT'" > Implementation Guide</span>

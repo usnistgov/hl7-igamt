@@ -7,7 +7,7 @@ import { IDisplayElement } from 'src/app/modules/shared/models/display-element.i
 import { IChange } from 'src/app/modules/shared/models/save-change';
 import { IChangeReasonSection } from 'src/app/modules/shared/services/change-log.service';
 import { Type } from '../../../../constants/type.enum';
-import { IBindingType, InternalSingleCode, IValuesetBinding } from '../../../../models/binding.interface';
+import { IBindingType, IValuesetBinding } from '../../../../models/binding.interface';
 import { IResource } from '../../../../models/resource.interface';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
 import { BindingService } from '../../../../services/binding.service';
@@ -16,25 +16,25 @@ import { IBinding, IBindingContext, StructureElementBindingService } from '../..
 import {
   BindingSelectorComponent,
   IBindingLocationInfo,
-  ISingleCodeDisplay,
 } from '../../../binding-selector/binding-selector.component';
 import { IValueSetBindingDisplay } from '../../../binding-selector/binding-selector.component';
 import { IChangeReasonDialogDisplay } from '../../../change-reason-dialog/change-reason-dialog.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
+import { ISingleCodeBinding } from './../../../../models/binding.interface';
 
 export interface IValueSetOrSingleCodeBindings {
   valueSetBindings: Array<IBinding<IValuesetBinding[]>>;
-  singleCodeBindings: Array<IBinding<InternalSingleCode>>;
+  singleCodeBindings: Array<IBinding<ISingleCodeBinding[]>>;
 }
 
 export interface IValueSetOrSingleCode {
   type: IBindingType;
-  value: IValuesetBinding[] | InternalSingleCode;
+  value: IValuesetBinding[] | ISingleCodeBinding[];
 }
 
 export interface IValueSetOrSingleCodeDisplay {
   type: IBindingType;
-  value: IValueSetBindingDisplay[] | ISingleCodeDisplay;
+  value: IValueSetBindingDisplay[] | ISingleCodeBinding[];
 }
 
 @Component({
@@ -43,8 +43,6 @@ export interface IValueSetOrSingleCodeDisplay {
   styleUrls: ['./valueset.component.scss'],
 })
 export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingleCodeBindings> implements OnInit, OnDestroy {
-
-  bindings: Array<IBinding<IValueSetOrSingleCode>>;
   freeze$: Observable<{
     context: IBindingContext,
     binding: IValueSetOrSingleCodeDisplay,
@@ -67,6 +65,9 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
   displaySingleCodeTemplate: TemplateRef<any>;
   alive: boolean;
   activeChangeLog$: Observable<IChangeReasonSection[]>;
+  vsOrScBindings: IValueSetOrSingleCodeBindings;
+  isOXB2MessageLevel: boolean;
+
   constructor(
     dialog: MatDialog,
     private structureElementBindingService: StructureElementBindingService,
@@ -126,9 +127,9 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
     }
   }
 
-  selectedSingleCode(vsOrCode: IValueSetOrSingleCodeDisplay): ISingleCodeDisplay {
+  selectedSingleCode(vsOrCode: IValueSetOrSingleCodeDisplay): ISingleCodeBinding[] {
     if (vsOrCode && vsOrCode.type === IBindingType.SINGLECODE) {
-      return _.cloneDeep(vsOrCode.value) as ISingleCodeDisplay;
+      return _.cloneDeep(vsOrCode.value) as ISingleCodeBinding[];
     } else {
       return undefined;
     }
@@ -143,7 +144,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
         obx2: this.resource.name === 'OBX' && this.position === 2,
         existingBindingType: this.editable.getValue() ? this.editable.getValue().type : undefined,
         selectedValueSetBinding: this.selectedValueSetBinding(this.editable.getValue()),
-        selectedSingleCode: this.selectedSingleCode(this.editable.getValue()),
+        selectedSingleCodes: this.selectedSingleCode(this.editable.getValue()),
       },
     });
 
@@ -159,10 +160,10 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
             });
             break;
           case IBindingType.SINGLECODE:
-            this.singleCodeChange(selection.selectedSingleCode);
+            this.singleCodeChange(selection.selectedSingleCodes);
             this.editable.next({
               type: IBindingType.SINGLECODE,
-              value: selection.selectedSingleCode,
+              value: selection.selectedSingleCodes,
             });
             break;
         }
@@ -180,9 +181,53 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
       ChangeType.UPDATE,
       skipReason,
     );
+    this.updateValueSetsBindings(change);
 
     if (change && change.length > 0) {
-      this.singleCodeChange(undefined, true);
+      this.updateSingleCodeBindings([]);
+      this.singleCodeChange([], true);
+    }
+  }
+
+  updateValueSetsBindings(change: IValueSetBindingDisplay[]) {
+    const valueSets = this.vsOrScBindings.valueSetBindings;
+    const indexOfCurrentContext = valueSets.findIndex((b) => {
+      return this.structureElementBindingService.contextIsEqual({ resource: this.context }, b.context);
+    });
+
+    if (change && change.length > 0) {
+      valueSets.splice(indexOfCurrentContext, 1, {
+        context: { resource: this.context },
+        value: change.map(
+          (vs) => this.transform(vs),
+        ),
+        level: 0,
+      });
+    } else {
+      valueSets.splice(indexOfCurrentContext, 1);
+    }
+  }
+
+  updateSingleCodeBindings(change: ISingleCodeBinding[]) {
+    const singleCodes = this.vsOrScBindings.singleCodeBindings;
+    const indexOfCurrentContext = singleCodes.findIndex((b) => {
+      return this.structureElementBindingService.contextIsEqual({ resource: this.context }, b.context);
+    });
+
+    if (change) {
+      singleCodes.splice(indexOfCurrentContext, 1, {
+        context: { resource: this.context },
+        value: change.map(
+          (sg) => ({
+            code: sg.code,
+            codeSystem: sg.codeSystem,
+            locations: sg.locations,
+          }),
+        ),
+        level: 0,
+      });
+    } else {
+      singleCodes.splice(indexOfCurrentContext, 1);
     }
   }
 
@@ -190,20 +235,24 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
     return true;
   }
 
-  singleCodeChange(change: ISingleCodeDisplay, skipReason: boolean = false) {
+  singleCodeChange(change: ISingleCodeBinding[], skipReason: boolean = false) {
     this.onChange(
       this.initialValue ? this.initialValue.type === IBindingType.SINGLECODE ? this.initialValue.value : undefined : undefined,
-      change ? {
-        code: change.code,
-        codeSystem: change.codeSystem,
-        valueSetId: change.valueSet.id,
-      } : undefined,
+      change ? change.map(
+        (sg) => ({
+          code: sg.code,
+          codeSystem: sg.codeSystem,
+          locations: sg.locations,
+        }),
+      ) : undefined,
       PropertyType.SINGLECODE,
       ChangeType.UPDATE,
       skipReason,
     );
-    if (change) {
+    this.updateSingleCodeBindings(change);
+    if (change && change.length > 0) {
       this.vsBindingsChange([], true);
+      this.updateValueSetsBindings([]);
     }
   }
 
@@ -234,15 +283,16 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
         );
 
       case IBindingType.SINGLECODE:
-        return this.bindingService.getSingleCodeBindingDisplay(binding.value.value as InternalSingleCode, this.repository).pipe(
-          take(1),
-          map((sg) => {
-            return {
-              type: IBindingType.SINGLECODE,
-              value: sg,
-            };
-          }),
-        );
+        return of({
+          type: IBindingType.SINGLECODE,
+          value: (binding.value.value as ISingleCodeBinding[]).map(
+            (sg) => ({
+              code: sg.code,
+              codeSystem: sg.codeSystem,
+              locations: sg.locations,
+            }),
+          ),
+        });
     }
   }
 
@@ -250,30 +300,22 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
     const context = { resource: this.context };
     switch (change.propertyType) {
       case PropertyType.SINGLECODE:
-        return combineLatest(
-          change.oldPropertyValue ? this.bindingService.getSingleCodeBindingDisplay(change.oldPropertyValue, this.repository) : of(undefined),
-          change.propertyValue ? this.bindingService.getSingleCodeBindingDisplay(change.propertyValue, this.repository) : of(undefined),
-        ).pipe(
-          take(1),
-          map(([previous, current]) => {
-            return {
-              current: {
-                context: {
-                  context,
-                  value: current,
-                },
-                template: this.displaySingleCodeTemplate,
-              },
-              previous: {
-                context: {
-                  context,
-                  value: previous,
-                },
-                template: this.displaySingleCodeTemplate,
-              },
-            };
-          }),
-        );
+        return of({
+          current: {
+            context: {
+              context,
+              value: change.propertyValue,
+            },
+            template: this.displaySingleCodeTemplate,
+          },
+          previous: {
+            context: {
+              context,
+              value: change.oldPropertyValue,
+            },
+            template: this.displaySingleCodeTemplate,
+          },
+        });
       case PropertyType.VALUESET:
         return combineLatest(
           change.oldPropertyValue ? this.bindingService.getValueSetBindingDisplay(change.oldPropertyValue, this.repository) : of(undefined),
@@ -304,11 +346,14 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
   }
 
   ngOnInit() {
+    const parentIsOBX = this.node && this.node.parent && this.node.parent.data && this.node.parent.data.type === Type.SEGMENTREF && this.node.parent.data.name === 'OBX';
+    this.isOXB2MessageLevel = parentIsOBX && this.position === 2 && this.context !== Type.SEGMENT;
     this.alive = true;
     this.value$.pipe(
       takeWhile(() => this.alive),
     ).subscribe(
       (vsOrSingleCode) => {
+        this.vsOrScBindings = vsOrSingleCode;
         const value = this.mergeBindings(vsOrSingleCode);
         const bindings = this.structureElementBindingService.getActiveAndFrozenBindings(value, { resource: this.context });
 

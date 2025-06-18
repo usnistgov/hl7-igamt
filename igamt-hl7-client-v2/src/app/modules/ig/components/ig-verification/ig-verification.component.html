@@ -1,0 +1,11 @@
+<ng-container *ngIf="status$ | async as status">
+  <ng-container *ngIf="!status?.loading && !status?.failure">
+    <app-verification-result-display [verificationResult]="verificationResult$ | async" [documentId]="documentId$ | async" [activeSelector]="activeSelector"></app-verification-result-display>
+  </ng-container>
+  <div *ngIf="status?.loading" style="display: flex; align-items: center; justify-content: center; height: 100%;">
+    <mat-spinner class="verification-progress" diameter="90"></mat-spinner>
+  </div>
+  <div *ngIf="!status?.loading && status?.failed && status?.failure" class="alert alert-danger">
+    {{status?.failure}}
+  </div>
+</ng-container>

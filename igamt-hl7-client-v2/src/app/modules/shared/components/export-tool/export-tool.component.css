@@ -1,44 +1,21 @@
-.error-INFO {
-    background-color: #b1daff;
+:host {
+  display: contents;
 }
 
-.error-WARNING {
-    background-color: #ffea38;
+.dialog-container {
+    gap: 10px;
+    display: grid;
+    grid-template-rows: min-content min-content min-content min-content;
 }
 
-.error-ERROR {
-    background-color: orange;
+.ext-vs-set-all {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 1px solid lightgray;
+  width: fit-content;
+  border-radius: 5px;
+  background-color: aliceblue;
 }
-
-.error-FATAL {
-    background-color: #f41005;
-}
-
-.error-Info {
-    background-color: #b1daff;
-}
-
-.error-Warning {
-    background-color: #ffea38;
-}
-
-.error-Error {
-    background-color: orange;
-}
-
-.error-Fatal {
-    background-color: #f41005;
-}
-
-.errorType-STRUCTURE {
-    background-color: #d400d4;
-}
-
-.errorType-METADATA {
-    background-color: #a7d6a9;
-}
-
-.error-code {
-    background-color: #a7d6a9;
-}
-

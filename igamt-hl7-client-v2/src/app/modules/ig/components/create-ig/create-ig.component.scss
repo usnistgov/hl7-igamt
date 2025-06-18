@@ -7,22 +7,34 @@
 .create-ig-layout {
   display: grid;
   height: 100%;
+  overflow: hidden;
   flex-direction: column;
   background-color: #f7f7f7;
-  padding: 10px;
-  grid-template-areas: 'title' 'alerts' 'metadata' 'messages' 'submit';
+  grid-template-areas: 'context' 'alerts' 'title'  'metadata' 'messages' 'submit';
   grid-template-columns: 1fr;
-  grid-template-rows: 40px minmax(min-content, max-content) minmax(min-content, max-content) auto 60px;
+  grid-template-rows: 40px  minmax(min-content, max-content) 40px minmax(min-content, max-content) auto 60px;
+}
+
+.context {
+  grid-area: context;
+  padding: 5px 5px 5px 20px;
+  border-bottom: 2px solid lightgray;
+  display: flex;
+  align-items: center;
 }
 
 .metadata {
   grid-area: metadata;
+  margin-top: 20px;
   flex-direction: row;
   align-items: flex-start;
+  padding: 0 50px 0 50px;
 }
 
 .title {
   height: 40px;
+  text-align: center;
+  padding: 20px;
   grid-area: title;
   flex-direction: row;
   align-items: flex-start;
@@ -30,19 +42,26 @@
 
 .alerts {
   grid-area: alerts;
+  padding: 0 50px 0 50px;
+
 }
 
 .submit {
   grid-area: submit;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  padding: 0 50px 0 50px;
+
 }
 
 .messages {
   grid-area: messages;
+  padding: 10px 50px 0 50px;
   height: 100%;
-  padding: 5px;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 input.ng-invalid {

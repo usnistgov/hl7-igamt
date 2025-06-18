@@ -12,6 +12,7 @@
 package gov.nist.hit.hl7.igamt.ig.domain.verification;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
 
 /**
  * @author jungyubw
@@ -23,28 +24,13 @@ public class IgamtObjectError {
   private Type targetType;
   private Object targetMeta;
   private String description;
-  @Deprecated
-  private String location;
   private String handleBy;
   private String severity;
   private Location locationInfo;
+  private ResourceRef subTarget;
   
   public IgamtObjectError(){
     super();
-  }
-
-  @Deprecated
-  public IgamtObjectError(String code, String target, Type targetType, Object targetMeta, String description,
-      String location, String severity, String handleBy) {
-    super();
-    this.code = code;
-    this.target = target;
-    this.targetType = targetType;
-    this.targetMeta = targetMeta;
-    this.description = description;
-    this.location = location;
-    this.severity = severity;
-    this.handleBy = handleBy;
   }
 
   public IgamtObjectError(String code, String target, Type targetType, Object targetMeta, Location locationInfo, String description, String severity, String handleBy) {
@@ -81,16 +67,6 @@ public class IgamtObjectError {
 
   public void setDescription(String description) {
     this.description = description;
-  }
-
-  @Deprecated
-  public String getLocation() {
-    return location;
-  }
-
-  @Deprecated
-  public void setLocation(String location) {
-    this.location = location;
   }
 
   public String getSeverity() {
@@ -131,5 +107,13 @@ public class IgamtObjectError {
 
   public void setLocationInfo(Location locationInfo) {
     this.locationInfo = locationInfo;
+  }
+
+  public ResourceRef getSubTarget() {
+    return subTarget;
+  }
+
+  public void setSubTarget(ResourceRef subTarget) {
+    this.subTarget = subTarget;
   }
 }

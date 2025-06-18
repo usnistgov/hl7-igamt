@@ -1,12 +1,19 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { combineLatest, Observable, throwError } from 'rxjs';
+import { catchError, map, take } from 'rxjs/operators';
+import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
+import { MessageType } from 'src/app/modules/dam-framework/models/messages/message.class';
+import { UsageDialogComponent } from 'src/app/modules/shared/components/usage-dialog/usage-dialog.component';
+import { selectWorkspaceActive } from '../../../../root-store/dam-igamt/igamt.selectors';
 import { selectMessageStructures, selectSegmentStructures } from '../../../../root-store/structure-editor/structure-editor.reducer';
-import { IMessage } from '../../../dam-framework/models/messages/message.class';
+import { IMessage, UserMessage } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
-import { InsertResourcesInRepostory } from '../../../dam-framework/store/data/dam.actions';
+import { DeleteResourcesFromRepostory, InsertResourcesInRepostory } from '../../../dam-framework/store/data/dam.actions';
 import { Type } from '../../../shared/constants/type.enum';
+import { IUsages } from '../../../shared/models/cross-reference';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { StructureEditorService } from '../../services/structure-editor.service';
 import { TableOfContentComponent } from '../table-of-content/table-of-content.component';
@@ -20,9 +27,13 @@ export class SideBarComponent implements OnInit {
 
   nodes: Observable<Array<Partial<IDisplayElement>>>;
   @ViewChild(TableOfContentComponent) toc: TableOfContentComponent;
-
+  readonly SEGMENTS_REPO = 'segment-structures';
+  readonly MESSAGES_REPO = 'message-structures';
+  readonly STRUCTURE_EDITOR_URL = 'structure-editor';
   constructor(
     private store: Store<any>,
+    private router: Router,
+    private dialog: MatDialog,
     private structureEditorService: StructureEditorService,
     private messageService: MessageService,
   ) {
@@ -68,23 +79,141 @@ export class SideBarComponent implements OnInit {
   publish({ id, type }) {
     const { repository, publish } = type === Type.SEGMENT ?
       {
-        repository: 'segment-structures',
+        repository: this.SEGMENTS_REPO,
         publish: this.structureEditorService.publishSegment(id) as Observable<IMessage<any>>,
       } :
       {
-        repository: 'message-structures',
+        repository: this.MESSAGES_REPO,
         publish: this.structureEditorService.publishMessageStructure(id) as Observable<IMessage<any>>,
       };
 
     publish.pipe(
       map((response) => {
-        this.store.dispatch(this.messageService.messageToAction(response));
-        this.store.dispatch(new InsertResourcesInRepostory({
-          collections: [{
-            key: repository,
-            values: [response.data.displayElement],
-          }],
-        }));
+        this.notifyAndUpdateRepository(response, repository);
+      }),
+      catchError((err) => {
+        this.store.dispatch(this.messageService.actionFromError(err));
+        return throwError(err);
+      }),
+    ).subscribe();
+  }
+
+  unpublish({ id, type }) {
+    const { repository, publish } = type === Type.SEGMENT ?
+      {
+        repository: this.SEGMENTS_REPO,
+        publish: this.structureEditorService.unPublishSegment(id) as Observable<IMessage<any>>,
+      } :
+      {
+        repository: this.MESSAGES_REPO,
+        publish: this.structureEditorService.unPublishMessageStructure(id) as Observable<IMessage<any>>,
+      };
+
+    publish.pipe(
+      map((response) => {
+        this.notifyAndUpdateRepository(response, repository);
+      }),
+      catchError((err) => {
+        this.store.dispatch(this.messageService.actionFromError(err));
+        return throwError(err);
+      }),
+    ).subscribe();
+  }
+
+  notifyAndUpdateRepository(response, repository) {
+    this.store.dispatch(this.messageService.messageToAction(response));
+    this.store.dispatch(new InsertResourcesInRepostory({
+      collections: [{
+        key: repository,
+        values: [response.data.displayElement],
+      }],
+    }));
+  }
+
+  deleteMessageStructure(id: string) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        question: 'Are you sure you want to delete this message structure ?',
+        action: 'Delete Message Structure',
+      },
+    });
+    dialogRef.afterClosed().pipe(
+      map((answer) => {
+        if (answer) {
+          this.structureEditorService.deleteMessageStructure(id).pipe(
+            map((response) => {
+              this.store.dispatch(this.messageService.messageToAction(response));
+              this.conditionalRedirectHome(id);
+              this.store.dispatch(new DeleteResourcesFromRepostory({
+                collections: [{
+                  key: this.MESSAGES_REPO,
+                  values: [id],
+                }],
+              }));
+            }),
+            catchError((err) => {
+              this.store.dispatch(this.messageService.actionFromError(err));
+              return throwError(err);
+            }),
+          ).subscribe();
+        }
+      }),
+    ).subscribe();
+  }
+
+  deleteSegmentStructure(id: string) {
+    this.structureEditorService.getSegmentCrossRefs(id).pipe(
+      take(1),
+      map((usages: IUsages[]) => {
+        if (usages.length === 0) {
+          const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            data: {
+              question: 'Are you sure you want to delete this segment structure ?',
+              action: 'Delete Segment Structure',
+            },
+          });
+          dialogRef.afterClosed().subscribe(
+            (answer) => {
+              if (answer) {
+                this.structureEditorService.deleteSegmentStructure(id).pipe(
+                  map((response) => {
+                    this.store.dispatch(this.messageService.messageToAction(response));
+                    this.conditionalRedirectHome(id);
+                    this.store.dispatch(new DeleteResourcesFromRepostory({
+                      collections: [{
+                        key: this.SEGMENTS_REPO,
+                        values: [id],
+                      }],
+                    }));
+                  }),
+                  catchError((err) => {
+                    this.store.dispatch(this.messageService.actionFromError(err));
+                    return throwError(err);
+                  }),
+                ).subscribe();
+              }
+            },
+          );
+        } else {
+          this.dialog.open(UsageDialogComponent, {
+            data: {
+              title: 'Cross References found',
+              usages,
+              element: {},
+            },
+          });
+        }
+      }),
+    ).subscribe();
+  }
+
+  conditionalRedirectHome(id: string) {
+    this.store.select(selectWorkspaceActive).pipe(
+      take(1),
+      map((active) => {
+        if (active.display.id === id) {
+          this.router.navigate(['/', this.STRUCTURE_EDITOR_URL]);
+        }
       }),
     ).subscribe();
   }
@@ -98,6 +227,12 @@ export class SideBarComponent implements OnInit {
             values: [message.displayElement],
           }],
         }));
+        this.store.dispatch(this.messageService.userMessageToAction(new UserMessage(MessageType.SUCCESS, 'Message Structure Created Successfully')));
+        this.router.navigate(['/', this.STRUCTURE_EDITOR_URL, 'conformanceprofile', message.displayElement.id]);
+      }),
+      catchError((err) => {
+        this.store.dispatch(this.messageService.actionFromError(err));
+        return throwError(err);
       }),
     ).subscribe();
   }
@@ -111,6 +246,12 @@ export class SideBarComponent implements OnInit {
             values: [segment.displayElement],
           }],
         }));
+        this.store.dispatch(this.messageService.userMessageToAction(new UserMessage(MessageType.SUCCESS, 'Segment Structure Created Successfully')));
+        this.router.navigate(['/', this.STRUCTURE_EDITOR_URL, 'segment', segment.displayElement.id]);
+      }),
+      catchError((err) => {
+        this.store.dispatch(this.messageService.actionFromError(err));
+        return throwError(err);
       }),
     ).subscribe();
   }
@@ -118,4 +259,52 @@ export class SideBarComponent implements OnInit {
   ngOnInit() {
   }
 
+  unlockSegmentStructure(id: string) {
+    this.structureEditorService.getSegmentLockedCrossRefs(id).pipe(
+      take(1),
+      map((usages: IUsages[]) => {
+        if (usages.length === 0) {
+          const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            data: {
+              question: 'Are you sure you want to unlock this segment structure ?',
+              action: 'Unlock Segment Structure',
+            },
+          });
+          dialogRef.afterClosed().subscribe(
+            (answer) => {
+              if (answer) {
+                this.unpublish({ id, type: Type.SEGMENT });
+
+              }
+            },
+          );
+        } else {
+          this.dialog.open(UsageDialogComponent, {
+            data: {
+              title: 'Cross References found',
+              usages,
+              element: {},
+            },
+          });
+        }
+      }),
+    ).subscribe();
+  }
+
+  unlockMessageStructure(id: string) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        question: 'Are you sure you want to unlock this Message structure ?',
+        action: 'Unlock Message Structure',
+      },
+    });
+    dialogRef.afterClosed().subscribe(
+      (answer) => {
+        if (answer) {
+          this.unpublish({ id, type: Type.MESSAGESTRUCT });
+
+        }
+      },
+    );
+  }
 }

@@ -12,23 +12,14 @@
 package gov.nist.hit.hl7.igamt.profilecomponent.service;
 
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
-import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyCoConstraintBindings;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyConformanceStatement;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyDynamicMapping;
@@ -70,17 +61,14 @@ public interface ProfileComponentService {
 
   ProfileComponentContext updateContextCoConstraintBindings(String pcId, String contextId, PropertyCoConstraintBindings coConstraintBindings) throws Exception;
 
-  Link cloneProfileComponent(String string, HashMap<RealKey, String> newKeys, Link l,
-                             String username, Scope user, CloneMode cloneMode);
-
-  Set<RelationShip> collectDependencies(ProfileComponent pc);
-
   ProfileComponent deleteContextById(String pcId, String contextId) throws ProfileComponentNotFoundException;
 
-  void applyChanges(ProfileComponent pc, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException;
+  void applyChanges(ProfileComponent pc, List<ChangeItemDomain> cItems) throws ApplyChangeException;
+  
+  List<ProfileComponent> saveAll(Set<ProfileComponent> profileComponents);
 
-  PropertyDynamicMapping updateContextDynamicMapping(String pcId, String contextId,
-      PropertyDynamicMapping pcDynamicMapping)
-      throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
+  PropertyDynamicMapping updateContextDynamicMapping(ProfileComponent pc, String contextId,
+		PropertyDynamicMapping pcDynamicMapping)
+		throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
 
 }

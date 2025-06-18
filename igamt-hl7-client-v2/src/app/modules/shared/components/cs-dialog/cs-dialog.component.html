@@ -8,7 +8,9 @@
         <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.CONDITIONAL" (ngModelChange)="changeTab($event)" name="activeTab" /> Conditional
       </ng-container>
       <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.COMPLEX" (ngModelChange)="changeTab($event)" name="activeTab" /> Complex
-      <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.FREE" (ngModelChange)="changeTab($event)" name="activeTab" /> Free Text
+      <ng-container *ngIf="!hideFreeText">
+        <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.FREE" (ngModelChange)="changeTab($event)" name="activeTab" /> Free Text
+      </ng-container>
     </div>
   </div>
   <ng-container *ngIf="cs">
@@ -24,21 +26,23 @@
       <tr>
         <td style="text-align: center;">
           <p-dropdown
-          [style]="{'min-width': '70px'}"
-          [options]="options"
-          [autoDisplayFirst]="false"
-          name="trueUsage"
-          [(ngModel)]="cs.trueUsage"
-          [appendTo]="anchor" ></p-dropdown>
+            [style]="{'min-width': '70px'}"
+            [options]="options"
+            [autoDisplayFirst]="false"
+            name="trueUsage"
+            [(ngModel)]="cs.trueUsage"
+            [appendTo]="anchor" >
+          </p-dropdown>
         </td>
         <td style="text-align: center;">
           <p-dropdown
-          [style]="{'min-width': '70px'}"
-          [options]="options"
-          [autoDisplayFirst]="false"
-          name="falseUsage"
-          [(ngModel)]="cs.falseUsage"
-          [appendTo]="anchor" ></p-dropdown>
+            [style]="{'min-width': '70px'}"
+            [options]="options"
+            [autoDisplayFirst]="false"
+            name="falseUsage"
+            [(ngModel)]="cs.falseUsage"
+            [appendTo]="anchor" >
+          </p-dropdown>
         </td>
       </tr>
     </table>
@@ -60,6 +64,16 @@
         ></app-structure-tree>
       </div>
     </div>
+    <div *ngIf="!predicateMode && !assertionMode" class="form-group">
+      <label for="strength" class="form-label-lg" style="margin-right: 10px;"> Conformance Statement Strength </label>
+      <p-dropdown
+      [style]="{'min-width': '200px'}"
+      [options]="strengthOptions"
+      [autoDisplayFirst]="false"
+      name="strength"
+      [(ngModel)]="cs.strength"
+      [appendTo]="anchor" ></p-dropdown>
+    </div>
     <div *ngIf="activeTab === tabType.FREE">
       <div class="form-group">
         <label for="free" class="form-label-lg"> Description </label>
@@ -69,8 +83,16 @@
         <hr style="margin-bottom: -14px; margin-left: 110px;"> <span style="margin-left: 5px; color: gray;"><i class="fa" [ngClass]="{'fa-chevron-down': hideAdvanced, 'fa-chevron-right': !hideAdvanced }"></i> Advanced </span>
       </div>
       <div class="form-group" *ngIf="hideAdvanced">
-        <label for="free" class="form-label-lg"> Script </label>
-        <textarea type="text" class="form-control" id="script" rows="6" name="script" placeholder="XML Script" [required]="required" [(ngModel)]="cs.assertionScript"></textarea>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <label for="free" class="form-label-lg"> XML Script </label>
+          <button class="btn btn-sm btn-success" (click)="formatXML()" >Format</button>
+        </div>
+        <ngx-codemirror
+          [(ngModel)]="cs.assertionScript"
+          id="script"
+          name="script"
+          [options]="xmlEditorOptions"
+        ></ngx-codemirror>
       </div>
     </div>
     <div *ngIf="cs.type === csType.ASSERTION">
@@ -103,6 +125,7 @@
         </ng-container>
       </mat-dialog-content>
     </div>
+
     <div *ngIf="statementsValid()" class="form-group">
       <div *ngIf="xmlExpression | async as xml" style="padding: 10px; background-color: #f7f7f7; border: 1px solid #e7e7e7; border-radius: 3px; display: flex; flex-direction: column; align-items: center;">
         <div style="display: flex; width: 100%;">
@@ -163,8 +186,11 @@
       [rootTree]="structure"
       [repository]="repository"
       [type]="token.value.data.branch"
+      [strength]="cs.strength"
       [collapsed]="false"
       [token]="token"
+      [transformer]="transformer"
+      [referenceChangeMap]="referenceChangeMap"
       (valueChange)="change()"
       ></app-cs-proposition>
       <app-cs-subcontext
@@ -176,6 +202,8 @@
       [repository]="repository"
       [collapsed]="false"
       [token]="token"
+      [transformer]="transformer"
+      [referenceChangeMap]="referenceChangeMap"
       (valueChange)="change()"
       ></app-cs-subcontext>
     </tr>

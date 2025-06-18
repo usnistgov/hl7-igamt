@@ -1,7 +1,7 @@
 import { LengthType } from '../constants/length-type.enum';
 import { Type } from '../constants/type.enum';
 import { Usage } from '../constants/usage.enum';
-import { InternalSingleCode, IValuesetBinding } from './binding.interface';
+import { ISingleCodeBinding, IValuesetBinding } from './binding.interface';
 import { ICoConstraintBindingContext } from './co-constraint.interface';
 import { IComment } from './comment.interface';
 import { IMessageProfileIdentifier } from './conformance-profile.interface';
@@ -105,7 +105,7 @@ export interface IPropertyRef extends IItemProperty {
 }
 
 export interface IPropertySingleCode extends IPropertyBinding {
-  internalSingleCode: InternalSingleCode;
+  singleCodeBindings: ISingleCodeBinding[];
   propertyKey: PropertyType.SINGLECODE;
 }
 
@@ -132,7 +132,7 @@ export interface IPropertyDynamicMapping extends IItemProperty {
   override: boolean;
   items: IPcDynamicMappingItem[];
 }
-export interface  IPcDynamicMappingItem {
+export interface IPcDynamicMappingItem {
   change: ChangeType;
   datatypeName: string;
   flavorId: string;

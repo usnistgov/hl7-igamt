@@ -1,5 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { Observable } from 'rxjs';
 import { IHL7v2TreeNode } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import { ElementNamingService } from 'src/app/modules/shared/services/element-naming.service';
@@ -20,6 +21,8 @@ export class GrouperDialogComponent implements OnInit {
   segment: IResource;
   selectedNode: IHL7v2TreeNode;
   selectedNodeName: string;
+  transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>;
+
   treeFilter: IHL7v2TreeFilter = {
     hide: false,
     restrictions: [
@@ -44,6 +47,8 @@ export class GrouperDialogComponent implements OnInit {
     this.excludePaths = data.excludePaths;
     this.repository = data.repository;
     this.segment = data.segment;
+    this.transformer = data.transformer;
+
     if (data.excludePaths) {
       this.treeFilter.restrictions.push({
         criterion: RestrictionType.PATH,

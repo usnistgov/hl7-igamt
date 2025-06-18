@@ -48,9 +48,13 @@
           [conformanceProfile]="conformanceProfile"
           [structure]="structure"
           [context]="binding.context"
+          [contextInfo]="contextCoConstraint"
           (valueChange)="segmentBindingChange(binding.context.pathId, $event)"
           (formValid)="formValid(binding.context.pathId, $event)"
           (delete)="deleteSegmentBinding(binding.bindings, segment, binding.context.pathId, j)"
+          [transformer]="transformer"
+          [referenceChangeMap]="referenceChangeMap"
+          [profileComponentContext]="profileComponentContext"
           [value]="segment">
         </app-segment-co-constraint-binding>
       </ng-container>

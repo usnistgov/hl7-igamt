@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Guid } from 'guid-typescript';
 import { Table } from 'primeng/table';
@@ -12,6 +12,8 @@ import {IResource} from '../../models/resource.interface';
   selector: 'app-select-segments',
   templateUrl: './select-segments.component.html',
   styleUrls: ['./select-segments.component.css'],
+  changeDetection: ChangeDetectionStrategy.Default,
+
 })
 export class SelectSegmentsComponent implements OnInit {
   @Input()
@@ -37,7 +39,7 @@ export class SelectSegmentsComponent implements OnInit {
   selectedScope: Scope;
   @Input()
   hl7Versions: string[] = [];
-  @ViewChild(NgForm) form;
+  @ViewChild(NgForm) form: NgForm ;
 
   constructor() {
   }
@@ -94,6 +96,8 @@ export class SelectSegmentsComponent implements OnInit {
     });
   }
   emitData() {
+    this.form.form.updateValueAndValidity();
+
     this.added.emit(this.selectedData);
   }
   isValid() {

@@ -5,6 +5,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
 import javax.net.ssl.HostnameVerifier;
@@ -47,6 +48,8 @@ import gov.nist.hit.hl7.auth.util.requests.AdminUserRequest;
 import gov.nist.hit.hl7.auth.util.requests.ChangePasswordConfirmRequest;
 import gov.nist.hit.hl7.auth.util.requests.ChangePasswordRequest;
 import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage;
+import gov.nist.hit.hl7.auth.util.requests.FindUserRequest;
+import gov.nist.hit.hl7.auth.util.requests.FindUserResponse;
 import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
 import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
@@ -131,11 +134,39 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	@Override
+	public FindUserResponse findUser(HttpServletRequest req, FindUserRequest user) throws AuthenticationException {
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-type", "application/json");
+			headers.set("User-Agent", "NIST IGAMT");
+			RestTemplate restTemplate = new RestTemplate();
+			HttpEntity<FindUserRequest> request = new HttpEntity<>(user, this.getCookiesHeaders(req));
+
+
+			ResponseEntity<FindUserResponse> response =
+					restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/find", HttpMethod.POST, request,
+							new ParameterizedTypeReference<FindUserResponse>() {});
+
+
+
+			return response.getBody();
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
+			String message = e.getResponseBodyAsString();
+
+			throw new AuthenticationException(getMessageString(message));
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new AuthenticationException(e.getMessage());
+		}
+	}
+
+	@Override
 	public ConnectionResponseMessage<UserResponse> connect(HttpServletResponse response, LoginRequest user)
 			throws AuthenticationException {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-type", "application/json");
+			headers.set("User-Agent", "NIST IGAMT");
 			HttpEntity<LoginRequest> request = new HttpEntity<>(user);
 			System.out.println(env.getProperty(AUTH_URL));
 			ResponseEntity<ConnectionResponseMessage<UserResponse>> call = restTemplate.exchange(
@@ -176,8 +207,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-type", "application/json");
+			headers.set("User-Agent", "NIST IGAMT");
 			RestTemplate restTemplate = new RestTemplate();
-			HttpEntity<RegistrationRequest> request = new HttpEntity<>(user);
+			HttpEntity<RegistrationRequest> request = new HttpEntity<>(user, headers);
 
 			ResponseEntity<ConnectionResponseMessage<UserResponse>> response = restTemplate.exchange(
 					env.getProperty(AUTH_URL) + "/api/tool/register", HttpMethod.POST, request,
@@ -208,10 +240,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-type", "application/json");
+			headers.set("User-Agent", "NIST IGAMT");
 			RestTemplate restTemplate = new RestTemplate();
 			ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest();
 			changePasswordRequest.setUsername(username);
-			HttpEntity<ChangePasswordRequest> request = new HttpEntity<ChangePasswordRequest>(changePasswordRequest);
+			HttpEntity<ChangePasswordRequest> request = new HttpEntity<ChangePasswordRequest>(changePasswordRequest, headers);
 			ResponseEntity<ConnectionResponseMessage<PasswordResetTokenResponse>> response = restTemplate.exchange(
 					env.getProperty(AUTH_URL) + "/api/tool/password/reset", HttpMethod.POST, request,
 					new ParameterizedTypeReference<ConnectionResponseMessage<PasswordResetTokenResponse>>() {
@@ -235,9 +268,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-type", "application/json");
+			headers.set("User-Agent", "NIST IGAMT");
 			RestTemplate restTemplate = new RestTemplate();
 
-			HttpEntity<String> request = new HttpEntity<String>(token);
+			HttpEntity<String> request = new HttpEntity<String>(token, headers);
 			ResponseEntity<Boolean> response = restTemplate.exchange(
 					env.getProperty(AUTH_URL) + "/api/tool/password/validatetoken", HttpMethod.POST, request,
 					Boolean.class);
@@ -267,9 +301,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-type", "application/json");
+			headers.set("User-Agent", "NIST IGAMT");
 			RestTemplate restTemplate = new RestTemplate();
 			HttpEntity<ChangePasswordConfirmRequest> request = new HttpEntity<ChangePasswordConfirmRequest>(
-					requestObject);
+					requestObject, headers);
 			ResponseEntity<ConnectionResponseMessage<PasswordResetTokenResponse>> response = restTemplate.exchange(
 					env.getProperty(AUTH_URL) + "/api/tool/password/reset/confirm", HttpMethod.POST, request,
 					new ParameterizedTypeReference<ConnectionResponseMessage<PasswordResetTokenResponse>>() {
@@ -328,46 +363,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			return obj.getText();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
 			throw new AuthenticationException("Could not parse the error response");
 		}
 	}
 
 	@Override
 	public UserListResponse getAllUsers(HttpServletRequest req) {
-		Cookie cookies[] = req.getCookies();
-
-		HttpHeaders headers = new HttpHeaders();
-
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("authCookie")) {
-					headers.add("Cookie", "authCookie=" + cookie.getValue());
-				}
-			}
-		}
 
 		ResponseEntity<UserListResponse> response = restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/users",
-				HttpMethod.GET, new HttpEntity<String>(headers), UserListResponse.class);
+				HttpMethod.GET, new HttpEntity<String>(this.getCookiesHeaders(req)), UserListResponse.class);
 		return response.getBody();
 	}
 
 	@Override
+	public ArrayList<String> getAllUsernames(HttpServletRequest req) {
+		ResponseEntity<ArrayList<String>> response = restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/usernames",
+				HttpMethod.GET, new HttpEntity<String>(this.getCookiesHeaders(req)), new ParameterizedTypeReference<ArrayList<String>>() {});
+		return response.getBody();
+	}
+
+
+	@Override
 	public UserResponse getCurrentUser(String username, HttpServletRequest req) {
-		Cookie cookies[] = req.getCookies();
-
-		HttpHeaders headers = new HttpHeaders();
-
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("authCookie")) {
-					headers.add("Cookie", "authCookie=" + cookie.getValue());
-				}
-			}
-		}
-
 		ResponseEntity<UserResponse> response = restTemplate.exchange(
 				env.getProperty(AUTH_URL) + "/api/tool/user/" + username, HttpMethod.GET,
-				new HttpEntity<String>(headers), UserResponse.class);
+				new HttpEntity<String>(this.getCookiesHeaders(req)), UserResponse.class);
 		return response.getBody();
 	}
 
@@ -376,21 +397,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			throws AuthenticationException {
 
 		try {
-			Cookie cookies[] = req.getCookies();
-
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-type", "application/json");
-
-			if (cookies != null) {
-				for (Cookie cookie : cookies) {
-					if (cookie.getName().equals("authCookie")) {
-						headers.add("Cookie", "authCookie=" + cookie.getValue());
-					}
-				}
-			}
-
 			RestTemplate restTemplate = new RestTemplate();
-			HttpEntity<RegistrationRequest> request = new HttpEntity<>(user);
+			HttpEntity<RegistrationRequest> request = new HttpEntity<>(user, this.getCookiesHeaders(req));
 
 			ResponseEntity<ConnectionResponseMessage<UserResponse>> response = restTemplate.exchange(
 					env.getProperty(AUTH_URL) + "/api/tool/user", HttpMethod.POST, request,
@@ -418,27 +426,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	public ConnectionResponseMessage<UserResponse> updatePendingAdmin(AdminUserRequest requestPara, HttpServletRequest req)
 			throws AuthenticationException {
 		try {
-			Cookie cookies[] = req.getCookies();
-
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-type", "application/json");
-
-			if (cookies != null) {
-				for (Cookie cookie : cookies) {
-					if (cookie.getName().equals("authCookie")) {
-						System.out.println("authCookie=" + cookie.getValue());
-						headers.add("Cookie", "authCookie=" + cookie.getValue());
-					}
-				}
-			}
+			
 			RestTemplate restTemplate = new RestTemplate();
-			HttpEntity<AdminUserRequest> request = new HttpEntity<>(requestPara);
+			HttpEntity<AdminUserRequest> request = new HttpEntity<>(requestPara, this.getCookiesHeaders(req));
+			
 			
 			ResponseEntity<ConnectionResponseMessage<UserResponse>> response = restTemplate.exchange(
 					env.getProperty(AUTH_URL) + "/api/tool/adminUpdate", HttpMethod.POST, request,
 					new ParameterizedTypeReference<ConnectionResponseMessage<UserResponse>>() {
 					});
-
 			return response.getBody();
 		} catch (HttpClientErrorException e) {
 			String message = e.getResponseBodyAsString();
@@ -455,6 +451,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			throw new AuthenticationException(e.getMessage());
 		}
 
+	}
+	
+	private HttpHeaders getCookiesHeaders(HttpServletRequest req){
+		Cookie cookies[] = req.getCookies();
+		
+		HttpHeaders headers = new HttpHeaders();
+
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equals("authCookie")) {
+					headers.add("Cookie", "authCookie=" + cookie.getValue());
+				}
+			}
+		} 
+		return headers;
+		
 	}
 
 }

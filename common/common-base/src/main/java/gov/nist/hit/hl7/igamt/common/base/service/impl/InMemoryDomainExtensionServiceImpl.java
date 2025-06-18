@@ -121,5 +121,14 @@ public class InMemoryDomainExtensionServiceImpl implements InMemoryDomainExtensi
 		return token;
 	}
 
+	@Override
+	public String put(DataExtension extension, Resource context) {
+		String token = this.getToken();
+		List<Resource> resources = new ArrayList<>(extension.getResources());
+		resources.add(context);
+		this.put(token, resources);
+		return token;
+	}
+
 	
 }

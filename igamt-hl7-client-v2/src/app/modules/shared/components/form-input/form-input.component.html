@@ -1,10 +1,10 @@
 <div class="form-group">
-  <label [for]="id" class="form-label-lg">{{label}}</label>
+  <label [for]="id" *ngIf="!hideLabel" class="form-label-lg">{{label}}</label>
   <input *ngIf="!viewOnly" [type]="type" class="form-control" [id]="id" [name]="name" [placeholder]="placeholder"
     [required]="required" [disabled]="disabled" [value]="value? value : ''" (input)="valueChange($event.target.value)"
     #inputElm
     (blur)="onTouch()">
-  <div *ngIf="control.invalid && !viewOnly" class="input-form-invalid-feedback"
+  <div *ngIf="control?.invalid && !viewOnly" class="input-form-invalid-feedback"
     style="margin-left: 10px;">
     {{convertErrors()}}
   </div>

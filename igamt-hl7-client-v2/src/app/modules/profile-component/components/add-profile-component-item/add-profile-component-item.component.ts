@@ -1,5 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import { IStructureTreeSelect } from 'src/app/modules/shared/components/structure-tree/structure-tree.component';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { AResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
@@ -16,13 +17,15 @@ export class AddProfileComponentItemComponent {
   structure: IHL7v2TreeNode[];
   repository: AResourceRepositoryService;
   filter: IHL7v2TreeFilter;
+  transformer: (node: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>;
   items: Record<string, IStructureTreeSelect> = {};
 
   constructor(
     public dialogRef: MatDialogRef<AddProfileComponentItemComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { structure, repository, selectedPaths }) {
+    @Inject(MAT_DIALOG_DATA) public data: { structure, repository, selectedPaths, transformer }) {
     this.structure = data.structure;
     this.repository = data.repository;
+    this.transformer = data.transformer;
     this.filter = {
       hide: false,
       restrictions: [

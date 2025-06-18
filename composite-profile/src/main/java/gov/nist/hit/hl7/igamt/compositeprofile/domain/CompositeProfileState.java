@@ -6,12 +6,14 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 
 import java.util.List;
+import java.util.Set;
 
 public class CompositeProfileState {
     ResourceAndDisplay<ConformanceProfile> conformanceProfile;
     List<ResourceAndDisplay<Datatype>> datatypes;
     List<ResourceAndDisplay<Segment>> segments;
-    List<Resource> references;
+    Set<Resource> resources;
+    String token;
 
     public ResourceAndDisplay<ConformanceProfile> getConformanceProfile() {
         return conformanceProfile;
@@ -37,11 +39,19 @@ public class CompositeProfileState {
         this.segments = segments;
     }
 
-    public List<Resource> getReferences() {
-        return references;
+    public Set<Resource> getResources() {
+        return resources;
     }
 
-    public void setReferences(List<Resource> references) {
-        this.references = references;
+    public void setResources(Set<Resource> resources) {
+        this.resources = resources;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

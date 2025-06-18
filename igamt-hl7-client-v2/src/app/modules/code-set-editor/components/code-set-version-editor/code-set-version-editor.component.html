@@ -1,0 +1,34 @@
+<ng-template #headerControls>
+  <div>
+    <button class="btn btn-sm btn-dark" (click)="commit()" *ngIf="!(resource$ | async).dateCommitted" [disabled]="hasChanges | async" >
+      <i class="fa fa-check" aria-hidden="true"></i>
+      Commit
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #headerTitle>
+  <div>
+
+  </div>
+  <h5 style="margin: 0;">
+    Code Set Version
+    <span class="badge badge-primary" *ngIf="(resource$ | async).dateCommitted"> {{(resource$ | async).version}}</span>
+    <span class="badge badge-primary" *ngIf="!(resource$ | async).dateCommitted">in progress</span>
+  </h5>
+  <div style="height: 100%; display: flex; justify-content: center; align-items: flex-end;">
+    <span style="font-size: 0.75em; color: gray; margin-left: 10px;">
+
+     <span *ngIf="(resource$ | async).dateCommitted" > <i class="fa fa-calendar-o"></i> Committed On  </span> {{(resource$ | async).dateCommitted | date}}
+
+    </span>
+  </div>
+
+</ng-template>
+
+<div *ngIf="(resource$ | async).dateCommitted" style="margin-top: 10px; margin-bottom: 10px;">
+  <app-input-copy type="text" [value]="versionURL" label="Version URL"></app-input-copy>
+</div>
+<app-code-set-table  #CodeSetTableComponent [codeSetVersion]="resource$ | async" [selectedColumns]="selectedColumns" (changes)="updateCodes($event)" (importCSVEvent)="importCSV($event)" (exportCSVEvent)="exportCSV($event)" [viewOnly]="(resource$ | async).dateCommitted"></app-code-set-table>
+
+

@@ -22,9 +22,7 @@ export class CommentsComponent extends HL7v2TreeColumnComponent<IComment[]> impl
     this.value$.subscribe(
       (value) => {
         if (value) {
-          this.comments = [
-            ...value,
-          ];
+          this.comments = value;
         }
       },
     );

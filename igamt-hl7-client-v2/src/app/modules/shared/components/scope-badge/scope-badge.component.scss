@@ -23,3 +23,12 @@
   background-color: $phinvads_scope_color;
   color: $phinvads_color;
 }
+
+.inline-scope-label {
+  flex-direction: row;
+  align-content: flex-start;
+  align-items: flex-start;
+  margin: 0px;
+  padding: 0px;
+  display: inline;
+}

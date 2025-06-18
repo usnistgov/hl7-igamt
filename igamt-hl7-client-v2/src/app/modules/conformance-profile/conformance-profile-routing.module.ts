@@ -5,9 +5,9 @@ import {
   OpenConformanceProfileDeltaEditor,
   OpenConformanceProfilePreDefEditor,
   OpenConformanceProfileSlicingEditor,
+  OpenMessageCrossRefEditor,
 } from 'src/app/root-store/conformance-profile-edit/conformance-profile-edit.actions';
 import { ConformanceProfileEditActionTypes, OpenConformanceProfileBindingsEditor, OpenConformanceProfileCoConstraintBindingsEditor, OpenConformanceProfileMetadataEditor, OpenConformanceProfilePostDefEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from '../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
-import {OpenSegmentSlicingEditor} from '../../root-store/segment-edit/segment-edit.actions';
 import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
 import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
 import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
@@ -20,6 +20,7 @@ import {ConformanceProfileSlicingEditorComponent} from './components/conformance
 import { ConformanceProfileStructureEditorComponent } from './components/conformance-profile-structure-editor/conformance-profile-structure-editor.component';
 import { CPConformanceStatementEditorComponent } from './components/conformance-statement-editor/cp-conformance-statement-editor.component';
 import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
+import { MessageCrossRefsComponent } from './components/message-cross-refs/message-cross-refs.component';
 import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
@@ -60,7 +61,23 @@ const routes: Routes = [
           idKey: 'conformanceProfileId',
         },
       },
-      { path: 'cross-references' },
+
+      {
+        path: 'cross-references',
+        component: MessageCrossRefsComponent,
+        canActivate: [EditorActivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.CROSSREF,
+            title: 'Cross references',
+            resourceType: Type.CONFORMANCEPROFILE,
+          },
+          urlPath: 'conformanceprofile',
+          idKey: 'conformanceProfileId',
+          resourceType: Type.CONFORMANCEPROFILE,
+          action: OpenMessageCrossRefEditor,
+        },
+      },
       {
         path: 'co-constraint',
         component: CoConstraintsBindingEditorComponent,

@@ -58,7 +58,6 @@ export enum Role {
 }
 
 export enum ProfileType {
-  HL7 = 'HL7',
   Constrainable = 'Constrainable',
   Implementation = 'Implementation',
 }

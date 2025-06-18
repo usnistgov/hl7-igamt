@@ -9,7 +9,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.GeneratedResourceMetadata;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.OrderedProfileComponentLink;
@@ -17,13 +19,12 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.delta.domain.ConformanceStatementDelta;
 import gov.nist.hit.hl7.igamt.delta.domain.ResourceDelta;
 import gov.nist.hit.hl7.igamt.serialization.util.SerializationTools;
+import gov.nist.hit.hl7.igamt.service.impl.ResourceSkeletonService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.diff.domain.DeltaAction;
-import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
-import gov.nist.hit.hl7.igamt.common.base.domain.GenerationDirective;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
@@ -40,6 +41,9 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.SegmentExportConfigu
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
@@ -83,12 +87,26 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
   private SerializationTools serializationTools;
   
   @Autowired
+  SlicingSerialization slicingSerialization;
+  
+  @Autowired
   private ReasonForChangeSerializationService reasonForChangeSerializationService;
+  
+  @Autowired
+  ResourceSkeletonService resourceSkeletonService;
+  
+
+  
+
 
   @Override
   public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, int position, SegmentExportConfiguration segmentExportConfiguration, ExportFilterDecision exportFilterDecision, Boolean deltaMode) throws SerializationException {
     Element segmentElement = igDataModelSerializationService.serializeResource(segmentDataModel.getModel(), Type.SEGMENT, position, segmentExportConfiguration);
     Segment segment = segmentDataModel.getModel();
+	ResourceSkeleton root = new ResourceSkeleton(
+            new ResourceRef(Type.SEGMENT, segment.getId()),
+            this.resourceSkeletonService
+    );
     if(segmentExportConfiguration.isReasonForChange()){
       segmentElement.appendChild(reasonForChangeSerializationService.serializeReasonForChange(segment.getLabel(),segment.getBinding(), segment.getChildren()));
     }
@@ -113,21 +131,20 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
     }
   }
     if(segment.isGenerated()) {
-        String compositionString= segment.getLabel() +" Composition = ";
+        StringBuilder compositionString= new StringBuilder(segment.getLabel() + " Composition = ");
         GeneratedResourceMetadata generatedResourceMetadata = igDataModel.getAllFlavoredSegmentDataModelsMap().get(segmentDataModel);
         Segment sourceSegment = segmentService.findById(generatedResourceMetadata.getSourceId());
-        if(generatedResourceMetadata != null) compositionString += sourceSegment.getLabel();
-        Set<GenerationDirective> generationDirectiveSet = generatedResourceMetadata.getGeneratedUsing();
+	    compositionString.append(sourceSegment.getLabel());
+	    List<GenerationDirective> generationDirectiveSet = generatedResourceMetadata.getGeneratedUsing();
         for(GenerationDirective generationDirective : generationDirectiveSet) {
-        	if(generationDirective.getType().equals(Type.PROFILECOMPONENT)) {
-        		ProfileComponent pc = profileComponentService.findById(generationDirective.getId());
-        		if(pc !=null) compositionString+= " + " + pc.getLabel();
-        }
+          ProfileComponent pc = profileComponentService.findById(generationDirective.getProfileComponentId());
+          if(pc !=null) {
+            compositionString.append(" + ").append(pc.getLabel());
+          }
         }
         segmentElement.addAttribute(
-				new Attribute("Composition", segment != null ? compositionString : "")
+				new Attribute("Composition", compositionString.toString())
 		);
-    
     }
     if(segment.getExt() != null) {
       segmentElement
@@ -200,13 +217,26 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
       }
     }  
     if (segment.getBinding() != null) {
-      Element bindingElement = bindingSerializationService.serializeBinding((Binding) segment.getBinding(), segmentDataModel.getValuesetMap(), segmentDataModel.getModel().getName(), bindedPaths );
+      Element bindingElement = bindingSerializationService.serializeBinding((Binding) segment.getBinding(), segmentDataModel.getValuesetMap(),segmentDataModel.getSingleCodeMap() , segmentDataModel.getModel().getName(), bindedPaths );
       if (bindingElement != null) {
         segmentElement.appendChild(bindingElement);
       }
     }
+    if (segment.getSlicings()!= null) {
+        Element slicingElement = null;
+		try {
+			slicingElement = slicingSerialization.serializeSlicing(segment.getSlicings(), root, Type.SEGMENT,bindedPaths);
+		} catch (ResourceNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        if (slicingElement != null) {
+        	segmentElement.appendChild(slicingElement);
+        }
+    
+  }
     if(!segmentDataModel.getConformanceStatements().isEmpty()|| !segmentDataModel.getPredicateMap().isEmpty()) {
-      Element constraints = constraintSerializationService.serializeConstraints(segmentDataModel.getConformanceStatements(), segmentDataModel.getPredicateMap(), segmentExportConfiguration.getConstraintExportConfiguration());
+      Element constraints = constraintSerializationService.serializeConstraints(segmentDataModel.getConformanceStatements(), segmentDataModel.getPredicateMap(), segmentExportConfiguration.getConstraintExportConfiguration(), root);
       if (constraints != null) {
         segmentElement.appendChild(constraints);
       }
@@ -234,6 +264,7 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
                 new Attribute("constantValue", field.getConstantValue() != null ? field.getConstantValue() : ""));
             fieldElement
             .addAttribute(new Attribute("id", field.getId() != null ? field.getId() : ""));
+            fieldElement.addAttribute(new Attribute("lengthType", field.getLengthType().getValue()));
             fieldElement.addAttribute(new Attribute("maxLength",
                 field.getMaxLength() != null ? field.getMaxLength() : ""));
             fieldElement.addAttribute(new Attribute("minLength",
@@ -257,8 +288,16 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
               }
 
             }
+            if(field.getUsage() != null && !field.getUsage().equals(Usage.CAB)) {
             fieldElement.addAttribute(
-                new Attribute("usage", field.getUsage() != null ? field.getUsage().toString() : ""));
+                new Attribute("usage", field.getUsage() != null ? field.getUsage().toString() : ""));}
+            else if(field.getUsage() != null && field.getUsage().equals(Usage.CAB)) {
+            	
+            	fieldElement.addAttribute(
+                        new Attribute("usage", field.getUsage() != null ? serializationTools.extractPredicateUsages(segmentDataModel.getPredicateMap(), field.getId()) : ""));
+                fieldElement.addAttribute(
+                      new Attribute("predicate", field.getUsage() != null ? serializationTools.extractPredicateDescription(segmentDataModel.getPredicateMap(), field.getId()) : ""));
+            }
             if (segmentDataModel != null && segmentDataModel.getValuesetMap() != null && segmentDataModel.getValuesetMap().containsKey(field.getPosition() + "")) {
               String vs = segmentDataModel.getValuesetMap().get(field.getPosition()+"").stream().map((element) -> {
                 return element.getBindingIdentifier();

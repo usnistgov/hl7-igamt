@@ -9,7 +9,7 @@ import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { Message } from '../../modules/dam-framework/models/messages/message.class';
 import { RxjsStoreHelperService } from '../../modules/dam-framework/services/rxjs-store-helper.service';
 import { IgService } from '../../modules/ig/services/ig.service';
-import {LibraryService} from '../../modules/library/services/library.service';
+import { LibraryService } from '../../modules/library/services/library.service';
 import {
   CreateLibrary,
   CreateLibraryActions,
@@ -29,7 +29,6 @@ export class CreateLibraryEffects {
       }));
       return this.libraryService.create(action.payload).pipe(
         map((resp: Message<string>) => {
-          console.log(resp);
           return new CreateLibrarySuccess(resp);
         })
         , catchError(

@@ -1,9 +1,8 @@
-import {HttpClient} from '@angular/common/http';
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {SelectItem} from 'primeng/api';
-import {Observable} from 'rxjs';
-import {IgListItem} from '../../../document/models/document/ig-list-item.class';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { Observable } from 'rxjs';
+import { IgListItem } from '../../../document/models/document/ig-list-item.class';
+import { UsersService } from '../../services/users.service';
 
 @Component({
   selector: 'app-sharing-dialog',
@@ -12,136 +11,76 @@ import {IgListItem} from '../../../document/models/document/ig-list-item.class';
 })
 export class SharingDialogComponent implements OnInit {
 
-  newSharedUser: any;
-  filteredUsersSingle: any[];
-  users: any[];
-  currentAuthor: string;
-  selectedUser: string;
-  title = 'Sharing Info for ';
-
-  sharedUsers: SelectItem[] = [];
-   changed = false;
+  newSharedUser: string;
+  filteredUsersSingle: string[];
+  users: string[];
+  owner: string;
+  title: string;
+  sharedUsers: string[] = [];
+  changed = false;
 
   constructor(public dialogRef: MatDialogRef<SharingDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: IShareDialogData,
-              private http: HttpClient) {
-  }
-
-  ngOnInit() {
-    this.fetchUsers().subscribe((data: any) => {
-      this.users = data.users;
+              private usersService: UsersService) {
+    this.fetchUsers().subscribe((usernames: any) => {
+      this.users = usernames;
     });
 
-    this.sharedUsers.push({label: this.data.username + ' #Owner', value: this.data.username});
     if (this.data && this.data.item) {
       if (this.data.item.sharedUsers) {
         this.data.item.sharedUsers.forEach((u) => {
-          this.sharedUsers.push({label: u, value: u});
+          this.sharedUsers.push(u);
         });
       }
 
-      this.title = this.title + this.data.item.title;
-    }
-
-    if (this.data && this.data.item) {
-      if (!this.data.item.currentAuthor) {
-        this.currentAuthor = this.data.username;
-      } else {
-        this.currentAuthor = this.data.item.currentAuthor;
-      }
+      this.title = 'Share Resource "' + this.data.item.title + '"';
+      this.owner = this.data.username;
     }
   }
 
-  fetchUsers(): Observable<any> {
-    return this.http.get<any>('api/users');
+  fetchUsers(): Observable<string[]> {
+    return this.usersService.getUsernames();
   }
 
-  filterUsersSingle(event) {
+  filterUsersSingle(event: any) {
     const query = event.query;
-    this.filteredUsersSingle = this.filterUser(query);
+    this.filteredUsersSingle = this.users.filter((u) => u.toLowerCase().indexOf(query.toLowerCase()) !== -1 && u.toLowerCase() !== this.owner);
   }
 
-  filterUser(query): string[] {
-    const filtered: string[] = [];
-    if (this.users) {
-      for (const user of this.users) {
-        if (user.username.toLowerCase().indexOf(query.toLowerCase()) === 0) {
-          filtered.push(user);
-        }
-        if (user.username.toLowerCase() === query.toLowerCase()) {
-          this.newSharedUser = user;
-        }
-      }
-    }
-    return filtered;
-  }
-
-  addUser() {
-    if (!this.checkUser()) {
-      this.sharedUsers.push({label: this.newSharedUser.username, value: this.newSharedUser.username});
+  addUser(username: string) {
+    const exists = this.sharedUsers.includes(username);
+    if (!exists && username !== this.owner) {
+      this.sharedUsers.push(username);
       this.changed = true;
     }
-    this.newSharedUser = {};
+    this.newSharedUser = '';
   }
 
-  tableListBoxSelectEvent(event) {
-    if (event && event.value) {
-      this.currentAuthor = event.value;
-    }
-  }
-
-  removeUser(user) {
+  removeUser(user: string) {
     this.changed = true;
-    this.sharedUsers.forEach( (item, index) => {
+    this.sharedUsers.forEach((item, index) => {
       if (item === user) {
         this.sharedUsers.splice(index, 1);
-        if (user.value === this.currentAuthor) {
-          this.currentAuthor = this.data.username;
-        }
       }
     });
-  }
-
-  checkUser() {
-    if (this.newSharedUser && this.newSharedUser.username) {
-      for (const entry of this.sharedUsers) {
-        if (entry.value === this.newSharedUser.username) {
-          return true;
-        }
-      }
-      return false;
-    }
-    return true;
-
   }
 
   submit() {
     this.dialogRef.close(this.result());
   }
+
   cancel() {
     this.dialogRef.close();
   }
 
   result() {
-    const out: any = {};
-    if (this.currentAuthor === this.data.username) {
-      out.currentAuthor = null;
-    } else {
-      out.currentAuthor = this.currentAuthor;
-    }
-
-    out.sharedUsers = [];
-    for (const entry of this.sharedUsers) {
-      if (entry.value !== this.data.username) {
-        out.sharedUsers.push(entry.value);
-      }
-    }
-    return out;
+    return [
+      ...this.sharedUsers,
+    ];
   }
 
-  print($event: any) {
-    console.log($event);
-  }
+  ngOnInit() { }
+
 }
 
 export interface IShareDialogData {

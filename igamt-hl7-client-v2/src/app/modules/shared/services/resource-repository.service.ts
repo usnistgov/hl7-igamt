@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Actions, ofType } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, take } from 'rxjs/operators';
@@ -12,7 +13,7 @@ import {
   selectValueSetById,
 } from '../../../root-store/dam-igamt/igamt.resource-display.selectors';
 import { RxjsStoreHelperService } from '../../dam-framework/services/rxjs-store-helper.service';
-import { InsertResourcesInRepostory } from '../../dam-framework/store/data/dam.actions';
+import { DamActionTypes, InsertResourcesInRepostory, RepositoryActionReduced } from '../../dam-framework/store/data/dam.actions';
 import { Type } from '../constants/type.enum';
 import { IDisplayElement } from '../models/display-element.interface';
 import { IResource } from '../models/resource.interface';
@@ -32,7 +33,7 @@ export abstract class AResourceRepositoryService {
   abstract loadResource(type: Type, id: string): void;
   abstract hotplug(display: IDisplayElement): Observable<IDisplayElement>;
   abstract hotplugDisplayList(display: IDisplayElement[], type: Type): Observable<IDisplayElement[]>;
-  abstract fetchResource<T extends IResource>(type: Type, id: string): Observable<T>;
+  abstract fetchResource<T extends IResource>(type: Type, id: string, options?: { display?: boolean, forceLoad?: boolean }): Observable<T>;
   abstract getResourceDisplay(type: Type, id: string): Observable<IDisplayElement>;
   abstract areLeafs(ids: string[]): Observable<{ [id: string]: boolean }>;
   abstract getRefData(ids: string[], type: Type): Observable<IRefData>;
@@ -42,7 +43,9 @@ export abstract class AResourceRepositoryService {
 export class StoreResourceRepositoryService extends AResourceRepositoryService {
 
   constructor(
-    protected store: Store<any>) {
+    protected actions: Actions,
+    protected store: Store<any>,
+  ) {
     super();
   }
 
@@ -57,13 +60,27 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
     this.store.dispatch(new LoadResourceReferences({ resourceType: type, id }));
   }
 
-  fetchResource<T extends IResource>(type: Type, id: string): Observable<T> {
+  fetchResource<T extends IResource>(type: Type, id: string, options?: { display?: boolean, forceLoad?: boolean }): Observable<T> {
     return this.store.select(fromIgamtResourcesSelectors.selectLoadedResourceById, { id }).pipe(
       take(1),
       mergeMap((resource) => {
-        if (!resource || !resource.type || resource.type !== type) {
-          this.store.dispatch(new LoadResourceReferences({ resourceType: type, id, insert: true }));
-          return this.getResource(type, id);
+        if (!resource || !resource.type || resource.type !== type || (options && options.forceLoad)) {
+          const tag = `${new Date().getTime()}-lrr-${type}-${id}`;
+          this.store.dispatch(new LoadResourceReferences({
+            resourceType: type,
+            id,
+            insert: true,
+            display: (options && options.display),
+            tag,
+          }));
+          return this.actions.pipe(
+            ofType(DamActionTypes.RepositoryActionReduced),
+            filter((action: RepositoryActionReduced) => action.payload.tag === tag),
+            take(1),
+            mergeMap((action: RepositoryActionReduced) => {
+              return this.getResource(type, id);
+            }),
+          );
         } else {
           return of(resource as T);
         }
@@ -123,11 +140,13 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
       map(([vals, leafs]) => {
         const val = {};
         vals.forEach((value) => {
-          val[value.id] = {
-            leaf: leafs[value.id],
-            name: value.fixedName,
-            version: value.domainInfo.version,
-          };
+          if (value) {
+            val[value.id] = {
+              leaf: leafs[value.id],
+              name: value.fixedName,
+              version: value.domainInfo.version,
+            };
+          }
         });
         return val;
       }),

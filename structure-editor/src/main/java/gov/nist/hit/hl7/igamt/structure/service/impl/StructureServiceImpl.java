@@ -3,11 +3,15 @@ package gov.nist.hit.hl7.igamt.structure.service.impl;
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.Event;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.impl.ConformanceProfileServiceImpl;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -63,10 +67,10 @@ public class StructureServiceImpl implements StructureService {
             if(HEAD.get() instanceof SegmentRef) {
                 SegmentRef ref = (SegmentRef) HEAD.get();
                 if(!ref.getName().equals("MSH")) {
-                    throw new InvalidStructureException("First structure element must be MSH");
+                    throw new InvalidStructureException("First message structure element must be MSH");
                 }
             } else {
-                throw new InvalidStructureException("First structure element must be MSH");
+                throw new InvalidStructureException("First message structure element must be MSH");
             }
         }
 
@@ -81,7 +85,7 @@ public class StructureServiceImpl implements StructureService {
 
     public void checkGroup(Group group) throws InvalidStructureException {
         if(!this.groupNameIsValid(group.getName())) {
-            throw new InvalidStructureException("Group name " + group.getName() + " is invalid, only letters and underscores permitted");
+            throw new InvalidStructureException("Group name " + group.getName() + " is invalid, only uppercase letters and underscores permitted");
         }
 
         if(group.getChildren() == null || group.getChildren().size() == 0) {
@@ -96,7 +100,7 @@ public class StructureServiceImpl implements StructureService {
     }
 
     public boolean groupNameIsValid(String name) {
-        return !Strings.isNullOrEmpty(name) && name.matches("[a-zA-Z]+[a-zA-Z_]*");
+        return !Strings.isNullOrEmpty(name) && name.matches("[A-Z]+[A-Z_]*");
     }
 
     @Override
@@ -108,9 +112,9 @@ public class StructureServiceImpl implements StructureService {
     public MessageStructure saveMessageStructure(String id, String user, Set<SegmentRefOrGroup> children) throws InvalidStructureException {
         MessageStructure messageStructure = this.messageStructureRepository.findByCustomTrueAndParticipantsContainingAndId(user, id);
         if(messageStructure == null) {
-            throw new IllegalArgumentException("Can't save message structure, incorrect scope or user");
+            throw new IllegalArgumentException("Message structure can not be saved, incorrect scope or user");
         } else if(Status.PUBLISHED.equals(messageStructure.getStatus())) {
-            throw new IllegalArgumentException("Can't save message structure, locked");
+            throw new IllegalArgumentException("Locked Message structure can not be edited");
         } else {
             this.validate(children);
             messageStructure.setChildren(children);
@@ -119,13 +123,46 @@ public class StructureServiceImpl implements StructureService {
     }
 
     @Override
-    public MessageStructure saveMessageMetadata(String id, String user, MessageStructureMetadata metadata) {
+    public MessageStructure saveMessageMetadata(String id, String user, MessageStructureMetadata metadata) throws Exception {
         MessageStructure messageStructure = this.messageStructureRepository.findByCustomTrueAndParticipantsContainingAndId(user, id);
         if(messageStructure == null) {
-            throw new IllegalArgumentException("Can't save message metadata, message not found for user");
+            throw new IllegalArgumentException("Message metadata can not be saved, message not found for user");
         } else if(Status.PUBLISHED.equals(messageStructure.getStatus())) {
-            throw new IllegalArgumentException("Can't save message structure, locked");
+            throw new IllegalArgumentException("Message metadata can not be saved");
         } else {
+            // Check StructureId
+            if(Strings.isNullOrEmpty(metadata.getStructId())) {
+                throw new Exception("Structure Id is required");
+            }
+            if(!metadata.getStructId().matches("[A-Z][A-Z0-9]{2}(_[A-Z][A-Z0-9]{2})?")) {
+                throw new Exception("Structure Id is not valid, value should be AXX[_AXX] where A is a letter and X is an alphanumerical");
+            }
+            // Check MessageType
+            if(Strings.isNullOrEmpty(metadata.getMessageType())) {
+                throw new Exception("Message Type is required");
+            }
+            if(!metadata.getMessageType().matches("[A-Z][A-Z0-9]{2}")) {
+                throw new Exception("Message Type is not valid, value should be AXX where A is a letter and X is an alphanumerical");
+            }
+            // Check events
+            if(metadata.getEvents() == null || metadata.getEvents().isEmpty()) {
+                throw new Exception("Message Events are required");
+            }
+
+            for(Event e: metadata.getEvents()) {
+                if(Strings.isNullOrEmpty(e.getName())) {
+                    throw new Exception("Event name is required");
+                }
+                if(!e.getName().matches("[A-Z][A-Z0-9]{2}")) {
+                    throw new Exception("Event name is not valid, value should be AXX where A is a letter and X is an alphanumerical");
+                }
+                e.setParentStructId(messageStructure.getStructID());
+                if(e.getId() == null) {
+                    e.setId(new ObjectId().toHexString());
+                }
+                e.setHl7Version(messageStructure.getDomainInfo().getVersion());
+                e.setType(Type.EVENT);
+            }
             messageStructure.setStructID(metadata.getStructId());
             messageStructure.setMessageType(metadata.getMessageType());
             messageStructure.setDescription(metadata.getDescription());
@@ -138,9 +175,9 @@ public class StructureServiceImpl implements StructureService {
     public Segment saveSegment(String id, String user, Set<Field> children) {
         Segment segment = this.segmentRepository.findByCustomTrueAndUsernameAndId(user, id);
         if(segment == null) {
-            throw new IllegalArgumentException("Can't save segment structure, segment not found for user");
+            throw new IllegalArgumentException("Segment structure can not be saved, segment not found for user");
         } else if(Status.PUBLISHED.equals(segment.getStatus())) {
-            throw new IllegalArgumentException("Can't save segment structure, locked");
+            throw new IllegalArgumentException("Locked Segment structure can not be saved");
         } else {
             segment.setChildren(children);
             return this.segmentRepository.save(segment);
@@ -151,13 +188,24 @@ public class StructureServiceImpl implements StructureService {
     public Segment saveSegmentMetadata(String id, String user, SegmentStructureMetadata metadata) {
         Segment segment = this.segmentRepository.findByCustomTrueAndUsernameAndId(user, id);
         if(segment == null) {
-            throw new IllegalArgumentException("Can't save segment structure, segment not found for user");
+            throw new IllegalArgumentException("Segment structure can not be saved, segment not found for user");
         } else if(Status.PUBLISHED.equals(segment.getStatus())) {
-            throw new IllegalArgumentException("Can't save segment structure, locked");
+            throw new IllegalArgumentException("Locked Segment structure can not be saved, locked");
         } else {
             /// TODO Extension Unique
             segment.setExt(metadata.getIdentifier());
             segment.setDescription(metadata.getDescription());
+            if(!Strings.isNullOrEmpty(metadata.getName()) && !segment.getName().equals(metadata.getName())) {
+                if(!metadata.getName().matches("Z[A-Z0-9]{2}")) {
+                    throw new IllegalArgumentException("Name Does not match the pattern Z[A-Z0-9]{2}");
+                }
+
+                if(segment.getName().startsWith("Z")) {
+                    segment.setName(metadata.getName());
+                } else {
+                    throw new IllegalArgumentException("The resource is not a Z segment");
+                }
+            }
             return this.segmentRepository.save(segment);
         }
     }
@@ -288,6 +336,98 @@ public class StructureServiceImpl implements StructureService {
         return state;
     }
 
+    @Override
+    public boolean deleteMessageStructure(String id, String user) {
+        MessageStructure messageStructure = this.messageStructureRepository.findByCustomTrueAndParticipantsContainingAndId(user, id);
+        if(messageStructure != null) {
+            this.messageStructureRepository.delete(messageStructure);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteSegmentStructure(String id, String user) {
+        Set<CustomSegmentCrossRef> refs = getSegmentStructureReferences(id, user);
+        if(refs == null || refs.isEmpty()) {
+            Segment segment = this.segmentRepository.findByCustomTrueAndUsernameAndIdAndDomainInfoScope(user,id,  Scope.USERCUSTOM);
+            if(segment != null) {
+                this.segmentRepository.delete(segment);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Set<CustomSegmentCrossRef> getSegmentStructureReferences(String id, String user) {
+        Set<CustomSegmentCrossRef> crossRefs = new HashSet<>();
+        List<MessageStructure> messageStructures  = getUserCustomMessageStructure(user);
+        for(MessageStructure messageStructure: messageStructures) {
+            DisplayElement displayElement = this.createDisplayElement(messageStructure);
+            Set<ReferenceLocation> locations = getSegmentLocations(id, "", messageStructure.getChildren());
+            for(ReferenceLocation referenceLocation: locations) {
+                CustomSegmentCrossRef customSegmentCrossRef = new CustomSegmentCrossRef(
+                        displayElement,
+                        referenceLocation
+                );
+                crossRefs.add(customSegmentCrossRef);
+            }
+        }
+        return crossRefs;
+    }
+
+    @Override
+    public Set<CustomSegmentCrossRef> getLockedSegmentStructure(String id, String user) {
+        Set<CustomSegmentCrossRef> crossRefs = new HashSet<>();
+        List<MessageStructure> messageStructures  = this.messageStructureRepository.findByCustomTrueAndParticipantsContainingAndStatus(user, Status.PUBLISHED);
+        for(MessageStructure messageStructure: messageStructures) {
+            DisplayElement displayElement = this.createDisplayElement(messageStructure);
+            Set<ReferenceLocation> locations = getSegmentLocations(id, "", messageStructure.getChildren());
+            for(ReferenceLocation referenceLocation: locations) {
+                CustomSegmentCrossRef customSegmentCrossRef = new CustomSegmentCrossRef(
+                        displayElement,
+                        referenceLocation
+                );
+                crossRefs.add(customSegmentCrossRef);
+            }
+        }
+        return crossRefs;
+    }
+    
+    public Set<ReferenceLocation> getSegmentLocations(String id, String path, Set<SegmentRefOrGroup> children) {
+        Set<ReferenceLocation> locations = new HashSet<>();
+        if(children == null || children.isEmpty()) {
+            return null;
+        } else {
+            for(SegmentRefOrGroup child: children) {
+                if(child instanceof Group) {
+                    Group group = (Group) child;
+                    Set<ReferenceLocation> childs = getSegmentLocations(id, this.concat(path, group.getName()), group.getChildren());
+                    if(childs != null) {
+                        locations.addAll(childs);
+                    }
+                } else {
+                    SegmentRef segmentRef = (SegmentRef) child;
+                    if(segmentRef.getRef().getId().equals(id)) {
+                        locations.add(
+                                new ReferenceLocation(Type.SEGMENTREF, this.concat(path, segmentRef.getPosition() + ""), segmentRef.getName())
+                        );
+                    }
+                }
+            }
+            return locations;
+        }
+    }
+
+    public String concat(String a, String b) {
+        if(a != null && !a.isEmpty()) {
+            return a + "." + b;
+        } else {
+            return b;
+        }
+    }
+
     public Set<String> collectSegmentIds(MessageStructure cp) {
         Set<String> ids = new HashSet<String>();
         for (MsgStructElement segOrgroup : cp.getChildren()) {
@@ -308,17 +448,50 @@ public class StructureServiceImpl implements StructureService {
     }
 
     @Override
-    public MessageStructureAndDisplay createMessageStructure(MessageStructureCreateWrapper request, String user) {
+    public MessageStructureAndDisplay createMessageStructure(MessageStructureCreateWrapper request, String user) throws Exception {
         MessageStructure structure = this.messageStructureRepository.findOneById(request.getFrom());
-        structure.setStructID(request.getName());
-        structure.setDescription(request.getDescription());
-        structure.setOrigin(request.getFrom());
-        request.getEvents().forEach((event) -> {
-            if(Strings.isNullOrEmpty(event.getId())) {
-                event.setId(new ObjectId().toHexString());
+
+        // Check StructureId
+        if(Strings.isNullOrEmpty(request.getStructureId())) {
+            throw new Exception("Structure Id is required");
+        }
+        if(!request.getStructureId().matches("[A-Z][A-Z0-9]{2}(_[A-Z][A-Z0-9]{2})?")) {
+            throw new Exception("Structure Id is not valid, value should be AXX[_AXX] where A is a letter and X is an alphanumerical");
+        }
+        // Check MessageType
+        if(Strings.isNullOrEmpty(request.getMessageType())) {
+            throw new Exception("Message Type is required");
+        }
+        if(!request.getMessageType().matches("[A-Z][A-Z0-9]{2}")) {
+            throw new Exception("Message Type is not valid, value should be AXX where A is a letter and X is an alphanumerical");
+        }
+        // Check events
+        if(request.getEvents() == null || request.getEvents().isEmpty()) {
+            throw new Exception("Message Events are required");
+        }
+        List<Event> events = new ArrayList<>();
+        for(MessageEvent ev: request.getEvents()) {
+            if(Strings.isNullOrEmpty(ev.getName())) {
+                throw new Exception("Event name is required");
             }
-        });
-        structure.setEvents(request.getEvents());
+            if(!ev.getName().matches("[A-Z][A-Z0-9]{2}")) {
+                throw new Exception("Event name is not valid, value should be AXX where A is a letter and X is an alphanumerical");
+            }
+            Event event = new Event();
+            event.setId(new ObjectId().toHexString());
+            event.setParentStructId(request.getStructureId());
+            event.setHl7Version(structure.getDomainInfo().getVersion());
+            event.setDescription(ev.getDescription());
+            event.setName(ev.getName());
+            event.setType(Type.EVENT);
+            events.add(event);
+        }
+
+        structure.setStructID(request.getStructureId());
+        structure.setDescription(request.getDescription());
+        structure.setMessageType(request.getMessageType());
+        structure.setOrigin(request.getFrom());
+        structure.setEvents(events);
         structure.setId(null);
         structure.setStatus(null);
         structure.setParticipants(Collections.singletonList(user));
@@ -336,6 +509,17 @@ public class StructureServiceImpl implements StructureService {
     @Override
     public SegmentStructureAndDisplay createSegmentStructure(SegmentStructureCreateWrapper request, String user) {
         Segment structure = this.segmentRepository.findById(request.getFrom()).orElseThrow(() -> new IllegalArgumentException("Segment not found"));
+        if(!Strings.isNullOrEmpty(request.getZname())) {
+        	if(!request.getZname().matches("Z[A-Z0-9]{2}")) {
+        		throw new IllegalArgumentException("Name Does not match the pattern Z[A-Z0-9]{2}");
+        	}
+
+        	if(structure.getName().startsWith("Z")) {
+        		structure.setName(request.getZname());
+        	} else {
+        		throw new IllegalArgumentException("The resource is not a Z segment");
+        	}
+        }
         structure.setDescription(request.getDescription());
         structure.setExt(request.getIdentifier());
         structure.setOrigin(request.getFrom());
@@ -376,6 +560,52 @@ public class StructureServiceImpl implements StructureService {
         MessageStructure structure = this.getMessageStructureForUser(id, user);
         if(structure!= null && !Status.PUBLISHED.equals(structure.getStatus())) {
             structure.setStatus(Status.PUBLISHED);
+            structure.setStructureIdentifier(structure.getId());
+            if(structure.getEvents() != null) {
+                structure.getEvents().forEach((e) -> {
+                    e.setParentStructId(structure.getStructID());
+                });
+            }
+            this.messageStructureRepository.save(structure);
+            MessageStructureAndDisplay response = new MessageStructureAndDisplay();
+            response.setDisplayElement(this.createDisplayElement(structure));
+            response.setStructure(structure);
+            return response;
+        } else {
+            throw new IllegalArgumentException("Message Not Found");
+        }
+    }
+    
+    @Override
+    public SegmentStructureAndDisplay unpublishSegment(String id, String user) {
+        Segment segment = this.segmentRepository.findOneById(id);
+        if(segment!= null && Status.PUBLISHED.equals(segment.getStatus())) {
+        	Set<CustomSegmentCrossRef>  refs= this.getLockedSegmentStructure(id, user);
+        	if(refs == null || refs.size() ==0) {
+            segment.setExt(segment.getFixedExtension());
+            segment.setFixedExtension(null);
+            segment.setStatus(null);
+            segment.setStructureIdentifier(segment.getId());
+            this.segmentRepository.save(segment);
+            SegmentStructureAndDisplay response = new SegmentStructureAndDisplay();
+            response.setDisplayElement(this.displayInfoService.convertSegment(segment));
+            response.setStructure(segment);
+            
+            return response;
+        	} else {
+                throw new IllegalArgumentException("Segment Used in Published Structures");
+        	}
+        	
+        } else {
+            throw new IllegalArgumentException("Segment Not Found");
+        }
+    }
+
+    @Override
+    public MessageStructureAndDisplay unpublishMessageStructure(String id, String user) {
+        MessageStructure structure = this.getMessageStructureForUser(id, user);
+        if(structure!= null && Status.PUBLISHED.equals(structure.getStatus())) {
+            structure.setStatus(null);
             structure.setStructureIdentifier(structure.getId());
             this.messageStructureRepository.save(structure);
             MessageStructureAndDisplay response = new MessageStructureAndDisplay();

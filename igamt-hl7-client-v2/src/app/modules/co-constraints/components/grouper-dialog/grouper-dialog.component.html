@@ -4,6 +4,7 @@
     <app-structure-tree
       [tree]="structure"
       [filter]="treeFilter"
+      [transformer]="transformer"
       [repository]="repository"
       (selection)="selectNode($event)"
     ></app-structure-tree>

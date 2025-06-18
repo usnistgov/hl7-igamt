@@ -1,12 +1,12 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {NgForm} from '@angular/forms';
-import {Guid} from 'guid-typescript';
-import {Table} from 'primeng/table';
-import {Scope} from '../../constants/scope.enum';
-import {Type} from '../../constants/type.enum';
-import {IAddingInfo, SourceType} from '../../models/adding-info';
-import {IDisplayElement} from '../../models/display-element.interface';
-import {IValueSet} from '../../models/value-set.interface';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { Guid } from 'guid-typescript';
+import { Table } from 'primeng/table';
+import { Scope } from '../../constants/scope.enum';
+import { Type } from '../../constants/type.enum';
+import { IAddingInfo, SourceType } from '../../models/adding-info';
+import { IDisplayElement } from '../../models/display-element.interface';
+import { IValueSet } from '../../models/value-set.interface';
 
 @Component({
   selector: 'app-select-value-sets',
@@ -31,7 +31,7 @@ export class SelectValueSetsComponent implements OnInit {
   selectedVersion: string;
   @Input()
   set hl7Versions(hl7Versions: string[]) {
-    this._hl7Versions = [... hl7Versions, '2.x'];
+    this._hl7Versions = [...hl7Versions, '2.x'];
   }
   @ViewChild(NgForm) form;
   constructor() {
@@ -48,7 +48,7 @@ export class SelectValueSetsComponent implements OnInit {
       name: obj.bindingIdentifier,
       ext: '',
       description: obj.name,
-      domainInfo: obj.domainInfo.scope === Scope.PHINVADS ? {...obj.domainInfo , scope: Scope.PHINVADS} : obj.domainInfo,
+      domainInfo: obj.domainInfo.scope === Scope.PHINVADS ? { ...obj.domainInfo, scope: Scope.PHINVADS } : obj.domainInfo,
       sourceType: obj.domainInfo.scope === Scope.PHINVADS ? SourceType.EXTERNAL : obj.sourceType,
       numberOfChildren: obj.numberOfCodes,
       includeChildren: obj.domainInfo.scope === Scope.PHINVADS ? false : obj.numberOfCodes < 500,
@@ -66,12 +66,13 @@ export class SelectValueSetsComponent implements OnInit {
       oid: obj.oid,
       type: Type.VALUESET,
       name: obj.bindingIdentifier,
+      ext: obj.bindingIdentifier,
       description: obj.name,
       flavor: true,
       sourceType: obj.sourceType,
       numberOfChildren: obj.numberOfCodes,
       includeChildren: obj.numberOfCodes < 500,
-      domainInfo: {...obj.domainInfo , scope: obj.domainInfo.scope === Scope.PHINVADS ? Scope.PHINVADS : Scope.USER},
+      domainInfo: { ...obj.domainInfo, scope: obj.domainInfo.scope === Scope.PHINVADS ? Scope.PHINVADS : Scope.USER },
       url: obj.url,
     };
     this.selectedData.push(element);

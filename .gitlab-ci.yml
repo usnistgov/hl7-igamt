@@ -1,0 +1,17 @@
+stages:
+  - triggers
+
+  
+build_trigger:
+  stage: triggers
+  trigger:
+    include: pipelines/build/.gitlab-ci.yml
+  when: "manual"
+  allow_failure: false 
+
+deploy_trigger:
+  stage: triggers
+  trigger:
+    include: pipelines/deploy/.gitlab-ci.yml
+  when: "manual"
+  allow_failure: false 

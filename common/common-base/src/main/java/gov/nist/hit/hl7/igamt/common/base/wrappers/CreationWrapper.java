@@ -10,7 +10,8 @@ public class CreationWrapper {
   private Scope scope;
   private DocumentMetadata metadata;
   private List<AddingInfo> selected;
-  
+  private WorkspaceRef workspace;
+
   public List<AddingInfo> getSelected() {
     return selected;
   }
@@ -36,6 +37,18 @@ public class CreationWrapper {
     super();
     this.setSelected(msgEvts);
     this.metadata = metadata;
+  }
+
+  public void setMetadata(DocumentMetadata metadata) {
+    this.metadata = metadata;
+  }
+
+  public WorkspaceRef getWorkspace() {
+    return workspace;
+  }
+
+  public void setWorkspace(WorkspaceRef workspace) {
+    this.workspace = workspace;
   }
 
   public Scope getScope() {

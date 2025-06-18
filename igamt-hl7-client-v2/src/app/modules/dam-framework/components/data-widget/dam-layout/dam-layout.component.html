@@ -1,9 +1,16 @@
 <div class="page-container-nopad">
   <div class="wrapper">
 
+
+
     <div class="alerts">
       <!-- ALERTS -->
       <ng-container *ngTemplateOutlet="alertsTemplate; context: { }" ></ng-container>
+    </div>
+
+    <div class="bc">
+      <!-- Bread Crumbs -->
+      <ng-container *ngTemplateOutlet="bcTemplate; context: { }" ></ng-container>
     </div>
 
     <div class="titlebar">
@@ -11,15 +18,23 @@
       <ng-container *ngTemplateOutlet="titleBarTemplate; context: { }" ></ng-container>
     </div>
 
+    <!-- <div class="notification">
+      <ng-container *ngTemplateOutlet="notificationsTemplate; context: { }" ></ng-container>
+    </div> -->
+
     <div class="page-container"
         [ngStyle]="{
           'grid-template-columns': '[sidebar] minmax(min-content, '+ (!collapsed ? positionX : '45px') +') [resize-bar] 4px [container] minmax(600px, 8fr)'
         }"
     >
 
-      <div class="container-section">
+      <div class="container-section"
+        [ngStyle]="{
+          'grid-template-rows': (!hideToolbar ? '[toolbar] minmax(min-content, 40px)' : '') + '[titlebar] minmax(min-content, 40px) [page-container-content] auto'
+        }"
+      >
 
-        <div class="toolbar-controls" >
+        <div class="toolbar-controls" *ngIf="!hideToolbar" >
           <!-- TOOLBAR -->
           <ng-container *ngTemplateOutlet="toolbarTemplate; context: { }" ></ng-container>
         </div>

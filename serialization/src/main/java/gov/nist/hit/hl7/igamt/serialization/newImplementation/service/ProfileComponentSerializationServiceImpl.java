@@ -1,4 +1,5 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
+import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableCoConstraintTable;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ProfileComponentContextDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ProfileComponentItemDataModel;
@@ -212,8 +213,9 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
 											break;
 
 	                                    case SINGLECODE:
-	                                    	profileComponentItemElement.addAttribute(new Attribute("valueSet",
-													((PropertySingleCode) itemProperty).getInternalSingleCode() != null ? ((PropertySingleCode) itemProperty).getInternalSingleCode().getCode() : ""));
+	                                    	//TODO Fix Single Code
+//	                                    	profileComponentItemElement.addAttribute(new Attribute("valueSet",
+//													((PropertySingleCode) itemProperty).getInternalSingleCode() != null ? ((PropertySingleCode) itemProperty).getInternalSingleCode().getCode() : ""));
 										break;
 
 											case USAGE:
@@ -288,7 +290,7 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
             				ItemProperty itemProperty = profileComponentItemDataModel.getItemProperties().stream().filter((item) -> {
             					return item instanceof PropertyPredicate;
             				}).findAny().get();
-            			Element predicateElement = constraintSerializationService.serializePredicate(((PropertyPredicate) itemProperty).getPredicate(), profileComponentItemDataModel.getLocationInfo().getHl7Path());
+            			Element predicateElement = constraintSerializationService.serializePredicate(((PropertyPredicate) itemProperty).getPredicate(), profileComponentItemDataModel.getLocationInfo().getHl7Path(), null);
                     if(predicateElement != null) {
                     	constraints.appendChild(predicateElement);
                         }
@@ -369,9 +371,13 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
                         if (coConstraintBinding != null) {
                             if (coConstraintBinding.getContext() != null) {
                                 Element coConstraintContext = new Element("coConstraintContext");
-								ResourceSkeletonBone context = this.coConstraintSerializationHelper.getStructureElementRef(conformanceProfileSkeleton, coConstraintBinding.getContext());
-                                coConstraintContext.appendChild(context.getLocationInfo().getHl7Path());
-                                coConstraintBindingElement.appendChild(coConstraintContext);
+								if(coConstraintBinding.getContext() == null || Strings.isNullOrEmpty(coConstraintBinding.getContext().getPathId())) {
+									coConstraintContext.appendChild(conformanceProfileSkeleton.get().getResource().getVariableName());
+								} else {
+									ResourceSkeletonBone context = this.coConstraintSerializationHelper.getStructureElementRef(conformanceProfileSkeleton, coConstraintBinding.getContext());
+									coConstraintContext.appendChild(context.getLocationInfo().getHl7Path());
+								}
+								coConstraintBindingElement.appendChild(coConstraintContext);
                             }
                             if (coConstraintBinding.getBindings() != null) {
                                 for (CoConstraintBindingSegment coConstraintBindingSegment : coConstraintBinding.getBindings()) {

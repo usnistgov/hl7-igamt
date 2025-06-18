@@ -13,6 +13,8 @@ package gov.nist.hit.hl7.igamt.display.model;
 
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CustomAttribute;
+
 /**
  * @author Abdelghani El Ouakili
  *
@@ -28,6 +30,7 @@ public class IGMetaDataDisplay {
   private String subTitle;
   private String scope;
   private String authorNotes;
+  private List<CustomAttribute> customAttributes;
 
   /**
    * 
@@ -106,6 +109,14 @@ public class IGMetaDataDisplay {
   public void setOrganization(String organization) {
     this.organization = organization;
   }
+
+public List<CustomAttribute> getCustomAttributes() {
+	return customAttributes;
+}
+
+public void setCustomAttributes(List<CustomAttribute> customAttributes) {
+	this.customAttributes = customAttributes;
+}
 
 
   

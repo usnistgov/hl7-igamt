@@ -37,7 +37,7 @@
   height: 100%;
   grid-gap: 2px;
   grid-template-columns: [sidebar-content] auto;
-  grid-template-rows: [sidebar-controls] 40px [sidebar-filter] 40px  [sidebar-delta-filter] minmax(auto, auto)  [sidebar-content-row] auto;
+  grid-template-rows: [sidebar-controls] 40px [sidebar-filter] 40px  [sidebar-delta-filter] minmax(0, 0)  [sidebar-content-row] auto;
 }
 
 .config-panel {
@@ -105,6 +105,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
+  gap: 5px;
   padding: 5px;
 }
 

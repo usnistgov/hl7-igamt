@@ -15,9 +15,10 @@ public class ResourceSkeletonBone extends ResourceSkeleton {
     private ResourceSkeletonBoneCardinality cardinality;
     private DisplayElement parent;
     private String elementId;
+    private ResourceSkeleton parentSkeleton;
     private int position;
 
-    public ResourceSkeletonBone(ResourceRef resourceRef, String elementId, int position, LocationInfo locationInfo, DisplayElement parent, Usage usage, ResourceSkeletonBoneCardinality cardinality, ResourceSkeletonService resourceSkeletonService) {
+    public ResourceSkeletonBone(ResourceRef resourceRef, String elementId, int position, LocationInfo locationInfo, DisplayElement parent, Usage usage, ResourceSkeletonBoneCardinality cardinality, ResourceSkeleton parentSkeleton, ResourceSkeletonService resourceSkeletonService) {
         super(resourceRef, resourceSkeletonService);
         this.parent = parent;
         this.locationInfo = locationInfo;
@@ -25,9 +26,10 @@ public class ResourceSkeletonBone extends ResourceSkeleton {
         this.position = position;
         this.usage = usage;
         this.cardinality = cardinality;
+        this.parentSkeleton = parentSkeleton;
     }
 
-    public ResourceSkeletonBone(List<ResourceSkeletonBone> children, String elementId, int position, LocationInfo locationInfo, DisplayElement parent, Usage usage, ResourceSkeletonBoneCardinality cardinality, ResourceSkeletonService resourceSkeletonService) {
+    public ResourceSkeletonBone(List<ResourceSkeletonBone> children, String elementId, int position, LocationInfo locationInfo, DisplayElement parent, Usage usage, ResourceSkeletonBoneCardinality cardinality, ResourceSkeleton parentSkeleton, ResourceSkeletonService resourceSkeletonService) {
         super(children, resourceSkeletonService);
         this.parent = parent;
         this.locationInfo = locationInfo;
@@ -35,6 +37,7 @@ public class ResourceSkeletonBone extends ResourceSkeleton {
         this.position = position;
         this.usage = usage;
         this.cardinality = cardinality;
+        this.parentSkeleton = parentSkeleton;
     }
 
     public ResourceSkeletonBone get() throws ResourceNotFoundException {
@@ -88,5 +91,13 @@ public class ResourceSkeletonBone extends ResourceSkeleton {
 
     public void setCardinality(ResourceSkeletonBoneCardinality cardinality) {
         this.cardinality = cardinality;
+    }
+
+    public ResourceSkeleton getParentSkeleton() {
+        return parentSkeleton;
+    }
+
+    public void setParentSkeleton(ResourceSkeleton parentSkeleton) {
+        this.parentSkeleton = parentSkeleton;
     }
 }

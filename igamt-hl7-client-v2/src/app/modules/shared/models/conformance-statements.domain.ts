@@ -23,7 +23,6 @@ export interface IStatement {
 export enum OccurrenceType {
   AT_LEAST_ONE = 'atLeast',
   INSTANCE = 'instance',
-  NONE = 'noOccurrence',
   ONE = 'exactlyOne',
   COUNT = 'count',
   ALL = 'all',
@@ -36,6 +35,11 @@ export enum VerbType {
   SHOULD_NOT = 'SHOULD NOT',
   MAY = 'MAY',
   MAY_NOT = 'MAY NOT',
+}
+
+export enum ConformanceStatementStrength {
+  SHALL = 'SHALL',
+  SHOULD = 'SHOULD',
 }
 
 export enum DeclarativeType {
@@ -64,6 +68,7 @@ export enum PropositionType {
   NOT_CONTAINS_VALUES_DESC = 'notContainListValuesDesc',
   VALUED = 'valued',
   NOT_VALUED = 'notValued',
+  CONTAINS_REGEX = 'regex',
 }
 
 export enum ComparativeType {

@@ -1,0 +1,97 @@
+<h5 mat-dialog-title>
+  Add Implementation Guides to workspace
+</h5>
+<mat-dialog-content>
+  <div class="browser-container">
+
+    <div class="side-bar">
+      <label><strong>IG documents List</strong> </label>
+      <ul class="list-group editors">
+
+        <li class="list-group-item cursor-pointer" (click)="load('PRIVATE', 'IGDOCUMENT')">PRIVATE</li>
+        <li class="list-group-item cursor-pointer" (click)="load('SHARED', 'IGDOCUMENT')">Shared</li>
+        <li class="list-group-item cursor-pointer" (click)="load('PUBLIC', 'IGDOCUMENT')"> Public</li>
+      </ul>
+      <label><strong>Workspace</strong> </label>
+      <ul class="list-group editors">
+
+        <li class="list-group-item cursor-pointer" (click)="load('PRIVATE', 'WORKSPACE')">PRIVATE</li>
+        <li class="list-group-item cursor-pointer" (click)="load('DISCOVERABLE', 'WORKSPACE')"> Discoverable</li>
+        <li class="list-group-item cursor-pointer" (click)="load('PUBLIC', 'WORKSPACE')"> Public</li>
+      </ul>
+    </div>
+
+    <div class="folder-content">
+      <p-breadcrumb *ngIf="items.length" [model]="items"></p-breadcrumb>
+        <div *ngFor="let elm of currentList">
+          <ng-container *ngTemplateOutlet="getTemplateByListItem(elm); context: {$implicit: elm}"></ng-container>
+        </div>
+    </div>
+
+  </div>
+
+</mat-dialog-content>
+<mat-dialog-actions  style=" display: flex ;justify-content: flex-end">
+    <button  class="btn btn-sm btn-danger" style="margin-right: 5px;" (click)="cancel()">Cancel</button>
+    <button  class="btn btn-sm btn-success">Submit</button>
+</mat-dialog-actions>
+
+<ng-template #ig let-igListItem>
+  <div>
+    <p-card>
+
+      <!-- CARD CONTENT -->
+      <div style="display: flex; flex-direction: row;">
+
+        <!-- ITEM COVER IMAGE -->
+        <div *ngIf="!igListItem.coverpage"
+             style="height: 60px; width: 60px; background-color: #feec9d; text-align: center; display: flex; flex-direction: column; justify-content: center;">
+          <strong style="color: #c9c9c9;">HL7</strong>
+        </div>
+        <img *ngIf="igListItem.coverpage" [src]="igListItem.coverpage" height="60px" >
+
+        <!-- ITEM DETAILS -->
+        <div style="display: flex; flex-direction: column;">
+          <h6 style="margin-left: 10px; margin-bottom: 0;" class="link"><strong>{{igListItem.title}}</strong></h6>
+          <span style="margin-left: 10px; color: #818181;">{{igListItem.subtitle}}</span>
+          <span *ngIf="igListItem.username" style="margin-left: 10px; color: #818181;">
+            <i class="fa fa-user"></i>
+             {{igListItem.username}}
+          </span>
+          <span *ngIf="igListItem.dateUpdated" style="margin-left: 10px; color: #818181;">
+            <i class="fa fa-calendar"></i>
+             updated on:  {{igListItem.dateUpdated | date}}
+          </span>
+          <span *ngIf="igListItem.participants" style="margin-left: 10px;">
+            <i class="fa fa-users"></i>
+            <span *ngFor="let participant of igListItem.participants">{{participant}} </span>
+          </span>
+        </div>
+
+      </div>
+
+
+      <!-- CARD FOOTER -->
+      <p-footer>
+        <div style="width: 100%; display: flex; flex-direction: column; justify-content: flex-start;">
+
+          <!-- BUTTONS ROW -->
+          <div style="width: 100%; display: flex; flex-direction: row; justify-content: space-between;">
+
+            <div style="width: 100%; display: flex; flex-direction: row; justify-content: flex-end;">
+
+
+              <button (click)="selectIgDocument(igListItem)">
+
+                Select
+
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </p-footer>
+    </p-card>
+
+  </div>
+</ng-template>

@@ -119,7 +119,7 @@ public class ConformanceProfile extends Resource {
    */
   @Override
   public String getLabel() {
-      if(this.getIdentifier()!=null&&!this.getIdentifier().isEmpty()) {
+      if(this.getIdentifier()!=null && !this.getIdentifier().isEmpty()) {
           return this.getName()+"-"+this.getIdentifier();
       }
     return this.getName();

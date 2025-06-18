@@ -30,11 +30,16 @@
   grid-row: content;
   display: grid;
   grid-gap: 2px;
-  grid-template-columns: [config-list] 1fr [config-content] 5fr;
-  grid-template-rows: 1;
+  grid-template-columns:  [config-list] 1fr [config-content] 5fr;
+  grid-template-rows:  1;
   overflow: hidden;
 }
 
+.save-btn{
+ display: flex;
+ flex-direction: row;
+ justify-content: flex-end;
+}
 .config-list {
   grid-column: config-list;
   grid-row: 1;

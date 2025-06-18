@@ -9,17 +9,19 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupRegistry;
 import gov.nist.hit.hl7.igamt.coconstraints.service.impl.SimpleCoConstraintService;
+import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
@@ -33,6 +35,7 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
@@ -68,6 +71,9 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
   @Autowired
   CompositeProfileStructureService compositeProfileService;
 
+  @Autowired
+  IgService igService;
+
   @Override
   public IGDisplayInfo covertIgToDisplay(Ig ig) {
     IGDisplayInfo ret = new IGDisplayInfo();
@@ -79,6 +85,9 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     ret.setCoConstraintGroups(convertCoConstraintGroupRegistry(ig.getCoConstraintGroupRegistry()));
     ret.setProfileComponents(convertPofileComponentRegistry(ig.getProfileComponentRegistry()));
     ret.setCompositeProfiles(convertCompositeProfileRegistry(ig.getCompositeProfileRegistry()));
+    ret.setResourceVersionSyncToken(igService.getResourceVersionSyncToken(ig.getUpdateDate()));
+    // Exclude share links from state
+    ig.setShareLinks(null);
     return ret;
   }
 
@@ -98,7 +107,6 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 
   private Set<DisplayElement> convertPofileComponentRegistry(
       ProfileComponentRegistry registry) {
-    // TODO Auto-generated method stub
     Map<String, Integer> positionMap= this.gatherIdsAndPositions(registry.getChildren());
     Set<DisplayElement> ret = new HashSet<DisplayElement>();
     List<ProfileComponent> pcs = profileComponentService.findByIdIn(positionMap.keySet());
@@ -135,7 +143,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     List<CoConstraintGroup> ccGroups = ids.stream().map((id) -> {
       try {
         return this.coConstraintService.findById(id);
-      } catch (CoConstraintGroupNotFoundException e) {
+      } catch (EntityNotFound e) {
         return null;
       }
     }).filter(Objects::nonNull).collect(Collectors.toList());
@@ -165,6 +173,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     displayElement.setOrigin(group.getOrigin());
     displayElement.setParentId(base.getParentId());
     displayElement.setParentType(base.getParentType());
+    displayElement.setDerived(group.isDerived());
 
     return displayElement;
   }
@@ -204,6 +213,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
       }
     }
     displayElement.setChildren(children);
+    displayElement.setDerived(pc.isDerived());
     return displayElement;
   }
 
@@ -272,7 +282,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     DisplayElement displayElement= new DisplayElement();
     displayElement.setId(compositeProfile.getId());
     displayElement.setDomainInfo(compositeProfile.getDomainInfo());
-    displayElement.setDescription(compositeProfile.getName());
+    displayElement.setDescription(compositeProfile.getDescription());
     displayElement.setPosition(position);
     displayElement.setLeaf(false);
     displayElement.setFlavorExt(compositeProfile.getFlavorsExtension());
@@ -281,8 +291,23 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     displayElement.setOrigin(compositeProfile.getOrigin());
     displayElement.setParentId(compositeProfile.getParentId());
     displayElement.setParentType(compositeProfile.getParentType());
-    List<DisplayElement> children = new ArrayList<DisplayElement>();
+    displayElement.setDerived(compositeProfile.isDerived());
     return displayElement;
   }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.display.service.DisplayInfoService#createReturn(gov.nist.hit.hl7.igamt.ig.domain.Ig, gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject)
+   */
+  @Override
+  public IGDisplayInfo createReturn(Ig ig, AddMessageResponseObject objects) {
+    IGDisplayInfo info = new IGDisplayInfo();
+    info.setIg(ig);
+    info.setMessages(this.convertConformanceProfiles(objects.getConformanceProfiles(), ig.getConformanceProfileRegistry()));
+    info.setSegments(this.convertSegments(objects.getSegments()));
+    info.setDatatypes(this.convertDatatypes(objects.getDatatypes()));
+    info.setValueSets(this.convertValueSets(objects.getValueSets()));
+    return info;
+  }
+
 
 }

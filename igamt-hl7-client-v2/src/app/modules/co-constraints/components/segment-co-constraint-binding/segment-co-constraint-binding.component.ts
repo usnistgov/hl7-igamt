@@ -1,14 +1,17 @@
-import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { Guid } from 'guid-typescript';
 import * as _ from 'lodash';
-import { combineLatest, Observable, of, throwError } from 'rxjs';
+import { combineLatest, Observable, of, Subscription, throwError } from 'rxjs';
 import { catchError, flatMap, map, take, tap } from 'rxjs/operators';
+import { DamWidgetComponent } from 'src/app/modules/dam-framework';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
-import { MessageType, UserMessage } from '../../../dam-framework/models/messages/message.class';
+import { ProfileComponentService } from 'src/app/modules/profile-component/services/profile-component.service';
+import { IProfileComponentContext, IProfileComponentItem } from 'src/app/modules/shared/models/profile.component';
+import { UserMessage } from '../../../dam-framework/models/messages/message.class';
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
@@ -32,8 +35,9 @@ import { StoreResourceRepositoryService } from '../../../shared/services/resourc
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
 import { FileUploadService } from '../../services/file-upload.service';
 import { CoConstraintGroupSelectorComponent } from '../co-constraint-group-selector/co-constraint-group-selector.component';
+import { CoConstraintImportDialogComponent } from '../co-constraint-import-dialog/co-constraint-import-dialog.component';
 import { CoConstraintAction, CoConstraintTableComponent } from '../co-constraint-table/co-constraint-table.component';
-import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
+import { IContextCoConstraint } from './../context-co-constraint-binding/context-co-constraint-binding.component';
 
 export interface ISegmentCoConstraint {
   resolved: boolean;
@@ -42,6 +46,7 @@ export interface ISegmentCoConstraint {
   display?: IDisplayElement;
   pathInfo?: IPathInfo;
   name?: string;
+  items?: IProfileComponentItem[];
 }
 
 @Component({
@@ -49,7 +54,7 @@ export interface ISegmentCoConstraint {
   templateUrl: './segment-co-constraint-binding.component.html',
   styleUrls: ['./segment-co-constraint-binding.component.scss'],
 })
-export class SegmentCoConstraintBindingComponent implements OnInit {
+export class SegmentCoConstraintBindingComponent implements OnInit, OnDestroy {
 
   binding: ICoConstraintBindingSegment;
   userMessage: UserMessage;
@@ -77,6 +82,8 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   @Input()
   context: IStructureElementRef;
   @Input()
+  contextInfo: IContextCoConstraint;
+  @Input()
   documentRef: IDocumentRef;
   @Output()
   valueChange: EventEmitter<ICoConstraintBindingSegment>;
@@ -87,37 +94,14 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   @Output()
   delete: EventEmitter<boolean>;
   segmentCoConstraint$: Observable<ISegmentCoConstraint>;
-
-  excelImport = false;
-  loading = false; // Flag variable
-  file: File = null; // Variable to store file
-
-  // On file Select
-  onChange(event) {
-    this.file = event.target.files[0];
-  }
-
-  openImportDialog() {
-    const dialogRef = this.dialog.open(ImportDialogComponent, {
-      maxWidth: '95vw',
-      maxHeight: '90vh',
-      data: {
-        fileUploadService: this.fileUploadService,
-        segmentRef: this.binding.segment.pathId,
-        conformanceProfile: this.conformanceProfile,
-        documentId: this.documentRef.documentId,
-        contextId: this.context.pathId,
-      },
-    });
-    dialogRef.afterClosed().subscribe(
-      (coConstraintTable) => {
-        if (coConstraintTable) {
-          this.store.dispatch(this.messageService.userMessageToAction(new UserMessage<never>(MessageType.SUCCESS, 'TABLE SAVED SUCCESSFULLY')));
-          this.binding.tables.push({ id: '', delta: undefined, value: coConstraintTable, condition: undefined });
-        }
-      },
-    );
-  }
+  unsavedChanges: boolean;
+  changesSubscription: Subscription;
+  @Input()
+  transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>;
+  @Input()
+  referenceChangeMap: Record<string, string> = {};
+  @Input()
+  profileComponentContext?: IProfileComponentContext;
 
   @Input()
   set value(binding: ICoConstraintBindingSegment) {
@@ -136,10 +120,13 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     private treeService: Hl7V2TreeService,
     private pathService: PathService,
     private elementNamingService: ElementNamingService,
+    private widget: DamWidgetComponent,
+    private profileComponentService: ProfileComponentService,
     protected ccService: CoConstraintEntityService) {
     this.valueChange = new EventEmitter<ICoConstraintBindingSegment>();
     this.delete = new EventEmitter<boolean>();
     this.formValid = new EventEmitter<boolean>();
+    this.changesSubscription = this.widget.containsUnsavedChanges$().subscribe((value) => this.unsavedChanges = value);
   }
 
   exportAsExcel(table: ICoConstraintTable) {
@@ -150,9 +137,16 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
       }),
     ).subscribe();
   }
-  importAsExcel() {
-    this.excelImport = true;
+
+  exportAsJson(table: ICoConstraintTable, index: number) {
+    this.conformanceProfile.pipe(
+      take(1),
+      tap((cp) => {
+        this.ccService.exportAsJson(cp.id, this.context.pathId, this.binding.segment.pathId, index);
+      }),
+    ).subscribe();
   }
+
   triggerRemove() {
     this.delete.emit(true);
   }
@@ -161,14 +155,21 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     return this.repository.fetchResource(Type.SEGMENT, id).pipe(take(1), map((seg) => seg as ISegment));
   }
 
-  createTable(binding: ICoConstraintBindingSegment, segment: ISegment) {
-    this.ccService.createCoConstraintTableForSegment(segment, this.repository).pipe(
+  generateTableId(segment: ISegmentCoConstraint, context: IContextCoConstraint, rand: string) {
+    const prefix = context.pathInfo && context.pathInfo.type === Type.GROUP && context.name ? context.name.replace('.', '_') + '_' : '';
+    const postfix = segment.name ? segment.name.replace('.', '_') + '_' : '';
+    return prefix + postfix + rand;
+  }
+
+  createTable(binding: ICoConstraintBindingSegment, scc: ISegmentCoConstraint) {
+    const id = this.generateTableId(scc, this.contextInfo, Guid.create().toString().substring(0, 5));
+    this.ccService.createCoConstraintTableForSegment(scc.segment, this.repository).pipe(
       take(1),
       tap((table) => {
         binding.tables.push({
           condition: undefined,
           value: table,
-          id: Guid.create().toString(),
+          id,
         });
         this.triggerChange();
       }),
@@ -216,7 +217,12 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
         context: context.path,
         assertion: conditional.condition,
         resource: this.conformanceProfile,
+        transformer: this.transformer,
+        referenceChangeMap: this.referenceChangeMap,
+        repository: this.repository,
+        structure: this.structure,
         excludePaths: [this.binding.segment.pathId],
+        hideFreeText: true,
       },
     });
 
@@ -292,6 +298,10 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
       this.structure[0].children,
       path,
       this.repository,
+      {
+        transformer: this.transformer,
+        useProfileComponentRef: true,
+      },
     ).pipe(
       take(1),
       flatMap((segmentRef) => {
@@ -328,7 +338,9 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   getTargetPathName(path: IPath, startFrom: string): Observable<{ pathInfo: IPathInfo, name: string }> {
     return this.conformanceProfile.pipe(
       flatMap((conformanceProfile) => {
-        return this.elementNamingService.getPathInfoFromPath(conformanceProfile, this.repository, path).pipe(
+        return this.elementNamingService.getPathInfoFromPath(conformanceProfile, this.repository, path, {
+          referenceChange: this.referenceChangeMap,
+        }).pipe(
           take(1),
           map((pathInfo) => {
             const name = this.elementNamingService.getStringNameFromPathInfo(this.elementNamingService.getStartPathInfo(pathInfo, startFrom));
@@ -350,12 +362,18 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
       this.getTargetPathName(path, segmentPath.elementId),
     ).pipe(
       map(([{ segment, display }, { name, pathInfo }]) => {
+        const pathId = this.pathService.pathToString(path);
+        const items = this.profileComponentContext ? this.profileComponentService.getFilteredItems(
+          this.profileComponentContext.profileComponentItems,
+          pathId,
+        ) : [];
         return {
           resolved: true,
           segment,
           display,
           pathInfo,
           name,
+          items,
         };
       }),
       catchError((error) => {
@@ -370,8 +388,35 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     });
   }
 
+  importTable(format: string) {
+    this.conformanceProfile.pipe(
+      take(1),
+      tap((cp) => {
+        this.dialog.open(CoConstraintImportDialogComponent, {
+          disableClose: true,
+          data: {
+            segmentPathId: this.binding.segment.pathId,
+            conformanceProfileId: cp.id,
+            documentId: this.documentRef.documentId,
+            contextPathId: this.context.pathId,
+            format,
+            files: format === 'json' ? 'application/json' : format === 'excel' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel' : '',
+            importFile: (file: File, cpId: string, contextId: string, segmentId: string) => this.fileUploadService.importCoConstraints(
+              file, cpId, contextId, segmentId, format,
+            ),
+          },
+        });
+      }),
+    ).subscribe();
+  }
+
   ngOnInit() {
     this.segmentCoConstraint$ = this.getSegmentCoConstraint(this.context.path, this.binding.segment.path);
   }
 
+  ngOnDestroy() {
+    if (this.changesSubscription) {
+      this.changesSubscription.unsubscribe();
+    }
+  }
 }

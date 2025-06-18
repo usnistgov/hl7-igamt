@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import gov.nist.diff.domain.DeltaAction;
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.GeneratedResourceMetadata;
 import gov.nist.hit.hl7.igamt.delta.domain.ConformanceStatementDelta;
@@ -15,15 +16,11 @@ import gov.nist.hit.hl7.igamt.delta.domain.StructureDelta;
 import gov.nist.hit.hl7.igamt.delta.service.DeltaService;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
 import gov.nist.hit.hl7.igamt.serialization.util.SerializationTools;
+import gov.nist.hit.hl7.igamt.service.impl.ResourceSkeletonService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.ActiveStatus;
-import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructureDataModel;
-import gov.nist.hit.hl7.igamt.common.base.domain.GenerationDirective;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
@@ -38,6 +35,8 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportTools;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ComponentDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -74,6 +73,9 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 
   @Autowired
   private SerializationTools serializationTools;
+  
+  @Autowired
+  private ResourceSkeletonService resourceSkeletonService;
 
   @Autowired
   private ReasonForChangeSerializationService reasonForChangeSerializationService;
@@ -83,6 +85,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
     //	    try {
     Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, position, datatypeExportConfiguration);
     Datatype datatype = datatypeDataModel.getModel();
+	ResourceSkeleton root = new ResourceSkeleton(
+            new ResourceRef(Type.DATATYPE, datatype.getId()),
+            this.resourceSkeletonService
+    );
     if(datatypeExportConfiguration.isReasonForChange()){
       if(datatype instanceof ComplexDatatype) {
         datatypeElement.appendChild(reasonForChangeSerializationService.serializeReasonForChange(datatype.getLabel(), datatype.getBinding(),  ((ComplexDatatype)datatype).getComponents()));
@@ -114,25 +120,27 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
     }
     
     if(datatype.isGenerated()) {
-    String compositionString= datatype.getLabel() +" Composition = ";
-    GeneratedResourceMetadata generatedResourceMetadata = ((IgDataModel) documentStructureDataModel).getAllFlavoredDatatypeDataModelsMap().get(datatypeDataModel);
-    Datatype sourceDatatype = datatypeService.findById(generatedResourceMetadata.getSourceId());
-    if(generatedResourceMetadata != null) compositionString += sourceDatatype.getLabel();
-    Set<GenerationDirective> generationDirectiveSet = generatedResourceMetadata.getGeneratedUsing();
-    for(GenerationDirective generationDirective : generationDirectiveSet) {
-    	if(generationDirective.getType().equals(Type.PROFILECOMPONENT)) {
-    		ProfileComponent pc = profileComponentService.findById(generationDirective.getId());
-    		if(pc !=null) compositionString+= " + " + pc.getLabel();
+      StringBuilder compositionString= new StringBuilder(datatype.getLabel() + " Composition = ");
+      GeneratedResourceMetadata generatedResourceMetadata = ((IgDataModel) documentStructureDataModel).getAllFlavoredDatatypeDataModelsMap().get(datatypeDataModel);
+      Datatype sourceDatatype = datatypeService.findById(generatedResourceMetadata.getSourceId());
+      compositionString.append(sourceDatatype.getLabel());
+      List<GenerationDirective> generationDirectiveSet = generatedResourceMetadata.getGeneratedUsing();
+      for(GenerationDirective generationDirective : generationDirectiveSet) {
+        ProfileComponent pc = profileComponentService.findById(generationDirective.getProfileComponentId());
+        if(pc !=null) {
+          compositionString.append(" + ").append(pc.getLabel());
+        }
+      }
+      datatypeElement.addAttribute(
+              new Attribute("Composition", compositionString.toString())
+      );
     }
-    }
-    datatypeElement.addAttribute(
-			new Attribute("Composition", datatype != null ? compositionString : "")
-	);
-    }   
     datatypeElement
     .addAttribute(new Attribute("ext", datatype.getExt() != null ? datatype.getExt() : ""));
     datatypeElement
     .addAttribute(new Attribute("label", datatype.getLabel() != null ? datatype.getLabel() : ""));
+    datatypeElement.addAttribute(new Attribute("usageNotes",
+            datatype.getUsageNotes() != null ? datatype.getUsageNotes() : ""));
     if(datatypeExportConfiguration.getPurposeAndUse()) {
       datatypeElement.addAttribute(new Attribute("purposeAndUse",
           datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
@@ -149,6 +157,8 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
       if(datatypeExportConfiguration.getMetadataConfig().isShortDescription()) {
         datatypeElement
         .addAttribute(new Attribute("shortDescription", datatype.getShortDescription() != null ? datatype.getShortDescription(): ""));}
+      
+      
       if(datatype.getDomainInfo() != null && datatypeExportConfiguration.getMetadataConfig().isHl7version()) {
         datatypeElement
         .addAttribute(new Attribute("hl7versions", datatype.getDomainInfo().getCompatibilityVersion()!= null ? datatype.getDomainInfo().getCompatibilityVersion().toString(): ""));
@@ -161,14 +171,17 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
         .addAttribute(new Attribute("publicationDate", datatype.getPublicationDateString()));
       }
     }
+    datatypeElement
+    .addAttribute(new Attribute("isPrimitive",datatype instanceof ComplexDatatype ? "false" : "true"));
     if (datatype instanceof ComplexDatatype) {
-      datatypeElement = serializeComplexDatatype(datatypeElement,datatypeDataModel,datatypeExportConfiguration, type);
 
+      datatypeElement = serializeComplexDatatype(datatypeElement,datatypeDataModel,datatypeExportConfiguration, type);
     } else if (datatype instanceof DateTimeDatatype) {
       datatypeElement = serializeDateTimeDatatype(datatypeElement, datatypeDataModel, datatypeExportConfiguration);
     }
+    
     if(!datatypeDataModel.getConformanceStatements().isEmpty()|| !datatypeDataModel.getPredicateMap().isEmpty()) {
-      Element constraints = constraintSerializationService.serializeConstraints(datatypeDataModel.getConformanceStatements(), datatypeDataModel.getPredicateMap(), datatypeExportConfiguration.getConstraintExportConfiguration());
+      Element constraints = constraintSerializationService.serializeConstraints(datatypeDataModel.getConformanceStatements(), datatypeDataModel.getPredicateMap(), datatypeExportConfiguration.getConstraintExportConfiguration(), root);
       if (constraints != null) {
         datatypeElement.appendChild(constraints);
       }
@@ -203,8 +216,11 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
               component.getConfLength() != null ? component.getConfLength() : ""));
           componentElement
           .addAttribute(new Attribute("id", component.getId() != null ? component.getId() : ""));
+//          componentElement
+//                  .addAttribute(new Attribute("old usage", component.getOldUsage() != null ? component.getOldUsage().toString() : ""));
           componentElement.addAttribute(
               new Attribute("name", component.getName() != null ? component.getName() : ""));
+          componentElement.addAttribute(new Attribute("lengthType", component.getLengthType().getValue()));
           componentElement.addAttribute(new Attribute("maxLength",
               component.getMaxLength() != null ? component.getMaxLength() : ""));
           componentElement.addAttribute(new Attribute("minLength",
@@ -270,8 +286,27 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
             //	              //throw new DatatypeNotFoundException(component.getRef().getId());
             //	            }
           }
-          componentElement.addAttribute(new Attribute("usage",
-              component.getUsage() != null ? component.getUsage().toString() : ""));
+          if(component.getUsage() != null && !component.getUsage().equals(Usage.CAB)) {
+        	  componentElement.addAttribute(
+                  new Attribute("usage", component.getUsage() != null ? component.getUsage().toString() : ""));}
+              else if(component.getUsage() != null && component.getUsage().equals(Usage.CAB)) {
+              	
+            	  componentElement.addAttribute(
+                          new Attribute("usage", component.getUsage() != null ? serializationTools.extractPredicateUsages(datatypeDataModel.getPredicateMap(), component.getId()) : ""));
+                  componentElement.addAttribute(
+                    new Attribute("predicate", component.getUsage() != null ? serializationTools.extractPredicateDescription(datatypeDataModel.getPredicateMap(), component.getId()) : "N/A"));
+             }
+          if(component.getOldUsage() != null && !component.getOldUsage().equals(Usage.CAB)) {
+            componentElement.addAttribute(
+                    new Attribute("oldUsage", component.getOldUsage() != null ? component.getOldUsage().toString() : ""));}
+          else if(component.getOldUsage() != null && component.getOldUsage().equals(Usage.CAB)) {
+
+            componentElement.addAttribute(
+                    new Attribute("oldUsage", component.getOldUsage() != null ? serializationTools.extractPredicateUsages(datatypeDataModel.getPredicateMap(), component.getId()) : ""));
+            componentElement.addAttribute(
+                    new Attribute("oldPredicate", component.getOldUsage() != null ? serializationTools.extractPredicateDescription(datatypeDataModel.getPredicateMap(), component.getId()) : ""));
+          }
+        
           datatypeElement.appendChild(componentElement);
         } catch (Exception exception) {
           throw new SubStructElementSerializationException(exception, component);
@@ -284,7 +319,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
       if (complexDatatype.getBinding() != null) {
         Element bindingElement;
         try {
-          bindingElement = bindingSerializationService.serializeBinding(complexDatatype.getBinding(), datatypeDataModel.getValuesetMap(), datatypeDataModel.getModel().getName(), bindedPaths);
+          bindingElement = bindingSerializationService.serializeBinding(complexDatatype.getBinding(), datatypeDataModel.getValuesetMap(), datatypeDataModel.getSingleCodeMap(), datatypeDataModel.getModel().getName(), bindedPaths);
           if(bindingElement !=null) {
             datatypeElement.appendChild(bindingElement);
           }

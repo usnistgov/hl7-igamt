@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import {MatSlider, MatSliderChange, MatSliderModule} from '@angular/material/slider';
+import { MatSlider, MatSliderChange, MatSliderModule } from '@angular/material/slider';
 import * as _ from 'lodash';
-import {CardModule} from 'primeng/card';
-import {TabViewModule} from 'primeng/tabview';
+import { CardModule } from 'primeng/card';
+import { TabViewModule } from 'primeng/tabview';
 
 @Component({
   selector: 'app-font-export-configuration',
@@ -18,8 +18,8 @@ export class FontExportConfigurationComponent implements OnInit {
   defaultFont: '\'Arial Narrow\',sans-serif';
   choosenFont: string;
   fonts: string[] = ['\'Arial Narrow\',sans-serif', '\'Palatino Linotype\', \'Book Antiqua\', Palatino, serif',
-  '\'Times New Roman\', Times, serif', 'Georgia, serif', '\'Comic Sans MS\', cursive, sans-serif',
-  '\'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif', 'Tahoma, Geneva, sans-serif', '\'Trebuchet MS\', Helvetica, sans-serif', 'Verdana, Geneva, sans-serif', '\'Courier New\', Courier, monospace', '\'Lucida Console\', Monaco, monospace'];
+    '\'Times New Roman\', Times, serif', 'Georgia, serif', '\'Comic Sans MS\', cursive, sans-serif',
+    '\'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif', 'Tahoma, Geneva, sans-serif', '\'Trebuchet MS\', Helvetica, sans-serif', 'Verdana, Geneva, sans-serif', '\'Courier New\', Courier, monospace', '\'Lucida Console\', Monaco, monospace'];
 
   @Input()
   config: any;
@@ -48,7 +48,6 @@ export class FontExportConfigurationComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    console.log('Is it ORIGINAL : ' + this.viewOnly);
   }
 
   onInputChange(event: MatSliderChange) {
@@ -59,7 +58,7 @@ export class FontExportConfigurationComponent implements OnInit {
     this.config.exportFont.value = this.config.exportFont.name + ';';
     this.detectChange.emit(this.config);
 
-   }
+  }
 
   print() {
   }

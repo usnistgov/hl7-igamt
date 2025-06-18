@@ -1,14 +1,31 @@
-<h5 mat-dialog-title> {{title}} </h5>
+<h5 mat-dialog-title>
+  <i class="fa fa-share" style="margin-right: 20px;"></i>
+  {{title}}
+</h5>
 <mat-dialog-content>
+  <div class="alert alert-warning">
+    The resource will be shared as "View Only". Users will not be able to edit the resource.
+  </div>
 
   <div style="display: flex; flex-direction: column">
 
-    <p-autoComplete [(ngModel)]="newSharedUser" [suggestions]="filteredUsersSingle" (completeMethod)="filterUsersSingle($event)" (onSelect)="addUser()" field="username"  size="100%" [style]="{'width':'100%','margin-bottom': '10px'}" [inputStyle]="{'width':'100%'}"
-                  placeholder="Search Users by Username" [minLength]="1" checkbox="true" [appendTo]="List">
+    <p-autoComplete
+      [(ngModel)]="newSharedUser"
+      [suggestions]="filteredUsersSingle"
+      (completeMethod)="filterUsersSingle($event)"
+      (onSelect)="addUser($event)"
+      size="100%"
+      [style]="{'width':'100%','margin-bottom': '10px'}"
+      [inputStyle]="{'width':'100%'}"
+      placeholder="Search Users by Username"
+      [minLength]="1"
+      checkbox="true"
+      [appendTo]="List">
+
       <ng-template let-value pTemplate="item">
         <div class="user-info-avatar">
-          <ngx-avatar [name]="value.username"></ngx-avatar>
-          <span style="margin-top:auto; margin-bottom: auto; margin-left: 5px"> <strong>{{value.username}}</strong> </span>
+          <ngx-avatar [name]="value"></ngx-avatar>
+          <span style="margin-top:auto; margin-bottom: auto; margin-left: 5px"> <strong>{{value}}</strong> </span>
         </div>
       </ng-template>
     </p-autoComplete>
@@ -17,10 +34,7 @@
       <thead>
       <tr>
         <th>
-          Participant
-        </th>
-        <th>
-          Privileges
+          Username
         </th>
         <th>
           Actions
@@ -29,25 +43,15 @@
       </thead>
       <tbody>
      <tr *ngFor="let user of sharedUsers">
-      <td>
+      <td style="vertical-align: middle;">
         <div class="user-info-avatar">
-          <ngx-avatar [name]="user.value"></ngx-avatar> <span style="margin:auto"> <strong>{{user.value}}</strong></span>
+          <ngx-avatar [name]="user"></ngx-avatar> <span style="margin-left: 10px;"> <strong>{{user}}</strong></span>
         </div>
       </td>
-       <td>
-         <span *ngIf="user.label.indexOf('#Owner')>-1" class="badge badge-warning" style="margin-right: 2px"> Owner</span>
-
-         <span *ngIf="user.value === currentAuthor" class="badge badge-primary" style="margin-right: 2px">  <i class="fa fa-edit"></i> Edit</span>
-         <span class="badge badge-secondary" style="margin-right: 2px">  <i class="fa fa-eye"></i> View</span>
-         <span class="badge badge-success" style="margin-right: 2px">  <i class="fa fa-copy"></i> Copy</span>
-
-
-         <!--         <span *ngIf="user.value === currentAuthor" class="badge badge-success"> CurrentAuthor</span>-->
-
-       </td>
-       <td>
-         <button class="btn btn-sm btn-danger"  [disabled]="user.label.indexOf('#Owner') >-1" (click)="removeUser(user)" style="margin-right: 2px"><i class="fa fa-remove"></i> Unshare</button>
-<!--         <button class="btn btn-sm btn-primary"   (click)="tableListBoxSelectEvent(user)" *ngIf="user.value !== currentAuthor"> <i class="fa fa-edit"></i> Allow editing</button>-->
+       <td style="vertical-align: middle;">
+          <div style="width: 100%; display: flex; align-items: center; justify-content: flex-end;">
+            <button class="btn btn-sm btn-danger"  (click)="removeUser(user)" ><i class="fa fa-remove"></i> Unshare</button>
+          </div>
        </td>
       </tr>
       </tbody>

@@ -53,14 +53,11 @@ export class CreateIgEffects {
       }));
       return this.igService.createIntegrationProfile(action.payload).pipe(
         map((resp: Message<string>) => {
-          console.log(resp);
           return new CreateIgSuccess(resp);
-        })
-        , catchError(
-          (err: HttpErrorResponse) => {
-            return of(new CreateIgFailure(err));
-          })
-        ,
+        }),
+        catchError((err: HttpErrorResponse) => {
+          return of(new CreateIgFailure(err));
+        }),
       );
     }),
   );

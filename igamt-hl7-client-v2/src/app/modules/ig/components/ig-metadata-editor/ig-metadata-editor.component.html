@@ -1,1 +1,89 @@
-<app-metadata-form [metadataFormInput]="metadataFormInput" (dataChange)="dataChange($event)" [froalaConfig]="froalaConfig$ |async"></app-metadata-form>
+<form [formGroup]="formGroup" style="display: flex; flex-direction: column; height: 100%;">
+
+  <ng-container>
+    <div class="form-group">
+      <label for="Cover picture" class="form-label-lg">Cover Picture</label>
+      <div>
+        <app-file-select-input formControlName="pictureFile" [viewOnly]="viewOnly$ | async"></app-file-select-input>
+      </div>
+    </div>
+  </ng-container>
+
+
+  <app-form-input formControlName="title" id="title" name="title"
+    placeholder="Title" label="Title" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
+  <app-form-input formControlName="subTitle" id="subTitle" name="subtitle"
+                  placeholder="Subtitle" label="Subtitle" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
+  <app-form-input formControlName="version" id="version" name="version"
+                  placeholder="Version" label="Version" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
+  <app-form-input formControlName="organization" id="organization" name="version"
+                  placeholder="Organization" label="Organization" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
+
+  <div class="form-group">
+    <label for="authors" class="form-label-lg"> Authors </label>
+    <p-chips *ngIf="!(viewOnly$ | async)" [styleClass]="'string-list'" formControlName="authors" [placeholder]="'Authors'"></p-chips>
+    <span *ngIf="viewOnly$ | async">
+      <br>
+      <span *ngFor="let item of formGroup.controls.authors.value" class="badge badge-secondary">
+        {{item}}
+      </span>
+    </span>
+  </div>
+
+  <ng-container>
+    <form style="margin-bottom: 15px;">
+      <p-table [columns]="cols" [value]= "customAttributes$ | async" [reorderableColumns]="true" (onRowReorder)="dataChange()">
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th style="width:2.5em"></th>
+                <th> Custom Attributes</th>
+                <th width="50px">
+                  <button (click)="openCustomAttributeDialog()" class="btn-sm btn-primary" *ngIf="!(viewOnly$ | async)">
+                    <i class="fa fa-plus"> </i>
+                  </button>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+            <tr [pReorderableRow]="index">
+                <td>
+                    <i class="fa fa-bars" pReorderableRowHandle></i>
+                </td>
+                <td>
+                  <div class="form-group">
+                    <label class="form-label-lg">{{rowData.name}}</label>
+                    <input [type]="type" class="form-control" [id]="rowData.name" [name]="rowData.name" placeholder="" [(ngModel)]="rowData.value" (ngModelChange)="dataChange()" [disabled]="viewOnly$ | async">
+                  </div>
+                </td>
+                <td>
+                  <button type="button" (click)="removeItem(i)" class="btn-sm btn-danger" [disabled]="viewOnly$ | async"><i class="fa fa-remove"></i></button>
+                </td>
+            </tr>
+        </ng-template>
+      </p-table>
+    </form>
+  </ng-container>
+  <ng-container>
+    <label><strong>Author Notes </strong></label>
+    <div *ngIf="!(viewOnly$ | async)" id="authorNotes" [froalaEditor]="froalaConfig$ |async" formControlName="authorNotes" style="flex-grow: 1; display: flex; flex-direction: column;" name="authorNotes"></div>
+    <!-- <div *ngIf="(viewOnly ||  !metadataForm['authorNotes'])" [froalaView]="form['authorNotes']" [froalaEditor]="froalaConfig" ></div> -->
+
+    <div *ngIf="(viewOnly$ | async) || !formGroup.get('authorNotes').value" id="authorNotesView" [froalaEditor]="froalaConfig$ |async" [froalaView]="formGroup.get('authorNotes').value"></div>
+
+  </ng-container>
+
+
+
+
+</form>
+<!-- <app-metadata-form [metadataFormInput]="metadataFormInput" (dataChange)="dataChange($event)" [froalaConfig]="froalaConfig$ |async" (modelChange)="modelChange($event)"></app-metadata-form> -->
+
+

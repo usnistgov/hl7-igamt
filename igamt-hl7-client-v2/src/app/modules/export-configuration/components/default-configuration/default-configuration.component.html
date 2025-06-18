@@ -2,20 +2,31 @@
   <div class="alerts">
     <app-dam-alerts-container></app-dam-alerts-container>
   </div>
-
   <div class="top-bar">
 
-    <h4 *ngIf="type === 'IGDOCUMENT'" class="title-text" >Implementation Guide Export Configuration</h4>
-    <h4 *ngIf="type === 'DATATYPELIBRARY'" class="title-text" >Datatype Library Export Configuration</h4>
-    <h4 *ngIf="type === 'DIFFERENTIAL'" class="title-text" >Differential Export Configuration</h4>
-
-
-    <div>
-      <button (click)="reset()" class="btn btn-sm btn-danger" style="margin-right:5px;" [disabled]="!hasChanges || currentConfiguration.original"> <i class="fa fa-trash"></i> Reset</button>
-      <button (click)="save()" class="btn btn-sm btn-success" style="margin-right:5px;" [disabled]="!hasChanges || currentConfiguration.original">  <i class="fa fa-save"></i> Save</button>
-    </div>
+    <ul class="nav nav-pills" style="margin-top: 10px; margin-bottom: 10px;">
+      <li style="cursor: pointer;" class="nav-item"  [routerLink]="[ '/export-configuration']" [queryParams]="{type: 'IGDOCUMENT'}" routerLinkActive="router-link-active"  >
+        <span  class="nav-link" style="display: flex" [ngClass]="{ 'active': type === 'IGDOCUMENT' }">
+          Implementation Guide Export Configuration
+        </span>
+      </li>
+      <li style="cursor: pointer;" class="nav-item" [routerLink]="[ '/export-configuration']" [queryParams]="{type: 'DATATYPELIBRARY'}"  >
+        <span  class="nav-link"  style="display: flex" [ngClass]="{ 'active': type === 'DATATYPELIBRARY' }">
+          Datatype Library Export Configuration
+        </span>
+      </li>
+      <li style="cursor: pointer;" class="nav-item" [routerLink]="[ '/export-configuration']" [queryParams]="{type: 'DIFFERENTIAL'}" >
+        <span  class="nav-link"  style="display: flex" [ngClass]="{ 'active': type === 'DIFFERENTIAL' }">
+          Differential Export Configuration
+        </span>
+      </li>
+    </ul>
   </div>
 
+  <!-- <div class="save-btn">
+    <button (click)="reset()" class="btn btn-sm btn-danger" style="margin-right:5px;" [disabled]="!hasChanges || currentConfiguration.original"> <i class="fa fa-trash"></i> Reset</button>
+    <button (click)="save()" class="btn btn-sm btn-success" style="margin-right:5px;" [disabled]="!hasChanges || currentConfiguration.original">  <i class="fa fa-save"></i> Save</button>
+  </div> -->
   <div class="content">
     <div class="config-list">
       <div class="list-control">
@@ -45,11 +56,15 @@
     </div>
     <div class="config-content" >
       <div class="edit" >
+        <div class="save-btn">
+          <button (click)="reset()" class="btn btn-sm btn-danger" style="margin-right:5px;" [disabled]="!hasChanges || currentConfiguration.original"> <i class="fa fa-trash"></i> Reset</button>
+          <button (click)="save()" class="btn btn-sm btn-success" style="margin-right:5px;" [disabled]="!hasChanges || currentConfiguration.original">  <i class="fa fa-save"></i> Save</button>
+        </div>
         <div *ngIf="currentConfiguration">
           <label class="form-label-lg"> Configuration name  </label>
           <input  type="text"  class="form-control" style="margin-bottom: 10px;" [(ngModel)]="currentConfiguration.configName" (ngModelChange)="change($event)" [disabled]="currentConfiguration.original">
           <p-tabView *ngIf="type === 'IGDOCUMENT'" [styleClass]="'configuration-tab-view'" >
-              <p-tabPanel header="Ig Display" [selected]="true">
+              <p-tabPanel header="IG Display" [selected]="true">
                   <app-ig-general-display-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.igGeneralConfiguration"  (detectChange)="change($event)" ></app-ig-general-display-configuration>
                 </p-tabPanel>
             <p-tabPanel header="Conformance Profile">

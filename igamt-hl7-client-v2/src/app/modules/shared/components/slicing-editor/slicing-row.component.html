@@ -18,10 +18,10 @@
      <span class="badge badge-secondary"> {{sliceRow_.type}}</span>
     </div>
   <div  style= "display: flex; flex-direction: row; justify-content: flex-end">
-    <button class="btn btn-sm btn-primary" (click)="addSlice()" pTooltip="Add slice">
+    <button class="btn btn-sm btn-primary" (click)="addSlice()" pTooltip="Add slice" [disabled]="viewOnly">
       <i class="fa fa-plus"></i>
     </button>
-    <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="delete()" pTooltip="Remove slicing">
+    <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="delete()" pTooltip="Remove slicing" [disabled]="viewOnly">
       <i class="fa fa-remove"></i>
     </button>
   </div>
@@ -137,7 +137,7 @@
         <td>
           <ng-container *ngTemplateOutlet="comments; context: { $implicit: {slice: slice, anchor: anchor, index: i }}"></ng-container>
         <td>
-          <button class="btn btn-sm btn-danger" style="margin-right: 15px;">
+          <button class="btn btn-sm btn-danger" style="margin-right: 15px;" (click)="deleteSlice(i)" [disabled]="viewOnly">
             <i class="fa fa-remove"></i>
           </button>
         </td>
@@ -152,7 +152,7 @@
   <ng-template #flavorSelector let-param>
     <p-dropdown [(ngModel)]="map[param.slice.flavorId]" [appendTo]="param.anchor" [optionLabel]="'fixedName'"
                 [options]="available_" [style]="{'minWidth':'100%'}"
-                [placeholder]="'Select Flavor'" (ngModelChange)="modelChange($event, param.slice)" [id]="node.data.id+param.index" [name]="node.data.id+param.index" [disabled]="viewOnly">
+                [placeholder]="'Select Flavor'" (ngModelChange)="modelChange($event, param.slice)" [id]="node.data.id+param.index" [name]="node.data.id+param.index" [disabled]="viewOnly" required>
       <ng-template let-item pTemplate="selectedItem">
           <ng-container>
             <app-display-section [element]="map[param.slice.flavorId]" [hideDescription]="true"></app-display-section>

@@ -13,6 +13,7 @@ export class MessageEventTreeData {
     readonly name: string,
     readonly description: string,
     readonly hl7Version: string,
+    readonly messageType: string,
   ) {
   }
 }

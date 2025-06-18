@@ -76,7 +76,9 @@ export abstract class ProfileComponentContextStructureEditor<T extends IProfileC
     super(editorMetadata, actions$, store);
     this.resourceType = editorMetadata.resourceType;
     this.hasOrigin$ = this.store.select(fromIgamtSelectedSelectors.selectedResourceHasOrigin);
-    this.config = this.store.select(getHl7ConfigState);
+    this.config = this.store.select(getHl7ConfigState).pipe(
+      filter((config) => !!config),
+    );
     this.datatypes = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes);
     this.segments = this.store.select(fromIgamtDisplaySelectors.selectAllSegments);
     this.valueSets = this.store.select(selectValueSetsNodes);
@@ -184,6 +186,7 @@ export abstract class ProfileComponentContextStructureEditor<T extends IProfileC
         data: {
           structure: this.nodes,
           repository: this.repository,
+          transformer: this.pcService.getProfileComponentItemTransformer(this.profileComponentItemList.getContextValue()),
           selectedPaths: this.profileComponentItemList.context$.getValue().profileComponentItems
             .map((elm) => {
               return elm.path;

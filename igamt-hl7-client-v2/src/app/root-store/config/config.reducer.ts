@@ -3,16 +3,16 @@ import { Hl7Config } from '../../modules/shared/models/config.class';
 import { ConfigActions, ConfigActionTypes } from './config.actions';
 
 export interface IState {
-  hl7Config: Hl7Config;
+  config: Hl7Config;
 }
 
 export const initialState: IState = {
-  hl7Config: null,
+  config: null,
 };
 
 export function reducer(state = initialState, action: ConfigActions): IState {
   if (action.type === ConfigActionTypes.LoadConfigSuccess) {
-    state = { ...state, hl7Config: action.payload.data };
+    state = { ...state, config: action.payload.data };
     return state;
   } else {
     return state;
@@ -23,7 +23,7 @@ export const getConfigState = createFeatureSelector<IState>('config');
 
 export const getHl7ConfigState = createSelector(
   getConfigState,
-  (state: IState) => state.hl7Config,
+  (state: IState) => state.config,
 );
 
 export const getHl7Versions = createSelector(

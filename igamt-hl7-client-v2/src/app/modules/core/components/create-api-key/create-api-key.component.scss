@@ -1,0 +1,24 @@
+@import '../../../../../assets/variables';
+
+.api-keys-layout {
+  @extend %page-wrapper;
+  display: grid;
+  grid-template-areas: 'alerts' 'register-content';
+  grid-template-columns: 1fr;
+  grid-template-rows: minmax(min-content, max-content) auto;
+  overflow: scroll;
+}
+
+.api-keys-card {
+  grid-column: register-content;
+  grid-row: 2;
+  margin-left: auto;
+  margin-right: auto;
+  width: 60%;
+  min-width: 700px;
+}
+
+input.ng-invalid {
+  background-color: #ffe9ec;
+  border-left: 5px solid red;
+}

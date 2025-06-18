@@ -33,16 +33,16 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
   set usages({ original, config }: { original: Usage, config: Hl7Config }) {
     const includeW = original === 'W';
     const includeB = original === 'B';
-    this.options = Hl7Config.getUsageOptions(config.usages, includeW, includeB).filter((u) => u.value !== Usage.CAB);
+    const includeIX = original === 'IX';
+
+    this.options = Hl7Config.getUsageOptions(config.usages, includeW, includeB, includeIX).filter((u) => u.value !== Usage.CAB);
   }
 
   constructor(dialog: MatDialog) {
     super([PropertyType.USAGE], dialog);
     this.value$.asObservable().subscribe(
       (value) => {
-        this.usage = {
-          ...value,
-        };
+        this.usage = value;
       },
     );
   }

@@ -1,162 +1,330 @@
 import { HttpClient } from '@angular/common/http';
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {SelectItem} from 'primeng/api';
-import {IDisplayElement} from '../../models/display-element.interface';
-import {ISelectedIds} from '../select-resource-ids/select-resource-ids.component';
+import { Component, Inject, TemplateRef, ViewChild } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { EMPTY, from, Subscription, throwError } from 'rxjs';
+import { catchError, flatMap, map, take, tap } from 'rxjs/operators';
+import { IMessage } from 'src/app/modules/dam-framework/models/messages/message.class';
+import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
+import { IgService } from 'src/app/modules/ig/services/ig.service';
+import { Type } from '../../constants/type.enum';
+import { IDisplayElement } from '../../models/display-element.interface';
+import { StoreResourceRepositoryService } from '../../services/resource-repository.service';
+import { VerificationService } from '../../services/verification.service';
+import { ISelectedIds } from '../select-resource-ids/select-resource-ids.component';
+import { IVerificationResultDisplay, VerificationDisplayActiveTypeSelector } from '../verification-result-display/verification-result-display.component';
+
+export enum ExportStepType {
+  PROFILE_SELECTION = 'PROFILE_SELECTION',
+  VERIFICATION = 'VERIFICATION',
+  EXTERNAL_VALUESET_CONFIGURATION = 'EXTERNAL_VALUESET_CONFIGURATION',
+  BUNDLE_GENERATION = 'BUNDLE_GENERATION',
+}
+
+export enum ExternalValueSetExportType {
+  EXTERNAL = 'EXTERNAL',
+  EXCLUDED = 'EXCLUDED',
+  SNAPSHOT = 'SNAPSHOT',
+}
 
 @Component({
   selector: 'app-export-xml-dialog',
   templateUrl: './export-xml-dialog.component.html',
   styleUrls: ['./export-xml-dialog.component.css'],
 })
-export class ExportXmlDialogComponent implements OnInit {
-  step = 0;
-  reports: any;
-  errorCounts: number[][];
-  igVerificationResultTable: any[] = [];
-  cpVerificationResultTable: any[] = [];
-  segVerificationResultTable: any[] = [];
-  dtVerificationResultTable: any[] = [];
-  vsVerificationResultTable: any[] = [];
-  igVerificationResultTableForUser: any[] = [];
-  cpVerificationResultTableForUser: any[] = [];
-  segVerificationResultTableForUser: any[] = [];
-  dtVerificationResultTableForUser: any[] = [];
-  vsVerificationResultTableForUser: any[] = [];
-  ids: ISelectedIds = {conformanceProfilesId: [], compositeProfilesId: []};
-  severities: SelectItem[];
+export class ExportXmlDialogComponent {
+  current = ExportStepType.PROFILE_SELECTION;
+  ids: ISelectedIds = { conformanceProfilesId: [], compositeProfilesId: [] };
+  verificationResult: IVerificationResultDisplay;
+  externalValueSets: Array<{
+    display: IDisplayElement;
+    URL: string;
+  }> = [];
+  displayTable = false;
+  verificationInProgress = false;
+  verificationFailed = false;
+  verificationErrorMessage: string;
+  generationInProgress = false;
+  generationFailed = false;
+  generationErrorMessage: string;
+  verified = false;
+  hasFatal = false;
+  hasErrors = false;
+  exportTypeMap = {};
+  rememberExternalValueSetExportMode = false;
+  externalValueSetsTypeCount = {
+    external: 0,
+    excluded: 0,
+    snapshot: 0,
+  };
+  exportType = 'xml';
+  generationSubscription: Subscription;
 
-  constructor(private http: HttpClient, public dialogRef: MatDialogRef<ExportXmlDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: IExportXmlDialogData) {
+  @ViewChild('profileSelection')
+  profileSelection: TemplateRef<any>;
+  @ViewChild('profileSelectionActions')
+  profileSelectionActions: TemplateRef<any>;
+
+  @ViewChild('profileVerification')
+  profileVerification: TemplateRef<any>;
+  @ViewChild('profileVerificationActions')
+  profileVerificationActions: TemplateRef<any>;
+
+  @ViewChild('externalValueSetsConfiguration')
+  externalValueSetsConfiguration: TemplateRef<any>;
+  @ViewChild('externalValueSetsConfigurationActions')
+  externalValueSetsConfigurationActions: TemplateRef<any>;
+
+  @ViewChild('bundleGeneration')
+  bundleGeneration: TemplateRef<any>;
+  @ViewChild('bundleGenerationActions')
+  bundleGenerationActions: TemplateRef<any>;
+
+  activeSelector: VerificationDisplayActiveTypeSelector = (data) => {
+    if (data.conformanceProfiles && data.conformanceProfiles.entries && data.conformanceProfiles.entries.length > 0) {
+      return Type.CONFORMANCEPROFILE;
+    }
+    if (data.compositeProfiles && data.compositeProfiles.entries && data.compositeProfiles.entries.length > 0) {
+      return Type.COMPOSITEPROFILE;
+    }
+    return undefined;
+  }
+
+  getStepTemplate(step: ExportStepType) {
+    switch (step) {
+      case ExportStepType.PROFILE_SELECTION:
+        return this.profileSelection;
+      case ExportStepType.VERIFICATION:
+        return this.profileVerification;
+      case ExportStepType.EXTERNAL_VALUESET_CONFIGURATION:
+        return this.externalValueSetsConfiguration;
+      case ExportStepType.BUNDLE_GENERATION:
+        return this.bundleGeneration;
+    }
+  }
+
+  getStepActions(step: ExportStepType) {
+    switch (step) {
+      case ExportStepType.PROFILE_SELECTION:
+        return this.profileSelectionActions;
+      case ExportStepType.VERIFICATION:
+        return this.profileVerificationActions;
+      case ExportStepType.EXTERNAL_VALUESET_CONFIGURATION:
+        return this.externalValueSetsConfigurationActions;
+      case ExportStepType.BUNDLE_GENERATION:
+        return this.bundleGenerationActions;
+    }
+  }
+
+  constructor(
+    private http: HttpClient,
+    public dialogRef: MatDialogRef<ExportXmlDialogComponent>,
+    private verificationService: VerificationService,
+    private repository: StoreResourceRepositoryService,
+    private message: MessageService,
+    private igService: IgService,
+    @Inject(MAT_DIALOG_DATA) public data: IExportXmlDialogData) {
 
   }
-  ngOnInit() {
-    this.severities = [
-      { label: 'All Severities', value: null },
-      { label: 'FATAL', value: 'FATAL' },
-      { label: 'ERROR', value: 'ERROR' },
-      { label: 'WARNING', value: 'WARNING' },
-      { label: 'INFO', value: 'INFO' },
-    ];
-    this.reports = null;
-    this.errorCounts = null;
-    this.step = 0;
-  }
+
   cancel() {
+    if (this.generationSubscription) {
+      this.generationSubscription.unsubscribe();
+    }
     this.dialogRef.close();
   }
 
-  verify() {
-    this.step = 1;
-    this.http.post<any>('/api/igdocuments/' + this.data.igId + '/preverification', this.ids).pipe().subscribe(
-        (x) => {
-          this.reports = x;
-          this.errorCounts = this.countErrors(this.reports);
-
-          console.log(x);
-        },
-        (error) => {
-        },
-    );
-  }
-
-  addErrorNumbers(errorTable, errorTableForUser, numOfError, errors) {
-    errors.forEach((e) => {
-      if (e && e.targetMeta && e.targetMeta.domainInfo && e.targetMeta.domainInfo.scope === 'USER' && e.handleBy === 'User') {
-        errorTableForUser.push(e);
-      } else {
-        errorTable.push(e);
-      }
-
-      if (e.severity === 'FATAL') {
-        numOfError[0] = numOfError[0] + 1;
-      } else if (e.severity === 'ERROR') {
-        numOfError[1] = numOfError[1] + 1;
-      } else if (e.severity === 'WARNING') {
-        numOfError[2] = numOfError[2] + 1;
-      } else if (e.severity === 'INFO') {
-        numOfError[3] = numOfError[3] + 1;
-      }
-    });
-
-    return numOfError;
-  }
-
-  countErrors(reports) {
-    let numOfVSError = [0, 0, 0, 0];
-    let numOfDTError = [0, 0, 0, 0];
-    let numOfSEGError = [0, 0, 0, 0];
-    let numOfCPError = [0, 0, 0, 0];
-    let numOfIGError = [0, 0, 0, 0];
-
-    this.igVerificationResultTable = [];
-    this.cpVerificationResultTable = [];
-    this.segVerificationResultTable = [];
-    this.dtVerificationResultTable = [];
-    this.vsVerificationResultTable = [];
-
-    if (reports) {
-      if (reports.valuesetVerificationResults) {
-        reports.valuesetVerificationResults.forEach((item) => {
-          numOfVSError = this.addErrorNumbers(this.vsVerificationResultTable, this.vsVerificationResultTableForUser, numOfVSError, item.errors);
-        });
-      }
-
-      if (reports.datatypeVerificationResults) {
-        reports.datatypeVerificationResults.forEach((item) => {
-          numOfDTError = this.addErrorNumbers(this.dtVerificationResultTable, this.dtVerificationResultTableForUser, numOfDTError, item.errors);
-        });
-      }
-
-      if (reports.segmentVerificationResults) {
-        reports.segmentVerificationResults.forEach((item) => {
-          numOfSEGError = this.addErrorNumbers(this.segVerificationResultTable, this.segVerificationResultTableForUser, numOfSEGError, item.errors);
-        });
-      }
-
-      if (reports.conformanceProfileVerificationResults) {
-        reports.conformanceProfileVerificationResults.forEach((item) => {
-          numOfCPError = this.addErrorNumbers(this.cpVerificationResultTable, this.cpVerificationResultTableForUser, numOfCPError, item.errors);
-        });
-      }
-
-      numOfIGError = this.addErrorNumbers(this.igVerificationResultTable, this.igVerificationResultTableForUser, numOfIGError, reports.igVerificationResult.errors);
+  updateTypeCount() {
+    if (!this.externalValueSets) {
+      return;
     }
+    let external = 0;
+    let excluded = 0;
+    let snapshot = 0;
+    for (const evs of this.externalValueSets) {
+      switch (this.exportTypeMap[evs.display.id]) {
+        case 'EXCLUDED':
+          excluded++;
+          break;
+        case 'SNAPSHOT':
+          snapshot++;
+          break;
+        case 'EXTERNAL':
+        default:
+          external++;
+      }
+    }
+    this.externalValueSetsTypeCount = {
+      excluded,
+      external,
+      snapshot,
+    };
+  }
 
-    return [numOfVSError, numOfDTError, numOfSEGError, numOfCPError, numOfIGError];
+  verify() {
+    this.current = ExportStepType.VERIFICATION;
+    this.verificationInProgress = true;
+    this.verificationFailed = false;
+    this.verificationErrorMessage = '';
+    this.generationInProgress = false;
+    this.generationFailed = false;
+    this.generationErrorMessage = '';
+    this.externalValueSets = [];
+    this.verified = false;
+    this.exportTypeMap = {};
+    this.externalValueSetsTypeCount = {
+      external: 0,
+      excluded: 0,
+      snapshot: 0,
+    };
+    this.displayTable = false;
+    this.http.post<any>('/api/igdocuments/' + this.data.igId + '/preverification', { ids: this.ids, exportType: 'xml' }).pipe(
+      flatMap((result) => {
+        const report = result.verificationIssues;
+        const externalValueSetExportModes = result.externalValueSetExportModes || {};
+        this.externalValueSets = result.externalValueSetReferences || [];
+        return this.verificationService.verificationReportToDisplay(report, this.repository).pipe(
+          take(1),
+          map((verificationResult) => {
+            this.verificationResult = verificationResult;
+            this.displayTable = !this.tableIsEmpty(verificationResult);
+            this.setVerificationFlags(verificationResult);
+            this.verificationInProgress = false;
+            this.verified = true;
+            this.exportTypeMap = {};
+            for (const vs of this.externalValueSets) {
+              this.exportTypeMap[vs.display.id] = externalValueSetExportModes[vs.display.id];
+            }
+            this.updateTypeCount();
+          }),
+        );
+      }),
+      catchError((e) => {
+        this.verificationInProgress = false;
+        this.verificationFailed = true;
+        this.verificationErrorMessage = this.message.fromError(e).message;
+        this.externalValueSets = [];
+        this.verified = false;
+        this.current = ExportStepType.PROFILE_SELECTION;
+        this.exportTypeMap = {};
+        return throwError(e);
+      }),
+    ).subscribe();
+  }
 
+  configureExternalValueSets() {
+    this.current = ExportStepType.EXTERNAL_VALUESET_CONFIGURATION;
+  }
+
+  tableIsEmpty(verificationTable: IVerificationResultDisplay) {
+    const ig = !verificationTable.ig || verificationTable.ig.entries.length === 0;
+    const cp = !verificationTable.conformanceProfiles || verificationTable.conformanceProfiles.entries.length === 0;
+    const composite = !verificationTable.compositeProfiles || verificationTable.compositeProfiles.entries.length === 0;
+    const segments = !verificationTable.segments || verificationTable.segments.entries.length === 0;
+    const datatypes = !verificationTable.datatypes || verificationTable.datatypes.entries.length === 0;
+    const valueSets = !verificationTable.valueSets || verificationTable.valueSets.entries.length === 0;
+    const coConstraintGroups = !verificationTable.coConstraintGroups || verificationTable.coConstraintGroups.entries.length === 0;
+    return ig && cp && composite && segments && datatypes && valueSets && coConstraintGroups;
+  }
+
+  setExportType(id: string, type: ExternalValueSetExportType) {
+    this.exportTypeMap[id] = type;
+    this.updateTypeCount();
+  }
+
+  setAllExportType(type: ExternalValueSetExportType) {
+    this.exportTypeMap = {};
+    for (const vs of this.externalValueSets) {
+      this.exportTypeMap[vs.display.id] = type;
+    }
+    this.updateTypeCount();
+  }
+
+  setVerificationFlags(result: IVerificationResultDisplay) {
+    const fatalCount = this.getCountOrZero(result.ig.stats.fatal)
+      + this.getCountOrZero(result.compositeProfiles.stats.fatal)
+      + this.getCountOrZero(result.conformanceProfiles.stats.fatal)
+      + this.getCountOrZero(result.segments.stats.fatal)
+      + this.getCountOrZero(result.datatypes.stats.fatal)
+      + this.getCountOrZero(result.valueSets.stats.fatal)
+      + this.getCountOrZero(result.coConstraintGroups.stats.fatal);
+
+    const errorsCount = this.getCountOrZero(result.ig.stats.error)
+      + this.getCountOrZero(result.compositeProfiles.stats.error)
+      + this.getCountOrZero(result.conformanceProfiles.stats.error)
+      + this.getCountOrZero(result.segments.stats.error)
+      + this.getCountOrZero(result.datatypes.stats.error)
+      + this.getCountOrZero(result.valueSets.stats.error)
+      + this.getCountOrZero(result.coConstraintGroups.stats.error);
+
+    this.hasErrors = errorsCount > 0;
+    this.hasFatal = fatalCount > 0;
+  }
+
+  getCountOrZero(n?: number): number {
+    return n || 0;
   }
 
   submit() {
-    this.dialogRef.close(this.ids);
-  }
-  matchConformanceProfileIds($event: string[]) {
-    this.ids = {...this.ids, conformanceProfilesId: $event };
+    this.current = ExportStepType.BUNDLE_GENERATION;
+    this.generationInProgress = true;
+    this.generationFailed = false;
+    this.generationErrorMessage = '';
+    const filename = this.data.title + ' ' + (new Date()).toUTCString() + '.zip';
+    this.generationSubscription = this.igService.exportXMLInline(
+      this.data.igId,
+      this.ids,
+      this.exportType,
+      filename,
+      {
+        externalValueSetsExportMode: this.exportTypeMap,
+        rememberExternalValueSetExportMode: this.rememberExternalValueSetExportMode,
+      },
+    ).pipe(
+      tap(() => {
+        this.generationInProgress = false;
+        this.generationFailed = false;
+        this.generationErrorMessage = '';
+        this.dialogRef.close();
+      }),
+      catchError((e) => {
+        this.generationInProgress = false;
+        this.generationFailed = true;
+        if (e.error && e.error instanceof Blob) {
+          return from(e.error.text()).pipe(
+            map((errorTxt: string) => {
+              const message: IMessage<string> = JSON.parse(errorTxt);
+              this.generationErrorMessage = message.text;
+            }),
+          );
+        }
+        this.generationErrorMessage = 'XML Bundle Generation failed due to an unexpected error.';
+        return EMPTY;
+      }),
+    ).subscribe();
   }
 
-  matchCompositeProfileIds($event: string[]) {
-    this.ids = {...this.ids, compositeProfilesId: $event };
-  }
-
-  isSelected(): boolean {
-    return (this.ids.conformanceProfilesId && this.ids.conformanceProfilesId.length > 0) || ( this.ids.compositeProfilesId && this.ids.compositeProfilesId.length > 0);
-  }
-
-  isProcessable(): boolean {
-    if (this.errorCounts && this.errorCounts[0] && this.errorCounts[1] && this.errorCounts[2] && this.errorCounts[3] && this.errorCounts[4] &&
-            this.errorCounts[0][0] + this.errorCounts[0][1]
-          + this.errorCounts[1][1] + this.errorCounts[1][1]
-          + this.errorCounts[2][1] + this.errorCounts[2][1]
-          + this.errorCounts[3][1] + this.errorCounts[3][1]
-          + this.errorCounts[4][1] + this.errorCounts[4][1] === 0) {
-        return true;
+  backFromGeneration() {
+    if (this.generationSubscription) {
+      this.generationSubscription.unsubscribe();
     }
-    return false;
+    this.goto(ExportStepType.VERIFICATION);
+  }
+
+  selectConformanceProfiles(ids: string[]) {
+    this.ids = { ...this.ids, conformanceProfilesId: ids };
+  }
+
+  selectCompositeProfiles(ids: string[]) {
+    this.ids = { ...this.ids, compositeProfilesId: ids };
+  }
+
+  goto(to: ExportStepType) {
+    this.current = to;
   }
 }
 export interface IExportXmlDialogData {
   conformanceProfiles?: IDisplayElement[];
   compositeProfiles?: IDisplayElement[];
-  igId?: string;
+  igId: string;
+  title: string;
 }

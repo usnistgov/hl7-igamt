@@ -1,7 +1,7 @@
 package gov.nist.hit.hl7.igamt.service.verification.impl;
 
 import com.google.common.base.Strings;
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
+
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
@@ -9,17 +9,27 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingInfo;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingLocationOption;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.Location;
-import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
-import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
+import gov.nist.hit.hl7.igamt.ig.model.*;
+import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.ResourceSkeletonService;
+import gov.nist.hit.hl7.igamt.service.impl.exception.AmbiguousOBX3MappingException;
+import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +55,82 @@ public class CoConstraintVerificationService extends VerificationUtils {
     @Autowired
     DatatypeService datatypeService;
 
+    @Autowired
+    CoConstraintSerializationHelper coConstraintSerializationHelper;
+
+    @Autowired
+    SegmentService segmentService;
+
+    @Autowired
+    CommonVerificationService commonVerificationService;
+
+    @Autowired
+    ValuesetService valuesetService;
+
+    public List<IgamtObjectError> verifyCoConstraintGroup(CoConstraintGroup coConstraintGroup) {
+        Segment baseSegment = this.segmentService.findById(coConstraintGroup.getBaseSegment());
+        List<IgamtObjectError> issues = new ArrayList<>();
+        if(baseSegment == null) {
+            // Base Segment does not exist
+        } else {
+            ResourceSkeleton segment = new ResourceSkeleton(
+                    new ResourceRef(
+                            Type.SEGMENT,
+                            baseSegment.getId()
+                    ),
+                    this.resourceSkeletonService
+            );
+            TargetLocation selectorHeadersLocation = TargetLocation.makeHeadersLocationFromCoConstraintGroup("selectors", "IF Columns");
+            TargetLocation constraintHeadersLocation = TargetLocation.makeHeadersLocationFromCoConstraintGroup( "constraints", "THEN Columns");
+            Map<String, List<IgamtObjectError>> selectors = checkCoConstraintHeaders(segment, selectorHeadersLocation, coConstraintGroup.getHeaders().getSelectors());
+            Map<String, List<IgamtObjectError>> constraints = checkCoConstraintHeaders(segment, constraintHeadersLocation, coConstraintGroup.getHeaders().getConstraints());
+            selectors.values().forEach(issues::addAll);
+            constraints.values().forEach(issues::addAll);
+            List<DataHeaderElementVerified> valid = Stream.concat(
+                    verifyHeaders(coConstraintGroup.getHeaders().getSelectors(), segment, true, selectors, constraints).stream(),
+                    verifyHeaders(coConstraintGroup.getHeaders().getConstraints(), segment, false, selectors, constraints).stream()
+            ).collect(Collectors.toList());
+
+            List<DataHeaderElementVerified> datatypeHeaders = valid.stream()
+                                                                   .filter((h) -> h.header.getColumnType().equals(ColumnType.DATATYPE))
+                                                                   .collect(Collectors.toList());
+
+            Set<Valueset> allowedValuesInDatatypeColumn = new HashSet<>();
+
+            TargetLocation tableLocation = TargetLocation.makeContextLocation("", "Co-Constraint Group");
+
+            if(datatypeHeaders.size() == 1) {
+                String location = datatypeHeaders.get(0).header.getKey();
+                allowedValuesInDatatypeColumn = getValueSetBindingsAtLocation(segment, location, tableLocation, issues);
+            }
+
+            // Validate Co-Constraints
+            issues.addAll(checkCoConstraints(segment, new TargetLocation(), coConstraintGroup.getCoConstraints(), valid, allowedValuesInDatatypeColumn, false, true));
+        }
+        return issues;
+    }
+
+    public List<IgamtObjectError> checkCoConstraintBindingsOBX3Mapping(ConformanceProfile profile) {
+        List<IgamtObjectError> errors = new ArrayList<>();
+        try {
+            coConstraintSerializationHelper.getOBX3ToFlavorMap(profile);
+        } catch (AmbiguousOBX3MappingException e) {
+            for(CoConstraintMappingLocation location: e.getMappings().keySet()) {
+                e.getMappings().get(location).forEach((ambigious) -> {
+                    errors.add(this.entry.CoConstraintOBX3MappingIsDuplicate(
+                            location.getLocationId(),
+                            location.getResource().getId(),
+                            location.getResource().getType(),
+                            ambigious.getCode()
+                    ));
+                });
+            }
+        } catch (ResourceNotFoundException | PathNotFoundException e) {
+            e.printStackTrace();
+        }
+        return errors;
+    }
+
     public List<IgamtObjectError> checkCoConstraintBinding(ResourceSkeleton resource, CoConstraintBinding coConstraintBinding) {
         return this.getTargetAndVerify(
             resource,
@@ -56,7 +142,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
             "CoConstraint Binding Context",
             (target) -> {
                 if (coConstraintBinding.getBindings() != null) {
-                    String name = (target instanceof ResourceSkeletonBone) ? ((ResourceSkeletonBone) target).getLocationInfo().getHl7Path() : target.getResource().getFixedName();
+                    String name = (target instanceof ResourceSkeletonBone) ? ((ResourceSkeletonBone) target).getLocationInfo().getHl7Path() : target.getResource().getVariableName();
                     return coConstraintBinding.getBindings().stream().flatMap(
                             (coConstraintBindingSegment) -> checkCoConstraintBindingSegment(
                                                                     target,
@@ -107,14 +193,42 @@ public class CoConstraintVerificationService extends VerificationUtils {
                             List<IgamtObjectError> errors = new ArrayList<>();
                             if (coConstraintBindingSegment.getTables() != null) {
                                 int i = 1;
+                                List<String> tableIds = new ArrayList<>();
                                 for (CoConstraintTableConditionalBinding tableConditionalBinding : coConstraintBindingSegment.getTables()) {
+                                    TargetLocation tableLocation = TargetLocation.makeTableLocation(
+                                            segmentLocation,
+                                            Strings.isNullOrEmpty(tableConditionalBinding.getId()) ? "[Missing_ID]" : tableConditionalBinding.getId(),
+                                            i
+                                    );
+
+                                    if(Strings.isNullOrEmpty(tableConditionalBinding.getId())) {
+                                        errors.add(this.entry.CoConstraintTableIdIsMissing(
+                                                tableLocation.pathId,
+                                                tableLocation.name,
+                                                context.getResource().getId(),
+                                                context.getResource().getType()
+                                        ));
+                                    } else if(tableIds.contains(tableConditionalBinding.getId())) {
+                                        errors.add(this.entry.CoConstraintTableIdIsDuplicate(
+                                                tableLocation.pathId,
+                                                tableLocation.name,
+                                                tableConditionalBinding.getId(),
+                                                context.getResource().getId(),
+                                                context.getResource().getType()
+                                        ));
+                                    } else {
+                                        tableIds.add(tableConditionalBinding.getId());
+                                    }
+
+                                    ResourceSkeleton segment = new ResourceSkeleton(
+                                            target.getResourceRef(),
+                                            this.resourceSkeletonService
+                                    );
+
                                     errors.addAll(checkCoConstraintTableConditionalBinding(
-                                            target,
-                                            TargetLocation.makeTableLocation(
-                                                    segmentLocation,
-                                                    tableConditionalBinding.getId(),
-                                                    i
-                                            ),
+                                            segment,
+                                            context,
+                                            tableLocation,
                                             tableConditionalBinding
                                     ));
                                     i++;
@@ -139,19 +253,14 @@ public class CoConstraintVerificationService extends VerificationUtils {
     }
 
 
-    List<IgamtObjectError> checkCoConstraintTableConditionalBinding(ResourceSkeletonBone segmentRef, TargetLocation tableLocation, CoConstraintTableConditionalBinding binding) {
-        ResourceSkeleton segment = new ResourceSkeleton(
-                segmentRef.getResourceRef(),
-                this.resourceSkeletonService
-        );
-
+    public List<IgamtObjectError> checkCoConstraintTableConditionalBinding(ResourceSkeleton segment, ResourceSkeleton context, TargetLocation tableLocation, CoConstraintTableConditionalBinding binding) {
         if(binding.getValue() != null) {
             List<IgamtObjectError> errors = new ArrayList<>();
             TargetLocation conditionLocation = TargetLocation.makeConditionLocation(tableLocation);
             if(binding.getCondition() != null) {
                 errors.addAll(
                         this.assertionVerificationService.checkAssertion(
-                                segment,
+                                context,
                                 new Location(conditionLocation.pathId, conditionLocation.name, PropertyType.COCONSTRAINTBINDING_CONDITION),
                                 binding.getCondition()
                         )
@@ -166,7 +275,15 @@ public class CoConstraintVerificationService extends VerificationUtils {
         }
     }
 
-    List<IgamtObjectError> checkCoConstraintTable(ResourceSkeleton segment, TargetLocation tableLocation, CoConstraintTable table) {
+    public List<DataHeaderElementVerified> verifyHeaders(List<CoConstraintHeader> headers, ResourceSkeleton segment, boolean selector, Map<String, List<IgamtObjectError>> selectors, Map<String, List<IgamtObjectError>> constraints) {
+        return headers.stream()
+                .filter((header) -> !selectors.containsKey(header.getKey()) && !constraints.containsKey(header.getKey()))
+                .map((header) -> this.toVerifiedDataHeaderElement(segment, header, selector))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    public List<IgamtObjectError> checkCoConstraintTable(ResourceSkeleton segment, TargetLocation tableLocation, CoConstraintTable table) {
         List<IgamtObjectError> errors = new ArrayList<>();
         TargetLocation selectorHeadersLocation = TargetLocation.makeHeadersLocation(tableLocation, "selectors", "IF Columns");
         TargetLocation constraintHeadersLocation = TargetLocation.makeHeadersLocation(tableLocation, "constraints", "THEN Columns");
@@ -178,16 +295,23 @@ public class CoConstraintVerificationService extends VerificationUtils {
         constraints.values().forEach(errors::addAll);
 
         List<DataHeaderElementVerified> valid = Stream.concat(
-                table.getHeaders().getSelectors().stream(),
-                table.getHeaders().getConstraints().stream()
-        )
-                .filter((header) -> !selectors.containsKey(header.getKey()) && !constraints.containsKey(header.getKey()))
-                .map((header) -> this.toVerifiedDataHeaderElement(segment, header))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                verifyHeaders(table.getHeaders().getSelectors(), segment, true, selectors, constraints).stream(),
+                verifyHeaders(table.getHeaders().getConstraints(), segment, false, selectors, constraints).stream()
+        ).collect(Collectors.toList());
+
+        List<DataHeaderElementVerified> datatypeHeaders = valid.stream()
+                                                               .filter((h) -> h.header.getColumnType().equals(ColumnType.DATATYPE))
+                                                               .collect(Collectors.toList());
+
+        Set<Valueset> allowedValuesInDatatypeColumn = new HashSet<>();
+
+        if(datatypeHeaders.size() == 1) {
+            String location = datatypeHeaders.get(0).header.getKey();
+            allowedValuesInDatatypeColumn = getValueSetBindingsAtLocation(segment, location, tableLocation, errors);
+        }
 
         // Validate Co-Constraints
-        errors.addAll(checkCoConstraints(segment, tableLocation, table.getCoConstraints(), valid, false));
+        errors.addAll(checkCoConstraints(segment, tableLocation, table.getCoConstraints(), valid, allowedValuesInDatatypeColumn, false, true));
         // Validate Groups
         if(table.getGroups() != null) {
             int i = 1;
@@ -198,6 +322,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
                             TargetLocation.makeGroupLocation(tableLocation, group.getId(), i),
                             group,
                             valid,
+                            allowedValuesInDatatypeColumn,
                             "#"+i++
                         )
                 );
@@ -207,11 +332,11 @@ public class CoConstraintVerificationService extends VerificationUtils {
         return errors;
     }
 
-    DataHeaderElementVerified toVerifiedDataHeaderElement(ResourceSkeleton segment, CoConstraintHeader header) {
+    DataHeaderElementVerified toVerifiedDataHeaderElement(ResourceSkeleton segment, CoConstraintHeader header, boolean selector) {
         try {
             ResourceSkeletonBone target = segment.get(header.getKey());
             BindingInfo bindingInfo = getBindingInfo(target.getResource().getFixedName());
-            return new DataHeaderElementVerified((DataElementHeader) header, target, bindingInfo);
+            return new DataHeaderElementVerified((DataElementHeader) header, target, bindingInfo, selector);
         } catch (ResourceNotFoundException e) {
             e.printStackTrace();
             return null;
@@ -219,16 +344,16 @@ public class CoConstraintVerificationService extends VerificationUtils {
     }
 
 
-    List<IgamtObjectError> checkCoConstraintTableGroup(ResourceSkeleton segment, TargetLocation groupLocation, CoConstraintGroupBinding group, List<DataHeaderElementVerified> headers, String groupId) {
+    List<IgamtObjectError> checkCoConstraintTableGroup(ResourceSkeleton segment, TargetLocation groupLocation, CoConstraintGroupBinding group, List<DataHeaderElementVerified> headers, Set<Valueset> allowedValuesInDatatypeColumn, String groupId) {
         if(group instanceof CoConstraintGroupBindingContained) {
             CoConstraintGroupBindingContained contained = (CoConstraintGroupBindingContained) group;
-            return checkCoConstraintTableGroup(segment, groupLocation, contained.getRequirement(), contained.getName(), contained.getCoConstraints(), headers);
+            return checkCoConstraintTableGroup(segment, groupLocation, contained.getRequirement(), contained.getName(), contained.getCoConstraints(), headers, allowedValuesInDatatypeColumn, true);
         } else {
             CoConstraintGroupBindingRef ref = (CoConstraintGroupBindingRef) group;
             try {
                 CoConstraintGroup content = this.coConstraintService.findById(ref.getRefId());
-                return checkCoConstraintTableGroup(segment, groupLocation, ref.getRequirement(), content.getName(), content.getCoConstraints(), headers);
-            } catch (CoConstraintGroupNotFoundException e) {
+                return checkCoConstraintTableGroup(segment, groupLocation, ref.getRequirement(), content.getName(), content.getCoConstraints(), headers, allowedValuesInDatatypeColumn, false);
+            } catch (EntityNotFound e) {
                 return Collections.singletonList(
                     this.entry.CoConstraintInvalidGroupRef(
                             groupLocation.pathId,
@@ -241,7 +366,20 @@ public class CoConstraintVerificationService extends VerificationUtils {
         }
     }
 
-    List<IgamtObjectError> checkCoConstraints(ResourceSkeleton segment, TargetLocation groupOrTableLocation, List<CoConstraint> coConstraints, List<DataHeaderElementVerified> headers, boolean group) {
+    boolean selectorIsCompatibleWithDatatypeHeader(ResourceSkeleton segment, List<DataHeaderElementVerified> headers) {
+        if(segment.getResource().getFixedName().equals("OBX")) {
+            List<DataHeaderElementVerified> selectors = headers.stream().filter((header) -> header.selector).collect(Collectors.toList());
+            if(selectors.size() != 1) {
+                return false;
+            } else {
+                DataHeaderElementVerified selector = selectors.get(0);
+                return Objects.equals(selector.header.getKey(), "3") && Objects.equals(selector.header.getColumnType(), ColumnType.CODE);
+            }
+        }
+        return false;
+    }
+
+    List<IgamtObjectError> checkCoConstraints(ResourceSkeleton segment, TargetLocation groupOrTableLocation, List<CoConstraint> coConstraints, List<DataHeaderElementVerified> headers, Set<Valueset> allowedValuesInDatatypeColumn, boolean group, boolean contained) {
         int i = 1;
         List<IgamtObjectError> errors = new ArrayList<>();
         boolean verifyDatatypeAndVaries = false;
@@ -254,6 +392,15 @@ public class CoConstraintVerificationService extends VerificationUtils {
 
         if(datatypeHeaders.size() == 1 && variesHeaders.size() == 1) {
             verifyDatatypeAndVaries = true;
+            if(!selectorIsCompatibleWithDatatypeHeader(segment, headers)) {
+                // Only allow datatype header when IF column is OBX-3 (Code)
+                errors.add(this.entry.CoConstraintDatatypeCellNotAllowed(
+                        groupOrTableLocation.pathId,
+                        groupOrTableLocation.name,
+                        segment.getResource().getId(),
+                        segment.getResource().getType()
+                ));
+            }
         } else if(datatypeHeaders.size() > 1) {
             // Multiple Datatype Cells
             errors.add(this.entry.CoConstraintMultiDatatypeCells(
@@ -281,12 +428,15 @@ public class CoConstraintVerificationService extends VerificationUtils {
         }
 
         for(CoConstraint cc: coConstraints) {
-
             TargetLocation ccLocation = TargetLocation.makeRowLocation(groupOrTableLocation, cc.getId(), i);
             errors.addAll(this.checkCoConstraintRequirement(segment, ccLocation, cc.getRequirement(), false, (i == 1) && group));
+            if(contained) {
+                errors.addAll(this.checkAllHeadersHaveCells(segment, cc, ccLocation, headers));
+            }
 
             for(DataHeaderElementVerified header: headers) {
                 if(cc.getCells().get(header.header.getKey()) != null) {
+                    CoConstraintCell cell = cc.getCells().get(header.header.getKey());
                     TargetLocation cellLocation = TargetLocation.makeCellLocation(
                             ccLocation,
                             header.header.getKey(),
@@ -295,7 +445,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
                     );
 
                     errors.addAll(
-                            this.checkCoConstraintCell(segment, header, cellLocation, cc.getCells().get(header.header.getKey()))
+                            this.checkCoConstraintCell(segment, header, cellLocation, cell)
                     );
                 }
             }
@@ -304,8 +454,21 @@ public class CoConstraintVerificationService extends VerificationUtils {
                 DataHeaderElementVerified datatypeHeader = datatypeHeaders.get(0);
                 DataHeaderElementVerified variesHeader = variesHeaders.get(0);
 
+                DatatypeCellVerified datatypeCellVerified = checkDatatypeCell(
+                        segment,
+                        TargetLocation.makeCellLocation(
+                                ccLocation,
+                                datatypeHeader.header.getKey(),
+                                datatypeHeader.target.getLocationInfo(),
+                                datatypeHeader.header.getColumnType()
+                        ),
+                        datatypeHeader,
+                        cc.getCells().get(datatypeHeader.header.getKey()),
+                        allowedValuesInDatatypeColumn
+                );
+
                 errors.addAll(
-                        this.checkDatatypeAndVaries(segment, datatypeHeader, variesHeader, ccLocation, cc)
+                        this.checkDatatypeAndVaries(segment, datatypeCellVerified, variesHeader, ccLocation, cc)
                 );
             }
 
@@ -314,7 +477,55 @@ public class CoConstraintVerificationService extends VerificationUtils {
         return errors;
     }
 
-    List<IgamtObjectError> checkCoConstraintTableGroup(ResourceSkeleton segment, TargetLocation groupLocation, CoConstraintRequirement requirement, String name, List<CoConstraint> coConstraints, List<DataHeaderElementVerified> headers) {
+    Set<Valueset> getValueSetBindingsAtLocation(ResourceSkeleton segment, String headerLocation, TargetLocation tableLocation, List<IgamtObjectError> errors) {
+        try {
+            ResourceBinding bindings = segment.getResourceBindings();
+            if(bindings != null && bindings.getChildren() != null) {
+                for(StructureElementBinding child : bindings.getChildren()) {
+                    if(child.getElementId().equals(headerLocation)) {
+                        Set<ValuesetBinding> valuesetBindings =  child.getValuesetBindings();
+                        if(valuesetBindings != null) {
+                            return valuesetBindings.stream()
+                                    .filter((valuesetBinding) -> valuesetBinding != null && valuesetBinding.getValueSets() != null)
+                                    .flatMap((valuesetBinding) -> valuesetBinding.getValueSets().stream())
+                                            .map((vsId) -> this.valuesetService.findById(vsId))
+                                    .filter(Objects::nonNull)
+                                    .collect(Collectors.toSet());
+                        }
+                    }
+                }
+            }
+        } catch (ResourceNotFoundException e) {
+            errors.add(
+                    this.entry.ResourceNotFound(
+                            new Location(tableLocation.pathId, tableLocation.name, PropertyType.COCONSTRAINTBINDING_SEGMENT),
+                            e.getId(),
+                            e.getType()
+                    )
+            );
+        }
+        return new HashSet<>();
+    }
+
+    List<IgamtObjectError> checkAllHeadersHaveCells(ResourceSkeleton segment, CoConstraint coConstraint, TargetLocation coConstraintLocation, List<DataHeaderElementVerified> headers) {
+        List<IgamtObjectError> errors = new ArrayList<>();
+        for(DataHeaderElementVerified header: headers) {
+            boolean cellExists = coConstraint.getCells().containsKey(header.header.getKey());
+            if(!cellExists) {
+                errors.add(this.entry.CoConstraintCellMissing(
+                        coConstraintLocation.pathId,
+                        coConstraintLocation.name,
+                        segment.getResource().getId(),
+                        segment.getResource().getType(),
+                        header.target.getLocationInfo().getHl7Path(),
+                        header.header.getColumnType().name()
+                ));
+            }
+        }
+        return errors;
+    }
+
+    List<IgamtObjectError> checkCoConstraintTableGroup(ResourceSkeleton segment, TargetLocation groupLocation, CoConstraintRequirement requirement, String name, List<CoConstraint> coConstraints, List<DataHeaderElementVerified> headers, Set<Valueset> allowedValuesInDatatypeColumn, boolean contained) {
         List<IgamtObjectError> errors = new ArrayList<>(this.checkCoConstraintRequirement(segment, groupLocation, requirement, true, false));
         if(Strings.isNullOrEmpty(name)) {
             errors.add(
@@ -327,7 +538,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
             );
         }
         errors.addAll(
-                this.checkCoConstraints(segment, groupLocation, coConstraints, headers, true)
+                this.checkCoConstraints(segment, groupLocation, coConstraints, headers, allowedValuesInDatatypeColumn, true, contained)
         );
         return errors;
     }
@@ -433,6 +644,10 @@ public class CoConstraintVerificationService extends VerificationUtils {
                 cell.getType()
         ));
 
+        if(this.coConstraintService.cellIsEmpty(cell) && !header.selector) {
+            return this.NoErrors();
+        }
+
         switch (header.header.getColumnType()) {
             case CODE:
                 if(cell instanceof CodeCell) {
@@ -494,13 +709,17 @@ public class CoConstraintVerificationService extends VerificationUtils {
             );
             errors.addAll(
                     this.vocabularyBindingVerificationService.verifyBindingLocations(
-                            segment,
-                            cellLocation.pathId,
-                            cellLocation.name,
-                            header.target,
                             valid,
                             new HashSet<>(cell.getLocations()),
-                            this.entry::CoConstraintCodeCellInvalidBindingLocation
+                            (reason) -> this.entry.CoConstraintCodeCellInvalidBindingLocation(
+                                    cellLocation.pathId,
+                                    cellLocation.name,
+                                    header.target.getLocationInfo(),
+                                    segment.getResource().getId(),
+                                    segment.getResource().getType(),
+                                    new HashSet<>(cell.getLocations()),
+                                    reason
+                            )
                     )
             );
         }
@@ -517,13 +736,18 @@ public class CoConstraintVerificationService extends VerificationUtils {
         for(ValuesetBinding vsBinding: cell.getBindings()) {
             errors.addAll(
                     this.vocabularyBindingVerificationService.verifyBindingLocations(
-                            segment,
-                            cellLocation.pathId,
-                            cellLocation.name,
-                            header.target,
                             validLocation,
                             vsBinding.getValuesetLocations(),
-                            this.entry::CoConstraintValueSetCellInvalidBindingLocation
+                            (reason) -> this.entry.CoConstraintValueSetCellInvalidBindingLocation(
+                                    cellLocation.pathId,
+                                    cellLocation.name,
+                                    header.target.getLocationInfo(),
+                                    segment.getResource().getId(),
+                                    segment.getResource().getType(),
+                                    vsBinding.getValuesetLocations(),
+                                    reason
+                            )
+
                     )
             );
             for(String vsId: vsBinding.getValueSets()) {
@@ -555,31 +779,53 @@ public class CoConstraintVerificationService extends VerificationUtils {
         return this.NoErrors();
     }
 
-    DatatypeCellVerified checkDatatypeCell(ResourceSkeleton segment, TargetLocation cellLocation, DataHeaderElementVerified datatype, CoConstraintCell coConstraintCell) {
+    DatatypeCellVerified checkDatatypeCell(ResourceSkeleton segment, TargetLocation cellLocation, DataHeaderElementVerified datatype, CoConstraintCell coConstraintCell, Set<Valueset> allowedDatatypeValues) {
         if(coConstraintCell instanceof DatatypeCell) {
             List<IgamtObjectError> errors = new ArrayList<>();
             DatatypeCell cell = (DatatypeCell) coConstraintCell;
             if(Strings.isNullOrEmpty(cell.getValue())) {
                 // Value Is Missing
+                errors.add(this.entry.CoConstraintDatatypeCellMissingValue(
+                        cellLocation.pathId,
+                        cellLocation.name,
+                        segment.getResource().getId(),
+                        segment.getResource().getType()
+                ));
+            }  else {
+                errors.addAll(
+                        this.commonVerificationService.checkDynamicMappingValueInValueSet(
+                                new Location(cellLocation.pathId, cellLocation.name, PropertyType.COCONSTRAINTBINDING_CELL),
+                                segment.getResource().getId(),
+                                segment.getResource().getType(),
+                                allowedDatatypeValues,
+                                cell.getValue()
+                        )
+                );
             }
             if(Strings.isNullOrEmpty(cell.getDatatypeId())) {
                 // Datatype Value Is Missing
-                return new DatatypeCellVerified(null, errors);
+                errors.add(this.entry.CoConstraintDatatypeCellMissingDatatype(
+                        cellLocation.pathId,
+                        cellLocation.name,
+                        segment.getResource().getId(),
+                        segment.getResource().getType()
+                ));
+                return new DatatypeCellVerified(null, cell.getValue(), errors);
             } else {
                 Datatype dt = this.datatypeService.findById(cell.getDatatypeId());
                 if(dt != null) {
-                    return new DatatypeCellVerified(dt, errors);
+                    return new DatatypeCellVerified(dt, cell.getValue(), errors);
                 } else {
                     errors.add(this.entry.ResourceNotFound(
                             new Location(cellLocation.pathId, cellLocation.name, PropertyType.COCONSTRAINTBINDING_CELL),
                             cell.getDatatypeId(),
                             Type.DATATYPE
                     ));
-                    return new DatatypeCellVerified(null, errors);
+                    return new DatatypeCellVerified(null, cell.getValue(), errors);
                 }
             }
         } else {
-            return new DatatypeCellVerified(null, Collections.singletonList(this.entry.CoConstraintIncompatibleHeaderAndCellType(
+            return new DatatypeCellVerified(null, null, Collections.singletonList(this.entry.CoConstraintIncompatibleHeaderAndCellType(
                     cellLocation.pathId,
                     cellLocation.name,
                     segment.getResource().getId(),
@@ -614,7 +860,8 @@ public class CoConstraintVerificationService extends VerificationUtils {
                     DataHeaderElementVerified verified = new DataHeaderElementVerified(
                             updated,
                             varies.target,
-                            bindingInfo
+                            bindingInfo,
+                            false
                     );
                     return this.checkCoConstraintCell(segment, verified, cellLocation, cell.getCellValue());
                 }
@@ -635,18 +882,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
     }
 
 
-    List<IgamtObjectError> checkDatatypeAndVaries(ResourceSkeleton segment, DataHeaderElementVerified datatype, DataHeaderElementVerified varies, TargetLocation ccLocation, CoConstraint cc) {
-        DatatypeCellVerified datatypeCellVerified = checkDatatypeCell(
-                segment,
-                TargetLocation.makeCellLocation(
-                        ccLocation,
-                        datatype.header.getKey(),
-                        datatype.target.getLocationInfo(),
-                        datatype.header.getColumnType()
-                ),
-                datatype,
-                cc.getCells().get(datatype.header.getKey())
-        );
+    List<IgamtObjectError> checkDatatypeAndVaries(ResourceSkeleton segment, DatatypeCellVerified datatypeCellVerified, DataHeaderElementVerified varies, TargetLocation ccLocation, CoConstraint cc) {
         if (datatypeCellVerified.datatype != null) {
             List<IgamtObjectError> errors = new ArrayList<>();
             errors.addAll(
@@ -808,11 +1044,13 @@ public class CoConstraintVerificationService extends VerificationUtils {
 
     protected static class DatatypeCellVerified {
         Datatype datatype;
+        String value;
         List<IgamtObjectError> errors;
 
-        public DatatypeCellVerified(Datatype datatype, List<IgamtObjectError> errors) {
+        public DatatypeCellVerified(Datatype datatype, String value, List<IgamtObjectError> errors) {
             this.datatype = datatype;
             this.errors = errors;
+            this.value = value;
         }
     }
 
@@ -820,24 +1058,40 @@ public class CoConstraintVerificationService extends VerificationUtils {
         DataElementHeader header;
         ResourceSkeletonBone target;
         BindingInfo bindingInfo;
+        boolean selector;
 
-        public DataHeaderElementVerified(DataElementHeader header, ResourceSkeletonBone target, BindingInfo bindingInfo) {
+        public DataHeaderElementVerified(DataElementHeader header, ResourceSkeletonBone target, BindingInfo bindingInfo, boolean selector) {
             this.header = header;
             this.target = target;
             this.bindingInfo = bindingInfo;
+            this.selector = selector;
         }
     }
 
-    protected static class TargetLocation {
+    public static class TargetLocation {
         String pathId;
         String name;
 
+        public TargetLocation() {
+        }
+
+        public TargetLocation(String name, String pathId) {
+            this.name = name;
+            this.pathId = pathId;
+        }
+
         static String concatPath(String pre, String value) {
-            return pre + ">" + value;
+            if(!Strings.isNullOrEmpty(pre)) {
+                return pre + ">" + value;
+            }
+            return value;
         }
 
         static String concatName(String pre, String value) {
-            return pre + " - " + value;
+            if(!Strings.isNullOrEmpty(pre)) {
+                return pre + " - " + value;
+            }
+            return value;
         }
 
         static TargetLocation makeContextLocation(String pathId, String name) {
@@ -879,6 +1133,13 @@ public class CoConstraintVerificationService extends VerificationUtils {
             TargetLocation location = new TargetLocation();
             location.name = concatName(tableLocation.name, headers);
             location.pathId = concatPath(tableLocation.pathId, headersKey);
+            return location;
+        }
+
+        static TargetLocation makeHeadersLocationFromCoConstraintGroup(String headersKey, String headers) {
+            TargetLocation location = new TargetLocation();
+            location.name = headers;
+            location.pathId = headersKey;
             return location;
         }
 

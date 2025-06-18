@@ -1,0 +1,147 @@
+<div style="height: 100%;" ngbDropdown class="toc-filter" #dd="ngbDropdown" [autoClose]="false" container="body" (openChange)="onOpenChange($event)">
+  <button class="btn no-focus" style="
+    color: gray;
+    border-left: 2px solid lightgray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    height: 100%;
+    border-radius: 0;"
+    [ngClass]="{'active': active, 'inactive': !active}"
+    ngbDropdownToggle>
+    <div style="width: 15px; height: 15px; border-radius: 15px;" [ngClass]="{'active-ind': active, 'inactive-ind': !active}"></div>
+    <span style="margin-left: 10px;">FILTER</span>
+  </button>
+  <div style="max-height: 55vh; overflow: scroll; -webkit-box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
+              -moz-box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
+              box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75); padding: 20px;" ngbDropdownMenu>
+    <p-checkbox
+    [(ngModel)]="activeFilter.usedInConformanceProfiles.active"
+    [binary]="true"
+    label="Used in Conformance Profile(s)"
+    ></p-checkbox>
+    <hr style="margin-top: 3px;">
+    <div style="display: flex; flex-direction: column;"  #anchor *ngIf="activeFilter.usedInConformanceProfiles.active">
+      <div class="btn-group btn-group-toggle" style="margin-bottom: 10px;" role="group" ngbRadioGroup name="usedInConformanceProfilesKF" [(ngModel)]="activeFilter.usedInConformanceProfiles.allow">
+        <label ngbButtonLabel class="btn-light no-focus" style="cursor: pointer;">
+          <input ngbButton type="radio" class="btn-check" [value]="true"> Keep Only
+        </label>
+        <label ngbButtonLabel class="btn-light no-focus" style="cursor: pointer;">
+          <input ngbButton type="radio" class="btn-check" [value]="false"> Filter Out
+        </label>
+      </div>
+      <table class="table table-sm table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>
+              <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+                <span>Conformance Profile(s)</span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <p-multiSelect
+                appendTo="body"
+                [options]="conformanceProfileOptions"
+                [(ngModel)]="activeFilter.usedInConformanceProfiles.conformanceProfiles"
+                [panelStyleClass]="'toc-filter'"
+                [style]="{'width':'100%'}">
+                <ng-template let-id pTemplate="item">
+                  <app-display-section style="display: inline-block;" [element]="conformanceProfilesMap[id.value]" [hideDescription]="true" [inline]="true" ></app-display-section>
+                </ng-template>
+                <ng-template let-selected pTemplate="selectedItems">
+                  <span *ngIf="!selected || selected.length === 0">Any Conformance Profile</span>
+                  <span *ngIf="selected && selected.length > 0">{{selected.length}} Conformance Profiles Selected</span>
+                </ng-template>
+              </p-multiSelect>
+            </td>
+          </tr>
+          <tr>
+            <th>
+              In Data Element with Usage(s)
+            </th>
+          </tr>
+          <tr>
+            <td>
+              <p-multiSelect
+              [panelStyleClass]="'toc-filter'"
+              appendTo="usage"
+              [options]="usages" [(ngModel)]="activeFilter.usedInConformanceProfiles.usages" [style]="{'width':'100%'}">
+              <ng-template let-selected pTemplate="selectedItems">
+                <span *ngIf="!selected || selected.length === 0">Any Usage</span>
+                <span *ngIf="selected && selected.length > 0">{{selected.length}} Usages Selected</span>
+              </ng-template>
+              </p-multiSelect>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p-checkbox
+    [(ngModel)]="activeFilter.hideNarratives"
+    [binary]="true"
+    label="Hide Narratives"
+    ></p-checkbox>
+    <hr style="margin-top: 3px;">
+    <p-checkbox
+    [(ngModel)]="activeFilter.filterByType.active"
+    [binary]="true"
+    label="Filter By Type"
+    ></p-checkbox>
+    <hr style="margin-top: 3px;">
+    <div style="margin-bottom: 5px; display: flex; flex-direction: column;" *ngIf="activeFilter.filterByType.active">
+      <div class="btn-group btn-group-toggle" style="margin-bottom: 10px;" role="group" ngbRadioGroup name="filterByTypeKF" [(ngModel)]="activeFilter.filterByType.allow">
+        <label ngbButtonLabel class="btn-light no-focus" style="cursor: pointer;">
+          <input ngbButton type="radio" class="btn-check" [value]="true"> Keep Only
+        </label>
+        <label ngbButtonLabel class="btn-light no-focus" style="cursor: pointer;">
+          <input ngbButton type="radio" class="btn-check" [value]="false"> Filter Out
+        </label>
+      </div>
+      <p-multiSelect
+      [panelStyleClass]="'toc-filter'"
+      appendTo="body"
+      [options]="typeOptions" [(ngModel)]="activeFilter.filterByType.types" [style]="{'width':'100%'}">
+      <ng-template let-selected pTemplate="selectedItems">
+        <span *ngIf="!selected || selected.length === 0">Any Type</span>
+        <span *ngIf="selected && selected.length > 0">{{selected.length}} Types Selected</span>
+      </ng-template>
+      </p-multiSelect>
+    </div>
+
+    <p-checkbox
+    [(ngModel)]="activeFilter.filterByScope.active"
+    [binary]="true"
+    label="Filter By Scope"
+    ></p-checkbox>
+    <hr style="margin-top: 3px;">
+    <div style="margin-bottom: 5px; display: flex; flex-direction: column;" *ngIf="activeFilter.filterByScope.active">
+      <div class="btn-group btn-group-toggle" style="margin-bottom: 10px;" role="group" ngbRadioGroup name="filterByScopeKF" [(ngModel)]="activeFilter.filterByScope.allow">
+        <label ngbButtonLabel class="btn-light no-focus" style="cursor: pointer;">
+          <input ngbButton type="radio" class="btn-check" [value]="true"> Keep Only
+        </label>
+        <label ngbButtonLabel class="btn-light no-focus" style="cursor: pointer;">
+          <input ngbButton type="radio" class="btn-check" [value]="false"> Filter Out
+        </label>
+      </div>
+      <p-multiSelect
+      [panelStyleClass]="'toc-filter'"
+      appendTo="body"
+      [options]="scopeOptions" [(ngModel)]="activeFilter.filterByScope.scopes" [style]="{'width':'100%'}">
+      <ng-template let-selected pTemplate="selectedItems">
+        <span *ngIf="!selected || selected.length === 0">Any Scope</span>
+        <span *ngIf="selected && selected.length > 0">{{selected.length}} Scopes Selected</span>
+      </ng-template>
+      </p-multiSelect>
+    </div>
+
+    <div style="display: flex; width: 100%; align-items: flex-end; justify-content: flex-end;">
+      <button (click)="clear(); dd.close()" style="margin-right: 5px;" class="btn btn-secondary">Clear</button>
+      <button (click)="apply(); dd.close()" class="btn btn-primary">Apply</button>
+    </div>
+  </div>
+</div>

@@ -1,9 +1,11 @@
-import {Type} from '../constants/type.enum';
-import {IActiveInfo, Status} from './abstract-domain.interface';
+import { ResourceOrigin } from '../constants/resource-origin.enum';
+import { Stability } from '../constants/stability.enum';
+import { Type } from '../constants/type.enum';
+import { IActiveInfo, Status } from './abstract-domain.interface';
 import { SourceType } from './adding-info';
-import {DeltaAction} from './delta';
-import {IDomainInfo} from './domain-info.interface';
-import {IPublicationInfo} from './publication-info.interface';
+import { DeltaAction } from './delta';
+import { IDomainInfo } from './domain-info.interface';
+import { IPublicationInfo } from './publication-info.interface';
 
 export interface IDisplayElement {
   id: string;
@@ -14,7 +16,8 @@ export interface IDisplayElement {
   type: Type;
   leaf: boolean;
   position?: number;
-  differential: boolean;
+  differential?: boolean; // delta could be calculated
+  derived?: boolean;
   children?: IDisplayElement[];
   parentType?: Type;
   parentId?: string;
@@ -30,5 +33,13 @@ export interface IDisplayElement {
   flavorExt?: string;
   resourceName?: string;
   structureIdentifier?: string;
+  resourceOrigin?: ResourceOrigin;
+  generated?: boolean;
+  sourceType?: SourceType;
+  stability?: Stability;
+}
+
+export interface ISummaryElement {
+  id?: string;
 
 }

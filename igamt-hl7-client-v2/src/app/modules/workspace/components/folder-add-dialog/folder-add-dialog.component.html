@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>Create a folder</h2>
+<form [formGroup]="metaDataForm" style="display: flex; flex-direction: column;">
+  <app-form-input formControlName="title" id="name" name="name"
+    placeholder="Folder Name" label="Name"> </app-form-input>
+  <app-form-input formControlName="description" id="description" name="description"
+  placeholder="Description" label="Description"> </app-form-input>
+</form>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
+  <button (click)="create()" [disabled]="metaDataForm.invalid" class="btn btn-sm btn-success">Done</button>
+</mat-dialog-actions>

@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>Delete Workspace</h2>
+<span>Are you sure you want to delete workspace {{name}}. All folders and implementation guides inside the workspace will be deleted.</span><br>
+<span>To confirm please enter the workspace name "{{name}}" below.</span>
+<input style="margin-top: 10px; background-color: pink;" #confirm class="form-control" type="text" [(ngModel)]="confirmation" placeholder="Enter Workspace Name">
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
+  <button (click)="done()" [disabled]="confirmation !== name" class="btn btn-sm btn-danger">
+    Delete
+  </button>
+</mat-dialog-actions>

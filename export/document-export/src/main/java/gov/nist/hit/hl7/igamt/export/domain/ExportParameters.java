@@ -31,6 +31,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ValuesetMetadataConfig
 public class ExportParameters {
 
   // Define parameters with a default value
+  private String exportType = "ig";
   private boolean inlineConstraints = false;
   private boolean includeTOC = true;
   private String targetFormat = "html";
@@ -50,6 +51,8 @@ public class ExportParameters {
   private ExportFontConfiguration exportFontConfiguration;
   private String appVersion;
   private Type type;
+
+
 
   public ExportParameters(boolean inlineConstraints, boolean includeTOC, String targetFormat,
       String documentTitle, String appVersion) {
@@ -78,10 +81,22 @@ public class ExportParameters {
 //        exportConfiguration.getCompositeProfileMetadataConfig(), exportFontConfiguration,
 //        appVersion);
 //  }
-  
+
+  public ExportParameters(String exportType, boolean inlineConstraints, boolean includeTOC, String targetFormat, String documentTitle, String imageLogo, ExportConfiguration exportConfiguration, ExportFontConfiguration exportFontConfiguration, String appVersion, Type type) {
+    this.exportType = exportType;
+    this.inlineConstraints = inlineConstraints;
+    this.includeTOC = includeTOC;
+    this.targetFormat = targetFormat;
+    this.documentTitle = documentTitle;
+    this.imageLogo = imageLogo;
+    this.exportFontConfiguration = exportFontConfiguration;
+    this.appVersion = appVersion;
+    this.type = type;
+  }
+
   public ExportParameters(boolean inlineConstraints, boolean includeTOC, String targetFormat,
-	      String documentTitle, String imageLogo, ExportConfiguration exportConfiguration,
-	      ExportFontConfiguration exportFontConfiguration, String appVersion, Type type) {
+                          String documentTitle, String imageLogo, ExportConfiguration exportConfiguration,
+                          ExportFontConfiguration exportFontConfiguration, String appVersion, Type type) {
 	    this(inlineConstraints, includeTOC, targetFormat, documentTitle, imageLogo,
 	        exportConfiguration.getConformamceProfileExportConfiguration().getColumns(),
 	        exportConfiguration.getCompositeProfileColumn().getColumns(),
@@ -180,7 +195,9 @@ public Map<String, String> toMap() {
     params.put("inlineConstraints", String.valueOf(inlineConstraints));
     params.put("targetFormat", targetFormat);
     params.put("documentTitle", documentTitle);
-    if (imageLogo != null) {
+  params.put("exportType", exportType);
+
+  if (imageLogo != null) {
       params.put("imageLogo", imageLogo);
     }
     if (messageColumns != null && !messageColumns.isEmpty()) {

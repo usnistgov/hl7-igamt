@@ -10,6 +10,8 @@ public class ResourceNotFoundException extends Exception {
 
 	public ResourceNotFoundException(String id, Type type) {
 		super(type + " with id " + id + " not found");
+		this.id = id;
+		this.type = type;
 	}
 
 	public String getId() {

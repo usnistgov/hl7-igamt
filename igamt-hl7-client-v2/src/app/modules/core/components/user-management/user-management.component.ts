@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { IAuthenticationState } from '../../../dam-framework/models/authentication/state';
 import { IUserProfile } from '../../../dam-framework/models/authentication/user-profile.class';
 import * as fromAuth from '../../../dam-framework/store/authentication';
-import {ResetPasswordRequest} from '../../../dam-framework/store/authentication/authentication.actions';
+import { ResetPasswordRequest } from '../../../dam-framework/store/authentication/authentication.actions';
 
 @Component({
   selector: 'app-user-management',
@@ -37,9 +37,7 @@ export class UserManagementComponent implements OnInit {
     requestPara.username = user.username;
     requestPara.pending = user.pending;
     requestPara.admin = user.admin;
-    console.log(requestPara);
     this.http.post<any>('api/adminUpdate', requestPara).subscribe((data) => {
-      console.log(data);
     });
   }
 

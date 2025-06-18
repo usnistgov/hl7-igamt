@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
@@ -12,8 +13,9 @@ import { StoreResourceRepositoryService } from '../../shared/services/resource-r
 export class StructureEditorResourceRepositoryService extends StoreResourceRepositoryService {
 
   constructor(
-    store: Store<any>) {
-    super(store);
+    store: Store<any>,
+    action: Actions) {
+    super(action, store);
   }
 
   /**

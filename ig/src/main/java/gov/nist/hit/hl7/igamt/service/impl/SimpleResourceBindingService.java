@@ -28,7 +28,7 @@ public class SimpleResourceBindingService implements ResourceBindingService {
     public FlatResourceBinding getFlatResourceBindings(ResourceBinding resourceBinding) {
         FlatResourceBinding structResourceBindings = resourceBinding.getChildren() != null && resourceBinding.getChildren().size() > 0 ?
                 resourceBinding.getChildren().stream()
-                        .map((a) -> this.getResourceBindings(null, a))
+                        .map((child) -> this.getResourceBindings(null, child))
                         .reduce(new FlatResourceBinding(), this::merge) : new FlatResourceBinding();
 
         if(resourceBinding.getConformanceStatements() != null) {
@@ -112,10 +112,10 @@ public class SimpleResourceBindingService implements ResourceBindingService {
                 );
             }
 
-            if(binding.getInternalSingleCode() != null) {
+            if(binding.getSingleCodeBindings() != null && binding.getSingleCodeBindings().size() > 0) {
                 flatResourceBinding.setSingleCodeBindingContainers(
                         Collections.singleton(
-                                new SingleCodeBindingContainer(pathId, binding.getInternalSingleCode())
+                                new SingleCodeBindingContainer(pathId, binding.getSingleCodeBindings())
                         )
                 );
             }

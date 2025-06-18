@@ -33,13 +33,14 @@ public class UsageConfiguration {
   private boolean cab = true;
   private boolean w = true;
   private boolean b = true;
+  private boolean ix = false;
 
 
   public UsageConfiguration() {
     super();
   }
 
-  public UsageConfiguration(boolean r, boolean re, boolean c, boolean x, boolean o, boolean cab, boolean w, boolean b) {
+  public UsageConfiguration(boolean r, boolean re, boolean c, boolean x, boolean o, boolean cab, boolean w, boolean b, boolean ix) {
     super();
     this.r = r;
     this.re = re;
@@ -48,7 +49,8 @@ public class UsageConfiguration {
     this.o = o;
     this.cab=cab;
     this.w = w;
-    this.b = b;  
+    this.b = b; 
+    this.ix = ix;
   }
   
   
@@ -127,6 +129,8 @@ public boolean isR() {
     	  return this.isCab();
       case B:
     	  return this.isCab();
+      case IX:
+    	  return this.isIx();
       default:
         return false;
     }
@@ -154,6 +158,9 @@ public boolean isR() {
 	  if (this.isW()) {
 		  usages.add(Usage.W);
 	  }
+	  if (this.isIx()) {
+		  usages.add(Usage.IX);
+	  }
 	return usages;
   }
 
@@ -163,6 +170,14 @@ public boolean isCab() {
 
 public void setCab(boolean cab) {
 	this.cab = cab;
+}
+
+public boolean isIx() {
+	return ix;
+}
+
+public void setIx(boolean ix) {
+	this.ix = ix;
 }
 
 }

@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.auth.controller;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.servlet.http.Cookie;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,7 +44,9 @@ public class AuthenticationController {
 
   @Autowired
   AccountManagmenEmailService emailService;
-
+  
+  @Autowired
+  Environment env;
 
   @RequestMapping(value = "/api/login", method = RequestMethod.POST)
   public ConnectionResponseMessage<UserResponse> login(@RequestBody LoginRequest user,
@@ -100,8 +104,13 @@ public class AuthenticationController {
   public UserListResponse getAllUserList(HttpServletRequest req,
           HttpServletResponse res, Authentication authentication)
       throws IOException {
-
     return authService.getAllUsers(req);
+  }
+
+  @RequestMapping(value = "api/usernames", method = RequestMethod.GET)
+  @ResponseBody
+  public ArrayList<String> getAllUsernames(HttpServletRequest req) {
+    return authService.getAllUsernames(req);
   }
 
   @RequestMapping(value = "api/user/{username}", method = RequestMethod.GET)
@@ -110,7 +119,6 @@ public class AuthenticationController {
           HttpServletRequest req, HttpServletResponse res,
           Authentication authentication)
       throws IOException {
-
     return authService.getCurrentUser(username, req);
   }
   
@@ -143,7 +151,7 @@ public class AuthenticationController {
 
   @RequestMapping(value = "api/password/reset", method = RequestMethod.POST)
   @ResponseBody
-  public ConnectionResponseMessage<PasswordResetTokenResponse> resetPaswordRequest(
+  public ConnectionResponseMessage<String> resetPaswordRequest(
       HttpServletRequest req, HttpServletResponse res, @RequestBody String username)
       throws AuthenticationException {
     try {
@@ -154,7 +162,12 @@ public class AuthenticationController {
         PasswordResetTokenResponse responseData = (PasswordResetTokenResponse) (response.getData());
         emailService.sendResetTokenUrl(responseData.getFullName(), responseData.getUsername(),
             responseData.getEmail(), getUrl(req, responseData.getToken()));
-        return response;
+        
+   
+        ConnectionResponseMessage ret =  new ConnectionResponseMessage<String>();
+        ret.setStatus(Status.SUCCESS);
+        ret.setData("An email has been sent to the address provided" );
+        return ret;
       } else {
         throw new AuthenticationException("Invalid Data format");
       }
@@ -197,11 +210,14 @@ public class AuthenticationController {
 
 
   private String getUrl(HttpServletRequest request, String token) {
-    String scheme = request.getScheme();
-    String host = request.getHeader("Host");
-    return scheme +"://" + host + "/igamt"  + "/reset-password-confirm/" + token;
+//    String baseUrl = ServletUriComponentsBuilder.fromRequestUri(request)
+//	            .replacePath(null)
+//	            .build()
+//	            .toUriString();
+	String baseUrl = env.getProperty("host.url");
+    return baseUrl  + "/reset-password-confirm/" + token;
   }
-
+  
 
 
 }

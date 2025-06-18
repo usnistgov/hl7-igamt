@@ -12,6 +12,7 @@ import {
 import { IHL7WorkspaceActive } from '../../modules/shared/models/editor.class';
 import { VerificationTab } from '../../modules/shared/services/verification.service';
 import { selectIgDocument } from '../ig/ig-edit/ig-edit.selectors';
+import { IAudience } from './../../modules/ig/models/ig/ig-document.class';
 
 export const selectWorkspaceActive = createSelector(
   fromDAM.selectWorkspace,
@@ -37,10 +38,17 @@ export const selectLoadedDocumentInfo = createSelector(
   },
 );
 
+export const selectAudience = createSelector(
+  selectIgDocument,
+  (document: IgDocument): IAudience => {
+    return document.audience;
+  },
+);
+
 export const selectViewOnly = createSelector(
   selectIgDocument,
   (document: IgDocument): boolean => {
-    return document.domainInfo.scope !== Scope.USER || document.status === Status.PUBLISHED || (document.sharePermission && document.sharePermission === SharePermission.READ);
+    return document.domainInfo.scope !== Scope.USER || document.status === Status.PUBLISHED || document.status === Status.LOCKED  || (document.sharePermission && document.sharePermission === SharePermission.READ);
   },
 );
 

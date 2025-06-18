@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 
 
@@ -25,5 +26,8 @@ public interface DatatypeLibraryRepository extends MongoRepository<DatatypeLibra
 
   @Query(value = "{ 'username' : ?0 }", fields = "{_id : 1}")
   List<DatatypeLibrary> findDatatypeLibraryIdsForUser(String username);
+  
+  public List<DatatypeLibrary> findByUsernameAndStatus(String username, Status status);
+
 
 }

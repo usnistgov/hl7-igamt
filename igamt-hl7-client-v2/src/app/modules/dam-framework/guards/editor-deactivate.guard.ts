@@ -19,6 +19,7 @@ export class EditorDeactivateGuard implements CanDeactivate<AbstractEditorCompon
     private dialog: MatDialog,
   ) { }
 
+  // tslint:disable-next-line: cognitive-complexity
   canDeactivate(component: AbstractEditorComponent, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState?: RouterStateSnapshot) {
     return combineLatest(
       this.store.select(selectWorkspaceCurrentIsChanged),
@@ -55,7 +56,11 @@ export class EditorDeactivateGuard implements CanDeactivate<AbstractEditorCompon
             );
           } else {
             return of(true).pipe(
-              tap(() => component.onDeactivate()),
+              tap(() => {
+                if (component && component.onDeactivate) {
+                  component.onDeactivate();
+                }
+              }),
             );
           }
         }

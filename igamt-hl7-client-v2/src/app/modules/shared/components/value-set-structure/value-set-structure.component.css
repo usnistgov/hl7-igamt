@@ -38,29 +38,33 @@
 
 .codes-toolbar {
 
-  display: grid;
-  width: 100%;
+  display: flex;
+  /* width: 100%; */
   flex-direction: row;
-  grid-template-areas: 'filter selected general';
+  justify-content: space-between ;
+  /* grid-template-areas: 'filter selected general'; */
 
 }
 
 .column-filter{
-  grid-area: filter;
+  /* grid-area: filter; */
   justify-content: start;
   display: grid;
 }
 .selected-codes-options{
-  grid-area:selected;
-  width: 100%;
+  /* grid-area:selected; */
+  /* width: 100%; */
   display:flex;
   flex-direction: row;
   justify-content: flex-end;
 }
 .codes-options{
-  grid-area: general;
+  /* grid-area: general; */
+  flex-direction: row;
   justify-content: flex-end;
   display: flex;
+  margin-bottom: 6px;
+
 }
 
 .code-system-column{
@@ -75,4 +79,11 @@
 }
 .pattern-row {
   background-color: orange !important;
+}
+.csv-actions{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }

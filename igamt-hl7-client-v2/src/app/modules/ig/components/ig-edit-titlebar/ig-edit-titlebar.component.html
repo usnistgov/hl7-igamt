@@ -1,10 +1,12 @@
-<div class="badge">
-    <app-scope-badge [scope]="metadata?.domainInfo?.scope"></app-scope-badge>
-    <app-entity-bagde [type]="'IGDOCUMENT'"></app-entity-bagde>
-</div>
-<div>
-    <span class="title-text">
-      {{ metadata.title }}
-    </span>
-    <app-metadata-date [updateDate]="metadata.updateDate" [creationDate]="metadata.creationDate"></app-metadata-date>
+<div style="display: flex; flex-direction: column; width: 100%; padding-right: 10px; padding-left: 5px;">
+  <div>
+    <app-ig-type [info]="info" ></app-ig-type>
+    <div class="custom-ig-badge entity-badge-dark entity-badge-ig">IG</div>
+    <div style="margin-left: 5px; display: inline;">
+      <span class="title-text">
+        {{ metadata.title }}
+      </span>
+    </div>
+  </div>
+  <app-metadata-date [updateDate]="metadata.updateDate" [creationDate]="metadata.creationDate"></app-metadata-date>  
 </div>

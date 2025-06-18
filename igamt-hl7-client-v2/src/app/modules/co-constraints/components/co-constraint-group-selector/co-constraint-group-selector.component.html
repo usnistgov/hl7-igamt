@@ -6,7 +6,7 @@
     </div>
   </div>
 
-  <p-table [value]="groups$ | async" [(selection)]="selected" [style]="{ 'width' : '900px', 'margin-top' : '20px' }">
+  <p-table [value]="groups$ | async" [paginator]="true" [rows]="10" [(selection)]="selected" [style]="{ 'width' : '900px', 'margin-top' : '20px' }">
     <ng-template pTemplate="header" let-columns>
       <tr>
         <th style="width: 50px;">

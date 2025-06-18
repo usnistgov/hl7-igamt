@@ -94,7 +94,7 @@ public class MessageStructure extends Resource {
     }
     return this.getName();
   }
-  public void complete( MessageStructure elm) {
+  public void complete(MessageStructure elm) {
     super.complete(elm);
     elm.identifier = identifier;
     elm.messageType = messageType;
@@ -102,6 +102,10 @@ public class MessageStructure extends Resource {
     elm.structID = structID;
     elm.children = children;
     elm.binding = binding;
+    elm.profileType = profileType;
+    elm.role = role;
+    elm.profileIdentifier = profileIdentifier;
+    elm.custom = custom;
   }
   public ConformanceProfile clone() {
     ConformanceProfile elm= new ConformanceProfile();

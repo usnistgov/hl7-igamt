@@ -13,6 +13,8 @@ package gov.nist.hit.hl7.igamt.coconstraints.exception;
 
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,9 +27,9 @@ public class CoConstraintGroupExceptionHandler {
 
   @ResponseBody
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  @ExceptionHandler({CoConstraintGroupNotFoundException.class})
+  @ExceptionHandler({EntityNotFound.class})
   public ResponseMessage handleConformanceProfileNotFoundException(
-          CoConstraintGroupNotFoundException exception) {
+          EntityNotFound exception) {
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }

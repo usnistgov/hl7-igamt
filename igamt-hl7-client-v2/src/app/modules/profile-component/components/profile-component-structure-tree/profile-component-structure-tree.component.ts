@@ -1,10 +1,12 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Store } from '@ngrx/store';
 import * as _ from 'lodash';
 import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import { IPathInfo } from 'src/app/modules/shared/services/element-naming.service';
 import { Hl7V2TreeService } from 'src/app/modules/shared/services/hl7-v2-tree.service';
+import { selectIgConfig } from 'src/app/root-store/ig/ig-edit/ig-edit.selectors';
 import {
   ColumnOptions,
   HL7v2TreeColumnType,
@@ -15,12 +17,12 @@ import { Type } from '../../../shared/constants/type.enum';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { Hl7Config, IValueSetBindingConfigMap } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IItemProperty, IProfileComponentBinding, IProfileComponentItem } from '../../../shared/models/profile.component';
+import { IItemProperty, IProfileComponentBinding, IProfileComponentContext, IProfileComponentItem } from '../../../shared/models/profile.component';
 import { IChange, PropertyType } from '../../../shared/models/save-change';
 import { AResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { IBindingContext } from '../../../shared/services/structure-element-binding.service';
-import { ProfileComponentRefChange } from '../../services/profile-component-ref-change.object';
 import { ProfileComponentStructureTreeItemMap } from '../../services/profile-component-structure-tree-item-map.object';
+import { IUserConfig } from './../../../shared/models/config.class';
 
 export interface IItemLocation {
   path: string;
@@ -77,6 +79,10 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   @Input()
   config: Hl7Config;
   treeExpandedNodes: string[];
+  @Input()
+  profileComponentContext: IProfileComponentContext;
+
+  public userConfig: Observable<IUserConfig>;
 
   @Input()
   set columns(cols: HL7v2TreeColumnType[]) {
@@ -133,9 +139,6 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   }
 
   @Input()
-  refChangeMap: ProfileComponentRefChange;
-
-  @Input()
   set nodes(nodes: IHL7V2ProfileComponentItemNode[]) {
     this.nodes$.next(nodes);
   }
@@ -167,7 +170,7 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   }
 
   constructor(
-    private treeService: Hl7V2TreeService,
+    private treeService: Hl7V2TreeService, private store: Store<any>,
   ) {
     this.treeSubscriptions = [];
     this.treeExpandedNodes = [];
@@ -178,11 +181,15 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
     this.tree$ = new BehaviorSubject([]);
     this.treeView$ = new BehaviorSubject(false);
 
-    this.activeNodes$ = combineLatest([
+    this.userConfig = this.store.select(selectIgConfig).pipe(
+      filter((config) => !!config),
+    );
+
+    this.activeNodes$ = combineLatest(
       this.treeView$,
       this.tree$,
       this.nodes$,
-    ]).pipe(
+    ).pipe(
       map(([tv, tree, nodes]) => {
         if (tv) { return tree[0].children; }
         return this.prune(nodes);
@@ -218,7 +225,6 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   }
 
   changeItem(change: IProfileComponentChange) {
-    console.log(this.itemsList);
     this.itemsList.update(change);
     this.changes.emit(change);
   }
@@ -236,8 +242,7 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   }
 
   onNodeExpand({ node }: { node: IHL7v2TreeNode }) {
-    const ref = this.refChangeMap ? this.refChangeMap.getPath(node.data.pathId) : node.data.ref.getValue();
-    this.treeService.loadNodeChildren(node, this.repository, ref).pipe(
+    this.treeService.loadNodeChildren(node, this.repository, { viewOnly: true, useProfileComponentRef: true }).pipe(
       take(1),
     ).subscribe();
   }

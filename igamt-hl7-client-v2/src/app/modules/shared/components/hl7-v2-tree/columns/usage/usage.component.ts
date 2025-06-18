@@ -17,6 +17,7 @@ import { IChangeReasonDialogDisplay } from '../../../change-reason-dialog/change
 import { CsDialogComponent } from '../../../cs-dialog/cs-dialog.component';
 import { IStringValue } from '../../hl7-v2-tree.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
+import { IUserConfig } from './../../../../models/config.class';
 
 export interface IUsageOption {
   label: string;
@@ -45,16 +46,17 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
   repository: AResourceRepositoryService;
 
   @Input()
-  set usages({ original, config }: { original: Usage, config: Hl7Config }) {
+  set usages({ original, config, userConfig }: { original: Usage, config: Hl7Config, userConfig: IUserConfig }) {
     const includeW = original === 'W';
     const includeB = original === 'B';
-    this.options = Hl7Config.getUsageOptions(config.usages, includeW, includeB);
+    const includeIX = (this.usage && this.usage.value === 'IX' || userConfig.includeIX);
+
+    this.options = Hl7Config.getUsageOptions(config.usages, includeW, includeB, includeIX);
   }
 
   @Input()
   set predicate({ documentRef, predicates }: { documentRef: IDocumentRef, predicates: Array<IBinding<IPredicate>> }) {
     const bindings = this.structureElementBindingService.getActiveAndFrozenBindings(predicates, { resource: this.context });
-
     this.editablePredicate.next({ value: bindings.active ? bindings.active.value : undefined });
     this.freezePredicate$ = of(bindings.frozen).pipe(
       filter((value) => !!value),
@@ -71,9 +73,7 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
     super([PropertyType.USAGE, PropertyType.PREDICATE], dialog);
     this.value$.asObservable().subscribe(
       (value) => {
-        this.usage = {
-          ...value,
-        };
+        this.usage = value;
       },
     );
     this.editablePredicate = new BehaviorSubject({ value: undefined });
@@ -110,17 +110,26 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
 
   createOrUpdate(predicate: IPredicate) {
     if (this.initial) {
-      this.onChange(this.initial, {
+      const change = {
         ...this.initial,
         ...predicate,
-      }, PropertyType.PREDICATE, ChangeType.UPDATE);
+      };
+      this.onChange(
+        this.initial,
+        change,
+        PropertyType.PREDICATE,
+        ChangeType.UPDATE,
+      );
+      this.updateBindingsArray(ChangeType.UPDATE, change);
     } else {
       this.onChange(this.initial, predicate, PropertyType.PREDICATE, ChangeType.ADD);
+      this.updateBindingsArray(ChangeType.ADD, predicate);
     }
   }
 
   delete(skipReason: boolean = false) {
     this.onChange(this.initial, undefined, PropertyType.PREDICATE, ChangeType.DELETE, skipReason);
+    this.updateBindingsArray(ChangeType.DELETE);
   }
 
   openDialog(title: string, predicate: IPredicate) {
@@ -156,7 +165,7 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
       this.clear(true);
     }
 
-    this.onChange<string>(this.getInputValue().value, event.value, PropertyType.USAGE, ChangeType.UPDATE);
+    this.onChange<string>(this.oldValue.value, event.value, PropertyType.USAGE, ChangeType.UPDATE);
   }
 
   isActualChange(change: IChange<any>): boolean {
@@ -186,6 +195,23 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
         context: change.oldPropertyValue ? change.oldPropertyValue.assertion ? change.oldPropertyValue.assertion.description : change.oldPropertyValue.freeText : '',
       },
     }) : null;
+  }
+
+  updateBindingsArray(change: ChangeType, value?: IPredicate) {
+    const predicates = this.node.data.bindings.values.predicate;
+    const indexOfCurrentContext = predicates.findIndex((b) => {
+      return this.structureElementBindingService.contextIsEqual({ resource: this.context }, b.context);
+    });
+
+    if (change === ChangeType.DELETE) {
+      predicates.splice(indexOfCurrentContext, 1);
+    } else {
+      predicates.splice(indexOfCurrentContext, 1, {
+        context: { resource: this.context },
+        value,
+        level: 0,
+      });
+    }
   }
 
   ngOnInit() {

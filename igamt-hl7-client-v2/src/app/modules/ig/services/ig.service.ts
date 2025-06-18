@@ -1,13 +1,14 @@
 import { LocationStrategy } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {el} from '@angular/platform-browser/testing/src/browser_util';
 import { Action } from '@ngrx/store';
-import {Observable, of, throwError} from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { map } from 'rxjs/operators';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { TableOfContentSave } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { IDocumentCreationWrapper } from '../../document/models/document/document-creation.interface';
+import { IDocumentConfig } from '../../document/models/document/IDocument.interface';
 import { MessageEventTreeNode } from '../../document/models/message-event/message-event.class';
 import {
   IAddNodes, IAddProfileComponentContext, IAddResourceFromFile, ICopyNode, ICopyResourceResponse,
@@ -15,7 +16,9 @@ import {
   ICreateCoConstraintGroupResponse, ICreateCompositeProfile, ICreateProfileComponent, ICreateProfileComponentResponse,
 } from '../../document/models/toc/toc-operation.class';
 import { IgTOCNodeHelper } from '../../document/services/ig-toc-node-helper.service';
-import {ExportTypes} from '../../export-configuration/models/export-types';
+import { ExportTypes } from '../../export-configuration/models/export-types';
+import { IgTemplate } from '../../shared/components/derive-dialog/derive-dialog.component';
+import { ExternalValueSetExportType } from '../../shared/components/export-xml-dialog/export-xml-dialog.component';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { CloneModeEnum } from '../../shared/constants/clone-mode.enum';
 import { Scope } from '../../shared/constants/scope.enum';
@@ -26,9 +29,9 @@ import { IConformanceStatement } from '../../shared/models/cs.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
 import { IRegistry } from '../../shared/models/registry.interface';
-import { IgTemplate } from '../components/derive-dialog/derive-dialog.component';
+import { IVerificationRequest } from '../../shared/models/verification.interface';
 import { INarrative } from '../components/ig-section-editor/ig-section-editor.component';
-import { IDocumentDisplayInfo } from '../models/ig/ig-document.class';
+import { IDocumentDisplayInfo, IIgUpdateInfo, IIgVerificationReport } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
 
@@ -47,25 +50,25 @@ export class IgService {
   getRegistryAndCollectionByType(type: Type): { registry: string, collection: string } {
     let registry: string;
     let collection: string;
-    if (type === Type.VALUESET) {
+    if (type === Type.VALUESET || type === Type.VALUESETREGISTRY) {
       registry = 'valueSetRegistry';
       collection = 'valueSets';
-    } else if (type === Type.CONFORMANCEPROFILE) {
+    } else if (type === Type.CONFORMANCEPROFILE || type === Type.CONFORMANCEPROFILEREGISTRY) {
       registry = 'conformanceProfileRegistry';
       collection = 'messages';
-    } else if (type === Type.DATATYPE) {
+    } else if (type === Type.DATATYPE || type === Type.DATATYPEREGISTRY) {
       registry = 'datatypeRegistry';
       collection = 'datatypes';
-    } else if (type === Type.SEGMENT) {
+    } else if (type === Type.SEGMENT || type === Type.SEGMENTREGISTRY) {
       registry = 'segmentRegistry';
       collection = 'segments';
-    } else if (type === Type.COCONSTRAINTGROUP) {
+    } else if (type === Type.COCONSTRAINTGROUP || type === Type.COCONSTRAINTGROUPREGISTRY) {
       registry = 'coConstraintGroupRegistry';
       collection = 'coConstraintGroups';
-    } else if (type === Type.PROFILECOMPONENT) {
+    } else if (type === Type.PROFILECOMPONENT || type === Type.PROFILECOMPONENTREGISTRY) {
       registry = 'profileComponentRegistry';
       collection = 'profileComponents';
-    } else if (type === Type.COMPOSITEPROFILE) {
+    } else if (type === Type.COMPOSITEPROFILE || type === Type.COMPOSITEPROFILEREGISTRY) {
       registry = 'compositeProfileRegistry';
       collection = 'compositeProfiles';
     }
@@ -73,18 +76,17 @@ export class IgService {
   }
 
   loadOrInsertRepositoryFromIgDisplayInfo(igInfo: IDocumentDisplayInfo<IgDocument>, load: boolean, values?: string[]): fromDam.InsertResourcesInRepostory | fromDam.LoadResourcesInRepostory {
-    const _default = ['segments', 'datatypes', 'messages', 'valueSets', 'coConstraintGroups', 'profileComponents', 'compositeProfiles',  'sections'];
-    console.log('loading');
+    const _default = ['segments', 'datatypes', 'messages', 'valueSets', 'coConstraintGroups', 'profileComponents', 'compositeProfiles', 'sections'];
     const collections = (values ? values : _default).map((key) => {
       return {
         key,
         values: key === 'sections' ? IgTOCNodeHelper.getIDisplayFromSections(igInfo.ig.content, '') : igInfo[key],
       };
     });
-    if (igInfo.profileComponents !== null ) {
+    if (igInfo.profileComponents !== null) {
       let childrenArray = [];
       igInfo['profileComponents'].forEach((x) => childrenArray = childrenArray.concat(x.children));
-      collections.push({key: 'contexts', values: childrenArray});
+      collections.push({ key: 'contexts', values: childrenArray });
     }
     return !load ? new fromDam.InsertResourcesInRepostory({
       collections,
@@ -107,8 +109,8 @@ export class IgService {
       key: collection,
       values: [display],
     }];
-    if (display.type === Type.PROFILECOMPONENT && display.children ) {
-      collections.push({key: 'contexts' , values: display.children });
+    if (display.type === Type.PROFILECOMPONENT && display.children) {
+      collections.push({ key: 'contexts', values: display.children });
     }
     return [
       ...(registry ? [new fromDam.LoadPayloadData({
@@ -116,7 +118,7 @@ export class IgService {
         [registry]: registryList,
       })] : []),
       ...(collection ? [new fromDam.InsertResourcesInRepostory({
-         collections,
+        collections,
       })] : []),
     ];
   }
@@ -132,6 +134,22 @@ export class IgService {
         collections: [{
           key: collection,
           values: [display.id],
+        }],
+      })] : []),
+    ];
+  }
+
+  deleteListFromRepository(ids: string[], ig: IgDocument, registryType: Type): Action[] {
+    const { registry, collection } = this.getRegistryAndCollectionByType(registryType);
+    return [
+      ...(registry ? [new fromDam.LoadPayloadData({
+        ...ig,
+        [registry]: this.removeByIdIn(ig[registry], ids),
+      })] : []),
+      ...(collection ? [new fromDam.DeleteResourcesFromRepostory({
+        collections: [{
+          key: collection,
+          values: ids,
         }],
       })] : []),
     ];
@@ -160,6 +178,10 @@ export class IgService {
   removeById(reg: IRegistry, id: string): IRegistry {
     return { ...reg, children: reg.children.filter((elm) => elm.id !== id) };
   }
+  removeByIdIn(reg: IRegistry, ids: string[]): IRegistry {
+
+    return { ...reg, children: reg.children.filter((elm) => ids.indexOf(elm.id) < 0) };
+  }
 
   igToIDisplayElement(ig: IgDocument): IDisplayElement {
     return {
@@ -179,12 +201,12 @@ export class IgService {
     return this.http.post<Message<string>>(this.IG_END_POINT + id + '/clone', data).pipe();
   }
 
-  publish(id: string): Observable<Message<string>> {
-    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/publish', {}).pipe();
+  publish(id: string, publicationInfo: any): Observable<Message<string>> {
+    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/publish', publicationInfo).pipe();
   }
 
-  updateSharedUsers(sharedUsers: any, id: string): Observable<Message<string>> {
-    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/updateSharedUser', sharedUsers).pipe();
+  updateViewers(viewers: string[], id: string): Observable<Message<string>> {
+    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/updateViewers', viewers).pipe();
   }
 
   getMessagesByVersionAndScope(hl7Version: string, scope: Scope): Observable<Message<MessageEventTreeNode[]>> {
@@ -293,21 +315,44 @@ export class IgService {
     } else { throwError('Unsupported Url'); }
   }
 
-  exportXML(igId: string, selectedIds: ISelectedIds, xmlFormat) {
-    const form = document.createElement('form');
-    form.action = this.EXPORT_URL + igId + '/xml/validation';
-    form.method = 'POST';
-    const json = document.createElement('input');
-    json.type = 'hidden';
-    json.name = 'json';
-    json.value = JSON.stringify(selectedIds);
-    form.appendChild(json);
-    form.style.display = 'none';
-    document.body.appendChild(form);
-    form.submit();
+  deleteResources(documentId: string, ids: string[], registryType: Type): Observable<string[]> {
+    return this.http.post<string[]>(this.IG_END_POINT + documentId + '/' + registryType + '/deleteResources', ids);
   }
 
-  export(igId, decision: any, format: string, configId: string , exportType: ExportTypes ) {
+  exportXMLInline(
+    igId: string,
+    selectedIds: ISelectedIds,
+    exportType: string,
+    filename: string,
+    externalValueSetExportConfiguration: {
+      rememberExternalValueSetExportMode: boolean,
+      externalValueSetsExportMode: Record<string, ExternalValueSetExportType>,
+    } = {
+        rememberExternalValueSetExportMode: false,
+        externalValueSetsExportMode: {},
+      }) {
+    const exportURL = this.EXPORT_URL + igId + '/xml/validation';
+    const json = JSON.stringify({
+      selected: selectedIds,
+      externalValueSetsExportMode: externalValueSetExportConfiguration.externalValueSetsExportMode,
+      rememberExternalValueSetExportMode: externalValueSetExportConfiguration.rememberExternalValueSetExportMode,
+      exportType,
+    });
+    return this.http.post(exportURL, { json }, {
+      responseType: 'blob',
+    }).pipe(
+      map((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      }),
+    );
+  }
+
+  export(igId, decision: any, format: string, configId: string, exportType: ExportTypes) {
     const form = document.createElement('form');
     form.action = this.EXPORT_URL + igId + '/' + format + '?deltamode=TEST';
     form.method = 'POST';
@@ -336,7 +381,7 @@ export class IgService {
   }
 
   exportAsHtml(igId: string, decision: any, configurationId: string, exportType: ExportTypes) {
-    this.submitForm(decision, this.EXPORT_URL + igId + '/html', configurationId, exportType );
+    this.submitForm(decision, this.EXPORT_URL + igId + '/html', configurationId, exportType);
   }
 
   exportDiffXML(igId: string) {
@@ -346,11 +391,11 @@ export class IgService {
     this.submitForm(null, this.EXPORT_URL + igId + '/' + profileId + '/xml/diff', null, null);
   }
 
-  exportDocument(igId: string, decision: any,  configId: string , exportType: ExportTypes, format: string) {
+  exportDocument(igId: string, decision: any, configId: string, exportType: ExportTypes, format: string) {
     this.submitForm(decision, this.EXPORT_URL + igId + '/' + format, configId, exportType);
   }
 
-  submitForm(decision: any, end_point: string, configId: string , exportType: ExportTypes) {
+  submitForm(decision: any, end_point: string, configId: string, exportType: ExportTypes) {
     const form = document.createElement('form');
     const documentType = document.createElement('input');
     documentType.type = 'hidden';
@@ -391,8 +436,29 @@ export class IgService {
     };
   }
 
-  exportToTesting(igId: string, selectedIds: ISelectedIds, username: string, password: string, tool: IConnectingInfo, targetDomain: string) {
-    return this.http.post('/api/testing/' + igId + '/push/' + targetDomain, selectedIds, this.getGvtOptions(username, password, tool));
+  exportToTesting(
+    igId: string,
+    selectedIds: ISelectedIds,
+    exportType: string,
+    externalValueSetExportConfiguration: {
+      rememberExternalValueSetExportMode: boolean,
+      externalValueSetsExportMode: Record<string, ExternalValueSetExportType>,
+    },
+    username: string,
+    password: string,
+    tool: IConnectingInfo,
+    targetDomain: string,
+  ) {
+    return this.http.post(
+      '/api/testing/' + igId + '/push/' + targetDomain,
+      {
+        selected: selectedIds,
+        externalValueSetsExportMode: externalValueSetExportConfiguration.externalValueSetsExportMode,
+        rememberExternalValueSetExportMode: externalValueSetExportConfiguration.rememberExternalValueSetExportMode,
+        exportType,
+      },
+      this.getGvtOptions(username, password, tool),
+    );
   }
 
   private prepareUrl(igId: string, type: string): string {
@@ -424,6 +490,9 @@ export class IgService {
   getConformanceStatementSummary(id: string): Observable<IConformanceStatement[]> {
     return this.http.get<IConformanceStatement[]>('api/igdocuments/' + id + '/conformancestatement/summary');
   }
+  getValueSetsSummary(id: string, filter: any): Observable<any[]> {
+    return this.http.post<any[]>('api/igdocuments/' + id + '/value-sets/summary', filter);
+  }
 
   loadTemplate(): Observable<IgTemplate[]> {
     return this.http.get<IgTemplate[]>('api/igdocuments/igTemplates');
@@ -438,10 +507,21 @@ export class IgService {
   }
 
   deleteContext(documentId: string, element: IDisplayElement, parent: IDisplayElement): Observable<IDisplayElement> {
-    return this.http.post<IDisplayElement>(this.IG_END_POINT + documentId + '/profile-component/' + parent.id + '/removeContext' , element.id);
+    return this.http.post<IDisplayElement>(this.IG_END_POINT + documentId + '/profile-component/' + parent.id + '/removeContext', element.id);
   }
 
   createCompositeProfile(request: ICreateCompositeProfile): Observable<Message<ICreateProfileComponentResponse>> {
     return this.http.post<Message<ICreateProfileComponentResponse>>(this.IG_END_POINT + request.documentId + '/composite-profile/create', request);
+  }
+
+  verify(payload: IVerificationRequest): Observable<IIgVerificationReport> {
+    return this.http.get<any>(this.IG_END_POINT + payload.id + '/verification');
+  }
+  getUpdateInfo(igId: string): Observable<IIgUpdateInfo> {
+    return this.http.get<IIgUpdateInfo>(this.IG_END_POINT + igId + '/update-info');
+  }
+
+  updateConfig(id: string, config: IDocumentConfig): Observable<any> {
+    return this.http.post<IDocumentConfig>(this.IG_END_POINT + id + '/update-config', config);
   }
 }

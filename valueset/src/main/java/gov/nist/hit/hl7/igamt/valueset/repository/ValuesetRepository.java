@@ -21,6 +21,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.ResourceOrigin;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 /**
@@ -52,4 +56,13 @@ public interface ValuesetRepository extends MongoRepository<Valueset, String> {
   List<Valueset> findLatestById(ObjectId id, Sort sort);
 
   List<Valueset> findByIdIn(Set<String> ids);
+  
+  public void deleteByDomainInfoScopeAndDomainInfoVersionIn(Scope scope, List<String> versions);
+
+
+ List<Valueset> findBySourceTypeAndResourceOrigin(SourceType type, ResourceOrigin origin);
+  
+  
+  
+
 }

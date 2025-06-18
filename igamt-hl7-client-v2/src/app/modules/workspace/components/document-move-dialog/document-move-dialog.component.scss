@@ -1,0 +1,37 @@
+@import '../../../../../assets/variables';
+
+
+.list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 200px;
+}
+
+.nav-active-link {
+  background-color: $nist_light_yellow;
+}
+
+.filter {
+  grid-column: bar;
+  grid-row: header-row;
+  background-color: white;
+  display: flex;
+  align-items: center;
+}
+
+.list {
+  grid-column: 1;
+  background-color: rgb(255, 246, 232);
+  grid-row: container-row;
+  overflow: scroll;
+  display: flex;
+}
+
+.list-group-item {
+  cursor: pointer;
+}
+
+.list-group-item:hover {
+  background-color: rgb(243, 243, 243);
+}

@@ -123,6 +123,11 @@ public class Complement {
 
 	}
 
+	@JsonIgnore
+	public String[] getValuesRaw() {
+		return values;
+	}
+
 	public void setValues(String[] values) {
 		this.values = values;
 	}

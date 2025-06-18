@@ -11,8 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.common.slicing.domain;
 
-import java.util.List;
-import java.util.Set;
+import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -29,7 +28,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = ConditionalSlicing.class, name = "ASSERTION"),
         @JsonSubTypes.Type(value = OrderedSlicing.class, name = "OCCURRENCE"),
 })
-public abstract class Slicing {
+public abstract class Slicing implements Serializable{
+
+	
+	private static final long serialVersionUID = -7487264970613020707L;
+
+	public Slicing() {}
+	
 	protected SlicingMethod type;
 	protected String path;
 	

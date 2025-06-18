@@ -1,0 +1,94 @@
+<p-card >
+  <div style="display: flex; justify-content: space-between; width: 100%;">
+    <!-- CARD CONTENT -->
+    <div style="display: flex; flex-direction: row; width: 100%;">
+      <!-- ITEM DETAILS -->
+      <div style="display: flex; flex-direction: column; width: 100%;">
+        <div style="display: flex; justify-content: space-between; align-items: start; width: 100%;">
+          <h6  [routerLink]="['/code-set', item.id]"  style="margin-left: 10px; margin-bottom: 0;" class="link">
+            <strong>{{item.title}}</strong>
+          </h6>
+          <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-start; gap: 3px;">
+            <span *ngIf="item.disableKeyProtection" class="badge badge-danger"><i class="fa fa-unlock"></i> API Access Without API Key</span>
+            <div *ngIf="item.published" class="status status-published" style="display: flex; justify-content: center; align-items: center; margin-right: 0;" >
+              <i class="fa fa-globe" style="margin-right: 3px;"></i>
+              PUBLISHED
+            </div>
+          </div>
+        </div>
+        <span style="margin-left: 10px; color: #818181;">{{item.subtitle}}</span>
+        <span *ngIf="item.username" style="margin-left: 10px; color: #818181;">
+          <i class="fa fa-user"></i>
+          {{item.username}}
+        </span>
+        <span *ngIf="item.sharedUsers && item.sharedUsers.length > 0 " style="margin-left: 10px; color: #818181;">
+          <i class="fa fa-users"></i>
+          shared with {{item.sharedUsers.length}} user(s)
+        </span>
+        <span *ngIf="item.dateUpdated" style="margin-left: 10px; color: #818181;">
+          <i class="fa fa-calendar"></i>
+          updated on:  {{item.dateUpdated | date}}
+        </span>
+        <span *ngIf="item.participants" style="margin-left: 10px;">
+          <i class="fa fa-users"></i>
+          <span *ngFor="let participant of item.participants">{{participant}} </span>
+        </span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CARD FOOTER -->
+  <p-footer>
+    <div style="width: 100%; display: flex; flex-direction: column; justify-content: flex-start;">
+
+      <!-- BUTTONS ROW -->
+      <div style="width: 100%; display: flex; flex-direction: row; justify-content: space-between;">
+
+        <!-- ITEM MORE INFO BUTTON -->
+        <div style="width: 100%; display: flex; flex-direction: row; justify-content: flex-start;">
+          <button (click)="moreInfo = !moreInfo" class="btn btn-sm btn-light border-gray" style="margin-right: 5px;">
+            <i [class]="'fa ' + (moreInfo ? 'fa-chevron-down' : 'fa-chevron-right')"></i>
+            More Info
+          </button>
+        </div>
+
+        <!-- ITEM CONTROL BUTTONS -->
+        <div style="width: 100%; display: flex; flex-direction: row; justify-content: flex-end;">
+          <div class="btn-group" role="group" aria-label="Actions">
+            <ng-container *ngFor="let control of controls" >
+
+              <button (click)="control.action(item)" [class]="'btn btn-sm btn-primary btn-action'"
+                      [disabled]="control.disabled(item)" *ngIf ="!control.hide || control.hide(item) ==false">
+                <i [class]="'fa ' + control.icon"></i>
+                <span style="margin-left: 3px;">
+                  {{ control.label }}
+                </span>
+              </button>
+
+            </ng-container>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ITEM MORE INFO ROW -->
+      <div *ngIf="moreInfo" style="display: flex; flex-direction: column; margin-top: 5px;">
+        <table class="table table-sm table-striped table-bordered">
+          <tr>
+            <th>
+              Code set versions
+            </th>
+            <th>
+              Date Committed
+            </th>
+          </tr>
+          <tr *ngFor="let version of item.children">
+            <td>{{version.version}}</td>
+            <td>{{version.dateCommitted | date}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </p-footer>
+</p-card>

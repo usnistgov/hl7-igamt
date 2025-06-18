@@ -1,0 +1,141 @@
+<ng-template #headerControls>
+  <ng-container *ngIf="isAdmin$ | async">
+    <button (click)="inviteUser()" class="btn btn-sm btn-primary">
+      <i class="fa fa-envelope" style="margin-right: 5px;"></i>
+      Invite Users
+    </button>
+  </ng-container>
+</ng-template>
+<ng-template #headerTitle>
+  <h5 style="margin: 0;">
+    <i class="fa fa-users" style="margin-right: 5px;"></i>
+    Manage Access
+  </h5>
+</ng-template>
+<div style="margin-bottom: 10px; display: flex;
+      flex-direction: row;
+      align-items: flex-start;">
+  <p-dropdown  
+    [options]="statusOptions" 
+    [(ngModel)]="statusFilter" 
+    (ngModelChange)="statusChanged($event)" 
+    [autoDisplayFirst]="false" 
+    [showClear]="true">
+  </p-dropdown>
+  <div class="input-group" style="margin-left: 10px;">
+    <div class="input-group-prepend" style="height: 35px;">
+      <span class="input-group-text" id="inputGroupPrepend3"><i [ngStyle]="{'color': username && username !== '' ? '#00c31b' : ''}"
+                                                                class="fa fa-search"></i></span>
+    </div>
+    <input (ngModelChange)="filterTextChanged($event)" [(ngModel)]="username" class="form-control"
+           id="username" placeholder="Search" required
+           style="background-color: #fbfbfb; height: 35px;" type="text">
+  </div>
+</div>
+<table *ngIf="owner$ | async as owner" class="table table-stripped table-bordered">
+  <tr>
+    <th style="vertical-align: middle;">Workspace Owner</th>
+    <td style="vertical-align: middle;">
+      <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+        <span><i class="fa fa-user" style="margin-right: 5px;"></i> 
+          {{owner}}
+          <span *ngIf="owner === (username$ | async)" class="badge badge-primary" style="margin-left: 5px;" >current</span>
+        </span>
+        
+      </div>
+    </td>
+  </tr>
+</table>
+<p-table [value]="filteredUserList$ | async" [columns]="columns" [paginator]="true" [rows]="10">
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th [pSortableColumn]="'USERNAME'">
+        Username
+        <p-sortIcon [field]="'username'"></p-sortIcon>
+      </th>
+      <th [pSortableColumn]="'STATUS'">
+        Status
+        <p-sortIcon [field]="'status'"></p-sortIcon>
+      </th>
+      <th [pSortableColumn]="'ADDED'">
+        Added
+        <p-sortIcon [field]="'added'"></p-sortIcon>
+      </th>
+      <th [pSortableColumn]="'JOINED'">
+        Joined
+        <p-sortIcon [field]="'joined'"></p-sortIcon>
+      </th>
+      <th [pSortableColumn]="'ADDEDBY'">
+        Added By
+        <p-sortIcon [field]="'invitedBy'"></p-sortIcon>
+      </th>
+      <th>
+        Permissions
+      </th>
+      <th>
+        Actions
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-row>
+    <tr>
+      <td>
+        {{row.username}}
+        <span *ngIf="row.username === (username$ | async)" class="badge badge-primary" style="margin-left: 5px;" >current</span>
+      </td>
+      <td>
+        <ng-container  [ngSwitch]="row.status">
+          <span *ngSwitchCase="'PENDING'" style="font-weight: bold; color: orange;">{{row.status}}</span>
+          <span *ngSwitchCase="'ACCEPTED'" style="font-weight: bold; color: green;">{{row.status}}</span>
+          <span *ngSwitchCase="'DECLINED'" style="font-weight: bold; color: red;">{{row.status}}</span>
+        </ng-container>
+      </td>
+      <td>
+        {{row.added | date}}
+      </td>
+      <td>
+        {{row.joined ? (row.joined | date) : 'N/A' }}
+      </td>
+      <td>
+        {{row.invitedBy}}
+      </td>
+      <td>
+        <ng-container *ngTemplateOutlet="pemissions; context : { $implicit: row.permissions | perms | async }" ></ng-container>
+      </td>
+      <td>
+        <button style="margin-top: 5px;" *ngIf="row.status !== 'DECLINED'" (click)="editUser(row)" class="btn btn-sm btn-primary">
+          Edit
+        </button>
+        <button style="margin-top: 5px;" *ngIf="row.status === 'DECLINED'" (click)="reInvite(row)" class="btn btn-sm btn-primary">
+          Resend
+        </button>
+        <button (click)="removeUser(row)" style="margin-left: 5px; margin-top: 5px;" class="btn btn-sm btn-danger">
+          Remove
+        </button>
+        <button  *ngIf="(isOwner$ | async) && row.status === 'ACCEPTED'" (click)="makeOwner(row)" style="margin-left: 5px; margin-top: 5px;" class="btn btn-sm btn-dark">
+          Make Owner
+        </button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<ng-template #pemissions let-permissions>
+  <ng-container *ngFor="let item of permissions">
+    <ng-container [ngSwitch]="item.type">
+      <span *ngSwitchCase="'ADMIN'" class="badge badge-success" style="margin-right: 3px;">
+        <i class="fa fa-star"></i>
+        {{item.label}}
+      </span>
+      <span *ngSwitchCase="'GLOBAL'" class="badge badge-primary" style="margin-right: 3px;">
+        <i class="fa fa-globe"></i>
+        {{item.label}} - {{item.perm}}
+      </span>
+      <span *ngSwitchCase="'FOLDER'" class="badge badge-secondary" style="margin-right: 3px;">
+        <i class="fa fa-folder"></i>
+        {{item.label}} - {{item.perm}}
+      </span>
+    </ng-container>
+  </ng-container>
+</ng-template>

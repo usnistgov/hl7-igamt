@@ -34,8 +34,13 @@ public interface XMLSerializeService {
   Element serializeCoConstraintXML(IgDataModel igModel) throws TableSerializationException, CoConstraintXMLSerializationException;
 
   Element serializeConstraintsXML(IgDataModel igModel);
+  
+  Element serializeBindingsXML(IgDataModel igModel);
+  
+  Element serializeSlicingXML(IgDataModel igModel);
 
   void generateIS(ZipOutputStream out, String xmlStr, String fileName) throws IOException;
 
-  void normalizeIgModel(IgDataModel igModel, String[] conformanceProfileIds) throws CloneNotSupportedException, ClassNotFoundException, IOException;
+  void normalizeIgModel(IgDataModel igModel, String[] conformanceProfileIds) throws Exception;
+
 }

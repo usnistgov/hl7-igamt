@@ -2,20 +2,25 @@
   <div>
     <ng-container *ngTemplateOutlet="commentItems; context: { $implicit: comments }"></ng-container>
   </div>
-  <button class="btn btn-sm btn-primary" *ngIf="!viewOnly" (click)="openDialog()">
+  <button style="height: fit-content;" class="btn btn-sm btn-primary" *ngIf="!viewOnly" (click)="openDialog()">
     <i class="fa fa-plus" aria-hidden="true"></i>
   </button>
 </div>
 <ng-template #commentItems let-comments>
-    <div *ngFor="let item of comments; let index = i" style="display: flex; flex-direction: row; align-items: center;">
+    <div *ngFor="let item of comments; let i = index" style="display: flex; flex-direction: row; align-items: center;">
       <ng-template #popContent let-text>
           <div [froalaView]="item.description"></div>
       </ng-template>
       <ng-template #popTitle><strong>{{item.username}}</strong></ng-template>
-      <div [ngbPopover]="popContent" [popoverTitle]="popTitle" triggers="mouseenter:mouseleave" placement="bottom" style="display: inline-flex;">
-        <div style="margin-right: 10px; margin-left: 10px;">
-            <i class="fa fa-times" style="color: red; font-size: 1.2em;" (click)="removeComment(i, comments)"></i>
-            <i class="fa fa-pencil" style="font-size: 1.2em; margin-left: 5px;" (click)="openDialog(item)"></i>
+      <div [ngbPopover]="popContent" [popoverTitle]="popTitle" triggers="mouseenter:mouseleave" placement="bottom"
+           style="display: inline-flex; align-items: center; justify-content: center; margin-bottom: 3px;">
+        <div *ngIf="!viewOnly" style="margin-right: 10px; margin-left: 10px;">
+          <button class="btn btn-sm btn-danger" (click)="removeComment(i, comments)">
+            <i class="fa fa-times"></i>
+          </button>
+          <button class="btn btn-sm btn-primary" style="margin-left: 5px;" (click)="openDialog(item)">
+            <i class="fa fa-pencil"></i>
+          </button>
         </div>
         <i class="fa fa-comment-o" style="font-size: 1.2em; margin-right: 5px;"></i>
         <strong>{{item.dateupdated | date:'medium' }}</strong>

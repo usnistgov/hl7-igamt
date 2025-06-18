@@ -14,11 +14,17 @@ export class DamLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
   showStatusBar: boolean;
 
   @Input()
+  hideToolbar: boolean;
+
+  @Input()
   showBottomDrawerToggle: boolean;
 
   // --- Templates
   @ContentChild('alerts')
   alertsTemplate: TemplateRef<any>;
+
+  // @ContentChild('notifications')
+  // notificationsTemplate: TemplateRef<any>;
 
   @ContentChild('titleBar')
   titleBarTemplate: TemplateRef<any>;
@@ -40,6 +46,9 @@ export class DamLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ContentChild('bottomDrawer')
   bottomDrawerTemplate: TemplateRef<any>;
+
+  @ContentChild('breadCrumbs')
+  bcTemplate: TemplateRef<any>;
 
   // --- Resize Attributes
   @ViewChild('resize', { read: ElementRef })

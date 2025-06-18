@@ -17,6 +17,7 @@ export enum ConformanceProfileEditActionTypes {
   OpenCPConformanceStatementEditor = '[ConformanceProfileEdit] Open Conformance Profile Conformance Statement Editor',
   OpenConformanceProfileBindingsEditor = '[ConformanceProfileEdit] Open ConformanceProfile Bindings Editor',
   OpenConformanceProfileSlicingEditor = '[ConformanceProfileEdit] Open ConformanceProfile Slicing Editor',
+  OpenMessageCrossRefEditor = '[ConformanceProfileEdit] Open Message CrossRef Editor',
 
 }
 
@@ -125,6 +126,14 @@ export class OpenCPConformanceStatementEditor extends OpenEditorBase {
   }
 }
 
+export class OpenMessageCrossRefEditor implements Action {
+  readonly type = ConformanceProfileEditActionTypes.OpenMessageCrossRefEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) { }
+}
+
 export type ConformanceProfileEditActions =
   | LoadConformanceProfile
   | OpenConformanceProfilePreDefEditor
@@ -135,4 +144,5 @@ export type ConformanceProfileEditActions =
   | OpenCPConformanceStatementEditor
   | OpenConformanceProfileCoConstraintBindingsEditor
   | LoadConformanceProfileSuccess
-  | LoadConformanceProfileFailure;
+  | LoadConformanceProfileFailure
+  | OpenMessageCrossRefEditor;

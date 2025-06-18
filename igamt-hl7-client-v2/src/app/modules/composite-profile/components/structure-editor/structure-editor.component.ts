@@ -2,14 +2,14 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { Observable, of, ReplaySubject, Subscription } from 'rxjs';
-import { concatMap, map } from 'rxjs/operators';
+import { concatMap, filter, map } from 'rxjs/operators';
 import { AbstractEditorComponent } from 'src/app/modules/core/components/abstract-editor-component/abstract-editor-component.component';
 import { BindingLegend } from 'src/app/modules/core/components/structure-editor/structure-editor.component';
 import { Message } from 'src/app/modules/dam-framework/models/messages/message.class';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { EditorSave } from 'src/app/modules/dam-framework/store';
 import { selectUsername } from 'src/app/modules/dam-framework/store/authentication';
-import { HL7v2TreeColumnType } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import { HL7v2TreeColumnType, IHL7v2TreeNode } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { IDocumentRef } from 'src/app/modules/shared/models/abstract-domain.interface';
 import { ICompositeProfileState, IResourceAndDisplay } from 'src/app/modules/shared/models/composite-profile';
@@ -18,10 +18,13 @@ import { ConstraintType } from 'src/app/modules/shared/models/cs.interface';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
 import { IChange } from 'src/app/modules/shared/models/save-change';
+import { Hl7V2TreeService } from 'src/app/modules/shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import { getHl7ConfigState, selectBindingConfig } from 'src/app/root-store/config/config.reducer';
 import { selectAllDatatypes, selectAllSegments, selectCompositeProfileById } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
-import { selectValueSetsNodes } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { selectIgConfig, selectValueSetsNodes } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { getUserConfigState } from './../../../../root-store/user-config/user-config.reducer';
+import { IUserConfig } from './../../../shared/models/config.class';
 
 export type GroupOptions = Array<{
   label: string,
@@ -61,10 +64,12 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
   selected: IResourceAndDisplay<any>;
   activeTab: GeneratedFlavorTabs;
   tabs: GeneratedFlavorTabs[] = [];
+  structure: IHL7v2TreeNode[];
+  public userConfig: Observable<IUserConfig>;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
-    private messageService: MessageService,
+    private treeService: Hl7V2TreeService,
     actions$: Actions,
     store: Store<any>,
   ) {
@@ -115,13 +120,19 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
       HL7v2TreeColumnType.COMMENT,
     ];
     this.resourceType = Type.CONFORMANCEPROFILE;
-    this.config = this.store.select(getHl7ConfigState);
+    this.config = this.store.select(getHl7ConfigState).pipe(
+      filter((config) => !!config),
+    );
     this.datatypes = this.store.select(selectAllDatatypes);
     this.segments = this.store.select(selectAllSegments);
     this.valueSets = this.store.select(selectValueSetsNodes);
     this.username = this.store.select(selectUsername);
     this.bindingConfig = this.store.select(selectBindingConfig);
     this.bindingConfig.subscribe();
+
+    this.userConfig = this.store.select(selectIgConfig).pipe(
+      filter((config) => !!config),
+    );
 
     this.resourceSubject = new ReplaySubject<GroupOptions>(1);
 
@@ -177,21 +188,39 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
   }
 
   selectItem(elm: IResourceAndDisplay<any>) {
-    switch (elm.display.type) {
-      case Type.DATATYPE:
-      case Type.SEGMENT:
-        this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS ];
-        if (elm.resource.name === 'OBX') {
-          this.tabs.push(GeneratedFlavorTabs.DYNAMIC_MAPPING);
-        }
-        break;
-      case Type.CONFORMANCEPROFILE:
-        this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS, GeneratedFlavorTabs.COCONSTRAINTS];
-        break;
-    }
-    if (!this.tabs.includes(this.activeTab)) {
-      this.activeTab = GeneratedFlavorTabs.STRUCTURE;
-    }
+    this.treeService.getTree(elm.resource, this.repository, true, false, (value) => {
+      switch (elm.display.type) {
+        case Type.DATATYPE:
+        case Type.SEGMENT:
+          this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS];
+          if (elm.resource.name === 'OBX') {
+            this.tabs.push(GeneratedFlavorTabs.DYNAMIC_MAPPING);
+          }
+          break;
+        case Type.CONFORMANCEPROFILE:
+          this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS, GeneratedFlavorTabs.COCONSTRAINTS];
+          break;
+      }
+      if (!this.tabs.includes(this.activeTab)) {
+        this.activeTab = GeneratedFlavorTabs.STRUCTURE;
+      }
+      this.structure = [
+        {
+          data: {
+            id: elm.resource.id,
+            pathId: elm.resource.id,
+            name: elm.resource.name,
+            type: elm.resource.type,
+            rootPath: { elementId: elm.resource.id },
+            position: 0,
+          },
+          expanded: true,
+          children: [...value],
+          parent: undefined,
+        },
+      ];
+    });
+
   }
 
   editorDisplayNode(): Observable<IDisplayElement> {

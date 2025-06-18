@@ -58,7 +58,7 @@ public class DatatypeClassifierImpl implements DatatypeClassifier {
     List<String> hl7Versions = configService.findOne().getHl7Versions();
 
     for (int i = 0; i < versions.size(); i++) {
-      AddVersion(hl7Versions.get(i), criterias);
+      addVersion(hl7Versions.get(i), criterias);
     }
     for (String s : datatypeMap.keySet()) {
       DatatypeClassification classification = new DatatypeClassification();
@@ -73,7 +73,8 @@ public class DatatypeClassifierImpl implements DatatypeClassifier {
 
         }
       }
-      System.out.println("Saving Classe Of Unchanged Datatype");
+//      System.out.println("Saving Classe Of Unchanged Datatype");
+    
       datatypeClassificationService.save(classification);
     }
   }
@@ -97,7 +98,7 @@ public class DatatypeClassifierImpl implements DatatypeClassifier {
   }
 
 
-  private void AddVersion(String version, HashMap<EvolutionPropertie, Boolean> criterias)
+  private void addVersion(String version, HashMap<EvolutionPropertie, Boolean> criterias)
       throws DatatypeNotFoundException {
     visited = new HashMap<String, Integer>();
     List<Datatype> datatypesToAdd =
@@ -111,25 +112,28 @@ public class DatatypeClassifierImpl implements DatatypeClassifier {
         temp.add(version1);
         datatypeMap.put(dt.getName(), temp);
       } else {
-        for (int i = 0; i < datatypeMap.get(dt.getName()).size(); i++) {
+    	List<String> latest = datatypeMap.get(dt.getName()).get(datatypeMap.get(dt.getName()).size() -1);
+    	  
+       // for (int i = 0; i < datatypeMap.get(dt.getName()).size(); i++) {
+        	
           List<Datatype> datatypes = datatypeService.findByNameAndVersionAndScope(dt.getName(),
-              datatypeMap.get(dt.getName()).get(i).get(0), Scope.HL7STANDARD.toString());
+        		  latest.get(0), Scope.HL7STANDARD.toString());
           Datatype d = null;
           if (datatypes != null && !datatypes.isEmpty()) {
             d = datatypes.get(0);
           } else {
             throw new DatatypeNotFoundException(dt.getName(),
-                datatypeMap.get(dt.getName()).get(i).get(0), Scope.HL7STANDARD.toString());
+                latest.get(0), Scope.HL7STANDARD.toString());
           }
           if (d != null && !visited.containsKey(dt.getName())) {
             if (deltaService.compareDatatypes(d, dt, criterias)) {
-              datatypeMap.get(dt.getName()).get(i).add(version);
+              latest.add(version);
 
-              System.out.println("FOUND IDENTIQUE");
+//              System.out.println("FOUND IDENTIQUE");
               visited.put(dt.getName(), 1);
             }
           }
-        }
+       // }
         if (!visited.containsKey(dt.getName())) {
           List<String> version2Add = new ArrayList<String>();
           version2Add.add(version);
@@ -147,7 +151,7 @@ public class DatatypeClassifierImpl implements DatatypeClassifier {
     List<String> hl7Versions = configService.findOne().getHl7Versions();
     HashMap<EvolutionPropertie, Boolean> criterias1 = new HashMap<EvolutionPropertie, Boolean>();
     for (int i = 0; i < hl7Versions.size(); i++) {
-      AddVersion(hl7Versions.get(i), criterias1);
+      addVersion(hl7Versions.get(i), criterias1);
     }
     for (String s : datatypeMap.keySet()) {
       DatatypeClassification classification = new DatatypeClassification();

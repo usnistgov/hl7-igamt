@@ -40,6 +40,7 @@ public class ConfigCreator {
 
   
   public void updateGVTURL() {
+	  
     Config constant =  this.sharedConstantService.findOne();
     String redirectToken = "#/uploadTokens";
     String loginEndpoint = "api/accounts/login";
@@ -72,6 +73,8 @@ public class ConfigCreator {
     hl7Versions.add("2.8");
     hl7Versions.add("2.8.1");
     hl7Versions.add("2.8.2");
+    hl7Versions.add("2.9");
+
 
     List<String> usages = new ArrayList<String>();
 
@@ -168,6 +171,8 @@ public class ConfigCreator {
 
     allowedBindingLocations_coded.put("2-8-1", newOption1);
     allowedBindingLocations_coded.put("2-8-2", oldOptions1);
+    allowedBindingLocations_coded.put("2-9", oldOptions1);
+
     BindingInfo coded =  BindingInfo.createCoded();
     coded.setAllowedBindingLocations(allowedBindingLocations_coded);
 
@@ -233,4 +238,35 @@ public class ConfigCreator {
 
     return ret;
   }
+  
+  public void addTXExceptions(){
+	  
+	  Config config = this.sharedConstantService.findOne();
+	  BindingInfo txInfo = BindingInfo.createSimple();
+	  txInfo.setLocationIndifferent(false);
+	  Set<BindingLocationInfo> txExceptions = new HashSet<BindingLocationInfo>();
+	  txExceptions.add(new BindingLocationInfo(Type.SEGMENT,"OM1", 44, config.getHl7Versions()));
+	  txInfo.setLocationExceptions(txExceptions);
+	  config.getValueSetBindingConfig().put("TX", txInfo);
+	  sharedConstantService.save(config);
+  }
+  
+  public void addNMExceptions(){
+	  
+	  Config config = this.sharedConstantService.findOne();
+	  BindingInfo nmInfo = BindingInfo.createSimple();
+	  nmInfo.setLocationIndifferent(false);
+	  Set<BindingLocationInfo> nmExceptions = new HashSet<BindingLocationInfo>();
+	  nmExceptions.add(new BindingLocationInfo(Type.SEGMENT,"PR1", 14, config.getHl7Versions()));
+	  nmExceptions.add(new BindingLocationInfo(Type.SEGMENT,"DG1", 15, config.getHl7Versions()));
+	  nmExceptions.add(new BindingLocationInfo(Type.DATATYPE,"CK", 1, config.getHl7Versions() ));
+
+	  nmInfo.setLocationExceptions(nmExceptions);
+	  config.getValueSetBindingConfig().put("NM", nmInfo);
+	  sharedConstantService.save(config);
+  }
+  
+  
+  
+  
 }

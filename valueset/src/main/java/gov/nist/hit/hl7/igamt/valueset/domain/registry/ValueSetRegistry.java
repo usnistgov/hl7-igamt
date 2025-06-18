@@ -20,7 +20,7 @@ private ValueSetConfigForExport exportConfig;
   }
 
 
-  public HashMap<String, Boolean> getCodesPresence() {
+  public HashMap<String, Boolean> getCodesPresence() { 
     return codesPresence;
   }
 

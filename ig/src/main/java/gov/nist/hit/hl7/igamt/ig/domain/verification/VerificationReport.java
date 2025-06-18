@@ -21,89 +21,102 @@ import java.util.List;
  */
 public class VerificationReport implements Serializable {
 
-  /**
-   */
-  private static final long serialVersionUID = -5775165964558251622L;
+	/**
+	 */
+	private static final long serialVersionUID = -5775165964558251622L;
 
-  private IgVerificationResult igVerificationResult;
+	private ErrorStats stats = new ErrorStats();
 
-  private List<VSVerificationResult> valuesetVerificationResults;
+	private IgVerificationResult igVerificationResult;
 
-  private List<DTSegVerificationResult> datatypeVerificationResults;
+	private List<VSVerificationResult> valuesetVerificationResults;
 
-  private List<DTSegVerificationResult> segmentVerificationResults;
+	private List<DTSegVerificationResult> datatypeVerificationResults;
 
-  private List<CPVerificationResult> conformanceProfileVerificationResults;
+	private List<DTSegVerificationResult> segmentVerificationResults;
 
-  public IgVerificationResult getIgVerificationResult() {
-    return igVerificationResult;
-  }
+	private List<CPVerificationResult> conformanceProfileVerificationResults;
 
-  public void addValuesetVerificationResult(VSVerificationResult valuesetVerificationResult) {
-    if (this.valuesetVerificationResults == null)
-      this.valuesetVerificationResults = new ArrayList<VSVerificationResult>();
-    this.valuesetVerificationResults.add(valuesetVerificationResult);
-  }
+	public IgVerificationResult getIgVerificationResult() {
+		return igVerificationResult;
+	}
 
-  public void addDatatypeVerificationResult(DTSegVerificationResult datatypeVerificationResult) {
-    if (this.datatypeVerificationResults == null)
-      this.datatypeVerificationResults = new ArrayList<DTSegVerificationResult>();
-    this.datatypeVerificationResults.add(datatypeVerificationResult);
-  }
+	public void addValuesetVerificationResult(VSVerificationResult valuesetVerificationResult) {
+		if (this.valuesetVerificationResults == null)
+			this.valuesetVerificationResults = new ArrayList<VSVerificationResult>();
+		this.valuesetVerificationResults.add(valuesetVerificationResult);
+	}
 
-  public void addSegmentVerificationResult(DTSegVerificationResult segmentVerificationResult) {
-    if (this.segmentVerificationResults == null)
-      this.segmentVerificationResults = new ArrayList<DTSegVerificationResult>();
-    this.segmentVerificationResults.add(segmentVerificationResult);
-  }
+	public void addDatatypeVerificationResult(DTSegVerificationResult datatypeVerificationResult) {
+		if (this.datatypeVerificationResults == null)
+			this.datatypeVerificationResults = new ArrayList<DTSegVerificationResult>();
+		this.datatypeVerificationResults.add(datatypeVerificationResult);
+	}
 
-  public void addConformanceProfileVerificationResult(
-      CPVerificationResult conformanceProfileVerificationResult) {
-    if (this.conformanceProfileVerificationResults == null)
-      this.conformanceProfileVerificationResults = new ArrayList<CPVerificationResult>();
-    this.conformanceProfileVerificationResults.add(conformanceProfileVerificationResult);
-  }
+	public void addSegmentVerificationResult(DTSegVerificationResult segmentVerificationResult) {
+		if (this.segmentVerificationResults == null)
+			this.segmentVerificationResults = new ArrayList<DTSegVerificationResult>();
+		this.segmentVerificationResults.add(segmentVerificationResult);
+	}
 
-  public void setIgVerificationResult(IgVerificationResult igVerificationResult) {
-    this.igVerificationResult = igVerificationResult;
-  }
+	public void addConformanceProfileVerificationResult(CPVerificationResult conformanceProfileVerificationResult) {
+		if (this.conformanceProfileVerificationResults == null)
+			this.conformanceProfileVerificationResults = new ArrayList<CPVerificationResult>();
+		this.conformanceProfileVerificationResults.add(conformanceProfileVerificationResult);
+	}
 
-  public List<VSVerificationResult> getValuesetVerificationResults() {
-    return valuesetVerificationResults;
-  }
+	public void setIgVerificationResult(IgVerificationResult igVerificationResult) {
+		this.igVerificationResult = igVerificationResult;
+	}
 
-  public void setValuesetVerificationResults(
-      List<VSVerificationResult> valuesetVerificationResults) {
-    this.valuesetVerificationResults = valuesetVerificationResults;
-  }
+	public List<VSVerificationResult> getValuesetVerificationResults() {
+		return valuesetVerificationResults;
+	}
 
-  public List<DTSegVerificationResult> getDatatypeVerificationResults() {
-    return datatypeVerificationResults;
-  }
+	public void setValuesetVerificationResults(List<VSVerificationResult> valuesetVerificationResults) {
+		this.valuesetVerificationResults = valuesetVerificationResults;
+	}
 
-  public void setDatatypeVerificationResults(
-      List<DTSegVerificationResult> datatypeVerificationResults) {
-    this.datatypeVerificationResults = datatypeVerificationResults;
-  }
+	public List<DTSegVerificationResult> getDatatypeVerificationResults() {
+		return datatypeVerificationResults;
+	}
 
-  public List<DTSegVerificationResult> getSegmentVerificationResults() {
-    return segmentVerificationResults;
-  }
+	public void setDatatypeVerificationResults(List<DTSegVerificationResult> datatypeVerificationResults) {
+		this.datatypeVerificationResults = datatypeVerificationResults;
+	}
 
-  public void setSegmentVerificationResults(
-      List<DTSegVerificationResult> segmentVerificationResults) {
-    this.segmentVerificationResults = segmentVerificationResults;
-  }
+	public List<DTSegVerificationResult> getSegmentVerificationResults() {
+		return segmentVerificationResults;
+	}
 
-  public List<CPVerificationResult> getConformanceProfileVerificationResults() {
-    return conformanceProfileVerificationResults;
-  }
+	public void setSegmentVerificationResults(List<DTSegVerificationResult> segmentVerificationResults) {
+		this.segmentVerificationResults = segmentVerificationResults;
+	}
 
-  public void setConformanceProfileVerificationResults(
-      List<CPVerificationResult> conformanceProfileVerificationResults) {
-    this.conformanceProfileVerificationResults = conformanceProfileVerificationResults;
-  }
+	public List<CPVerificationResult> getConformanceProfileVerificationResults() {
+		return conformanceProfileVerificationResults;
+	}
 
+	public void setConformanceProfileVerificationResults(
+			List<CPVerificationResult> conformanceProfileVerificationResults) {
+		this.conformanceProfileVerificationResults = conformanceProfileVerificationResults;
+	}
 
+	public ErrorStats getStats() {
+		return stats;
+	}
+
+	public void setStats(ErrorStats stats) {
+		this.stats = stats;
+	}
+
+	public void addStats(ErrorStats add) {
+		this.stats.setTotal(this.stats.getTotal() + add.getTotal());
+		this.stats.setFatal(this.stats.getFatal() + add.getFatal());
+		this.stats.setError(this.stats.getError() + add.getError());
+		this.stats.setWarning(this.stats.getWarning() + add.getWarning());
+		this.stats.setInformational(this.stats.getInformational() + add.getInformational());
+		
+	}
 
 }

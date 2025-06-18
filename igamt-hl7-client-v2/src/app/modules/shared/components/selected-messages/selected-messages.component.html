@@ -1,0 +1,95 @@
+
+
+<form #addingEditForm="ngForm" style="height: 100%">
+<div style="height: 100%; width: 100%;">
+<p-table #dt [globalFilterFields]="['data.name', 'hl7Version', 'name']" [value]="selectedData" scrollHeight="95%"
+scrollable="true" dataKey="data.name">
+
+    <ng-template pTemplate="caption">
+      <div style="text-align: left">
+        <div class="input-group" style="margin-left: 10px;">
+          <div class="input-group-prepend" style="height: 35px;">
+            <span class="input-group-text"><i class="fa fa-filter"></i></span>
+          </div>
+          <input (input)="dt.filterGlobal($event.target.value, 'contains')" class="form-control" placeholder="Filter"
+                 required style="background-color: #f0f0f0; text-align: left; height: 35px;" type="text">
+        </div>
+      </div>
+    </ng-template>
+    <ng-template let-columns pTemplate="header">
+      <tr>
+        <th width="30%">
+          Name
+        </th>
+        <th width="10%">
+          Message Structure
+        </th>
+        <th width="10%">
+          Message Event
+        </th>
+        <th width="10%">
+          HL7 version
+        </th>
+        <th>
+          Profile Type
+        </th>
+        <th>
+          Role
+        </th>
+        <th width="5%">
+          Actions
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template let-columns="columns" let-index="rowIndex" let-node="node" let-rowData pTemplate="body">
+
+      <tr>
+        <td width="30%">
+          <input [name]="rowData.id" [id]="rowData.id"
+                 appNamingDuplication
+                 [existing]="existing" [fixedName]="''" [domainInfo]="rowData.domainInfo" type="text"
+                 style="width: 100%"  [(ngModel)]="rowData.ext" (ngModelChange)="emitData()" required/>
+          <div *ngIf="addingEditForm.controls[rowData.id] && addingEditForm.controls[rowData.id].errors" style="color:red; font-size: 12px">
+            <div *ngIf="addingEditForm.controls[rowData.id].errors.required">
+              <span>*Name is required</span>
+            </div>
+            <div  *ngIf="addingEditForm.controls[rowData.id].errors.duplicated">
+              <span>*Name is duplicated</span>
+            </div>
+          </div>
+        </td>
+
+        <td width="10%">
+          {{rowData.structId}}
+        </td>
+        <td width="10%">
+          {{rowData.name}}
+        </td>
+        <td width="10%">
+          {{rowData.domainInfo?.version}}
+        </td>
+        <td>
+          <div style="display:flex; flex-direction: column;">
+            <p-radioButton name="{{rowData.id + 'type1'}}" id="{{rowData.id+ 'type1'}}" [value]="'Constrainable'" [label]="'Constrainable'" [(ngModel)]="rowData.profileType"></p-radioButton>
+            <p-radioButton name="{{rowData.id + 'type2'}}" id="{{rowData.id + 'type2'}}"  [value]="'Implementation'" [label]="'Implementation'" [(ngModel)]="rowData.profileType"></p-radioButton>
+          </div>
+        </td>
+        <td>
+          <div style="display:flex; flex-direction: column;">
+
+            <p-radioButton name="{{rowData.id + 'role1'}}" id="{{rowData.id+ 'role1'}}" [value]="'Sender'" [label]="'SENDER'" [(ngModel)]="rowData.role"></p-radioButton>
+            <p-radioButton name="{{rowData.id + 'role2'}}" id="{{rowData.id + 'role2'}}"  [value]="'Receiver'" [label]="'RECEIVER'" [(ngModel)]="rowData.role"></p-radioButton>
+            <p-radioButton name="{{rowData.id + 'role3'}}" id="{{rowData.id + 'role3'}}"  [value]="'SenderAndReceiver'" [label]="'SENDER and RECEIVER'" [(ngModel)]="rowData.role"></p-radioButton>
+          </div>
+        </td>
+
+        <td width="5%">
+          <button (click)="unselect(rowData)" class="btn btn-sm btn-danger">
+            <i [class]="'fa fa-remove'"></i>
+          </button>
+        </td>
+        </tr>
+    </ng-template>
+  </p-table>
+  </div>
+</form>

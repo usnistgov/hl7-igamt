@@ -2,13 +2,14 @@ package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import org.springframework.data.annotation.Transient;
 
+import java.util.List;
 import java.util.Set;
 
 public abstract class Resource extends AbstractDomain {
 
   private String preDef;
   private String postDef;
-  protected String parentId;
+  protected String parentId;// where the Resource was created or published. The resource can be deprecated from another library but the parent Id remains the same
   protected Set<String> libraryReferences;
   protected Type parentType;
   private String purposeAndUse;
@@ -16,9 +17,12 @@ public abstract class Resource extends AbstractDomain {
   private String fixedExtension;
   private String structureIdentifier;
   @Transient
-  private Set<GenerationDirective> generatedUsing;
+  private List<GenerationDirective> generatedUsing;
   @Transient
   private boolean generated;
+  
+  private ResourceOrigin resourceOrigin;
+  private DocumentInfo documentInfo;
 
   public Resource() {
     super();
@@ -60,7 +64,11 @@ public abstract class Resource extends AbstractDomain {
       elm.purposeAndUse = purposeAndUse;
       elm.fixedExtension = fixedExtension;
       elm.setStructureIdentifier(structureIdentifier);
-      elm.setActiveInfo(new ActiveInfo());
+      elm.setResourceOrigin(resourceOrigin);
+      elm.generatedUsing = generatedUsing;
+      elm.generated = generated;
+      elm.setDocumentInfo(documentInfo);
+
   }
 
 
@@ -116,7 +124,7 @@ public abstract class Resource extends AbstractDomain {
  // abstract String getSectionTitle();
   
   public String getPublicationDateString() {
-    String s = null;
+    String s = "";
     if(this.getPublicationInfo() !=null && this.getPublicationInfo().getPublicationDate() !=null) {
       s = this.getPublicationInfo().getPublicationDate().toString();
       if(this.getActiveInfo() !=null && this.getActiveInfo().getStatus() !=null && this.getActiveInfo().getStatus().equals(ActiveStatus.DEPRECATED)) {
@@ -136,11 +144,11 @@ public abstract class Resource extends AbstractDomain {
     this.fixedExtension = fixedExtension;
   }
 
-  public Set<GenerationDirective> getGeneratedUsing() {
+  public List<GenerationDirective> getGeneratedUsing() {
     return generatedUsing;
   }
 
-  public void setGeneratedUsing(Set<GenerationDirective> generatedUsing) {
+  public void setGeneratedUsing(List<GenerationDirective> generatedUsing) {
     this.generatedUsing = generatedUsing;
   }
 
@@ -160,5 +168,25 @@ public abstract class Resource extends AbstractDomain {
 
   public void setStructureIdentifier(String structureIdentifier) {
     this.structureIdentifier = structureIdentifier;
+  }
+
+
+  public ResourceOrigin getResourceOrigin() {
+    return resourceOrigin;
+  }
+
+
+  public void setResourceOrigin(ResourceOrigin resourceOrigin) {
+    this.resourceOrigin = resourceOrigin;
+  }
+
+
+  public DocumentInfo getDocumentInfo() {
+    return documentInfo;
+  }
+
+
+  public void setDocumentInfo(DocumentInfo documentInfo) {
+    this.documentInfo = documentInfo;
   }
 }

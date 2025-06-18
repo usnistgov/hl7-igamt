@@ -6,6 +6,7 @@ import { selectDatatypesById, selectSegmentsById } from 'src/app/root-store/dam-
 import { IConformanceStatementEditorData } from '../../core/components/conformance-statement-editor/conformance-statement-editor.component';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
+import { ICoConstraintGroup } from '../../shared/models/co-constraint.interface';
 import { IConformanceProfile } from '../../shared/models/conformance-profile.interface';
 import { ICPConformanceStatementList } from '../../shared/models/cs-list.interface';
 import { IChange } from '../../shared/models/save-change';
@@ -59,6 +60,10 @@ export class ConformanceProfileService {
         );
       }),
     );
+  }
+
+  getReferencedCoConstraintGroups(id: string): Observable<ICoConstraintGroup[]> {
+    return this.http.get<ICoConstraintGroup[]>(this.URL + id + '/coconstraints/group');
   }
 
   getConformanceStatements(id: string, documentRef: IDocumentRef): Observable<ICPConformanceStatementList> {

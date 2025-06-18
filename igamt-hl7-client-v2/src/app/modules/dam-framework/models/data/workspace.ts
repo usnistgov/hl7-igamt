@@ -1,3 +1,5 @@
+import { Type } from 'src/app/modules/shared/constants/type.enum';
+
 export interface IEditorMetadata {
   id: string;
   title?: string;
@@ -9,6 +11,8 @@ export interface IWorkspaceVerification {
   endpoint: string;
   verificationTime: Date;
   loading: boolean;
+  failed: boolean;
+  failure?: string;
   entries: IVerificationEnty[];
 }
 
@@ -21,6 +25,10 @@ export interface IVerificationEnty {
   targetType: string;
   message: string;
   severity: string;
+  subTarget?: {
+    id: string;
+    type: Type;
+  };
 }
 
 export interface IWorkspace {
@@ -53,6 +61,7 @@ export const emptyWorkspace: IWorkspace = {
     endpoint: undefined,
     verificationTime: undefined,
     loading: false,
+    failed: false,
     entries: [],
   },
   initial: undefined,

@@ -5,8 +5,15 @@
 
 }
 
+.verification-result {
+  display: flex;
+  grid-area: verification;
+  max-width: 10px;
+}
 .inline-label {
   display: grid;
   align-content: flex-start;
-  grid-template-columns: fit-content(10%) fit-content(10%) max-content;
+  grid-template-columns:  fit-content(10%) max-content max-content;
 }
+
+

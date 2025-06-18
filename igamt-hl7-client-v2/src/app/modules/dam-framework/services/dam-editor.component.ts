@@ -93,7 +93,7 @@ export abstract class DamAbstractEditorComponent {
               this.store.dispatch(new fromDam.EditorSaveFailure());
             },
             () => {
-              this.store.dispatch(new fromDam.EditorSaveSuccess());
+              this.store.dispatch(new fromDam.EditorSaveSuccess(this.editor));
               this.store.dispatch(new EditorVerify());
             });
         }
@@ -108,7 +108,7 @@ export abstract class DamAbstractEditorComponent {
         this.onEditorVerify(action).subscribe(
           (result) => this.store.dispatch(result),
           (result) => {
-            this.store.dispatch(result);
+            this.store.dispatch(new fromDam.EditorVerificationFailure({ message: result.message }));
           },
         );
       }),

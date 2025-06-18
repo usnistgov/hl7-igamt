@@ -12,11 +12,14 @@
 	<xsl:param name="inlineConstraints" select="'false'" />
 	<xsl:param name="includeTOC" select="'false'" />
 	<xsl:param name="targetFormat" select="'html'" />
+	<xsl:param name="exportType" select="'ig'" />
 	<xsl:variable name="documentTargetFormat" select="$targetFormat" />
 	<xsl:param name="documentTitle" select="'Implementation Guide'" />
 	<xsl:param name="imageLogo" select="''" />
 	<xsl:variable name="inlineConstraintsVar" select="$inlineConstraints" />
 	<xsl:variable name="imageLogoSrc" select="$imageLogo" />
+	<xsl:variable name="exportTypeVar" select="$exportType" />
+
 
 	<!-- Custom export font -->
 	<xsl:param name="userFontFamily" />
@@ -28,8 +31,10 @@
 	<xsl:variable name="appVersion" select="$appCurrentVersion" />
 	<!-- Parameters for the column filter -->
 	<!-- Messages -->
-	<xsl:param name="messageColumnName" select="'true'" />
-	<xsl:variable name="columnDisplay.message.name" select="$messageColumnName" />
+	<xsl:param name="messageColumnPath" select="'true'" />
+	<xsl:variable name="columnDisplay.message.path" select="$messageColumnPath" />
+	<xsl:param name="messageColumnElementName" select="'true'" />
+	<xsl:variable name="columnDisplay.message.name" select="$messageColumnElementName" />
 	<xsl:param name="messageColumnUsage" select="'true'" />
 	<xsl:variable name="columnDisplay.message.usage" select="$messageColumnUsage" />
 	<xsl:param name="messageColumnCardinality" select="'true'" />

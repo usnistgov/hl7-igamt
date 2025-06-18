@@ -3,13 +3,17 @@ package gov.nist.hit.hl7.igamt.ig.model;
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 import gov.nist.hit.hl7.igamt.service.impl.ResourceSkeletonService;
+
+import java.util.Arrays;
 import java.util.List;
 
 public class ResourceSkeleton {
     protected final ResourceRef resourceRef;
     protected DisplayElement resource;
+	protected ResourceBinding resourceBindings;
     protected final ResourceSkeletonService resourceSkeletonService;
     protected List<ResourceSkeletonBone> children;
 
@@ -29,6 +33,7 @@ public class ResourceSkeleton {
             ResourceSkeletonInfo resourceSkeletonInfo = this.resourceSkeletonService.loadSkeleton(resourceRef, this);
             this.setChildren(resourceSkeletonInfo.getChildren());
             this.setResource(resourceSkeletonInfo.getResource());
+			this.setResourceBindings(resourceSkeletonInfo.getBinding());
             return resourceSkeletonInfo;
         }
         return null;
@@ -39,7 +44,12 @@ public class ResourceSkeleton {
     }
 
     public DisplayElement getResource() {
-        return resource;
+        try {
+            this.lazyLoad();
+            return resource;
+        } catch (Exception e) {
+            return resource;
+        }
     }
 
     public void setResource(DisplayElement resource) {
@@ -85,6 +95,30 @@ public class ResourceSkeleton {
         }
         return null;
     }
+    
+    public ResourceSkeletonBone getByPositionPath(String positionalPath) throws ResourceNotFoundException {
+    	try {
+        	String[] positions = positionalPath.split("\\.");
+        	if(positions.length > 0) {
+        		String top = positions[0];
+        		String[] others = Arrays.copyOfRange(positions, 1, positions.length);
+            	ResourceSkeletonBone current = this.get(Integer.parseInt(top));
+            	for(String position: others) {
+            		if(current != null) {
+                		current = current.get(Integer.parseInt(position));
+            		}
+            		else {
+            			return null;
+            		}
+            	}
+            	return current;
+        	} else {
+        		return null;
+        	}
+    	} catch(Exception e) {
+    		return null;
+    	}
+    }
 
     public ResourceSkeletonBone get(int position) throws ResourceNotFoundException {
         this.lazyLoad();
@@ -100,4 +134,17 @@ public class ResourceSkeleton {
         return this;
     }
 
+	public ResourceBinding getResourceBindings() throws ResourceNotFoundException {
+		this.lazyLoad();
+		return resourceBindings;
+	}
+
+    public List<ResourceSkeletonBone> getChildren() throws ResourceNotFoundException {
+        this.lazyLoad();
+        return children;
+    }
+
+	protected void setResourceBindings(ResourceBinding resourceBindings) {
+		this.resourceBindings = resourceBindings;
+	}
 }

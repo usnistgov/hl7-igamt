@@ -39,6 +39,15 @@ public class ComplexDatatype extends Datatype {
 	  elm.components=this.getComponents();
 	  
   }
+
+
+
+public Component findComponentById(String cid) {
+	for(Component c : this.components) {
+		if(c.getId().equals(cid)) return c;
+	}
+	return null;
+}
   
   
   

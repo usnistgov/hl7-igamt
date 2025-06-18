@@ -1,3 +1,5 @@
+import { ICoustomAttribute } from '../../ig/components/ig-metadata-editor/ig-metadata-editor.component';
+
 export interface IMetadata {
   title: string;
   version: string;
@@ -12,4 +14,5 @@ export interface IMetadata {
   subTitle: string;
   scope?: any;
   authorNotes?: any;
+  customAttributes?: ICoustomAttribute[];
 }

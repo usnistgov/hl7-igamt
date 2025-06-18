@@ -19,8 +19,8 @@ import java.util.Arrays;
  */
 public class ReqId {
 
-	private String[] conformanceProfilesId;
-	private String[] compositeProfilesId;
+	private String[] conformanceProfilesId = new String[0];
+	private String[] compositeProfilesId = new String[0];
 	public String[] getConformanceProfilesId() {
 		return conformanceProfilesId;
 	}

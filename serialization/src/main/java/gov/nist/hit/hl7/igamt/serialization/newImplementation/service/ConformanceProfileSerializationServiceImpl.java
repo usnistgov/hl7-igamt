@@ -1,11 +1,15 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableCoConstraintTable;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
 import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
@@ -22,6 +26,7 @@ import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
@@ -45,6 +50,8 @@ import gov.nist.hit.hl7.igamt.serialization.exception.MsgStructElementSerializat
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
+import gov.nist.hit.hl7.igamt.serialization.util.SerializationTools;
+import gov.nist.hit.hl7.igamt.service.impl.ResourceSkeletonService;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -78,11 +85,24 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
     @Autowired
     private CoConstraintSerializationHelper coConstraintSerializationHelper;
     
+    @Autowired
+    SlicingSerialization slicingSerialization;
+    
+    @Autowired
+    ResourceSkeletonService resourceSkeletonService;
+    
+    @Autowired
+    private SerializationTools serializationTools;
+    
     @Override
     public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level, int position,
                                                ConformanceProfileExportConfiguration conformanceProfileExportConfiguration, Boolean deltaMode) throws ResourceSerializationException {
         ConformanceProfile conformanceProfile = conformanceProfileDataModel.getModel();
         ResourceSkeleton conformanceProfileSkeleton = this.coConstraintSerializationHelper.getConformanceProfileSkeleton(conformanceProfile.getId());
+    	ResourceSkeleton root = new ResourceSkeleton(
+                new ResourceRef(Type.CONFORMANCEPROFILE, conformanceProfile.getId()),
+                this.resourceSkeletonService
+        );
         if (conformanceProfile != null) {
             try {
                 Element conformanceProfileElement = igDataModelSerializationService.serializeResource(conformanceProfileDataModel.getModel(), Type.CONFORMANCEPROFILE, position, conformanceProfileExportConfiguration);
@@ -175,7 +195,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                             conformanceProfile.getRole() != null ? conformanceProfile.getRole().name() : ""));
                 }
                 if (!conformanceProfileDataModel.getConformanceStatements().isEmpty() || !conformanceProfileDataModel.getPredicateMap().isEmpty()) {
-                    Element constraints = constraintSerializationService.serializeConstraints(conformanceProfileDataModel.getConformanceStatements(), conformanceProfileDataModel.getPredicateMap(), conformanceProfileExportConfiguration.getConstraintExportConfiguration());
+                    Element constraints = constraintSerializationService.serializeConstraints(conformanceProfileDataModel.getConformanceStatements(), conformanceProfileDataModel.getPredicateMap(), conformanceProfileExportConfiguration.getConstraintExportConfiguration(), root);
                     if (constraints != null) {
                         conformanceProfileElement.appendChild(constraints);
                     }
@@ -187,15 +207,32 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                     conformanceProfileElement.addAttribute(new Attribute("derived",String.valueOf(conformanceProfile.isDerived())));
                 }
 
-        	      Map<String, Boolean > bindedPaths = conformanceProfile.getChildren().stream().filter(  field  -> field != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), field.getUsage())).collect(Collectors.toMap( x -> x.getId(), x -> true ));
+//        	      Map<String, Boolean > bindedPaths = conformanceProfile.getChildren().stream()
+//        	    		  .filter(field  -> field != null && ExportTools
+//									        	    		  .CheckUsage(
+//									        	    				  conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), 
+//									        	    				  field.getUsage()
+//									        	    		  )
+//        	    		   ).collect(Collectors.toMap( x -> x.getId(), x -> true ));
 
+                Map<String, Boolean > bindedPaths = new HashMap<>();    
+                bindedPaths = buildBindedPath(conformanceProfile.getChildren(), bindedPaths,conformanceProfileExportConfiguration);
+                		
                 if (conformanceProfile.getBinding() != null) {
-                    Element bindingElement = bindingSerializationService.serializeBinding(conformanceProfile.getBinding(), conformanceProfileDataModel.getValuesetMap(), conformanceProfileDataModel.getModel().getName(), bindedPaths);
+                    Element bindingElement = bindingSerializationService.serializeBinding(conformanceProfile.getBinding(), conformanceProfileDataModel.getValuesetMap(),conformanceProfileDataModel.getSingleCodeMap(), conformanceProfileDataModel.getModel().getName(), bindedPaths);
                     if (bindingElement != null) {
                         conformanceProfileElement.appendChild(bindingElement);
                     }
                 }
 
+                if (conformanceProfile.getSlicings()!= null) {
+
+                	
+                    Element slicingElement = slicingSerialization.serializeSlicing(conformanceProfile.getSlicings(), root, Type.CONFORMANCEPROFILE, bindedPaths);
+                    if (slicingElement != null) {
+                        conformanceProfileElement.appendChild(slicingElement);
+                    }
+                }
 
 
                 if (conformanceProfile.getChildren() != null
@@ -242,7 +279,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                         if (messageStructElm != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), messageStructElm.getUsage())) {
                             if (messageStructElm != null) {
 //		              if(this.bindedGroupsAndSegmentRefs.contains(msgStructElm.getId())) {
-                                Element msgStructElement = this.serializeMsgStructElement(igDataModel, messageStructElm, 0, conformanceProfileExportConfiguration);
+                                Element msgStructElement = this.serializeMsgStructElement(igDataModel, conformanceProfileDataModel, messageStructElm, 0, conformanceProfileExportConfiguration);
                                 if (msgStructElement != null) {
                                     conformanceProfileElement.appendChild(msgStructElement);
                                 }
@@ -382,8 +419,12 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                             if (coConstraintBinding != null) {
                                 if (coConstraintBinding.getContext() != null) {
                                     Element coConstraintContext = new Element("coConstraintContext");
-                                    ResourceSkeletonBone context = this.coConstraintSerializationHelper.getStructureElementRef(conformanceProfileSkeleton, coConstraintBinding.getContext());
-                                    coConstraintContext.appendChild(context.getLocationInfo().getHl7Path());
+                                    if(coConstraintBinding.getContext() == null || Strings.isNullOrEmpty(coConstraintBinding.getContext().getPathId())) {
+                                        coConstraintContext.appendChild(conformanceProfileSkeleton.get().getResource().getVariableName());
+                                    } else {
+                                        ResourceSkeletonBone context = this.coConstraintSerializationHelper.getStructureElementRef(conformanceProfileSkeleton, coConstraintBinding.getContext());
+                                        coConstraintContext.appendChild(context.getLocationInfo().getHl7Path());
+                                    }
                                     coConstraintBindingElement.appendChild(coConstraintContext);
                                 }
                                 if (coConstraintBinding.getBindings() != null) {
@@ -504,16 +545,16 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
      * @throws SerializationException
      * @throws Exception
      */
-    private Element serializeMsgStructElement(IgDataModel igDataModel, MsgStructElement msgStructElm, int depth, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration)
+    private Element serializeMsgStructElement(IgDataModel igDataModel, ConformanceProfileDataModel conformanceProfileDataModel, MsgStructElement msgStructElm, int depth, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration)
             throws SerializationException {
         try {
             Element msgStructElement;
             if (msgStructElm instanceof Group) {
-                msgStructElement = serializeGroup(igDataModel, (Group) msgStructElm, depth, conformanceProfileExportConfiguration);
+                msgStructElement = serializeGroup(igDataModel,conformanceProfileDataModel, (Group) msgStructElm, depth, conformanceProfileExportConfiguration);
             } else if (msgStructElm instanceof SegmentRef) {
                 SegmentDataModel segmentDataModel = igDataModel.getSegments().stream().filter(seg -> ((SegmentRef) msgStructElm).getRef().getId().equals(seg.getModel().getId())).findAny().orElseThrow(() -> new SegmentNotFoundException(((SegmentRef) msgStructElm).getRef().getId()));
                 Segment segment = segmentDataModel.getModel();
-                msgStructElement = serializeSegmentRef((SegmentRef) msgStructElm, segment, depth);
+                msgStructElement = serializeSegmentRef( conformanceProfileDataModel,(SegmentRef) msgStructElm, segment, depth);
             } else {
                 throw new MsgStructElementSerializationException(new Exception(
                         "Unable to serialize conformance profile element: element isn't a Group or SegmentRef instance ("
@@ -536,7 +577,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
     /**
      * @param segmentRef @return @throws
      */
-    private Element serializeSegmentRef(SegmentRef segmentRef, Segment segment, int depth)
+    private Element serializeSegmentRef(ConformanceProfileDataModel conformanceProfileDataModel,SegmentRef segmentRef, Segment segment, int depth)
             throws MsgStructElementSerializationException {
         Element segmentRefElement = new Element("SegmentRef");
         try {
@@ -556,8 +597,17 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                     new Attribute("max", segmentRef.getMax() != null ? segmentRef.getMax() : ""));
             segmentRefElement.addAttribute(new Attribute("min", String.valueOf(segmentRef.getMin())));
             segmentRefElement.addAttribute(new Attribute("type", Type.SEGMENTREF.name()));
-            segmentRefElement.addAttribute(new Attribute("usage",
-                    segmentRef.getUsage() != null ? segmentRef.getUsage().toString() : ""));
+            
+            if(segmentRef.getUsage() != null && !segmentRef.getUsage().equals(Usage.CAB)) {
+            	segmentRefElement.addAttribute(
+                    new Attribute("usage", segmentRef.getUsage() != null ? segmentRef.getUsage().toString() : ""));}
+                else if(segmentRef.getUsage() != null && segmentRef.getUsage().equals(Usage.CAB)) {
+                	
+                	segmentRefElement.addAttribute(
+                            new Attribute("usage", segmentRef.getUsage() != null ? serializationTools.extractPredicateUsages(conformanceProfileDataModel.getPredicateMap(), segmentRef.getId()) : ""));
+                    segmentRefElement.addAttribute(
+                        new Attribute("predicate", segmentRef.getUsage() != null ? serializationTools.extractPredicateDescription(conformanceProfileDataModel.getPredicateMap(), segmentRef.getId()) : ""));
+                }
             segmentRefElement.addAttribute(new Attribute("iDRef", segmentRef.getId()));
             segmentRefElement.addAttribute(new Attribute("iDSeg", segmentRef.getRef().getId()));
             if (segment != null && segment.getName() != null) {
@@ -575,7 +625,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
         }
     }
 
-    private Element serializeGroup(IgDataModel igDataModel, Group group, int depth, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) throws SerializationException {
+    private Element serializeGroup(IgDataModel igDataModel,ConformanceProfileDataModel conformanceProfileDataModel, Group group, int depth, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) throws SerializationException {
         Element groupElement = new Element("Group");
 //	    if (group.getBinding() != null) {
 //	      Element binding;
@@ -596,7 +646,17 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
         elementGroupBegin.addAttribute(new Attribute("name", group.getName()));
         elementGroupBegin
                 .addAttribute(new Attribute("description", "BEGIN " + group.getName() + " GROUP"));
-        elementGroupBegin.addAttribute(new Attribute("usage", String.valueOf(group.getUsage())));
+        if(group.getUsage() != null && !group.getUsage().equals(Usage.CAB)) {
+        	elementGroupBegin.addAttribute(
+                new Attribute("usage", group.getUsage() != null ? group.getUsage().toString() : ""));}
+            else if(group.getUsage() != null && group.getUsage().equals(Usage.CAB)) {
+            	
+            	elementGroupBegin.addAttribute(
+                        new Attribute("usage", group.getUsage() != null ? serializationTools.extractPredicateUsages(conformanceProfileDataModel.getPredicateMap(), group.getId()) : ""));
+                elementGroupBegin.addAttribute(
+                    new Attribute("predicate", group.getUsage() != null ? serializationTools.extractPredicateDescription(conformanceProfileDataModel.getPredicateMap(), group.getId()) : ""));
+            }
+//        elementGroupBegin.addAttribute(new Attribute("usage", String.valueOf(group.getUsage())));
         elementGroupBegin.addAttribute(new Attribute("min", group.getMin() + ""));
         elementGroupBegin.addAttribute(new Attribute("max", group.getMax()));
         elementGroupBegin.addAttribute(new Attribute("ref", StringUtils.repeat(".", 4 * depth) + "["));
@@ -610,7 +670,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
         if(msgStructElm != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), msgStructElm.getUsage()))
         		{
             try {
-                Element child = this.serializeMsgStructElement(igDataModel, msgStructElm, depth + 1, conformanceProfileExportConfiguration);
+                Element child = this.serializeMsgStructElement(igDataModel, conformanceProfileDataModel, msgStructElm, depth + 1, conformanceProfileExportConfiguration);
                 if (child != null) {
                     groupElement.appendChild(child);
                 }
@@ -902,7 +962,27 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
         return "";
     }
 
+    private  Map<String, Boolean > buildBindedPath(Set<SegmentRefOrGroup> segmentRefOrGroupList, Map<String, Boolean > bindedPaths, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration){
+//    	Map<String, Boolean > bindedPaths = new HashMap<>();
+    	for( SegmentRefOrGroup segmentRefOrGroup : segmentRefOrGroupList) {
+    		if(segmentRefOrGroup != null && ExportTools
+				        	    		  .CheckUsage(
+				        	    				  conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), 
+				        	    				  segmentRefOrGroup.getUsage()
+				        	    		  )) {
+    			if(segmentRefOrGroup instanceof SegmentRef) {
+    				bindedPaths.put(segmentRefOrGroup.getId(), true);
+    			} else if(segmentRefOrGroup instanceof Group ) {
+                    Map<String, Boolean > groupBindedPath = buildBindedPath(((Group) segmentRefOrGroup).getChildren(), bindedPaths, conformanceProfileExportConfiguration);
+                    bindedPaths.putAll(groupBindedPath);
+                }
+    		}
+    	}
+    	return bindedPaths;
+    	
+    }
 
+   
 //	  @Override
 //	  public Map<String, String> getIdPathMap() {
 //	    ConformanceProfile conformanceProfile = (ConformanceProfile) this.getAbstractDomain();

@@ -1,0 +1,53 @@
+@import '../../../../../assets/variables';
+
+:host {
+  display: contents;
+}
+
+.side-bar {
+  height: 100%;
+  display: grid;
+  gap: 2px;
+  grid-template-columns: [bar] minmax(min-content, 2fr);
+  grid-template-rows: [editors-row] minmax(min-content, max-content) [header-row] minmax(min-content, 40px) [container-row] auto;
+  overflow: hidden;
+}
+
+.editors {
+  grid-column: bar;
+  grid-row: editors-row;
+}
+
+.folder-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-active-link {
+  background-color: $nist_light_yellow;
+}
+
+.filter {
+  grid-column: bar;
+  grid-row: header-row;
+  background-color: white;
+  display: flex;
+  align-items: center;
+}
+
+.list {
+  grid-column: 1;
+  background-color: rgb(255, 246, 232);
+  grid-row: container-row;
+  overflow: scroll;
+  display: flex;
+}
+
+.list-group-item {
+  cursor: pointer;
+}
+
+.list-group-item:hover {
+  background-color: rgb(243, 243, 243);
+}

@@ -1,16 +1,23 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, SystemJsNgModuleLoader, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Actions } from '@ngrx/effects';
+import { ActivatedRoute, ChildrenOutletContexts, Router } from '@angular/router';
+import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
+import { Actions, ofType } from '@ngrx/effects';
+import { Dictionary } from '@ngrx/entity';
 import { Store } from '@ngrx/store';
+import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { SelectItem } from 'primeng/api';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
-import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { concatMap, filter, flatMap, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { BuildValueSetComponent } from 'src/app/modules/shared/components/build-value-set/build-value-set.component';
+import { ImportFromLibComponent } from 'src/app/modules/shared/components/import-from-lib/import-from-lib.component';
+import { ImportFromProviderComponent } from 'src/app/modules/shared/components/import-from-provider/import-from-provider.component';
+import { Hl7Config } from 'src/app/modules/shared/models/config.class';
+import { IContent } from 'src/app/modules/shared/models/content.interface';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { selectAllMessages } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
-import { AddResourceSuccess } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-
+import { AddResourceSuccess, selectIgDocument } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
   AddProfileComponentContext,
@@ -31,15 +38,18 @@ import {
   UpdateSections,
 } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
+import { getHl7ConfigState } from '../../../../root-store/config/config.reducer';
 import {
   CreateCoConstraintGroup,
   CreateCoConstraintGroupSuccess,
+  DeleteResources,
 } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
 import { ClearResource } from '../../../../root-store/resource-loader/resource-loader.actions';
 import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
 import { EditorReset, selectWorkspaceActive } from '../../../dam-framework/store/data';
+import { DamActionTypes } from '../../../dam-framework/store/data/dam.actions';
 import { selectRouterURL } from '../../../dam-framework/store/router';
 import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
 import { AddCoConstraintGroupComponent } from '../../../shared/components/add-co-constraint-group/add-co-constraint-group.component';
@@ -62,31 +72,24 @@ import { IDisplayElement } from '../../../shared/models/display-element.interfac
 import { IResourcePickerData } from '../../../shared/models/resource-picker-data.interface';
 import { CrossReferencesService } from '../../../shared/services/cross-references.service';
 import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.class';
+import { IgTocFilterService, IIgTocFilterConfiguration, selectIgTocFilter } from '../../services/ig-toc-filter.service';
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
+import { selectVerificationResult } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
+import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
+import { LibraryService } from './../../../library/services/library.service';
+import { IMessagePickerContext, IMessagePickerData, MessagePickerComponent } from './../../../shared/components/message-picker/message-picker.component';
+import { UnusedElementsComponent } from './../../../shared/components/unused-elements/unused-elements.component';
+import { SourceType } from './../../../shared/models/adding-info';
+import { VerificationService } from './../../../shared/services/verification.service';
+import { ITypedSection } from './../ig-toc/ig-toc.component';
+import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
   templateUrl: './ig-edit-sidebar.component.html',
   styleUrls: ['./ig-edit-sidebar.component.scss'],
 })
-export class IgEditSidebarComponent implements OnInit, OnDestroy {
-
-  nodes$: Observable<any[]>;
-  hl7Version$: Observable<string[]>;
-  documentRef$: Observable<IDocumentRef>;
-  version$: Observable<string>;
-  delta: boolean;
-  viewOnly$: Observable<boolean>;
-  @Input()
-  deltaMode = false;
-  @ViewChild(IgTocComponent) toc: IgTocComponent;
-  optionsToDisplay: any;
-  deltaOptions: SelectItem[] = [{ label: 'CHANGED', value: 'UPDATED' }, { label: 'DELETED', value: 'DELETED' }, { label: 'ADDED', value: 'ADDED' }];
-  selectedValues = ['UPDATED', 'DELETED', 'ADDED', 'UNCHANGED'];
-  deltaMode$: Observable<boolean> = of(false);
-  selectedTargetId = 'IG';
-  derived: boolean;
-  selectedSubscription: Subscription;
+export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(
     private store: Store<IDocumentDisplayInfo<IgDocument>>,
@@ -94,15 +97,35 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
     private crossReferencesService: CrossReferencesService,
     private router: Router,
     private activeRoute: ActivatedRoute,
-    private actions: Actions) {
+    private igTocFilterService: IgTocFilterService,
+    private actions: Actions,
+    private verificationService: VerificationService,
+
+    private libraryService: LibraryService) {
     this.deltaMode$ = this.store.select(fromIgEdit.selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
     this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
     this.nodes$ = this.getNodes();
     this.hl7Version$ = store.select(config.getHl7Versions);
+    this.ig$ = this.store.select(selectIgDocument);
+    this.conformanceProfiles$ = store.select(selectAllMessages);
+    this.config$ = this.store.select(getHl7ConfigState).pipe(
+      // tslint:disable-next-line: no-shadowed-variable
+      filter((config) => !!config),
+    );
     this.documentRef$ = store.select(fromIgamtSelectors.selectLoadedDocumentInfo);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
     this.viewOnly$ = this.store.select(fromIgamtSelectors.selectViewOnly);
+    this.filterActive$ = this.store.select(selectIgTocFilter).pipe(
+      map((tocFilter) => {
+        return tocFilter && tocFilter.active;
+      }),
+    );
+    // verification
+    this.verification$ = this.store.select(selectVerificationResult).pipe(
+      filter((value) => !!value),
+      map((value) => this.verificationService.convertValueToTocElements(value)),
+    );
     this.selectedSubscription = this.store.select(selectRouterURL).pipe(
       map((url: string) => {
         const regex = '/ig/[a-z0-9A-Z-]+/(?<type>[a-z]+)/(?<id>[a-z0-9A-Z-]+).*';
@@ -114,6 +137,40 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
           this.selectedTargetId = 'IG';
         }
       })).subscribe();
+  }
+
+  nodes$: Observable<any[]>;
+
+  verification$: Observable<Dictionary<IVerificationEnty[]>>;
+  hl7Version$: Observable<string[]>;
+  documentRef$: Observable<IDocumentRef>;
+  conformanceProfiles$: Observable<IDisplayElement[]>;
+  config$: Observable<Hl7Config>;
+  version$: Observable<string>;
+  delta: boolean;
+  viewOnly$: Observable<boolean>;
+  @Input()
+  deltaMode = false;
+  @ViewChild(IgTocComponent) toc: IgTocComponent;
+  @ViewChild('triggerPopOver') triggerPopOver: NgbPopover;
+  optionsToDisplay: any;
+  deltaOptions: SelectItem[] = [{ label: 'CHANGED', value: 'UPDATED' }, { label: 'DELETED', value: 'DELETED' }, { label: 'ADDED', value: 'ADDED' }];
+  selectedValues = ['UPDATED', 'DELETED', 'ADDED', 'UNCHANGED'];
+  deltaMode$: Observable<boolean> = of(false);
+  selectedTargetId = 'IG';
+  derived: boolean;
+  ig$: Observable<IgDocument>;
+  selectedSubscription: Subscription;
+  tocFilterSubscription: Subscription;
+  saveSuccessSubscription: Subscription;
+  filterActive$: Observable<boolean>;
+
+  @BlockUI('toc') blockUIView: NgBlockUI;
+
+  MessagePickerComponent;
+
+  updateTocFilter(tocFilter: IIgTocFilterConfiguration) {
+    this.igTocFilterService.setFilter(tocFilter);
   }
 
   getNodes() {
@@ -196,6 +253,90 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
     subscription.unsubscribe();
   }
 
+  // addChildrenFromProvider(providerId: string){
+  //   const dialogRef = this.dialog.open(ImportFromProviderComponent, {
+  //     data: {},
+  //   });
+  //   dialogRef.afterClosed().pipe(
+  //     filter((x) => x !== undefined),
+  //     withLatestFrom(this.documentRef$, this.config$),
+  //     take(1),
+  //     map(([result, documentRef, config]) => {
+  //       if(result.redirect){
+  //       RxjsStoreHelperService.listenAndReact(this.actions, {
+  //         [IgEditActionTypes.AddResourceSuccess]: {
+  //           do: (action: AddResourceSuccess) => {
+  //             this.router.navigate(['./' + Type.VALUESET.toString().toLocaleLowerCase() + '/' + action.payload.targetResourceId], { relativeTo: this.activeRoute });
+  //             return of();
+  //           },
+  //         },
+  //       }).subscribe();
+  //     }
+  //       this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result.selected, type: Type.VALUESET }));
+  //     }),
+  //   ).subscribe();
+  // }
+
+  addChildrenFromProvider(providerId: string) {
+    this.config$.pipe(
+      take(1),
+      switchMap((conf) => {
+        const dialogRef = this.dialog.open(ImportFromProviderComponent, {
+          data: { url: conf.phinvadsUrl },
+        });
+        return dialogRef.afterClosed().pipe(
+          filter((x) => x !== undefined),
+          withLatestFrom(this.documentRef$),
+          map(([result, documentRef]) => {
+            if (result && result.redirect) {
+              RxjsStoreHelperService.listenAndReact(this.actions, {
+                [IgEditActionTypes.AddResourceSuccess]: {
+                  do: (action: AddResourceSuccess) => {
+                    this.router.navigate(['./' + Type.VALUESET.toString().toLocaleLowerCase() + '/' + action.payload.targetResourceId], { relativeTo: this.activeRoute });
+                    return of();
+                  },
+                },
+              }).subscribe();
+            }
+            this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result.selected, type: Type.VALUESET }));
+          }),
+        );
+      }),
+    ).subscribe();
+  }
+
+  addMessages(event: IAddWrapper) {
+    const subscription = this.hl7Version$.pipe(
+      withLatestFrom(this.version$),
+      take(1),
+      map(([versions, selectedVersion]) => {
+        const dialogData: IMessagePickerData = {
+          hl7Versions: versions,
+          existing: event.node.children,
+          version: selectedVersion,
+          scope: event.scope,
+          context: IMessagePickerContext.ADD,
+        };
+        const dialogRef = this.dialog.open(MessagePickerComponent, {
+          data: dialogData,
+        });
+        dialogRef.afterClosed().pipe(
+          map((result) => {
+            this.store.dispatch(new ClearResource());
+            return result;
+          }),
+          filter((x) => x !== undefined),
+          withLatestFrom(this.documentRef$),
+          take(1),
+          map(([result, documentRef]) => {
+            this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type }));
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
+    subscription.unsubscribe();
+  }
+
   addStructure(event: IAddWrapper) {
     const subscription = this.hl7Version$.pipe(
       withLatestFrom(this.version$),
@@ -228,6 +369,33 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
       }),
     ).subscribe();
     subscription.unsubscribe();
+  }
+
+  addUserDataTypes(event: IAddWrapper) {
+    this.libraryService.getPublishedLibraries().pipe(
+      withLatestFrom(this.version$),
+      // take(1),
+      map(([ILibraryDisplay, selectedVersion]) => {
+        const dialogData = {
+          version: selectedVersion,
+          libs: ILibraryDisplay,
+        };
+        const dialogRef = this.dialog.open(ImportFromLibComponent, {
+          data: dialogData,
+        });
+        dialogRef.afterClosed().pipe(
+          map((result) => {
+            return result;
+          }),
+          filter((x) => x !== undefined),
+          withLatestFrom(this.documentRef$),
+          take(1),
+          map(([result, documentRef]) => {
+            this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type }));
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
   }
 
   addVSFromCSV($event) {
@@ -475,8 +643,8 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
   }
 
   addValueSet($event: IAddNewWrapper) {
-    const dialogRef = this.dialog.open(AddResourceComponent, {
-      data: { existing: $event.node.children, scope: Scope.USER, title: this.getNewTitle($event.type), type: $event.type },
+    const dialogRef = this.dialog.open(BuildValueSetComponent, {
+      data: { existing: $event.node.children, scope: Scope.USER, title: this.getNewTitle($event.type), type: $event.type, sourceType: SourceType.INTERNAL },
     });
     dialogRef.afterClosed().pipe(
       filter((x) => x !== undefined),
@@ -574,10 +742,128 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
       })).subscribe();
   }
 
+  manageProfileStructure(event: IContent[]) {
+    this.documentRef$.pipe(
+      take(1),
+      tap((documentRef) => {
+
+        const dialogRef = this.dialog.open(ManageProfileStructureComponent, {
+          data: event,
+        });
+        dialogRef.afterClosed().subscribe(
+          (answer) => {
+            event = [];
+
+          },
+        );
+      })).subscribe();
+  }
+
+  triggerTocFilterWarning() {
+    this.triggerPopOver.open();
+    setTimeout(() => {
+      this.triggerPopOver.open();
+      setTimeout(() => {
+        this.triggerPopOver.close();
+      }, 3000);
+    }, 1000);
+  }
+
   ngOnDestroy(): void {
     if (this.selectedSubscription) {
       this.selectedSubscription.unsubscribe();
     }
+    if (this.tocFilterSubscription) {
+      this.tocFilterSubscription.unsubscribe();
+    }
+    if (this.saveSuccessSubscription) {
+      this.saveSuccessSubscription.unsubscribe();
+    }
+  }
+
+  ngAfterViewInit() {
+    // Filter TOC on Nodes or Filter Change
+    this.tocFilterSubscription = combineLatest(
+      this.getNodes(),
+      this.store.select(selectIgTocFilter),
+    ).pipe(
+      tap(([, tocFilter]) => {
+        if (tocFilter) {
+          this.blockUIView.start();
+          setTimeout(() => {
+            this.toc.filterNode((display) => {
+              return this.igTocFilterService.isFiltered(display, tocFilter);
+            });
+            this.toc.updateNumbers();
+            setTimeout(() => {
+              this.blockUIView.stop();
+              if (tocFilter.active) {
+                this.triggerTocFilterWarning();
+              }
+            }, 200);
+          }, 200);
+        }
+      }),
+    ).subscribe();
+
+    // Update Filter On Save
+    this.saveSuccessSubscription = this.actions.pipe(
+      ofType(DamActionTypes.EditorSaveSuccess),
+      switchMap(() => {
+        return this.store.select(selectIgTocFilter).pipe(
+          take(1),
+          tap((tocFilter) => {
+            if (tocFilter && tocFilter.usedInConformanceProfiles.active) {
+              this.igTocFilterService.setFilter(tocFilter);
+              this.triggerTocFilterWarning();
+            }
+          }),
+        );
+      }),
+    ).subscribe();
+  }
+  cleanUnused($event: { children: IDisplayElement[], type: Type }) {
+    this.documentRef$.pipe(
+      take(1),
+      concatMap((documentRef: IDocumentRef) => {
+        return this.crossReferencesService.getUnused(documentRef.documentId, $event.type).pipe(
+          take(1),
+          map((unused: string[]) => {
+            if (unused.length === 0) {
+              const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+                data: {
+                  question: 'No Unused Elements',
+                  action: '',
+                },
+              });
+              dialogRef.afterClosed().subscribe();
+            } else {
+              const unusedMap = {};
+              unused.forEach((element) => {
+                unusedMap[element] = true;
+              });
+              let unusedDisplay: IDisplayElement[] = [];
+
+              unusedDisplay = $event.children.filter((x) => unusedMap[x.id]);
+              const dialogRef = this.dialog.open(UnusedElementsComponent, {
+
+                data: {
+                  ids: unused,
+                  resources: unusedDisplay,
+                },
+              });
+              dialogRef.afterClosed().subscribe(
+                (answer) => {
+                  if (answer) {
+                    this.store.dispatch(new DeleteResources({ documentId: documentRef.documentId, ids: answer, type: $event.type }));
+                  }
+                },
+              );
+            }
+          }),
+        );
+      }),
+    ).subscribe();
   }
 
 }

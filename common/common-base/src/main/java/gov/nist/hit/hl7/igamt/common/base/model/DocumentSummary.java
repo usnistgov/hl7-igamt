@@ -2,143 +2,181 @@ package gov.nist.hit.hl7.igamt.common.base.model;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class DocumentSummary {
 
-  private String title;
-  private int position;
-  private String coverpage;
-  private String subtitle;
-  private Date dateUpdated;
-  private String id;
-  private String username;
-  private boolean derived; 
-  private List<String> participants;
-  private Status status;
-  private List<String> elements;
-  private SharePermission sharePermission;
-  private List<String> sharedUsers;
-  private String currentAuthor;
+	private String title;
+	private int position;
+	private String coverpage;
+	private String subtitle;
+	private Date dateUpdated;
+	private String id;
+	private String username;
+	private boolean derived; 
+	private List<String> participants;
+	private Status status;
+	private List<String> elements;
+	private SharePermission sharePermission;
+	private Set<String> sharedUsers;
+	private String currentAuthor;
+	private Boolean draft;
+	private Type resourceType;
+	private PublicationInfo publicationInfo;
+	private Boolean deprecated;
 
-  public String getTitle() {
-    return title;
-  }
+	public Boolean getDraft() {
+		return draft;
+	}
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
+	public void setDraft(Boolean draft) {
+		this.draft = draft;
+	}
+	
 
-  public String getCoverpage() {
-    return coverpage;
-  }
+	public Boolean getDeprecated() {
+		return deprecated;
+	}
 
-  public void setCoverpage(String coverpage) {
-    this.coverpage = coverpage;
-  }
+	public void setDeprecated(Boolean deprecated) {
+		this.deprecated = deprecated;
+	}
 
-  public String getSubtitle() {
-    return subtitle;
-  }
+	public String getTitle() {
+		return title;
+	}
 
-  public void setSubtitle(String subtitle) {
-    this.subtitle = subtitle;
-  }
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-  public Date getDateUpdated() {
-    return dateUpdated;
-  }
+	public String getCoverpage() {
+		return coverpage;
+	}
 
-  public void setDateUpdated(java.util.Date date) {
-    this.dateUpdated = date;
-  }
+	public void setCoverpage(String coverpage) {
+		this.coverpage = coverpage;
+	}
 
-  public List<String> getElements() {
-    return elements;
-  }
+	public String getSubtitle() {
+		return subtitle;
+	}
 
-  public void setElements(List<String> confrmanceProfiles) {
-    this.elements = confrmanceProfiles;
-  }
+	public void setSubtitle(String subtitle) {
+		this.subtitle = subtitle;
+	}
 
-  public String getUsername() {
-    return username;
-  }
+	public Date getDateUpdated() {
+		return dateUpdated;
+	}
 
-  public void setUsername(String username) {
-    this.username = username;
-  }
+	public void setDateUpdated(java.util.Date date) {
+		this.dateUpdated = date;
+	}
 
-  public DocumentSummary() {
-    // TODO Auto-generated constructor stub
-  }
+	public List<String> getElements() {
+		return elements;
+	}
 
-  public int getPosition() {
-    return position;
-  }
+	public void setElements(List<String> confrmanceProfiles) {
+		this.elements = confrmanceProfiles;
+	}
 
-  public Status getStatus() {
-    return status;
-  }
+	public String getUsername() {
+		return username;
+	}
 
-  public void setStatus(Status status) {
-    this.status = status;
-  }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-  public void setPosition(int position) {
-    this.position = position;
-  }
+	public DocumentSummary() {
+		// TODO Auto-generated constructor stub
+	}
 
-  public String getId() {
-    return id;
-  }
+	public int getPosition() {
+		return position;
+	}
 
-  public void setId(String id) {
-    this.id = id;
-  }
+	public Status getStatus() {
+		return status;
+	}
 
-  public List<String> getParticipants() {
-    return participants;
-  }
+	public void setStatus(Status status) {
+		this.status = status;
+	}
 
-  public void setParticipants(List<String> participants) {
-    this.participants = participants;
-  }
+	public void setPosition(int position) {
+		this.position = position;
+	}
 
-  public boolean isDerived() {
-    return derived;
-  }
+	public String getId() {
+		return id;
+	}
 
-  public void setDerived(boolean derived) {
-    this.derived = derived;
-  }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-public SharePermission getSharePermission() {
-	return sharePermission;
-}
+	public List<String> getParticipants() {
+		return participants;
+	}
 
-public void setSharePermission(SharePermission sharePermission) {
-	this.sharePermission = sharePermission;
-}
+	public void setParticipants(List<String> participants) {
+		this.participants = participants;
+	}
 
-public List<String> getSharedUsers() {
-	return sharedUsers;
-}
+	public boolean isDerived() {
+		return derived;
+	}
 
-public void setSharedUsers(List<String> sharedUsers) {
-	this.sharedUsers = sharedUsers;
-}
+	public void setDerived(boolean derived) {
+		this.derived = derived;
+	}
 
-public String getCurrentAuthor() {
-	return currentAuthor;
-}
+	public SharePermission getSharePermission() {
+		return sharePermission;
+	}
 
-public void setCurrentAuthor(String currentAuthor) {
-	this.currentAuthor = currentAuthor;
-}
+	public void setSharePermission(SharePermission sharePermission) {
+		this.sharePermission = sharePermission;
+	}
 
+	public Set<String> getSharedUsers() {
+		return sharedUsers;
+	}
 
+	public void setSharedUsers(Set<String> sharedUsers) {
+		this.sharedUsers = sharedUsers;
+	}
+
+	public String getCurrentAuthor() {
+		return currentAuthor;
+	}
+
+	public void setCurrentAuthor(String currentAuthor) {
+		this.currentAuthor = currentAuthor;
+	}
+
+	public Type getResourceType() {
+		return resourceType;
+	}
+
+	public void setResourceType(Type resourceType) {
+		this.resourceType = resourceType;
+	}
+
+	public PublicationInfo getPublicationInfo() {
+		return publicationInfo;
+	}
+
+	public void setPublicationInfo(PublicationInfo publicationInfo) {
+		this.publicationInfo = publicationInfo;
+	}
 
 }

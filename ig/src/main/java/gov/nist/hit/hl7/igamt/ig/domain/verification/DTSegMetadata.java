@@ -41,7 +41,12 @@ public class DTSegMetadata {
    * @param segment
    */
   public DTSegMetadata(Segment segment) {
-    this.name = segment.getName();
+	  if(segment.getFixedExtension() != null) {
+		  this.name = segment.getName() + "#" + segment.getFixedExtension();
+	  }else {
+		  this.name = segment.getName();		  
+	  }
+	  
     this.extension = segment.getExt();
     this.description = segment.getDescription();
     this.domainInfo = segment.getDomainInfo();

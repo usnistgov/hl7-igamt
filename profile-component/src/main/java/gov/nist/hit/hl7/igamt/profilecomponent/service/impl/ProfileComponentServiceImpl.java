@@ -13,8 +13,6 @@ package gov.nist.hit.hl7.igamt.profilecomponent.service.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentBinding;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,20 +28,12 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Role;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
-import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
-import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
-import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
@@ -52,8 +42,6 @@ import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageProfileIdentifier;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
-import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
@@ -63,7 +51,6 @@ import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentContext
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.repository.ProfileComponentRepository;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
-import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
@@ -104,6 +91,9 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
 
   @Autowired
   ApplyChange applyChange;
+  
+  @Autowired
+  CoConstraintService coConstraintService;
 
 
   @Override
@@ -185,15 +175,6 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     if(pc  == null ) {
       throw new ProfileComponentNotFoundException(pcId);
     }
-    
-    for(ProfileComponentContext ctx: pc.getChildren()) {
-      System.out.println(ctx.getId());
-      System.out.println(contextId);
-      if(ctx.getId().equals(contextId.toString())) {
-        System.out.println("FOUND");
-      }
-    }
-    
     return pc.getChildren().stream().filter(customer -> contextId.equals(customer.getId())).findAny().orElseThrow( () -> new ProfileComponentContextNotFoundException(contextId));
 
 
@@ -268,15 +249,15 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
         if (this.hasObx2Change(newContext.getProfileComponentBindings())) {
           checkAndUpdateDynamicMapping(oldContext, newContext, s);
         } else if(oldContext.getProfileComponentDynamicMapping() != null && oldContext.getProfileComponentDynamicMapping().isOverride()){
-            oldContext.setProfileComponentDynamicMapping(null);
+          oldContext.setProfileComponentDynamicMapping(null);
         } else {
           oldContext.setProfileComponentDynamicMapping(newContext.getProfileComponentDynamicMapping());
         }
       }
     }  
   }
-  
-  
+
+
   /**
    * @param profileComponentBindings
    * @return
@@ -330,11 +311,11 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     Set<PropertyBinding> obx2Bindings = new HashSet<PropertyBinding>();
     if(ctx.getProfileComponentBindings() != null && ctx.getProfileComponentBindings().getContextBindings() !=null) {
       obx2Bindings = ctx.getProfileComponentBindings().getContextBindings().stream().filter((x) -> x.getTarget() != null && x.getTarget().equals("2")).collect(Collectors.toSet());
-    if(obx2Bindings == null || obx2Bindings.isEmpty()) {
-      return this.segmentService.findObx2VsId(s);
-    }else { 
-      return findObx2ValueSet(obx2Bindings);
-    }
+      if(obx2Bindings == null || obx2Bindings.isEmpty()) {
+        return this.segmentService.findObx2VsId(s);
+      }else { 
+        return findObx2ValueSet(obx2Bindings);
+      }
     }else return null;
   }
 
@@ -404,167 +385,6 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     throw new ProfileComponentContextNotFoundException(contextId);
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService#cloneProfileComponent(java.lang.String, java.util.HashMap, gov.nist.hit.hl7.igamt.common.base.domain.Link, java.lang.String, gov.nist.hit.hl7.igamt.common.base.domain.Scope, gov.nist.hit.hl7.igamt.common.base.util.CloneMode)
-   */
-  @Override
-  public Link cloneProfileComponent(String newId, HashMap<RealKey, String> newKeys, Link l,
-      String username, Scope scope, CloneMode cloneMode) {
-    ProfileComponent old = this.findById(l.getId());
-    ProfileComponent elm = old.clone();
-    elm.setId(newId);
-    elm.getDomainInfo().setScope(scope);
-    elm.setUsername(username);
-    elm.setOrigin(l.getId());
-    elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
-    Link newLink = new Link(elm);
-    updateDependencies(elm, newKeys, cloneMode);
-    this.save(elm);
-    return newLink;
-
-  }
-
-  private void updateDependencies(ProfileComponent elm, HashMap<RealKey, String> newKeys, CloneMode cloneMode) {
-
-    for(ProfileComponentContext context: elm.getChildren()) {
-      RealKey contextKey = new RealKey(context.getSourceId(), context.getLevel());
-      if(newKeys.containsKey(contextKey)) {
-        context.setSourceId(newKeys.get(contextKey));
-      }
-      for(ProfileComponentItem item: context.getProfileComponentItems()) {
-        for(ItemProperty prop : item.getItemProperties()) {
-          if(prop instanceof PropertyDatatype) {
-            PropertyDatatype propDt =  (PropertyDatatype)prop;
-            if(propDt.getDatatypeId() != null) {
-              RealKey key = new RealKey(propDt.getDatatypeId(), Type.DATATYPE);
-              if (newKeys.containsKey(key)) {
-                propDt.setDatatypeId(newKeys.get(key));
-              }
-            }
-          }
-          if(prop instanceof PropertyRef) {
-            PropertyRef propRef =  (PropertyRef)prop;
-            if(propRef.getRef() != null) {
-              RealKey key = new RealKey(propRef.getRef(), Type.SEGMENT);
-              if (newKeys.containsKey(key)) {
-                propRef.setRef(newKeys.get(key));
-              }
-            }
-          }
-          if(prop instanceof PropertyValueSet) {
-            PropertyValueSet propVs =  (PropertyValueSet)prop;
-            this.bindingService.processAndSubstitute(propVs.getValuesetBindings(), newKeys);          
-          }
-          if(prop instanceof PropertySingleCode) {
-            PropertySingleCode propSingleCode = (PropertySingleCode)prop;
-            //TODO update sig
-          }
-        }
-      }
-    }
-  }
-
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService#collectDependencies(gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent)
-   */
-  @Override
-  public Set<RelationShip> collectDependencies(ProfileComponent pc) {
-    Set<RelationShip> relations = new HashSet<RelationShip>();
-    if(pc.getChildren() != null) {
-
-      for(ProfileComponentContext ctx: pc.getChildren()) {
-        String label = this.getResourceLabel(ctx);
-
-        RelationShip rel = new RelationShip(new ReferenceIndentifier(ctx.getSourceId(), ctx.getLevel()),
-            new ReferenceIndentifier(pc.getId(), Type.PROFILECOMPONENT),
-            new ReferenceLocation(getContextType(ctx.getLevel()), label, label)); 
-        relations.add(rel);
-        if(ctx.getProfileComponentItems() != null) {
-          relations.addAll(collectDependencies(ctx, pc.getName(), pc.getId(), label));
-        }
-      }
-    }
-
-    return relations;
-  }
-
-
-  /**
-   * @param level
-   * @return
-   */
-  private Type getContextType(Type level) {
-    if(level.equals(Type.CONFORMANCEPROFILE)) {
-      return Type.MESSAGECONTEXT;
-    }else if (level.equals(Type.SEGMENT)){
-      return Type.SEGMENTCONTEXT;
-    }else return null;
-  }
-
-  private Set<RelationShip> collectDependencies(ProfileComponentContext ctx, String pcName, String pcId, String resourceName) {
-    Set<RelationShip> relations = new HashSet<RelationShip>();
-
-    for(ProfileComponentItem item: ctx.getProfileComponentItems()) {
-      if(item.getItemProperties() != null) {
-        for(ItemProperty prop : item.getItemProperties()) {
-          if(prop instanceof PropertyDatatype) {
-            PropertyDatatype propDt =  (PropertyDatatype)prop;
-            if(propDt.getDatatypeId() != null) {
-              RelationShip rel = new RelationShip(new ReferenceIndentifier(propDt.getDatatypeId(), Type.DATATYPE),
-                  new ReferenceIndentifier(pcId, Type.PROFILECOMPONENT),
-                  new ReferenceLocation(Type.PROFILECOMPONENTITEM,  resourceName , item.getPath().replaceAll("-", "."))); 
-              relations.add(rel);
-
-            }
-          }
-          if(prop instanceof PropertyRef) {
-            PropertyRef propRef =  (PropertyRef)prop;
-            if(propRef.getRef() != null) {
-              RelationShip rel = new RelationShip(new ReferenceIndentifier(propRef.getRef(), Type.SEGMENT),
-                  new ReferenceIndentifier(pcId, Type.PROFILECOMPONENT),
-                  new ReferenceLocation(Type.PROFILECOMPONENTITEM, resourceName, item.getPath().replaceAll("-", "."))); 
-              relations.add(rel);
-            }
-          }
-          if(prop instanceof PropertyValueSet) {
-            PropertyValueSet propVs =  (PropertyValueSet)prop;
-            if(propVs.getValuesetBindings() != null ) {
-              Set<String> vsIds = this.bindingService.processValueSetBinding(propVs.getValuesetBindings());
-              if(vsIds != null && !vsIds.isEmpty()) {
-                vsIds.forEach((s) -> {
-                  relations.add(new RelationShip(new ReferenceIndentifier(s, Type.VALUESET),
-                      new ReferenceIndentifier(pcId, Type.PROFILECOMPONENT),
-                      new ReferenceLocation(Type.PROFILECOMPONENTITEM, resourceName , item.getPath().replaceAll("-", "."))) );
-                }) ;
-              }
-            }
-          }
-          if(prop instanceof PropertySingleCode) {
-            PropertySingleCode propSingleCode = (PropertySingleCode)prop;
-            //TODO update single code references.
-          }
-        }
-      }
-    }
-
-    return relations;
-  }
-
-  private String getResourceLabel(ProfileComponentContext ctx) {
-    String ret = "";
-    if(ctx.getLevel().equals(Type.SEGMENT)) {
-      Segment s = this.segmentService.findById(ctx.getSourceId());
-      if(s !=null) {
-        ret = s.getLabel();
-      }
-    }else if(ctx.getLevel().equals(Type.CONFORMANCEPROFILE)) {
-      ConformanceProfile cp = this.conformanceProfileService.findById(ctx.getSourceId());
-      if(cp != null) {
-        ret = cp.getLabel();
-      }      
-    }
-    return ret;
-  }
 
   /* (non-Javadoc)
    * @see gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService#deleteContextById(java.lang.String, java.lang.String)
@@ -584,16 +404,16 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
    * @see gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService#applyChanges(gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent, java.util.List, java.lang.String)
    */
   @Override
-  public void applyChanges(ProfileComponent pc, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException {
+  public void applyChanges(ProfileComponent pc, List<ChangeItemDomain> cItems) throws ApplyChangeException {
 
     Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
-    this.applyMetaData(pc, singlePropertyMap , documentId);
+    this.applyMetaData(pc, singlePropertyMap);
     this.save(pc);
   }
 
-  private void applyMetaData( ProfileComponent cp, Map<PropertyType, ChangeItemDomain> singlePropertyMap, String documentId) throws ApplyChangeException{
+  private void applyMetaData( ProfileComponent cp, Map<PropertyType, ChangeItemDomain> singlePropertyMap) throws ApplyChangeException{
 
-    applyChange.applyResourceChanges(cp, singlePropertyMap , documentId);
+    applyChange.applyResourceChanges(cp, singlePropertyMap);
     ObjectMapper mapper = new ObjectMapper();
 
     if (singlePropertyMap.containsKey(PropertyType.NAME)) {
@@ -614,9 +434,8 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
   }
 
   @Override
-  public PropertyDynamicMapping updateContextDynamicMapping(String pcId, String contextId,
+  public PropertyDynamicMapping updateContextDynamicMapping(ProfileComponent pc, String contextId,
       PropertyDynamicMapping pcDynamicMapping) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException {
-    ProfileComponent pc = this.findById(pcId);
     for(ProfileComponentContext ctx:  pc.getChildren()) {
       if(ctx.getId().equals(contextId)) {
         ctx.setProfileComponentDynamicMapping(pcDynamicMapping);
@@ -624,8 +443,17 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
       }
     }
     this.save(pc);
-    return findContextById(pcId, contextId).getProfileComponentDynamicMapping();
+    return findContextById(pc.getId(), contextId).getProfileComponentDynamicMapping();
 
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService#saveAll(java.util.Set)
+   */
+  @Override
+  public List<ProfileComponent> saveAll(Set<ProfileComponent> profileComponents) {
+    // TODO Auto-generated method stub
+    return this.profileComponentRepository.saveAll(profileComponents);
   }
 
 

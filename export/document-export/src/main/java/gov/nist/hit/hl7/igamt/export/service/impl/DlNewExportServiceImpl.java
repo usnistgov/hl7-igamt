@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.diff.domain.DeltaMode;
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraint;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
@@ -30,6 +29,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
@@ -132,7 +132,7 @@ public class DlNewExportServiceImpl implements DlNewExportService {
 					      System.out.println("XML_EXPORT_DATATYPELIBRARY : " + xmlContent);
 //					      System.out.println("XmlContent in IgExportService is : " + xmlContent);
 			// TODO add app infoservice to get app version
-			ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
+			ExportParameters exportParameters = new ExportParameters("dl",false, true, exportFormat.getValue(),
 					dl.getName(), dl.getMetadata().getCoverPicture(), exportConfiguration,
 					exportConfiguration.getExportFontConfiguration(), "2.0_beta",dl.getType());
 			InputStream htmlContent = exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH,
@@ -167,7 +167,7 @@ public class DlNewExportServiceImpl implements DlNewExportService {
 	
 	@Override
 	public ExportFilterDecision getExportFilterDecision(DatatypeLibrary dl, ExportConfiguration config)
-			throws CoConstraintGroupNotFoundException {
+			throws EntityNotFound {
 
 		ExportFilterDecision decision = new ExportFilterDecision();
 

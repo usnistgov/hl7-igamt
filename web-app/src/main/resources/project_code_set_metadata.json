@@ -1,0 +1,16 @@
+{
+  "$project": {
+    "id":  1, "latest":  1, "dateUpdated":  1, "name": 1,
+    "versions": {
+      "$map": {
+        "input": {
+          "$map": {
+            "input": "$codeSetVersions",
+            "in": { "$arrayElemAt": [{ "$objectToArray": "$$this" }, 1] }
+          }
+        },
+        "in": "$$this.v"
+      }
+    }
+  }
+}

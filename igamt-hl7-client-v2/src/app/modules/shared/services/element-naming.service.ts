@@ -14,10 +14,13 @@ import { AResourceRepositoryService } from './resource-repository.service';
 
 export type NamedChildrenList = INamedChildrenItem[];
 
-export interface INamedChildrenItem {
+interface INamedChildrenItem {
   name: string;
   id: string;
-  ref?: IRef;
+  ref?: {
+    type: Type;
+    id: string;
+  };
   type: Type;
   children?: NamedChildrenList;
   position: number;
@@ -30,6 +33,10 @@ export interface IPathInfo {
   type: Type;
   position: number;
   leaf: boolean;
+  ref?: {
+    type: Type;
+    id: string;
+  };
   child?: IPathInfo;
 }
 
@@ -88,6 +95,10 @@ export class ElementNamingService {
         type: elm.data.type,
         position: elm.data.position,
         leaf: elm.leaf,
+        ref: elm.data.ref ? {
+          id: elm.data.ref.getValue().id,
+          type: elm.data.ref.getValue().type,
+        } : undefined,
       };
     };
 
@@ -113,7 +124,10 @@ export class ElementNamingService {
         position: field.position,
         leaf: leafs[field.ref.id],
         type: field.type,
-        ref: field.ref,
+        ref: {
+          id: field.ref.id,
+          type: Type.DATATYPE,
+        },
       };
     };
 
@@ -124,7 +138,10 @@ export class ElementNamingService {
         position: elm.position,
         leaf: false,
         type: elm.type,
-        ref: elm.type === Type.SEGMENTREF ? (elm as ISegmentRef).ref : undefined,
+        ref: elm.type === Type.SEGMENTREF ? {
+          id: (elm as ISegmentRef).ref.id,
+          type: Type.SEGMENT,
+        } : undefined,
         children: elm.type === Type.GROUP ? ((elm as IGroup).children || []).map(itemize) : undefined,
       };
     };
@@ -162,12 +179,17 @@ export class ElementNamingService {
     );
   }
 
-  getPathInfoFromPathId(resource: IResource, repository: AResourceRepositoryService, location: string): Observable<IPathInfo> {
-    return this.getPathInfoFromPath(resource, repository, this.pathService.getPathFromPathId(location));
+  getPathInfoFromPathId(resource: IResource, repository: AResourceRepositoryService, location: string, options?: {
+    referenceChange?: Record<string, string>;
+  }): Observable<IPathInfo> {
+    return this.getPathInfoFromPath(resource, repository, this.pathService.getPathFromPathId(location), options);
   }
 
   // tslint:disable-next-line: cognitive-complexity
-  getPathInfoFromPath(resource: IResource, repository: AResourceRepositoryService, path: IPath): Observable<IPathInfo> {
+  getPathInfoFromPath(resource: IResource, repository: AResourceRepositoryService, path: IPath, options?: {
+    referenceChange?: Record<string, string>;
+  }): Observable<IPathInfo> {
+    const referenceChange = options ? options.referenceChange : {};
     const pathSubject = new ReplaySubject<IPathInfo>(1);
     const refType = (type: Type) => {
       if (type === Type.FIELD || type === Type.COMPONENT || type === Type.SUBCOMPONENT) {
@@ -182,9 +204,15 @@ export class ElementNamingService {
       type: resource.type,
       position: -1,
       leaf: false,
+      ref: {
+        id: resource.id,
+        type: resource.type,
+      },
     };
 
     const fn = (children: NamedChildrenList, cursor: IPath, pathInfo: IPathInfo, subject: Subject<IPathInfo>) => {
+
+      const pathId = this.pathService.pathToString(cursor);
 
       // Get child pointed by cursor
       const next = children.find((child) => {
@@ -193,6 +221,11 @@ export class ElementNamingService {
 
       if (next) {
         // If child found
+        // Get child's reference
+        const reference = referenceChange[pathId] && next.ref ? {
+          id: referenceChange[pathId],
+          type: next.ref.type,
+        } : next.ref;
 
         // Add child to pathInfo
         pathInfo.child = {
@@ -201,6 +234,7 @@ export class ElementNamingService {
           type: next.type,
           position: next.position,
           leaf: next.leaf,
+          ref: reference,
         };
 
         if (cursor.child) {
@@ -213,10 +247,10 @@ export class ElementNamingService {
           } else {
             // If child is not a leaf
 
-            if (next.ref) {
+            if (reference) {
               // If child has a reference
               // Get children from reference
-              this.getChildrenListFromRef(refType(next.type), next.ref.id, repository,
+              this.getChildrenListFromRef(refType(next.type), reference.id, repository,
                 next.type === Type.SEGMENTREF ? pathInfo.child : undefined).pipe(
                   take(1),
                   map((list) => {
@@ -239,7 +273,7 @@ export class ElementNamingService {
             // If the path if segment ref
 
             // Resolve segment ref to get segment name
-            repository.fetchResource(Type.SEGMENT, next.ref.id).pipe(
+            repository.fetchResource(Type.SEGMENT, reference.id).pipe(
               take(1),
               tap((segment) => {
                 pathInfo.child.name = segment.name;
@@ -284,18 +318,20 @@ export class ElementNamingService {
   }
 
   getStartPathInfo(pathInfo: IPathInfo, from: string): IPathInfo {
-    if (pathInfo.type === Type.SEGMENTREF || pathInfo.id === from) {
+    if (pathInfo.type === Type.SEGMENTREF || pathInfo.type === Type.SEGMENT || pathInfo.id === from) {
       return pathInfo;
     } else {
       return this.getStartPathInfo(pathInfo.child, from);
     }
   }
 
-  getStringNameFromPath(path: IPath, resource: IResource, repository: AResourceRepositoryService): Observable<string> {
+  getStringNameFromPath(path: IPath, resource: IResource, repository: AResourceRepositoryService, options?: {
+    referenceChange?: Record<string, string>;
+  }): Observable<string> {
     if (!path) {
       return of('');
     }
-    return this.getPathInfoFromPath(resource, repository, path).pipe(
+    return this.getPathInfoFromPath(resource, repository, path, options).pipe(
       take(1),
       map((pathInfo) => {
         return this.getStringNameFromPathInfo(pathInfo);

@@ -1,6 +1,7 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Action} from '@ngrx/store';
-import {IResource} from 'src/app/modules/shared/models/resource.interface';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Action } from '@ngrx/store';
+import { IDocumentConfig } from 'src/app/modules/document/models/document/IDocument.interface';
+import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import {
   IAddNodes, IAddProfileComponentContext,
   IAddResourceFromFile,
@@ -10,16 +11,14 @@ import {
   ICreateCoConstraintGroupResponse, ICreateCompositeProfile, ICreateProfileComponent, ICreateProfileComponentResponse,
   IDeleteNode,
 } from '../../../modules/document/models/toc/toc-operation.class';
-import {IDocumentDisplayInfo, IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
-import {Type} from '../../../modules/shared/constants/type.enum';
-import {IContent} from '../../../modules/shared/models/content.interface';
-import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
-import {IHL7EditorMetadata} from '../../../modules/shared/models/editor.enum';
-import {
-  LoadResourceReferences,
-  LoadResourceReferencesFailure,
-  LoadResourceReferencesSuccess,
-} from '../../dam-igamt/igamt.loaded-resources.actions';
+import { IDocumentDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
+import { Type } from '../../../modules/shared/constants/type.enum';
+import { IContent } from '../../../modules/shared/models/content.interface';
+import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
+import { IHL7EditorMetadata } from '../../../modules/shared/models/editor.enum';
+import { IDeleteNodes } from './../../../modules/document/models/toc/toc-operation.class';
+import { IIgUpdateInfo } from './../../../modules/ig/models/ig/ig-document.class';
+import { IVerificationRequest } from './../../../modules/shared/models/verification.interface';
 
 export enum IgEditActionTypes {
   IgEditResolverLoad = '[Ig Edit Resolver] Load Ig',
@@ -40,6 +39,10 @@ export enum IgEditActionTypes {
   DeleteResourceSuccess = '[Ig Edit TOC] Delete Resource Success',
   DeleteResourceFailure = '[Ig Edit TOC] Delete Resource Failure',
 
+  DeleteResources = '[Ig Edit TOC] Delete Resources',
+  DeleteResourcesSuccess = '[Ig Edit TOC] Delete Resources Success',
+  DeleteResourcesFailure = '[Ig Edit TOC] Delete Resources Failure',
+
   OpenNarrativeEditorNode = '[Ig Edit TOC Narrative] Open Narrative Editor Node',
   OpenIgMetadataEditorNode = '[Ig Edit TOC Ig Metadata] Open Ig Metadata Editor Node',
   OpenConformanceProfileEditorNode = '[Ig Edit TOC Conformance Profile] Open Conformance Profile Editor Node',
@@ -47,6 +50,9 @@ export enum IgEditActionTypes {
   OpenDatatypeEditorNode = '[Ig Edit TOC Datatype] Open Datatype Editor Node',
   OpenValueSetEditorNode = '[Ig Edit TOC Value Set] Open Value Set Editor Node',
   OpenConformanceStatementSummaryEditorNode = '[Ig Edit TOC] Open Conformance Statement Summary Editor Node',
+  OpenValueSetsSummaryEditorNode = '[Ig Edit TOC] Open Value Sets Summary Editor Node',
+
+  OpenIgVerificationEditor = '[Ig verification] Open Ig Verification Editor',
 
   TableOfContentSave = '[Ig Edit TOC Save] Save Table Of Content',
   TableOfContentSaveSuccess = '[Ig Edit TOC Save] Save Table Of Content Success',
@@ -78,6 +84,17 @@ export enum IgEditActionTypes {
   CreateCompositeProfile = '[Ig Edit TOC] Create Composite Profile',
   CreateCompositeProfileSuccess = '[Ig Edit TOC] Create Create Composite Profile Success',
   CreateCompositeProfileFailure = '[Ig Edit TOC] Create Create Composite Profile Failure',
+
+  RefreshUpdateInfo = '[Ig Edit] Refresh Document Update Info',
+
+  VerifiyIg = '[Ig Edit TOC] Verify IG',
+  VerifyIgSuccess = '[Ig Edit TOC] Verify Ig Success',
+  VerifyIgFailure = '[Ig Edit TOC] Verify Ig Failure',
+
+  UpdateDocumentConfig =  '[DOC Edit] Update Config',
+  UpdateDocumentConfigSuccess =  '[DOC Edit] Update Config Success',
+  UpdateDocumentConfigFailure =  '[DOC Edit] Update Config Failure',
+
 }
 
 export class ClearIgEdit implements Action {
@@ -242,8 +259,29 @@ export class OpenConformanceStatementSummaryEditorNode extends OpenEditorBase {
   }
 }
 
+export class OpenValueSetsSummaryEditorNode extends OpenEditorBase {
+  readonly type = IgEditActionTypes.OpenValueSetsSummaryEditorNode;
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) {
+    super();
+  }
+}
+
 export class OpenIgMetadataEditorNode extends OpenEditorBase {
   readonly type = IgEditActionTypes.OpenIgMetadataEditorNode;
+
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) {
+    super();
+  }
+}
+
+export class OpenIgVerificationEditor extends OpenEditorBase {
+  readonly type = IgEditActionTypes.OpenIgVerificationEditor;
 
   constructor(readonly payload: {
     id: string,
@@ -325,7 +363,7 @@ export class AddProfileComponentContextFailure implements Action {
   }
 }
 
-export class DeleteProfileComponentContextFailure  implements Action {
+export class DeleteProfileComponentContextFailure implements Action {
   readonly type = IgEditActionTypes.DeleteProfileComponentContextFailure;
   constructor(readonly error: HttpErrorResponse) {
   }
@@ -357,6 +395,62 @@ export class CreateCompositeProfileSuccess implements Action {
 export class CreateCompositeProfileFailure implements Action {
   readonly type = IgEditActionTypes.CreateCompositeProfileFailure;
   constructor(readonly payload: HttpErrorResponse) {
+  }
+}
+export class DeleteResources implements Action {
+  readonly type = IgEditActionTypes.DeleteResources;
+  constructor(readonly payload: IDeleteNodes) {
+  }
+}
+export class DeleteResourcesSuccess implements Action {
+  readonly type = IgEditActionTypes.DeleteResourcesSuccess;
+  constructor(readonly ids: string[], readonly redirect: boolean, readonly url) {
+  }
+}
+export class DeleteResourcesFailure implements Action {
+  readonly type = IgEditActionTypes.DeleteResourcesFailure;
+  constructor(readonly error: HttpErrorResponse) {
+  }
+}
+
+export class VerifyIgFailure implements Action {
+  readonly type = IgEditActionTypes.VerifyIgFailure;
+  constructor(readonly error: HttpErrorResponse) {
+  }
+}
+export class VerifyIgSuccess implements Action {
+  readonly type = IgEditActionTypes.VerifyIgSuccess;
+  constructor(readonly result: IVerificationRequest) {
+  }
+}
+
+export class VerifyIg implements Action {
+  readonly type = IgEditActionTypes.VerifiyIg;
+  constructor(readonly payload: IVerificationRequest) {
+  }
+}
+
+export class RefreshUpdateInfo implements Action {
+  readonly type = IgEditActionTypes.RefreshUpdateInfo;
+  constructor(readonly payload: IIgUpdateInfo) {
+  }
+}
+
+export class UpdateDocumentConfig implements Action {
+  readonly type = IgEditActionTypes.UpdateDocumentConfig;
+  constructor(readonly payload: {id: string, config: IDocumentConfig} ) {
+  }
+}
+
+export class UpdateDocumentConfigSuccess implements Action {
+  readonly type = IgEditActionTypes.UpdateDocumentConfigSuccess;
+  constructor(readonly payload: IDocumentConfig ) {
+  }
+}
+
+export class UpdateDocumentConfigFailure implements Action {
+  readonly type = IgEditActionTypes.UpdateDocumentConfigFailure;
+  constructor(readonly error: HttpErrorResponse) {
   }
 }
 
@@ -397,4 +491,12 @@ export type IgEditActions =
   | ToggleDeltaFailure
   | CreateCompositeProfile
   | CreateCompositeProfileSuccess
-  | CreateCompositeProfileFailure;
+  | CreateCompositeProfileFailure
+  | DeleteResources
+  | DeleteResourcesSuccess
+  | DeleteResourcesFailure
+  | VerifyIg
+  | VerifyIgSuccess
+  | VerifyIgFailure
+  | RefreshUpdateInfo
+  | OpenValueSetsSummaryEditorNode;

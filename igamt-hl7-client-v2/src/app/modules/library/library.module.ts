@@ -11,6 +11,7 @@ import { LibraryListEffects } from 'src/app/root-store/library/library-list/libr
 import { CreateLibraryEffects } from '../../root-store/create-library/create-library.effects';
 import * as fromLibrary from '../../root-store/library/library.reducer';
 import { DamFrameworkModule } from '../dam-framework/dam-framework.module';
+import { DamMessagesModule } from '../dam-framework/dam-framework.module';
 import { ExportConfigurationModule } from '../export-configuration/export-configuration.module';
 import { LibraryEditEffects } from './../../root-store/library/library-edit/library-edit.effects';
 import { CoreModule } from './../core/core.module';
@@ -35,57 +36,58 @@ import { LibraryListService } from './services/library-list.service';
 import { LibraryService } from './services/library.service';
 
 @NgModule({
-  declarations: [
-    LibraryListContainerComponent,
-    LibraryEditContainerComponent,
-    LibraryEditSidebarComponent,
-    LibraryEditToolbarComponent,
-    LibraryEditTitlebarComponent,
-    LibraryTocComponent,
-    NarrativeSectionFormComponent,
-    LibraryEditActiveTitlebarComponent,
-    LibrarySectionEditorComponent,
-    LibraryMetadataEditorComponent,
-    CreateLibraryComponent,
-    LibraryListItemCardComponent,
-    DatatypesEvolutionComponent,
-    PublishLibraryDialogComponent,
-    NamingSelectionDirective,
-  ],
-  imports: [
-    DamFrameworkModule.forRoot(),
-    LibraryRoutingModule,
-    EffectsModule.forFeature([CreateLibraryEffects, LibraryListEffects, LibraryEditEffects]),
-    StoreModule.forFeature(fromLibrary.featureName, fromLibrary.reducers),
-    CoreModule,
-    TabViewModule,
-    SharedModule,
-    StepsModule,
-    RadioButtonModule,
-    TableModule,
-    ColorPickerModule,
-    ContextMenuModule,
-    ExportConfigurationModule,
-    TreeTableModule,
-    AutoCompleteModule,
-    MatSelectModule,
-  ],
-  providers: [
-    LibraryListService,
-    LibraryService,
-  ],
-  exports: [
-    LibraryListContainerComponent,
-    LibraryEditContainerComponent,
-    LibraryEditSidebarComponent,
-    LibraryEditToolbarComponent,
-    LibraryEditTitlebarComponent,
-    LibraryEditActiveTitlebarComponent,
-    LibrarySectionEditorComponent,
-    LibraryMetadataEditorComponent,
-    CreateLibraryComponent,
-  ],
-  entryComponents: [LibraryEditContainerComponent, PublishLibraryDialogComponent],
+    declarations: [
+        LibraryListContainerComponent,
+        LibraryEditContainerComponent,
+        LibraryEditSidebarComponent,
+        LibraryEditToolbarComponent,
+        LibraryEditTitlebarComponent,
+        LibraryTocComponent,
+        NarrativeSectionFormComponent,
+        LibraryEditActiveTitlebarComponent,
+        LibrarySectionEditorComponent,
+        LibraryMetadataEditorComponent,
+        CreateLibraryComponent,
+        LibraryListItemCardComponent,
+        DatatypesEvolutionComponent,
+        PublishLibraryDialogComponent,
+        NamingSelectionDirective,
+    ],
+    providers: [
+        LibraryListService,
+        LibraryService,
+    ],
+    exports: [
+        LibraryListContainerComponent,
+        LibraryEditContainerComponent,
+        LibraryEditSidebarComponent,
+        LibraryEditToolbarComponent,
+        LibraryEditTitlebarComponent,
+        LibraryEditActiveTitlebarComponent,
+        LibrarySectionEditorComponent,
+        LibraryMetadataEditorComponent,
+        CreateLibraryComponent,
+    ],
+    entryComponents: [LibraryEditContainerComponent, PublishLibraryDialogComponent],
+    imports: [
+        DamFrameworkModule.forRoot(),
+        LibraryRoutingModule,
+        EffectsModule.forFeature([CreateLibraryEffects, LibraryListEffects, LibraryEditEffects]),
+        StoreModule.forFeature(fromLibrary.featureName, fromLibrary.reducers),
+        CoreModule,
+        TabViewModule,
+        SharedModule,
+        StepsModule,
+        RadioButtonModule,
+        TableModule,
+        ColorPickerModule,
+        ContextMenuModule,
+        ExportConfigurationModule,
+        TreeTableModule,
+        AutoCompleteModule,
+        MatSelectModule,
+        DamMessagesModule,
+    ],
 })
 export class LibraryModule {
 }

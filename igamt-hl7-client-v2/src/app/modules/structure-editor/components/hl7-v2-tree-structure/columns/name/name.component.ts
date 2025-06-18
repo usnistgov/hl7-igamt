@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import { IHL7v2TreeNodeData } from '../../../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../../../shared/constants/type.enum';
 import { ChangeType, PropertyType } from '../../../../../shared/models/save-change';
 import { IStructureElement } from '../../../../../shared/models/structure-element.interface';
@@ -10,9 +11,9 @@ import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
   templateUrl: './name.component.html',
   styleUrls: ['./name.component.scss'],
 })
-export class NameComponent extends HL7v2TreeColumnComponent<string> implements OnInit {
+export class NameComponent extends HL7v2TreeColumnComponent<IHL7v2TreeNodeData> implements OnInit {
 
-  nname: string;
+  node: IHL7v2TreeNodeData;
   @Output()
   add: EventEmitter<Type>;
   @Output()
@@ -28,7 +29,7 @@ export class NameComponent extends HL7v2TreeColumnComponent<string> implements O
     super([PropertyType.NAME], dialog);
     this.value$.subscribe(
       (value) => {
-        this.nname = value;
+        this.node = value;
       },
     );
     this.add = new EventEmitter();
@@ -52,17 +53,17 @@ export class NameComponent extends HL7v2TreeColumnComponent<string> implements O
     if (this.editMode) {
       this.tmp = '';
     } else {
-      this.tmp = this.nname;
+      this.tmp = this.node.name;
     }
 
     this.editMode = !this.editMode;
   }
 
   setValue() {
-    this.nname = this.tmp;
-    this.onChange(this.value$.getValue(), this.nname, PropertyType.NAME, ChangeType.UPDATE);
+    this.onChange(this.value$.getValue().name, this.tmp, PropertyType.NAME, ChangeType.UPDATE);
+    this.node.name = this.tmp;
     this.applyToTarget<IStructureElement>((elm) => {
-      elm.name = this.nname;
+      elm.name = this.tmp;
     });
     this.toggleEdit();
   }

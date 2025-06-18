@@ -1,5 +1,6 @@
 import { EventEmitter, Input, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import * as _ from 'lodash';
 import { BehaviorSubject, concat, Observable, of } from 'rxjs';
 import { flatMap, map, tap } from 'rxjs/operators';
 import { Type } from '../../../constants/type.enum';
@@ -7,6 +8,7 @@ import { IDocumentRef } from '../../../models/abstract-domain.interface';
 import { ChangeType, IChange, IChangeReason, ILocationChangeLog, PropertyType } from '../../../models/save-change';
 import { ChangeLogService, IChangeReasonSection } from '../../../services/change-log.service';
 import { ChangeReasonDialogComponent, IChangeReasonDialogDisplay } from '../../change-reason-dialog/change-reason-dialog.component';
+import { IHL7v2TreeNode } from '../hl7-v2-tree.component';
 
 export abstract class HL7v2TreeColumnComponent<T> {
 
@@ -35,9 +37,15 @@ export abstract class HL7v2TreeColumnComponent<T> {
   @Input()
   context: Type;
   @Input()
+  node: IHL7v2TreeNode;
+  oldValue: T;
+
+  @Input()
   set value(val: T) {
     this.value$.next(val);
+    this.oldValue = _.cloneDeep(val);
   }
+
   @Input()
   set changeLog(log: ILocationChangeLog) {
     this.changeLogService.init(log);

@@ -11,11 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.datatypeLibrary.service.impl;
 
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
-
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,10 +24,7 @@ import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -47,9 +39,11 @@ import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ActiveInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.ActiveStatus;
+import gov.nist.hit.hl7.igamt.common.base.domain.Audience;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicAudience;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
@@ -57,6 +51,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.PublicationEntry;
@@ -71,6 +66,7 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -84,12 +80,12 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.DatatypeLibraryNotFoundException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.repository.DatatypeLibraryRepository;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.service.CloneLibService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.LibraryDisplayInfoService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
-import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
@@ -139,44 +135,40 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
 
   @Autowired
   InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
+  @Autowired
+  CloneLibService cloneLibService;
 
 
   @Override
   public DatatypeLibrary findById(String id) {
-    // TODO Auto-generated method stub
     return datatypeLibraryRepository.findById(id).orElse(null);
   }
 
   @Override
   public List<DatatypeLibrary> findAll() {
-    // TODO Auto-generated method stub
     return datatypeLibraryRepository.findAll();
   }
 
 
   @Override
   public void delete(String id) {
-    // TODO Auto-generated method stub
     datatypeLibraryRepository.deleteById(id);
   }
 
 
   @Override
   public DatatypeLibrary save(DatatypeLibrary DatatypeLibrary) {
-    // TODO Auto-generated method stub
     return datatypeLibraryRepository.save(DatatypeLibrary);
   }
 
-
+  @Override
   public List<DatatypeLibrary> findByUsername(String username) {
-    // TODO Auto-generated method stub
     return datatypeLibraryRepository.findByUsername(username);
   }
 
 
   @Override
   public List<DatatypeLibrary> finByScope(String scope) {
-    // TODO Auto-generated method stub
     return datatypeLibraryRepository.findByDomainInfoScope(scope);
   }
 
@@ -277,7 +269,6 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   }
   public void addDatatypes(Set<String> ids, DatatypeLibrary lib, AddDatatypeResponseObject ret)
       throws AddingException {
-    // TODO Auto-generated method stub
     if (lib.getDatatypeRegistry() != null) {
       if (lib.getDatatypeRegistry().getChildren() != null) {
         Set<String> existants = mapLinkToId(lib.getDatatypeRegistry().getChildren());
@@ -396,6 +387,8 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     qry.fields().include("updateDate");
     qry.fields().include("sharedUsers");
     qry.fields().include("currentAuthor");
+    qry.fields().include("status");
+
 
     List<DatatypeLibrary> igs = mongoTemplate.find(qry, DatatypeLibrary.class);
     return igs;
@@ -427,8 +420,6 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       element.setDerived(lib.isDerived());
       element.setUsername(lib.getUsername());
       element.setStatus(lib.getStatus());
-      element.setSharePermission(lib.getSharePermission());
-      element.setSharedUsers(lib.getSharedUsers());
       element.setCurrentAuthor(lib.getCurrentAuthor());
       List<String> datatypesNames = new ArrayList<String>();
       DatatypeRegistry datatypeRegistry = lib.getDatatypeRegistry();
@@ -458,7 +449,6 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    */
   @Override
   public List<DatatypeLibrary> findPublished() {
-    // TODO Auto-generated method stub
 
 
     Criteria where = Criteria.where("status").is(Status.PUBLISHED);
@@ -520,16 +510,15 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    * @see gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#getPublicationSummary()
    */
   @Override
-  public PublicationSummary getPublicationSummary(String id) {
+  public PublicationSummary getPublicationSummary(String id, Scope scope) {
     // TODO Auto-generated method stub
     PublicationSummary summary= new PublicationSummary();
+    summary.scope = scope;
     summary.entries= new ArrayList<PublicationEntry>();
     List<Datatype> toPublish = this.datatypeService.findByParentId(id);
     
-    System.out.println(toPublish.size());
-
     for(Datatype d : toPublish) {
-      summary.entries.add(getPublicationEntry(d));
+      summary.entries.add(getPublicationEntry(d, scope));
     }
     return summary;
   }
@@ -538,15 +527,16 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    * @param d
    * @return
    */
-  private PublicationEntry getPublicationEntry(Datatype d) {
+  private PublicationEntry getPublicationEntry(Datatype d, Scope scope) {
     // TODO Auto-generated method stub
     PublicationEntry entry = new PublicationEntry();
     List<String> availableExtensions = new ArrayList<String>();
 
     entry.display = display.convertDatatype(d);
     entry.suggested = d.getExt();
+    if(scope.equals(Scope.SDTF)) {
     Criteria where = Criteria.where("name").is(d.getName())
-        .andOperator(Criteria.where("domainInfo.scope").is(Scope.SDTF.toString()));
+        .andOperator(Criteria.where("domainInfo.scope").is(scope.toString()));
     Query qry = Query.query(where);
     List<String> used=  this.mongoTemplate.findDistinct(qry, "ext", "datatype", Datatype.class, String.class);
     Map<String, Boolean> map = used.stream().collect(Collectors.toMap(x ->  x, x->true));
@@ -564,6 +554,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       entry.suggested= availableExtensions.get(0);
     }
     entry.availableExtensions = availableExtensions;
+    }
     return entry;
   }
 
@@ -571,10 +562,17 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    * @see gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#publishLibray(java.lang.String, gov.nist.hit.hl7.igamt.common.base.model.PublicationResult)
    */
   @Override
-  public String publishLibray(String id, PublicationResult publicationResult) {
+  public String publishLibray(String id, PublicationResult publicationResult) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     DatatypeLibrary lib = this.findById(id);
-    lib.setStatus(Status.PUBLISHED);
+    Status status; 
+    if(publicationResult.getScope().equals(Scope.SDTF)) {
+    	status = Status.PUBLISHED;
+    }else {
+         status = Status.LOCKED;
+    }
+    lib.setStatus(status);
+
     PublicationInfo info = new PublicationInfo();
     info.setPublicationDate(new Date());
     info.setPublicationVersion(publicationResult.getVersion());
@@ -586,19 +584,21 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
           d.getDomainInfo().setScope(publsihed.get(l.getId()).getScope());
           d.setExt(publsihed.get(l.getId()).getExt());
           d.setPublicationInfo(info);
-          d.setStatus(Status.PUBLISHED);
+          d.setStatus(status);
           l.setDomainInfo(d.getDomainInfo());
           datatypeService.save(d);
         }
       }
     }
+	Audience audience = new PublicAudience();
+	lib.setAudience(audience);
     lib.setPublicationInfo(info);
     this.save(lib);
     return lib.getId();
   }
   
   @Override
-  public void deactivateChildren(String id, Set<String> ids) {
+  public void deactivateChildren(String id, Set<String> ids) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
 
    List<Datatype> datatypes =  this.datatypeService.findByIdIn(ids);
@@ -656,37 +656,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   	      }
   	      else throw new Exception("Datatype is missing.");
   	    }
-
-//  	    for (Link link : dl.getSegmentRegistry().getChildren()) {
-//  	      Segment s = this.segmentService.findById(link.getId());
-//  	      if (s != null) {
-//  	        SegmentDataModel segmentDataModel = new SegmentDataModel();
-//  	        segmentDataModel.putModel(s, this.datatypeService, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
-//  	        // CoConstraintTable coConstraintTable =
-//  	        // this.coConstraintService.getCoConstraintForSegment(s.getId());
-//  	        // segmentDataModel.setCoConstraintTable(coConstraintTable);
-//  	        segments.add(segmentDataModel);
-//  	      } else
-//  	        throw new Exception("Segment is missing.");
-//  	    }
-
-//  	    for (Link link : ig.getConformanceProfileRegistry().getChildren()) {
-//  	      ConformanceProfile cp = this.conformanceProfileService.findById(link.getId());
-//  	      if (cp != null) {
-//  	        ConformanceProfileDataModel conformanceProfileDataModel = new ConformanceProfileDataModel();
-//  	        conformanceProfileDataModel.putModel(cp, valuesetBindingDataModelMap,
-//  	            this.conformanceStatementRepository, this.predicateRepository, this.segmentService);
-//  	        conformanceProfiles.add(conformanceProfileDataModel);
-//  	      } else
-//  	        throw new Exception("ConformanceProfile is missing.");
-//  	    }
-
   	    datatypeLibraryDataModel.setDatatypes(datatypes);
-//  	    igDataModel.setSegments(segments);
-//  	    igDataModel.setConformanceProfiles(conformanceProfiles);
-//  	    igDataModel.setValuesets(valuesets);
-
-
   	    return datatypeLibraryDataModel;
   	  }
 
@@ -731,12 +701,13 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    * @see gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#clone(java.lang.String, java.lang.String, gov.nist.hit.hl7.igamt.display.model.CopyInfo)
    */
   @Override
-  public DatatypeLibrary clone(String id, String username, CopyInfo info) throws DatatypeLibraryNotFoundException {
+  public DatatypeLibrary clone(String id, String username, CopyInfo info) throws DatatypeLibraryNotFoundException, ForbiddenOperationException, EntityNotFound {
     // TODO Auto-generated method stub
     DatatypeLibrary lib = this.findById(id);
-  
-    if(lib != null) {
-      DatatypeLibrary newLib = new DatatypeLibrary();
+    DatatypeLibrary newLib = new DatatypeLibrary();
+
+    if(info.getMode().equals(CloneMode.UPGRADE)) {
+
       newLib.setId(new ObjectId().toString());
       newLib.setFrom(lib.getId());
       newLib.setOrigin(lib.getId());
@@ -748,11 +719,10 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       newLib.setStatus(null);
       newLib.setContent(lib.getContent());
       newLib.setValueSetRegistry(lib.getValueSetRegistry());
-      
       for(Link l: lib.getDatatypeRegistry().getChildren()) {
-        if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.SDTF)) {
+        if(l.getDomainInfo().getScope().equals(Scope.SDTF)) {
           Datatype d = this.datatypeService.findById(l.getId());
-          if(d.getLibraryReferences() ==null) {
+          if(d.getLibraryReferences() == null) {
             d.setLibraryReferences(new HashSet<String>());
           }
           d.getLibraryReferences().add(newLib.getId());
@@ -763,9 +733,25 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       newLib.setDatatypeRegistry(lib.getDatatypeRegistry());
       newLib = this.save(newLib);
       return newLib;
+    }else  {
+    	newLib.setFrom(lib.getId());
+        newLib.setOrigin(lib.getId());
+          
+        newLib.setMetadata(lib.getMetadata().clone());
 
-    } else throw new DatatypeLibraryNotFoundException(id);
+        newLib.getMetadata().setTitle(newLib.getMetadata().getTitle() + "[clone]");
+
+    	newLib = this.cloneLibService.clone(lib, username, info);
+    }
+	return newLib;
+
   }
+
+@Override
+public List<DatatypeLibrary> findByUsernameAndStatus(String username, Status locked) {
+	// TODO Auto-generated method stub
+	return datatypeLibraryRepository.findByUsernameAndStatus(username, locked);
+}
 }
 
 

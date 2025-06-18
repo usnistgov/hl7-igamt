@@ -1,5 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
 import { CoConstraintColumnType } from 'src/app/modules/shared/models/co-constraint.interface';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
@@ -24,6 +25,8 @@ export class DataHeaderDialogComponent implements OnInit {
   selectedNodeName: string;
   type: CoConstraintColumnType;
   editMode: boolean;
+  transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>;
+
   treeFilter: IHL7v2TreeFilter = {
     hide: false,
     restrictions: [
@@ -65,6 +68,7 @@ export class DataHeaderDialogComponent implements OnInit {
     this.excludePaths = data.excludePaths;
     this.repository = data.repository;
     this.segment = data.segment;
+    this.transformer = data.transformer;
     if (data.excludePaths) {
       this.treeFilter.restrictions.push({
         criterion: RestrictionType.PATH,

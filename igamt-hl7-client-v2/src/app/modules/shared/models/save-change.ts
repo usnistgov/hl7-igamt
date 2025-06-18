@@ -1,4 +1,5 @@
 import { IBindingContext } from '../services/structure-element-binding.service';
+import { SourceType } from './adding-info';
 export interface IChange<T = any> {
   location: string;
   propertyType: PropertyType;
@@ -87,4 +88,6 @@ export enum PropertyType {
   FLAVORSEXTENSION = 'FLAVORSEXTENSION',
   DYNAMICMAPPING = 'DYNAMICMAPPING',
   SLICING = 'SLICING',
+  ALLOWEMPTY = 'ALLOWEMPTY',
+  CODESETREFERENCE = 'CODESETREFERENCE',
 }

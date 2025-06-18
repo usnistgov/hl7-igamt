@@ -19,6 +19,7 @@ export enum DamActionTypes {
   EditorSave = '[DAMF Editor] Editor Save',
   EditorVerify = '[DAMF Editor] Editor Verify',
   EditorVerificationResult = '[DAMF Editor] Editor Verification Result',
+  EditorVerificationFailure = '[DAMF Editor] Editor Verification Failure',
   EditorSaveSuccess = '[DAMF Editor] Editor Save Success',
   EditorSaveFailure = '[DAMF Editor] Editor Save Failure',
   EditorUpdate = '[DAMF Editor] Update editor without changes',
@@ -31,6 +32,7 @@ export enum DamActionTypes {
   InsertResourcesInRepostory = '[DAMF Repository] Insert Resources In Repository',
   DeleteResourcesFromRepostory = '[DAMF Repository] Delete Resources From Repository',
   ClearRepository = '[DAMF Repository] Clear Repository',
+  RepositoryActionReduced = '[DAMF Repository] Repository Action Reduded',
   CollapseSideBar = '[DAMF Layout] Collapse Side Bar',
   ExpandSideBar = '[DAMF Layout] Expand Side Bar',
   CollapseBottomDrawer = '[DAMF Layout] Collapse Bottom Drawer',
@@ -168,6 +170,15 @@ export class EditorVerificationResult implements Action {
   }
 }
 
+export class EditorVerificationFailure implements Action {
+  readonly type = DamActionTypes.EditorVerificationFailure;
+
+  constructor(readonly payload: {
+    message: string,
+  }) {
+  }
+}
+
 export class EditorUpdate implements Action {
   readonly type = DamActionTypes.EditorUpdate;
   constructor(readonly payload: {
@@ -216,6 +227,7 @@ export class LoadResourcesInRepostory implements Action {
       key: string,
       values: IDamResource[],
     }>,
+    tag?: string;
   }) { }
 }
 
@@ -227,6 +239,7 @@ export class InsertResourcesInRepostory implements Action {
       key: string,
       values: IDamResource[],
     }>,
+    tag?: string;
   }) { }
 }
 
@@ -238,6 +251,15 @@ export class DeleteResourcesFromRepostory implements Action {
       key: string,
       values: string[],
     }>,
+    tag?: string;
+  }) { }
+}
+
+export class RepositoryActionReduced implements Action {
+  readonly type = DamActionTypes.RepositoryActionReduced;
+
+  constructor(readonly payload: {
+    tag: string;
   }) { }
 }
 
@@ -247,6 +269,7 @@ export class ClearRepository implements Action {
   constructor(readonly payload: {
     all: boolean,
     collections?: string[],
+    tag?: string;
   }) { }
 }
 
@@ -322,6 +345,7 @@ export type DamActions =
   LoadResourcesInRepostory |
   InsertResourcesInRepostory |
   ClearRepository |
+  RepositoryActionReduced |
   LoadForRouteSuccess |
   GlobalSave |
   LoadForRouteFailure |
@@ -332,4 +356,5 @@ export type DamActions =
   DeleteResourcesFromRepostory |
   ToggleFullScreen |
   EditorVerificationResult |
-  EditorVerify;
+  EditorVerify |
+  EditorVerificationFailure;

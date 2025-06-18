@@ -1,11 +1,11 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Store } from '@ngrx/store';
-import {Observable, of} from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import * as config from '../../../../root-store/config/config.reducer';
-import {selectSegmentStructures} from '../../../../root-store/structure-editor/structure-editor.reducer';
+import { selectSegmentStructures } from '../../../../root-store/structure-editor/structure-editor.reducer';
 import { Scope } from '../../../shared/constants/scope.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { ISegment } from '../../../shared/models/segment.interface';
@@ -24,6 +24,7 @@ export class CreateSegmentDialogComponent implements OnInit {
   segmentBase: ISegment;
   identifier: string;
   description: string;
+  zname: string;
   selectedScope = Scope.HL7STANDARD;
   domainInfo: any;
   existing: IDisplayElement[] = [];
@@ -41,9 +42,8 @@ export class CreateSegmentDialogComponent implements OnInit {
 
   startFrom($event) {
     this.segmentBase = $event;
-    console.log($event);
     this.description = $event.description;
-    this.domainInfo = {...$event.domainInfo, scope: Scope.USERCUSTOM};
+    this.domainInfo = { ...$event.domainInfo, scope: Scope.USERCUSTOM };
   }
 
   clearSelection() {
@@ -59,7 +59,12 @@ export class CreateSegmentDialogComponent implements OnInit {
       from: this.segmentBase.id,
       identifier: this.identifier,
       description: this.description,
+      zname: this.zname,
     });
+  }
+
+  isZSegment(name: string) {
+    return name.startsWith('Z');
   }
 
   getSegments($event) {

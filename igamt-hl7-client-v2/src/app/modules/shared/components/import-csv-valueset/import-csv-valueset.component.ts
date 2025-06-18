@@ -1,6 +1,6 @@
-import {Component, ElementRef, HostListener, Inject, OnInit, ViewChild} from '@angular/core';
+import { Component, ElementRef, HostListener, Inject, OnInit, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 
 @Component({
   selector: 'app-import-csv-valueset',
@@ -14,7 +14,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
     },
   ],
 })
-export class ImportCsvValuesetComponent implements ControlValueAccessor, OnInit  {
+export class ImportCsvValuesetComponent implements ControlValueAccessor, OnInit {
   onChange: (files: File) => void;
   onTouched: () => void;
   @ViewChild('fileInput', { read: ElementRef })
@@ -55,7 +55,6 @@ export class ImportCsvValuesetComponent implements ControlValueAccessor, OnInit 
         this.data.node.children.forEach((item) => {
           if (item.variableName === bId) {
             this.errorMessage = 'Binding Identifier : ' + bId + ' is duplicated.';
-            console.log(this.errorMessage);
           }
         });
       }
@@ -89,7 +88,7 @@ export class ImportCsvValuesetComponent implements ControlValueAccessor, OnInit 
   }
 
   submit() {
-    this.dialogRef.close({redirect: this.redirect, file: this.file});
+    this.dialogRef.close({ redirect: this.redirect, file: this.file });
   }
   cancel() {
     this.dialogRef.close();

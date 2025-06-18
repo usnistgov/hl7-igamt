@@ -51,6 +51,13 @@ export class MessageService {
     return this.userMessageToAction(userMessage);
   }
 
+  createUserMessage(message: Message, options?: IUserMessageOptions): UserMessage {
+    return UserMessage.fromMessage(
+      message,
+      this.mergeOptions(options),
+    );
+  }
+
   userMessageToAction(userMessage: UserMessage): Notify | AddMessage {
     if (userMessage.status === MessageType.SUCCESS) {
       return new Notify(this.mergeUserMessage(userMessage));

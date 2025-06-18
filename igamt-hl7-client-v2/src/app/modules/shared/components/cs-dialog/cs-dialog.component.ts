@@ -4,10 +4,12 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import * as _ from 'lodash';
 import { BehaviorSubject, from, Observable, of, Subject, Subscription } from 'rxjs';
 import { concatMap, finalize, flatMap, map, skip, take, takeWhile, tap } from 'rxjs/operators';
+import { ProfileComponentService } from 'src/app/modules/profile-component/services/profile-component.service';
 import * as vk from 'vkbeautify';
+import { xml as xmlFormat } from 'vkbeautify';
 import { Type } from '../../constants/type.enum';
 import { ConditionalUsageOptions } from '../../constants/usage.enum';
-import { ConstraintType, IAssertionConformanceStatement, IFreeTextConformanceStatement, IPath } from '../../models/cs.interface';
+import { AssertionMode, ConstraintType, IAssertionConformanceStatement, IFreeTextConformanceStatement, IPath } from '../../models/cs.interface';
 import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
 import { ConformanceStatementService } from '../../services/conformance-statement.service';
@@ -20,6 +22,7 @@ import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from '../../
 import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 import { BinaryOperator, IfThenOperator, IToken, LeafStatementType, Pattern, Statement, StatementIdIndex, TokenType } from '../pattern-dialog/cs-pattern.domain';
 import { PatternDialogComponent } from '../pattern-dialog/pattern-dialog.component';
+import { ConformanceStatementStrength } from './../../models/conformance-statements.domain';
 import { IAssertion } from './../../models/cs.interface';
 import { IStatementTokenPayload } from './cs-statement.component';
 
@@ -52,12 +55,30 @@ export class CsDialogComponent implements OnDestroy {
     ).subscribe();
   }
 
+  xmlEditorOptions = {
+    theme: 'monokai',
+    mode: 'xml',
+    lineNumbers: true,
+    foldGutter: true,
+    styleActiveLine: true,
+    autoCloseTags: true,
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
+    matchBrackets: true,
+    extraKeys: { 'Alt-F': 'findPersistent' },
+    lineWrapping: true,
+    placeholder:
+      `<Assertion>
+<!-- your assertion -->
+</Assertion>`,
+  };
+
   constructor(
     private csService: ConformanceStatementService,
     private dialog: MatDialog,
     private treeService: Hl7V2TreeService,
     private elementNamingService: ElementNamingService,
     private pathService: PathService,
+    private profileComponentService: ProfileComponentService,
     public dialogRef: MatDialogRef<CsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public repository: StoreResourceRepositoryService,
@@ -74,6 +95,10 @@ export class CsDialogComponent implements OnDestroy {
     this.assertionMode = data.assertionMode;
     this.title = data.title;
     this.excludePaths = data.excludePaths || [];
+    this.hideFreeText = data.hideFreeText;
+    this.transformer = data.transformer;
+
+    this.referenceChangeMap = data.referenceChangeMap;
 
     this.predicateElementId = data.predicateElementId;
     if (this.predicateMode && this.predicateElementId) {
@@ -99,29 +124,33 @@ export class CsDialogComponent implements OnDestroy {
         this.resourceType = resource.type;
         this.resource = resource;
         this.treeService.getTree(resource, this.repository, true, true, (value) => {
-          this.structure = [
-            {
-              data: {
-                id: resource.id,
-                pathId: resource.id,
-                name: resource.name,
-                type: resource.type,
-                rootPath: { elementId: resource.id },
-                position: 0,
-              },
-              children: [...value],
-              parent: undefined,
-            },
-          ];
-          this.context = this.structure;
-          this.contextName = resource.name;
-          this.contextType = resource.type;
-          if (!this.assertionMode) {
-            this.conformanceStatement = data.payload;
-          } else {
-            this.setAssertion(data.assertion, data.context);
-          }
-
+          this.profileComponentService.applyTransformer(value, this.transformer).pipe(
+            take(1),
+            tap((nodes: IHL7v2TreeNode[]) => {
+              this.structure = [
+                {
+                  data: {
+                    id: resource.id,
+                    pathId: resource.id,
+                    name: resource.name,
+                    type: resource.type,
+                    rootPath: { elementId: resource.id },
+                    position: 0,
+                  },
+                  children: [...nodes],
+                  parent: undefined,
+                },
+              ];
+              this.context = this.structure;
+              this.contextName = resource.name;
+              this.contextType = resource.type;
+              if (!this.assertionMode) {
+                this.conformanceStatement = data.payload;
+              } else {
+                this.setAssertion(data.assertion, data.context);
+              }
+            }),
+          ).subscribe();
         });
       },
     );
@@ -166,6 +195,14 @@ export class CsDialogComponent implements OnDestroy {
   predicateElementId: string;
   excludePaths: string[];
   options = ConditionalUsageOptions;
+  strengthOptions = [{
+    label: 'SHALL',
+    value: ConformanceStatementStrength.SHALL,
+  }, {
+    label: 'SHOULD',
+    value: ConformanceStatementStrength.SHOULD,
+  }];
+
   contextFilter: IHL7v2TreeFilter = {
     hide: false,
     restrictions: [
@@ -183,6 +220,9 @@ export class CsDialogComponent implements OnDestroy {
   xmlVisible = true;
   activeStatement = 0;
   alive = true;
+  hideFreeText = false;
+  transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>;
+  referenceChangeMap: Record<string, string> = {};
 
   @ViewChild('csForm', { read: NgForm }) form: NgForm;
 
@@ -244,7 +284,15 @@ export class CsDialogComponent implements OnDestroy {
       this.pathService.straightConcatPath(effectiveContext, pathValue) : undefined;
 
     // Get the effective Tree for the token
-    const tree$ = (!effectiveContext ? of(this.structure) : this.treeService.getNodeByPath(this.context[0].children, effectiveContext, this.repository).pipe(
+    const tree$ = (!effectiveContext ? of(this.structure) : this.treeService.getNodeByPath(
+      this.context[0].children,
+      effectiveContext,
+      this.repository,
+      {
+        transformer: this.transformer,
+        useProfileComponentRef: true,
+      },
+    ).pipe(
       map((node) => [node]),
     ));
 
@@ -275,7 +323,9 @@ export class CsDialogComponent implements OnDestroy {
       this.structure = [
         node,
       ];
-      this.elementNamingService.getStringNameFromPath(this.cs.context, this.resource, this.repository).pipe(
+      this.elementNamingService.getStringNameFromPath(this.cs.context, this.resource, this.repository, {
+        referenceChange: this.referenceChangeMap,
+      }).pipe(
         take(1),
         map((value) => {
           this.contextName = value;
@@ -359,13 +409,22 @@ export class CsDialogComponent implements OnDestroy {
 
     if (this.statementsValid()) {
       if (this.predicateMode) {
-        return this.csService.generateXMLfromPredicate(this.cs as IPredicate, this.resource.id).pipe(
+        return this.csService.generateXMLfromPredicate(this.cs as IPredicate, this.resource.id, this.resourceType).pipe(
           tap(processValue),
         ).subscribe();
       } else {
-        return this.csService.generateXMLfromCs(this.cs, this.resource.id).pipe(
+        return this.csService.generateXMLfromCs(this.cs, this.resource.id, this.resourceType).pipe(
           tap(processValue),
         ).subscribe();
+      }
+    }
+  }
+
+  formatXML() {
+    if (this.cs.type === ConstraintType.FREE) {
+      const freeText = this.cs as IFreeTextConformanceStatement;
+      if (freeText.assertionScript) {
+        freeText.assertionScript = xmlFormat(freeText.assertionScript, 4);
       }
     }
   }
@@ -407,13 +466,25 @@ export class CsDialogComponent implements OnDestroy {
     });
 
     if (this.cs.type === ConstraintType.ASSERTION) {
-      this.descriptionService.updateAssertionDescription((this.cs as IAssertionConformanceStatement).assertion);
+      const cs = (this.cs as IAssertionConformanceStatement);
+      this.descriptionService.updateAssertionDescription(cs.assertion);
+      cs.assertion.description = `${this.capitalize(cs.assertion.description.trim())}`;
+      if (cs.assertion.description && cs.assertion.description !== '_' && !cs.assertion.description.startsWith('(')) {
+        cs.assertion.description = `${cs.assertion.description}.`;
+      }
       if (this.predicateMode) {
         const desc = (this.cs as IAssertionConformanceStatement).assertion.description;
         const noIf = desc && desc.startsWith('If');
         (this.cs as IAssertionConformanceStatement).assertion.description = !noIf ? 'If ' + (this.cs as IAssertionConformanceStatement).assertion.description : desc;
       }
     }
+  }
+
+  capitalize(value: string): string {
+    if (value) {
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+    return value;
   }
 
   updatePattern(pattern: Pattern) {
@@ -486,8 +557,10 @@ export class CsDialogComponent implements OnDestroy {
   }
 
   setActiveWithoutDependencies() {
-    this.activeStatement = this.pattern.tokens
-      .find((t) => !t.dependency && t.type === TokenType.STATEMENT).value.data.id;
+    if (this.pattern) {
+      this.activeStatement = this.pattern.tokens
+        .find((t) => !t.dependency && t.type === TokenType.STATEMENT).value.data.id;
+    }
   }
 
   done() {

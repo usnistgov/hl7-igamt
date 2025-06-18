@@ -1,11 +1,11 @@
 <form [formGroup]="formGroup" style="display: flex; flex-direction: column; height: 100%;">
 
   <app-form-input formControlName="structId" id="structId" name="structId"
-    placeholder="Structure Id" label="Structure Id" [viewOnly]="true">
+    placeholder="Structure Id" label="Message Structure (MSH-9.3)" [viewOnly]="viewOnly$ | async">
   </app-form-input>
 
   <app-form-input formControlName="messageType" id="messageType" name="messageType"
-    placeholder="Message Type" label="Message Type" [viewOnly]="true">
+    placeholder="Message Type" label="Message Code (MSH-9.1)" [viewOnly]="viewOnly$ | async">
   </app-form-input>
 
   <app-form-input formControlName="description" id="description" name="description"
@@ -13,24 +13,22 @@
   </app-form-input>
 
   <div class="form-group">
-    <label for="hl7Version" class="form-label-lg"> HL7 Version </label>
+    <label for="hl7Version" class="form-label-lg"> HL7 Version (MSH-12.1) </label>
     <div><span class="badge badge-secondary">{{ formGroup.controls.hl7Version.value }}</span></div>
   </div>
 
   <table formArrayName="events"  class="table table-striped table-bordered table-sm" style="margin-top: 10px;">
     <tr>
-      <th> Structure Events </th>
+      <th style="width: 300px;"> Trigger Events (MSH-9.2) </th>
       <th> Description </th>
       <th *ngIf="!(viewOnly$ | async)"> Action </th>
     </tr>
-    <tr *ngFor="let item of getArray().controls; let i = index;" [formGroupName]="i">
+    <tr *ngFor="let item of events.controls; let i = index;" [formGroupName]="i">
       <td>
-        <input *ngIf="!(viewOnly$ | async)" class="form-control" formControlName="name" id="name" name="name" placeholder="Name" label="Name" required>
-        <span *ngIf="(viewOnly$ | async)">{{ item.controls.name.value }}</span>
+        <app-form-input formControlName="name" id="name" name="name" [hideLabel]="true" placeholder="Name" label="Name" [viewOnly]="viewOnly$ | async"></app-form-input>
       </td>
       <td>
-        <input *ngIf="!(viewOnly$ | async)" class="form-control" formControlName="description" id="description" name="description" placeholder="Description" label="Description" required>
-        <span *ngIf="(viewOnly$ | async)">{{ item.controls.description.value }}</span>
+        <app-form-input formControlName="description" id="description" name="description" [hideLabel]="true" placeholder="Description" label="Description" [viewOnly]="viewOnly$ | async"></app-form-input>
       </td>
       <td *ngIf="!(viewOnly$ | async)">
         <button class="btn btn-sm btn-danger" (click)="deleteEvent(i)" >
@@ -38,21 +36,18 @@
         </button>
       </td>
     </tr>
-    <tr *ngIf="!(viewOnly$ | async)">
+    <tr *ngIf="!(viewOnly$ | async)" [formGroup]="subFormGroup">
       <td>
-        <input [ngModelOptions]="{standalone: true}" name="eventN" id="eventN"  type="text" [(ngModel)]="eventStub.name" type="text" style="width: 100%" class="form-control" />
+        <app-form-input formControlName="name" id="sfg-name" name="name" placeholder="Name" label="Name" [hideLabel]="true" [viewOnly]="false"></app-form-input>
       </td>
       <td>
-        <input [ngModelOptions]="{standalone: true}" name="eventD" id="eventD"  type="text" [(ngModel)]="eventStub.description" type="text" style="width: 100%" class="form-control" />
+        <app-form-input formControlName="description" id="sfg-description" name="description" placeholder="Description" label="Description" [hideLabel]="true" [viewOnly]="false"></app-form-input>
       </td>
       <td>
-        <button class="btn btn-sm btn-primary" (click)="addEvent(eventStub)" [disabled]="eventStub.name === ''" >
+        <button class="btn btn-sm btn-primary" [disabled]="subFormGroup.invalid" (click)="addEvent()" >
           <i class="fa fa-plus"></i>
         </button>
       </td>
     </tr>
   </table>
-
-
-
 </form>

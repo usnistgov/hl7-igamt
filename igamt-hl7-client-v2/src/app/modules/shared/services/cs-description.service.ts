@@ -34,7 +34,14 @@ export class CsDescriptionService {
       this.updateAssertionDescription(a);
       return a.description;
     });
-    assertion.description = '( ' + descriptions.join(' ' + assertion.operator + ' ') + ' )';
+    assertion.description = '(' + this.capitalize(descriptions.join(' ' + assertion.operator + ' ')) + ')';
+  }
+
+  capitalize(value: string): string {
+    if (value) {
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+    return value;
   }
 
   updateIfThenDescription(assertion: IIfThenAssertion) {

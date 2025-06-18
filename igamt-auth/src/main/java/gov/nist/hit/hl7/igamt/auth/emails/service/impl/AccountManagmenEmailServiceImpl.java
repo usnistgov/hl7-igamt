@@ -120,7 +120,7 @@ public class AccountManagmenEmailServiceImpl implements AccountManagmenEmailServ
         + "You password reset request has been processed.\n"
         + "Copy and paste the following url to your browser to initiate the password change:\n"
         + url + " \n\n" + "Sincerely, " + "\n\n" + "The IGAMT Team" + "\n\n"
-        + "P.S: If you need help, contact us at '" + "'");
+        + "P.S: If you need help, contact us at 'robert.snelick@nist.gov'");
 
     try {
       this.mailSender.send(msg);

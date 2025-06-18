@@ -11,6 +11,8 @@
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="X" binary="false" [(ngModel)]="config.componentExport.x" (onChange)="triggerChange()"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="B" binary="false" [(ngModel)]="config.componentExport.b" (onChange)="triggerChange()"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="W" binary="false" [(ngModel)]="config.componentExport.w" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="IX" binary="false" [(ngModel)]="config.componentExport.ix" (onChange)="triggerChange()"></p-checkbox></li>
+
       </ul>
     </div>
 
@@ -39,7 +41,7 @@
         <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
           <h5 class="card-title title-text custom-card-title">Metadata</h5>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="HL7 Version" binary="true" [(ngModel)]="config.metadataConfig.hl7version" (onChange)="triggerChange()"></p-checkbox></li>
+            <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="HL7 Version" binary="true" [(ngModel)]="config.version" (onChange)="triggerChange()"></p-checkbox></li>
             <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Usage Notes " binary="true" [(ngModel)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox></li>
             <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Author Notes" binary="true" [(ngModel)]="config.authorNotes" (onChange)="triggerChange()"></p-checkbox></li>
           </ul>

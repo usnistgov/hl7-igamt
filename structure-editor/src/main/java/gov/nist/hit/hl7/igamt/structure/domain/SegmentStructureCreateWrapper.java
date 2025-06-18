@@ -4,8 +4,17 @@ public class SegmentStructureCreateWrapper {
     String identifier;
     String description;
     String from;
+    String zname;
 
-    public String getIdentifier() {
+    public String getZname() {
+		return zname;
+	}
+
+	public void setZname(String zname) {
+		this.zname = zname;
+	}
+
+	public String getIdentifier() {
         return identifier;
     }
 

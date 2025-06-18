@@ -1,4 +1,4 @@
-  <h2 mat-dialog-title>Export Document</h2>
+  <h2 mat-dialog-title>{{title}}</h2>
 <mat-dialog-content>
 
   <div>
@@ -16,14 +16,21 @@
     <label style="font-weight: bold;" >Would you like to override the configuration ?</label><br>
     <div style="display: flex; justify-content: center;">
       <button (click)="customize()" class="btn btn-sn btn-primary" style="margin-right:5px;">
-        <i class="fa fa-cog"></i>
-        Customize
+        <ng-container *ngIf="exportFilterDecision">
+          <i class="fa fa-pencil"></i>
+          Edit Customization
+        </ng-container>
+        <ng-container *ngIf="!exportFilterDecision">
+          <i class="fa fa-cog"></i>
+          Customize
+        </ng-container>
+
       </button>
     </div>
   </div>
 
 </mat-dialog-content>
 <mat-dialog-actions style="justify-content: flex-end; margin-top: 10px;">
-  <button (click)="export()" class="btn btn-sm btn-success" [disabled]="!selectedConfig" style="margin-right: 5px;">Export</button>
+  <button (click)="export()" class="btn btn-sm btn-success" [disabled]="!selectedConfig" style="margin-right: 5px;">Done</button>
   <button [mat-dialog-close]="" class="btn btn-sm btn-danger" >Cancel</button>
 </mat-dialog-actions>

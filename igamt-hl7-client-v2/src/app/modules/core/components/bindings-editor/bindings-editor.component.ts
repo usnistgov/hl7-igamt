@@ -2,7 +2,7 @@ import { OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
+import { catchError, concatMap, filter, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { EditorVerificationResult, EditorVerify } from 'src/app/modules/dam-framework/store/index';
@@ -19,7 +19,7 @@ import { IStructureChanges } from '../../../segment/components/segment-structure
 import { ISingleCodeDisplay } from '../../../shared/components/binding-selector/binding-selector.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
-import { IBindingContainer, InternalSingleCode, IValuesetBinding } from '../../../shared/models/binding.interface';
+import { IBindingContainer, IValuesetBinding } from '../../../shared/models/binding.interface';
 import { Hl7Config, IValueSetBindingConfigMap } from '../../../shared/models/config.class';
 import { ConstraintType, IAssertionConformanceStatement, IConformanceStatement, IFreeTextConformanceStatement } from '../../../shared/models/cs.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
@@ -68,7 +68,9 @@ export abstract class BindingsEditorComponent extends AbstractEditorComponent im
     super(editorMetadata, actions$, store);
     this.resourceType = editorMetadata.resourceType;
     this.hasOrigin$ = this.store.select(fromIgamtSelectedSelectors.selectedResourceHasOrigin);
-    this.config = this.store.select(getHl7ConfigState);
+    this.config = this.store.select(getHl7ConfigState).pipe(
+      filter((config) => !!config),
+    );
     this.datatypes = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes);
     this.segments = this.store.select(fromIgamtDisplaySelectors.selectAllSegments);
     this.valueSets = this.store.select(selectValueSetsNodes);
@@ -135,10 +137,6 @@ export abstract class BindingsEditorComponent extends AbstractEditorComponent im
 
   getVsBindingDisplay(binding: IValuesetBinding[]): Observable<IValueSetBindingDisplay[]> {
     return this.bindingService.getValueSetBindingDisplay(binding, this.repository);
-  }
-
-  getSgBindingDisplay(binding: InternalSingleCode): Observable<ISingleCodeDisplay> {
-    return this.bindingService.getSingleCodeBindingDisplay(binding, this.repository);
   }
 
   markedForDeletion(binding: IBindingContainer<any>, type: PropertyType): Observable<{ flag: boolean }> {
@@ -229,6 +227,9 @@ export abstract class BindingsEditorComponent extends AbstractEditorComponent im
                 }),
               }),
             ];
+          }),
+          catchError((e) => {
+            return throwError(this.messageService.fromError(e));
           }),
         );
       }),

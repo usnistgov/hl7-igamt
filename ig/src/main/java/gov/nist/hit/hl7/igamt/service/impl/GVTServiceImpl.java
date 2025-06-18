@@ -68,7 +68,7 @@ public class GVTServiceImpl implements GVTService {
       SSLContextBuilder builder = new SSLContextBuilder();
       builder.loadTrustMaterial(null, new TrustAllStrategy());
       SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-      CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory).setHostnameVerifier(SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER).build();
+      CloseableHttpClient httpClient = HttpClients.custom().disableCookieManagement().setSSLSocketFactory(socketFactory).setHostnameVerifier(SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER).build();
       HttpComponentsClientHttpRequestFactory fct =
           new HttpComponentsClientHttpRequestFactory(httpClient);
       this.restTemplate = new RestTemplate(fct);
@@ -168,7 +168,7 @@ public class GVTServiceImpl implements GVTService {
       headers.add("Authorization", authorization);
       HttpEntity<String> entity = new HttpEntity<String>("", headers);
       ResponseEntity<String> response =
-          restTemplate.exchange(url + env.getProperty(LOGIN_ENDPOINT), HttpMethod.GET, entity, String.class);
+          restTemplate.exchange(url + env.getProperty(LOGIN_ENDPOINT), HttpMethod.POST, entity, String.class);
       if (response.getStatusCode() == HttpStatus.OK) {
         return true;
       }

@@ -1,0 +1,13 @@
+.ui-g {
+  display: flex;
+  flex-direction: column;
+}
+
+.ui-g-12 {
+  margin-bottom: 1em;
+}
+
+label {
+  display: block;
+  margin-bottom: .5em;
+}

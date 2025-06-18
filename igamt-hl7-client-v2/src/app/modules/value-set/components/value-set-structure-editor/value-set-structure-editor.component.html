@@ -1,8 +1,8 @@
 <ng-template #headerControls *ngIf="resource$ | async as resource">
   <app-change-log-list-info
-  [changes]="resource.changeLogs"
+  [changes]="changeReason$ | async"
   (editChange)="updateChangeReason($event)"
   [viewOnly]="viewOnly$ | async"
   ></app-change-log-list-info>
 </ng-template>
-<app-value-set-structure [valueSet]="resource$ |async" [viewOnly]="viewOnly$ | async" (changes)="change($event)" [cols]="cols" [codeSystemOptions]="codeSystemOptions" [selectedColumns]="selectedColumns"></app-value-set-structure>
+<app-value-set-structure [valueSet]="resource$ |async" [viewOnly]="viewOnly$ | async" (changes)="contentChange($event)" [cols]="cols"  [selectedColumns]="selectedColumns" (exportCSVEvent)="exportCSV($event)"></app-value-set-structure>

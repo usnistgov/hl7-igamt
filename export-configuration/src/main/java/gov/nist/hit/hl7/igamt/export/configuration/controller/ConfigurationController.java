@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,6 +51,7 @@ public class ConfigurationController {
 
   @RequestMapping(value = "api/configuration/save", method = RequestMethod.POST,
       consumes = {"application/json"})
+  @PreAuthorize("AccessConfiguration(#exportConfiguration.id, WRITE)")
   public ResponseMessage saveExportconfuguration(@RequestBody ExportConfiguration exportConfiguration, Authentication authentication) throws Exception{
     
     if(exportConfiguration.isOriginal()) {
@@ -63,6 +65,7 @@ public class ConfigurationController {
 
   @RequestMapping(value = "api/configuration/saveAsDefault", method = RequestMethod.POST,
       consumes = {"application/json"})
+  @PreAuthorize("AccessConfiguration(#exportConfigurationWrapper.id, WRITE)")
   @ResponseBody
   public ResponseMessage saveAsDefaultExportconfuguration(@RequestBody ExportConfigurationForFrontEnd exportConfigurationWrapper, Authentication authentication){
     ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(exportConfigurationWrapper.getId());
@@ -73,6 +76,7 @@ public class ConfigurationController {
   }
 
   @RequestMapping(value = "/api/configuration/{id}", method = RequestMethod.GET, produces = { "application/json" })
+  @PreAuthorize("AccessConfiguration(#id, READ)")
   public @ResponseBody ExportConfiguration getExportConfiguration(@PathVariable("id") String id) {
     return exportConfigurationService.getExportConfiguration(id);
 
@@ -111,6 +115,7 @@ public class ConfigurationController {
 
   @RequestMapping(value = "api/configuration/delete", method = RequestMethod.POST,
       consumes = {"application/json"})
+  @PreAuthorize("AccessConfiguration(#exportConfiguration.id, WRITE)")
   public @ResponseBody ResponseMessage deleteExportconfuguration(@RequestBody ExportConfiguration exportConfiguration) throws Exception{
     
     if(exportConfiguration.isOriginal()) {

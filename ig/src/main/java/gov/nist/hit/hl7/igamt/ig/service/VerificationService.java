@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.ig.service;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -7,7 +9,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.display.model.XMLVerificationReport;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.CPVerificationResult;
-import gov.nist.hit.hl7.igamt.ig.domain.verification.ComplianceReport;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.DTSegVerificationResult;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VSVerificationResult;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationReport;
@@ -25,12 +26,11 @@ public interface VerificationService {
 
   DTSegVerificationResult verifySegment(Segment segment);
 
-  CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile, boolean needDeep);
+  CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile);
   
-  VerificationReport verifyIg(String documentId, boolean needDeep);
+  VerificationReport verifyIg(String documentId);
+ 
+  VerificationReport verifyIg(Ig ig);
   
-  VerificationReport verifyIg(Ig ig, boolean needDeep);
-  
-  ComplianceReport verifyIgForCompliance(String documentId);
-
+  VerificationReport verifyIg(Ig ig, Map<String, String> map);
 }

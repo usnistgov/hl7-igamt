@@ -2,14 +2,15 @@ import { OnDestroy, OnInit, Type as CoreType } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
+import { catchError, concatMap, filter, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { IDocumentConfig } from 'src/app/modules/document/models/document/IDocument.interface';
+import { VerificationType } from 'src/app/modules/shared/models/verification.interface';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { getHl7ConfigState, selectBindingConfig } from '../../../../root-store/config/config.reducer';
-import { LoadResourceReferences } from '../../../../root-store/dam-igamt/igamt.loaded-resources.actions';
-import { selectDerived, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectDerived, selectIgConfig, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { IStructureChanges } from '../../../segment/components/segment-structure-editor/segment-structure-editor.component';
@@ -24,6 +25,7 @@ import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-c
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { IBindingContext } from '../../../shared/services/structure-element-binding.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
+import { VerifyIg } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
 
 export type BindingLegend = Array<{
   label: string,
@@ -39,6 +41,7 @@ export abstract class StructureEditorComponent<T extends IResource> extends Abst
   public valueSets: Observable<IDisplayElement[]>;
   public bindingConfig: Observable<IValueSetBindingConfigMap>;
   public config: Observable<Hl7Config>;
+  public documentConfig: Observable<IDocumentConfig>;
   changes: ReplaySubject<IStructureChanges>;
   username: Observable<string>;
   resource$: Observable<T>;
@@ -59,7 +62,12 @@ export abstract class StructureEditorComponent<T extends IResource> extends Abst
     super(editorMetadata, actions$, store);
     this.resourceType = editorMetadata.resourceType;
     this.hasOrigin$ = this.store.select(fromIgamtSelectedSelectors.selectedResourceHasOrigin);
-    this.config = this.store.select(getHl7ConfigState);
+    this.config = this.store.select(getHl7ConfigState).pipe(
+      filter((config) => !!config),
+    );
+    this.documentConfig = this.store.select(selectIgConfig).pipe(
+      filter((config) => !!config),
+    );
     this.datatypes = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes);
     this.segments = this.store.select(fromIgamtDisplaySelectors.selectAllSegments);
     this.valueSets = this.store.select(selectValueSetsNodes);
@@ -154,8 +162,9 @@ export abstract class StructureEditorComponent<T extends IResource> extends Abst
               flatMap((resource) => {
                 this.changes.next({});
                 this.resourceSubject.next(resource as T);
-                // new LoadResourceReferences({ resourceType: this.editor.resourceType, id }),
-                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
+                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource }),
+                  new VerifyIg({id: documentRef.documentId, resourceType: documentRef.type, verificationType: VerificationType.VERIFICATION  }),
+                ];
               }),
             );
           }),

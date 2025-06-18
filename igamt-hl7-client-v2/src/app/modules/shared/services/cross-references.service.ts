@@ -8,6 +8,7 @@ import { Type } from '../constants/type.enum';
 import { IDocumentRef } from '../models/abstract-domain.interface';
 import { IRelationShip, IUsages } from '../models/cross-reference';
 import { IDisplayElement } from '../models/display-element.interface';
+import { IResourceFilter } from './../../ig/services/ig-toc-filter.service';
 import { StoreResourceRepositoryService } from './resource-repository.service';
 
 @Injectable({
@@ -64,6 +65,10 @@ export class CrossReferencesService {
       },
       ),
     );
+  }
+
+  getUnused(id: string, elementType: Type ): Observable<string[]> {
+      return this.http.get<string[]>('api/igdocuments/' + id + '/' + elementType  + '/unused');
   }
 
 }

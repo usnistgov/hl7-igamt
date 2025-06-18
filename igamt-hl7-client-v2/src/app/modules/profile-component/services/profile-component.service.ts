@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
-import { combineLatest, EMPTY, Observable, of } from 'rxjs';
-import { flatMap, map, take } from 'rxjs/operators';
+import { combineLatest, Observable, of } from 'rxjs';
+import { flatMap, map, mergeMap, take } from 'rxjs/operators';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { SegmentService } from '../../segment/services/segment.service';
 import { IHL7v2TreeNode, IHL7v2TreeNodeData, IResourceRef } from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
@@ -13,7 +13,6 @@ import {
   IPropertyCoConstraintBindings, IPropertyConformanceStatement,
   IPropertyDynamicMapping, IPropertyValueSet,
 } from '../../shared/models/profile.component';
-
 import {
   IItemProperty,
   IProfileComponent,
@@ -26,8 +25,7 @@ import {
 } from '../../shared/models/profile.component';
 import { IResource } from '../../shared/models/resource.interface';
 import { IChange, PropertyType } from '../../shared/models/save-change';
-import { IDynamicMappingInfo, ISegment } from '../../shared/models/segment.interface';
-import { DisplayService } from '../../shared/services/display.service';
+import { ISegment } from '../../shared/models/segment.interface';
 import { ElementNamingService, IPathInfo } from '../../shared/services/element-naming.service';
 import { Hl7V2TreeService } from '../../shared/services/hl7-v2-tree.service';
 import { PathService } from '../../shared/services/path.service';
@@ -38,7 +36,7 @@ import { IItemLocation, IProfileComponentChange } from '../components/profile-co
 import {
   IDynamicMappingEditorInfo,
 } from '../components/segment-context-dynamic-mapping/segment-context-dynamic-mapping.component';
-import { ITreeStructureProfileComponentPermutation } from './profile-component-ref-change.object';
+import { ProfileComponentApplyService } from './profile-component-apply.service';
 
 export interface IHL7v2TreeProfileComponentNode extends IHL7v2TreeNode {
   data: IHL7v2TreeProfileComponentNodeData;
@@ -68,7 +66,7 @@ export class ProfileComponentService {
     private elementNamingService: ElementNamingService,
     private segmentService: SegmentService,
     private valueSetService: ValueSetService,
-    private display: DisplayService,
+    private profileComponentApplyService: ProfileComponentApplyService,
   ) { }
 
   getById(id: string): Observable<IProfileComponent> {
@@ -90,6 +88,7 @@ export class ProfileComponentService {
   saveRootConformanceStatements(pcId: string, id: string, csList: IPropertyConformanceStatement[]): Observable<IPropertyConformanceStatement[]> {
     return this.http.post<IPropertyConformanceStatement[]>(this.URL + pcId + '/context/' + id + '/conformance-statements', csList);
   }
+
   saveDynamicMapping(pcId: string, id: string, csList: IPropertyDynamicMapping): Observable<IPropertyDynamicMapping> {
     return this.http.post<IPropertyDynamicMapping>(this.URL + pcId + '/context/' + id + '/dynamic-mapping', csList);
   }
@@ -218,25 +217,82 @@ export class ProfileComponentService {
     );
   }
 
-  // tslint:disable-next-line:cognitive-complexity
-  getNodeByPathAndRef(children: IHL7v2TreeNode[], fullPath: IPath, repository: AResourceRepositoryService, structPermutations?: Record<string, ITreeStructureProfileComponentPermutation>): Observable<IHL7v2TreeNode> {
-    const inner = (nodes: IHL7v2TreeNode[], path: IPath, changeRef?: ITreeStructureProfileComponentPermutation) => {
+  applyTransformer(
+    nodeList: IHL7v2TreeNode[],
+    transformer?: (nodes: IHL7v2TreeNode[]) => Observable<IHL7v2TreeNode[]>,
+  ): Observable<IHL7v2TreeNode[]> {
+    const recursiveTransform = (nodes: IHL7v2TreeNode[]): Observable<IHL7v2TreeNode[]> => {
+      const nodes$ = nodes.map((node) => {
+        if (node.children && node.children.length > 0) {
+          return recursiveTransform(node.children).pipe(
+            map((children) => {
+              node.children = children;
+              return node;
+            }),
+          );
+        } else {
+          return of(node);
+        }
+      });
+      return combineLatest(nodes$).pipe(
+        take(1),
+        mergeMap((nodesWithChildrenProcessed) => {
+          return transformer(nodesWithChildrenProcessed);
+        }),
+      );
+    };
+    return transformer ? recursiveTransform(nodeList).pipe(
+      take(1),
+    ) : of(nodeList);
+  }
+
+  getProfileComponentItemTransformer(profileComponentContext: IProfileComponentContext) {
+    return (nodes: IHL7v2TreeNode[]) => {
+      const nodes$ = nodes.map((node) => {
+        if (node.data.profileComponentOverrides) {
+          this.profileComponentApplyService.apply(node, profileComponentContext);
+        }
+        return of(node);
+      });
+      return combineLatest(nodes$);
+    };
+  }
+
+  getProfileComponentItemTransformerUsingItemList(items: IProfileComponentItem[]) {
+    return (nodes: IHL7v2TreeNode[]) => {
+      const nodes$ = nodes.map((node) => {
+        if (node.data.profileComponentOverrides) {
+          this.profileComponentApplyService.applyItems(node, items);
+        }
+        return of(node);
+      });
+      return combineLatest(nodes$);
+    };
+  }
+
+  getNodeByPath(children: IHL7v2TreeNode[], fullPath: IPath, repository: AResourceRepositoryService, profileComponentContext?: IProfileComponentContext): Observable<IHL7v2TreeNode> {
+    const ppTransformer = this.getProfileComponentItemTransformer(profileComponentContext);
+    const inner = (nodes: IHL7v2TreeNode[], path: IPath) => {
       if (path) {
         // Get current node based on current node in path's ID
         const elm = nodes.filter((e: IHL7v2TreeNode) => e.data.id === path.elementId);
         if (!elm || elm.length !== 1) {
           // If no node found for current node in path then the path is unresolvable
-          return EMPTY;
+          return of(null);
         } else {
           const node = elm[0];
           // if current node in path has children
           if (path.child) {
             // load tree node children
-            return this.treeService.loadNodeChildren(node, repository, changeRef ? changeRef.ref : undefined).pipe(
+            return this.treeService.loadNodeChildren(node, repository, {
+              viewOnly: true,
+              transform: ppTransformer,
+              useProfileComponentRef: true,
+            }).pipe(
               take(1),
               flatMap((elms) => {
                 // recursive call using the children list and the child path
-                return inner(elms, path.child, changeRef && changeRef.children ? changeRef.children[path.child.elementId] : undefined);
+                return inner(elms, path.child);
               }),
             );
           } else {
@@ -247,43 +303,97 @@ export class ProfileComponentService {
         }
       } else {
         // if path is empty then return nothing
-        return EMPTY;
+        return of(null);
       }
     };
-    return inner(children, fullPath, structPermutations ? structPermutations[fullPath.elementId] : undefined);
+    return inner(children, fullPath);
+  }
+
+  getRefChangeMap(profileComponentContext: IProfileComponentContext): Record<string, string> {
+    return this.getRefChangeMapByItemList(profileComponentContext.profileComponentItems);
+  }
+
+  getFilteredItems(allItems: IProfileComponentItem[], from: string): IProfileComponentItem[] {
+    const filtered: IProfileComponentItem[] = [];
+    for (const item of allItems) {
+      if (item.path.startsWith(`${from}-`)) {
+        const path = item.path.substring(from.length + 1);
+        filtered.push({
+          path,
+          itemProperties: item.itemProperties,
+        });
+      }
+    }
+    return filtered;
+  }
+
+  getRefChangeMapByItemList(items: IProfileComponentItem[]): Record<string, string> {
+    return items.reduce((acc, item) => {
+      const reference = item
+        .itemProperties
+        .filter((itemProp) => itemProp.propertyKey === PropertyType.DATATYPE || itemProp.propertyKey === PropertyType.SEGMENTREF)
+        .map((itemProp) => {
+          switch (itemProp.propertyKey) {
+            case PropertyType.DATATYPE:
+              return (itemProp as IPropertyDatatype).datatypeId;
+            case PropertyType.SEGMENTREF:
+              return (itemProp as IPropertyRef).ref;
+          }
+        })
+        .pop();
+      return {
+        ...acc,
+        [item.path]: reference,
+      };
+    }, {});
   }
 
   getHL7V2ProfileComponentItemNode(
     resource: IResource,
     repository: AResourceRepositoryService,
     nodes: IHL7v2TreeNode[],
-    items: IProfileComponentItem[],
-    refChanges: Record<string, ITreeStructureProfileComponentPermutation>,
-  ): Observable<IHL7v2TreeProfileComponentNode[]> {
+    profileComponentContext: IProfileComponentContext,
+  ): Observable<{
+    notfound: IProfileComponentItem[],
+    nodes: IHL7v2TreeProfileComponentNode[],
+  }> {
+    const items = profileComponentContext.profileComponentItems || [];
+    const references = this.getRefChangeMap(profileComponentContext);
     return items.length > 0 ? combineLatest(
       items.sort(
         (a, b) => this.comparePath(a.path, b.path),
       ).map((item) => {
         const path = this.pathService.getPathFromPathId(item.path);
-        return this.getNodeByPathAndRef(
+        return this.getNodeByPath(
           nodes[0].children,
           path,
           repository,
-          refChanges,
+          profileComponentContext,
         ).pipe(
           flatMap((node) => {
-            return this.elementNamingService.getPathInfoFromPath(resource, repository, path).pipe(
+            if (!node) {
+              return of({
+                item,
+                node: null,
+              });
+            }
+            return this.elementNamingService.getPathInfoFromPath(resource, repository, path, {
+              referenceChange: references,
+            }).pipe(
               take(1),
               map((pathInfo) => {
                 const name = this.elementNamingService.getStringNameFromPathInfo(pathInfo);
                 return {
-                  ...node,
-                  data: {
-                    ...node.data,
-                    location: {
-                      name,
-                      positionalPath: this.getPositionalPath(pathInfo.child),
-                      pathInfo: this.getLeaf(pathInfo),
+                  item,
+                  node: {
+                    ...node,
+                    data: {
+                      ...node.data,
+                      location: {
+                        name,
+                        positionalPath: this.getPositionalPath(pathInfo.child),
+                        pathInfo: this.getLeaf(pathInfo),
+                      },
                     },
                   },
                 };
@@ -294,12 +404,24 @@ export class ProfileComponentService {
       }),
     ).pipe(
       map((list) => {
-        list.sort((a, b) => {
+        const found = list
+          .filter((elm) => elm.node)
+          .map((elm) => elm.node);
+        const notfound = list
+          .filter((elm) => !elm.node)
+          .map((elm) => elm.item);
+        found.sort((a, b) => {
           return this.comparePositionalId(a.data.location.positionalPath, b.data.location.positionalPath);
         });
-        return list;
+        return {
+          notfound,
+          nodes: found,
+        };
       }),
-    ) : of([]);
+    ) : of({
+      notfound: [],
+      nodes: [],
+    });
   }
 
   getPositionalPath(pathInfo: IPathInfo): string {
@@ -343,11 +465,7 @@ export class ProfileComponentService {
   }
 
   saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<string>> {
-    return this.http.post<Message<string>>(this.URL + id, changes, {
-      params: {
-        dId: documentRef.documentId,
-      },
-    });
+    return this.http.post<Message<string>>(this.URL + id, changes);
   }
 
   profileComponentToMetadata(pc: IProfileComponent): IProfileComponentMetadata {
