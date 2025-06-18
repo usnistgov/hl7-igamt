@@ -46,5 +46,7 @@ public interface CoConstraintXMLSerialization {
 
     Element serializeVariesCell(ResourceSkeleton segment, DataElementHeader header, VariesCell cell, String defaultHL7Version) throws CoConstraintXMLSerializationException;
 
+    Element serializeAnyCell(ResourceSkeleton segment, DataElementHeader header, AnyCell cell, String defaultHL7Version) throws CoConstraintXMLSerializationException;
+
     Element serializeCoConstraintGroup(ResourceSkeleton segment, CoConstraintTable table, CoConstraintGroupBindingContained group, String defaultHL7Version) throws CoConstraintXMLSerializationException;
 }

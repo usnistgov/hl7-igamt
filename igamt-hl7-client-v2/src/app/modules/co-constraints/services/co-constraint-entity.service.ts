@@ -5,7 +5,7 @@ import { Md5 } from 'md5-typescript';
 import { combineLatest, Observable, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { IHL7v2TreeNode } from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
-import { ICoConstraintGroupBindingRef, ICoConstraintGrouper, ICoConstraintVariesCell, INarrativeHeader } from '../../shared/models/co-constraint.interface';
+import { ICoConstraintAnyCell, ICoConstraintGroupBindingRef, ICoConstraintGrouper, ICoConstraintVariesCell as ICoConstraintVariesCell, INarrativeHeader } from '../../shared/models/co-constraint.interface';
 import {
   CoConstraintGroupBindingType,
   CoConstraintHeaderType,
@@ -303,6 +303,8 @@ export class CoConstraintEntityService {
         return this.createEmptyValueSetCell();
       case CoConstraintColumnType.VARIES:
         return this.createEmptyVariesCell();
+      case CoConstraintColumnType.ANY:
+        return this.createEmptyAnyCell();
       default:
         return this.createEmptyValueCell();
     }
@@ -335,6 +337,14 @@ export class CoConstraintEntityService {
   createEmptyVariesCell(): ICoConstraintVariesCell {
     return {
       type: CoConstraintColumnType.VARIES,
+      cellType: undefined,
+      cellValue: undefined,
+    };
+  }
+
+  createEmptyAnyCell(): ICoConstraintAnyCell {
+    return {
+      type: CoConstraintColumnType.ANY,
       cellType: undefined,
       cellValue: undefined,
     };

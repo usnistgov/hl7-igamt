@@ -10,7 +10,6 @@ import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 
 public interface CoConstraintService {
-
     CoConstraintGroup findById(String id) throws EntityNotFound;
     void delete(CoConstraintGroup ccGroup);
     List<CoConstraintGroup> findDocumentCoConstraintGroupsSegmentCompatible(String segmentId, DocumentType type, String documentId);
@@ -23,6 +22,7 @@ public interface CoConstraintService {
     boolean valueSetCellIsEmpty(ValueSetCell vsCell);
     boolean cellIsEmpty(CoConstraintCell cell);
     boolean variesCellIsEmpty(VariesCell variesCell);
+    boolean anyCellIsEmpty(AnyCell anyCell);
     Link createIgLink(CoConstraintGroup group, int position, String username);
     List<CoConstraintGroup> findByIdIn(Set<String> ids);
     List<CoConstraintGroup>  saveAll(Set<CoConstraintGroup> coConstraintGroups);

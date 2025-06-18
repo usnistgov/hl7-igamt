@@ -334,6 +334,9 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
             case VALUE:
                 if(!(cell instanceof  ValueCell)) return null;
                 return this.serializeValueCell(segment, header, (ValueCell) cell);
+            case ANY:
+                if(!(cell instanceof  AnyCell)) return null;
+                return this.serializeAnyCell(segment, header, (AnyCell) cell, defaultHL7Version);
         }
         return null;
     }
@@ -431,6 +434,11 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
 
     @Override
     public Element serializeVariesCell(ResourceSkeleton segment, DataElementHeader header, VariesCell cell, String defaultHL7Version) throws CoConstraintXMLSerializationException {
+        return this.serializeCell(segment, cell.getCellType(), cell.getCellValue(), header, defaultHL7Version);
+    }
+
+    @Override
+    public Element serializeAnyCell(ResourceSkeleton segment, DataElementHeader header, AnyCell cell, String defaultHL7Version) throws CoConstraintXMLSerializationException {
         return this.serializeCell(segment, cell.getCellType(), cell.getCellValue(), header, defaultHL7Version);
     }
 

@@ -1,0 +1,23 @@
+<div class="btn-group" style="width: 100%; border: 1px solid gray;" *ngIf="!viewOnly && !cellValue.cellType && allowedColumns && allowedColumns.length > 0">
+  <button *ngFor="let item of allowedColumns" class="btn btn-sm btn-light" (click)="setTemplateType(cellValue, item)">{{ item }}</button>
+</div>
+<div style="width: 100%; display: flex; justify-content: space-between; align-items: flex-start;" *ngIf="cellValue.cellType">
+  <div style="width: 100%;">
+    <ng-container *ngTemplateOutlet="getCellTemplateForType(cellValue.cellType); context: {
+      $implicit: cellValue.cellValue,
+      header: header,
+      viewOnly : viewOnly,
+      overrideElementInfo: overrideElementInfo,
+      id: id,
+      row: row,
+      fieldId : fieldId,
+      viewOnly: viewOnly,
+      anchor: anchor,
+      excludeBindingStrength: excludeBindingStrength,
+      column: column
+    }"></ng-container>
+  </div>
+  <button style="margin-left: 5px;" class="btn btn-sm btn-danger" (click)="clearCell(cellValue)" *ngIf="!viewOnly">
+    <i class="fa fa-trash" ></i>
+  </button>
+</div>

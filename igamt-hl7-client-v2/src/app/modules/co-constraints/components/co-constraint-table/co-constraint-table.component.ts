@@ -4,7 +4,7 @@ import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import * as _ from 'lodash';
 import { combineLatest, Observable, of, Subject } from 'rxjs';
-import { catchError, filter, map, take, tap } from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, take, tap } from 'rxjs/operators';
 import { ProfileComponentService } from 'src/app/modules/profile-component/services/profile-component.service';
 import { IProfileComponentItem } from 'src/app/modules/shared/models/profile.component';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
@@ -146,6 +146,8 @@ export class CoConstraintTableComponent implements OnInit {
   narrativeTmplRef: TemplateRef<any>;
   @ViewChild('variesCell')
   variesTmplRef: TemplateRef<any>;
+  @ViewChild('anyCell')
+  anyTmplRef: TemplateRef<any>;
   @ViewChild('tableForm')
   form: NgForm;
 
@@ -233,21 +235,32 @@ export class CoConstraintTableComponent implements OnInit {
         useProfileComponentRef: true,
       },
     ).pipe(
-      map((node) => {
-        const resourceRef = node.data.ref.getValue();
-        const parent = node.parent ? node.parent.data.ref.getValue() : undefined;
-        return {
-          version: resourceRef.version,
-          parent: parent ? parent.name : segment,
-          datatype: resourceRef.name,
-          location: node.data.position,
-          cardinality: node.data.cardinality,
-          type: node.data.type,
-          bindingInfo: node.data.valueSetBindingsInfo ? node.data.valueSetBindingsInfo.getValue() : null,
-          displayCardinality: this.repeats(node.data.cardinality) && columnType === CoConstraintColumnType.VARIES,
-          name: segment + '-' + (key || '').replace('-', '.'),
-          resolved: true,
-        };
+      mergeMap((node) => {
+        return combineLatest([
+          this.treeService.getNodeRef(node, this.repository, {
+            useProfileComponentRef: true,
+          }),
+          node.parent ? this.treeService.getNodeRef(node.parent, this.repository, {
+            useProfileComponentRef: true,
+          }) : of(undefined),
+        ]).pipe(
+          take(1),
+          map(([resourceRef, parent]) => {
+            return {
+              version: resourceRef.version,
+              parent: parent ? parent.name : segment,
+              datatype: resourceRef.name,
+              location: node.data.position,
+              cardinality: node.data.cardinality,
+              type: node.data.type,
+              bindingInfo: node.data.valueSetBindingsInfo ? node.data.valueSetBindingsInfo.getValue() : null,
+              displayCardinality: this.repeats(node.data.cardinality) && columnType === CoConstraintColumnType.VARIES,
+              name: segment + '-' + (key || '').replace('-', '.'),
+              resolved: true,
+              datatypeId: resourceRef.id,
+            };
+          })
+        );
       }),
       catchError((err) => {
         return of({
@@ -262,6 +275,7 @@ export class CoConstraintTableComponent implements OnInit {
           bindingInfo: undefined,
           displayCardinality: undefined,
           name: segment + '-' + (key || '').replace('-', '.'),
+          datatypeId: undefined,
         });
       }),
     );
@@ -481,6 +495,8 @@ export class CoConstraintTableComponent implements OnInit {
         return this.datatypeTmplRef;
       case CoConstraintColumnType.VARIES:
         return this.variesTmplRef;
+      case CoConstraintColumnType.ANY:
+        return this.anyTmplRef;
     }
   }
 

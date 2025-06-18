@@ -102,6 +102,7 @@ export interface IDataElementHeaderInfo {
   name: string;
   error?: string;
   resolved: boolean;
+  datatypeId: string;
 }
 
 export interface INarrativeHeader extends ICoConstraintHeader {
@@ -149,6 +150,12 @@ export interface ICoConstraintVariesCell extends ICoConstraintCell {
   cellValue: ICoConstraintCell;
 }
 
+export interface ICoConstraintAnyCell extends ICoConstraintCell {
+  cellType: CoConstraintColumnType;
+  cellValue: ICoConstraintCell;
+}
+
+
 export enum CoConstraintColumnType {
   CODE = 'CODE',
   VALUESET = 'VALUESET',
@@ -157,6 +164,7 @@ export enum CoConstraintColumnType {
   VARIES = 'VARIES',
   VALUE = 'VALUE',
   GROUPER = 'GROUPER',
+  ANY = 'ANY'
 }
 
 export enum CoConstraintGroupBindingType {

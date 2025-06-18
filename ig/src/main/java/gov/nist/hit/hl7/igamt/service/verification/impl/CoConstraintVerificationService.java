@@ -116,12 +116,12 @@ public class CoConstraintVerificationService extends VerificationUtils {
             coConstraintSerializationHelper.getOBX3ToFlavorMap(profile);
         } catch (AmbiguousOBX3MappingException e) {
             for(CoConstraintMappingLocation location: e.getMappings().keySet()) {
-                e.getMappings().get(location).forEach((ambigious) -> {
+                e.getMappings().get(location).forEach((ambiguous) -> {
                     errors.add(this.entry.CoConstraintOBX3MappingIsDuplicate(
                             location.getLocationId(),
                             location.getResource().getId(),
                             location.getResource().getType(),
-                            ambigious.getCode()
+                            ambiguous.getCode()
                     ));
                 });
             }
@@ -409,7 +409,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
                     segment.getResource().getId(),
                     segment.getResource().getType()
             ));
-        } else if(variesHeaders.size() >= 1 && datatypeHeaders.size() == 0) {
+        } else if(!variesHeaders.isEmpty() && datatypeHeaders.isEmpty()) {
             // Varies Found but no Datatype Cell
             errors.add(this.entry.CoConstraintNoDatatypeCell(
                     groupOrTableLocation.pathId,
@@ -445,7 +445,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
                     );
 
                     errors.addAll(
-                            this.checkCoConstraintCell(segment, header, cellLocation, cell)
+                            this.checkCoConstraintCellWithHeaderCompatibility(segment, header, cellLocation, cell)
                     );
                 }
             }
@@ -634,7 +634,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
         return errors;
     }
 
-    List<IgamtObjectError> checkCoConstraintCell(ResourceSkeleton segment, DataHeaderElementVerified header, TargetLocation cellLocation, CoConstraintCell cell) {
+    List<IgamtObjectError> checkCoConstraintCellWithHeaderCompatibility(ResourceSkeleton segment, DataHeaderElementVerified header, TargetLocation cellLocation, CoConstraintCell cell) {
         List<IgamtObjectError> incompatible = Collections.singletonList(this.entry.CoConstraintIncompatibleHeaderAndCellType(
                 cellLocation.pathId,
                 cellLocation.name,
@@ -644,29 +644,57 @@ public class CoConstraintVerificationService extends VerificationUtils {
                 cell.getType()
         ));
 
+        switch (header.header.getColumnType()) {
+            case CODE:
+                if(!(cell instanceof CodeCell)) {
+                    return incompatible;
+                }
+                break;
+            case VALUESET:
+                if(!(cell instanceof ValueSetCell)) {
+                    return incompatible;
+                }
+                break;
+            case VALUE:
+                if(!(cell instanceof ValueCell)) {
+                    return incompatible;
+                }
+                break;
+            case ANY:
+                if(!(cell instanceof AnyCell)) {
+                    return incompatible;
+                }
+                break;
+        }
+        return this.checkCoConstraintCell(segment, header.header.getColumnType(), header, cellLocation, cell);
+    }
+
+    List<IgamtObjectError> checkCoConstraintCell(ResourceSkeleton segment, ColumnType type, DataHeaderElementVerified header, TargetLocation cellLocation, CoConstraintCell cell) {
         if(this.coConstraintService.cellIsEmpty(cell) && !header.selector) {
             return this.NoErrors();
         }
 
-        switch (header.header.getColumnType()) {
+        switch (type) {
             case CODE:
                 if(cell instanceof CodeCell) {
                     return this.checkCodeCell(segment, header, cellLocation, (CodeCell) cell);
-                } else {
-                    return incompatible;
                 }
+                break;
             case VALUESET:
                 if(cell instanceof ValueSetCell) {
                     return this.checkValueSet(segment, header, cellLocation, (ValueSetCell) cell);
-                } else {
-                    return incompatible;
                 }
+                break;
             case VALUE:
                 if(cell instanceof ValueCell) {
                     return this.checkValue(segment, header, cellLocation, (ValueCell) cell);
-                } else {
-                    return incompatible;
                 }
+                break;
+            case ANY:
+                if(cell instanceof AnyCell) {
+                    return this.checkAnyCell(segment, header, cellLocation, (AnyCell) cell);
+                }
+                break;
         }
         return this.NoErrors();
     }
@@ -779,6 +807,28 @@ public class CoConstraintVerificationService extends VerificationUtils {
         return this.NoErrors();
     }
 
+    List<IgamtObjectError> checkAnyCell(ResourceSkeleton segment, DataHeaderElementVerified header, TargetLocation cellLocation, AnyCell cell) {
+        if(cell.getCellValue() != null) {
+            boolean allowed = Arrays.asList(
+                    ColumnType.CODE,
+                    ColumnType.VALUESET,
+                    ColumnType.VALUE
+            ).contains(cell.getCellType());
+            if(!allowed) {
+
+            } else {
+                return this.checkCoConstraintCell(
+                        segment,
+                        cell.getCellType(),
+                        header,
+                        cellLocation,
+                        cell.getCellValue()
+                );
+            }
+        }
+        return this.NoErrors();
+    }
+
     DatatypeCellVerified checkDatatypeCell(ResourceSkeleton segment, TargetLocation cellLocation, DataHeaderElementVerified datatype, CoConstraintCell coConstraintCell, Set<Valueset> allowedDatatypeValues) {
         if(coConstraintCell instanceof DatatypeCell) {
             List<IgamtObjectError> errors = new ArrayList<>();
@@ -856,14 +906,14 @@ public class CoConstraintVerificationService extends VerificationUtils {
                         varies.target.getPosition(),
                         varies.target.getParent()
                 );
-                if(headerTypeErrors.size() == 0) {
+                if(headerTypeErrors.isEmpty()) {
                     DataHeaderElementVerified verified = new DataHeaderElementVerified(
                             updated,
                             varies.target,
                             bindingInfo,
                             false
                     );
-                    return this.checkCoConstraintCell(segment, verified, cellLocation, cell.getCellValue());
+                    return this.checkCoConstraintCellWithHeaderCompatibility(segment, verified, cellLocation, cell.getCellValue());
                 }
                 return headerTypeErrors;
             } else {
@@ -917,7 +967,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
                         headersLocation,
                         (DataElementHeader) header
                 );
-                if(errors.size() > 0) {
+                if(!errors.isEmpty()) {
                     headerIssues.put(header.getKey(), errors);
                 }
             }

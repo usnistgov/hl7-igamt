@@ -6,4 +6,5 @@ public enum ColumnType {
     DATATYPE,
     VARIES,
     VALUE,
+    ANY,
 }

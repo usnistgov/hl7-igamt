@@ -96,6 +96,9 @@ export class DataHeaderDialogComponent implements OnInit {
         ...(bindingInfo.allowValueSets ? [{ label: 'Value Set', value: CoConstraintColumnType.VALUESET }] : []),
         ...(this.selectedNode.leaf ? [{ label: 'Constant Value', value: CoConstraintColumnType.VALUE }] : []),
       ];
+      if (this.constraints.length > 1) {
+        this.constraints.push({ label: 'Any', value: CoConstraintColumnType.ANY });
+      }
     } else if (this.selectedNode.leaf) {
       this.constraints = this.primitive;
       this.type = CoConstraintColumnType.VALUE;

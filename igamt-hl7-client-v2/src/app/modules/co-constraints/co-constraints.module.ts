@@ -26,6 +26,7 @@ import { NarrativeHeaderDialogComponent } from './components/narrative-header-di
 import { SegmentCoConstraintBindingComponent } from './components/segment-co-constraint-binding/segment-co-constraint-binding.component';
 import { CoConstraintGroupService } from './services/co-constraint-group.service';
 import { FileUploadService } from './services/file-upload.service';
+import { AnyCellComponent } from './components/co-constraint-table/any-cell/any-cell.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { FileUploadService } from './services/file-upload.service';
     DatatypeCellComponent,
     VariesCellComponent,
     ValueCellComponent,
+    AnyCellComponent,
     CoConstraintImportDialogComponent,
   ],
   imports: [

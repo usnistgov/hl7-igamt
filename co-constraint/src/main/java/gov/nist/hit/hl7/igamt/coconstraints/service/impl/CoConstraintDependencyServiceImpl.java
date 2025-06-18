@@ -19,23 +19,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.common.binding.domain.BindingSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraint;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintCell;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupBinding;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupBindingContained;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupBindingRef;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
-import gov.nist.hit.hl7.igamt.coconstraints.model.DatatypeCell;
-import gov.nist.hit.hl7.igamt.coconstraints.model.ValueSetCell;
-import gov.nist.hit.hl7.igamt.coconstraints.model.VariesCell;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintDependencyService;
 import gov.nist.hit.hl7.igamt.coconstraints.wrappers.CoConstraintsDependencies;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
@@ -177,6 +165,11 @@ public class CoConstraintDependencyServiceImpl implements CoConstraintDependency
       if(vrCell.getCellValue() !=null) {
         process(vrCell.getCellValue(), used, filter);
       }
+    } else if(cell instanceof AnyCell) {
+      AnyCell anyCell= (AnyCell) cell;
+      if(anyCell.getCellValue() !=null) {
+        process(anyCell.getCellValue(), used, filter);
+      }
     }
   }
   
@@ -219,18 +212,23 @@ public class CoConstraintDependencyServiceImpl implements CoConstraintDependency
           }
         }
       }
-    }else if(cell instanceof DatatypeCell ) {
+    } else if(cell instanceof DatatypeCell ) {
       DatatypeCell dtCell= (DatatypeCell)cell; 
       RealKey datatypeKey = new RealKey(dtCell.getDatatypeId(), Type.DATATYPE);
       if(newKeys.containsKey(datatypeKey)) {
         dtCell.setDatatypeId(newKeys.get(datatypeKey));
       }
-    }else if(cell instanceof VariesCell) {
+    } else if(cell instanceof VariesCell) {
       VariesCell vrCell= (VariesCell)cell;
       if(vrCell.getCellValue() !=null) {
         updateDepenedencies(vrCell.getCellValue(), newKeys);
       }
-    }   
+    } else if(cell instanceof AnyCell) {
+      AnyCell anyCell= (AnyCell)cell;
+      if(anyCell.getCellValue() !=null) {
+        updateDepenedencies(anyCell.getCellValue(), newKeys);
+      }
+    }
   }
   @Override
   public Set<RelationShip> collectDependencies(CoConstraintGroup ccGroup) {
@@ -274,13 +272,18 @@ public class CoConstraintDependencyServiceImpl implements CoConstraintDependency
           }
         }
       }
-    }else if(cell instanceof DatatypeCell ) {
+    } else if(cell instanceof DatatypeCell ) {
       DatatypeCell dtCell= (DatatypeCell)cell; 
       rel.add(new RelationShip(new ReferenceIndentifier(dtCell.getDatatypeId(), Type.DATATYPE), parent, new ReferenceLocation(Type.COCONSTRAINTGROUP,path, null)));
-    }else if(cell instanceof VariesCell) {
+    } else if(cell instanceof VariesCell) {
       VariesCell vrCell= (VariesCell)cell;
       if(vrCell.getCellValue() !=null) {
         rel.addAll(collectDependencies(vrCell.getCellValue(), parent, path));
+      }
+    } else if(cell instanceof AnyCell) {
+      AnyCell anyCell = (AnyCell)cell;
+      if(anyCell.getCellValue() !=null) {
+        rel.addAll(collectDependencies(anyCell.getCellValue(), parent, path));
       }
     }
     return rel;

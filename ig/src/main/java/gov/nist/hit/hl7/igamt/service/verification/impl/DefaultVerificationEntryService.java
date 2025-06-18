@@ -226,7 +226,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
 
     @Override
     public IgamtObjectError InvalidBindingLocation(String pathId, String name, LocationInfo target, PropertyType prop, String id, Type type, Set<Integer> bindingLocations, String reason) {
-        boolean blIsSet = bindingLocations != null && bindingLocations.size() > 0;
+        boolean blIsSet = bindingLocations != null && !bindingLocations.isEmpty();
         return new IgamtVerificationEntryBuilder("INVALID_BINDING_LOCATION")
                 .fatal()
                 .target(id, type)
@@ -442,7 +442,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
 
     @Override
     public IgamtObjectError CoConstraintCodeCellInvalidBindingLocation(String pathId, String locationName, LocationInfo info, String id, Type type, Set<Integer> bindingLocations, String reason) {
-        boolean blIsSet = bindingLocations != null && bindingLocations.size() > 0;
+        boolean blIsSet = bindingLocations != null && !bindingLocations.isEmpty();
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_CODE_CELL_INVALID_BL")
                 .fatal()
                 .target(id, type)
@@ -486,7 +486,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
 
     @Override
     public IgamtObjectError CoConstraintValueSetCellInvalidBindingLocation(String pathId, String locationName, LocationInfo info, String id, Type type, Set<Integer> bindingLocations, String reason) {
-        boolean blIsSet = bindingLocations != null && bindingLocations.size() > 0;
+        boolean blIsSet = bindingLocations != null && !bindingLocations.isEmpty();
         return new IgamtVerificationEntryBuilder("COCONSTRAINT_VALUESET_CELL_INVALID_BL")
                 .fatal()
                 .target(id, type)

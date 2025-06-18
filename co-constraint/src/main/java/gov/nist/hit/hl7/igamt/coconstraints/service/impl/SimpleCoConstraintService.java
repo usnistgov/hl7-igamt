@@ -5,10 +5,6 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.coconstraints.repository.CoConstraintGroupRepository;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
-import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
-import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
-import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -115,15 +111,6 @@ public class SimpleCoConstraintService implements CoConstraintService {
     });
   }
 
-
-
-  void valueSetCellIdSubstitution(ValueSetCell cell, Map<String, String> valueSets) {
-    cell.getBindings().forEach(binding -> {
-      binding.setValueSets(binding.getValueSets().stream().map(valueSets::get).collect(Collectors.toList()));
-    });
-  }
-
-
   @Override
   public CoConstraintGroup createCoConstraintGroupPrototype(String id) throws SegmentNotFoundException {
     Segment segment = this.segmentService.findById(id);
@@ -169,6 +156,11 @@ public class SimpleCoConstraintService implements CoConstraintService {
   }
 
   @Override
+  public boolean anyCellIsEmpty(AnyCell anyCell) {
+    return anyCell == null || this.cellIsEmpty(anyCell.getCellValue());
+  }
+
+  @Override
   public boolean cellIsEmpty(CoConstraintCell cell) {
     if(cell == null)
       return true;
@@ -184,6 +176,8 @@ public class SimpleCoConstraintService implements CoConstraintService {
         return this.datatypeCellIsEmpty((DatatypeCell) cell);
       case VALUESET:
         return this.valueSetCellIsEmpty((ValueSetCell) cell);
+      case ANY:
+        return this.anyCellIsEmpty((AnyCell) cell);
     }
     return true;
   }
@@ -229,134 +223,10 @@ public class SimpleCoConstraintService implements CoConstraintService {
     return null;
   }
 
-
-  /**
-   * @param parent
-   * @param value
-   * @return
-   */
-  private Collection<? extends RelationShip> collectDependencies(
-      ReferenceIndentifier parent, CoConstraintTable value, String tableName) {
-    // TODO Auto-generated method stub
-    HashSet<RelationShip> rel = new HashSet<RelationShip>();
-    if(value.getGroups() !=null) {
-      for(CoConstraintGroupBinding groupBinding : value.getGroups()) {
-
-        if(groupBinding instanceof CoConstraintGroupBindingContained) {
-          CoConstraintGroupBindingContained  coConstraintGroupBindingContained = (CoConstraintGroupBindingContained)(groupBinding);
-          rel.addAll(this.collectDependencies(coConstraintGroupBindingContained.getCoConstraints(), parent, tableName+"."+coConstraintGroupBindingContained.getName()));
-
-        }else if(groupBinding instanceof CoConstraintGroupBindingRef) {
-          CoConstraintGroupBindingRef ref = (CoConstraintGroupBindingRef)groupBinding;
-          ref.getRefId();
-          rel.add(new RelationShip(new ReferenceIndentifier(ref.getRefId(), Type.COCONSTRAINTGROUP), parent, new ReferenceLocation(parent.getType(), tableName,"Co-Constraint Table")));
-        }
-      }
-    }
-    if(value.getCoConstraints() !=null) {
-      rel.addAll(this.collectDependencies(value.getCoConstraints(), parent, tableName));
-    }
-    return rel;
-  }
-
-  private Collection<? extends RelationShip> collectDependencies(List<CoConstraint> coConstraints,
-      ReferenceIndentifier parent, String path) {
-    HashSet<RelationShip> rel = new HashSet<RelationShip>();
-    for(CoConstraint cc: coConstraints) {
-      rel.addAll(collectDependencies(cc, parent, path));
-    }
-    return rel;
-  }
-
-  private Collection<? extends RelationShip> collectDependencies(CoConstraint cc,
-      ReferenceIndentifier parent, String path) {
-    HashSet<RelationShip> rel = new HashSet<RelationShip>();
-
-    if(cc.getCells()!=null) {
-      for(Map.Entry<String, CoConstraintCell> entry : cc.getCells().entrySet()){
-        rel.addAll(collectDependencies(entry.getValue(),parent, path ));
-      }
-    }
-    return rel;
-  }
-
-  private Collection<? extends RelationShip> collectDependencies(CoConstraintCell cell,
-      ReferenceIndentifier parent, String path) {
-    // TODO Auto-generated method stub
-    HashSet<RelationShip> rel = new HashSet<RelationShip>();
-
-    if(cell instanceof ValueSetCell) {
-      ValueSetCell vsCell= (ValueSetCell)cell;
-      if(vsCell.getBindings() !=null) {
-        for(ValuesetBinding vsb : vsCell.getBindings()) {
-          if(vsb.getValueSets() !=null ) {
-            for(String vs : vsb.getValueSets()) {
-              rel.add(new RelationShip(new ReferenceIndentifier(vs, Type.VALUESET), parent, new ReferenceLocation(Type.COCONSTRAINTGROUP, path,null )));
-            }
-          }
-        }
-      }
-    }else if(cell instanceof DatatypeCell ) {
-      DatatypeCell dtCell= (DatatypeCell)cell; 
-      rel.add(new RelationShip(new ReferenceIndentifier(dtCell.getDatatypeId(), Type.DATATYPE), parent, new ReferenceLocation(Type.COCONSTRAINTGROUP,path, null)));
-    }else if(cell instanceof VariesCell) {
-      VariesCell vrCell= (VariesCell)cell;
-      if(vrCell.getCellValue() !=null) {
-        rel.addAll(collectDependencies(vrCell.getCellValue(), parent, path));
-      }
-    }
-    return rel;
-  }
-
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService#findByIdIn(java.util.Set)
-   */
   @Override
   public List<CoConstraintGroup> findByIdIn(Set<String> ids) {
-    // TODO Auto-generated method stub
     return coConstraintGroupRepository.findByIdIn(ids);
   }
-  
-  public void updateDependencies(CoConstraint coconstraint, HashMap<RealKey, String> newKeys) {
-    if(coconstraint.getCells() !=null && coconstraint.getCells().values() !=null) {
-      coconstraint.getCells().values().stream().forEach(cell -> {
-        this.updateDepenedencies( cell, newKeys);
-      }); 
-    }
-  }
-
-  private void updateDepenedencies(CoConstraintCell cell,
-      HashMap<RealKey, String> newKeys) {
-    if(cell instanceof ValueSetCell) {
-      ValueSetCell vsCell= (ValueSetCell)cell;
-      if(vsCell.getBindings() !=null) {        
-        for(ValuesetBinding vsb : vsCell.getBindings()) {
-          if(vsb.getValueSets() !=null ) {
-            vsb.setValueSets(vsb.getValueSets().stream().map(vs -> {
-              RealKey vsKey = new RealKey(vs, Type.VALUESET);
-              if(newKeys.containsKey(vsKey)) {
-                return newKeys.get(vsKey);
-              }else {
-                return vs;
-              }
-            }).collect(Collectors.toList()));
-          }
-        }
-      }
-    }else if(cell instanceof DatatypeCell ) {
-      DatatypeCell dtCell= (DatatypeCell)cell; 
-      RealKey datatypeKey = new RealKey(dtCell.getDatatypeId(), Type.DATATYPE);
-      if(newKeys.containsKey(datatypeKey)) {
-        dtCell.setDatatypeId(newKeys.get(datatypeKey));
-      }
-    }else if(cell instanceof VariesCell) {
-      VariesCell vrCell= (VariesCell)cell;
-      if(vrCell.getCellValue() !=null) {
-        updateDepenedencies(vrCell.getCellValue(), newKeys);
-      }
-    }   
-  }
-
   
   @Override
   public void updateCloneTag(
@@ -379,7 +249,6 @@ public class SimpleCoConstraintService implements CoConstraintService {
       });
     }
   }
-
 
   @Override
   public List<CoConstraintGroup> saveAll(Set<CoConstraintGroup> coConstraintGroups) {
@@ -414,6 +283,10 @@ public class SimpleCoConstraintService implements CoConstraintService {
                   ((ValueSetCell) ((VariesCell) cell).getCellValue()).getBindings().forEach((vsBinding) -> {
                     valueSetIds.addAll(vsBinding.getValueSets());
                   });
+                } else if(cell instanceof AnyCell && ((AnyCell) cell).getCellValue() instanceof ValueSetCell) {
+                  ((ValueSetCell) ((AnyCell) cell).getCellValue()).getBindings().forEach((vsBinding) -> {
+                    valueSetIds.addAll(vsBinding.getValueSets());
+                  });
                 }
               }
             }
@@ -423,5 +296,4 @@ public class SimpleCoConstraintService implements CoConstraintService {
     }
     return valueSetIds;
   }
-
 }

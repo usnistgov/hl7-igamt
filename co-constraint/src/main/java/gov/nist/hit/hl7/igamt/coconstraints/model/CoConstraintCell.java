@@ -11,7 +11,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = ValueSetCell.class, name = "VALUESET"),
         @JsonSubTypes.Type(value = DatatypeCell.class, name = "DATATYPE"),
         @JsonSubTypes.Type(value = VariesCell.class, name = "VARIES"),
-        @JsonSubTypes.Type(value = ValueCell.class, name = "VALUE")
+        @JsonSubTypes.Type(value = ValueCell.class, name = "VALUE"),
+        @JsonSubTypes.Type(value = AnyCell.class, name = "ANY")
 })
 public abstract class CoConstraintCell {
     protected ColumnType type;

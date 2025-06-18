@@ -483,4 +483,25 @@
     </app-varies-cell>
   </ng-template>
 
+  <ng-template #anyCell let-row="row" let-anchor="anchor" let-overrideElementInfo="overrideElementInfo"  let-excludeBindingStrength="excludeBindingStrength" let-header="header" let-fieldId="fieldId" let-id="id" let-column="column" let-cell let-viewOnly="viewOnly">
+    <app-any-cell
+      [header]="header"
+      [cellValue]="cell"
+      [elementInfo]="overrideElementInfo ? overrideElementInfo: getHeaderElementInfo(header) | async"
+      [viewOnly]="viewOnly"
+      [fieldId]="fieldId"
+      [column]="column"
+      [id]="id"
+      [anchor]="anchor"
+      (cellValueChange)="emitChange()"
+      [row]="row"
+      [excludeBindingStrength]="excludeBindingStrength"
+      [codeTmplRef]="codeCell"
+      [valueSetTmplRef]="valueSetCell"
+      [valueTmplRef]="valueCell"
+      [datatypes]="datatypes"
+    >
+    </app-any-cell>
+  </ng-template>
+
 </form>
