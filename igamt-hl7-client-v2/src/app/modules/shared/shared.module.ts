@@ -162,6 +162,7 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { ExternalVsMetadataComponent } from './components/external-vs-metadata/external-vs-metadata.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -283,6 +284,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ExternalVsCodesFetchComponent,
     FetchCodesDialogComponent,
     ImportFromProviderComponent,
+    ExternalVsMetadataComponent
   ],
   providers: [
     StoreResourceRepositoryService,

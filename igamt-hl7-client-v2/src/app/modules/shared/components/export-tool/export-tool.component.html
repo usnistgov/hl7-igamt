@@ -28,7 +28,7 @@
       <ul *ngIf="current === 'EXTERNAL_VALUESET_CONFIGURATION'" >
         <li><strong>External:</strong> Validation will require network access and will perform an HTTP call to the value set service URL to check for a code's validity (this option might result in slower validation performances).</li>
         <li><strong>Excluded From Validation (Empty)</strong>: Bindings to this value set will not be validated and will only serve as placeholders for documentation purposes.</li>
-        <li><strong>Snapshot:</strong> A snapshot of the value set will be fetched and exported in that XML, some value sets can be extermely large which will result in large exported files.</li>
+        <li><strong>Snapshot:</strong> A snapshot of the value set will be fetched and exported in the XML, some value sets can be extermely large which will result in large exported files.</li>
       </ul>
       <button *ngIf="current !== 'EXTERNAL_VALUESET_CONFIGURATION'" (click)="configureExternalValueSets()" class="btn btn-sm btn-info">Configure External Value Sets</button>
     </div>
@@ -132,6 +132,7 @@
     <ng-template pTemplate="header" let-columns>
       <tr>
         <th>External Value Set</th>
+        <th>Metadata</th>
         <th>Export Type</th>
       </tr>
     </ng-template>
@@ -139,6 +140,9 @@
       <tr>
         <td>
           <app-display-section [element]="rowData.display"></app-display-section>
+        </td>
+        <td>
+          <app-external-vs-metadata [url]="rowData.url"></app-external-vs-metadata>
         </td>
         <td>
           <button class="btn btn-sm" (click)="setExportType(rowData.display.id, 'EXTERNAL')" [ngClass]="exportTypeMap[rowData.display.id] === 'EXTERNAL' || !exportTypeMap[rowData.display.id]  ? 'btn-success selected':'btn-light'">
