@@ -33,7 +33,7 @@
     PUBLISHED
   </span>
 
-  <span class="badge  badge-secondary" *ngIf="url" style ="margin-left: 5px;"> EXT </span>
+  <span class="badge  badge-secondary" *ngIf="sourceType ==='EXTERNAL' || sourceType === 'EXTERNAL_TRACKED'" style ="margin-left: 5px;"> EXT </span>
 
   <span class="badge scope-badge-dynamic" *ngIf="stability && stability ==='Dynamic' " style ="margin-left: 5px;"> DYN </span>
   </div>
