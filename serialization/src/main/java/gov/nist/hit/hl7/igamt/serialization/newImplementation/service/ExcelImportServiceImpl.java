@@ -171,13 +171,8 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 
         CoConstraintUsage coConstraintUsage = CoConstraintUsage.valueOf(parsedCoConstraint.getUsage());
         requirement.setUsage(coConstraintUsage);
-        System.out.println(newLine + " USAGE : " + requirement.getUsage().name());
-
         cardinality.setMin(parsedCoConstraint.getMinCardinality());
-        System.out.println(newLine + " MIN : " + cardinality.getMin());
-
         cardinality.setMax(parsedCoConstraint.getMaxCardinality());
-        System.out.println(newLine + " MAX : " + cardinality.getMax());
         int i = 0;
         for (Map.Entry<Integer, String> entry : entries) {
             CoConstraintHeader coConstraintHeader = headerMap.get(entry.getKey());
@@ -243,7 +238,6 @@ public class ExcelImportServiceImpl implements ExcelImportService {
     }
 
     private boolean isGroupHeader(Row r) {
-        System.out.println("Number of cells : " + r.getPhysicalNumberOfCells() + " starts with for name : " + r.getCell(3).getStringCellValue());
         return r.getPhysicalNumberOfCells() == 4 && r.getCell(3).getStringCellValue().startsWith("Group name");
     }
 
@@ -340,22 +334,15 @@ public class ExcelImportServiceImpl implements ExcelImportService {
                     VariesCell variesCell = new VariesCell();
 //                    variesCell.setCardinalityMax(cardValue);
                     if (cellValue.startsWith("Code:")) {
-                        System.out.println("1");
                         CodeCell codeCellVaries = processCodeCell(cellValue);
                         variesCell.setCellValue(codeCellVaries);
                         variesCell.setCellType(ColumnType.CODE);
-                        System.out.println("1 done");
-
                         return variesCell;
 
                     } else if (cellValue.startsWith("Strength:")) {
-                        System.out.println("2");
-
                         ValueSetCell valueSetCellVaries = processValueSetCell(cellValue, igID);
                         variesCell.setCellValue(valueSetCellVaries);
                         variesCell.setCellType(ColumnType.VALUESET);
-                        System.out.println("2 done");
-
                         return variesCell;
                     } else {
                         return variesCell;
@@ -401,7 +388,6 @@ public class ExcelImportServiceImpl implements ExcelImportService {
                     String datatype = name.split("-")[0];
                     dataElementHeader.setColumnType(ColumnType.valueOf(columnType));
                     dataElementHeader.setKey(stringKey);
-                    System.out.println(" type : " + dataElementHeader.getColumnType().name() + " and name : " + name + " and key : " + stringKey);
                     return dataElementHeader;
                 }
             }
@@ -507,16 +493,12 @@ public class ExcelImportServiceImpl implements ExcelImportService {
                 CodeCell codeCell = new CodeCell();
                 String[] splitCodeCellValue = cellValue.split(",");
                 String codeValue = splitCodeCellValue[0].split(":")[1];
-                System.out.println(newLine + " CODE VALUE : " + codeValue);
                 String codeSystemValue = splitCodeCellValue[1].split(":")[1];
-                System.out.println(newLine + " CODESystem VALUE : " + codeSystemValue);
                 List<Integer> locations = new ArrayList<Integer>();
                 String[] LocationsString = splitCodeCellValue[2].split(":")[1].split("or");
                 for (String s : LocationsString) {
-                    System.out.println(newLine + " the STRING OF LOCATION S : " + s);
                     locations.add(Integer.parseInt(s.replaceAll("\\s", "")));
                 }
-                System.out.println(newLine + " Locations VALUE : " + locations);
                 codeCell.setCode(codeValue);
                 codeCell.setCodeSystem(codeSystemValue);
                 codeCell.setLocations(locations);
@@ -533,7 +515,6 @@ public class ExcelImportServiceImpl implements ExcelImportService {
         List<ValuesetBinding> list = new ArrayList<ValuesetBinding>();
         if (cellValue != null && !cellValue.isEmpty()) {
             if (cellValue.matches(valueSetRegularExpression)) {
-                System.out.println("ValueSet cell value is : " + cellValue);
                 ValuesetBinding valueSetBinding = new ValuesetBinding();
                 List<String> valueSets = new ArrayList<String>();
                 Pattern pattern = Pattern.compile(valueSetRegularExpression);
@@ -545,17 +526,11 @@ public class ExcelImportServiceImpl implements ExcelImportService {
                     usage = matcher.group(1);
                     locations = matcher.group(2);
                     allValueSets = matcher.group(3);
-                    System.out.println("Found value: " + matcher.group(0));
-                    System.out.println("Found value: " + matcher.group(1));
-                    System.out.println("Found value: " + matcher.group(2));
-                } else {
-                    System.out.println("NO MATCH");
                 }
 
                 valueSetBinding.setStrength(ValuesetStrength.valueOf(usage.replaceAll("\\s", "")));
                 Set<Integer> locations2 = new HashSet<Integer>();
                 for (String s : locations.replace("]", "").replace("[", "").split(",")) {
-                    System.out.println(newLine + " the STRING OF LOCATION S : " + s);
                     locations2.add(Integer.parseInt(s.replaceAll("\\s", "")));
                 }
                 valueSetBinding.setValuesetLocations(locations2);
@@ -573,7 +548,6 @@ public class ExcelImportServiceImpl implements ExcelImportService {
                 valueSetBinding.setValueSets(valueSets);
                 list.add(valueSetBinding);
                 valueSetCell.setBindings(list);
-                System.out.println("DASDASD");
             }
             valueSetCell.setBindings(list);
             return valueSetCell;
@@ -585,7 +559,6 @@ public class ExcelImportServiceImpl implements ExcelImportService {
     }
 
     public CoConstraintHeader processNarrativeHeaderCell(String value) {
-        System.out.println(newLine + "we in");
         NarrativeHeader narrativeHeader = new NarrativeHeader();
         narrativeHeader.setTitle(value);
         narrativeHeader.setType(HeaderType.NARRATIVE);
