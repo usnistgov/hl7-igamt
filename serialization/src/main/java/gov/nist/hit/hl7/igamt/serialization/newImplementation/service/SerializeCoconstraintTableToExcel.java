@@ -143,7 +143,7 @@ public class SerializeCoconstraintTableToExcel {
 		Cell usageHeaderCell2 = headerRow2.createCell(headerCellNumber);
 		usageHeaderCell2.setCellValue("Usage");
 		usageHeaderCell2.setCellStyle(usageAndCardinalityStyle);
-		sheet.addMergedRegion(new CellRangeAddress(0,1,0,0));
+		safeAddMergedRegion(sheet, new CellRangeAddress(0, 1, 0, 0));
 
 		Cell cardinalityHeaderCell = headerRow.createCell(headerCellNumber++);
 		cardinalityHeaderCell.setCellStyle(usageAndCardinalityStyle);
@@ -152,7 +152,7 @@ public class SerializeCoconstraintTableToExcel {
 		Cell cardinalityHeaderCell2 = headerRow2.createCell(headerCellNumber);
 		cardinalityHeaderCell2.setCellStyle(usageAndCardinalityStyle);
 		cardinalityHeaderCell2.setCellValue("Cardinality");
-		sheet.addMergedRegion(new CellRangeAddress(0,1,1,2));
+		safeAddMergedRegion(sheet, new CellRangeAddress(0, 1, 1, 2));
 
 		headerCellNumber++;
 
@@ -161,28 +161,33 @@ public class SerializeCoconstraintTableToExcel {
 		ifCell.setCellValue("IF");
 		ifCell.setCellStyle(ifHeaderStyle);
 
-		Cell thenCell = headerRow.createCell(headers.getSelectors().size()+3);
-		headerCellNumber=headerCellNumber+headers.getConstraints().size();
+		int thenStart = headerCellNumber;
+		Cell thenCell = headerRow.createCell(thenStart);
 		thenCell.setCellValue("THEN");
 		thenCell.setCellStyle(thenHeaderStyle);
 
 		Cell groupByCell = null;
 		if(!coConstraintTable.getGroups().isEmpty()) {
-			 groupByCell = headerRow.createCell(headers.getSelectors().size()+headers.getConstraints().size()+3+countThenVaries(headers.getConstraints()));
+			 groupByCell = headerRow.createCell(headers.getSelectors().size()+headers.getConstraints().size()+3);
 			headerCellNumber=headerCellNumber+1;
 			groupByCell.setCellValue("Group By");
 			groupByCell.setCellStyle(thenHeaderStyle);
-		}			
-		int narrativesStart;
-		if(!coConstraintTable.getGroups().isEmpty()) {
-			narrativesStart= headers.getSelectors().size()+headers.getConstraints().size()+3+countThenVaries(headers.getConstraints())+1;
-		}else {
-			narrativesStart= headers.getSelectors().size()+headers.getConstraints().size()+3+countThenVaries(headers.getConstraints());
 		}
-		Cell userCell = headerRow.createCell(narrativesStart);
-		headerCellNumber=headerCellNumber+headers.getSelectors().size();
-		userCell.setCellValue("NARRATIVES");
-		userCell.setCellStyle(userHeaderStyle);
+		int narrativesStart;
+		if (!coConstraintTable.getGroups().isEmpty()) {
+			narrativesStart = headers.getSelectors().size() + headers.getConstraints().size() + 3 + 1;
+		} else {
+			narrativesStart = headers.getSelectors().size() + headers.getConstraints().size() + 3;
+		}
+
+// Declare userCell outside the condition so it's visible later
+		Cell userCell = null;
+
+		if (!headers.getNarratives().isEmpty()) {
+			userCell = headerRow.createCell(narrativesStart);
+			userCell.setCellValue("NARRATIVES");
+			userCell.setCellStyle(userHeaderStyle);
+		}
 
 		headerCellNumber=3;
 		for (CoConstraintHeader coConstraintTableHeader : headers.getSelectors()) {
@@ -207,30 +212,22 @@ public class SerializeCoconstraintTableToExcel {
 			}
 		}
 		for (CoConstraintHeader coConstraintTableHeader : headers.getConstraints()) {
-			//				if(((DataElementHeader) coConstraintTableHeader).getColumnType().equals(ColumnType.VARIES)) {
-			//					String headerLabel = ((DataElementHeader) coConstraintTableHeader).getColumnType().name()  + " " + ((DataElementHeader) coConstraintTableHeader).getName();
-			//					Cell cell1 = headerRow2.createCell(headerCellNumber++);
-			//					cell1.setCellValue(headerLabel);
-			//					cell1.setCellStyle(thenHeaderStyle);
-			//					Cell cell2 = headerRow2.createCell(headerCellNumber++);
-			//					cell2.setCellValue("coConstraintTableHeader");
-			//					cell2.setCellStyle(thenHeaderStyle);
-			//					sheet.addMergedRegion(new CellRangeAddress(1,1,cell1.getColumnIndex(),cell2.getColumnIndex()));
-			////					headerCellNumber++;
-			//				}else
 			{
 				SerializableDataElementHeader serializableDataElementHeader = this.coConstraintSerializationHelper.getSerializableDataElementHeader(((DataElementHeader) coConstraintTableHeader), segment);
 				String headerLabel = ((DataElementHeader) coConstraintTableHeader).getColumnType().name()  + " " + serializableDataElementHeader.getName();
 				Cell cell = headerRow2.createCell(headerCellNumber++);
 				cell.setCellValue(headerLabel);
 				cell.setCellStyle(thenHeaderStyle);
-				if(((DataElementHeader) coConstraintTableHeader).getColumnType().equals(ColumnType.VARIES)) {
-					Cell cellCard = headerRow2.createCell(headerCellNumber++);
-					cellCard.setCellValue("Cardinality");
-					cellCard.setCellStyle(thenHeaderStyle);
-				}
+//				if(((DataElementHeader) coConstraintTableHeader).getColumnType().equals(ColumnType.VARIES)) {
+//					Cell cellCard = headerRow2.createCell(headerCellNumber++);
+//					cellCard.setCellValue("Cardinality");
+//					cellCard.setCellStyle(thenHeaderStyle);
+//				}
 
 			}
+		}
+		if (headerCellNumber - thenStart > 1) {
+			safeAddMergedRegion(sheet, new CellRangeAddress(0, 0, thenStart, headerCellNumber - 1));
 		}
 		if(!coConstraintTable.getGroups().isEmpty()) {		
 			Cell cell = headerRow2.createCell(headerCellNumber++);
@@ -249,23 +246,22 @@ public class SerializeCoconstraintTableToExcel {
 		}
 
 		if(thenCell.getColumnIndex() - ifCell.getColumnIndex() != 1){
-			sheet.addMergedRegion(new CellRangeAddress(0,0,ifCell.getColumnIndex(),thenCell.getColumnIndex()-1));
+			safeAddMergedRegion(sheet, new CellRangeAddress(0,0,ifCell.getColumnIndex(),thenCell.getColumnIndex()-1));
 		}
 		if(!coConstraintTable.getGroups().isEmpty()) {
 			if(groupByCell.getColumnIndex() - thenCell.getColumnIndex() != 1){
-				sheet.addMergedRegion(new CellRangeAddress(0,0,thenCell.getColumnIndex(),groupByCell.getColumnIndex()-1));
+				safeAddMergedRegion(sheet, new CellRangeAddress(0,0,thenCell.getColumnIndex(),groupByCell.getColumnIndex()-1));
 			}
 		}else {
-			if(userCell.getColumnIndex() - thenCell.getColumnIndex() != 1){
-				sheet.addMergedRegion(new CellRangeAddress(0,0,thenCell.getColumnIndex(),userCell.getColumnIndex()-1));
+			if (userCell != null && headers.getNarratives().size() > 1) {
+				safeAddMergedRegion(sheet, new CellRangeAddress(0, 0, userCell.getColumnIndex(), userCell.getColumnIndex() + headers.getNarratives().size() - 1));
 			}
 		}
 
 		
 		if(headers.getNarratives().size() > 1 ) {
-			sheet.addMergedRegion(new CellRangeAddress(0,0,userCell.getColumnIndex(),userCell.getColumnIndex()+headers.getNarratives().size()-1));
+			safeAddMergedRegion(sheet, new CellRangeAddress(0,0,userCell.getColumnIndex(),userCell.getColumnIndex()+headers.getNarratives().size()-1));
 		}
-		System.out.println("Here6 :" + userCell.getColumnIndex());
 
 
 		for (CoConstraint coConstraintTableRow : coConstraintTable.getCoConstraints()) {
@@ -319,7 +315,7 @@ public class SerializeCoconstraintTableToExcel {
 			groupNameCell.setCellValue("Group name : " + ((CoConstraintGroupBindingContained) coConstraintTableGroup).getName());
 			groupNameCell.setCellValue(((CoConstraintGroupBindingContained) coConstraintTableGroup).getName());
 			groupNameCell.setCellStyle(headerGroupStyle);
-			sheet.addMergedRegion(new CellRangeAddress(rowNumber-1,rowNumber-1,cellNumber-1,cellNumber+headerCount-2));
+			safeAddMergedRegion(sheet, new CellRangeAddress(rowNumber - 1, rowNumber - 1, 3, 3 + headerCount - 2));
 			for (CoConstraint coConstraintTableRow : ((CoConstraintGroupBindingContained) coConstraintTableGroup).getCoConstraints()) {
 				serializeRowToExcel(workbook,coConstraintTable, coConstraintTableRow, sheet, rowNumber++,true);
 			}
@@ -486,18 +482,18 @@ public class SerializeCoconstraintTableToExcel {
 						ColumnType c = ((DataElementHeader) coConstraintTableHeader).getColumnType();
 						cell.setCellValue(WriteValueToCellExcel(coConstraintCell, c));
 						cell.setCellStyle(thenRowStyle);
-						if(c.equals(ColumnType.VARIES)) {
-							Cell cellCard = row.createCell(cellNumber++);
-							if(coConstraintCell.getCardinalityMax() != null) {
-								cellCard.setCellValue(coConstraintCell.getCardinalityMax());
-								cellCard.setCellStyle(thenRowStyle);
-							} else {
-								cellCard.setCellValue("1");
-								cellCard.setCellStyle(thenRowStyle);
-
-							}
-
-						}
+//						if(c.equals(ColumnType.VARIES)) {
+//							Cell cellCard = row.createCell(cellNumber++);
+//							if(coConstraintCell.getCardinalityMax() != null) {
+//								cellCard.setCellValue(coConstraintCell.getCardinalityMax());
+//								cellCard.setCellStyle(thenRowStyle);
+//							} else {
+//								cellCard.setCellValue("1");
+//								cellCard.setCellStyle(thenRowStyle);
+//
+//							}
+//
+//						}
 					}
 				}
 			}
@@ -651,6 +647,21 @@ public class SerializeCoconstraintTableToExcel {
 			//			}
 			break;
 
+			case ANY:
+				AnyCell anyCell = (AnyCell) coConstraintTableCell;
+				if(anyCell.getCellType() != null) {
+					cellValue = WriteValueToCellExcel( anyCell.getCellValue(), anyCell.getCellType());
+				} else {
+					cellValue = "";
+				}
+
+				//			if(coConstraintTableCell.getCardinalityMax() != null) {
+				//				Element tdCard = new Element("td");
+				//				tdCard.appendChild(coConstraintTableCell.getCardinalityMax());
+				//				tdCell.appendChild(tdCard);
+				//			}
+				break;
+
 		case DATATYPE:		
 			DatatypeCell datatypeCell = (DatatypeCell) coConstraintTableCell;
 			Datatype datatype = datatypeService.findById(datatypeCell.getDatatypeId());
@@ -720,6 +731,14 @@ public class SerializeCoconstraintTableToExcel {
 			}
 		}
 		return valuesetBindings.toString();
+	}
+	private void safeAddMergedRegion(XSSFSheet sheet, CellRangeAddress region) {
+		for (int i = 0; i < sheet.getNumMergedRegions(); i++) {
+			if (sheet.getMergedRegion(i).formatAsString().equals(region.formatAsString())) {
+				return;
+			}
+		}
+		sheet.addMergedRegion(region);
 	}
 
 

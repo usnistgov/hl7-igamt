@@ -356,6 +356,21 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 			//				}
 			break;
 
+			case ANY:
+				AnyCell anyCell = (AnyCell) coConstraintTableCell;
+				if (anyCell.getCellType() != null) {
+					tdCell = serializeCellCompact(anyCell.getCellValue(), anyCell.getCellType());
+				} else {
+					tdCell.appendChild("");
+				}
+
+				//				if(coConstraintTableCell.getCardinalityMax() != null) {
+				//					Element tdCard = new Element("td");
+				//					tdCard.appendChild(coConstraintTableCell.getCardinalityMax());
+				//					tdCell.appendChild(tdCard);
+				//				}
+				break;
+
 		case DATATYPE:
 			Element table2 = new Element("table");
 			// table.addAttribute(new Attribute("style", "border : none"));
@@ -620,7 +635,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 	public Element serializeRowCompact(CoConstraint coConstraintTableRow, List<SerializableDataElementHeader> ifAndThenHeadersList, List<CoConstraintHeader> narrativesHeadersList, boolean isGroup, boolean isWithinGroup, int position) {
 		Element tr = new Element("tr");
 		Element td = new Element("td");
-		if (position == 1) {
+		if (isWithinGroup && position == 1) {
 			td.appendChild(" 1 (Primary)");
 		} else {
 			td.appendChild(String.valueOf(position));
