@@ -96,6 +96,7 @@ public class ExcelImportServiceImpl implements ExcelImportService {
         if (table.isHasGrouper()) {
             coConstraintHeaders.setGrouper(processGrouper(table.getGrouperValue()));
         }
+
         return coConstraintHeaders;
     }
 
@@ -337,23 +338,43 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 
                 case VARIES:
                     VariesCell variesCell = new VariesCell();
-                    variesCell.setCardinalityMax(cardValue);
+//                    variesCell.setCardinalityMax(cardValue);
                     if (cellValue.startsWith("Code:")) {
+                        System.out.println("1");
                         CodeCell codeCellVaries = processCodeCell(cellValue);
                         variesCell.setCellValue(codeCellVaries);
                         variesCell.setCellType(ColumnType.CODE);
+                        System.out.println("1 done");
+
                         return variesCell;
+
                     } else if (cellValue.startsWith("Strength:")) {
+                        System.out.println("2");
+
                         ValueSetCell valueSetCellVaries = processValueSetCell(cellValue, igID);
                         variesCell.setCellValue(valueSetCellVaries);
                         variesCell.setCellType(ColumnType.VALUESET);
+                        System.out.println("2 done");
+
                         return variesCell;
                     } else {
-                        ValueCell valueCell2 = new ValueCell();
-                        valueCell2.setValue(cellValue);
-                        variesCell.setCellValue(valueCell2);
-                        variesCell.setCellType(ColumnType.VALUE);
                         return variesCell;
+                    }
+                case ANY:
+                    AnyCell anyCell = new AnyCell();
+//                    anyCell.setCardinalityMax(cardValue);
+                    if (cellValue.startsWith("Code:")) {
+                        CodeCell codeCellAny = processCodeCell(cellValue);
+                        anyCell.setCellValue(codeCellAny);
+                        anyCell.setCellType(ColumnType.CODE);
+                        return anyCell;
+                    } else if (cellValue.startsWith("Strength:")) {
+                        ValueSetCell valueSetCellAny = processValueSetCell(cellValue, igID);
+                        anyCell.setCellValue(valueSetCellAny);
+                        anyCell.setCellType(ColumnType.VALUESET);
+                        return anyCell;
+                    } else {
+                        return anyCell;
                     }
             }
             return null;
