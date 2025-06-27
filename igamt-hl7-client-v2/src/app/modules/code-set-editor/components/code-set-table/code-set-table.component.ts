@@ -1,14 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef } from '@angular/core';
 import { FormControl, NgForm, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material';
 import { Guid } from 'guid-typescript';
 import { SelectItem } from 'primeng/api';
+import { ImportCodeCSVComponent } from 'src/app/modules/shared/components/import-code-csv/import-code-csv.component';
 import { CodeUsage } from 'src/app/modules/shared/constants/usage.enum';
 import { IChange, PropertyType } from 'src/app/modules/shared/models/save-change';
 import { ICodes } from 'src/app/modules/shared/models/value-set.interface';
 import { ICodeSetVersionContent } from '../../models/code-set.models';
-import { MatDialog } from '@angular/material';
-import { ImportCodeCSVComponent } from 'src/app/modules/shared/components/import-code-csv/import-code-csv.component';
-import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-code-set-table',
@@ -23,7 +23,7 @@ export class CodeSetTableComponent implements OnInit {
 
   @ViewChild('form') form!: NgForm;
 
-  valid: boolean = true;
+  valid = true;
 
   @Input()
   set codeSetVersion(codeSetVersion: ICodeSetVersionContent) {
@@ -39,7 +39,7 @@ export class CodeSetTableComponent implements OnInit {
   }
 
   constructor(
-    private dialog: MatDialog, private cdr: ChangeDetectorRef
+    private dialog: MatDialog, private cdr: ChangeDetectorRef,
   ) {
 
   }
@@ -108,7 +108,7 @@ export class CodeSetTableComponent implements OnInit {
     code.hasPattern = true;
     code.pattern = '';
     // add pattern control to the form to make form validation work correctly
-    //this.form.control.addControl('pattern' + code.id, new FormControl('', { validators: Validators.required, updateOn: 'blur' }));
+    // this.form.control.addControl('pattern' + code.id, new FormControl('', { validators: Validators.required, updateOn: 'blur' }));
     this.changeCodes();
   }
 
@@ -116,7 +116,7 @@ export class CodeSetTableComponent implements OnInit {
     code.hasPattern = false;
     code.pattern = '';
     // remove pattern control to the form to make form validation work correctly
-    //this.form.control.removeControl('pattern' + code.id);
+    // this.form.control.removeControl('pattern' + code.id);
     this.changeCodes();
   }
 
@@ -230,7 +230,6 @@ export class CodeSetTableComponent implements OnInit {
     link.click();
     document.body.removeChild(link);
   }
-
 
   ngAfterViewInit() { }
 }

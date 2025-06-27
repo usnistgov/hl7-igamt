@@ -6,7 +6,7 @@ import java.util.Map;
 public class GroupedId {
 
     List<String> groupNames;
-    private Map<ValueSetType, String> defaultMap;
+    private Map<ValueSetType, String> defaultMap = new java.util.HashMap<ValueSetType, String>();
 
     boolean custom;
     public List<String> getGroupNames() {
@@ -48,4 +48,25 @@ public class GroupedId {
     public void setCustom(boolean custom) {
         this.custom = custom;
     }
+
+
+    public void assignGroup(String id, ValueSetType type) {
+        String groupName = defaultMap.get(type);
+        if(groupName != null ){
+            groupedData.computeIfAbsent(groupName, k -> new java.util.ArrayList<>()).add(id);
+        }
+    }
+
+    public void findAndRemove(String id) {
+        if (groupedData == null) {
+            return;
+        }
+        for (Map.Entry<String, List<String>> entry : groupedData.entrySet()) {
+            List<String> group = entry.getValue();
+            if (group.remove(id)) {
+                break;
+            }
+        }
+    }
+
 }

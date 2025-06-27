@@ -2,10 +2,7 @@ package gov.nist.hit.hl7.igamt.valueset.domain.registry;
 
 import java.util.HashMap;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.GroupedId;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 
 public class ValueSetRegistry extends Registry {
   /**
@@ -49,15 +46,11 @@ public class ValueSetRegistry extends Registry {
     this.exportConfig = exportConfig;
   }
 
-
-  /**
-   * @param id
-   * @return
-   */
   public Link findOneTableById(String id) {
     for(Link link:this.getChildren()){
       if(link.getId().equals(id)) return link;
     }
     return null;
   }
+
 }

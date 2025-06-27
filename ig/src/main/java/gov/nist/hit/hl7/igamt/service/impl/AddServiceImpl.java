@@ -15,16 +15,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.DependencyWrapper;
@@ -59,7 +54,7 @@ public class AddServiceImpl implements AddService {
   @Autowired
   ConformanceProfileDependencyService conformanceProfileDependencyService;
   @Autowired
-  SegmentDependencyService segmentDependencyService; 
+  SegmentDependencyService segmentDependencyService;
   @Autowired
   MessageStructureRepository messageStructureRepository;
   @Autowired
@@ -81,46 +76,46 @@ public class AddServiceImpl implements AddService {
     DependencyFilter dependencyFilter = new DependencyFilter(excluded);
     AddMessageResponseObject ret = new AddMessageResponseObject();
     for (AddingInfo addingInfo : added) {
-        ConformanceProfile clone =  resourceManagementService.createProfile(username, new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT), addingInfo);
-        
-        ConformanceProfileDependencies dependencies = conformanceProfileDependencyService.getDependencies(clone, dependencyFilter);
-        this.conformanceProfileService.save(clone);
-        Link link = this.resourceHelper.generateLink(clone, new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT), ig.getConformanceProfileRegistry().getChildren().size()+1);  
-        ig.getConformanceProfileRegistry().getChildren().add(link);
-        excluded.put(new RealKey(clone.getId(), Type.CONFORMANCEPROFILE), true);
-        ret.getConformanceProfiles().add(clone);
-        this.applyDependendencies( ig, dependencies, excluded, ret);
+      ConformanceProfile clone = resourceManagementService.createProfile(username, new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT), addingInfo);
+
+      ConformanceProfileDependencies dependencies = conformanceProfileDependencyService.getDependencies(clone, dependencyFilter);
+      this.conformanceProfileService.save(clone);
+      Link link = this.resourceHelper.generateLink(clone, new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT), ig.getConformanceProfileRegistry().getChildren().size() + 1);
+      ig.getConformanceProfileRegistry().getChildren().add(link);
+      excluded.put(new RealKey(clone.getId(), Type.CONFORMANCEPROFILE), true);
+      ret.getConformanceProfiles().add(clone);
+      this.applyDependendencies(ig, dependencies, excluded, ret);
     }
     return ret;
   }
-  
-  
+
+
   @Override
   public AddMessageResponseObject addSegments(Ig ig, List<AddingInfo> added, String username) throws EntityNotFound, ForbiddenOperationException {
     HashMap<RealKey, Boolean> excluded = this.buildExistingFilter(ig);
     DependencyFilter dependencyFilter = new DependencyFilter(excluded);
     AddMessageResponseObject ret = new AddMessageResponseObject();
     for (AddingInfo addingInfo : added) {
-        Segment elm =  resourceManagementService.createFlavor(ig.getSegmentRegistry(), username, new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT), Type.SEGMENT, addingInfo);   
-        excluded.put(new RealKey(elm.getId(), Type.SEGMENT), true);
-        SegmentDependencies dependencies = segmentDependencyService.getDependencies(elm, dependencyFilter);
-        ret.getSegments().add(elm);
-        this.applyDependendencies( ig, dependencies, excluded, ret);
+      Segment elm = resourceManagementService.createFlavor(ig.getSegmentRegistry(), username, new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT), Type.SEGMENT, addingInfo);
+      excluded.put(new RealKey(elm.getId(), Type.SEGMENT), true);
+      SegmentDependencies dependencies = segmentDependencyService.getDependencies(elm, dependencyFilter);
+      ret.getSegments().add(elm);
+      this.applyDependendencies(ig, dependencies, excluded, ret);
     }
     return ret;
   }
-  
+
   @Override
   public AddMessageResponseObject addDatatypes(Ig ig, List<AddingInfo> added, String username) throws EntityNotFound, ForbiddenOperationException {
     HashMap<RealKey, Boolean> excluded = this.buildExistingFilter(ig);
     DependencyFilter dependencyFilter = new DependencyFilter(excluded);
     AddMessageResponseObject ret = new AddMessageResponseObject();
     for (AddingInfo addingInfo : added) {
-        Datatype elm =  resourceManagementService.createFlavor(ig.getDatatypeRegistry(), username, new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT), Type.DATATYPE, addingInfo);   
-        excluded.put(new RealKey(elm.getId(), Type.DATATYPE), true);
-        DatatypeDependencies dependencies = datatypeDependencyService.getDependencies(elm, dependencyFilter);
-        ret.getDatatypes().add(elm);
-        this.applyDependendencies( ig, dependencies, excluded, ret);
+      Datatype elm = resourceManagementService.createFlavor(ig.getDatatypeRegistry(), username, new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT), Type.DATATYPE, addingInfo);
+      excluded.put(new RealKey(elm.getId(), Type.DATATYPE), true);
+      DatatypeDependencies dependencies = datatypeDependencyService.getDependencies(elm, dependencyFilter);
+      ret.getDatatypes().add(elm);
+      this.applyDependendencies(ig, dependencies, excluded, ret);
     }
     return ret;
   }
@@ -133,45 +128,45 @@ public class AddServiceImpl implements AddService {
    * @param excluded
    */
   private <T extends DependencyWrapper> void applyDependendencies(Ig ig,
-      T dependencies, HashMap<RealKey, Boolean> excluded, AddMessageResponseObject response) {
+                                                                  T dependencies, HashMap<RealKey, Boolean> excluded, AddMessageResponseObject response) {
     DocumentInfo info = new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT);
 
-    if(dependencies instanceof DatatypeDependencies) {
-      DatatypeDependencies datatypeDep = (DatatypeDependencies)dependencies;
+    if (dependencies instanceof DatatypeDependencies) {
+      DatatypeDependencies datatypeDep = (DatatypeDependencies) dependencies;
       List<Valueset> valueSets = this.valueSetService.findByIdIn((datatypeDep.getValuesets().keySet()));
       response.getValueSets().addAll(valueSets);
-      addLinks(ig.getValueSetRegistry(), valueSets, info, excluded );
-      
+      addLinks(ig.getValueSetRegistry(), valueSets, info, excluded);
+      this.valueSetService.groupAddedValueSets(ig.getValueSetRegistry(), valueSets);
+
       response.getDatatypes().addAll(datatypeDep.getDatatypes().values());
-      addLinks(ig.getDatatypeRegistry(), datatypeDep.getDatatypes().values(),  info, excluded );
+      addLinks(ig.getDatatypeRegistry(), datatypeDep.getDatatypes().values(), info, excluded);
 
     }
-    if(dependencies instanceof ConformanceProfileDependencies ) {
-      ConformanceProfileDependencies cfDep = (ConformanceProfileDependencies)dependencies;
-      addLinks(ig.getSegmentRegistry(), cfDep.getSegments().values(),  info, excluded );
-      addLinks(ig.getCoConstraintGroupRegistry(), cfDep.getCoConstraintGroups().values(),  info, excluded );
-      
+    if (dependencies instanceof ConformanceProfileDependencies) {
+      ConformanceProfileDependencies cfDep = (ConformanceProfileDependencies) dependencies;
+      addLinks(ig.getSegmentRegistry(), cfDep.getSegments().values(), info, excluded);
+      addLinks(ig.getCoConstraintGroupRegistry(), cfDep.getCoConstraintGroups().values(), info, excluded);
       response.getSegments().addAll(cfDep.getSegments().values());
       response.getCoConstraints().addAll(cfDep.getCoConstraintGroups().values());
-      
+
     }
 
   }
 
   @SuppressWarnings("unlikely-arg-type")
-  <T extends Resource> void  addLinks(Registry reg, Collection<T> added, DocumentInfo info, HashMap<RealKey, Boolean> excluded ){
-    for( T resource: added ) {
-      if(!excluded.containsKey(resource.getId())) {
-        Link link = this.resourceHelper.generateLink(resource, info, reg.getChildren().size()+1);  
+  <T extends Resource> void addLinks(Registry reg, Collection<T> added, DocumentInfo info, HashMap<RealKey, Boolean> excluded) {
+    for (T resource : added) {
+      if (!excluded.containsKey(resource.getId())) {
+        Link link = this.resourceHelper.generateLink(resource, info, reg.getChildren().size() + 1);
         reg.getChildren().add(link);
         excluded.put(new RealKey(resource.getId(), resource.getType()), true);
-      }    
+      }
     }
   }
 
 
   private HashMap<RealKey, Boolean> buildExistingFilter(Ig ig) {
-    HashMap<RealKey, Boolean> newKeys= new HashMap<RealKey, Boolean>();
+    HashMap<RealKey, Boolean> newKeys = new HashMap<RealKey, Boolean>();
     addKeys(ig.getConformanceProfileRegistry(), Type.CONFORMANCEPROFILE, newKeys);
     addKeys(ig.getValueSetRegistry(), Type.VALUESET, newKeys);
     addKeys(ig.getDatatypeRegistry(), Type.DATATYPE, newKeys);
@@ -188,12 +183,13 @@ public class AddServiceImpl implements AddService {
    * @param newKeys
    */
   private void addKeys(Registry reg, Type type, HashMap<RealKey, Boolean> keys) {
-    if(reg.getChildren() != null) {
-      Set<String> ids =  reg.getLinksAsIds();
-      for(String id : ids ) {
+    if (reg.getChildren() != null) {
+      Set<String> ids = reg.getLinksAsIds();
+      for (String id : ids) {
         RealKey key = new RealKey(id, type);
         keys.put(key, true);
       }
     }
   }
+
 }

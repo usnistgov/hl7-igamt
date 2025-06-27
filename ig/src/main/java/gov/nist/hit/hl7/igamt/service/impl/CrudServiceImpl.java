@@ -373,7 +373,6 @@ public class CrudServiceImpl implements CrudService {
 
 	@Override
 	public AddValueSetResponseObject addValueSets(Set<String> ids, Ig ig) throws AddingException {
-		// TODO Auto-generated method stub
 		ValueSetRegistry reg = ig.getValueSetRegistry();
 		AddValueSetResponseObject ret = new AddValueSetResponseObject();
 		if (reg != null) {
@@ -383,9 +382,9 @@ public class CrudServiceImpl implements CrudService {
 				for (String id : ids) {
 					Valueset valueSet = valuesetService.findById(id);
 					if (valueSet != null) {
-						Link link =
-								new Link(valueSet, reg.getChildren().size() + 1);
+						Link link = new Link(valueSet, reg.getChildren().size() + 1);
 						reg.getChildren().add(link);
+
 						ret.getValueSets().add(valueSet);
 					} else {
 						throw new AddingException("Could not find Value Set  with id " + id);
@@ -454,13 +453,12 @@ public class CrudServiceImpl implements CrudService {
 	 */
 	@Override
 	public AddValueSetResponseObject addValueSets(List<AddingInfo> toAdd, Ig ig, String username) throws AddingException, EntityNotFound, ForbiddenOperationException {
-		// TODO Auto-generated method stub
 		Set<String> savedIds = new HashSet<String>();
 		for (AddingInfo elm : toAdd) {
 			if (elm.isFlavor()) {
-				addValueSetAsFlavor(elm, savedIds,ig, username );
+				addValueSetAsFlavor(elm, savedIds, ig, username );
 			} else {
-				addAsIs(elm, savedIds,ig, username);
+				addAsIs(elm, savedIds, ig, username);
 			}
 		}
 		AddValueSetResponseObject objects = this.addValueSets(savedIds, ig);

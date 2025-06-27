@@ -525,7 +525,6 @@ export class IgService {
     return this.http.post<IDocumentConfig>(this.IG_END_POINT + id + '/update-config', config);
   }
 
-
   groupValueSets(id: string, groups: any): Observable<any> {
 
     return this.http.post<any>(this.IG_END_POINT + id + '/group-value-sets',  groups);

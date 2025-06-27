@@ -756,6 +756,9 @@ public class IGDocumentController extends BaseController {
 		Link found = findLinkById(valuesetId, ig.getValueSetRegistry().getChildren());
 		if (found != null) {
 			ig.getValueSetRegistry().getChildren().remove(found);
+			if(ig.getValueSetRegistry().getGroupedData() != null){
+				ig.getValueSetRegistry().getGroupedData().findAndRemove(valuesetId);
+			}
 		}
 		Valueset valueSet = valuesetService.findById(valuesetId);
 		if (valueSet != null) {
@@ -979,11 +982,13 @@ public class IGDocumentController extends BaseController {
 
 		Valueset clone =  resourceManagementService.createFlavor(ig.getValueSetRegistry(), username, new DocumentInfo(id, DocumentType.IGDOCUMENT), Type.VALUESET, wrapper.getSelected());
 
-		if(ig.getValueSetRegistry().getCodesPresence() != null) {
-			if(ig.getValueSetRegistry().getCodesPresence().containsKey(valuesetId)) {
-				ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), ig.getValueSetRegistry().getCodesPresence().get(valuesetId));
-			}
-		}
+//		if(ig.getValueSetRegistry().getCodesPresence() != null) {
+//			if(ig.getValueSetRegistry().getCodesPresence().containsKey(valuesetId)) {
+//				ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), ig.getValueSetRegistry().getCodesPresence().get(valuesetId));
+//			}
+//		}
+		this.valuesetService.groupAddedValueSets(ig.getValueSetRegistry(), Collections.singleton(clone));
+
 		ig = igService.save(ig);
 		AddResourceResponse response = new AddResourceResponse();
 		response.setId(clone.getId());
@@ -1196,6 +1201,8 @@ public class IGDocumentController extends BaseController {
 		//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
 		AddValueSetResponseObject objects = crudService.addValueSets(wrapper.getSelected(), ig, username);
+
+		this.valuesetService.groupAddedValueSets(ig.getValueSetRegistry(), objects.getValueSets());
 
 		igService.save(ig);
 		IGDisplayInfo info = new IGDisplayInfo();
@@ -1413,6 +1420,7 @@ public class IGDocumentController extends BaseController {
 			@RequestParam("file") MultipartFile csvFile, Authentication authentication) throws ImportValueSetException, IGNotFoundException, ForbiddenOperationException {
 		
 		Valueset newVS = this.igService.importValuesetsFromCSV(id, csvFile);
+
 		AddResourceResponse response = new AddResourceResponse();
 		response.setId(newVS.getId());
 		response.setReg(findIgById(id).getValueSetRegistry());

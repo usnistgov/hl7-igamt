@@ -472,7 +472,6 @@ export class GroupValueSetsSuccess implements Action {
   }
 }
 
-
 export class GroupValueSetsFailure implements Action {
   readonly type = IgEditActionTypes.UpdateDocumentConfigFailure;
   constructor(readonly error: HttpErrorResponse) {

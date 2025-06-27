@@ -75,6 +75,7 @@ import {
 } from './ig-edit.actions';
 import {
   selectIgDocument,
+  selectIgId,
   selectSectionFromIgById,
   selectTableOfContentChanged,
 } from './ig-edit.selectors';
@@ -164,7 +165,9 @@ export class IgEditEffects extends DamWidgetEffect {
       IgEditActionTypes.CreateCoConstraintGroupSuccess,
       IgEditActionTypes.AddProfileComponentContextSuccess,
       IgEditActionTypes.CreateCompositeProfileSuccess,
-      IgEditActionTypes.UpdateDocumentConfigSuccess),
+      IgEditActionTypes.UpdateDocumentConfigSuccess,
+      IgEditActionTypes.GroupValueSetsSuccess,
+    ),
     flatMap((action) => {
       return this.store.select(selectLoadedDocumentInfo).pipe(
         take(1),
@@ -420,13 +423,42 @@ export class IgEditEffects extends DamWidgetEffect {
   @Effect()
   deleteResourceSuccess$ = this.actions$.pipe(
     ofType(IgEditActionTypes.DeleteResourceSuccess),
-    map((action: DeleteResourceSuccess) => {
+    switchMap((action: DeleteResourceSuccess) => {
       if (action.redirect) {
         this.router.navigate([action.url]);
       }
-      return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Delete Success', null));
-    }),
-  );
+      return this.store.select(selectIgId).pipe(
+      take(1),
+      flatMap((documentId) => {
+        return [
+          new IgEditResolverLoad(documentId),
+          this.message.messageToAction(new Message(MessageType.SUCCESS, 'Delete Resource Success', null)),
+        ];
+      }),
+    );
+  }),
+);
+
+@Effect()
+deleteResourcesSuccess$ = this.actions$.pipe(
+  ofType(IgEditActionTypes.DeleteResourcesSuccess),
+  switchMap((act: DeleteResourcesSuccess) => {
+
+    if (act.redirect) {
+      this.router.navigate([act.url]);
+    }
+
+    return this.store.select(selectIgId).pipe(
+      take(1),
+      flatMap((documentId) => {
+        return [
+          new IgEditResolverLoad(documentId),
+          this.message.messageToAction(new Message(MessageType.SUCCESS, 'Delete Resources Success', null)),
+        ];
+      }),
+    );
+  }),
+);
 
   @Effect()
   IgEditTocAddResource$ = this.actions$.pipe(
@@ -532,10 +564,11 @@ export class IgEditEffects extends DamWidgetEffect {
       this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
-      return combineLatest(
-        this.igService.deleteResource(action.payload.documentId, action.payload.element),
-        this.store.select(selectWorkspaceActive),
-        this.store.select(selectIgDocument).pipe(take(1))).pipe(
+      return  this.igService.deleteResource(action.payload.documentId, action.payload.element).pipe(
+        withLatestFrom(
+          this.store.select(selectWorkspaceActive),
+          this.store.select(selectIgDocument).pipe(take(1)),
+        ),
           take(1),
           flatMap(([response, selected, ig]) => {
             const url = '/' + 'ig/' + ig.id;
@@ -880,17 +913,6 @@ export class IgEditEffects extends DamWidgetEffect {
   );
 
   @Effect()
-  deleteResourcesSuccess$ = this.actions$.pipe(
-    ofType(IgEditActionTypes.DeleteResourcesSuccess),
-    map((act: DeleteResourcesSuccess) => {
-      if (act.redirect) {
-        this.router.navigate([act.url]);
-      }
-      return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Delete Resources Success', null));
-    }),
-  );
-
-  @Effect()
   verifyIg = this.actions$.pipe(
     ofType(IgEditActionTypes.VerifiyIg),
     switchMap((action: VerifyIg) => {
@@ -972,7 +994,6 @@ export class IgEditEffects extends DamWidgetEffect {
     }),
   );
 
-
   @Effect()
   GroupValueSets$ = this.actions$.pipe(
     ofType(IgEditActionTypes.GroupValueSets),
@@ -1009,8 +1030,6 @@ export class IgEditEffects extends DamWidgetEffect {
       );
     }),
   );
-
-
 
   finalizeAdd(toDoo: Observable<Action>) {
     return combineLatest(

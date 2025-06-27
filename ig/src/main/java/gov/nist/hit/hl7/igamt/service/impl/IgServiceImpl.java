@@ -1756,6 +1756,12 @@ public class IgServiceImpl implements IgService {
 				Link found = findLinkById(id, reg.getChildren());
 				if (found != null) {
 					reg.getChildren().remove(found);
+					if(reg instanceof  ValueSetRegistry ){
+						ValueSetRegistry valueSetRegistry = (ValueSetRegistry) reg;
+						if(valueSetRegistry.getGroupedData() != null){
+							valueSetRegistry.getGroupedData().findAndRemove(id);
+						}
+					}
 				}
 				if (resource.getDomainInfo().getScope().equals(Scope.USER)) {
 					this.resourceHelper.deleteByType(resource, convertype(registryType));
@@ -1975,8 +1981,6 @@ public class IgServiceImpl implements IgService {
 									}
 								}
 							}
-
-
 					}
 				}
 
@@ -1989,6 +1993,7 @@ public class IgServiceImpl implements IgService {
 					newVS.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
 					newVS.setId(new ObjectId().toString());
 					newVS = this.valueSetService.save(newVS);
+					this.valueSetService.groupAddedValueSets(ig.getValueSetRegistry(), Collections.singleton(newVS));
 
 					ig.getValueSetRegistry().getChildren()
 							.add(new Link(newVS.getId(), newVS.getDomainInfo(), ig.getValueSetRegistry().getChildren().size() + 1));

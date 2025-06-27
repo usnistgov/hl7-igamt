@@ -3,53 +3,40 @@
 <div mat-dialog-content>
   <ng-container *ngIf="custom">
    
-
-    <div style="height: 100%; width: 100%;">
-
-          <button class="btn btn-sm btn-light" (click)="showTypeGroupTable = !showTypeGroupTable">
-            {{ showTypeGroupTable ? 'Default Groups' : 'Show Default Groups' }}
-          </button>
-          <div>
-          <table *ngIf="showTypeGroupTable" class="type-group-table" >
-            <thead>
-              <tr>
-                <th>  Value Set Type  </th>
-                <th>  Assign to Group </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let type of valueSetTypes">
-                <td>  <span class="{{type.class}} badge">  {{ type.label }}</span></td>
-                <td>
-                  <select [(ngModel)]="typeToGroupMap[type.value]">
-                    <option [ngValue]="null" disabled>Select Group</option>
-                    <option *ngFor="let group of groupNames" [value]="group">
-                      {{ group }}
-                    </option>
-                  </select>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="2">
-                    <div style="display: flex; flex-direction: row; justify-content: center;">
-
-                        <button class="btn btn-sm btn-info" (click)="redistribute()"> Apply </button>
+    <div style="height: 100%; width: 100%;" >
+        <div style="display: flex;  flex-direction: row; justify-content: flex-end; margin-bottom: 5px;">
+            <button class="btn btn-sm btn-info" (click)="redistribute()" style="float:right;"> Re-distribute </button>
+        </div>
+<div>
+    
+<table *ngIf="showTypeGroupTable" class="table table-bordered table-sm">
+  <tbody>
+    <tr>
+      <td style="font-weight: bold; vertical-align: middle; text-align: center; background-color: #f3f8fc ;">Value Set Type</td>
+      <td *ngFor="let type of valueSetTypes"  style="text-align: center;">
+        <span class="{{ type.class }} badge">{{ type.label }}</span>
+      </td>
+    </tr>
+    <tr>
+      <td style="font-weight: bold; vertical-align: middle; text-align: center; background-color: #f3f8fc ;">Assign to Group</td>
+      <td *ngFor="let type of valueSetTypes">
+        <select [(ngModel)]="typeToGroupMap[type.value]" class="form-control">
+          <option [ngValue]="null" disabled> Select Group</option>
+          <option *ngFor="let group of groupNames" [value]="group"> {{ group }} </option>
+        </select>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 
-                    </div>
-
-
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <hr/>
           </div>
-        
-     
 
-          <div style="margin-bottom: 16px;" style="display: flex; flex-direction: row; justify-content: flex-end;">
-            <input
+          <div style="display: flex; flex-direction: row; justify-content: flex-end;" class="form-group">
+            <input class="form-control"
               type="text"
+              style="width: 500px; margin-right: 5px;"
               [(ngModel)]="newGroupName"
               placeholder="Enter group name"
             />
@@ -58,46 +45,51 @@
               (click)="addGroup()"
               [disabled]="newGroupName.length < 1">
               <i class="fa fa-plus"></i>
+              Add New Group
             </button>
           </div>
     <div class="group-container" cdkDropList [cdkDropListData]="groupNames" (cdkDropListDropped)="dropGroup($event)"   [cdkDropListConnectedTo]="[groupDropListId]"   [id]="groupDropListId">
       <div class="group-column group-drag" *ngFor="let group of groupNames" cdkDrag>
-        <div class="group-header">
-            <div cdkDragHandle class="drag-icon"><i class="fa fa-bars"></i></div>
+        <div class="group-header" style="display: flex; flex-direction: row; margin-right: 5px; justify-content: space-between;">
+            
+           <div cdkDragHandle style="margin-right:7px;"><i class="fa fa-bars"></i></div>
 
-          <div *ngIf="editingGroup !== group" style="width: 100%;">
-            <h4 style="display: inline-block; margin-right: 8px;">
+          <div *ngIf="editingGroup !== group" style="width: 100%; display: flex; justify-content: space-between; align-items: center; gap:5px">
+            <h5 style="word-break: break-word;">
               {{ group }}
-            </h4>
+            </h5>
+            <div style="display: flex; justify-content: flex-end;">
+
             <button *ngIf="isNotDefault(group)"
-              class="btn btn-sm btn-info"
-              (click)="startEditingGroup(group)"
-              style="height: 30px; width: 30px;">
+              class="btn btn-sm btn-info cs-center"
+              (click)="startEditingGroup(group)" style="display: inline-block; margin-right: 8px;">
               <i class="fa fa-pencil"></i>
             </button>
 
             <button *ngIf="isNotDefault(group)"
-            class="btn btn-sm btn-danger"
-            (click)="deleteGroup(group)"
-            style="height: 30px; width: 30px;">
+            class="btn btn-sm btn-danger cs-center"
+            (click)="deleteGroup(group)">
             <i class="fa fa-remove"></i>
             </button>
+
+            </div>
+
           </div>
 
-          <div *ngIf="editingGroup === group" style="width: 100%;">
+          <div *ngIf="editingGroup === group" style="width: 100%; display: flex; flex-direction: row; justify-content: space-between;">
             <input
               type="text"
               [(ngModel)]="editedGroupName"
               (keyup.enter)="renameGroup(group)"
               (blur)="renameGroup(group)"
               class="form-control form-control-sm"
-              placeholder="New group name"
+              placeholder="New Group Name"
             />
             <button
               class="btn btn-sm btn-success"
               [disabled]="!editedGroupName || groupNames.includes(editedGroupName.trim())"
               (click)="renameGroup(group)">
-              Save
+              <i class="fa fa-check"></i>
             </button>
           </div>
         </div>
@@ -113,8 +105,7 @@
           <div
             class="item"
             *ngFor="let item of groupedData[group]"
-            cdkDrag
-          >
+            cdkDrag>
             <app-display-section [element]="item" [hideDescription]="true"></app-display-section>
           </div>
         </div>
@@ -126,12 +117,11 @@
 
   <ng-container *ngIf="!custom">
     <div style="margin-bottom: 16px; display: flex; justify-content: flex-end;">
-      <button (click)="customize()">
+      <button (click)="customize()" class="btn btn-secondary">
         <i class="fa fa-pencil"></i> Customize grouping
       </button>
     </div>
 
-    <!-- Read-Only Group Columns -->
     <div class="group-container">
       <div class="group-column" *ngFor="let group of groupNames">
         <div class="group-header">
@@ -148,6 +138,6 @@
 </div>
 
 <mat-dialog-actions style="justify-content: flex-end; margin-top: 10px;">
-  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
-  <button (click)="done()" class="btn btn-sm btn-success">Done</button>
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;"> Cancel </button>
+  <button (click)="done()" class="btn btn-sm btn-success"> Done </button>
 </mat-dialog-actions>
