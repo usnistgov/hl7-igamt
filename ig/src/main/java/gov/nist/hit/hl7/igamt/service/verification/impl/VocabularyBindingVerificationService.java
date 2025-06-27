@@ -24,8 +24,6 @@ import java.util.*;
 public class VocabularyBindingVerificationService extends VerificationUtils {
 
     @Autowired
-    ValuesetService valuesetService;
-    @Autowired
     IgRequestScopeCache igRequestScopeCache;
 
     public List<IgamtObjectError> verifyValueSetBinding(ResourceSkeleton resourceSkeleton, String pathId, Set<ValuesetBinding> valuesetBindings) {

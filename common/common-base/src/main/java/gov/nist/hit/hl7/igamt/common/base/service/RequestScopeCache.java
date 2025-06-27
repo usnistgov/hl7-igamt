@@ -9,4 +9,6 @@ public interface RequestScopeCache {
 	Map<String, String> getImplementationGuideBindingIdentifierMap(String igId);
 	TriStateBoolean valueSetHasRequiredUsageCodes(String vsId);
 	boolean valueSetExists(String vsId);
+	<T> T getCacheResource(String resourceId, Class<T> clazz);
+	<T> void cacheResource(T resource);
 }

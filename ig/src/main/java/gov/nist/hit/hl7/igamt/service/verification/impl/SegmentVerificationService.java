@@ -2,17 +2,19 @@ package gov.nist.hit.hl7.igamt.service.verification.impl;
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.service.RequestScopeCache;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.Location;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.ig.service.ResourceBindingVerificationService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.service.impl.ResourceSkeletonService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,28 +32,42 @@ public class SegmentVerificationService extends VerificationUtils {
 	@Autowired
 	CommonVerificationService commonVerificationService;
 	@Autowired
-	ValuesetService valuesetService;
+	ResourceSkeletonService resourceSkeletonService;
+	@Autowired
+	SlicingVerificationService slicingVerificationService;
+	@Autowired
+	private RequestScopeCache requestScopeCache;
 
 	List<IgamtObjectError> verifySegment(Segment segment) {
 		List<IgamtObjectError> errors = new ArrayList<>();
-		LocationInfo contextLocationInfo = new LocationInfo(segment.getName(),
-		                                                    segment.getName(),
-		                                                    null,
-		                                                    Type.SEGMENT,
-		                                                    null
+		LocationInfo contextLocationInfo = new LocationInfo(
+				segment.getName(),
+                segment.getName(),
+                null,
+                Type.SEGMENT,
+                null
 		);
 		ResourceRef contextResourceRef = new ResourceRef(Type.SEGMENT, segment.getId());
 		errors.addAll(checkDynamicMapping(segment, contextLocationInfo, segment.getBinding().getChildren()));
 		errors.addAll(commonVerificationService.checkExtension(segment, segment.getExt()));
-		errors.addAll(checkFields(segment.getChildren(), contextLocationInfo, contextResourceRef));
+		errors.addAll(checkFields(segment.getChildren(), contextLocationInfo, contextResourceRef, segment));
 		errors.addAll(resourceBindingVerificationService.verifySegmentBindings(segment));
+		if(segment.getSlicings() != null) {
+			ResourceSkeleton resource = new ResourceSkeleton(contextResourceRef, resourceSkeletonService);
+			errors.addAll(
+					slicingVerificationService.verifySlicing(
+							resource,
+							segment.getSlicings()
+					)
+			);
+		}
 		return errors;
 	}
 
 	List<IgamtObjectError> checkDynamicMapping(Segment segment, LocationInfo segmentLocationInfo, Set<StructureElementBinding> bindings) {
 		List<IgamtObjectError> issues = new ArrayList<>();
 		String targetElementId = segment.getDynamicMappingInfo().getReferenceFieldId();
-		if(segment.getDynamicMappingInfo() != null && !Strings.isNullOrEmpty(targetElementId) && bindings != null && bindings.size() > 0) {
+		if(segment.getDynamicMappingInfo() != null && !Strings.isNullOrEmpty(targetElementId) && bindings != null && !bindings.isEmpty()) {
 			Field dynamicMappingField = segment
 					.getChildren()
 					.stream()
@@ -66,7 +82,7 @@ public class SegmentVerificationService extends VerificationUtils {
 						.findFirst()
 						.orElse(null);
 
-				if(structureElementBinding != null && structureElementBinding.getValuesetBindings() != null && structureElementBinding.getValuesetBindings().size() > 0) {
+				if(structureElementBinding != null && structureElementBinding.getValuesetBindings() != null && ! structureElementBinding.getValuesetBindings().isEmpty()) {
 					Set<String> vsList = structureElementBinding.getValuesetBindings()
 					                                            .stream()
 					                                            .flatMap((vs) -> vs.getValueSets() != null ? vs.getValueSets().stream() : new ArrayList<String>().stream())
@@ -82,10 +98,10 @@ public class SegmentVerificationService extends VerificationUtils {
 					                            .filter((value) -> !Strings.isNullOrEmpty(value))
 					                            .collect(Collectors.toSet());
 
-					if(vsList.size() > 0) {
+					if(!vsList.isEmpty()) {
 						LocationInfo field = getFieldLocationInfo(dynamicMappingField, segmentLocationInfo);
 						Set<Valueset> valueSets = vsList.stream()
-							.map((vsId) -> this.valuesetService.findById(vsId))
+							.map((vsId) -> requestScopeCache.getCacheResource(vsId, Valueset.class))
 							.filter(Objects::nonNull)
 							.collect(Collectors.toSet());
 						issues.addAll(
@@ -122,19 +138,28 @@ public class SegmentVerificationService extends VerificationUtils {
 		return issues;
 	}
 
-	List<IgamtObjectError> checkFields(Set<Field> fields, LocationInfo parentLocationInfo, ResourceRef context) {
+	List<IgamtObjectError> checkFields(Set<Field> fields, LocationInfo parentLocationInfo, ResourceRef context, Segment segment) {
 		List<IgamtObjectError> issues = new ArrayList<>();
 		if (fields != null) {
 			for (Field field : fields) {
-				issues.addAll(checkField(field, parentLocationInfo, context));
+				issues.addAll(checkField(field, parentLocationInfo, context, segment));
 			}
 		}
 		return issues;
 	}
 
-	List<IgamtObjectError> checkField(Field field, LocationInfo parentLocationInfo, ResourceRef context) {
+	List<IgamtObjectError> checkField(Field field, LocationInfo parentLocationInfo, ResourceRef context, Segment segment) {
 		List<IgamtObjectError> issues = new ArrayList<>();
 		LocationInfo locationInfo = getFieldLocationInfo(field, parentLocationInfo);
+		// Check Reference
+		issues.addAll(this.checkReference(
+				field.getRef().getId(),
+				Type.DATATYPE,
+				segment.getDocumentInfo(),
+				segment.getId(),
+				segment.getType(),
+				locationInfo
+		));
 		// Check length issues
 		issues.addAll(commonVerificationService.checkLength(
 				field,

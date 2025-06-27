@@ -3,17 +3,21 @@ package gov.nist.hit.hl7.igamt.service.verification.impl;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.common.base.service.RequestScopeCache;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.*;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.service.verification.VerificationEntryService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +56,8 @@ public class IgVerificationService {
 	IgService igService;
 	@Autowired
 	VerificationEntryService entry;
+	@Autowired
+	private RequestScopeCache requestScopeCache;
 
 	public IgVerificationIssuesList verifyIg(Ig ig) {
 		String defaultHL7Version = igService.findDefaultHL7Version(ig);
@@ -76,7 +82,7 @@ public class IgVerificationService {
 				ig,
 				Type.SEGMENT,
 				ig.getSegmentRegistry(),
-				(id) -> this.segmentService.findById(id),
+				(id) -> requestScopeCache.getCacheResource(id, Segment.class),
 				(resource) -> this.segmentVerificationService.verifySegment(resource),
 				(segment) -> this.segmentService.getSegmentIdentifier(segment, defaultHL7Version),
 				true,
@@ -88,7 +94,7 @@ public class IgVerificationService {
 				ig,
 				Type.DATATYPE,
 				ig.getDatatypeRegistry(),
-				(id) -> this.datatypeService.findById(id),
+				(id) -> requestScopeCache.getCacheResource(id, Datatype.class),
 				(datatype) -> this.datatypeVerificationService.verifyDatatype(datatype),
 				(dt) -> datatypeService.getDatatypeIdentifier(dt, defaultHL7Version),
 				true,
@@ -100,7 +106,7 @@ public class IgVerificationService {
 				ig,
 				Type.VALUESET,
 				ig.getValueSetRegistry(),
-				(id) -> this.valuesetService.findById(id),
+				(id) -> requestScopeCache.getCacheResource(id, Valueset.class),
 				(resource) -> this.valueSetVerificationService.verifyValueSet(resource),
 				(vs) -> valuesetService.getBindingIdentifier(vs, defaultHL7Version),
 				true,
