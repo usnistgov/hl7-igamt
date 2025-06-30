@@ -44,6 +44,15 @@ public class DatatypeVerificationService extends VerificationUtils {
 		if(components != null) {
 			for(Component component: components) {
 				LocationInfo locationInfo = getComponentLocationInfo(complexDatatype.getName(), component);
+				// Check Reference
+				List<IgamtObjectError> referenceIssues = checkReference(
+						component.getRef().getId(),
+						Type.DATATYPE,
+						complexDatatype.getDocumentInfo(),
+						complexDatatype.getId(),
+						complexDatatype.getType(),
+						locationInfo
+				);
 				// Check length issues
 				List<IgamtObjectError> lengthIssues = commonVerificationService.checkLength(
 						component,
@@ -59,6 +68,7 @@ public class DatatypeVerificationService extends VerificationUtils {
 						Type.DATATYPE,
 						lengthIssues.isEmpty()
 				);
+				errors.addAll(referenceIssues);
 				errors.addAll(lengthIssues);
 				errors.addAll(constantIssues);
 			}
