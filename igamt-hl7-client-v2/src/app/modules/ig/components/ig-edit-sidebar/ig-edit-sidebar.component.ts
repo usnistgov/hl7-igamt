@@ -900,33 +900,31 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
   // }
 
   groupValueSet($event) {
-  combineLatest([
-    this.store.select(selectIgDocument),
-    this.store.select(selectAllValueSets),
-  ]).pipe(
-    take(1),
-    concatMap(([document, allValueSets]) => {
-      const dialogRef = this.dialog.open(GroupValueSetComponent, {
-        data: {
-          groupedData: document.valueSetRegistry.groupedData,
-          valueSets: allValueSets,
-        },
-        // width: '',
-        height: '95vh',
-        disableClose: true,
-      });
+    combineLatest([
+      this.store.select(selectIgDocument),
+      this.store.select(selectAllValueSets),
+    ]).pipe(
+      take(1),
+      concatMap(([document, allValueSets]) => {
+        const dialogRef = this.dialog.open(GroupValueSetComponent, {
+          data: {
+            groupedData: document.valueSetRegistry.groupedData,
+            valueSets: allValueSets,
+          },
+          disableClose: true,
+        });
 
-      return dialogRef.afterClosed().pipe(
-        filter((result) => result !== undefined),
-        take(1),
-        map((result) => {
-          if (result) {
-            this.store.dispatch(new GroupValueSets({ id: document.id, groups: result }));
-          }
-        }),
-      );
-    }),
-  ).subscribe();
-}
+        return dialogRef.afterClosed().pipe(
+          filter((result) => result !== undefined),
+          take(1),
+          map((result) => {
+            if (result) {
+              this.store.dispatch(new GroupValueSets({ id: document.id, groups: result }));
+            }
+          }),
+        );
+      }),
+    ).subscribe();
+  }
 
 }
