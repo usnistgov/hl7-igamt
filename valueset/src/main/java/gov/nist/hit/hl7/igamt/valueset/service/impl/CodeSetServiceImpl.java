@@ -211,15 +211,10 @@ public class CodeSetServiceImpl implements CodeSetService {
 
 	@Override
 	public CodeSetVersion commit(
-			String codeSetId,
-			String codeSetVersionId,
+			CodeSet codeSet,
+			CodeSetVersion codeSetVersion,
 			CodeSetVersionCommit commit
 	) throws ResourceNotFoundException, CodeSetCommitException {
-		CodeSet codeSet = this.codeSetRepo.findById(codeSetId).orElseThrow(() -> new ResourceNotFoundException(codeSetId, Type.CODESET));
-		if(!codeSet.getCodeSetVersions().contains(codeSetVersionId)) {
-			throw new ResourceNotFoundException(codeSetVersionId, Type.CODESETVERSION);
-		}
-		CodeSetVersion codeSetVersion = findCodeSetVersionById(codeSetVersionId);
 		// Validate version
 		if(commit.getVersion() == null) {
 			throw new CodeSetCommitException("CodeSet Version is required.");
@@ -228,9 +223,10 @@ public class CodeSetServiceImpl implements CodeSetService {
 		if(cleanedVersion.isEmpty()) {
 			throw new CodeSetCommitException("CodeSet Version is required.");
 		}
-		CodeSetVersionMetadata duplicate = getCodeSetVersionMetadata(codeSet).stream().filter((version) -> version.isCommitted() && version.getVersion().equals(cleanedVersion))
-		                                  .findFirst()
-		                                  .orElse(null);
+		CodeSetVersionMetadata duplicate = getCodeSetVersionMetadata(codeSet)
+				.stream().filter((version) -> version.isCommitted() && version.getVersion().equals(cleanedVersion))
+				.findFirst()
+				.orElse(null);
 		if(duplicate != null) {
 			throw new CodeSetCommitException("CodeSet Version number "+cleanedVersion+" already exists.");
 		}
@@ -250,7 +246,7 @@ public class CodeSetServiceImpl implements CodeSetService {
 		this.codeSetVersionRepo.save(starting);
 
 		if(commit.isMarkAsLatestStable()) {
-			codeSet.setLatest(codeSetVersionId);
+			codeSet.setLatest(codeSetVersion.getId());
 		}
 		codeSet.getCodeSetVersions().add(starting.getId());
 		this.codeSetRepo.save(codeSet);

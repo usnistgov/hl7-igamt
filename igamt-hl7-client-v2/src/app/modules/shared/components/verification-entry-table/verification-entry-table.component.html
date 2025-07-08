@@ -13,7 +13,7 @@
       <table class="table table-sm table-bordered table-striped">
         <ng-container *ngFor="let item of verification.entries">
           <tbody *ngIf="item.entries?.length" [ngClass]="{ 'no-target-tbody': !item.target}">
-            <tr style="background-color: white;">
+            <tr *ngIf="item.target" style="background-color: white;">
               <th colspan="2" [ngClass]="{ 'no-target-th': !item.target}">
                 <div style="display: flex; justify-content: flex-start; align-items: center;">
                   <app-display-ref *ngIf="item.target" [element]="item.target" [documentId]="documentId" documentType="IGDOCUMENT"></app-display-ref>

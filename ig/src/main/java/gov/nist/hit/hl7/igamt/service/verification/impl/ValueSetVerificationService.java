@@ -7,6 +7,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.Location;
 import gov.nist.hit.hl7.igamt.service.impl.UserResourcePermissionService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeSetVersion;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.model.CodeSetVersionContent;
 import gov.nist.hit.hl7.igamt.valueset.service.CodeSetService;
@@ -27,7 +28,11 @@ public class ValueSetVerificationService extends VerificationUtils {
 	@Autowired
 	UserResourcePermissionService userResourcePermissionService;
 
-	List<IgamtObjectError> verifyValueSet(Valueset valueset) {
+	public List<IgamtObjectError> verifyCodeSetVersion(CodeSetVersion codeSetVersion) {
+		return this.checkCodes(codeSetVersion.getCodes(), codeSetVersion.getId());
+	}
+
+	public List<IgamtObjectError> verifyValueSet(Valueset valueset) {
 		switch(valueset.getSourceType()) {
 			case EXTERNAL:
 				return checkExternal(valueset);
@@ -39,7 +44,7 @@ public class ValueSetVerificationService extends VerificationUtils {
 		return this.NoErrors();
 	}
 
-	List<IgamtObjectError> checkExternal(Valueset valueset) {
+	public List<IgamtObjectError> checkExternal(Valueset valueset) {
 		List<IgamtObjectError> issues = new ArrayList<>();
 		if(valueset.getUrl() == null || valueset.getUrl().isEmpty()) {
 			issues.add(
@@ -177,6 +182,16 @@ public class ValueSetVerificationService extends VerificationUtils {
 		if (code.getUsage() == null) {
 			issues.add(
 					this.entry.ValuesetMissingUsage(
+							location,
+							valueSetId,
+							Type.VALUESET
+					)
+			);
+		}
+		// Check is pattern
+		if(code.isHasPattern() && Strings.isBlank(code.getPattern())) {
+			issues.add(
+					this.entry.ValuesetMissingPattern(
 							location,
 							valueSetId,
 							Type.VALUESET

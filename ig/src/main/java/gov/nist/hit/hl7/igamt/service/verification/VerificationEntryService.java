@@ -106,6 +106,7 @@ public interface VerificationEntryService {
     IgamtObjectError ValuesetMissingCodeSys(Location info, String id, Type type);
     IgamtObjectError ValuesetMissingUsage(Location info, String id, Type type);
     IgamtObjectError ValuesetDuplicatedCode(Location location, String id, Type type, String code, String codesys);
+    IgamtObjectError ValuesetMissingPattern(Location info, String id, Type type);
     IgamtObjectError Valueset_NotAllowedCodeUsage_ConstrainableProfile(Location location, String id, Type type, String code, String usage);
     IgamtObjectError Valueset_NotAllowedCodeUsage_ImplementableProfile(Location location, String id, Type type, String code, String usage);
     IgamtObjectError Valueset_NotAllowedCodeUsage_ClosedValueset(Location location, String id, Type type, String code, String usage);
