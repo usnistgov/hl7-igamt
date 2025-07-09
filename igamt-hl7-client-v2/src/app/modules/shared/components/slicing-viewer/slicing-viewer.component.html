@@ -1,5 +1,5 @@
 <ng-container *ngIf="slicing">
-  <button [ngbPopover]="popContent" [popoverTitle]="popTitle" triggers="hover:hover" placement="bottom" class="btn btn-sm btn-i">
+  <button [ngbPopover]="popContent" [popoverTitle]="popTitle" triggers="click" placement="bottom" class="btn btn-sm btn-i">
     <i class="fa fa-scissors"></i>
   </button>
   <ng-template #popContent>
@@ -30,7 +30,7 @@
       <td>
         <ng-container [ngSwitch]="slicing.type">
           <span *ngSwitchCase="'ASSERTION'">
-        {{slice.assertion?.description}}
+            {{slice.assertion?.description}}
           </span>
           <span *ngSwitchCase="'OCCURRENCE'">
             {{slice.position}}

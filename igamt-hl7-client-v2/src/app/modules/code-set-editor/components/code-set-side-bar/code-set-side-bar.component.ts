@@ -49,7 +49,7 @@ export class CodeSetSideBarComponent implements OnInit {
             listDisplay: ListDisplay.INPROGRESS,
           });
         }
-        let i = 0;
+        const i = 0;
         const topIndex = hasInProgress ? 1 : 0;
         const bottomIndex = children.length - 1;
         children

@@ -28,10 +28,6 @@ export class ValueSetStructureComponent implements OnInit {
     private codeSetService: CodeSetServiceService,
   ) {
   }
-  _valueSet: IValueSet;
-
-  codesLoading: boolean;
-  loadingError: string;
 
   @Input()
   set valueSet(valueSet) {
@@ -45,6 +41,10 @@ export class ValueSetStructureComponent implements OnInit {
   get valueSet() {
     return this._valueSet;
   }
+  _valueSet: IValueSet;
+
+  codesLoading: boolean;
+  loadingError: string;
   selectedCodes: ICodes[] = [];
   notDefinedOption = { label: 'Not defined', value: 'Undefined' };
   edit = {};
@@ -65,24 +65,14 @@ export class ValueSetStructureComponent implements OnInit {
   @Input()
   selectedColumns: any[];
 
-
   columns = [
     { field: 'value', header: 'Value', filterMatchMode: 'contains' },
     { field: 'usage', header: 'Usage', filterMatchMode: 'contains' },
     { field: 'description', header: 'Description', filterMatchMode: 'contains' },
 
-
   ];
 
   filterValues: { [key: string]: string } = {};
-
-  //dt1: any;
-
-  onFilter(field: string, matchMode: string, dt1: any) {
-  const filterValue = this.filterValues[field] || '';
-
-    dt1.filter(filterValue, field, matchMode);
-  }
 
   stabilityOptionsOptions = [
     this.notDefinedOption, { label: 'Dynamic', value: 'Dynamic' }, { label: 'Static', value: 'Static' },
@@ -134,6 +124,14 @@ export class ValueSetStructureComponent implements OnInit {
       ],
     },
   ];
+
+  // dt1: any;
+
+  onFilter(field: string, matchMode: string, dt1: any) {
+  const filterValue = this.filterValues[field] || '';
+
+  dt1.filter(filterValue, field, matchMode);
+  }
 
   ngOnInit() {
     this.editMap[this.valueSet.id] = false;

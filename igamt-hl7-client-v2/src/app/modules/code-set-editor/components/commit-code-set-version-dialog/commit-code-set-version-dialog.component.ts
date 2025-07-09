@@ -7,7 +7,6 @@ import { catchError, map } from 'rxjs/operators';
 import { DeltaChange, ICodeDelta, ICodeSetVersionContent, ICodeSetVersionInfo } from '../../models/code-set.models';
 import { CodeSetServiceService } from '../../services/CodeSetService.service';
 import { IVerificationEntryTable, VerificationService } from 'src/app/modules/shared/services/verification.service';
-import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 
 export enum CommitTab {
   CHANGES = "CHANGES",
@@ -37,6 +36,7 @@ export class CommitCodeSetVersionDialogComponent implements OnInit {
   verificationResults: IVerificationEntryTable;
   resource: ICodeSetVersionContent;
   codeSetVersionInfo: ICodeSetVersionInfo;
+  CommitTab = CommitTab;
 
   constructor(
     public dialogRef: MatDialogRef<CommitCodeSetVersionDialogComponent>,

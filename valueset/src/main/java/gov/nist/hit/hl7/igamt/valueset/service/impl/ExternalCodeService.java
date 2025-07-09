@@ -59,6 +59,8 @@ public class ExternalCodeService {
 			);
 			return response.getBody();
 		} catch (HttpClientErrorException | HttpServerErrorException e) {
+			System.out.println("Status code: " + e.getStatusCode());
+			System.out.println("Response body: " + e.getResponseBodyAsString());
 			throw new RuntimeException("API call failed", e);
 		} catch (RestClientException e) {
 			throw new RuntimeException("API connection failed", e);

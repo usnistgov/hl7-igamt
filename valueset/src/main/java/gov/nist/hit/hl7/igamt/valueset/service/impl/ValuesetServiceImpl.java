@@ -15,8 +15,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.ResourceOrigin;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
@@ -33,12 +32,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.ContentDefinition;
-import gov.nist.hit.hl7.igamt.common.base.domain.Extensibility;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
-import gov.nist.hit.hl7.igamt.common.base.domain.Stability;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
@@ -393,4 +386,21 @@ public class ValuesetServiceImpl implements ValuesetService {
         }
         return valueSets;
     }
+
+    @Override
+    public void groupAddedValueSets(ValueSetRegistry registry, Collection<Valueset> valueSets) {
+        if (registry.getGroupedData() != null && valueSets != null && valueSets.size() > 0) {
+            for (Valueset vs : valueSets) {
+                if (vs.getSourceType().equals(SourceType.EXTERNAL) || vs.getSourceType().equals(SourceType.EXTERNAL_TRACKED)) {
+                    registry.getGroupedData().assignGroup(vs.getId(), ValueSetType.EXTERNAL);
+                } else if (vs.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
+                    registry.getGroupedData().assignGroup(vs.getId(), ValueSetType.HL7STANDARD);
+                } else if (vs.getDomainInfo().getScope().equals(Scope.USER)) {
+                    registry.getGroupedData().assignGroup(vs.getId(), ValueSetType.USER);
+                }
+            }
+        }
+    }
+
+
 }

@@ -1,7 +1,7 @@
 <div style="display: flex; gap: 20px; height: 100%;">
   <div style="display: flex; flex-direction: column; flex-grow: 1; gap: 5px;">
     <ul class="nav nav-pills">
-      <li class="nav-item nav-link pointer" [ngClass]="{'active': activeTab === 'CHANGES' }" (click)="selectTab('CHANGES')" >
+      <li class="nav-item nav-link pointer" [ngClass]="{'active': activeTab === CommitTab.CHANGES }" (click)="selectTab(CommitTab.CHANGES)" >
         <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
           Changes
           <span class="badge badge-danger" *ngIf="error && !loadingDelta">FAILED</span>
@@ -10,7 +10,7 @@
           </div>
         </div>
       </li>
-      <li class="nav-item nav-link pointer" [ngClass]="{'active': activeTab === 'VERIFICATION' }" (click)="selectTab('VERIFICATION')" >
+      <li class="nav-item nav-link pointer" [ngClass]="{'active': activeTab === CommitTab.VERIFICATION }" (click)="selectTab(CommitTab.VERIFICATION)" >
         <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
           Verification
           <span class="badge badge-danger" *ngIf="verificationError && !loadingVerification">FAILED</span>

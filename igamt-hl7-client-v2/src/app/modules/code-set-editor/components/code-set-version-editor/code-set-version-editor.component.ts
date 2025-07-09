@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
@@ -17,11 +18,11 @@ import { selectAllCodeSetVersions, selectCodeSetId } from 'src/app/root-store/co
 import * as fromDam from '../../../dam-framework/store';
 import { ICodeSetCommit, ICodeSetVersionContent, ICodeSetVersionInfo } from '../../models/code-set.models';
 import { CodeSetServiceService } from '../../services/CodeSetService.service';
+import { CodeSetTableComponent } from '../code-set-table/code-set-table.component';
 import { CommitCodeSetVersionDialogComponent } from '../commit-code-set-version-dialog/commit-code-set-version-dialog.component';
 import { EditorChange } from './../../../dam-framework/store/data/dam.actions';
 import { ImportCodeCSVComponent } from './../../../shared/components/import-code-csv/import-code-csv.component';
 import { ICodes } from './../../../shared/models/value-set.interface';
-import { CodeSetTableComponent } from '../code-set-table/code-set-table.component';
 
 @Component({
   selector: 'app-code-set-version-editor',
@@ -49,7 +50,6 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
   codeSetVersions$: Observable<ICodeSetVersionInfo[]>;
 
   @ViewChild('CodeSetTableComponent') child!: CodeSetTableComponent;
-
 
   constructor(
     actions$: Actions,
@@ -117,7 +117,7 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
     this.changeTime = new Date();
     this.store.dispatch(new EditorChange({
       data,
-      valid: valid,
+      valid,
       date: this.changeTime,
     }));
   }
@@ -252,7 +252,7 @@ export class CodeSetVersionEditorComponent extends DamAbstractEditorComponent im
           take(1),
           tap((resource) => {
             this.resourceSubject.next({ ...resource, codes });
-          })
+          }),
         ).subscribe();
       }
     });

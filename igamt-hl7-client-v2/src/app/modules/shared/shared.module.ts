@@ -87,6 +87,7 @@ import { FieldAddDialogComponent } from './components/field-add-dialog/field-add
 import { FileInputComponent } from './components/file-input/file-input.component';
 import { FileSelectInputComponent } from './components/file-select-input/file-select-input.component';
 import { FormInputComponent } from './components/form-input/form-input.component';
+import { GroupValueSetComponent } from './components/group-value-set/group-value-set.component';
 import { CardinalityComponent } from './components/hl7-v2-tree/columns/cardinality/cardinality.component';
 import { CommentsComponent } from './components/hl7-v2-tree/columns/comments/comments.component';
 import { ConformanceLengthComponent } from './components/hl7-v2-tree/columns/conformance-length/conformance-length.component';
@@ -284,6 +285,7 @@ import { ExternalVsMetadataComponent } from './components/external-vs-metadata/e
     ExternalVsCodesFetchComponent,
     FetchCodesDialogComponent,
     ImportFromProviderComponent,
+    GroupValueSetComponent,
     ExternalVsMetadataComponent
   ],
   providers: [
@@ -498,6 +500,7 @@ import { ExternalVsMetadataComponent } from './components/external-vs-metadata/e
     ExternalVsCodesFetchComponent,
     FetchCodesDialogComponent,
     FileInputComponent,
+    GroupValueSetComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -544,6 +547,7 @@ import { ExternalVsMetadataComponent } from './components/external-vs-metadata/e
     BuildValueSetComponent,
     FetchCodesDialogComponent,
     ImportFromProviderComponent,
+    GroupValueSetComponent,
   ],
 })
 export class SharedModule {

@@ -9,7 +9,9 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { SelectItem } from 'primeng/api';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import { concatMap, filter, flatMap, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { IDocument } from 'src/app/modules/document/models/document/IDocument.interface';
 import { BuildValueSetComponent } from 'src/app/modules/shared/components/build-value-set/build-value-set.component';
+import { GroupValueSetComponent } from 'src/app/modules/shared/components/group-value-set/group-value-set.component';
 import { ImportFromLibComponent } from 'src/app/modules/shared/components/import-from-lib/import-from-lib.component';
 import { ImportFromProviderComponent } from 'src/app/modules/shared/components/import-from-provider/import-from-provider.component';
 import { Hl7Config } from 'src/app/modules/shared/models/config.class';
@@ -74,7 +76,9 @@ import { CrossReferencesService } from '../../../shared/services/cross-reference
 import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.class';
 import { IgTocFilterService, IIgTocFilterConfiguration, selectIgTocFilter } from '../../services/ig-toc-filter.service';
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
+import { selectAllValueSets } from './../../../../root-store/dam-igamt/igamt.resource-display.selectors';
 import { selectVerificationResult } from './../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
+import { GroupValueSets } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
 import { LibraryService } from './../../../library/services/library.service';
 import { IMessagePickerContext, IMessagePickerData, MessagePickerComponent } from './../../../shared/components/message-picker/message-picker.component';
@@ -859,6 +863,63 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
                   }
                 },
               );
+            }
+          }),
+        );
+      }),
+    ).subscribe();
+  }
+
+  // groupValueSet($event) {
+  //   console.log($event.valueSets.children);
+
+  //   this.store.select(selectIgDocument).pipe(
+  //     take(1),
+  //     concatMap((document: IgDocument) => {
+  //       const dialogRef = this.dialog.open(GroupValueSetComponent, {
+
+  //         data: {
+  //           groupedData: document.valueSetRegistry.groupedData, valueSets: $event.valueSets.children,
+  //            width: '1400px',
+  //            height: '1400px',
+  //         disableClose: true,
+  //       },
+  //       });
+  //       return dialogRef.afterClosed().pipe(
+  //         filter((result) => result !== undefined),
+  //         take(1),
+  //         map((result) => {
+  //           if (result) {
+  //             console.log(result);
+  //             this.store.dispatch(new GroupValueSets({ id: document.id, groups: result}));
+  //           }
+  //         })
+  //       );
+  //     })
+  //   ).subscribe();
+  // }
+
+  groupValueSet($event) {
+    combineLatest([
+      this.store.select(selectIgDocument),
+      this.store.select(selectAllValueSets),
+    ]).pipe(
+      take(1),
+      concatMap(([document, allValueSets]) => {
+        const dialogRef = this.dialog.open(GroupValueSetComponent, {
+          data: {
+            groupedData: document.valueSetRegistry.groupedData,
+            valueSets: allValueSets,
+          },
+          disableClose: true,
+        });
+
+        return dialogRef.afterClosed().pipe(
+          filter((result) => result !== undefined),
+          take(1),
+          map((result) => {
+            if (result) {
+              this.store.dispatch(new GroupValueSets({ id: document.id, groups: result }));
             }
           }),
         );

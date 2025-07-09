@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 
 public class Registry implements Serializable{
 
-
-
   private Set<Link> children = new HashSet<Link>();
   protected Type type;
 
@@ -55,11 +53,7 @@ public class Registry implements Serializable{
     return null;
   }
 
-  /**
-   * @return
-   */
   public Type getType() {
-    // TODO Auto-generated method stub
     return type;
   }
 
