@@ -23,7 +23,6 @@ import { CommitCodeSetVersionDialogComponent } from '../commit-code-set-version-
 import { EditorChange } from './../../../dam-framework/store/data/dam.actions';
 import { ImportCodeCSVComponent } from './../../../shared/components/import-code-csv/import-code-csv.component';
 import { ICodes } from './../../../shared/models/value-set.interface';
-import { CodeSetTableComponent } from '../code-set-table/code-set-table.component';
 
 @Component({
   selector: 'app-code-set-version-editor',
