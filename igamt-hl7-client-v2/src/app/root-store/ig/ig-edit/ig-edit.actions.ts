@@ -95,6 +95,11 @@ export enum IgEditActionTypes {
   UpdateDocumentConfigSuccess =  '[DOC Edit] Update Config Success',
   UpdateDocumentConfigFailure =  '[DOC Edit] Update Config Failure',
 
+  GroupValueSets = '[DOC Edit] Group Value Sets',
+
+  GroupValueSetsSuccess =  '[DOC Edit] Group Value Sets Success',
+  GroupValueSetsFailure = '[DOC Edit] Group Value Sets Failure',
+
 }
 
 export class ClearIgEdit implements Action {
@@ -454,6 +459,25 @@ export class UpdateDocumentConfigFailure implements Action {
   }
 }
 
+export class GroupValueSets implements Action {
+  readonly type = IgEditActionTypes.GroupValueSets;
+  constructor(readonly payload: {id: string, groups: any}) {
+          console.log(payload);
+  }
+}
+
+export class GroupValueSetsSuccess implements Action {
+  readonly type = IgEditActionTypes.GroupValueSetsSuccess;
+  constructor(readonly payload: {id: string, groups: any} ) {
+  }
+}
+
+export class GroupValueSetsFailure implements Action {
+  readonly type = IgEditActionTypes.UpdateDocumentConfigFailure;
+  constructor(readonly error: HttpErrorResponse) {
+  }
+}
+
 export type IgEditActions =
   IgEditResolverLoad
   | IgEditResolverLoadSuccess
@@ -499,4 +523,7 @@ export type IgEditActions =
   | VerifyIgSuccess
   | VerifyIgFailure
   | RefreshUpdateInfo
-  | OpenValueSetsSummaryEditorNode;
+  | OpenValueSetsSummaryEditorNode
+  | GroupValueSets
+  | GroupValueSetsFailure
+  | GroupValueSetsSuccess;

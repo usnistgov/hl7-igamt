@@ -73,6 +73,14 @@ public class IgamtObjectError {
     return severity;
   }
 
+  public boolean isFatal() {
+    return severity.equals("FATAL");
+  }
+
+  public boolean isError() {
+    return severity.equals("ERROR");
+  }
+
   public void setSeverity(String severity) {
     this.severity = severity;
   }

@@ -20,6 +20,10 @@ public interface VerificationEntryService {
     IgamtObjectError LinkedResourceDocumentInfoInvalid(String resourceId, Type resourceType);
     IgamtObjectError DuplicateResourceIdentifier(String resourceId, Type resourceType, String label, String version);
 
+    // Reference
+    IgamtObjectError InvalidResourceReference(LocationInfo location, String id, Type type, PropertyType property);
+    IgamtObjectError InvalidResourceReferenceDocumentInfo(LocationInfo location, String id, Type type, PropertyType property);
+
     // Extension
     IgamtObjectError MissingResourceExtension(String resourceId, Type resourceType, String label, String version);
     IgamtObjectError InvalidResourceExtension(String resourceId, Type resourceType, String label, String version, String ext);
@@ -102,6 +106,7 @@ public interface VerificationEntryService {
     IgamtObjectError ValuesetMissingCodeSys(Location info, String id, Type type);
     IgamtObjectError ValuesetMissingUsage(Location info, String id, Type type);
     IgamtObjectError ValuesetDuplicatedCode(Location location, String id, Type type, String code, String codesys);
+    IgamtObjectError ValuesetMissingPattern(Location info, String id, Type type);
     IgamtObjectError Valueset_NotAllowedCodeUsage_ConstrainableProfile(Location location, String id, Type type, String code, String usage);
     IgamtObjectError Valueset_NotAllowedCodeUsage_ImplementableProfile(Location location, String id, Type type, String code, String usage);
     IgamtObjectError Valueset_NotAllowedCodeUsage_ClosedValueset(Location location, String id, Type type, String code, String usage);
@@ -153,5 +158,16 @@ public interface VerificationEntryService {
     IgamtObjectError ConstantInvalidDatatype(LocationInfo location, String id, Type type, SubStructElement e);
     IgamtObjectError ConstantInvalidUsage(LocationInfo location, String id, Type type);
     IgamtObjectError ConstantInvalidLengthRange(LocationInfo location, String id, Type type, String minLength, String maxLength, String constantValue);
+
+    // Slicing
+    IgamtObjectError InvalidSlicingTargetType(LocationInfo location, String id, Type type, Type targetType);
+    IgamtObjectError EmptySlicing(LocationInfo location, String id, Type type);
+    IgamtObjectError SliceMissingFlavor(LocationInfo location, String id, Type type);
+    // Ordered
+    IgamtObjectError OrderedSlicingInvalidPosition(LocationInfo location, String id, Type type, int position);
+    IgamtObjectError OrderedSlicingWithDuplicatePosition(LocationInfo location, String id, Type type, int position);
+    // Conditional
+    IgamtObjectError ConditionalSlicingAssertionMissing(LocationInfo location, String id, Type type);
+
 }
 

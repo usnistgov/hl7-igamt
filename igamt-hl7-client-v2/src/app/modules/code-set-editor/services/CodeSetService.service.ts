@@ -8,6 +8,7 @@ import { Message } from '../../dam-framework/models/messages/message.class';
 import { LoadPayloadData, LoadResourcesInRepostory } from '../../dam-framework/store';
 import { ICodes } from '../../shared/models/value-set.interface';
 import { ICodeDelta, ICodeSetCommit, ICodeSetInfo, ICodeSetListItem, ICodeSetVersionContent } from '../models/code-set.models';
+import { IVerificationEnty } from '../../dam-framework';
 
 @Injectable({
   providedIn: 'root',
@@ -117,6 +118,10 @@ export class CodeSetServiceService {
 
   getCodeSetDelta(codeSetId: string, sourceVersionId: string, targetVersionId: string): Observable<ICodeDelta[]> {
     return this.http.get<ICodeDelta[]>(this.CODE_SET_END_POINT + codeSetId + '/compare/' + sourceVersionId + '/' + targetVersionId);
+  }
+
+  verifyCodeSet(codeSetId: string, codeSetVersionId: string): Observable<IVerificationEnty[]> {
+    return this.http.post<IVerificationEnty[]>(`/api/code-set/${codeSetId}/code-set-version/${codeSetVersionId}/verify`, {});
   }
 
 }

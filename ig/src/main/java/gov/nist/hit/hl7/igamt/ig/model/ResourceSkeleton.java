@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.ig.model;
 
 import com.google.common.base.Strings;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
@@ -13,6 +14,7 @@ import java.util.List;
 public class ResourceSkeleton {
     protected final ResourceRef resourceRef;
     protected DisplayElement resource;
+	protected DocumentInfo documentInfo;
 	protected ResourceBinding resourceBindings;
     protected final ResourceSkeletonService resourceSkeletonService;
     protected List<ResourceSkeletonBone> children;
@@ -33,6 +35,7 @@ public class ResourceSkeleton {
             ResourceSkeletonInfo resourceSkeletonInfo = this.resourceSkeletonService.loadSkeleton(resourceRef, this);
             this.setChildren(resourceSkeletonInfo.getChildren());
             this.setResource(resourceSkeletonInfo.getResource());
+			this.setDocumentInfo(resourceSkeletonInfo.getDocumentInfo());
 			this.setResourceBindings(resourceSkeletonInfo.getBinding());
             return resourceSkeletonInfo;
         }
@@ -146,5 +149,13 @@ public class ResourceSkeleton {
 
 	protected void setResourceBindings(ResourceBinding resourceBindings) {
 		this.resourceBindings = resourceBindings;
+	}
+
+	public DocumentInfo getDocumentInfo() {
+		return documentInfo;
+	}
+
+	public void setDocumentInfo(DocumentInfo documentInfo) {
+		this.documentInfo = documentInfo;
 	}
 }

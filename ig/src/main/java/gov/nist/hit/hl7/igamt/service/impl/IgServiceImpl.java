@@ -16,6 +16,7 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.access.model.Action;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.service.RequestScopeCache;
 import gov.nist.hit.hl7.igamt.common.base.util.BindingSummaryFilter;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.conformanceprofile.model.CoConstraintTableReference;
@@ -212,11 +213,14 @@ public class IgServiceImpl implements IgService {
 	@Autowired
 	ResourceBindingService resourcebindingService;
 
+
 	@Autowired
 	UserResourcePermissionService resourcePermissionService;
 
 	@Autowired
 	ExternalCodeService externalCodeService;
+	@Autowired
+	private RequestScopeCache requestScopeCache;
 
 	@Override
 	public Ig findById(String id) {
@@ -941,8 +945,7 @@ public class IgServiceImpl implements IgService {
 				pc = inMemoryDomainExtensionService.findById(link.getId(), ProfileComponent.class);
 			if (pc != null) {
 				ProfileComponentDataModel profileComponentDataModel = new ProfileComponentDataModel();
-				DataElementNamingService dataElementNamingService = new DataElementNamingService(datatypeService,
-						segmentService, conformanceProfileService);
+				DataElementNamingService dataElementNamingService = new DataElementNamingService(requestScopeCache, conformanceProfileService);
 				profileComponentDataModel.putModel(pc, dataElementNamingService);
 				profileComponents.add(profileComponentDataModel);
 			} else
@@ -1464,6 +1467,7 @@ public class IgServiceImpl implements IgService {
 		// Value Set Registry
 		ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
 		subSetIg.setValueSetRegistry(valueSetRegistry);
+		subSetIg.getValueSetRegistry().setGroupedData(ig.getValueSetRegistry().getGroupedData());
 		valueSetRegistry.setChildren(
 				resources.getValuesets()
 						.stream()
@@ -1754,6 +1758,12 @@ public class IgServiceImpl implements IgService {
 				Link found = findLinkById(id, reg.getChildren());
 				if (found != null) {
 					reg.getChildren().remove(found);
+					if(reg instanceof  ValueSetRegistry ){
+						ValueSetRegistry valueSetRegistry = (ValueSetRegistry) reg;
+						if(valueSetRegistry.getGroupedData() != null){
+							valueSetRegistry.getGroupedData().findAndRemove(id);
+						}
+					}
 				}
 				if (resource.getDomainInfo().getScope().equals(Scope.USER)) {
 					this.resourceHelper.deleteByType(resource, convertype(registryType));
@@ -1973,8 +1983,6 @@ public class IgServiceImpl implements IgService {
 									}
 								}
 							}
-
-
 					}
 				}
 
@@ -1987,6 +1995,7 @@ public class IgServiceImpl implements IgService {
 					newVS.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
 					newVS.setId(new ObjectId().toString());
 					newVS = this.valueSetService.save(newVS);
+					this.valueSetService.groupAddedValueSets(ig.getValueSetRegistry(), Collections.singleton(newVS));
 
 					ig.getValueSetRegistry().getChildren()
 							.add(new Link(newVS.getId(), newVS.getDomainInfo(), ig.getValueSetRegistry().getChildren().size() + 1));

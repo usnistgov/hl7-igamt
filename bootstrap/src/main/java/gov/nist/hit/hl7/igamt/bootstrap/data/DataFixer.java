@@ -889,4 +889,92 @@ public class DataFixer {
         this.segmentRepo.save(s);
     }
 
+
+    public void findRLengthInconsistency() {
+        Segment s = this.segmentRepo.findById("HL7OBX-V2-7-1").get();
+        for (Field f : s.getChildren()) {
+            if (f.getUsage().equals(Usage.X)) {
+                boolean empty = (f.getMaxLength() == null || f.getMaxLength().equals("0") || f.getMaxLength().equals("NA"))
+                        && (f.getMinLength() == null || f.getMinLength().equals("0") || f.getMinLength().equals("NA"));
+                if (!empty) {
+                    f.setMaxLength("0");
+                    f.setMinLength("0");
+                }
+            }
+
+        }
+        this.segmentRepo.save(s);
+    }
+
+
+    public void findRLengthSegmentPB() {
+        int total = 0;
+        try (PrintWriter writer = new PrintWriter(new FileWriter("All-R-length_fields-1.csv"))) {
+            writer.println("Segment,HL7 Version,Usage, Field Position,Data Type, MinLength, MaxLength");
+
+            List<Segment> segments = segmentsService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
+            for (Segment s : segments) {
+                for (Field f : s.getChildren()) {
+                    if (f.getUsage().equals(Usage.R)) {
+                        System.out.println("Found Field with X"+ s.getId());
+//                        boolean empty = (f.getMaxLength() == null || f.getMaxLength().equals("0") || f.getMaxLength().equals("NA") )
+//                                && (f.getMinLength() == null || f.getMinLength().equals("0") || f.getMinLength().equals("NA") );
+
+                        boolean empty = (f.getMaxLength() == null || f.getMaxLength().equals("0"))
+                                && (f.getMinLength() == null || f.getMinLength().equals("0") );
+
+                        if (empty) {
+                            writer.println(
+                                    s.getName() + "," +
+                                            s.getDomainInfo().getVersion() + "," +f.getUsage()+ "," +
+                                            f.getPosition() + "," +
+                                            f.getRef().getId() +',' + f.getMinLength() +',' + f.getMaxLength()
+                            );
+                            total += 1;
+                        }
+                    }
+                }
+            }
+
+            writer.println();
+            writer.println("Total," + total);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void findRLengthDatatypePB() {
+        int total = 0;
+        try (PrintWriter writer = new PrintWriter(new FileWriter("datatype-length_components-1.csv"))) {
+            writer.println("Datatype,HL7 Version, Usage, Component Position,Data Type, MinLength, MaxLength");
+
+            List<Datatype> datatypes = this.datatypeService.findByDomainInfoScope(Scope.HL7STANDARD.toString()).stream().filter(x -> x instanceof  ComplexDatatype).collect(Collectors.toList());
+            for (Datatype d : datatypes) {
+                ComplexDatatype complexDatatype = (ComplexDatatype) d;
+                for (Component f : complexDatatype.getComponents()) {
+                    if (f.getUsage().equals(Usage.R)) {
+                        boolean empty = (f.getMaxLength() == null || f.getMaxLength().equals("0") || f.getMaxLength().equals("NA") )
+                                && (f.getMinLength() == null || f.getMinLength().equals("0") || f.getMinLength().equals("NA") );
+
+                        if (empty) {
+                            writer.println(
+                                    complexDatatype.getName() + "," +
+                                            complexDatatype.getDomainInfo().getVersion() + "," +
+                                            f.getPosition() + "," +
+                                            f.getRef().getId() +',' + f.getMinLength() +',' + f.getMaxLength()
+                            );
+                            total += 1;
+                        }
+                    }
+                }
+            }
+
+            writer.println();
+            writer.println("Total," + total);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -87,6 +87,7 @@ import { FieldAddDialogComponent } from './components/field-add-dialog/field-add
 import { FileInputComponent } from './components/file-input/file-input.component';
 import { FileSelectInputComponent } from './components/file-select-input/file-select-input.component';
 import { FormInputComponent } from './components/form-input/form-input.component';
+import { GroupValueSetComponent } from './components/group-value-set/group-value-set.component';
 import { CardinalityComponent } from './components/hl7-v2-tree/columns/cardinality/cardinality.component';
 import { CommentsComponent } from './components/hl7-v2-tree/columns/comments/comments.component';
 import { ConformanceLengthComponent } from './components/hl7-v2-tree/columns/conformance-length/conformance-length.component';
@@ -162,6 +163,7 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { ExternalVsMetadataComponent } from './components/external-vs-metadata/external-vs-metadata.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -283,6 +285,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ExternalVsCodesFetchComponent,
     FetchCodesDialogComponent,
     ImportFromProviderComponent,
+    GroupValueSetComponent,
+    ExternalVsMetadataComponent
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -496,6 +500,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ExternalVsCodesFetchComponent,
     FetchCodesDialogComponent,
     FileInputComponent,
+    GroupValueSetComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -542,6 +547,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     BuildValueSetComponent,
     FetchCodesDialogComponent,
     ImportFromProviderComponent,
+    GroupValueSetComponent,
   ],
 })
 export class SharedModule {

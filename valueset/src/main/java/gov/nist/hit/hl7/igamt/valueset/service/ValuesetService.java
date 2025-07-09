@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.valueset.service;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -92,4 +93,6 @@ public interface ValuesetService {
 
 
 	List<Valueset> findBySourceTypeAndResourceOrigin(SourceType type, ResourceOrigin origin);
+
+    void groupAddedValueSets(ValueSetRegistry valueSetRegistry, Collection<Valueset> valueSets);
 }

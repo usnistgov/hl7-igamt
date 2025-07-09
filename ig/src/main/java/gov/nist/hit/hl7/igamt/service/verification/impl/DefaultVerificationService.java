@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.service.verification.impl;
 
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.service.RequestScopeCache;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -24,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class DefaultVerificationService implements gov.nist.hit.hl7.igamt.service.verification.VerificationService {
@@ -53,6 +53,8 @@ public class DefaultVerificationService implements gov.nist.hit.hl7.igamt.servic
 	SegmentService segmentService;
 	@Autowired
 	IgService igService;
+	@Autowired
+	private RequestScopeCache requestScopeCache;
 
 	@Override
 	public List<IgamtObjectError> verifySegment(Segment segment) {
@@ -126,6 +128,11 @@ public class DefaultVerificationService implements gov.nist.hit.hl7.igamt.servic
 			List<Valueset> valueSets,
 			List<CoConstraintGroup> coConstraintGroups
 	) {
+		this.preloadResourcesInCache(
+				segments,
+				datatypes,
+				valueSets
+		);
 		String defaultHL7Version = this.igService.findDefaultHL7Version(ig);
 		IgVerificationIssuesList issuesList = new IgVerificationIssuesList();
 		if(conformanceProfiles != null) {
@@ -188,5 +195,21 @@ public class DefaultVerificationService implements gov.nist.hit.hl7.igamt.servic
 			});
 		}
 		return issuesList;
+	}
+
+	private void preloadResourcesInCache(
+			List<Segment> segments,
+			List<Datatype> datatypes,
+			List<Valueset> valueSets
+	) {
+		segments.forEach(segment -> {
+			requestScopeCache.cacheResource(segment);
+		});
+		datatypes.forEach(datatype -> {
+			requestScopeCache.cacheResource(datatype);
+		});
+		valueSets.forEach(valueSet -> {
+			requestScopeCache.cacheResource(valueSet);
+		});
 	}
 }

@@ -9,6 +9,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.service.RequestScopeCache;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
@@ -24,12 +25,10 @@ import gov.nist.hit.hl7.igamt.ig.domain.verification.Location;
 import gov.nist.hit.hl7.igamt.ig.model.*;
 import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
-import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.ResourceSkeletonService;
 import gov.nist.hit.hl7.igamt.service.impl.exception.AmbiguousOBX3MappingException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,22 +52,19 @@ public class CoConstraintVerificationService extends VerificationUtils {
     VocabularyBindingVerificationService vocabularyBindingVerificationService;
 
     @Autowired
-    DatatypeService datatypeService;
-
-    @Autowired
     CoConstraintSerializationHelper coConstraintSerializationHelper;
-
-    @Autowired
-    SegmentService segmentService;
 
     @Autowired
     CommonVerificationService commonVerificationService;
 
     @Autowired
-    ValuesetService valuesetService;
+    RequestScopeCache requestScopeCache;
+
+    @Autowired
+    DatatypeService datatypeService;
 
     public List<IgamtObjectError> verifyCoConstraintGroup(CoConstraintGroup coConstraintGroup) {
-        Segment baseSegment = this.segmentService.findById(coConstraintGroup.getBaseSegment());
+        Segment baseSegment = this.requestScopeCache.getCacheResource(coConstraintGroup.getBaseSegment(), Segment.class);
         List<IgamtObjectError> issues = new ArrayList<>();
         if(baseSegment == null) {
             // Base Segment does not exist
@@ -488,7 +484,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
                             return valuesetBindings.stream()
                                     .filter((valuesetBinding) -> valuesetBinding != null && valuesetBinding.getValueSets() != null)
                                     .flatMap((valuesetBinding) -> valuesetBinding.getValueSets().stream())
-                                            .map((vsId) -> this.valuesetService.findById(vsId))
+                                            .map((vsId) -> this.requestScopeCache.getCacheResource(vsId, Valueset.class))
                                     .filter(Objects::nonNull)
                                     .collect(Collectors.toSet());
                         }
@@ -812,7 +808,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
                 ));
                 return new DatatypeCellVerified(null, cell.getValue(), errors);
             } else {
-                Datatype dt = this.datatypeService.findById(cell.getDatatypeId());
+                Datatype dt = this.requestScopeCache.getCacheResource(cell.getDatatypeId(), Datatype.class);
                 if(dt != null) {
                     return new DatatypeCellVerified(dt, cell.getValue(), errors);
                 } else {

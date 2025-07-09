@@ -44,9 +44,9 @@ export class ImportFromProviderComponent implements OnInit {
   selectedCodeSet: ICodeSetQueryMetaData;
   selectedCodeSetSourceType: SourceType = SourceType.EXTERNAL;
   latestVersionNumberOfCodes: number;
-  fetchingVersionCodes: boolean = false;
+  fetchingVersionCodes = false;
   latestVersion: string;
-  versionCodesCache:any = {} ;
+  versionCodesCache: any = {} ;
 
   model: IAddingInfo;
   selectedVersion: any;
@@ -160,10 +160,10 @@ export class ImportFromProviderComponent implements OnInit {
         this.errorSelected = error;
         this.fetchingVersionCodes = false;
         return of();
-      })
+      }),
     ).subscribe();
 
-  //}, 2000);
+  // }, 2000);
 
   }
 

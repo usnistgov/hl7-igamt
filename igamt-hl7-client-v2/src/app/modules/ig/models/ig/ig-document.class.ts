@@ -104,3 +104,13 @@ export interface IIgVerificationReport {
   coConstraintGroups?: any[];
   generated?: IDisplayElement[];
 }
+
+export interface IGroupValueSetWrapper {
+  groups?: IValueSetGroups[]; // if already grouped
+  valueSets: IDisplayElement[];
+}
+
+export interface IValueSetGroups {
+  name: string;
+  items: IDisplayElement[];
+}
