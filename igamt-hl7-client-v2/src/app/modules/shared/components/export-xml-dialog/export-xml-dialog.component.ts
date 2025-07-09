@@ -37,7 +37,7 @@ export class ExportXmlDialogComponent {
   verificationResult: IVerificationResultDisplay;
   externalValueSets: Array<{
     display: IDisplayElement;
-    URL: string;
+    url: string;
   }> = [];
   displayTable = false;
   verificationInProgress = false;

@@ -2,16 +2,15 @@ package gov.nist.hit.hl7.igamt.service.verification.impl;
 
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.common.base.service.RequestScopeCache;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.PrimitiveDatatype;
-import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.Location;
 import gov.nist.hit.hl7.igamt.service.verification.VerificationEntryService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,9 +28,7 @@ public class CommonVerificationService {
 	@Autowired
 	VerificationEntryService verificationEntryService;
 	@Autowired
-	DatatypeService datatypeService;
-	@Autowired
-	ValuesetService valuesetService;
+	RequestScopeCache requestScopeCache;
 
 	static final Predicate<String> extensionPattern = Pattern.compile("^[A-Za-z][\\w-]{0,7}$").asPredicate();
 
@@ -425,7 +422,7 @@ public class CommonVerificationService {
 		if (element != null) {
 			Ref ref = element.getRef();
 			if (ref.getId() != null) {
-				Datatype child = this.datatypeService.findById(ref.getId());
+				Datatype child = this.requestScopeCache.getCacheResource(ref.getId(), Datatype.class);
 				if (child != null)
 					return this.isPrimitiveDatatype(child);
 			}

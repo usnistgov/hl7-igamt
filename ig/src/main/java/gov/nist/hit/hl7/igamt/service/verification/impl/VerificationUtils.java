@@ -1,26 +1,28 @@
 package gov.nist.hit.hl7.igamt.service.verification.impl;
 
 import com.google.common.base.Strings;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.service.RequestScopeCache;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingInfo;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingLocationOption;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.Location;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.service.verification.VerificationEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 public abstract class VerificationUtils {
@@ -29,6 +31,8 @@ public abstract class VerificationUtils {
     protected VerificationEntryService entry;
     @Autowired
     private ConfigService configService;
+    @Autowired
+    private RequestScopeCache requestScopeCache;
 
     public List<IgamtObjectError> process(ResourceSkeleton context, PropertyType propertyType, String pathId, Function<ResourceSkeletonBone, List<IgamtObjectError>> verify) {
         try {
@@ -144,6 +148,97 @@ public abstract class VerificationUtils {
     }
 
     public boolean isValidBindingLocations(List<BindingLocationOption> valid, Set<Integer> actual) {
-        return valid.stream().anyMatch((blo) -> blo.getValue().containsAll(actual));
+        return valid.stream().anyMatch((blo) -> new HashSet<>(blo.getValue()).containsAll(actual));
     }
+
+    public List<IgamtObjectError> checkReference(
+            String id,
+            Type type,
+            DocumentInfo parent,
+            String parentId,
+            Type parentType,
+            LocationInfo location
+    ) {
+        List<IgamtObjectError> issues = new ArrayList<>();
+        switch (type) {
+            case DATATYPE:
+                Datatype datatype = this.requestScopeCache.getCacheResource(id, Datatype.class);
+                if(datatype == null) {
+                    issues.add(this.entry.InvalidResourceReference(
+                            location,
+                            parentId,
+                            parentType,
+                            PropertyType.DATATYPE
+                    ));
+                } else {
+                    issues.addAll(this.checkDocumentInfo(
+                            datatype.getDocumentInfo(),
+                            parent,
+                            parentId,
+                            parentType,
+                            location,
+                            PropertyType.DATATYPE
+                    ));
+                }
+                break;
+            case SEGMENT:
+                Segment segment = this.requestScopeCache.getCacheResource(id, Segment.class);
+                if(segment == null) {
+                    issues.add(this.entry.InvalidResourceReference(
+                            location,
+                            parentId,
+                            parentType,
+                            PropertyType.SEGMENTREF
+                    ));
+                } else {
+                    issues.addAll(this.checkDocumentInfo(
+                            segment.getDocumentInfo(),
+                            parent,
+                            parentId,
+                            parentType,
+                            location,
+                            PropertyType.SEGMENTREF
+                    ));
+                }
+                break;
+        }
+        return issues;
+    }
+
+    private List<IgamtObjectError> checkDocumentInfo(
+            DocumentInfo child,
+            DocumentInfo parent,
+            String parentId,
+            Type parentType,
+            LocationInfo locationInfo,
+            PropertyType property
+    ) {
+        if(parent == null && child != null) {
+            return Arrays.asList(this.entry.InvalidResourceReferenceDocumentInfo(
+                    locationInfo,
+                    parentId,
+                    parentType,
+                    property
+            ));
+        }
+        if(parent != null && child != null) {
+            boolean type = parent.getType() != null &&
+                    child.getType() != null &&
+                    parent.getType().equals(child.getType());
+            boolean id = parent.getDocumentId() != null &&
+                    child.getDocumentId() != null &&
+                    parent.getDocumentId().equals(child.getDocumentId());
+            if(!type || !id) {
+                return Arrays.asList(this.entry.InvalidResourceReferenceDocumentInfo(
+                        locationInfo,
+                        parentId,
+                        parentType,
+                        property
+                ));
+            }
+        }
+        return this.NoErrors();
+    }
+
+
 }

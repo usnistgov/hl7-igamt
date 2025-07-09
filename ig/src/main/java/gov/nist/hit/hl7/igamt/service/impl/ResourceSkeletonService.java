@@ -5,6 +5,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.service.RequestScopeCache;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
@@ -34,7 +35,8 @@ public class ResourceSkeletonService {
     SegmentService segmentService;
     @Autowired
     ConformanceProfileService conformanceProfileService;
-
+    @Autowired
+    RequestScopeCache requestScopeCache;
 
     public ResourceSkeletonInfo loadSkeleton(ResourceRef resourceRef, ResourceSkeleton parent) throws ResourceNotFoundException {
         switch (resourceRef.getType()) {
@@ -50,7 +52,7 @@ public class ResourceSkeletonService {
     }
 
     public ResourceSkeletonInfo loadDatatypeSkeleton(String id, LocationInfo parentLocationInfo, ResourceSkeleton parent) throws ResourceNotFoundException {
-        Datatype datatype = this.datatypeService.findById(id);
+        Datatype datatype = this.requestScopeCache.getCacheResource(id, Datatype.class);
         if(datatype == null) {
             throw new ResourceNotFoundException(id, Type.DATATYPE);
         }
@@ -69,13 +71,13 @@ public class ResourceSkeletonService {
                     parent,
                     this
             )).collect(Collectors.toList());
-            return new ResourceSkeletonInfo(children, resource, datatype.getBinding());
+            return new ResourceSkeletonInfo(children, resource, datatype.getDocumentInfo(), datatype.getBinding());
         } else {
-            return new ResourceSkeletonInfo(Collections.emptyList(), resource, datatype.getBinding());
+            return new ResourceSkeletonInfo(Collections.emptyList(), resource, datatype.getDocumentInfo(), datatype.getBinding());
         }
     }
     public ResourceSkeletonInfo loadSegmentSkeleton(String id, LocationInfo parentLocationInfo, ResourceSkeleton parent) throws ResourceNotFoundException {
-        Segment segment = this.segmentService.findById(id);
+        Segment segment = this.requestScopeCache.getCacheResource(id, Segment.class);
         if(segment == null) {
             throw new ResourceNotFoundException(id, Type.SEGMENT);
         }
@@ -93,7 +95,7 @@ public class ResourceSkeletonService {
                 parent,
                 this
         )).collect(Collectors.toList());
-        return new ResourceSkeletonInfo(children, resource, segment.getBinding());
+        return new ResourceSkeletonInfo(children, resource, segment.getDocumentInfo(), segment.getBinding());
     }
 
     public ResourceSkeletonInfo loadConformanceProfileSkeleton(String id, ResourceSkeleton parent) throws ResourceNotFoundException {
@@ -103,7 +105,7 @@ public class ResourceSkeletonService {
         }
 
         DisplayElement resource = this.conformanceProfileService.convertConformanceProfile(conformanceProfile, 0);
-        return new ResourceSkeletonInfo(getGroupChildren(resource, conformanceProfile.getChildren(), null, parent), resource, conformanceProfile.getBinding());
+        return new ResourceSkeletonInfo(getGroupChildren(resource, conformanceProfile.getChildren(), null, parent), resource, conformanceProfile.getDocumentInfo(), conformanceProfile.getBinding());
     }
 
     public List<ResourceSkeletonBone> getGroupChildren(DisplayElement parent, Set<SegmentRefOrGroup> segmentRefOrGroups, LocationInfo parentLocationInfo, ResourceSkeleton parentSkeleton) {

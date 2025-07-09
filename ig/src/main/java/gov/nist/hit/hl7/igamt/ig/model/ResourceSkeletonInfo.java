@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.ig.model;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 
@@ -9,10 +10,17 @@ public class ResourceSkeletonInfo {
     List<ResourceSkeletonBone> children;
     DisplayElement resource;
     ResourceBinding binding;
+    DocumentInfo documentInfo;
 
-    public ResourceSkeletonInfo(List<ResourceSkeletonBone> children, DisplayElement resource, ResourceBinding binding) {
+    public ResourceSkeletonInfo(
+            List<ResourceSkeletonBone> children,
+            DisplayElement resource,
+            DocumentInfo documentInfo,
+            ResourceBinding binding
+    ) {
         this.children = children;
         this.resource = resource;
+        this.documentInfo = documentInfo;
         this.binding = binding;
     }
 
@@ -39,5 +47,13 @@ public class ResourceSkeletonInfo {
 
     public void setBinding(ResourceBinding binding) {
         this.binding = binding;
+    }
+
+    public DocumentInfo getDocumentInfo() {
+        return documentInfo;
+    }
+
+    public void setDocumentInfo(DocumentInfo documentInfo) {
+        this.documentInfo = documentInfo;
     }
 }

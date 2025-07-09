@@ -16,6 +16,7 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.access.model.Action;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.service.RequestScopeCache;
 import gov.nist.hit.hl7.igamt.common.base.util.BindingSummaryFilter;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.conformanceprofile.model.CoConstraintTableReference;
@@ -218,6 +219,8 @@ public class IgServiceImpl implements IgService {
 
 	@Autowired
 	ExternalCodeService externalCodeService;
+	@Autowired
+	private RequestScopeCache requestScopeCache;
 
 	@Override
 	public Ig findById(String id) {
@@ -942,8 +945,7 @@ public class IgServiceImpl implements IgService {
 				pc = inMemoryDomainExtensionService.findById(link.getId(), ProfileComponent.class);
 			if (pc != null) {
 				ProfileComponentDataModel profileComponentDataModel = new ProfileComponentDataModel();
-				DataElementNamingService dataElementNamingService = new DataElementNamingService(datatypeService,
-						segmentService, conformanceProfileService);
+				DataElementNamingService dataElementNamingService = new DataElementNamingService(requestScopeCache, conformanceProfileService);
 				profileComponentDataModel.putModel(pc, dataElementNamingService);
 				profileComponents.add(profileComponentDataModel);
 			} else

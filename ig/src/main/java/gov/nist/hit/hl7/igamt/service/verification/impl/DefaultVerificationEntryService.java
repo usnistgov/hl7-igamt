@@ -77,6 +77,28 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
+    public IgamtObjectError InvalidResourceReference(LocationInfo location, String id, Type type, PropertyType property) {
+        return new IgamtVerificationEntryBuilder("INVALID_RESOURCE_REFERENCE")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location.getPathId(), location, property)
+                .message("Element has invalid resource reference.")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError InvalidResourceReferenceDocumentInfo(LocationInfo location, String id, Type type, PropertyType property) {
+        return new IgamtVerificationEntryBuilder("INVALID_RESOURCE_REFERENCE_DOCUMENT_INFO")
+                .fatal()
+                .handleInternally()
+                .target(id, type)
+                .locationInfo(location.getPathId(), location, property)
+                .message("Element has resource reference with invalid document information.")
+                .entry();
+    }
+
+    @Override
     public IgamtObjectError MissingResourceExtension(
             String resourceId, Type resourceType, String label, String version
     ) {
@@ -305,7 +327,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .fatal()
                 .target(id, type)
                 .locationInfo(pathId, name, propertyType)
-                .message("Co-Constraint Table Header " + info.getHl7Path() + " has invalid column type \"" + column + "\" "+ (!Strings.isNullOrEmpty(reason) ? "" : "reason : " + reason))
+                .message("Co-Constraint Table Header " + info.getHl7Path() + " has invalid column type \"" + column + "\" "+ (Strings.isNullOrEmpty(reason) ? "" : "reason : " + reason))
                 .entry();
     }
 
@@ -1190,12 +1212,83 @@ public class DefaultVerificationEntryService implements VerificationEntryService
 
     @Override
     public IgamtObjectError ConstantInvalidLengthRange(LocationInfo locationInfo, String id, Type type, String minLength, String maxLength, String constantValue) {
-            return new IgamtVerificationEntryBuilder("CONSTANT_VALUE_LENGTH")
+        return new IgamtVerificationEntryBuilder("CONSTANT_VALUE_LENGTH")
             .error()
             .handleByUser()
             .target(id, type)
             .locationInfo(locationInfo.getPathId(), locationInfo, PropertyType.CONSTANTVALUE)
             .message(String.format("The length of Constant Value: '%s' is not within [%s..%s]", constantValue, minLength, maxLength))
             .entry();
+    }
+
+    @Override
+    public IgamtObjectError InvalidSlicingTargetType(LocationInfo location, String id, Type type, Type targetType) {
+        return new IgamtVerificationEntryBuilder("INVALID_SLICING_TARGET")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location.getPathId(), location, PropertyType.SLICING)
+                .message(String.format("Slicing target is of type %s", targetType))
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError EmptySlicing(LocationInfo location, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("EMPTY_SLICING")
+                .warning()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location.getPathId(), location, PropertyType.SLICING)
+                .message("Location has slicing defined with no slice definition")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError SliceMissingFlavor(LocationInfo location, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("SLICE_MISSING_FLAVOR")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location.getPathId(), location, PropertyType.SLICE_FLAVOR)
+                .message("Location has slice defined without a flavor")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError OrderedSlicingInvalidPosition(LocationInfo location, String id, Type type, int position) {
+        return new IgamtVerificationEntryBuilder("ORDERED_SLICE_INVALID_POSITION")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location.getPathId(), location, PropertyType.ORDERED_SLICE_POSITION)
+                .message("Location has ordered slice with invalid position '"+ position +"'")
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError OrderedSlicingWithDuplicatePosition(
+            LocationInfo location,
+            String id,
+            Type type,
+            int position
+    ) {
+        return new IgamtVerificationEntryBuilder("ORDERED_SLICE_DUPLICATE_POSITION")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location.getPathId(), location, PropertyType.ORDERED_SLICE_POSITION)
+                .message("Location has ordered slice with duplicate position "+ position)
+                .entry();
+    }
+
+    @Override
+    public IgamtObjectError ConditionalSlicingAssertionMissing(LocationInfo location, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("CONDITIONAL_SLICE_MISSING_ASSERTION")
+                .fatal()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(location.getPathId(), location, PropertyType.CONDITIONAL_SLICE_ASSERTION)
+                .message("Location has conditional slice with missing assertion")
+                .entry();
     }
 }

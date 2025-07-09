@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.service.impl;
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.service.RequestScopeCache;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
@@ -11,49 +12,26 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
-import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
-import org.springframework.security.core.parameters.P;
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Stack;
 
 public class DataElementNamingService {
-    private final Map<String, Datatype> datatypeMap;
-    private final Map<String, Segment> segmentMap;
-    private final DatatypeService datatypeService;
-    private final SegmentService segmentService;
+    private final RequestScopeCache requestScopeCache;
     private final ConformanceProfileService conformanceProfileService;
 
-    public DataElementNamingService(DatatypeService datatypeService, SegmentService segmentService, ConformanceProfileService conformanceProfileService) {
-        this.datatypeService = datatypeService;
-        this.segmentService = segmentService;
+    public DataElementNamingService(RequestScopeCache requestScopeCache, ConformanceProfileService conformanceProfileService) {
+	    this.requestScopeCache = requestScopeCache;
         this.conformanceProfileService = conformanceProfileService;
-        this.datatypeMap = new HashMap<>();
-        this.segmentMap = new HashMap<>();
     }
 
     public Datatype getDatatypeById(String id) {
-        if(datatypeMap.containsKey(id)) {
-            return datatypeMap.get(id);
-        } else {
-            Datatype datatype = this.datatypeService.findById(id);
-            this.datatypeMap.put(id, datatype);
-            return datatype;
-        }
+        return requestScopeCache.getCacheResource(id, Datatype.class);
     }
 
     public Segment getSegmentById(String id) {
-        if(segmentMap.containsKey(id)) {
-            return segmentMap.get(id);
-        } else {
-            Segment segment = this.segmentService.findById(id);
-            this.segmentMap.put(id, segment);
-            return segment;
-        }
+        return requestScopeCache.getCacheResource(id, Segment.class);
+
     }
 
     private LocationInfo processSegRefOrGroup(SegmentRefOrGroup segmentRefOrGroup, Stack<String> route, LocationInfo info) {
@@ -197,7 +175,7 @@ public class DataElementNamingService {
                     return null;
                 }
             case SEGMENT:
-                Segment segment = this.segmentService.findById(id);
+                Segment segment = getSegmentById(id);
                 if(segment != null) {
                     return this.computeLocationInfo(segment, path);
                 } else {
