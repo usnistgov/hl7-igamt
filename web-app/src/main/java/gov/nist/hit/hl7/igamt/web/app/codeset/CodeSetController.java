@@ -14,8 +14,11 @@ import gov.nist.hit.hl7.igamt.access.model.AccessPermission;
 import gov.nist.hit.hl7.igamt.access.model.Action;
 import gov.nist.hit.hl7.igamt.access.security.AccessControlService;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
+import gov.nist.hit.hl7.igamt.service.verification.impl.ValueSetVerificationService;
 import gov.nist.hit.hl7.igamt.valueset.exception.CodeSetCommitException;
 import gov.nist.hit.hl7.igamt.valueset.model.*;
+import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetRepository;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,7 +55,11 @@ public class CodeSetController {
 	@Autowired
 	CodeSetService codeSetService;
 	@Autowired
+	CodeSetRepository codeSetRepo;
+	@Autowired
 	CommonService commonService;
+	@Autowired
+	ValueSetVerificationService valueSetVerificationService;
 	@Autowired
 	AccessControlService accessControlService;
 
@@ -144,11 +151,36 @@ public class CodeSetController {
 	public ResponseMessage<?> commit(
 			@PathVariable("id") String id,
 			@PathVariable("versionId") String versionId,
-			@RequestBody CodeSetVersionCommit commit,
-			Authentication authentication
+			@RequestBody CodeSetVersionCommit commit
 	) throws ResourceNotFoundException, CodeSetCommitException {
-		CodeSetVersion ret = codeSetService.commit(id, versionId, commit);
-		return new ResponseMessage<>(Status.SUCCESS, "Code Set Committed Successfully", ret.getId(), null);
+		CodeSet codeSet = this.codeSetRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESET));
+		if(!codeSet.getCodeSetVersions().contains(versionId)) {
+			throw new ResourceNotFoundException(versionId, Type.CODESETVERSION);
+		}
+		CodeSetVersion codeSetVersion = codeSetService.findCodeSetVersionById(versionId);
+		List<IgamtObjectError> verificationIssues = this.valueSetVerificationService.verifyCodeSetVersion(codeSetVersion);
+		boolean isNotValid = verificationIssues.stream().anyMatch((e) -> e.isFatal() || e.isError());
+		if(isNotValid) {
+			return new ResponseMessage<>(Status.FAILED, "Code Set Version contains errors or fatal issues, please fix your code set and try again.", versionId, null);
+		} else {
+			CodeSetVersion ret = codeSetService.commit(codeSet, codeSetVersion, commit);
+			return new ResponseMessage<>(Status.SUCCESS, "Code Set Committed Successfully", ret.getId(), null);
+		}
+	}
+
+	@RequestMapping(value = "/api/code-set/{id}/code-set-version/{versionId}/verify", method = RequestMethod.POST, produces = { "application/json" })
+	@ResponseBody
+	@PreAuthorize("AccessResource('CODESETVERSION', #versionId, WRITE)")
+	public List<IgamtObjectError> verifyCodeSetVersion(
+			@PathVariable("id") String id,
+			@PathVariable("versionId") String versionId
+	) throws Exception {
+		CodeSet codeSet = this.codeSetRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id, Type.CODESET));
+		if(!codeSet.getCodeSetVersions().contains(versionId)) {
+			throw new ResourceNotFoundException(versionId, Type.CODESETVERSION);
+		}
+		CodeSetVersion codeSetVersion = codeSetService.findCodeSetVersionById(versionId);
+		return this.valueSetVerificationService.verifyCodeSetVersion(codeSetVersion);
 	}
 
 
@@ -218,7 +250,7 @@ public class CodeSetController {
 	@PreAuthorize("AccessResource('CODESET', #id, WRITE)")
 	public ResponseMessage<String> deleteCodeSet(@PathVariable("id") String id) throws ForbiddenOperationException, ResourceNotFoundException {
 		this.codeSetService.deleteCodeSet(id);
-		return new ResponseMessage<>(ResponseMessage.Status.SUCCESS, "Code Set  Deleted Successfully",  id, id, new Date());
+		return new ResponseMessage<>(ResponseMessage.Status.SUCCESS, "Code Set Deleted Successfully",  id, id, new Date());
 	}
 
 

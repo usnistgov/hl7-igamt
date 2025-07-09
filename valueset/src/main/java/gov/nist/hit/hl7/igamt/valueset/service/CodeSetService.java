@@ -28,8 +28,8 @@ public interface CodeSetService {
 	) throws ResourceNotFoundException, ForbiddenOperationException;
 
 	CodeSetVersion commit(
-			String codeSetId,
-			String codeSetVersionId,
+			CodeSet codeSet,
+			CodeSetVersion codeSetVersion,
 			CodeSetVersionCommit commit
 	) throws ResourceNotFoundException, CodeSetCommitException;
 

@@ -355,6 +355,25 @@ export class VerificationService {
     return this.getVerificationEntryTable(generated, this.convertErrorsToEntries(list || []), repository);
   }
 
+  createCodeSetEntryTable(list: any[]): IVerificationEntryTable {
+    const entries = this.convertErrorsToEntries(list || []);
+    const stats = this.getVerificationStats(entries);
+    const valid = !(stats.error && stats.error > 0) && !(stats.fatal && stats.fatal > 0);
+    const entryList: IVerificationEntryList = {
+      target: null,
+      stats,
+      entries,
+    }
+    return {
+      valid: valid,
+      stats,
+      resources: [],
+      codes: Array.from(new Set(entries.map((entry) => entry.code))),
+      severities: Array.from(new Set(entries.map((entry) => entry.severity))),
+      entries: [entryList],
+    };
+  }
+
   convertErrorsToEntries(errors: any[]): IVerificationEnty[] {
     const ret: IVerificationEnty[] = [];
     errors.forEach((element) => {

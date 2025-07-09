@@ -6,6 +6,9 @@
   background-color: lightpink !important;
 }
 
+.pointer {
+  cursor: pointer;
+}
 
 td {
   padding: 0 !important;

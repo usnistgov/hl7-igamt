@@ -800,6 +800,17 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .entry();
 	}
 
+    @Override
+    public IgamtObjectError ValuesetMissingPattern(Location l, String id, Type type) {
+        return new IgamtVerificationEntryBuilder("Valueset_Missing_Pattern")
+                .error()
+                .handleByUser()
+                .target(id, type)
+                .locationInfo(l.getPathId(), l.getName(), PropertyType.PATTERN)
+                .message("Missing code pattern (regular expression)")
+                .entry();
+    }
+
 	@Override
 	public IgamtObjectError ValuesetDuplicatedCode(Location l, String id, Type type, String code, String codesys) {
 		return new IgamtVerificationEntryBuilder("Valueset_Duplicated_Code")

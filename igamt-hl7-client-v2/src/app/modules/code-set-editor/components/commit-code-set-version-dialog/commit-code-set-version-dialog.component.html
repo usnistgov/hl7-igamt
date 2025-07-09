@@ -1,76 +1,119 @@
 <div style="display: flex; gap: 20px; height: 100%;">
-  <div style="flex-grow: 1; height: 100%; border: 2px solid lightgray; border-radius: 4px; background-color: rgb(251 251 251);">
-    <div *ngIf="loading" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; flex-direction: column; gap: 5px;">
-      <h4>Loading Changes</h4>
-      <mat-spinner class="verification-progress" diameter="40"></mat-spinner>
+  <div style="display: flex; flex-direction: column; flex-grow: 1; gap: 5px;">
+    <ul class="nav nav-pills">
+      <li class="nav-item nav-link pointer" [ngClass]="{'active': activeTab === 'CHANGES' }" (click)="selectTab('CHANGES')" >
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+          Changes
+          <span class="badge badge-danger" *ngIf="error && !loadingDelta">FAILED</span>
+          <div *ngIf="loadingDelta">
+            <mat-spinner class="verification-progress" diameter="20"></mat-spinner>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item nav-link pointer" [ngClass]="{'active': activeTab === 'VERIFICATION' }" (click)="selectTab('VERIFICATION')" >
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+          Verification
+          <span class="badge badge-danger" *ngIf="verificationError && !loadingVerification">FAILED</span>
+          <div *ngIf="loadingVerification">
+            <mat-spinner class="verification-progress" diameter="20"></mat-spinner>
+          </div>
+          <ng-container *ngIf="verificationResults" >
+            <div *ngIf="verificationResults.stats && !(!verificationResults.stats.fatal && !verificationResults.stats.error && !verificationResults.stats.warning && !verificationResults.stats.informational)" style="display: flex;">
+              <div style="margin-right: 5px;">
+                <app-issue-badge *ngIf="verificationResults.stats.fatal" type="FATAL" [number]="verificationResults.stats.fatal" ></app-issue-badge>
+              </div>
+              <div style="margin-right: 5px;">
+                <app-issue-badge *ngIf="verificationResults.stats.error" type="ERROR" [number]="verificationResults.stats.error" ></app-issue-badge>
+              </div>
+              <div style="margin-right: 5px;">
+                <app-issue-badge *ngIf="verificationResults.stats.warning" type="WARNING" [number]="verificationResults.stats.warning" ></app-issue-badge>
+              </div>
+              <div style="margin-right: 5px;">
+                <app-issue-badge *ngIf="verificationResults.stats.informational" type="INFORMATIONAL" [number]="verificationResults.stats.informational" ></app-issue-badge>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </li>
+    </ul>
+    <div *ngIf="activeTab === 'VERIFICATION'" style="flex-grow: 1; height: 100%; overflow: hidden; padding-top: 20px;">
+      <div *ngIf="!loadingVerification && verificationError" class="alert alert-danger">
+        {{ verificationError }}
+      </div>
+      <app-verification-entry-table *ngIf="verificationResults && !loadingVerification && !verificationError" [value]="verificationResults"> </app-verification-entry-table>
     </div>
-    <div *ngIf="!loading" style="display: flex; width: 100%; height: 100%; flex-direction: column; gap: 10px; padding: 10px;">
-      <div *ngIf="error" class="alert alert-danger">{{error}}</div>
-      <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
-        <span>Comparing with version</span>
-        <p-dropdown
-          [options]="versions"
-          [autoDisplayFirst]="false"
-          [(ngModel)]="compareTarget"
-          (ngModelChange)="onTargetChange($event)"
-        ></p-dropdown>
+    <div *ngIf="activeTab === 'CHANGES'" style="flex-grow: 1; height: 100%; border: 2px solid lightgray; border-radius: 4px; background-color: rgb(251 251 251);">
+      <div *ngIf="loadingDelta" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; flex-direction: column; gap: 5px;">
+        <h4>Loading Changes</h4>
+        <mat-spinner class="verification-progress" diameter="40"></mat-spinner>
       </div>
-      <div *ngIf="delta && delta.length === 0" style="display: flex; flex-grow: 1; align-items: center; justify-content: center;">
-        <span>No changes have been made.</span>
-      </div>
-      <div *ngIf="delta && delta.length > 0" style="display: flex; flex-grow: 1; justify-content: center; margin-top: 40px;">
-        <p-table
-          [value]="delta"
-          [paginator]="true"
-          [rows]="20"
-          [rowsPerPageOptions]="[5, 10, 15, 20, 30, 40, 50]"
-        >
-          <ng-template let-columns pTemplate="header">
-              <tr>
-                <th>Change</th>
-                <th>Code</th>
-                <th>Is Pattern</th>
-                <th>Pattern Expression</th>
-                <th>Description</th>
-                <th>Code System</th>
-                <th>Usage</th>
-                <th>Comments</th>
+      <div *ngIf="!loadingDelta" style="display: flex; width: 100%; height: 100%; flex-direction: column; gap: 10px; padding: 10px;">
+        <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+          <span>Comparing with version</span>
+          <p-dropdown
+            [options]="versions"
+            [autoDisplayFirst]="false"
+            [(ngModel)]="compareTarget"
+            (ngModelChange)="onTargetChange($event)"
+          ></p-dropdown>
+        </div>
+        <div *ngIf="delta && delta.length === 0" style="display: flex; flex-grow: 1; align-items: center; justify-content: center;">
+          <span>No changes have been made.</span>
+        </div>
+        <div *ngIf="delta && delta.length > 0" style="display: flex; flex-grow: 1; justify-content: center; margin-top: 40px;">
+          <p-table
+            [value]="delta"
+            [paginator]="true"
+            [rows]="20"
+            [rowsPerPageOptions]="[5, 10, 15, 20, 30, 40, 50]"
+          >
+            <ng-template let-columns pTemplate="header">
+                <tr>
+                  <th>Change</th>
+                  <th>Code</th>
+                  <th>Is Pattern</th>
+                  <th>Pattern Expression</th>
+                  <th>Description</th>
+                  <th>Code System</th>
+                  <th>Usage</th>
+                  <th>Comments</th>
+                </tr>
+            </ng-template>
+            <ng-template let-index="rowIndex" let-rowData pTemplate="body">
+              <tr [ngClass]="{'added': rowData.change === 'ADDED', 'removed': rowData.change === 'DELETED'}" style="border-top: 2px solid black;">
+                <td style="text-align: center; font-weight: bold;">
+                  {{rowData.change}}
+                </td>
+                <td>
+                  <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.value, row: rowData.change }"></ng-container>
+                </td>
+                <td>
+                  <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.hasPattern, row: rowData.change, template: hasPattern }"></ng-container>
+                </td>
+                <td>
+                  <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.pattern, row: rowData.change }"></ng-container>
+                </td>
+                <td>
+                  <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.description, row: rowData.change }"></ng-container>
+                </td>
+                <td>
+                  <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.codeSystem, row: rowData.change }"></ng-container>
+                </td>
+                <td>
+                  <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.usage, row: rowData.change }"></ng-container>
+                </td>
+                <td>
+                  <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.comments, row: rowData.change }"></ng-container>
+                </td>
               </tr>
-          </ng-template>
-          <ng-template let-index="rowIndex" let-rowData pTemplate="body">
-            <tr [ngClass]="{'added': rowData.change === 'ADDED', 'removed': rowData.change === 'DELETED'}" style="border-top: 2px solid black;">
-              <td style="text-align: center; font-weight: bold;">
-                {{rowData.change}}
-              </td>
-              <td>
-                <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.value, row: rowData.change }"></ng-container>
-              </td>
-              <td>
-                <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.hasPattern, row: rowData.change, template: hasPattern }"></ng-container>
-              </td>
-              <td>
-                <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.pattern, row: rowData.change }"></ng-container>
-              </td>
-              <td>
-                <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.description, row: rowData.change }"></ng-container>
-              </td>
-              <td>
-                <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.codeSystem, row: rowData.change }"></ng-container>
-              </td>
-              <td>
-                <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.usage, row: rowData.change }"></ng-container>
-              </td>
-              <td>
-                <ng-container *ngTemplateOutlet="deltaValue; context: { $implicit: rowData.comments, row: rowData.change }"></ng-container>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
+            </ng-template>
+          </p-table>
+        </div>
       </div>
     </div>
-
   </div>
-  <div style="min-width: 500px; height: 100%; overflow-x: scroll;">
+  <div style="min-width: 500px; height: 100%; overflow-x: scroll; padding-left: 5px; padding-right: 5px;">
     <h2 mat-dialog-title>Commit Version</h2>
     <form [formGroup]="metaDataForm" style="display: flex; flex-direction: column;">
       <div class="form-group">
