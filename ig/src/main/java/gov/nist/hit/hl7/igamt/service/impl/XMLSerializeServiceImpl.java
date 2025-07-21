@@ -130,7 +130,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 	private static final int limitSizeOfVS = 5000;
 
-	public static  String schemaVersion = "1.7.1";
+	public static  String schemaVersion = "1.7.2";
 	public static  String schemaURL = "https://raw.githubusercontent.com/usnistgov/hl7-v2-schemas/"+ schemaVersion + "/src/main/resources/hl7-v2-schemas/";
 	/*
 	 * (non-Javadoc)

@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>gov.nist.hit</groupId>
 			<artifactId>hl7-v2-schemas</artifactId>
-			<version>1.6.0</version>
+			<version>1.7.2-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
