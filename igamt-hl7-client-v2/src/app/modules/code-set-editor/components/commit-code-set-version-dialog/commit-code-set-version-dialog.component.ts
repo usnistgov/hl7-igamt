@@ -61,8 +61,8 @@ export class CommitCodeSetVersionDialogComponent implements OnInit {
       this.compareTarget = found.value;
       this.codeSetVersionInfo = this.compareTarget;
       this.loadDelta(this.compareTarget.id);
-      this.verify(this.codeSetId, this.versionId);
     }
+    this.verify(this.codeSetId, this.versionId);
   }
 
   verify(codeSet: string, codeSetVersionId: string) {

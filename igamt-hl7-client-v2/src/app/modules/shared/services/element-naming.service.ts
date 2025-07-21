@@ -189,7 +189,7 @@ export class ElementNamingService {
   getPathInfoFromPath(resource: IResource, repository: AResourceRepositoryService, path: IPath, options?: {
     referenceChange?: Record<string, string>;
   }): Observable<IPathInfo> {
-    const referenceChange = options ? options.referenceChange : {};
+    const referenceChange = options ? options.referenceChange || {} : {};
     const pathSubject = new ReplaySubject<IPathInfo>(1);
     const refType = (type: Type) => {
       if (type === Type.FIELD || type === Type.COMPONENT || type === Type.SUBCOMPONENT) {
