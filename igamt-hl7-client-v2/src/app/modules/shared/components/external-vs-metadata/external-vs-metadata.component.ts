@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { catchError, mergeMap, tap } from 'rxjs/operators';
 import { EMPTY, Observable, of, Subscription } from 'rxjs';
+import { catchError, mergeMap, tap } from 'rxjs/operators';
 
 export interface CodeSetVersionMetadata {
   name: string;
-  date: Date,
+  date: Date;
   numberOfCodes: number;
   version: string;
   id: string;
@@ -18,10 +18,10 @@ export interface CodeSetMetadata {
     version: string;
     date: Date;
   };
-  versions: {
+  versions: Array<{
     version: string;
     date: Date;
-  }[];
+  }>;
 }
 
 @Component({
@@ -48,9 +48,9 @@ export class ExternalVsMetadataComponent implements OnChanges {
 
   version: string | undefined;
   base: string;
-  loading: boolean = false;
-  errored: boolean = false;
-  invalidURL: boolean = false;
+  loading = false;
+  errored = false;
+  invalidURL = false;
   subscription: Subscription;
   metadata: Observable<CodeSetVersionMetadata>;
 
@@ -91,10 +91,10 @@ export class ExternalVsMetadataComponent implements OnChanges {
             this.errored = true;
             this.loading = false;
             return EMPTY;
-          })
-        )
-      })
-    )
+          }),
+        );
+      }),
+    );
   }
 
   fetchVersionMetadata(version: string): Observable<CodeSetVersionMetadata> {
@@ -112,10 +112,10 @@ export class ExternalVsMetadataComponent implements OnChanges {
             this.errored = true;
             this.loading = false;
             return EMPTY;
-          })
+          }),
         );
-      })
-    )
+      }),
+    );
   }
 
 }
