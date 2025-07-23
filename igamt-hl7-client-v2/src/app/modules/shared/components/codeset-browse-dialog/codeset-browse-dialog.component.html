@@ -59,7 +59,7 @@
                           <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
                         </td>
                         <td style="white-space: normal;">
-                          <app-entity-bagde [type]="rowData.type"></app-entity-bagde>                          
+                          <app-entity-bagde [type]="rowData.type"></app-entity-bagde>
                           <strong [ngStyle]="{ 'color': rowNode.node.selectable ? 'black' : '#b1b1b1'}" style="margin-left: 10px">
                             <span>{{rowData.label}}</span>
                             <span style="margin-left: 5px;" class="badge badge-primary" *ngIf="rowData.type === 'CODESETVERSION' && rowData.latestStable">latest</span>
@@ -93,6 +93,7 @@
           <div *ngIf="item.data.type === 'CODESET'">
             <app-entity-bagde [type]="item.data.type"></app-entity-bagde>
             <strong style="margin-left: 10px">{{item.data.label}}</strong>
+            <span style="color: blue;"> (track latest version)</span>
           </div>
           <div>
             <button (click)="clear(i)" class="btn btn-sm btn-danger">
@@ -114,6 +115,7 @@
           <div *ngIf="selected.data.type === 'CODESET'">
             <app-entity-bagde [type]="selected.data.type"></app-entity-bagde>
             <strong style="margin-left: 10px">{{selected.data.label}}</strong>
+            <span style="color: blue;"> (track latest version)</span>
           </div>
           <div>
             <button (click)="clearSelection()" class="btn btn-sm btn-danger">
