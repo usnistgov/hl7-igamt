@@ -123,7 +123,7 @@
           >
             <input
               (input)="
-                dt1.filter($event.target.value, col.field, col.filterMatchMode)
+                dt1.filter($event.target.value, col.field, 'contains')
               "
               [placeholder]="' Search by ' + col.header"
               [value]="dt1.filters[col.field]?.value"

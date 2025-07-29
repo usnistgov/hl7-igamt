@@ -83,9 +83,8 @@ import { IVerificationEnty } from './../../../dam-framework/models/data/workspac
 import { LibraryService } from './../../../library/services/library.service';
 import { IMessagePickerContext, IMessagePickerData, MessagePickerComponent } from './../../../shared/components/message-picker/message-picker.component';
 import { UnusedElementsComponent } from './../../../shared/components/unused-elements/unused-elements.component';
-import { SourceType } from './../../../shared/models/adding-info';
+import { IGResourceProvider } from './../../../shared/models/adding-info';
 import { VerificationService } from './../../../shared/services/verification.service';
-import { ITypedSection } from './../ig-toc/ig-toc.component';
 import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
 
 @Component({
@@ -257,31 +256,19 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     subscription.unsubscribe();
   }
 
-  // addChildrenFromProvider(providerId: string){
-  //   const dialogRef = this.dialog.open(ImportFromProviderComponent, {
-  //     data: {},
-  //   });
-  //   dialogRef.afterClosed().pipe(
-  //     filter((x) => x !== undefined),
-  //     withLatestFrom(this.documentRef$, this.config$),
-  //     take(1),
-  //     map(([result, documentRef, config]) => {
-  //       if(result.redirect){
-  //       RxjsStoreHelperService.listenAndReact(this.actions, {
-  //         [IgEditActionTypes.AddResourceSuccess]: {
-  //           do: (action: AddResourceSuccess) => {
-  //             this.router.navigate(['./' + Type.VALUESET.toString().toLocaleLowerCase() + '/' + action.payload.targetResourceId], { relativeTo: this.activeRoute });
-  //             return of();
-  //           },
-  //         },
-  //       }).subscribe();
-  //     }
-  //       this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result.selected, type: Type.VALUESET }));
-  //     }),
-  //   ).subscribe();
-  // }
+  addChildrenFromProvider(providerId: IGResourceProvider) {
+    if (providerId === IGResourceProvider.IGAMT_CODESETS) {
+      this.addValueSet(true);
+    } else if (providerId === IGResourceProvider.PHINVADS) {
+      this.addPhinvadsValueSet();
+    } else {
+      throw new Error('Unknown provider: ' + providerId);
+    }
+  }
 
-  addChildrenFromProvider(providerId: string) {
+
+
+  addPhinvadsValueSet() {
     this.config$.pipe(
       take(1),
       switchMap((conf) => {
@@ -537,7 +524,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
   addChild($event: IAddNewWrapper) {
     switch ($event.type) {
       case Type.VALUESET:
-        this.addValueSet($event);
+        this.addValueSet();
         break;
       case Type.COCONSTRAINTGROUP:
         this.addCoConstraintGroup($event);
@@ -646,9 +633,11 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     ).subscribe();
   }
 
-  addValueSet($event: IAddNewWrapper) {
+  addValueSet(asIgamtExternalValueSet = false) {
     const dialogRef = this.dialog.open(BuildValueSetComponent, {
-      data: { existing: $event.node.children, scope: Scope.USER, title: this.getNewTitle($event.type), type: $event.type, sourceType: SourceType.INTERNAL },
+      data: {
+        asIgamtExternalValueSet,
+      },
     });
     dialogRef.afterClosed().pipe(
       filter((x) => x !== undefined),
@@ -664,7 +653,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
             },
           },
         }).subscribe();
-        this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: [result], type: $event.type }));
+        this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: [result], type: Type.VALUESET }));
       }),
     ).subscribe();
   }

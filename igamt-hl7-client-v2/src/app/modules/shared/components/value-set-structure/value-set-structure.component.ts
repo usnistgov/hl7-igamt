@@ -4,7 +4,6 @@ import { Guid } from 'guid-typescript';
 import { SelectItem } from 'primeng/api';
 import { EMPTY, of } from 'rxjs';
 import { catchError, finalize, map, tap } from 'rxjs/operators';
-import { ICodeSetInfo } from 'src/app/modules/code-set-editor/models/code-set.models';
 import { CodeSetServiceService } from 'src/app/modules/code-set-editor/services/CodeSetService.service';
 import { ConfirmDialogComponent } from 'src/app/modules/dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { Type } from '../../constants/type.enum';
@@ -125,17 +124,15 @@ export class ValueSetStructureComponent implements OnInit {
     },
   ];
 
-  // dt1: any;
-
   onFilter(field: string, matchMode: string, dt1: any) {
-  const filterValue = this.filterValues[field] || '';
-
-  dt1.filter(filterValue, field, matchMode);
+    const filterValue = this.filterValues[field] || '';
+    dt1.filter(filterValue, field, matchMode);
   }
 
   ngOnInit() {
     this.editMap[this.valueSet.id] = false;
   }
+
   toggleEdit(id: string) {
     this.temp = null;
     const tempMap = this.editMap;
@@ -164,12 +161,6 @@ export class ValueSetStructureComponent implements OnInit {
       return codeSystem.toLowerCase().indexOf(event.query.toLowerCase()) === 0;
     });
   }
-
-  // getCodeSystemOptions(): SelectItem[] {
-  //   return this.valueSet.codes.map((code: ICodes) => {
-  //     return { label: code.codeSystem, value: code.codeSystem };
-  //   });
-  // }
 
   getCodeSystemOptions(): SelectItem[] {
     const uniqueCodeSystems = new Set(this.valueSet.codes.map((code: ICodes) => code.codeSystem));
