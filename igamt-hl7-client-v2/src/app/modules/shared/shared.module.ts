@@ -82,6 +82,7 @@ import { EntityBrowseDialogComponent } from './components/entity-browse-dialog/e
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
 import { ExternalVsCodesFetchComponent } from './components/external-vs-codes-fetch/external-vs-codes-fetch.component';
+import { ExternalVsMetadataComponent } from './components/external-vs-metadata/external-vs-metadata.component';
 import { FetchCodesDialogComponent } from './components/fetch-codes-dialog/fetch-codes-dialog.component';
 import { FieldAddDialogComponent } from './components/field-add-dialog/field-add-dialog.component';
 import { FileInputComponent } from './components/file-input/file-input.component';
@@ -163,7 +164,6 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { ExternalVsMetadataComponent } from './components/external-vs-metadata/external-vs-metadata.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -286,7 +286,7 @@ import { ExternalVsMetadataComponent } from './components/external-vs-metadata/e
     FetchCodesDialogComponent,
     ImportFromProviderComponent,
     GroupValueSetComponent,
-    ExternalVsMetadataComponent
+    ExternalVsMetadataComponent,
   ],
   providers: [
     StoreResourceRepositoryService,

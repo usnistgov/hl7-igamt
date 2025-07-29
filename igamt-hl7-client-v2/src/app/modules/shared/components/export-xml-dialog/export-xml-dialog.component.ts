@@ -58,6 +58,8 @@ export class ExportXmlDialogComponent {
   };
   exportType = 'xml';
   generationSubscription: Subscription;
+  configurationLoadedFromSaved = false;
+  rowsOptions: number[] = [];
 
   @ViewChild('profileSelection')
   profileSelection: TemplateRef<any>;
@@ -182,6 +184,8 @@ export class ExportXmlDialogComponent {
         const report = result.verificationIssues;
         const externalValueSetExportModes = result.externalValueSetExportModes || {};
         this.externalValueSets = result.externalValueSetReferences || [];
+        this.rowsOptions = this.getRowsPerPageOptions(this.externalValueSets);
+        this.configurationLoadedFromSaved = result.externalValueSetExportModes && Object.keys(result.externalValueSetExportModes).length > 0;
         return this.verificationService.verificationReportToDisplay(report, this.repository).pipe(
           take(1),
           map((verificationResult) => {
@@ -237,6 +241,18 @@ export class ExportXmlDialogComponent {
       this.exportTypeMap[vs.display.id] = type;
     }
     this.updateTypeCount();
+  }
+
+  getRowsPerPageOptions(externalValueSets: any[]): number[] {
+    let cursor = 10;
+    const length = externalValueSets.length;
+    const options = [];
+    while (cursor < length) {
+      options.push(cursor);
+      cursor += 10;
+    }
+    options.push(cursor);
+    return options;
   }
 
   setVerificationFlags(result: IVerificationResultDisplay) {

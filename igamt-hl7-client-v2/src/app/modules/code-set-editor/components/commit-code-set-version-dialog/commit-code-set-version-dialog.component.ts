@@ -4,13 +4,13 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { SelectItem } from 'primeng/primeng';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { IVerificationEntryTable, VerificationService } from 'src/app/modules/shared/services/verification.service';
 import { DeltaChange, ICodeDelta, ICodeSetVersionContent, ICodeSetVersionInfo } from '../../models/code-set.models';
 import { CodeSetServiceService } from '../../services/CodeSetService.service';
-import { IVerificationEntryTable, VerificationService } from 'src/app/modules/shared/services/verification.service';
 
 export enum CommitTab {
-  CHANGES = "CHANGES",
-  VERIFICATION = "VERIFICATION"
+  CHANGES = 'CHANGES',
+  VERIFICATION = 'VERIFICATION',
 }
 
 @Component({
@@ -79,11 +79,11 @@ export class CommitCodeSetVersionDialogComponent implements OnInit {
         if (error.error && error.error.text) {
           this.verificationError = error.error.text;
         } else {
-          this.verificationError = "An unexpected error happened while trying to verify your code set, please try again later or contact admin"
+          this.verificationError = 'An unexpected error happened while trying to verify your code set, please try again later or contact admin';
         }
         this.verificationResults = null;
         return throwError(error);
-      })
+      }),
     ).subscribe();
   }
 
@@ -100,7 +100,7 @@ export class CommitCodeSetVersionDialogComponent implements OnInit {
         if (error.error && error.error.text) {
           this.error = error.error.text;
         } else {
-          this.error = "An unexpected error happened while trying to compare versions, please try again later or contact admin"
+          this.error = 'An unexpected error happened while trying to compare versions, please try again later or contact admin';
         }
         this.delta = null;
         return throwError(error);

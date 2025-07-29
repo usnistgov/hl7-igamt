@@ -4,11 +4,11 @@ import { Action, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CodeSetLoadType } from 'src/app/root-store/code-set-editor/code-set-list/code-set-list.actions';
+import { IVerificationEnty } from '../../dam-framework';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { LoadPayloadData, LoadResourcesInRepostory } from '../../dam-framework/store';
 import { ICodes } from '../../shared/models/value-set.interface';
 import { ICodeDelta, ICodeSetCommit, ICodeSetInfo, ICodeSetListItem, ICodeSetVersionContent } from '../models/code-set.models';
-import { IVerificationEnty } from '../../dam-framework';
 
 @Injectable({
   providedIn: 'root',
