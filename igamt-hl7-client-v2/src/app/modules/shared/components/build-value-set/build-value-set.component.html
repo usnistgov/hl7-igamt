@@ -2,7 +2,37 @@
 <mat-dialog-content>
   <form #form='ngForm'>
 
+    <div *ngIf="asIgamtExternalValueSet" style="margin-bottom: 10px;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <label> <strong> Existing Code Set from IGAMT </strong> </label>
+        <button class="btn btn-sm btn-primary btn-outline" (click)="selectExistingCodeSet()">
+          <i class="fa fa-pencil"></i>
+        </button>
+        <input [(ngModel)]="model.url" class="form-control" id="url" name="url" style="display: none;" required type="url"/>
+      </div>
+      <span *ngIf="!selectedCodeSet" style="color: lightgray;">No code set selected</span>
 
+      <div *ngIf="selectedCodeSet" style="display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 10px; border-radius: 5px; border: 1px solid lightgray; margin-top: 10px;">
+        <div *ngIf="selectedCodeSet.data.type === 'CODESETVERSION'" style="display: flex; gap: 10px; align-items: center; justify-content: space-between;">
+          <app-entity-bagde [type]="selectedCodeSet.parent.data.type"></app-entity-bagde>
+          <strong style="margin-left: 10px">{{selectedCodeSet.parent.data.label}}</strong>
+          <i class="fa fa-chevron-right"></i>
+          <strong>version {{selectedCodeSet.data.label}}</strong>
+          <span style="margin-left: 5px;" class="badge badge-primary" *ngIf="selectedCodeSet.data.latestStable">latest</span>
+          <span style="color: gray;">Committed on {{selectedCodeSet.data.dateCommitted | date:'medium'}}</span>
+        </div>
+        <div *ngIf="selectedCodeSet.data.type === 'CODESET'">
+          <app-entity-bagde [type]="selectedCodeSet.data.type"></app-entity-bagde>
+          <strong style="margin-left: 10px">{{selectedCodeSet.data.label}}</strong>
+          <span style="color: blue;"> (track latest version)</span>
+        </div>
+        <div>
+          <button (click)="clearSelection()" class="btn btn-sm btn-danger">
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+      </div>
+    </div>
 
     <div class="form-group">
       <label> <strong> Binging Identifier </strong> </label>
@@ -23,11 +53,11 @@
       </div>
     </div>
 
-
     <table class="table table-bordered" width="100%">
       <tr style="background-color: #efeded;">
         <th colspan="2">Value Set Attributes</th>
       </tr>
+
       <tr>
         <td><strong>Extensibility:</strong></td>
         <td>
@@ -35,6 +65,7 @@
             name="extensibility"></p-dropdown>
         </td>
       </tr>
+
       <tr>
         <td><strong>Stability:</strong></td>
         <td>
@@ -42,6 +73,7 @@
             name="stability"></p-dropdown>
         </td>
       </tr>
+
       <tr>
         <td><strong>Content Definition:</strong></td>
         <td>
@@ -50,44 +82,43 @@
         </td>
       </tr>
 
-      <tr style="background-color: #efeded;">
-        <th colspan="2">Code Management</th>
-      </tr>
-      <tr>
-        <td colspan="2">
+      <ng-container  *ngIf="!asIgamtExternalValueSet">
+        <tr style="background-color: #efeded;">
+          <th colspan="2">Code Management</th>
+        </tr>
+        <tr>
+          <td colspan="2">
 
-          <p-radioButton [(ngModel)]="model.sourceType" value="INTERNAL" inputId="internal"
-            name="sourceType"></p-radioButton>
-          Internal (Codes Managed inside the IG Document)
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2"><p-radioButton [(ngModel)]="model.sourceType" value="EXTERNAL" inputId="external"
-            name="sourceType"></p-radioButton>
-          External (Codes Managed outside of the IG Document)</td>
-      </tr>
-
+            <p-radioButton [(ngModel)]="model.sourceType" value="INTERNAL" inputId="internal"
+              name="sourceType"></p-radioButton>
+            Internal (Codes Managed inside the IG Document)
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2"><p-radioButton [(ngModel)]="model.sourceType" value="EXTERNAL" inputId="external"
+              name="sourceType"></p-radioButton>
+            External (Codes Managed outside of the IG Document)</td>
+        </tr>
+      </ng-container>
     </table>
 
-
-    <div class="form-group" *ngIf="model.sourceType ==='EXTERNAL'">
-      <label> <strong> Code Set URL </strong> </label>
-
-      <input [(ngModel)]="model.url" class="form-control" id="url" name="url"
-        placeholder="Enter Code set URL" required type="url" width="100%" />
-      <div *ngIf="form.controls['url'] && form.controls['url'].invalid" class="input-form-invalid-feedback"
-        style="margin-left: 10px;">
-        <span style="color:red"> Enter a valid URL</span>
+    <ng-container *ngIf="!asIgamtExternalValueSet">
+      <div class="form-group" *ngIf="model.sourceType ==='EXTERNAL'">
+        <label> <strong> Code Set URL </strong> </label>
+        <input [(ngModel)]="model.url" class="form-control" id="url" name="url"
+          placeholder="Enter Code set URL" required type="url" width="100%" />
+        <div *ngIf="form.controls['url'] && form.controls['url'].invalid" class="input-form-invalid-feedback"
+          style="margin-left: 10px;">
+          <span style="color:red"> Enter a valid URL</span>
+        </div>
       </div>
-    </div>
-
-
+    </ng-container>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions style=" display: flex;justify-content: space-between">
   <p-checkbox [(ngModel)]="redirect" binary="true" label="redirect to the flavor"></p-checkbox>
   <div style="justify-content: flex-end; margin-left: 5px;">
     <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
-    <button (click)="submit()" [disabled]="form&& form.invalid" class="btn btn-sm btn-success">Submit</button>
+    <button (click)="submit()" [disabled]="form && form.invalid" class="btn btn-sm btn-success">Submit</button>
   </div>
 </mat-dialog-actions>

@@ -94,7 +94,7 @@ export enum PropertyType {
   CODESETREFERENCE = 'CODESETREFERENCE',
   SLICE_FLAVOR = 'SLICE_FLAVOR',
   ORDERED_SLICE_POSITION = 'ORDERED_SLICE_POSITION',
-  CONDITIONAL_SLICE_ASSERTION = 'CONDITIONAL_SLICE_ASSERTION'
+  CONDITIONAL_SLICE_ASSERTION = 'CONDITIONAL_SLICE_ASSERTION',
 }
 
 export const PropertyTypeText: Record<PropertyType, string> = {
@@ -160,5 +160,5 @@ export const PropertyTypeText: Record<PropertyType, string> = {
   [PropertyType.CODESETREFERENCE]: 'Code Set Reference',
   [PropertyType.SLICE_FLAVOR]: 'Slice Flavor',
   [PropertyType.ORDERED_SLICE_POSITION]: 'Ordered Slice Position',
-  [PropertyType.CONDITIONAL_SLICE_ASSERTION]: 'Conditional Slice Assertion'
-}
+  [PropertyType.CONDITIONAL_SLICE_ASSERTION]: 'Conditional Slice Assertion',
+};

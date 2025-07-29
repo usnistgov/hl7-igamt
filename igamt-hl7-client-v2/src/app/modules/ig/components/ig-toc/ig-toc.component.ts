@@ -19,7 +19,6 @@ import { SelectItem } from 'primeng/api';
 import { map, take } from 'rxjs/operators';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
-import { IClickInfo } from '../../../document/models/toc/click-info.interface';
 import { Scope } from '../../../shared/constants/scope.enum';
 import { Type } from '../../../shared/constants/type.enum';
 import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
@@ -31,6 +30,7 @@ import { IgService } from '../../services/ig.service';
 import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
 import { IContent } from './../../../shared/models/content.interface';
 import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
+import { IGResourceProvider } from 'src/app/modules/shared/models/adding-info';
 
 @Component({
   selector: 'app-ig-toc',
@@ -82,7 +82,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @Output()
   addChildren = new EventEmitter<IAddWrapper>();
   @Output()
-  addChildrenFromProvider =  new EventEmitter<string>();
+  addChildrenFromProvider = new EventEmitter<string>();
   @Output()
   addCustom = new EventEmitter<IAddWrapper>();
   @Output()
@@ -365,12 +365,12 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     this.checkUnused.emit({ children: registryNode.children, type: registryNode.type });
   }
 
-  addFromProvider(providerId: string) {
+  addFromProvider(providerId: IGResourceProvider) {
     this.addChildrenFromProvider.emit(providerId);
   }
 
   onGroupValueSet($event: IDisplayElement[]) {
-    this.groupValueSet.emit({valueSets: $event});
+    this.groupValueSet.emit({ valueSets: $event });
   }
 
 }

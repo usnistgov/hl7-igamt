@@ -82,6 +82,8 @@ export class ExportToolComponent implements OnInit {
   exportInProgress = false;
   exportError: string;
   exportFailed = false;
+  configurationLoadedFromSaved = false;
+  rowsOptions: number[] = [];
 
   @ViewChild('toolLogin')
   toolLogin: TemplateRef<any>;
@@ -202,6 +204,8 @@ export class ExportToolComponent implements OnInit {
         const report = result.verificationIssues;
         const externalValueSetExportModes = result.externalValueSetExportModes || {};
         this.externalValueSets = result.externalValueSetReferences || [];
+        this.rowsOptions = this.getRowsPerPageOptions(this.externalValueSets);
+        this.configurationLoadedFromSaved = result.externalValueSetExportModes && Object.keys(result.externalValueSetExportModes).length > 0;
         return this.verificationService.verificationReportToDisplay(report, this.repository).pipe(
           take(1),
           map((verificationResult) => {
@@ -335,6 +339,18 @@ export class ExportToolComponent implements OnInit {
 
   selectConformanceProfiles(ids: string[]) {
     this.ids = { ...this.ids, conformanceProfilesId: ids };
+  }
+
+  getRowsPerPageOptions(externalValueSets: any[]): number[] {
+    let cursor = 10;
+    const length = externalValueSets.length;
+    const options = [];
+    while (cursor < length) {
+      options.push(cursor);
+      cursor += 10;
+    }
+    options.push(cursor);
+    return options;
   }
 
   selectCompositeProfiles(ids: string[]) {

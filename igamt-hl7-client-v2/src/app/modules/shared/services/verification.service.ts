@@ -363,9 +363,9 @@ export class VerificationService {
       target: null,
       stats,
       entries,
-    }
+    };
     return {
-      valid: valid,
+      valid,
       stats,
       resources: [],
       codes: Array.from(new Set(entries.map((entry) => entry.code))),

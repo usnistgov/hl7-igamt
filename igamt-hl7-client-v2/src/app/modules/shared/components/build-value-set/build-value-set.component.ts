@@ -1,8 +1,10 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { IAddingInfo, SourceType } from '../../models/adding-info';
-import { IAddResourceData } from '../add-resource/add-resource.component';
+import { Type } from '../../constants/type.enum';
+import { BrowseType, CodeSetBrowseDialogComponent, IBrowserTreeNode } from '../codeset-browse-dialog/codeset-browse-dialog.component';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-build-value-set',
@@ -15,6 +17,8 @@ export class BuildValueSetComponent implements OnInit {
   @ViewChild(NgForm) child;
   redirect = true;
   notDefinedOption = { label: 'Not defined', value: 'Undefined' };
+  asIgamtExternalValueSet = false;
+  selectedCodeSet: IBrowserTreeNode;
 
   stabilityOptionsOptions = [
     this.notDefinedOption, { label: 'Dynamic', value: 'Dynamic' }, { label: 'Static', value: 'Static' },
@@ -26,23 +30,72 @@ export class BuildValueSetComponent implements OnInit {
     this.notDefinedOption, { label: 'Extensional', value: 'Extensional' }, { label: 'Intensional', value: 'Intensional' },
   ];
 
-  constructor(public dialogRef: MatDialogRef<BuildValueSetComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: IAddResourceData) {
+  constructor(
+    private dialog: MatDialog,
+    public dialogRef: MatDialogRef<BuildValueSetComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { asIgamtExternalValueSet?: boolean; }
+  ) {
+    this.asIgamtExternalValueSet = data.asIgamtExternalValueSet;
     this.model = {
       originalId: null,
       id: null,
-      sourceType: SourceType.INTERNAL,
+      sourceType: this.asIgamtExternalValueSet ? SourceType.EXTERNAL : SourceType.INTERNAL,
       name: '',
-      type: this.data.type,
+      type: Type.VALUESET,
       ext: '',
-      flavor : true,
-      url : ''};
+      flavor: true,
+      url: ''
+    };
+  }
+
+  selectExistingCodeSet() {
+    this.dialog.open(CodeSetBrowseDialogComponent, {
+      data: {
+        browserType: BrowseType.ENTITY,
+        scope: {
+          private: true,
+          public: true,
+        },
+        types: [Type.CODESET, Type.CODESETVERSION],
+        exclude: [],
+        selectionMode: 'single',
+        includeVersions: true,
+      },
+    }).afterClosed().pipe(
+      map((browserResult: IBrowserTreeNode) => {
+        this.selectedCodeSet = browserResult;
+        this.setURL(browserResult);
+      }),
+    ).subscribe();
+  }
+
+  clearSelection() {
+    this.selectedCodeSet = null;
+    this.model.url = '';
+  }
+
+  setURL(selectedNode: IBrowserTreeNode) {
+    let codeSetId: string;
+    let codeSetVersion: string;
+
+    if (selectedNode.data.type === Type.CODESET) {
+      codeSetId = selectedNode.data.id;
+    } else if (selectedNode.data.type === Type.CODESETVERSION) {
+      codeSetVersion = selectedNode.data.label;
+      codeSetId = selectedNode.parent ? selectedNode.parent.data.id : undefined;
+    }
+    const host = window.location.protocol + '//' + window.location.host;
+    let url = host + '/codesets/' + codeSetId;
+    if (codeSetVersion) {
+      url = url + '?version=' + codeSetVersion;
+    }
+    this.model.url = url;
   }
 
   ngOnInit() {
   }
+
   submit() {
-    console.log(this.model);
     this.dialogRef.close(this.model);
   }
 
