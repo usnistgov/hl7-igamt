@@ -1,0 +1,61 @@
+<h3 mat-dialog-title>Slicing for {{ elementName }}</h3>
+<table class="table table-bordered table-striped">
+  <thead>
+  <tr>
+    <th>
+      <ng-container [ngSwitch]="slicing.type">
+        <span *ngSwitchCase="'ASSERTION'">
+          Assertion
+        </span>
+          <span *ngSwitchCase="'OCCURRENCE'">
+          Occurrence
+        </span>
+      </ng-container>
+    </th>
+    <th>
+      Flavor
+    </th>
+    <th>
+      Comments
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let slice of slicing.slices">
+      <td>
+        <ng-container [ngSwitch]="slicing.type">
+          <span *ngSwitchCase="'ASSERTION'">
+            {{slice.assertion?.description}}
+          </span>
+          <span *ngSwitchCase="'OCCURRENCE'">
+            {{slice.position}}
+          </span>
+        </ng-container>
+      </td>
+      <td>
+        <app-display-section *ngIf="map[slice.flavorId]" [element]="map[slice.flavorId]" [hideDescription]="true"></app-display-section>
+      </td>
+      <td>
+        {{slice.comments}}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <ng-container [ngSwitch]="slicing.type">
+          <span *ngSwitchCase="'ASSERTION'">
+            <strong>Otherwise (Default)</strong>
+          </span>
+          <span *ngSwitchCase="'OCCURRENCE'">
+            <strong>* (Default)</strong>
+          </span>
+        </ng-container>
+      </td>
+      <td>
+        <app-display-section *ngIf="map[defaultFlavorId]" [element]="map[defaultFlavorId]" [hideDescription]="true"></app-display-section>
+      </td>
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>

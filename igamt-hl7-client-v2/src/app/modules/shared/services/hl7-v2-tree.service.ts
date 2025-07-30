@@ -243,7 +243,10 @@ export class Hl7V2TreeService {
       viewOnly,
       level,
       pathId,
-      slicing: resource.slicings ? resource.slicings.find((x) => x.path === resourcePathId) : null,
+      slicing: resource.slicings ? resource.slicings.find((x) => {
+        const bindingLocation = (parent && parent.data.pathId) ? parent.data.pathId + '-' + x.path : x.path;
+        return bindingLocation === resourcePathId;
+      }) : null,
       bindings: elementBindings,
       profileComponentOverrides: new BehaviorSubject({}),
       resourcePathId,
