@@ -10,6 +10,7 @@ import { ISlicing } from '../../../../models/slicing';
 import { IChangeReasonDialogDisplay } from '../../../change-reason-dialog/change-reason-dialog.component';
 import { IResourceRef } from '../../hl7-v2-tree.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
+import { AResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 
 export type GroupOptions = Array<{
   label: string,
@@ -30,6 +31,8 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
 
   @Input()
   anchor: TemplateRef<any>;
+  @Input()
+  repository: AResourceRepositoryService;
   @Input()
   slicing: ISlicing;
   @Input()

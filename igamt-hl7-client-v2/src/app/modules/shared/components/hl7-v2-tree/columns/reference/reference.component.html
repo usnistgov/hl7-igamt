@@ -24,7 +24,7 @@
     <div *ngIf="!editMode" style="display: flex; justify-content: space-between; align-items: center;">
 
       <div style="display: flex; align-items: center;">
-        <app-slicing-viewer [slicing]="slicing" style="margin-right: 5px;" [options]="all"></app-slicing-viewer>
+        <app-slicing-viewer [slicing]="slicing" style="margin-right: 5px;" [options]="all" [resource]="resource$ | async" [repository]="repository" [location]="location" [defaultFlavorId]="ref.id"></app-slicing-viewer>
         <app-change-log-info style="margin-right: 5px;"
           [sections]="changeDisplaySections$ | async"
           [context]="context"
@@ -43,7 +43,7 @@
   </div>
 
   <div *ngSwitchCase="true" style="display: flex; align-items: center;">
-    <app-slicing-viewer [slicing]="slicing" style="margin-right: 5px;" [options]="all"></app-slicing-viewer>
+    <app-slicing-viewer [slicing]="slicing" style="margin-right: 5px;" [options]="all" [resource]="resource$ | async" [repository]="repository" [location]="location" [defaultFlavorId]="ref.id"></app-slicing-viewer>
     <app-change-log-info style="margin-right: 5px;"
       [sections]="changeDisplaySections$ | async"
       [context]="context"
