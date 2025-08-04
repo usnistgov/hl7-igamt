@@ -11,9 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.service.impl;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import org.bson.types.ObjectId;
@@ -286,6 +284,7 @@ public class CloneServiceImpl implements  CloneService {
 		Set<Link> links  = new HashSet<Link>();
 		ret.setSavedResources(new HashSet<T>());
 		if(reg instanceof ValueSetRegistry) {
+			this.updateGroupData((ValueSetRegistry)reg, newKeys);
 			updateCodePresence((ValueSetRegistry)reg, newKeys);
 
 		}
@@ -304,6 +303,7 @@ public class CloneServiceImpl implements  CloneService {
 				links.add(l);
 			}
 		}
+
 
 		ret.setLinks(links);
 		return ret;
@@ -329,6 +329,31 @@ public class CloneServiceImpl implements  CloneService {
 		}
 		reg.setCodesPresence(newCodesPresence);
 	}
+
+	private void updateGroupData(ValueSetRegistry reg, HashMap<RealKey, String> newKeys) {
+		Map<String, List<String>> old = reg.getGroupedData().getGroupedData();
+		Map<String, List<String>> newGroupData = new HashMap<>();
+
+		for (Map.Entry<String, List<String>> entry : old.entrySet()) {
+			String group = entry.getKey();
+			List<String> updatedList = new ArrayList<>();
+
+			for (String id : entry.getValue()) {
+				RealKey key = new RealKey(id,Type.VALUESET);
+				String newId = newKeys.getOrDefault(key, id);
+				updatedList.add(newId);
+			}
+
+			newGroupData.put(group, updatedList);
+		}
+
+		reg.getGroupedData().setGroupedData(newGroupData);
+	}
+
+
+
+
+
 
 	/**
 	 * @param res
