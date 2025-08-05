@@ -346,7 +346,7 @@ public class CloneServiceImpl implements  CloneService {
 
 			newGroupData.put(group, updatedList);
 		}
-
+		
 		reg.getGroupedData().setGroupedData(newGroupData);
 	}
 
