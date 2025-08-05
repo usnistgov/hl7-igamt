@@ -81,9 +81,13 @@ import { selectVerificationResult } from './../../../../root-store/dam-igamt/iga
 import { GroupValueSets } from './../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { IVerificationEnty } from './../../../dam-framework/models/data/workspace';
 import { LibraryService } from './../../../library/services/library.service';
-import { IMessagePickerContext, IMessagePickerData, MessagePickerComponent } from './../../../shared/components/message-picker/message-picker.component';
+import {
+  IMessagePickerContext,
+  IMessagePickerData,
+  MessagePickerComponent,
+} from './../../../shared/components/message-picker/message-picker.component';
 import { UnusedElementsComponent } from './../../../shared/components/unused-elements/unused-elements.component';
-import { IGResourceProvider } from './../../../shared/models/adding-info';
+import { IGResourceProvider, SourceType } from './../../../shared/models/adding-info';
 import { VerificationService } from './../../../shared/services/verification.service';
 import { ManageProfileStructureComponent } from './../manage-profile-structure/manage-profile-structure.component';
 
@@ -93,7 +97,6 @@ import { ManageProfileStructureComponent } from './../manage-profile-structure/m
   styleUrls: ['./ig-edit-sidebar.component.scss'],
 })
 export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit {
-
   constructor(
     private store: Store<IDocumentDisplayInfo<IgDocument>>,
     private dialog: MatDialog,
@@ -104,17 +107,21 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     private actions: Actions,
     private verificationService: VerificationService,
 
-    private libraryService: LibraryService) {
+    private libraryService: LibraryService
+  ) {
     this.deltaMode$ = this.store.select(fromIgEdit.selectDelta);
-    this.deltaMode$.subscribe((x) => this.delta = x);
-    this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
+    this.deltaMode$.subscribe((x) => (this.delta = x));
+    this.store
+      .select(selectDerived)
+      .pipe(take(1))
+      .subscribe((x) => (this.derived = x));
     this.nodes$ = this.getNodes();
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.ig$ = this.store.select(selectIgDocument);
     this.conformanceProfiles$ = store.select(selectAllMessages);
     this.config$ = this.store.select(getHl7ConfigState).pipe(
       // tslint:disable-next-line: no-shadowed-variable
-      filter((config) => !!config),
+      filter((config) => !!config)
     );
     this.documentRef$ = store.select(fromIgamtSelectors.selectLoadedDocumentInfo);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
@@ -122,24 +129,30 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     this.filterActive$ = this.store.select(selectIgTocFilter).pipe(
       map((tocFilter) => {
         return tocFilter && tocFilter.active;
-      }),
+      })
     );
     // verification
     this.verification$ = this.store.select(selectVerificationResult).pipe(
       filter((value) => !!value),
-      map((value) => this.verificationService.convertValueToTocElements(value)),
+      map((value) => this.verificationService.convertValueToTocElements(value))
     );
-    this.selectedSubscription = this.store.select(selectRouterURL).pipe(
-      map((url: string) => {
-        const regex = '/ig/[a-z0-9A-Z-]+/(?<type>[a-z]+)/(?<id>[a-z0-9A-Z-]+).*';
-        const match = new RegExp(regex, 'g').exec(url);
-        if (match) {
-          const { groups: { type, id } } = match;
-          this.selectedTargetId = 'TOC-' + type.toUpperCase() + '-' + id;
-        } else {
-          this.selectedTargetId = 'IG';
-        }
-      })).subscribe();
+    this.selectedSubscription = this.store
+      .select(selectRouterURL)
+      .pipe(
+        map((url: string) => {
+          const regex = '/ig/[a-z0-9A-Z-]+/(?<type>[a-z]+)/(?<id>[a-z0-9A-Z-]+).*';
+          const match = new RegExp(regex, 'g').exec(url);
+          if (match) {
+            const {
+              groups: { type, id },
+            } = match;
+            this.selectedTargetId = 'TOC-' + type.toUpperCase() + '-' + id;
+          } else {
+            this.selectedTargetId = 'IG';
+          }
+        })
+      )
+      .subscribe();
   }
 
   nodes$: Observable<any[]>;
@@ -157,7 +170,11 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
   @ViewChild(IgTocComponent) toc: IgTocComponent;
   @ViewChild('triggerPopOver') triggerPopOver: NgbPopover;
   optionsToDisplay: any;
-  deltaOptions: SelectItem[] = [{ label: 'CHANGED', value: 'UPDATED' }, { label: 'DELETED', value: 'DELETED' }, { label: 'ADDED', value: 'ADDED' }];
+  deltaOptions: SelectItem[] = [
+    { label: 'CHANGED', value: 'UPDATED' },
+    { label: 'DELETED', value: 'DELETED' },
+    { label: 'ADDED', value: 'ADDED' },
+  ];
   selectedValues = ['UPDATED', 'DELETED', 'ADDED', 'UNCHANGED'];
   deltaMode$: Observable<boolean> = of(false);
   selectedTargetId = 'IG';
@@ -184,12 +201,11 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
         } else {
           return this.store.select(fromIgDocumentEdit.selectProfileTree);
         }
-      }),
+      })
     );
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   findScroll() {
     if (this.selectedTargetId) {
@@ -222,43 +238,58 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   addChildren(event: IAddWrapper) {
-    const subscription = this.hl7Version$.pipe(
-      withLatestFrom(this.version$),
-      take(1),
-      map(([versions, selectedVersion]) => {
-        const dialogData: IResourcePickerData = {
-          hl7Versions: versions,
-          existing: event.node.children,
-          title: this.getDialogTitle(event),
-          version: selectedVersion,
-          scope: event.scope,
-          master: false,
-          documentType: Type.IGDOCUMENT,
-          type: event.type,
-        };
-        const dialogRef = this.dialog.open(ResourcePickerComponent, {
-          data: dialogData,
-        });
-        dialogRef.afterClosed().pipe(
-          map((result) => {
-            this.store.dispatch(new ClearResource());
-            return result;
-          }),
-          filter((x) => x !== undefined),
-          withLatestFrom(this.documentRef$),
-          take(1),
-          map(([result, documentRef]) => {
-            this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type }));
-          }),
-        ).subscribe();
-      }),
-    ).subscribe();
+    const subscription = this.hl7Version$
+      .pipe(
+        withLatestFrom(this.version$),
+        take(1),
+        map(([versions, selectedVersion]) => {
+          const dialogData: IResourcePickerData = {
+            hl7Versions: versions,
+            existing: event.node.children,
+            title: this.getDialogTitle(event),
+            version: selectedVersion,
+            scope: event.scope,
+            master: false,
+            documentType: Type.IGDOCUMENT,
+            type: event.type,
+          };
+          const dialogRef = this.dialog.open(ResourcePickerComponent, {
+            data: dialogData,
+          });
+          dialogRef
+            .afterClosed()
+            .pipe(
+              map((result) => {
+                this.store.dispatch(new ClearResource());
+                return result;
+              }),
+              filter((x) => x !== undefined),
+              withLatestFrom(this.documentRef$),
+              take(1),
+              map(([result, documentRef]) => {
+                this.store.dispatch(
+                  new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type })
+                );
+              })
+            )
+            .subscribe();
+        })
+      )
+      .subscribe();
     subscription.unsubscribe();
   }
 
-  addChildrenFromProvider(providerId: IGResourceProvider) {
+  addChildrenFromProvider({
+    node,
+    providerId,
+    type,
+  }: {
+    node: IDisplayElement;
+    providerId: IGResourceProvider;
+    type: Type;
+  }) {
     if (providerId === IGResourceProvider.IGAMT_CODESETS) {
-      this.addValueSet(true);
+      this.addValueSet({ node, type }, true);
     } else if (providerId === IGResourceProvider.PHINVADS) {
       this.addPhinvadsValueSet();
     } else {
@@ -266,127 +297,158 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     }
   }
 
-
-
   addPhinvadsValueSet() {
-    this.config$.pipe(
-      take(1),
-      switchMap((conf) => {
-        const dialogRef = this.dialog.open(ImportFromProviderComponent, {
-          data: { url: conf.phinvadsUrl },
-        });
-        return dialogRef.afterClosed().pipe(
-          filter((x) => x !== undefined),
-          withLatestFrom(this.documentRef$),
-          map(([result, documentRef]) => {
-            if (result && result.redirect) {
-              RxjsStoreHelperService.listenAndReact(this.actions, {
-                [IgEditActionTypes.AddResourceSuccess]: {
-                  do: (action: AddResourceSuccess) => {
-                    this.router.navigate(['./' + Type.VALUESET.toString().toLocaleLowerCase() + '/' + action.payload.targetResourceId], { relativeTo: this.activeRoute });
-                    return of();
+    this.config$
+      .pipe(
+        take(1),
+        switchMap((conf) => {
+          const dialogRef = this.dialog.open(ImportFromProviderComponent, {
+            data: { url: conf.phinvadsUrl },
+          });
+          return dialogRef.afterClosed().pipe(
+            filter((x) => x !== undefined),
+            withLatestFrom(this.documentRef$),
+            map(([result, documentRef]) => {
+              if (result && result.redirect) {
+                RxjsStoreHelperService.listenAndReact(this.actions, {
+                  [IgEditActionTypes.AddResourceSuccess]: {
+                    do: (action: AddResourceSuccess) => {
+                      this.router.navigate(
+                        ['./' + Type.VALUESET.toString().toLocaleLowerCase() + '/' + action.payload.targetResourceId],
+                        { relativeTo: this.activeRoute }
+                      );
+                      return of();
+                    },
                   },
-                },
-              }).subscribe();
-            }
-            this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result.selected, type: Type.VALUESET }));
-          }),
-        );
-      }),
-    ).subscribe();
+                }).subscribe();
+              }
+              this.store.dispatch(
+                new IgEditTocAddResource({
+                  documentId: documentRef.documentId,
+                  selected: result.selected,
+                  type: Type.VALUESET,
+                })
+              );
+            })
+          );
+        })
+      )
+      .subscribe();
   }
 
   addMessages(event: IAddWrapper) {
-    const subscription = this.hl7Version$.pipe(
-      withLatestFrom(this.version$),
-      take(1),
-      map(([versions, selectedVersion]) => {
-        const dialogData: IMessagePickerData = {
-          hl7Versions: versions,
-          existing: event.node.children,
-          version: selectedVersion,
-          scope: event.scope,
-          context: IMessagePickerContext.ADD,
-        };
-        const dialogRef = this.dialog.open(MessagePickerComponent, {
-          data: dialogData,
-        });
-        dialogRef.afterClosed().pipe(
-          map((result) => {
-            this.store.dispatch(new ClearResource());
-            return result;
-          }),
-          filter((x) => x !== undefined),
-          withLatestFrom(this.documentRef$),
-          take(1),
-          map(([result, documentRef]) => {
-            this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type }));
-          }),
-        ).subscribe();
-      }),
-    ).subscribe();
+    const subscription = this.hl7Version$
+      .pipe(
+        withLatestFrom(this.version$),
+        take(1),
+        map(([versions, selectedVersion]) => {
+          const dialogData: IMessagePickerData = {
+            hl7Versions: versions,
+            existing: event.node.children,
+            version: selectedVersion,
+            scope: event.scope,
+            context: IMessagePickerContext.ADD,
+          };
+          const dialogRef = this.dialog.open(MessagePickerComponent, {
+            data: dialogData,
+          });
+          dialogRef
+            .afterClosed()
+            .pipe(
+              map((result) => {
+                this.store.dispatch(new ClearResource());
+                return result;
+              }),
+              filter((x) => x !== undefined),
+              withLatestFrom(this.documentRef$),
+              take(1),
+              map(([result, documentRef]) => {
+                this.store.dispatch(
+                  new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type })
+                );
+              })
+            )
+            .subscribe();
+        })
+      )
+      .subscribe();
     subscription.unsubscribe();
   }
 
   addStructure(event: IAddWrapper) {
-    const subscription = this.hl7Version$.pipe(
-      withLatestFrom(this.version$),
-      take(1),
-      map(([versions, selectedVersion]) => {
-        const dialogData = {
-          hl7Versions: versions,
-          existing: event.node.children,
-          title: this.getDialogTitle(event),
-          version: selectedVersion,
-          scope: Scope.USERCUSTOM,
-          master: false,
-          documentType: Type.IGDOCUMENT,
-          type: event.type,
-        };
-        const dialogRef = this.dialog.open(ImportStructureComponent, {
-          data: dialogData,
-        });
-        dialogRef.afterClosed().pipe(
-          map((result) => {
-            return result;
-          }),
-          filter((x) => x !== undefined),
-          withLatestFrom(this.documentRef$),
-          take(1),
-          map(([result, documentRef]) => {
-            this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type }));
-          }),
-        ).subscribe();
-      }),
-    ).subscribe();
+    const subscription = this.hl7Version$
+      .pipe(
+        withLatestFrom(this.version$),
+        take(1),
+        map(([versions, selectedVersion]) => {
+          const dialogData = {
+            hl7Versions: versions,
+            existing: event.node.children,
+            title: this.getDialogTitle(event),
+            version: selectedVersion,
+            scope: Scope.USERCUSTOM,
+            master: false,
+            documentType: Type.IGDOCUMENT,
+            type: event.type,
+          };
+          const dialogRef = this.dialog.open(ImportStructureComponent, {
+            data: dialogData,
+          });
+          dialogRef
+            .afterClosed()
+            .pipe(
+              map((result) => {
+                return result;
+              }),
+              filter((x) => x !== undefined),
+              withLatestFrom(this.documentRef$),
+              take(1),
+              map(([result, documentRef]) => {
+                this.store.dispatch(
+                  new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type })
+                );
+              })
+            )
+            .subscribe();
+        })
+      )
+      .subscribe();
     subscription.unsubscribe();
   }
 
   addUserDataTypes(event: IAddWrapper) {
-    this.libraryService.getPublishedLibraries().pipe(
-      withLatestFrom(this.version$),
-      // take(1),
-      map(([ILibraryDisplay, selectedVersion]) => {
-        const dialogData = {
-          version: selectedVersion,
-          libs: ILibraryDisplay,
-        };
-        const dialogRef = this.dialog.open(ImportFromLibComponent, {
-          data: dialogData,
-        });
-        dialogRef.afterClosed().pipe(
-          map((result) => {
-            return result;
-          }),
-          filter((x) => x !== undefined),
-          withLatestFrom(this.documentRef$),
-          take(1),
-          map(([result, documentRef]) => {
-            this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type }));
-          }),
-        ).subscribe();
-      }),
-    ).subscribe();
+    this.libraryService
+      .getPublishedLibraries()
+      .pipe(
+        withLatestFrom(this.version$),
+        // take(1),
+        map(([ILibraryDisplay, selectedVersion]) => {
+          const dialogData = {
+            version: selectedVersion,
+            libs: ILibraryDisplay,
+          };
+          const dialogRef = this.dialog.open(ImportFromLibComponent, {
+            data: dialogData,
+          });
+          dialogRef
+            .afterClosed()
+            .pipe(
+              map((result) => {
+                return result;
+              }),
+              filter((x) => x !== undefined),
+              withLatestFrom(this.documentRef$),
+              take(1),
+              map(([result, documentRef]) => {
+                this.store.dispatch(
+                  new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type })
+                );
+              })
+            )
+            .subscribe();
+        })
+      )
+      .subscribe();
   }
 
   addVSFromCSV($event) {
@@ -394,89 +456,103 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
       data: { ...$event, targetScope: Scope.USER, title: 'Add Valueset from CSV file' },
     });
 
-    dialogRef.afterClosed().pipe(
-      filter((x) => x !== undefined),
-      withLatestFrom(this.documentRef$),
-      take(1),
-      map(([result, documentRef]) => {
-        if (result && result.redirect) {
-          RxjsStoreHelperService.listenAndReact(this.actions, {
-            [IgEditActionTypes.ImportResourceFromFileSuccess]: {
-              do: (action: ImportResourceFromFileSuccess) => {
-                this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
-                return of();
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter((x) => x !== undefined),
+        withLatestFrom(this.documentRef$),
+        take(1),
+        map(([result, documentRef]) => {
+          if (result && result.redirect) {
+            RxjsStoreHelperService.listenAndReact(this.actions, {
+              [IgEditActionTypes.ImportResourceFromFileSuccess]: {
+                do: (action: ImportResourceFromFileSuccess) => {
+                  this.router.navigate(
+                    ['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id],
+                    { relativeTo: this.activeRoute }
+                  );
+                  return of();
+                },
               },
-            },
-          }).subscribe();
-        }
+            }).subscribe();
+          }
 
-        this.store.dispatch(new ImportResourceFromFile(documentRef.documentId, Type.VALUESET, Type.IGDOCUMENT, result.file));
-      }),
-    ).subscribe();
+          this.store.dispatch(
+            new ImportResourceFromFile(documentRef.documentId, Type.VALUESET, Type.IGDOCUMENT, result.file)
+          );
+        })
+      )
+      .subscribe();
   }
   copy($event: ICopyResourceData) {
     const dialogRef = this.dialog.open(CopyResourceComponent, {
       data: { ...$event, targetScope: Scope.USER, title: this.getCopyTitle($event.element.type) },
     });
-    dialogRef.afterClosed().pipe(
-      filter((x) => x !== undefined),
-      withLatestFrom(this.documentRef$),
-      map(([result, documentRef]) => {
-        if (result && result.redirect) {
-          RxjsStoreHelperService.listenAndReact(this.actions, {
-            [IgEditActionTypes.CopyResourceSuccess]: {
-              do: (action: CopyResourceSuccess) => {
-                this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
-                return of();
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter((x) => x !== undefined),
+        withLatestFrom(this.documentRef$),
+        map(([result, documentRef]) => {
+          if (result && result.redirect) {
+            RxjsStoreHelperService.listenAndReact(this.actions, {
+              [IgEditActionTypes.CopyResourceSuccess]: {
+                do: (action: CopyResourceSuccess) => {
+                  this.router.navigate(
+                    ['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id],
+                    { relativeTo: this.activeRoute }
+                  );
+                  return of();
+                },
               },
-            },
-          }).subscribe();
-        }
-        this.store.dispatch(new CopyResource({ documentId: documentRef.documentId, selected: result.flavor }));
-      }),
-    ).subscribe();
+            }).subscribe();
+          }
+          this.store.dispatch(new CopyResource({ documentId: documentRef.documentId, selected: result.flavor }));
+        })
+      )
+      .subscribe();
   }
   delete($event: IDisplayElement) {
-    this.documentRef$.pipe(
-      take(1),
-      concatMap((documentRef: IDocumentRef) => {
-        return this.crossReferencesService.findUsagesDisplay(documentRef, Type.IGDOCUMENT, $event.type, $event.id).pipe(
-          take(1),
-          map((usages: IUsages[]) => {
-            if (usages.length === 0) {
-              const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-                data: {
-                  question: 'Are you sure you want to delete this ' + this.getStringFromType($event.type) + '?',
-                  action: 'Delete ' + this.getStringFromType($event.type),
-                },
-              });
-              dialogRef.afterClosed().subscribe(
-                (answer) => {
-                  if (answer) {
-                    this.store.dispatch(new DeleteResource({ documentId: documentRef.documentId, element: $event }));
-                  }
-                },
-              );
-            } else {
-              const dialogRef = this.dialog.open(UsageDialogComponent, {
-                data: {
-                  title: 'Cross References found',
-                  usages,
-                  element: $event,
-                  documentId: documentRef.documentId,
-                },
-              });
-              this.router.events
-                .subscribe((h) => {
-                  dialogRef.close();
-                });
-              dialogRef.afterClosed().subscribe(
-              );
-            }
-          }),
-        );
-      }),
-    ).subscribe();
+    this.documentRef$
+      .pipe(
+        take(1),
+        concatMap((documentRef: IDocumentRef) => {
+          return this.crossReferencesService
+            .findUsagesDisplay(documentRef, Type.IGDOCUMENT, $event.type, $event.id)
+            .pipe(
+              take(1),
+              map((usages: IUsages[]) => {
+                if (usages.length === 0) {
+                  const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+                    data: {
+                      question: 'Are you sure you want to delete this ' + this.getStringFromType($event.type) + '?',
+                      action: 'Delete ' + this.getStringFromType($event.type),
+                    },
+                  });
+                  dialogRef.afterClosed().subscribe((answer) => {
+                    if (answer) {
+                      this.store.dispatch(new DeleteResource({ documentId: documentRef.documentId, element: $event }));
+                    }
+                  });
+                } else {
+                  const dialogRef = this.dialog.open(UsageDialogComponent, {
+                    data: {
+                      title: 'Cross References found',
+                      usages,
+                      element: $event,
+                      documentId: documentRef.documentId,
+                    },
+                  });
+                  this.router.events.subscribe((h) => {
+                    dialogRef.close();
+                  });
+                  dialogRef.afterClosed().subscribe();
+                }
+              })
+            );
+        })
+      )
+      .subscribe();
   }
   private getDialogTitle(event: IAddWrapper) {
     return 'Add ' + this.getStringFormScope(event.scope) + ' ' + this.getStringFromType(event.type);
@@ -524,7 +600,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
   addChild($event: IAddNewWrapper) {
     switch ($event.type) {
       case Type.VALUESET:
-        this.addValueSet();
+        this.addValueSet($event);
         break;
       case Type.COCONSTRAINTGROUP:
         this.addCoConstraintGroup($event);
@@ -539,134 +615,180 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   addProfileComponent(event: IAddNewWrapper) {
-    combineLatest(this.documentRef$, this.store.select(fromIgamtDisplaySelectors.selectAllSegments), this.store.select(selectAllMessages)).pipe(
-      take(1),
-      tap(([{ documentId, type }, segments, messages]) => {
-        const dialogRef = this.dialog.open(AddProfileComponentComponent, {
-          data: {
-            children: segments.concat(messages),
-          },
-        });
-        dialogRef.afterClosed().pipe(
-          filter((x) => x !== undefined),
-          take(1),
-          map((result) => {
-            if (result) {
-              RxjsStoreHelperService.listenAndReact(this.actions, {
-                [IgEditActionTypes.CreateProfileComponentSuccess]: {
-                  do: (action: CreateProfileComponentSuccess) => {
-                    this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
-                    return of();
-                  },
-                },
-              }).subscribe();
-              this.store.dispatch(new CreateProfileComponent({ documentId, ...result }));
-            }
-          }),
-        ).subscribe();
-      }),
-    ).subscribe();
+    combineLatest(
+      this.documentRef$,
+      this.store.select(fromIgamtDisplaySelectors.selectAllSegments),
+      this.store.select(selectAllMessages)
+    )
+      .pipe(
+        take(1),
+        tap(([{ documentId, type }, segments, messages]) => {
+          const dialogRef = this.dialog.open(AddProfileComponentComponent, {
+            data: {
+              children: segments.concat(messages),
+            },
+          });
+          dialogRef
+            .afterClosed()
+            .pipe(
+              filter((x) => x !== undefined),
+              take(1),
+              map((result) => {
+                if (result) {
+                  RxjsStoreHelperService.listenAndReact(this.actions, {
+                    [IgEditActionTypes.CreateProfileComponentSuccess]: {
+                      do: (action: CreateProfileComponentSuccess) => {
+                        this.router.navigate(
+                          ['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id],
+                          { relativeTo: this.activeRoute }
+                        );
+                        return of();
+                      },
+                    },
+                  }).subscribe();
+                  this.store.dispatch(new CreateProfileComponent({ documentId, ...result }));
+                }
+              })
+            )
+            .subscribe();
+        })
+      )
+      .subscribe();
   }
 
   addCompositeProfile(event: IAddNewWrapper) {
-    combineLatest(this.documentRef$, this.store.select(fromIgamtDisplaySelectors.selectAllProfileComponents), this.store.select(fromIgamtDisplaySelectors.selectAllCompositeProfiles), this.store.select(selectAllMessages)).pipe(
-      take(1),
-      tap(([{ documentId, type }, profileComponents, compositeProfiles, messages]) => {
-        const dialogRef = this.dialog.open(AddCompositeComponent, {
-          data: {
-            messages,
-            profileComponents,
-            compositeProfiles,
-          },
-        });
-        dialogRef.afterClosed().pipe(
-          filter((x) => x !== undefined),
-          take(1),
-          map((result) => {
-            if (result) {
-              RxjsStoreHelperService.listenAndReact(this.actions, {
-                [IgEditActionTypes.CreateProfileComponentSuccess]: {
-                  do: (action: CreateProfileComponentSuccess) => {
-                    this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
-                    return of();
-                  },
-                },
-              }).subscribe();
-              this.store.dispatch(new CreateCompositeProfile({ documentId, ...result }));
-            }
-          }),
-        ).subscribe();
-      }),
-    ).subscribe();
+    combineLatest(
+      this.documentRef$,
+      this.store.select(fromIgamtDisplaySelectors.selectAllProfileComponents),
+      this.store.select(fromIgamtDisplaySelectors.selectAllCompositeProfiles),
+      this.store.select(selectAllMessages)
+    )
+      .pipe(
+        take(1),
+        tap(([{ documentId, type }, profileComponents, compositeProfiles, messages]) => {
+          const dialogRef = this.dialog.open(AddCompositeComponent, {
+            data: {
+              messages,
+              profileComponents,
+              compositeProfiles,
+            },
+          });
+          dialogRef
+            .afterClosed()
+            .pipe(
+              filter((x) => x !== undefined),
+              take(1),
+              map((result) => {
+                if (result) {
+                  RxjsStoreHelperService.listenAndReact(this.actions, {
+                    [IgEditActionTypes.CreateProfileComponentSuccess]: {
+                      do: (action: CreateProfileComponentSuccess) => {
+                        this.router.navigate(
+                          ['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id],
+                          { relativeTo: this.activeRoute }
+                        );
+                        return of();
+                      },
+                    },
+                  }).subscribe();
+                  this.store.dispatch(new CreateCompositeProfile({ documentId, ...result }));
+                }
+              })
+            )
+            .subscribe();
+        })
+      )
+      .subscribe();
   }
 
   addCoConstraintGroup($event: IAddNewWrapper) {
-    combineLatest(this.documentRef$, this.store.select(fromIgamtDisplaySelectors.selectAllSegments)).pipe(
-      take(1),
-      tap(([{ documentId, type }, segments]) => {
-        const dialogRef = this.dialog.open(AddCoConstraintGroupComponent, {
-          data: {
-            segments: segments.filter((f) => {
-              return f.domainInfo.scope === Scope.USER;
-            }),
-            baseSegment: undefined,
-          },
-        });
-        dialogRef.afterClosed().pipe(
-          filter((x) => x !== undefined),
-          take(1),
-          map((result) => {
-            if (result) {
-              RxjsStoreHelperService.listenAndReact(this.actions, {
-                [IgEditActionTypes.CreateCoConstraintGroupSuccess]: {
-                  do: (action: CreateCoConstraintGroupSuccess) => {
-                    this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
-                    return of();
-                  },
-                },
-              }).subscribe();
-              this.store.dispatch(new CreateCoConstraintGroup({ documentId, ...result }));
-            }
-          }),
-        ).subscribe();
-      }),
-    ).subscribe();
+    combineLatest(this.documentRef$, this.store.select(fromIgamtDisplaySelectors.selectAllSegments))
+      .pipe(
+        take(1),
+        tap(([{ documentId, type }, segments]) => {
+          const dialogRef = this.dialog.open(AddCoConstraintGroupComponent, {
+            data: {
+              segments: segments.filter((f) => {
+                return f.domainInfo.scope === Scope.USER;
+              }),
+              baseSegment: undefined,
+            },
+          });
+          dialogRef
+            .afterClosed()
+            .pipe(
+              filter((x) => x !== undefined),
+              take(1),
+              map((result) => {
+                if (result) {
+                  RxjsStoreHelperService.listenAndReact(this.actions, {
+                    [IgEditActionTypes.CreateCoConstraintGroupSuccess]: {
+                      do: (action: CreateCoConstraintGroupSuccess) => {
+                        this.router.navigate(
+                          ['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id],
+                          { relativeTo: this.activeRoute }
+                        );
+                        return of();
+                      },
+                    },
+                  }).subscribe();
+                  this.store.dispatch(new CreateCoConstraintGroup({ documentId, ...result }));
+                }
+              })
+            )
+            .subscribe();
+        })
+      )
+      .subscribe();
   }
 
-  addValueSet(asIgamtExternalValueSet = false) {
+  addValueSet($event: IAddNewWrapper, asIgamtExternalValueSet = false) {
     const dialogRef = this.dialog.open(BuildValueSetComponent, {
       data: {
         asIgamtExternalValueSet,
+        existing: $event.node.children,
+        scope: Scope.USER,
+        type: $event.type,
       },
     });
-    dialogRef.afterClosed().pipe(
-      filter((x) => x !== undefined),
-      withLatestFrom(this.documentRef$),
-      take(1),
-      map(([result, documentRef]) => {
-
-        RxjsStoreHelperService.listenAndReact(this.actions, {
-          [IgEditActionTypes.AddResourceSuccess]: {
-            do: (action: AddResourceSuccess) => {
-              this.router.navigate(['./' + Type.VALUESET.toString().toLocaleLowerCase() + '/' + action.payload.targetResourceId], { relativeTo: this.activeRoute });
-              return of();
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter((x) => x !== undefined),
+        withLatestFrom(this.documentRef$),
+        take(1),
+        map(([result, documentRef]) => {
+          RxjsStoreHelperService.listenAndReact(this.actions, {
+            [IgEditActionTypes.AddResourceSuccess]: {
+              do: (action: AddResourceSuccess) => {
+                this.router.navigate(
+                  ['./' + Type.VALUESET.toString().toLocaleLowerCase() + '/' + action.payload.targetResourceId],
+                  { relativeTo: this.activeRoute }
+                );
+                return of();
+              },
             },
-          },
-        }).subscribe();
-        this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: [result], type: Type.VALUESET }));
-      }),
-    ).subscribe();
+          }).subscribe();
+          this.store.dispatch(
+            new IgEditTocAddResource({ documentId: documentRef.documentId, selected: [result], type: Type.VALUESET })
+          );
+        })
+      )
+      .subscribe();
   }
 
   toggleDelta() {
     this.toc.filter('');
-    this.store.select(selectIgId).pipe(
-      take(1),
-      withLatestFrom(this.deltaMode$),
-      map(([id, delta]) => {
-        this.store.dispatch(new ToggleDelta(id, !delta));
-      }),
-    ).subscribe();
+    this.store
+      .select(selectIgId)
+      .pipe(
+        take(1),
+        withLatestFrom(this.deltaMode$),
+        map(([id, delta]) => {
+          this.store.dispatch(new ToggleDelta(id, !delta));
+        })
+      )
+      .subscribe();
   }
 
   filterByDelta($event: string[]) {
@@ -676,80 +798,98 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   checkDeleteNarrative($event: string) {
-    this.store.select(selectWorkspaceActive).pipe(
-      take(1),
-      map((x) => {
-        if (x.display && x.display.id && x.display.id === $event) {
-          this.store.dispatch(new EditorReset());
-          this.router.navigate(['./' + 'metadata'], { relativeTo: this.activeRoute });
-        }
-      }),
-    ).subscribe();
+    this.store
+      .select(selectWorkspaceActive)
+      .pipe(
+        take(1),
+        map((x) => {
+          if (x.display && x.display.id && x.display.id === $event) {
+            this.store.dispatch(new EditorReset());
+            this.router.navigate(['./' + 'metadata'], { relativeTo: this.activeRoute });
+          }
+        })
+      )
+      .subscribe();
   }
 
   onAddPcChildren($event: IDisplayElement) {
-    combineLatest(this.documentRef$, this.store.select(fromIgamtDisplaySelectors.selectAllSegments), this.store.select(selectAllMessages)).pipe(
-      take(1),
-      tap(([{ documentId, type }, segments, messages]) => {
-        const dialogRef = this.dialog.open(AddProfileComponentContextComponent, {
-          data: {
-            available: segments.concat(messages),
-            pc: $event,
-          },
-        });
-        dialogRef.afterClosed().pipe(
-          filter((x) => x !== undefined),
-          take(1),
-          map((result) => {
-            if (result) {
-              this.store.dispatch(new AddProfileComponentContext({ documentId, pcId: $event.id, added: result }));
-            }
-          }),
-        ).subscribe();
-      }),
-    ).subscribe();
+    combineLatest(
+      this.documentRef$,
+      this.store.select(fromIgamtDisplaySelectors.selectAllSegments),
+      this.store.select(selectAllMessages)
+    )
+      .pipe(
+        take(1),
+        tap(([{ documentId, type }, segments, messages]) => {
+          const dialogRef = this.dialog.open(AddProfileComponentContextComponent, {
+            data: {
+              available: segments.concat(messages),
+              pc: $event,
+            },
+          });
+          dialogRef
+            .afterClosed()
+            .pipe(
+              filter((x) => x !== undefined),
+              take(1),
+              map((result) => {
+                if (result) {
+                  this.store.dispatch(new AddProfileComponentContext({ documentId, pcId: $event.id, added: result }));
+                }
+              })
+            )
+            .subscribe();
+        })
+      )
+      .subscribe();
   }
 
   deleteOneChild($event: { child: IDisplayElement; parent: IDisplayElement }) {
-    this.documentRef$.pipe(
-      take(1),
-      tap((documentRef) => {
-
-        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-          data: {
-            question: 'Are you sure you want to remove ' + getLabel($event.child.fixedName, $event.child.variableName) + ' from ' + getLabel($event.parent.fixedName, $event.parent.variableName) + ' ?',
-            action: 'Delete Profile Component Context',
-          },
-        });
-        dialogRef.afterClosed().subscribe(
-          (answer) => {
+    this.documentRef$
+      .pipe(
+        take(1),
+        tap((documentRef) => {
+          const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            data: {
+              question:
+                'Are you sure you want to remove ' +
+                getLabel($event.child.fixedName, $event.child.variableName) +
+                ' from ' +
+                getLabel($event.parent.fixedName, $event.parent.variableName) +
+                ' ?',
+              action: 'Delete Profile Component Context',
+            },
+          });
+          dialogRef.afterClosed().subscribe((answer) => {
             if (answer) {
-              this.store.dispatch(new DeleteProfileComponentContext({
-                documentId: documentRef.documentId,
-                element: $event.child,
-                parent: $event.parent,
-              }));
+              this.store.dispatch(
+                new DeleteProfileComponentContext({
+                  documentId: documentRef.documentId,
+                  element: $event.child,
+                  parent: $event.parent,
+                })
+              );
             }
-          },
-        );
-      })).subscribe();
+          });
+        })
+      )
+      .subscribe();
   }
 
   manageProfileStructure(event: IContent[]) {
-    this.documentRef$.pipe(
-      take(1),
-      tap((documentRef) => {
-
-        const dialogRef = this.dialog.open(ManageProfileStructureComponent, {
-          data: event,
-        });
-        dialogRef.afterClosed().subscribe(
-          (answer) => {
+    this.documentRef$
+      .pipe(
+        take(1),
+        tap((documentRef) => {
+          const dialogRef = this.dialog.open(ManageProfileStructureComponent, {
+            data: event,
+          });
+          dialogRef.afterClosed().subscribe((answer) => {
             event = [];
-
-          },
-        );
-      })).subscribe();
+          });
+        })
+      )
+      .subscribe();
   }
 
   triggerTocFilterWarning() {
@@ -776,87 +916,89 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
 
   ngAfterViewInit() {
     // Filter TOC on Nodes or Filter Change
-    this.tocFilterSubscription = combineLatest(
-      this.getNodes(),
-      this.store.select(selectIgTocFilter),
-    ).pipe(
-      tap(([, tocFilter]) => {
-        if (tocFilter) {
-          this.blockUIView.start();
-          setTimeout(() => {
-            this.toc.filterNode((display) => {
-              return this.igTocFilterService.isFiltered(display, tocFilter);
-            });
-            this.toc.updateNumbers();
+    this.tocFilterSubscription = combineLatest(this.getNodes(), this.store.select(selectIgTocFilter))
+      .pipe(
+        tap(([, tocFilter]) => {
+          if (tocFilter) {
+            this.blockUIView.start();
             setTimeout(() => {
-              this.blockUIView.stop();
-              if (tocFilter.active) {
-                this.triggerTocFilterWarning();
-              }
+              this.toc.filterNode((display) => {
+                return this.igTocFilterService.isFiltered(display, tocFilter);
+              });
+              this.toc.updateNumbers();
+              setTimeout(() => {
+                this.blockUIView.stop();
+                if (tocFilter.active) {
+                  this.triggerTocFilterWarning();
+                }
+              }, 200);
             }, 200);
-          }, 200);
-        }
-      }),
-    ).subscribe();
+          }
+        })
+      )
+      .subscribe();
 
     // Update Filter On Save
-    this.saveSuccessSubscription = this.actions.pipe(
-      ofType(DamActionTypes.EditorSaveSuccess),
-      switchMap(() => {
-        return this.store.select(selectIgTocFilter).pipe(
-          take(1),
-          tap((tocFilter) => {
-            if (tocFilter && tocFilter.usedInConformanceProfiles.active) {
-              this.igTocFilterService.setFilter(tocFilter);
-              this.triggerTocFilterWarning();
-            }
-          }),
-        );
-      }),
-    ).subscribe();
+    this.saveSuccessSubscription = this.actions
+      .pipe(
+        ofType(DamActionTypes.EditorSaveSuccess),
+        switchMap(() => {
+          return this.store.select(selectIgTocFilter).pipe(
+            take(1),
+            tap((tocFilter) => {
+              if (tocFilter && tocFilter.usedInConformanceProfiles.active) {
+                this.igTocFilterService.setFilter(tocFilter);
+                this.triggerTocFilterWarning();
+              }
+            })
+          );
+        })
+      )
+      .subscribe();
   }
-  cleanUnused($event: { children: IDisplayElement[], type: Type }) {
-    this.documentRef$.pipe(
-      take(1),
-      concatMap((documentRef: IDocumentRef) => {
-        return this.crossReferencesService.getUnused(documentRef.documentId, $event.type).pipe(
-          take(1),
-          map((unused: string[]) => {
-            if (unused.length === 0) {
-              const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-                data: {
-                  question: 'No Unused Elements',
-                  action: '',
-                },
-              });
-              dialogRef.afterClosed().subscribe();
-            } else {
-              const unusedMap = {};
-              unused.forEach((element) => {
-                unusedMap[element] = true;
-              });
-              let unusedDisplay: IDisplayElement[] = [];
+  cleanUnused($event: { children: IDisplayElement[]; type: Type }) {
+    this.documentRef$
+      .pipe(
+        take(1),
+        concatMap((documentRef: IDocumentRef) => {
+          return this.crossReferencesService.getUnused(documentRef.documentId, $event.type).pipe(
+            take(1),
+            map((unused: string[]) => {
+              if (unused.length === 0) {
+                const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+                  data: {
+                    question: 'No Unused Elements',
+                    action: '',
+                  },
+                });
+                dialogRef.afterClosed().subscribe();
+              } else {
+                const unusedMap = {};
+                unused.forEach((element) => {
+                  unusedMap[element] = true;
+                });
+                let unusedDisplay: IDisplayElement[] = [];
 
-              unusedDisplay = $event.children.filter((x) => unusedMap[x.id]);
-              const dialogRef = this.dialog.open(UnusedElementsComponent, {
-
-                data: {
-                  ids: unused,
-                  resources: unusedDisplay,
-                },
-              });
-              dialogRef.afterClosed().subscribe(
-                (answer) => {
+                unusedDisplay = $event.children.filter((x) => unusedMap[x.id]);
+                const dialogRef = this.dialog.open(UnusedElementsComponent, {
+                  data: {
+                    ids: unused,
+                    resources: unusedDisplay,
+                  },
+                });
+                dialogRef.afterClosed().subscribe((answer) => {
                   if (answer) {
-                    this.store.dispatch(new DeleteResources({ documentId: documentRef.documentId, ids: answer, type: $event.type }));
+                    this.store.dispatch(
+                      new DeleteResources({ documentId: documentRef.documentId, ids: answer, type: $event.type })
+                    );
                   }
-                },
-              );
-            }
-          }),
-        );
-      }),
-    ).subscribe();
+                });
+              }
+            })
+          );
+        })
+      )
+      .subscribe();
   }
 
   // groupValueSet($event) {
@@ -889,31 +1031,29 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
   // }
 
   groupValueSet($event) {
-    combineLatest([
-      this.store.select(selectIgDocument),
-      this.store.select(selectAllValueSets),
-    ]).pipe(
-      take(1),
-      concatMap(([document, allValueSets]) => {
-        const dialogRef = this.dialog.open(GroupValueSetComponent, {
-          data: {
-            groupedData: document.valueSetRegistry.groupedData,
-            valueSets: allValueSets,
-          },
-          disableClose: true,
-        });
+    combineLatest([this.store.select(selectIgDocument), this.store.select(selectAllValueSets)])
+      .pipe(
+        take(1),
+        concatMap(([document, allValueSets]) => {
+          const dialogRef = this.dialog.open(GroupValueSetComponent, {
+            data: {
+              groupedData: document.valueSetRegistry.groupedData,
+              valueSets: allValueSets,
+            },
+            disableClose: true,
+          });
 
-        return dialogRef.afterClosed().pipe(
-          filter((result) => result !== undefined),
-          take(1),
-          map((result) => {
-            if (result) {
-              this.store.dispatch(new GroupValueSets({ id: document.id, groups: result }));
-            }
-          }),
-        );
-      }),
-    ).subscribe();
+          return dialogRef.afterClosed().pipe(
+            filter((result) => result !== undefined),
+            take(1),
+            map((result) => {
+              if (result) {
+                this.store.dispatch(new GroupValueSets({ id: document.id, groups: result }));
+              }
+            })
+          );
+        })
+      )
+      .subscribe();
   }
-
 }
