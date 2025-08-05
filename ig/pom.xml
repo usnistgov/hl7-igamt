@@ -120,5 +120,9 @@
 			<id>hit-nexus</id>
 			<url>https://hit-nexus.nist.gov/repository/releases</url>
 		</repository>
+		<repository>
+			<id>hit-nexus-snapshots</id>
+			<url>https://hit-nexus.nist.gov/repository/snapshots/</url>
+		</repository>
 	</repositories>
 </project>

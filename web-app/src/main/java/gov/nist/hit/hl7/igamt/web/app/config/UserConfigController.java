@@ -51,7 +51,7 @@ public class UserConfigController {
 		if(configs == null || configs.isEmpty()) {
 			config = UserConfig.GenerateDefault();
 		}else {
-			config = configs.get(0);
+			config = new UserConfig();
 		}
 	    return new ResponseMessage<UserConfig>(Status.SUCCESS, null, null, null, false, null, config);
 	}
