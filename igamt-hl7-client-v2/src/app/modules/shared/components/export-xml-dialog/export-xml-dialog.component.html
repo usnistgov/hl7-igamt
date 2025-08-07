@@ -21,6 +21,7 @@
       You can customize how these value sets are exported to fit your use case.
       <div *ngIf="current !== 'EXTERNAL_VALUESET_CONFIGURATION'">
         <strong>{{ externalValueSetsTypeCount.external }}</strong> external, <strong>{{ externalValueSetsTypeCount.excluded }}</strong> excluded from the validation (empty), <strong>{{ externalValueSetsTypeCount.snapshot }}</strong> snapshot.
+        <span *ngIf="configurationLoadedFromSaved" style="margin-left: 10px; color: blue;">(loaded from saved configuration)</span>  
       </div>
       <ul *ngIf="current === 'EXTERNAL_VALUESET_CONFIGURATION'" >
         <li><strong>External:</strong> Validation will require network access and will perform an HTTP call to the value set service URL to check for a code's validity (this option might result in slower validation performances).</li>
@@ -96,11 +97,12 @@
   </div>
   <div style="margin-top: 10px;">
     <strong>{{ externalValueSetsTypeCount.external }}</strong> external, <strong>{{ externalValueSetsTypeCount.excluded }}</strong> excluded from the validation (empty), <strong>{{ externalValueSetsTypeCount.snapshot }}</strong> snapshot.
+    <span *ngIf="configurationLoadedFromSaved" style="margin-left: 10px; color: blue;">(loaded from saved configuration)</span>  
   </div>
   <div style="margin-top: 10px; margin-bottom: 10px;">
     <p-checkbox [(ngModel)]="rememberExternalValueSetExportMode" [binary]="true" [label]="'Remember this configuration for export to '+ exportType" name="remember"  ></p-checkbox>
   </div>
-  <p-table [value]="externalValueSets" [paginator]="true" [rows]="5">
+  <p-table [value]="externalValueSets" [paginator]="true" [rows]="10" [rowsPerPageOptions]="rowsOptions" >
     <ng-template pTemplate="header" let-columns>
       <tr>
         <th>External Value Set</th>

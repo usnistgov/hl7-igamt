@@ -130,7 +130,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 	private static final int limitSizeOfVS = 5000;
 
-	public static  String schemaVersion = "1.7.1";
+	public static  String schemaVersion = "1.7.2";
 	public static  String schemaURL = "https://raw.githubusercontent.com/usnistgov/hl7-v2-schemas/"+ schemaVersion + "/src/main/resources/hl7-v2-schemas/";
 	/*
 	 * (non-Javadoc)
@@ -669,7 +669,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 					if (n != null) {
 						Element elm_Constraint = new Element("Predicate");
-						elm_Constraint.addAttribute(new Attribute("Target", this.bindingInstanceNum(key)));
+						elm_Constraint.addAttribute(new Attribute("Target", this.getPredicateTargetPath(key)));
 						elm_Constraint.addAttribute(new Attribute("TrueUsage", p.getTrueUsage().toString()));
 						elm_Constraint.addAttribute(new Attribute("FalseUsage", p.getFalseUsage().toString()));
 						Element elm_Description = new Element("Description");
@@ -704,7 +704,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					Node n = this.innerXMLHandler(script);
 					if (n != null) {
 						Element elm_Constraint = new Element("Predicate");
-						elm_Constraint.addAttribute(new Attribute("Target", this.bindingInstanceNum(key)));
+						elm_Constraint.addAttribute(new Attribute("Target", this.getPredicateTargetPath(key)));
 						elm_Constraint.addAttribute(new Attribute("TrueUsage", p.getTrueUsage().toString()));
 						elm_Constraint.addAttribute(new Attribute("FalseUsage", p.getFalseUsage().toString()));
 						Element elm_Description = new Element("Description");
@@ -747,7 +747,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 						Node n = this.innerXMLHandler(script);
 						if (n != null) {
 							Element elm_Constraint = new Element("Predicate");
-							elm_Constraint.addAttribute(new Attribute("Target", this.bindingInstanceNum(groupKey)));
+							elm_Constraint.addAttribute(new Attribute("Target", this.getPredicateTargetPath(groupKey)));
 							elm_Constraint.addAttribute(new Attribute("TrueUsage", p.getTrueUsage().toString()));
 							elm_Constraint.addAttribute(new Attribute("FalseUsage", p.getFalseUsage().toString()));
 							Element elm_Description = new Element("Description");
@@ -780,7 +780,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 						Node n = this.innerXMLHandler(script);
 						if (n != null) {
 							Element elm_Constraint = new Element("Predicate");
-							elm_Constraint.addAttribute(new Attribute("Target", this.bindingInstanceNum(key)));
+							elm_Constraint.addAttribute(new Attribute("Target", this.getPredicateTargetPath(key)));
 							elm_Constraint.addAttribute(new Attribute("TrueUsage", p.getTrueUsage().toString()));
 							elm_Constraint.addAttribute(new Attribute("FalseUsage", p.getFalseUsage().toString()));
 							Element elm_Description = new Element("Description");
@@ -1039,10 +1039,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 			return countContextChild(path.getChild(), result + 1);
 	}
 
-	private String bindingInstanceNum(String keyStr) {
+	private String getPredicateTargetPath(String keyStr) {
 		String[] keys = keyStr.split("\\.");
 		for (int i = 0; i < keys.length; i++) {
-			keys[i] = keys[i] + "[1]";
+			keys[i] = keys[i] + "[*]";
 		}
 		return String.join(".", keys);
 	}
