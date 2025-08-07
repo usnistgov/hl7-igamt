@@ -1425,16 +1425,36 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 		try {
 			Element elmMessage = new Element("Message");
 			elmMessage.addAttribute(new Attribute("ID", cpModel.getModel().getId()));
-			if (cpModel.getModel().getDisplayName() != null && !cpModel.getModel().getDisplayName().equals(""))
-				elmMessage.addAttribute(new Attribute("Identifier", this.str(cpModel.getModel().getDisplayName())));
-			if (cpModel.getModel().getName() != null && !cpModel.getModel().getName().equals(""))
+			if (!Strings.isNullOrEmpty(cpModel.getModel().getName())) {
 				elmMessage.addAttribute(new Attribute("Name", this.str(cpModel.getModel().getName())));
+			}
 			elmMessage.addAttribute(new Attribute("Type", this.str(cpModel.getModel().getMessageType())));
 			elmMessage.addAttribute(new Attribute("Event", this.str(cpModel.getModel().getEvent())));
 			elmMessage.addAttribute(new Attribute("StructID", this.str(cpModel.getModel().getStructID())));
 
-			if (cpModel.getModel().getDescription() != null && !cpModel.getModel().getDescription().equals(""))
+			if (!Strings.isNullOrEmpty(cpModel.getModel().getDescription())) {
 				elmMessage.addAttribute(new Attribute("Description", this.str(cpModel.getModel().getDescription())));
+			}
+
+			if(!Strings.isNullOrEmpty(cpModel.getModel().getDisplayName())) {
+				elmMessage.addAttribute(new Attribute("DisplayName", this.str(cpModel.getModel().getDisplayName())));
+			}
+
+			if(!Strings.isNullOrEmpty(cpModel.getModel().getOrganization())) {
+				elmMessage.addAttribute(new Attribute("Organization", this.str(cpModel.getModel().getOrganization())));
+			}
+
+			if(cpModel.getModel().getAuthors() != null && !cpModel.getModel().getAuthors().isEmpty()) {
+				elmMessage.addAttribute(new Attribute("Authors", this.str(String.join( ", ", cpModel.getModel().getAuthors()))));
+			}
+
+			if(cpModel.getModel().getProfileType() != null) {
+				elmMessage.addAttribute(new Attribute("ProfileType", this.str(cpModel.getModel().getProfileType().name())));
+			}
+
+			if(cpModel.getModel().getRole() != null) {
+				elmMessage.addAttribute(new Attribute("Role", this.str(cpModel.getModel().getRole().name())));
+			}
 
 			Map<Integer, SegmentRefOrGroupDataModel> segmentRefOrGroupDataModels = new HashMap<Integer, SegmentRefOrGroupDataModel>();
 
