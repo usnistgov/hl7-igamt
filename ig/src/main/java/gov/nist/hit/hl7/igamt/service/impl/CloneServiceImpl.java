@@ -331,28 +331,26 @@ public class CloneServiceImpl implements  CloneService {
 	}
 
 	private void updateGroupData(ValueSetRegistry reg, HashMap<RealKey, String> newKeys) {
-		Map<String, List<String>> old = reg.getGroupedData().getGroupedData();
-		Map<String, List<String>> newGroupData = new HashMap<>();
+		if(reg.getGroupedData() != null && reg.getGroupedData().isCustom()) {
+			Map<String, List<String>> old = reg.getGroupedData().getGroupedData();
+			Map<String, List<String>> newGroupData = new HashMap<>();
 
-		for (Map.Entry<String, List<String>> entry : old.entrySet()) {
-			String group = entry.getKey();
-			List<String> updatedList = new ArrayList<>();
+			for (Map.Entry<String, List<String>> entry : old.entrySet()) {
+				String group = entry.getKey();
+				List<String> updatedList = new ArrayList<>();
 
-			for (String id : entry.getValue()) {
-				RealKey key = new RealKey(id,Type.VALUESET);
-				String newId = newKeys.getOrDefault(key, id);
-				updatedList.add(newId);
+				for (String id : entry.getValue()) {
+					RealKey key = new RealKey(id, Type.VALUESET);
+					String newId = newKeys.getOrDefault(key, id);
+					updatedList.add(newId);
+				}
+
+				newGroupData.put(group, updatedList);
 			}
 
-			newGroupData.put(group, updatedList);
+			reg.getGroupedData().setGroupedData(newGroupData);
 		}
-		
-		reg.getGroupedData().setGroupedData(newGroupData);
 	}
-
-
-
-
 
 
 	/**
