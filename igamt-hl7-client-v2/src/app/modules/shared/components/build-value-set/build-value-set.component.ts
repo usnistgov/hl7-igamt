@@ -3,8 +3,14 @@ import { NgForm } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { IAddingInfo, SourceType } from '../../models/adding-info';
 import { Type } from '../../constants/type.enum';
-import { BrowseType, CodeSetBrowseDialogComponent, IBrowserTreeNode } from '../codeset-browse-dialog/codeset-browse-dialog.component';
+import {
+  BrowseType,
+  CodeSetBrowseDialogComponent,
+  IBrowserTreeNode,
+} from '../codeset-browse-dialog/codeset-browse-dialog.component';
 import { map } from 'rxjs/operators';
+import { IDisplayElement } from '../../models/display-element.interface';
+import { Scope } from '@angular/core/src/profile/wtf_impl';
 
 @Component({
   selector: 'app-build-value-set',
@@ -12,7 +18,6 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./build-value-set.component.css'],
 })
 export class BuildValueSetComponent implements OnInit {
-
   model: IAddingInfo;
   @ViewChild(NgForm) child;
   redirect = true;
@@ -21,19 +26,26 @@ export class BuildValueSetComponent implements OnInit {
   selectedCodeSet: IBrowserTreeNode;
 
   stabilityOptionsOptions = [
-    this.notDefinedOption, { label: 'Dynamic', value: 'Dynamic' }, { label: 'Static', value: 'Static' },
+    this.notDefinedOption,
+    { label: 'Dynamic', value: 'Dynamic' },
+    { label: 'Static', value: 'Static' },
   ];
   extensibilityOptions = [
-    this.notDefinedOption, { label: 'Open', value: 'Open' }, { label: 'Closed', value: 'Closed' },
+    this.notDefinedOption,
+    { label: 'Open', value: 'Open' },
+    { label: 'Closed', value: 'Closed' },
   ];
   contentDefinitionOptions = [
-    this.notDefinedOption, { label: 'Extensional', value: 'Extensional' }, { label: 'Intensional', value: 'Intensional' },
+    this.notDefinedOption,
+    { label: 'Extensional', value: 'Extensional' },
+    { label: 'Intensional', value: 'Intensional' },
   ];
 
   constructor(
     private dialog: MatDialog,
     public dialogRef: MatDialogRef<BuildValueSetComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { asIgamtExternalValueSet?: boolean; }
+    @Inject(MAT_DIALOG_DATA)
+    public data: { asIgamtExternalValueSet?: boolean; existing?: IDisplayElement[]; scope?: Scope; type?: Type }
   ) {
     this.asIgamtExternalValueSet = data.asIgamtExternalValueSet;
     this.model = {
@@ -44,29 +56,33 @@ export class BuildValueSetComponent implements OnInit {
       type: Type.VALUESET,
       ext: '',
       flavor: true,
-      url: ''
+      url: '',
     };
   }
 
   selectExistingCodeSet() {
-    this.dialog.open(CodeSetBrowseDialogComponent, {
-      data: {
-        browserType: BrowseType.ENTITY,
-        scope: {
-          private: true,
-          public: true,
+    this.dialog
+      .open(CodeSetBrowseDialogComponent, {
+        data: {
+          browserType: BrowseType.ENTITY,
+          scope: {
+            private: true,
+            public: true,
+          },
+          types: [Type.CODESET, Type.CODESETVERSION],
+          exclude: [],
+          selectionMode: 'single',
+          includeVersions: true,
         },
-        types: [Type.CODESET, Type.CODESETVERSION],
-        exclude: [],
-        selectionMode: 'single',
-        includeVersions: true,
-      },
-    }).afterClosed().pipe(
-      map((browserResult: IBrowserTreeNode) => {
-        this.selectedCodeSet = browserResult;
-        this.setURL(browserResult);
-      }),
-    ).subscribe();
+      })
+      .afterClosed()
+      .pipe(
+        map((browserResult: IBrowserTreeNode) => {
+          this.selectedCodeSet = browserResult;
+          this.setURL(browserResult);
+        })
+      )
+      .subscribe();
   }
 
   clearSelection() {
@@ -92,8 +108,7 @@ export class BuildValueSetComponent implements OnInit {
     this.model.url = url;
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   submit() {
     this.dialogRef.close(this.model);

@@ -38,9 +38,12 @@ import { IGResourceProvider } from 'src/app/modules/shared/models/adding-info';
   styleUrls: ['./ig-toc.component.scss'],
 })
 export class IgTocComponent implements OnInit, AfterViewInit {
-
   optionsToDisplay: any;
-  deltaOptions: SelectItem[] = [{ label: 'CHANGED', value: 'UPDATED' }, { label: 'DELETED', value: 'DELETED' }, { label: 'ADDED', value: 'ADDED' }];
+  deltaOptions: SelectItem[] = [
+    { label: 'CHANGED', value: 'UPDATED' },
+    { label: 'DELETED', value: 'DELETED' },
+    { label: 'ADDED', value: 'ADDED' },
+  ];
 
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
   @ViewChild('vsLib') vsLib: ElementRef;
@@ -76,13 +79,17 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @Output()
   delete = new EventEmitter<IDisplayElement>();
   @Output()
-  deleteContext = new EventEmitter<{ child: IDisplayElement, parent: IDisplayElement }>();
+  deleteContext = new EventEmitter<{ child: IDisplayElement; parent: IDisplayElement }>();
   @Output()
   deleteNarrative = new EventEmitter<string>();
   @Output()
   addChildren = new EventEmitter<IAddWrapper>();
   @Output()
-  addChildrenFromProvider = new EventEmitter<string>();
+  addChildrenFromProvider = new EventEmitter<{
+    node: IDisplayElement;
+    providerId: IGResourceProvider;
+    type: Type;
+  }>();
   @Output()
   addCustom = new EventEmitter<IAddWrapper>();
   @Output()
@@ -94,7 +101,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @Output()
   addPcChildren = new EventEmitter<IDisplayElement>();
   @Output()
-  checkUnused = new EventEmitter<{ children: IDisplayElement[], type: Type }>();
+  checkUnused = new EventEmitter<{ children: IDisplayElement[]; type: Type }>();
 
   @Output()
   manageProfileStructure = new EventEmitter<IContent[]>();
@@ -115,34 +122,51 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     private activatedRoute: ActivatedRoute,
     private igService: IgService,
     private store: Store<any>,
-    private dialog: MatDialog,
+    private dialog: MatDialog
   ) {
     this.options = {
       allowDrag: (node: TreeNode) => {
-        return !(this.viewOnly) && (node.data.type === Type.TEXT ||
-          node.data.type === Type.CONFORMANCEPROFILE ||
-          node.data.type === Type.PROFILE || node.data.type === Type.PROFILECOMPONENT || Type.COMPOSITEPROFILE);
+        return (
+          !this.viewOnly &&
+          (node.data.type === Type.TEXT ||
+            node.data.type === Type.CONFORMANCEPROFILE ||
+            node.data.type === Type.PROFILE ||
+            node.data.type === Type.PROFILECOMPONENT ||
+            Type.COMPOSITEPROFILE)
+        );
       },
       actionMapping: {
         mouse: {
           drop: (tree: TreeModel, node: TreeNode, $event: any, { from, to }) => {
-            if (from.data.type === Type.TEXT && (!this.isOrphan(to) && to.parent.data.type === Type.TEXT || this.isOrphan(to))) {
+            if (
+              from.data.type === Type.TEXT &&
+              ((!this.isOrphan(to) && to.parent.data.type === Type.TEXT) || this.isOrphan(to))
+            ) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
-            } else if (from.data.type === Type.CONFORMANCEPROFILE && to.parent.data.type === Type.CONFORMANCEPROFILEREGISTRY) {
+            } else if (
+              from.data.type === Type.CONFORMANCEPROFILE &&
+              to.parent.data.type === Type.CONFORMANCEPROFILEREGISTRY
+            ) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
               // tslint:disable-next-line:no-duplicated-branches
-            } else if (from.data.type === Type.PROFILECOMPONENT && to.parent.data.type === Type.PROFILECOMPONENTREGISTRY) {
+            } else if (
+              from.data.type === Type.PROFILECOMPONENT &&
+              to.parent.data.type === Type.PROFILECOMPONENTREGISTRY
+            ) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
               // tslint:disable-next-line:no-duplicated-branches
-            } else if (from.data.type === Type.COMPOSITEPROFILE && to.parent.data.type === Type.COMPOSITEPROFILEREGISTRY) {
+            } else if (
+              from.data.type === Type.COMPOSITEPROFILE &&
+              to.parent.data.type === Type.COMPOSITEPROFILEREGISTRY
+            ) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
             }
           },
-          click: () => { },
+          click: () => {},
         },
       },
     };
@@ -152,13 +176,12 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     return node && node.parent && !node.parent.parent;
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   findInToc(profileNodeChildren: any[], type: Type): any[] {
     const node = profileNodeChildren.find((x) => x.type === type);
     if (node) {
-      return (node.children || []);
+      return node.children || [];
     } else {
       return [];
     }
@@ -178,16 +201,24 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     this.elementNumbers.valueSets = valueSets.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
 
     const coConstraintGroup = this.findInToc(profileNodes.children, Type.COCONSTRAINTGROUPREGISTRY);
-    this.elementNumbers.coConstraintGroup = coConstraintGroup.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
+    this.elementNumbers.coConstraintGroup = coConstraintGroup.filter(
+      (n) => !this.tree.treeModel.hiddenNodeIds[n.id]
+    ).length;
 
     const conformanceProfiles = this.findInToc(profileNodes.children, Type.CONFORMANCEPROFILEREGISTRY);
-    this.elementNumbers.conformanceProfiles = conformanceProfiles.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
+    this.elementNumbers.conformanceProfiles = conformanceProfiles.filter(
+      (n) => !this.tree.treeModel.hiddenNodeIds[n.id]
+    ).length;
 
     const profileComponents = this.findInToc(profileNodes.children, Type.PROFILECOMPONENTREGISTRY);
-    this.elementNumbers.profileComponents = profileComponents.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
+    this.elementNumbers.profileComponents = profileComponents.filter(
+      (n) => !this.tree.treeModel.hiddenNodeIds[n.id]
+    ).length;
 
     const compositeProfiles = this.findInToc(profileNodes.children, Type.COMPOSITEPROFILEREGISTRY);
-    this.elementNumbers.compositeProfiles = compositeProfiles.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
+    this.elementNumbers.compositeProfiles = compositeProfiles.filter(
+      (n) => !this.tree.treeModel.hiddenNodeIds[n.id]
+    ).length;
   }
 
   addSectionToNode(node) {
@@ -234,10 +265,12 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
 
   exportDiffProfileXML(node: TreeNode) {
-    this.store.select(fromIgDocumentEdit.selectIgId).pipe(
-      take(1),
-      map((id) => this.igService.exportProfileDiffXML(id, node.data.id)),
-    )
+    this.store
+      .select(fromIgDocumentEdit.selectIgId)
+      .pipe(
+        take(1),
+        map((id) => this.igService.exportProfileDiffXML(id, node.data.id))
+      )
       .subscribe();
   }
 
@@ -286,7 +319,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   filter(value: string) {
     this.tree.treeModel.filterNodes((node) => {
       return this.nodeHelperService
-        .getFilteringLabel(node.data.fixedName, node.data.variableName).toLowerCase()
+        .getFilteringLabel(node.data.fixedName, node.data.variableName)
+        .toLowerCase()
         .startsWith(value ? value.toLowerCase() : '');
     });
   }
@@ -305,8 +339,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     return document.getElementById('toc-container');
   }
 
-  ngAfterViewInit() {
-  }
+  ngAfterViewInit() {}
 
   expandAll() {
     this.tree.treeModel.expandAll();
@@ -321,7 +354,9 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
 
   filterByDelta($event: string[]) {
-    this.tree.treeModel.filterNodes((node) => node.data.delta != null && $event.indexOf(node.data.delta) > -1 && node.data.Type !== Type.TEXT);
+    this.tree.treeModel.filterNodes(
+      (node) => node.data.delta != null && $event.indexOf(node.data.delta) > -1 && node.data.Type !== Type.TEXT
+    );
   }
 
   getPcElementUrl(treeNode: TreeNode) {
@@ -347,32 +382,27 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
 
   manageStructure(node: TreeNode) {
-
     const dialogRef = this.dialog.open(ManageProfileStructureComponent, {
       data: node.data.children,
     });
-    dialogRef.afterClosed().subscribe(
-      (answer) => {
-
-        if (answer) {
-          this.nodeHelperService.updateProfileStructure(node, answer);
-          this.update();
-        }
-      },
-    );
+    dialogRef.afterClosed().subscribe((answer) => {
+      if (answer) {
+        this.nodeHelperService.updateProfileStructure(node, answer);
+        this.update();
+      }
+    });
   }
   deleteUnused(registryNode) {
     this.checkUnused.emit({ children: registryNode.children, type: registryNode.type });
   }
 
-  addFromProvider(providerId: IGResourceProvider) {
-    this.addChildrenFromProvider.emit(providerId);
+  addFromProvider(node: IDisplayElement, providerId: IGResourceProvider) {
+    this.addChildrenFromProvider.emit({ node, providerId, type: Type.VALUESET });
   }
 
   onGroupValueSet($event: IDisplayElement[]) {
     this.groupValueSet.emit({ valueSets: $event });
   }
-
 }
 export class ElmentNumbers {
   conformanceProfiles?: number;
@@ -382,7 +412,6 @@ export class ElmentNumbers {
   datatypes?: number;
   valueSets?: number;
   coConstraintGroup?: number;
-
 }
 
 export interface ITypedSection {
