@@ -32,8 +32,6 @@ import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.stereotype.Service;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
-import com.mongodb.gridfs.GridFSDBFile;
-
 import gov.nist.hit.hl7.igamt.files.service.FileStorageService;
 
 /**

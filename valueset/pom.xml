@@ -21,34 +21,26 @@
 			<artifactId>common-base</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>common-util</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-
 		</dependency>
-
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>common-exception</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		<!-- <dependency> <groupId>gov.nist.hit.hl7</groupId> <artifactId>serialization</artifactId> 
-			<version>${parent.version}</version> </dependency> -->
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>common-change-entity</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>x-reference</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-
-
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>resource</artifactId>
@@ -59,18 +51,15 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.6</version>
 		</dependency>
-
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.5.9</version>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5</artifactId>
+			<version>5.4.2</version>
 		</dependency>
-
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-structures-r4</artifactId>
 			<version>4.2.0</version>
 		</dependency>
-
 	</dependencies>
 </project>

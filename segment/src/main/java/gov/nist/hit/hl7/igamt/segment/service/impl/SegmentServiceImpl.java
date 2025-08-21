@@ -94,7 +94,6 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 import gov.nist.hit.hl7.resource.change.service.ApplyChange;
-import nu.xom.Attribute;
 import gov.nist.hit.hl7.resource.change.service.OperationService;
 
 /**
@@ -407,8 +406,6 @@ public class SegmentServiceImpl implements SegmentService {
    */
 
   /**
-   * @param childDt
-   * @param id
    * @return
    */
   private StructureElementBinding findStructureElementBindingByComponentIdForDatatype(Datatype dt, String cid) {
@@ -422,8 +419,6 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
   /**
-   * @param fSeb
-   * @param id
    * @return
    */
   private StructureElementBinding findStructureElementBindingByComponentIdFromStructureElementBinding(
@@ -439,7 +434,6 @@ public class SegmentServiceImpl implements SegmentService {
 
   /**
    * @param segment
-   * @param id
    * @return
    */
   private StructureElementBinding findStructureElementBindingByFieldIdForSegment(Segment segment, String fId) {
@@ -849,7 +843,7 @@ public class SegmentServiceImpl implements SegmentService {
     qry.fields().include("name");
     qry.fields().include("description");
     qry.fields().include("ext");
-    qry.with(new Sort(Sort.Direction.ASC, "ext"));
+    qry.with(Sort.by(Sort.Direction.ASC, "ext"));
 
     List<Segment> segments = mongoTemplate.find(qry, Segment.class);
     return segments;
@@ -860,7 +854,7 @@ public class SegmentServiceImpl implements SegmentService {
     Query qry = new Query();
     qry.addCriteria(Criteria.where("_id").in(convertIds(ids)));
     qry.addCriteria(Criteria.where("name").ne(name));
-    qry.with(new Sort(Sort.Direction.ASC, "name"));
+    qry.with(Sort.by(Sort.Direction.ASC, "name"));
 
     qry.fields().include("domainInfo");
     qry.fields().include("id");
@@ -1017,7 +1011,6 @@ public class SegmentServiceImpl implements SegmentService {
   /**
    * @param map
    * @param children
-   * @param documentId
    * @throws ApplyChangeException 
    */
   private void applyChildrenChange(Map<PropertyType, List<ChangeItemDomain>> map,
@@ -1055,7 +1048,6 @@ public class SegmentServiceImpl implements SegmentService {
   /**
    * @param map
    * @param s
-   * @param documentId
    */
   private void applyDynamicMappingChanges(Map<PropertyType, List<ChangeItemDomain>> map, Segment s) {
     if(map.containsKey(PropertyType.DYNAMICMAPPINGITEM)) {

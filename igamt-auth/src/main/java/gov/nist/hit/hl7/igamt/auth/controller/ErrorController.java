@@ -1,8 +1,7 @@
 package gov.nist.hit.hl7.igamt.auth.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +30,7 @@ public class ErrorController {
 	  @RequestMapping(value ="api/errors/report", method = RequestMethod.POST)
 	  @ResponseBody
 	  public ConnectionResponseMessage<Object> report(@RequestBody
-			  ErrorReport error,HttpServletRequest req, HttpServletResponse res, Authentication auth) throws ErrorEmailException{
+			  ErrorReport error, HttpServletRequest req, HttpServletResponse res, Authentication auth) throws ErrorEmailException{
 
 		    try {
 		    		

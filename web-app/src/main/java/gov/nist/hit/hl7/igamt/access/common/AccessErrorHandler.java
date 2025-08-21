@@ -6,12 +6,12 @@ import gov.nist.hit.hl7.igamt.access.exception.EditSyncInconclusiveException;
 import gov.nist.hit.hl7.igamt.access.exception.ResourceAccessDeniedException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ExpressionInvocationTargetException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 

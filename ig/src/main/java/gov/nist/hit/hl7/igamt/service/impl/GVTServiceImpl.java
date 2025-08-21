@@ -12,17 +12,21 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import javax.annotation.PostConstruct;
 
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import jakarta.annotation.PostConstruct;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
+import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
+import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.core5.http.config.Registry;
+import org.apache.hc.core5.http.config.RegistryBuilder;
 import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.SSLContexts;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
@@ -38,14 +42,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import gov.nist.hit.hl7.igamt.ig.model.GVTDomain;
 import gov.nist.hit.hl7.igamt.ig.service.GVTService;
 import gov.nist.hit.hl7.igamt.service.impl.exception.GVTExportException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.GVTLoginException;
-import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+
+import javax.net.ssl.SSLContext;
 
 
 @Service
@@ -65,12 +67,23 @@ public class GVTServiceImpl implements GVTService {
   @SuppressWarnings("deprecation")
   public void init() {
     try {
-      SSLContextBuilder builder = new SSLContextBuilder();
-      builder.loadTrustMaterial(null, new TrustAllStrategy());
-      SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-      CloseableHttpClient httpClient = HttpClients.custom().disableCookieManagement().setSSLSocketFactory(socketFactory).setHostnameVerifier(SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER).build();
-      HttpComponentsClientHttpRequestFactory fct =
-          new HttpComponentsClientHttpRequestFactory(httpClient);
+      org.apache.http.ssl.TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
+      SSLContext sslContext = SSLContexts.custom()
+                                         .loadTrustMaterial(null, acceptingTrustStrategy)
+                                         .build();
+      org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
+      Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
+                                                                               .register("https", sslsf)
+                                                                               .register("http", new PlainConnectionSocketFactory())
+                                                                               .build();
+
+      BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager(socketFactoryRegistry);
+      CloseableHttpClient httpClient = HttpClients
+              .custom()
+              .setConnectionManager(connectionManager)
+              .build();
+      HttpComponentsClientHttpRequestFactory fct = new HttpComponentsClientHttpRequestFactory(httpClient);
+
       this.restTemplate = new RestTemplate(fct);
     } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
       // TODO Auto-generated catch block

@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class ErrorHandlerController implements ErrorController{
+public class ErrorHandlerController implements ErrorController {
 
-	@Override
 	@RequestMapping("/error")
 	@ResponseBody
 	public String getErrorPath() {
 		return "<center><h1>Something went wrong, Please refresh the page</h1></center>";
 	}
+
 }

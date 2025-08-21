@@ -2,9 +2,6 @@ package gov.nist.hit.hl7.igamt.ig.util;
 
 import java.util.Set;
 
-import javax.persistence.Id;
-
-import org.springframework.data.mongodb.core.mapping.Document;
 
 public class SectionTemplate {
 

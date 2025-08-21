@@ -5,8 +5,8 @@ import gov.nist.hit.hl7.igamt.auth.exception.AuthenticationException;
 import gov.nist.hit.hl7.igamt.workspace.domain.Workspace;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspacePermissions;
 import gov.nist.hit.hl7.igamt.workspace.domain.WorkspaceUser;
+import jakarta.servlet.http.HttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface WorkspaceUserManagementService {

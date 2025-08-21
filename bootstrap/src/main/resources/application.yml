@@ -1,10 +1,11 @@
 spring:
   application:
     name: hl7-igamt
-  main: 
+  main:
     allow-bean-definition-overriding: true
+    allow-circular-references: true
 
-server: 
+server:
     port: 9000
     servlet:
       context-path: /
@@ -53,3 +54,4 @@ gvt:
    
 host:
    url: http://localhost:8090
+

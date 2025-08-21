@@ -1,7 +1,7 @@
 package gov.nist.hit.hl7.igamt.files.util;
 
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class HttpUtil {
 

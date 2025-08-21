@@ -17,6 +17,7 @@ import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceForbidden;
 import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceNotFound;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceDocumentManagementService;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceUserManagementService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -27,7 +28,6 @@ import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.workspace.domain.Workspace;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceService;
 
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class WorkspaceController {

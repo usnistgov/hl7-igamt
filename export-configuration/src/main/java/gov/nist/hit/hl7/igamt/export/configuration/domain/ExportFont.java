@@ -13,9 +13,9 @@
  */
 package gov.nist.hit.hl7.igamt.export.configuration.domain;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 

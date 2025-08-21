@@ -33,7 +33,7 @@ public abstract class CustomSecurityExpressionRoot extends SecurityExpressionRoo
     }
 
     public UsernamePasswordAuthenticationToken getAuthToken() {
-        return (UsernamePasswordAuthenticationToken) this.authentication;
+        return (UsernamePasswordAuthenticationToken) this.getAuthentication();
     }
 
     public boolean AccessWorkspace(String id, AccessLevel level)  throws ResourceNotFoundException, ResourceAccessDeniedException {

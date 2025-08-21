@@ -3,13 +3,12 @@ package gov.nist.hit.hl7.igamt.files.controller;
 
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -53,8 +52,8 @@ public class FileStorageController {
 
   @RequestMapping(value = "/api/storage/upload", method = RequestMethod.POST,
 	      consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
-	  public UploadFileResponse uploadFroala(@RequestPart("file") MultipartFile part, @RequestParam(value="ig", required=false) String ig, @RequestParam(value="type", required=false) String type,@RequestParam(value="id", required=false) String id,  
-	      HttpServletRequest request, Authentication authentication) throws UploadImageFileException {
+	  public UploadFileResponse uploadFroala(@RequestPart("file") MultipartFile part, @RequestParam(value="ig", required=false) String ig, @RequestParam(value="type", required=false) String type, @RequestParam(value="id", required=false) String id,
+                                             HttpServletRequest request, Authentication authentication) throws UploadImageFileException {
 	    try {
 
 	      String mime = part.getContentType();

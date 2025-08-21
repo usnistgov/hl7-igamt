@@ -16,13 +16,11 @@ package gov.nist.hit.hl7.igamt.export.configuration.domain;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.persistence.Column;
-
 import gov.nist.diff.domain.DeltaAction;
+import jakarta.persistence.Column;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.AbstractDomainExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.Columns;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.CompositeProfileExportConfiguration;

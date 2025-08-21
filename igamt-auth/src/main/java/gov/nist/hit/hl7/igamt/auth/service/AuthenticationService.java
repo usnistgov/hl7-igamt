@@ -13,9 +13,8 @@ package gov.nist.hit.hl7.igamt.auth.service;
 
 import java.util.ArrayList;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 
 import gov.nist.hit.hl7.auth.util.requests.AdminUserRequest;
@@ -37,8 +36,9 @@ import java.util.ArrayList;
  *
  */
 public interface AuthenticationService {
-  public ConnectionResponseMessage<UserResponse> connect(HttpServletResponse response,
-      LoginRequest user) throws AuthenticationException;
+  public ConnectionResponseMessage<UserResponse> connect(
+          HttpServletResponse response,
+          LoginRequest user) throws AuthenticationException;
 
   public ConnectionResponseMessage<UserResponse> register(RegistrationRequest user)
       throws AuthenticationException;

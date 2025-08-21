@@ -1,57 +1,65 @@
 package gov.nist.hit.hl7.igamt.bootstrap.configuration;
 
-import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoCredential;
+import jakarta.annotation.Nonnull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
+import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-
-import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
+
+import java.util.Collections;
 
 @Configuration
 @EnableMongoRepositories(basePackages = {"gov.nist.hit.hl7.igamt"})
 @ComponentScan("gov.nist.hit.hl7.igamt")
+public class DataMongoConfig extends AbstractMongoClientConfiguration {
 
-public class DataMongoConfig extends AbstractMongoConfiguration {
-
-
-  @Autowired
-  Environment env;
-
-
-  private static final String DB_NAME = "db.name";
-  private static final String DB_HOST = "db.host";
-  private static final String DB_PORT = "db.port";
-	@Bean
-	public GridFsTemplate gridFsTemplate() throws Exception {
-	    return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter());
-	}
+  @Value("${db.host}")
+  private String HOST;
+  @Value("${db.port}")
+  private String PORT;
+  @Value("${db.name}")
+  private String NAME;
+  @Value("${db.username:}")
+  private String USERNAME;
+  @Value("${db.password:}")
+  private String PASSWORD;
+  @Value("${db.auth.source:}")
+  private String AUTH_SOURCE;
 
   @Override
-  protected String getDatabaseName() {
-    return env.getProperty(DB_NAME);
+  @Nonnull
+  public String getDatabaseName() {
+    return NAME;
   }
 
   @Override
-  public MongoClient mongoClient() {
-
-
-    return new MongoClient(
-        new ServerAddress(env.getProperty(DB_HOST), Integer.parseInt(env.getProperty(DB_PORT))));
+  protected void configureClientSettings(MongoClientSettings.Builder builder) {
+    if(USERNAME != null && PASSWORD != null && !USERNAME.isEmpty() && !PASSWORD.isEmpty()) {
+      MongoCredential credential = MongoCredential.createCredential(
+              USERNAME,
+              AUTH_SOURCE,
+              PASSWORD.toCharArray()
+      );
+      builder.credential(credential);
+    }
+    builder.applyToClusterSettings(settings -> {
+      settings.hosts(Collections.singletonList(
+              new ServerAddress(HOST, Integer.parseInt(PORT))
+      ));
+    });
   }
 
-  @Override
-  protected String getMappingBasePackage() {
-    return "gov.nist.hit.hl7.igamt";
+  @Bean
+  public GridFsTemplate gridFsTemplate(MongoConverter mongoConverter) {
+      return new GridFsTemplate(mongoDbFactory(), mongoConverter);
   }
-
-
 
 }

@@ -2,22 +2,16 @@ package gov.nist.hit.hl7.igamt.common.base.util;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.index.Indexed;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-@RedisHash
+
 @Document
 public class RelationShip {
 
 	@Id
 	private String id;
-	
-	private Usage usage; 
-	@Indexed
+	private Usage usage;
 	private ReferenceIndentifier child;
-	@Indexed
 	private ReferenceIndentifier parent;
-	
 	private ReferenceLocation location;
 	
 	

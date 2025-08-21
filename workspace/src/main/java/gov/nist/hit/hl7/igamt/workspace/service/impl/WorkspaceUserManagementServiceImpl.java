@@ -12,13 +12,13 @@ import gov.nist.hit.hl7.igamt.workspace.service.WorkspacePermissionService;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceService;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceUserManagementService;
 import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceVerificationService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 

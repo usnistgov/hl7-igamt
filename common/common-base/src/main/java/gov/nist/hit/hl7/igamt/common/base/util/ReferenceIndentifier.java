@@ -1,12 +1,10 @@
 package gov.nist.hit.hl7.igamt.common.base.util;
 
-import org.springframework.data.redis.core.index.Indexed;
-
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class ReferenceIndentifier {
-	@Indexed private String id;
-	@Indexed private Type type;
+	private String id;
+	private Type type;
 	
 	
 	public ReferenceIndentifier(String id, Type type) {

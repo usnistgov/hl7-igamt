@@ -3,11 +3,9 @@ package gov.nist.hit.hl7.igamt.web.app.ig;
 import java.io.InputStream;
 import java.util.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
-import gov.nist.hit.hl7.igamt.web.app.model.IgSubSet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

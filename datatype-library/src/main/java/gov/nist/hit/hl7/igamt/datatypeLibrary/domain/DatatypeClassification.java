@@ -14,8 +14,7 @@ package gov.nist.hit.hl7.igamt.datatypeLibrary.domain;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.GeneratedValue;
-
+import jakarta.persistence.GeneratedValue;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -49,7 +48,5 @@ public class DatatypeClassification {
   public void setClasses(Set<DatatypeVersionGroup> classes) {
     this.classes = classes;
   }
-
-
 
 }

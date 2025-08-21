@@ -3,8 +3,8 @@ package gov.nist.hit.hl7.igamt.files.service.impl;
 import java.io.InputStream;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 
+import jakarta.annotation.PostConstruct;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;

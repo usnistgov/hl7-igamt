@@ -14,12 +14,7 @@
 package gov.nist.hit.hl7.igamt.datatype.service.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -728,15 +723,13 @@ public class DatatypeServiceImpl implements DatatypeService {
 		Query qry = new Query();
 		qry.addCriteria(Criteria.where("_id").in(convertIds(ids)));
 		qry.addCriteria(Criteria.where("name").is(name));
-
 		qry.fields().include("domainInfo");
 		qry.fields().include("id");
 		qry.fields().include("_class");
 		qry.fields().include("name");
 		qry.fields().include("description");
 		qry.fields().include("ext");
-		qry.with(new Sort(Sort.Direction.ASC, "ext"));
-
+		qry.with(Sort.by(Sort.Direction.ASC,"ext"));
 		List<Datatype> datatypes = mongoTemplate.find(qry, Datatype.class);
 		return datatypes;
 	}
@@ -746,16 +739,13 @@ public class DatatypeServiceImpl implements DatatypeService {
 		Query qry = new Query();
 		qry.addCriteria(Criteria.where("_id").in(convertIds(ids)));
 		qry.addCriteria(Criteria.where("name").ne(name));
-		qry.with(new Sort(Sort.Direction.ASC, "name"));
-
-		//
+		qry.with(Sort.by(Sort.Direction.ASC,"name"));
 		qry.fields().include("domainInfo");
 		qry.fields().include("id");
 		qry.fields().include("name");
 		qry.fields().include("description");
 		qry.fields().include("ext");
 		qry.fields().include("_class");
-
 		List<Datatype> datatypes = mongoTemplate.find(qry, Datatype.class);
 		return datatypes;
 	}
@@ -809,8 +799,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 	/**
 	 * @param map
 	 * @param dateTimeDatatype
-	 * @param documentId
-	 * @throws ApplyChangeException 
+	 * @throws ApplyChangeException
 	 */
 	private void applyDTMChange(Map<PropertyType, List<ChangeItemDomain>> map,
 			DateTimeDatatype dateTimeDatatype) throws ApplyChangeException {
@@ -838,7 +827,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 	/**
 	 * @param map
 	 * @param components
-	 * @param documentId
 	 */
 	private void applyChildrenChange(
 			Map<PropertyType, List<ChangeItemDomain>> map,
@@ -878,7 +866,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 	}
 
 	/**
-	 * @param sebs
 	 * @param location
 	 * @return
 	 */
@@ -937,8 +924,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 	}
 
 	/**
-	 * @param seb
-	 * @param replace
 	 * @return
 	 */
 	private StructureElementBinding findAndCreateStructureElementBindingByIdPath(StructureElementBinding binding,
@@ -1052,8 +1037,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 	}
 
 	/**
-	 * @param childDT
-	 * @param childSeb
 	 * @return
 	 */
 	private LocationInfo makeLocationInfoForSubComponent(ComplexDatatype dt, StructureElementBinding seb) {

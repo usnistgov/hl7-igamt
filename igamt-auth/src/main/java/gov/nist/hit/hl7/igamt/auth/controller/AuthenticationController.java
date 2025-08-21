@@ -5,10 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
@@ -82,8 +81,9 @@ public class AuthenticationController {
 
   @RequestMapping(value = "api/logout", method = RequestMethod.GET)
   @ResponseBody
-  public void logout(HttpServletRequest req, HttpServletResponse res,
-      Authentication authentication) {
+  public void logout(
+          HttpServletRequest req, HttpServletResponse res,
+          Authentication authentication) {
     Cookie authCookie = new Cookie("authCookie", "");
     authCookie.setPath("/api");
     authCookie.setMaxAge(0);

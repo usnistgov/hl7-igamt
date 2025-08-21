@@ -15,14 +15,14 @@ export class ConfigService {
   }
 
   getConfig(): Observable<Message<Hl7Config>> {
-    return this.http.get<Message<Hl7Config>>('api/config/');
+    return this.http.get<Message<Hl7Config>>('api/config');
   }
 
   getUserConfig(): Observable<Message<IUserConfig>> {
-    return this.http.get<Message<IUserConfig>>('api/user-config/');
+    return this.http.get<Message<IUserConfig>>('api/user-config');
   }
 
-  saveUserConfig( userConfig: IUserConfig): Observable<Message<IUserConfig>> {
+  saveUserConfig(userConfig: IUserConfig): Observable<Message<IUserConfig>> {
     return this.http.post<Message<IUserConfig>>('api/user-config/', userConfig);
   }
 }
