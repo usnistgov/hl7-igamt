@@ -8,7 +8,12 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringJoiner;
 import gov.nist.hit.hl7.igamt.ig.data.fix.PcConformanceStatementsIdFixes;
+import gov.nist.hit.hl7.igamt.mcp.IgamtTools;
 import org.bson.types.ObjectId;
+import org.springframework.ai.support.ToolCallbacks;
+import org.springframework.ai.tool.ToolCallback;
+import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.ai.tool.method.MethodToolCallbackProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -248,6 +253,23 @@ public class BootstrapApplication implements CommandLineRunner {
 		mailSender.setJavaMailProperties(javaMailProperties);
 		return mailSender;
 	}
+
+
+//	@Bean
+//	public List<ToolCallback> tools(IgamtTools igamtMcpTools) {
+//		return List.of(
+//				ToolCallbacks.from(igamtMcpTools)
+//				// , ToolCallbacks.from(otherServiceWithAtToolMethods)
+//		);
+//	}
+	@Bean
+	ToolCallbackProvider igamtToolProvider(IgamtTools tools) {
+		return MethodToolCallbackProvider.builder()
+				.toolObjects(tools) // picks up @Tool methods
+				.build();
+	}
+
+
 
 	@Bean
 	public org.springframework.mail.SimpleMailMessage templateMessage() {

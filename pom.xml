@@ -114,6 +114,7 @@
 		<module>structure-editor</module>
 		<module>web-app</module>
         <module>workspace</module>
-  </modules>
+        <module>igamt-mcp</module>
+    </modules>
 
 </project>
