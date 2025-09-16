@@ -89,7 +89,7 @@ build_and_push_docker_image_test:
   when: "manual"
   allow_failure: false 
   
-  build_and_push_docker_image_local:
+build_and_push_docker_image_local:
   stage: deploy
   image: docker:24.0.2
   services:
