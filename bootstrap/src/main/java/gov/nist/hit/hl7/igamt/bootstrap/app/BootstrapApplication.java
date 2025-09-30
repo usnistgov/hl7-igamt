@@ -254,22 +254,12 @@ public class BootstrapApplication implements CommandLineRunner {
 		return mailSender;
 	}
 
-
-//	@Bean
-//	public List<ToolCallback> tools(IgamtTools igamtMcpTools) {
-//		return List.of(
-//				ToolCallbacks.from(igamtMcpTools)
-//				// , ToolCallbacks.from(otherServiceWithAtToolMethods)
-//		);
-//	}
 	@Bean
 	ToolCallbackProvider igamtToolProvider(IgamtTools tools) {
 		return MethodToolCallbackProvider.builder()
-				.toolObjects(tools) // picks up @Tool methods
+				.toolObjects(tools)
 				.build();
 	}
-
-
 
 	@Bean
 	public org.springframework.mail.SimpleMailMessage templateMessage() {

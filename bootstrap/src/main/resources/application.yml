@@ -9,11 +9,12 @@ spring:
       server:
         name: igamt
         version: 1.0.0
-        type: SYNC
-        sse-endpoint: /sse
-        sse-message-endpoint: /mcp/messages
+        type: ASYNC
         capabilities:
           tool: true
+          resource: false
+          prompt: false
+          completion: false
 
 server:
     port: 9000

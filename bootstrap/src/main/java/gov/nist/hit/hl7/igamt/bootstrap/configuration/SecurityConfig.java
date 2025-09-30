@@ -24,11 +24,6 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests(authorizeRequests ->
             authorizeRequests
-                    .requestMatchers("/ss").permitAll()
-                    .requestMatchers("/sse/**").permitAll()
-                    .requestMatchers("/sse").permitAll()
-
-                    .requestMatchers("/mcp/**").permitAll()
                     .requestMatchers("/api/login").not().authenticated()
                     .requestMatchers("/api/register").not().authenticated()
                     .requestMatchers("/api/password/**").not().authenticated()
@@ -43,13 +38,5 @@ public class SecurityConfig {
     http.csrf(AbstractHttpConfigurer::disable);
     http.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
-  }
-
-  @Bean
-  public WebSecurityCustomizer webSecurityCustomizer() {
-    return (web) -> web.ignoring()
-            .requestMatchers(new AntPathRequestMatcher("/ss"))
-            .requestMatchers(new AntPathRequestMatcher("/mcp/**"))
-            .requestMatchers(new AntPathRequestMatcher("/sse"));
   }
 }

@@ -18,8 +18,6 @@ public class IgamtTools {
 
     @Tool(description = "Get the current time in a specified timezone. Use 'UTC' for Coordinated Universal Time.")
     public String getCurrentTime(String timezone) {
-        // You would implement the logic here to get the time for the given timezone.
-        // For simplicity, we'll just return a mock response.
         if ("UTC".equalsIgnoreCase(timezone)) {
             return "The current time is 12:30 PM UTC.";
         }
