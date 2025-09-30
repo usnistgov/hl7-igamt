@@ -252,7 +252,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                             }
 
                         }
-                        if (segmentRefOrGroup.getText() != null) {
+                        if (segmentRefOrGroup.getText() != null && !segmentRefOrGroup.getText().isEmpty()) {
                             Element definitionText = new Element("DefinitionText");
                             definitionText
                                     .addAttribute(new Attribute("text", segmentRefOrGroup.getText()));
