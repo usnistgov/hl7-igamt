@@ -70,6 +70,10 @@ const routes: Routes = [
     loadChildren: './modules/ig/ig.module#IgModule',
   },
   {
+    path: 'example-messages',
+    loadChildren: './modules/example-messages/example-messages.module#ExampleMessagesModule',
+  },
+  {
     path: 'datatype-library',
     loadChildren: './modules/library/library.module#LibraryModule',
   },

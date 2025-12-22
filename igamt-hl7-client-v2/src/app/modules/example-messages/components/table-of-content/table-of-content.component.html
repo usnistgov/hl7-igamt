@@ -1,0 +1,32 @@
+<div id="toc-container" class="toc-container">
+  <tree-root #treeroot [nodes]="nodes" [options]="options">
+    <ng-template #treeNodeTemplate let-index="index" let-node>
+      <ng-container [ngSwitch]="node.data.type">
+        <div [routerLink]="['message', node.data.id]" routerLinkActive="active-node"  *ngSwitchCase="'EXAMPLEMESSAGE'" style="display: flex; align-items: center; padding: 3px 6px; gap: 5px;">
+          <span class="badge badge-primary">
+            <i class="fa fa-envelope"></i>
+            Message
+          </span>
+          {{ node.data.label }} 
+        </div>
+        <ng-container *ngSwitchCase="'EXAMPLEMESSAGESNIPPET'">
+          <span class="badge badge-primary">
+            <i class="fa fa-scissors"></i>
+            Snippet
+          </span>
+          {{ node.data.label }} 
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+          <div [contextMenu]="profileContexMenu" >
+            <app-display-section [element]="node.data"></app-display-section>
+            <context-menu #profileContexMenu>
+              <ng-template (execute)="createExampleMessage(node.data.id)" contextMenuItem>
+                <i class="fa fa-plus"></i> Create Example Message
+              </ng-template>
+            </context-menu>
+          </div>
+        </ng-container>
+      </ng-container>
+    </ng-template>
+  </tree-root>
+</div>

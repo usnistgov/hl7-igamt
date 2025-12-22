@@ -33,6 +33,7 @@ export const IG_EDIT_WIDGET_ID = 'IG-EDIT-WIDGET';
 export class IgEditContainerComponent extends DamWidgetComponent implements OnInit, OnDestroy {
 
   titleBar$: Observable<ITitleBarMetadata>;
+  igId$: Observable<string>;
   activeWorkspace: Observable<IWorkspaceActive>;
   showStatusBar$: Observable<boolean>;
   showBottomDrawer$: Observable<boolean>;
@@ -55,6 +56,7 @@ export class IgEditContainerComponent extends DamWidgetComponent implements OnIn
     this.activeWorkspace = store.select(fromIgamtSelectors.selectWorkspaceActive);
     this.showStatusBar$ = verificationService.getStatusBarActive();
     this.showBottomDrawer$ = verificationService.getBottomDrawerActive();
+    this.igId$ = store.select(fromIgEdit.selectIgId);
     this.location$ = this.store.select(selectIgDocumentLocation).pipe(
       map((igLocation) => igLocation.location),
     );

@@ -11,6 +11,7 @@ export class IgEditTitlebarComponent implements OnInit {
 
   @Input() metadata: ITitleBarMetadata;
   @Input() info: IgDocumentStatusInfo;
+  @Input() igId: string;
 
   constructor() {
   }

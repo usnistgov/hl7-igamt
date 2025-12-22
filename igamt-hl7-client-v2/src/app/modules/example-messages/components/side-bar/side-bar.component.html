@@ -1,0 +1,21 @@
+<div class="input-group sidebar-filter">
+  <div class="input-group-prepend">
+    <span class="input-group-text"><i class="fa fa-filter"></i></span>
+  </div>
+  <input (keyup)="filterFn($event.target.value)" class="form-control"
+          placeholder="Filter" required style="background-color: #f0f0f0;" type="text">
+</div>
+<div class="sidebar-controls">
+  <app-dam-side-bar-toggle></app-dam-side-bar-toggle>
+  <div class="btn-group mr-2" role="group">
+    <button  class="btn btn-text btn-sm btn-primary" (click)="expandAll()">
+      <i class="fa fa-expand"></i>
+    </button>
+    <button  class="btn btn-text btn-sm btn-primary"  (click)="collapseAll()">
+      <i class="fa fa-compress"></i>
+    </button>
+  </div>
+</div>
+<div class="sidebar-content" id="sidebar-content">
+  <app-table-of-content [nodes]="nodes | async" (onCreateExampleMessage)="createExampleMessage($event)"></app-table-of-content>
+</div>

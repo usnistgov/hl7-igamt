@@ -1,12 +1,18 @@
 <div style="display: flex; flex-direction: column; width: 100%; padding-right: 10px; padding-left: 5px;">
-  <div>
-    <app-ig-type [info]="info" ></app-ig-type>
-    <div class="custom-ig-badge entity-badge-dark entity-badge-ig">IG</div>
-    <div style="margin-left: 5px; display: inline;">
-      <span class="title-text">
-        {{ metadata.title }}
-      </span>
+  <div style="display: flex; align-items: center;">
+    <div style="flex: 1;">
+      <app-ig-type [info]="info" ></app-ig-type>
+      <div class="custom-ig-badge entity-badge-dark entity-badge-ig">IG</div>
+      <div style="margin-left: 5px; display: inline;">
+        <span class="title-text">
+          {{ metadata.title }}
+        </span>
+      </div>
     </div>
+    <button [routerLink]="['/example-messages', igId ]"  class="btn btn-sm btn-primary">
+      Example Messages
+      <i class="fa fa-chevron-right"></i>
+    </button>
   </div>
   <app-metadata-date [updateDate]="metadata.updateDate" [creationDate]="metadata.creationDate"></app-metadata-date>  
 </div>

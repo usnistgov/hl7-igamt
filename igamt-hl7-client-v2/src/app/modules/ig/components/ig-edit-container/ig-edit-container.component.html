@@ -23,7 +23,7 @@
   </ng-template>
 
   <ng-template #titleBar>
-    <app-ig-edit-titlebar [metadata]="titleBar$ | async" [info]="statusInfo$ | async" ></app-ig-edit-titlebar>
+    <app-ig-edit-titlebar [igId]="igId$ | async" [metadata]="titleBar$ | async" [info]="statusInfo$ | async" ></app-ig-edit-titlebar>
   </ng-template>
   <ng-template #toolbar>
     <app-ig-edit-toolbar></app-ig-edit-toolbar>

@@ -1,0 +1,11 @@
+:host {
+  display: contents;
+}
+.inline-label {
+  display: grid;
+  align-content: flex-start;
+  grid-template-columns: fit-content(10%) fit-content(10%) fit-content(10%) max-content;
+}
+.toc-container {
+  height: 100%;
+}

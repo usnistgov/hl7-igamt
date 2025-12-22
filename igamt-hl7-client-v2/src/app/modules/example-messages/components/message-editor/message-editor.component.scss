@@ -1,0 +1,30 @@
+:host {
+    display: contents;
+}
+
+.message-editor {
+    height: 100%;
+    width: 100%; 
+    overflow: hidden;
+}
+
+.selected {
+    background-color: #f3c60b;
+    border-radius: 5px;
+    padding: 5px;
+    border: 1px solid;
+}
+
+.stale-overlay {
+    height: 100%; 
+    width: 100%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    position: absolute;
+    opacity: 0.8;
+    background-color: #fefefe;
+    z-index: 2;
+    padding: 50px;
+    color: black;
+}

@@ -1,0 +1,57 @@
+<app-dam-layout>
+
+  <ng-template #alerts>
+    <app-dam-alerts-container></app-dam-alerts-container>
+  </ng-template>
+
+  <ng-template #breadCrumbs>
+    <div style="padding: 5px 5px 5px 10px; display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <i class="fa fa-envelope"></i>
+        <span style="font-size: 1.1em;">Example Messages</span>
+        <i class="fa fa-chevron-right"></i>
+      </div>
+      <div style="display: flex; justify-content: center; align-items: center;">
+        <app-dam-fullscreen-button></app-dam-fullscreen-button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #titleBar>
+    <div style="display: flex; flex-direction: column; width: 100%; padding-right: 10px; padding-left: 5px;">
+      <div style="display: flex; align-items: center;">
+        <div class="custom-ig-badge entity-badge-dark entity-badge-ig">IG</div>
+        <div style="margin-left: 5px; display: inline;">
+          <span class="title-text">
+            {{ title$ | async }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #toolbar>
+    <div></div>
+    <div>
+      <app-dam-reset-button></app-dam-reset-button>
+      <app-dam-save-button></app-dam-save-button>
+    </div>
+  </ng-template>
+
+  <ng-template #activeTitleBar>
+    <app-active-titlebar
+    [active]="activeWorkspace | async"
+    [controls]="activeComponent?.controls"
+    [header]="activeComponent?.header"
+    ></app-active-titlebar>
+  </ng-template>
+
+  <ng-template #editorContent>
+    <app-dam-editor-outlet></app-dam-editor-outlet>
+  </ng-template>
+
+  <ng-template #sideBar>
+    <app-side-bar></app-side-bar>
+  </ng-template>
+
+</app-dam-layout>
