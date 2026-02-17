@@ -291,7 +291,28 @@ export class IgService {
   }
 
   saveTextSections(id: string, content: IContent[]): Observable<Message<string>> {
-    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/update/sections', content);
+    const filteredContent = this.minimizeContent(content);
+    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/update/sections', filteredContent);
+  }
+
+  minimizeContent(content: IContent[]): IContent[] {
+    const contentCopy = content.map(section => ({ ...section }));
+    const profileSection = contentCopy.find(section => section.type === Type.PROFILE);
+
+    if (profileSection && profileSection.children) {
+      profileSection.children = profileSection.children.map(child => {
+        const orderedRegistry = child.type === Type.CONFORMANCEPROFILEREGISTRY ||
+          child.type === Type.PROFILECOMPONENTREGISTRY ||
+          child.type === Type.COMPOSITEPROFILEREGISTRY;
+
+        if (!orderedRegistry) {
+          return { ...child, children: [] };
+        }
+        return child;
+      });
+    }
+
+    return contentCopy;
   }
 
   uploadCoverImage(file: File): Observable<{
@@ -527,6 +548,6 @@ export class IgService {
 
   groupValueSets(id: string, groups: any): Observable<any> {
 
-    return this.http.post<any>(this.IG_END_POINT + id + '/group-value-sets',  groups);
+    return this.http.post<any>(this.IG_END_POINT + id + '/group-value-sets', groups);
   }
 }

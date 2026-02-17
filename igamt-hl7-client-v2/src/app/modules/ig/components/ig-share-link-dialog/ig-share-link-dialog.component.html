@@ -1,6 +1,6 @@
 <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
   <h2 style="margin: 0;" mat-dialog-title>
-    Export Share
+    {{ isDifferential ? 'Differential Export Share' : 'Export Share' }}
   </h2>
   <button *ngIf="list" class="btn btn-sm btn-primary" (click)="create()">
     <i class="fa fa-plus"></i>
