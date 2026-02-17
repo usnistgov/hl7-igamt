@@ -382,12 +382,18 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
                 vsBinding.addAttribute(attr("BindingStrength", binding.getStrength().name()));
 
                 Element vsBindingLocations = new Element("BindingLocations");
-                binding.getValuesetLocations().stream().map((vsLocation) -> {
-                    Element bindingLocation = new Element("ComplexBindingLocation");
-                    bindingLocation.addAttribute(attr("CodeLocation", vsLocation + "[1]"));
-                    bindingLocation.addAttribute(attr("CodeSystemLocation", (vsLocation + 2) + "[1]"));
-                    return bindingLocation;
-                }).forEach(vsBindingLocations::appendChild);
+                if(binding.getValuesetLocations() != null && !binding.getValuesetLocations().isEmpty()) {
+                    binding.getValuesetLocations().stream().map((vsLocation) -> {
+                        Element bindingLocation = new Element("ComplexBindingLocation");
+                        bindingLocation.addAttribute(attr("CodeLocation", vsLocation + "[1]"));
+                        bindingLocation.addAttribute(attr("CodeSystemLocation", (vsLocation + 2) + "[1]"));
+                        return bindingLocation;
+                    }).forEach(vsBindingLocations::appendChild);
+                } else {
+                    Element simpleBindingLocation = new Element("SimpleBindingLocation");
+                    simpleBindingLocation.addAttribute(new Attribute("CodeLocation", "."));
+                    vsBindingLocations.appendChild(simpleBindingLocation);
+                }
                 vsBinding.appendChild(vsBindingLocations);
 
                 Element vsBindings = new Element("Bindings");
