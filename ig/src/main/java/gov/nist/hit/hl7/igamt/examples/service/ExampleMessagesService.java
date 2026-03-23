@@ -10,6 +10,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRe
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.examples.domain.ExampleMessage;
 import gov.nist.hit.hl7.igamt.examples.domain.IgExampleMessages;
+import gov.nist.hit.hl7.igamt.examples.domain.MessageSnippet;
 import gov.nist.hit.hl7.igamt.examples.domain.ProfileInfo;
 import gov.nist.hit.hl7.igamt.examples.dto.*;
 import gov.nist.hit.hl7.igamt.examples.repository.IgExampleMessagesRepository;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -131,6 +133,27 @@ public class ExampleMessagesService {
         exampleMessage.setName(createMessageDTO.getName());
         exampleMessage.setProfileId(createMessageDTO.getProfileId());
         igExampleMessages.getExampleMessages().add(exampleMessage);
+        this.exampleMessagesRepository.save(igExampleMessages);
+        return this.toDTO(igExampleMessages);
+    }
+
+    public IgExampleMessagesDTO createSnippet(String igId, String messageId, CreateSnippetDTO createSnippetDTO) throws ResourceNotFoundException {
+        IgExampleMessages igExampleMessages = this.exampleMessagesRepository.findById(igId).orElse(null);
+        if (igExampleMessages == null) {
+            throw new ResourceNotFoundException(igId, Type.EXAMPLEMESSAGES);
+        }
+
+        ExampleMessage exampleMessage = igExampleMessages.getExampleMessages().stream()
+                .filter((m) -> m.getId().equals(messageId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException(messageId, Type.EXAMPLEMESSAGE));
+
+        MessageSnippet snippet = new MessageSnippet();
+        snippet.setId(new ObjectId().toString());
+        snippet.setName(createSnippetDTO.getName());
+        snippet.setMessageReferences(new HashSet<>(createSnippetDTO.getMessageReferences()));
+
+        exampleMessage.getSnippets().add(snippet);
         this.exampleMessagesRepository.save(igExampleMessages);
         return this.toDTO(igExampleMessages);
     }

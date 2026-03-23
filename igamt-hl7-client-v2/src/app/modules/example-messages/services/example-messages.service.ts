@@ -4,6 +4,11 @@ import { Observable } from 'rxjs';
 import { IExampleMessageDTO, IgExampleMessages } from '../domain/example-messages.model';
 import { IMessage } from '../../dam-framework/models/messages/message.class';
 
+export interface ICreateExampleMessageSnippetRequest {
+  name: string;
+  messageReferences: string[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -30,6 +35,10 @@ export class ExampleMessagesService {
 
   public parseExampleMessage(id: string, messageId: string): Observable<any[]> {
     return this.http.get<any[]>(`api/example-messages/${id}/message/${messageId}/parse`);
+  }
+
+  public createExampleMessageSnippet(id: string, messageId: string, data: ICreateExampleMessageSnippetRequest): Observable<IMessage<IgExampleMessages>> {
+    return this.http.post<IMessage<IgExampleMessages>>(`api/example-messages/${id}/message/${messageId}/snippet`, data);
   }
 
 }

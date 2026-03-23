@@ -5,6 +5,7 @@ import java.util.Set;
 
 public class MessageSnippet {
     private String id;
+    private String name;
     private Set<String> messageReferences;
     private String narrativeHTML;
 
@@ -14,6 +15,14 @@ public class MessageSnippet {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Set<String> getMessageReferences() {

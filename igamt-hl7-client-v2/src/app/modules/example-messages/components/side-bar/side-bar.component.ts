@@ -55,8 +55,9 @@ export class SideBarComponent {
                 children: [
                   ...message.snippets.map((snippet) => ({
                     ...snippet,
+                    messageId: message.id,
                     type: Type.EXAMPLEMESSAGESNIPPET,
-                    label: message.name,
+                    label: snippet.name,
                   }))
                 ]
               }))

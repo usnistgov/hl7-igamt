@@ -1,4 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { ActivatedRoute } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import * as _ from 'lodash';
@@ -15,7 +17,8 @@ import { MessageService } from 'src/app/modules/dam-framework/services/message.s
 import { TreeNode } from 'angular-tree-component';
 import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import * as CodeMirror from 'codemirror';
-import { MessageElement } from '../../domain/example-messages.model';
+import { IExampleMessageSnippet, MessageElement } from '../../domain/example-messages.model';
+import { CreateDialogComponent } from '../create-dialog/create-dialog.component';
 
 @Component({
   selector: 'app-message-editor',
@@ -45,12 +48,16 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
   highlighted: CodeMirror.TextMarker | null = null;
   selected: MessageElement | null = null;
   messageHash: string | null = null;
+  snippetId: string;
+  snippetToHighlightPath: string | null = null;
 
   @ViewChild('codemirror') private codeEditor!: CodemirrorComponent;
 
   constructor(
     actions$: Actions,
     store: Store<any>,
+    private route: ActivatedRoute,
+    private dialog: MatDialog,
     private froalaService: FroalaService,
     private messageService: MessageService,
     private exampleMessagesService: ExampleMessagesService
@@ -70,11 +77,20 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
         this.message = current.message;
         this.narrative = current.narrativeHTML;
         this.messageId = current.id;
+        this.resolveSnippetPath();
         if (this.message) {
           await this.parseMessage();
         }
       })
     ).subscribe();
+
+    this.route.queryParamMap.pipe(
+      map((params) => params.get('snippetId'))
+    ).subscribe((snippetId) => {
+      this.snippetId = snippetId;
+      this.resolveSnippetPath();
+      this.highlightSnippetIfAvailable();
+    });
   }
 
   messageEditorOptions = {
@@ -99,7 +115,7 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
 
   async messageChange() {
     await this.updateStaleMessageState();
-    if (this.staleMessageTree) {
+    if (this.staleMessageTree && this.highlighted) {
       this.highlighted.clear();
       this.selected = null;
     }
@@ -147,6 +163,45 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
     this.select(element.start, element.end);
   }
 
+  createSnippet(element: MessageElement) {
+    this.dialog.open(CreateDialogComponent, {
+      data: {
+        title: 'Create Snippet',
+      },
+    }).afterClosed().pipe(
+      take(1),
+      mergeMap((data) => {
+        if (!data || !data.name || !element || !element.positionalPath) {
+          return EMPTY;
+        }
+        return this.igId$.pipe(
+          take(1),
+          mergeMap((igId) => {
+            return this.exampleMessagesService.createExampleMessageSnippet(igId, this.messageId, {
+              name: data.name,
+              messageReferences: [element.positionalPath],
+            }).pipe(
+              map((message) => {
+                const actions = [];
+                actions.push(this.messageService.messageToAction(message));
+                if (message.data) {
+                  actions.push(new fromDam.LoadPayloadData(message.data));
+                }
+                actions.forEach((action) => {
+                  this.store.dispatch(action);
+                });
+              }),
+              catchError((error) => {
+                this.store.dispatch(this.messageService.actionFromError(error));
+                return EMPTY;
+              }),
+            )
+          }),
+        );
+      }),
+    ).subscribe();
+  }
+
   select(from: { line: number, column: number }, to: { line: number, column: number }) {
     const editor = this.codeEditor.codeMirror;
     const doc = editor.getDoc();
@@ -177,6 +232,7 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
           map(async (parsed) => {
             this.parsed = parsed;
             await this.updateStaleMessageState();
+            this.highlightSnippetIfAvailable();
           })
         )
       }),
@@ -189,6 +245,58 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
   async updateStaleMessageState() {
     const hash = await this.getMessageHash();
     this.staleMessageTree = hash !== this.messageHash;
+  }
+
+  private resolveSnippetPath() {
+    if (!this.snippetId || !this.messageId) {
+      this.snippetToHighlightPath = null;
+      return;
+    }
+    this.store.select(selectIgExampleMessages).pipe(
+      take(1),
+      map((igExampleMessages) => {
+        const allMessages = igExampleMessages.profileExampleMessages
+          .reduce((acc, profile) => [...acc, ...profile.exampleMessages], []);
+        const message = allMessages.find((exampleMessage) => exampleMessage.id === this.messageId);
+        if (!message || !message.snippets) {
+          this.snippetToHighlightPath = null;
+          return;
+        }
+        const snippet = message.snippets.find((entry: IExampleMessageSnippet) => entry.id === this.snippetId);
+        this.snippetToHighlightPath = snippet && snippet.messageReferences && snippet.messageReferences.length > 0
+          ? snippet.messageReferences[0]
+          : null;
+      }),
+    ).subscribe();
+  }
+
+  private highlightSnippetIfAvailable() {
+    if (!this.parsed || !this.snippetToHighlightPath) {
+      return;
+    }
+    const target = this.findByPositionalPath(this.parsed, this.snippetToHighlightPath);
+    if (target) {
+      this.highlight(target);
+    }
+  }
+
+  private findByPositionalPath(node: any, positionalPath: string): MessageElement | null {
+    if (!node) {
+      return null;
+    }
+    if (node.positionalPath === positionalPath) {
+      return node as MessageElement;
+    }
+    if (!node.children || node.children.length === 0) {
+      return null;
+    }
+    for (const child of node.children) {
+      const found = this.findByPositionalPath(child, positionalPath);
+      if (found) {
+        return found;
+      }
+    }
+    return null;
   }
 
   onDeactivate(): void {

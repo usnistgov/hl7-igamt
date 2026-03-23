@@ -4,6 +4,7 @@ import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.examples.domain.ExampleMessage;
 import gov.nist.hit.hl7.igamt.examples.domain.IgExampleMessages;
 import gov.nist.hit.hl7.igamt.examples.dto.CreateMessageDTO;
+import gov.nist.hit.hl7.igamt.examples.dto.CreateSnippetDTO;
 import gov.nist.hit.hl7.igamt.examples.dto.ExampleMessageDTO;
 import gov.nist.hit.hl7.igamt.examples.dto.IgExampleMessagesDTO;
 import gov.nist.hit.hl7.igamt.examples.dto.SaveMessageDTO;
@@ -75,6 +76,24 @@ public class ExampleMessagesController {
         return new ResponseMessage<>(
                 ResponseMessage.Status.SUCCESS,
                 "Example Message Created Successfully",
+                igExampleMessages.getId(),
+                igExampleMessages,
+                new Date()
+        );
+    }
+
+    @RequestMapping(value = "/api/example-messages/{id}/message/{messageId}/snippet", method = RequestMethod.POST, produces = {"application/json" })
+    public @ResponseBody
+    ResponseMessage<IgExampleMessagesDTO> createSnippet(
+            @PathVariable("id") String id,
+            @PathVariable("messageId") String messageId,
+            @RequestBody CreateSnippetDTO createSnippetDTO,
+            Authentication authentication
+    ) throws Exception {
+        IgExampleMessagesDTO igExampleMessages = this.exampleMessagesService.createSnippet(id, messageId, createSnippetDTO);
+        return new ResponseMessage<>(
+                ResponseMessage.Status.SUCCESS,
+                "Snippet Created Successfully",
                 igExampleMessages.getId(),
                 igExampleMessages,
                 new Date()

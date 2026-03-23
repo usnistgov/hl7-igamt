@@ -15,11 +15,18 @@
                 <div *ngIf="!loading && parsed" style="height: 100%; width: 100%; overflow: scroll; padding: 15px;">
                     <tree-root #treeroot [nodes]="parsed.children" [options]="options">
                         <ng-template #treeNodeTemplate let-index="index" let-node>
-                            <span [ngClass]="{ 'selected': selected && node.data.positionalPath === selected.positionalPath }" (click)="highlight(node.data)" style="white-space: nowrap; color: black;">
-                                <app-entity-bagde [type]="node.data.type" ></app-entity-bagde>
-                                {{ node.data.hl7Path }} 
-                                <span *ngIf="node.data.type !== 'GROUP'">- {{ node.data.name }}</span>
-                            </span>
+                            <div [contextMenu]="elementContextMenu">
+                                <span [ngClass]="{ 'selected': selected && node.data.positionalPath === selected.positionalPath }" (click)="highlight(node.data)" style="white-space: nowrap; color: black;">
+                                    <app-entity-bagde [type]="node.data.type" ></app-entity-bagde>
+                                    {{ node.data.hl7Path }}
+                                    <span *ngIf="node.data.type !== 'GROUP'">- {{ node.data.name }}</span>
+                                </span>
+                                <context-menu #elementContextMenu>
+                                    <ng-template (execute)="createSnippet(node.data)" contextMenuItem [enabled]="!staleMessageTree">
+                                        <i class="fa fa-plus"></i> Create Snippet
+                                    </ng-template>
+                                </context-menu>
+                            </div>
                         </ng-template>
                     </tree-root>
                 </div>
