@@ -245,7 +245,11 @@
       }"
       >
         <div *cdkDragPreview style="padding: 10px; background-color: lightcoral;"> Co-Constraint ({{ i + 1 }}) </div>
-        <td class="btn-cell" *ngIf="!vOnly && !delta" ><button *ngIf="!viewOnly" class="btn btn-sm btn-danger" (click)="deleteCoConstraint(list, i)"><i class="fa fa-times"></i></button></td>
+        <td class="btn-cell" *ngIf="!vOnly && !delta" >
+          <button *ngIf="!viewOnly" class="btn btn-sm btn-danger" (click)="deleteCoConstraint(list, i)"><i class="fa fa-times"></i></button>
+          <button *ngIf="!viewOnly && cc.cloned && derived" class="btn btn-sm btn-warning" title="Unlock this derived row for editing" (click)="unlockDerivedRow(cc)"><i class="fa fa-unlock"></i></button>
+          <button *ngIf="!viewOnly && cc.cloned && derived" class="btn btn-sm btn-info" title="Clone this derived row as editable" (click)="cloneDerivedRow(list, cc)"><i class="fa fa-clone"></i></button>
+        </td>
         <td class="requirement-cell" style="text-align: center;">
           <table style="width: 100%;">
             <tr *ngIf="delta && cc.delta === 'ADDED'" class="table-success">

@@ -30,6 +30,7 @@ import { IDisplayElement } from '../../../shared/models/display-element.interfac
 import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { PathService } from '../../../shared/services/path.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
+import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
 import { DataHeaderDialogComponent } from '../data-header-dialog/data-header-dialog.component';
 import { GrouperDialogComponent } from '../grouper-dialog/grouper-dialog.component';
@@ -575,6 +576,29 @@ export class CoConstraintTableComponent implements OnInit {
   addCoConstraintGroup() {
     const group = this.coconstraintEntity.createEmptyContainedGroupBinding();
     (this.value as ICoConstraintTable).groups.push(group);
+    this.emitChange();
+  }
+
+  unlockDerivedRow(cc: ICoConstraint) {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        action: 'Unlock Derived Row',
+        question: 'This row will no longer be considered as derived. Are you sure you want to continue?',
+      },
+    }).afterClosed().pipe(
+      filter((answer) => answer),
+      tap(() => {
+        cc.cloned = false;
+        this.emitChange();
+      }),
+    ).subscribe();
+  }
+
+  cloneDerivedRow(list: ICoConstraint[], cc: ICoConstraint) {
+    const clone: ICoConstraint = _.cloneDeep(cc);
+    clone.cloned = false;
+    clone.id = new Date().getTime().toString();
+    list.push(clone);
     this.emitChange();
   }
 
