@@ -6,7 +6,6 @@ import { of } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { Message } from '../../modules/dam-framework/models/messages/message.class';
-import { MessageService } from '../../modules/dam-framework/services/message.service';
 import { RxjsStoreHelperService } from '../../modules/dam-framework/services/rxjs-store-helper.service';
 import { ResourceService } from '../../modules/shared/services/resource.service';
 import {
@@ -31,15 +30,14 @@ export class ResourceLoaderEffects {
       return this.resourceService.importResource(action.payload).pipe(
         map((resp: Message<any[]>) => {
           return new LoadResourceSuccess({ response: resp, resourceInfo: action.payload });
-        })
-        , catchError(
-          (err: HttpErrorResponse) => {
-            return of(new LoadMessageEventsFailure(err));
-          })
-        ,
+        }),
+        catchError((err: HttpErrorResponse) => {
+          return of(new LoadMessageEventsFailure(err));
+        }),
       );
     }),
   );
+
   @Effect()
   loadResourceFailure$ = this.actions$.pipe(
     ofType(ResourceLoaderActionTypes.LoadResourceFailure),
@@ -65,7 +63,6 @@ export class ResourceLoaderEffects {
     private actions$: Actions<ResourceLoaderActions>,
     private resourceService: ResourceService,
     private store: Store<any>,
-    private message: MessageService,
     private helper: RxjsStoreHelperService) {
   }
 

@@ -31,5 +31,6 @@
 		<module>common-util</module>
 		<module>common-exception</module>
 		<module>common-slicing</module>
+		<module>common-minidump</module>
 	</modules>
 </project>

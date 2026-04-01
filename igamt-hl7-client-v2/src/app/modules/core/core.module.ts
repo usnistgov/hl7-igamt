@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
@@ -14,6 +15,7 @@ import { SharedModule } from '../shared/shared.module';
 import { ApiKeyManagementComponent } from './components/api-key-management/api-key-management.component';
 import { ConfigurationDialogComponent } from './components/configuration-dialog/configuration-dialog.component';
 import { CreateApiKeyComponent } from './components/create-api-key/create-api-key.component';
+import { DataManagementComponent } from './components/data-management/data-management.component';
 import { ErrorPageComponent } from './components/error-page/error-page.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -23,6 +25,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { ResetPasswordRequestComponent } from './components/reset-password-request/reset-password-request.component';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
+import { MiniDumpService } from './services/mini-dump.service';
 
 @NgModule({
   declarations: [
@@ -38,10 +41,12 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
     ConfigurationDialogComponent,
     ApiKeyManagementComponent,
     CreateApiKeyComponent,
+    DataManagementComponent,
   ],
   imports: [
     CommonModule,
     HttpClientModule,
+    FormsModule,
     CardModule,
     TableModule,
     ProgressBarModule,
@@ -78,10 +83,13 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
     ConfigurationDialogComponent,
     ApiKeyManagementComponent,
     CreateApiKeyComponent,
+    DataManagementComponent,
+    FormsModule,
   ],
   entryComponents: [
     ConfigurationDialogComponent,
   ],
+  providers: [MiniDumpService],
 })
 export class CoreModule {
 }

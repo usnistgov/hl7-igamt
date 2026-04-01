@@ -3,11 +3,18 @@ spring:
     name: hl7-igamt
   main: 
     allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 60MB
 
 server: 
     port: 9000
     servlet:
       context-path: /
+      multipart:
+        max-file-size: 50MB
+        max-request-size: 60MB
     error:
       include-stacktrace: never
     connection-timeout: 60000

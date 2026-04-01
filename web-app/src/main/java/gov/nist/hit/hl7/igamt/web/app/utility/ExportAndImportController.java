@@ -122,9 +122,6 @@ public class ExportAndImportController {
   @Autowired
   InMemoryDomainExtensionService inMemoryDomainExtensionService;
 
-//  List<String> files = new ArrayList<String>();
-//  Path source = Paths.get(this.getClass().getResource("/").getPath());
-  
   Path source = new File(getClass()
 		  .getResource("/")
 		  .getFile()).toPath();
@@ -161,10 +158,10 @@ public class ExportAndImportController {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         decision = mapper.readValue(formData.getJson(), ExportFilterDecision.class);
-        ExportDecision oldDecsision = exportDecisionRepository.findByUsernameAndTypeAndDocumentAndConfig(username, type, ig.getId(), config.getId());
-        if(oldDecsision != null) {
-          oldDecsision.setDecision(decision);
-          exportDecisionRepository.save(oldDecsision);
+        ExportDecision oldDecsion = exportDecisionRepository.findByUsernameAndTypeAndDocumentAndConfig(username, type, ig.getId(), config.getId());
+        if(oldDecsion != null) {
+          oldDecsion.setDecision(decision);
+          exportDecisionRepository.save(oldDecsion);
         }else {
           ExportDecision newDecsion = new ExportDecision(type, ig.getId(), config.getId(), username, decision);
           exportDecisionRepository.insert(newDecsion);
@@ -333,7 +330,7 @@ public class ExportAndImportController {
 	      dataExtensionTokens.addAll(igDataModel.getDataExtensionTokens());
 	      ig = igDataModel.getModel();
         String username = authentication.getPrincipal().toString();
-        ExportedFile exportedFile= null;     
+        ExportedFile exportedFile= null;
         ExportConfiguration exportConfiguration = exportConfigurationService.getConfigurationToApply(type, username);
         if(type.equals(ExportType.IGDOCUMENT ) || type.equals(ExportType.DIFFERENTIAL)) {
           ExportFilterDecision decision = igExportService.getExportFilterDecision(ig, exportConfiguration);
@@ -496,9 +493,9 @@ public class ExportAndImportController {
       } else {	
         ExportConfigurationGlobal exportConfigurationGlobal = new ExportConfigurationGlobal();
         ExportFilterDecision exportFilterDecision = igExportService.getExportFilterDecision(ds, config);
-        ExportDecision oldDecsision = this.exportDecisionRepository.findByUsernameAndTypeAndDocumentAndConfig(authentication.getPrincipal().toString(), config.getType(), id, config.getId());
-        if(oldDecsision != null) {
-          exportConfigurationGlobal.setPrevious(oldDecsision.getFilterdDecision());
+        ExportDecision oldDecsion = this.exportDecisionRepository.findByUsernameAndTypeAndDocumentAndConfig(authentication.getPrincipal().toString(), config.getType(), id, config.getId());
+        if(oldDecsion != null) {
+          exportConfigurationGlobal.setPrevious(oldDecsion.getFilterdDecision());
         }
         
         exportConfigurationGlobal.setExportConfiguration(config);
@@ -579,5 +576,8 @@ public class ExportAndImportController {
 	        zipOut.write(bytes, 0, length);
 	    }
 	}
+
+  // -- upcoming user mini dump endpoints will be inserted here --
+
 
 }

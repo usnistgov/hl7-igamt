@@ -1,0 +1,76 @@
+<div class="register-layout">
+  <app-dam-alerts-container></app-dam-alerts-container>
+  <div class="data-management-grid">
+    <div class="register-card">
+      <div class="card-header">
+        <div>
+          <h5 class="page-title mb-0">Export Archive</h5>
+          <small class="text-muted">Download all IG-owned artifacts for the selected format.</small>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label>Archive Name</label>
+          <input class="form-control" [(ngModel)]="exportForm.archiveName" placeholder="mini-dump-{{defaultArchiveBase}}" [disabled]="exportLoading">
+          <small class="text-muted">Preview filename: <code>{{ exportPreview }}</code></small>
+        </div>
+        <div class="form-group">
+          <label>Format</label>
+          <div class="btn-group w-100" role="group">
+            <button type="button" class="btn btn-outline-primary" [class.active]="exportForm.format === 'JSON'" (click)="setExportFormat('JSON')" [disabled]="exportLoading">
+              JSON
+            </button>
+            <button type="button" class="btn btn-outline-primary" [class.active]="exportForm.format === 'BSON'" (click)="setExportFormat('BSON')" [disabled]="exportLoading">
+              BSON
+            </button>
+          </div>
+          <small class="text-muted d-block mt-1">{{ formatDescription }}</small>
+        </div>
+        <button class="btn btn-primary" (click)="confirmExport()" [disabled]="exportLoading">
+          <i class="fa fa-spinner fa-spin mr-1" *ngIf="exportLoading"></i>
+          <i class="fa fa-download mr-1" *ngIf="!exportLoading"></i>
+          {{ exportLoading ? 'Exporting...' : 'Download' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="register-card">
+      <div class="card-header">
+        <div>
+          <h5 class="page-title mb-0">Import Archive</h5>
+          <small class="text-muted">Restore a JSON export (BSON files in the zip are ignored).</small>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label>Import Mode</label>
+          <select class="form-control" [(ngModel)]="importOptions.mode" [disabled]="importLoading">
+            <option value="MERGE">Merge missing resources only</option>
+            <option value="OVERRIDE">Override (delete before import)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Archive</label>
+          <div class="input-group">
+            <div class="custom-file">
+              <input class="custom-file-input" type="file" (change)="handleFileSelection($event)" accept="application/zip" [disabled]="importLoading">
+              <label class="custom-file-label">{{ selectedFile?.name || 'Choose zip file' }}</label>
+            </div>
+            <div class="input-group-append" *ngIf="selectedFile && !importLoading">
+              <button class="btn btn-outline-secondary" type="button" (click)="clearImportFile()">Clear</button>
+            </div>
+          </div>
+        </div>
+        <div class="alert alert-warning" *ngIf="importOptions.mode === 'OVERRIDE' && !importLoading">
+          <i class="fa fa-exclamation-triangle mr-1"></i>
+          Override deletes existing resources owned by the IG before import.
+        </div>
+        <button class="btn btn-primary" type="button" (click)="openImportDialog()" [disabled]="!selectedFile || importLoading">
+          <i class="fa fa-spinner fa-spin mr-1" *ngIf="importLoading"></i>
+          <i class="fa fa-upload mr-1" *ngIf="!importLoading"></i>
+          {{ importLoading ? 'Importing...' : 'Continue' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

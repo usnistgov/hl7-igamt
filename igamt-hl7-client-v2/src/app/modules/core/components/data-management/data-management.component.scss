@@ -1,0 +1,36 @@
+.register-layout {
+  background: linear-gradient(#f5f7fb, #e5e9f2);
+}
+
+.register-card {
+  margin-top: 2rem;
+}
+
+.data-management {
+  section {
+    margin-bottom: 2rem;
+  }
+}
+
+.modal .modal-content {
+  max-width: 540px;
+}
+
+.data-management-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.register-card .card-header {
+  border-bottom: none;
+}
+
+.btn-group.btn-group-toggle {
+  width: 100%;
+
+  .btn {
+    flex: 1;
+  }
+}

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ApiKeyManagementComponent } from './modules/core/components/api-key-management/api-key-management.component';
 import { CreateApiKeyComponent } from './modules/core/components/create-api-key/create-api-key.component';
+import { DataManagementComponent } from './modules/core/components/data-management/data-management.component';
 import { ErrorPageComponent } from './modules/core/components/error-page/error-page.component';
 import { HomeComponent } from './modules/core/components/home/home.component';
 import { NewPasswordComponent } from './modules/core/components/new-password/new-password.component';
@@ -93,6 +94,10 @@ const routes: Routes = [
   {
     path: 'code-set',
     loadChildren: './modules/code-set-editor/code-set-editor.module#CodeSetEditorModule',
+  },
+  {
+    path: 'data-management',
+    component: DataManagementComponent,
   },
   {
     path: '**', component: ErrorPageComponent,
