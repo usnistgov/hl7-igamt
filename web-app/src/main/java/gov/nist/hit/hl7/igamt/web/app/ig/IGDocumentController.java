@@ -392,12 +392,14 @@ public class IGDocumentController extends BaseController {
 	"application/json" })
 	@NotifySave(id = "#id", type = "'IGDOCUMENT'")
 	@PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE) && ConcurrentSync('IGDOCUMENT', #id, ALLOW_SYNC_STRICT)")
-	public @ResponseBody ResponseMessage<Object> updateIg(@PathVariable("id") String id, @RequestBody Section section,
+	public @ResponseBody ResponseMessage<Object> updateIg(@PathVariable("id") String id, @RequestBody TextSection section,
 			Authentication authentication) throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
 		Ig ig = findIgById(id);
-		Section igSection = this.findSectionById(ig.getContent(), section.getId());
+		TextSection igSection = this.findSectionById(ig.getContent(), section.getId());
 		igSection.setDescription(section.getDescription());
 		igSection.setLabel(section.getLabel());
+		igSection.setMessageId(section.getMessageId());
+		igSection.setSnippetId(section.getSnippetId());
 		this.igService.save(ig);
 		return new ResponseMessage<Object>(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, ig.getId(), new Date());
 

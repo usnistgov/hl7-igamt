@@ -130,6 +130,27 @@ export class NodeHelperService {
     }
   }
 
+  addMessageSectionNode(node: TreeNode, messageId: string, snippetId: string, label: string) {
+    if (node.children || node.data.children) {
+      const newNode = {
+        description: '',
+        id: Guid.create().toString(),
+        domainInfo: null,
+        differential: false,
+        variableName: label || 'Message Example',
+        children: [],
+        type: Type.MESSAGESECTION,
+        fixedName: null,
+        leaf: true,
+        position: 0,
+        isExpanded: false,
+        messageId,
+        snippetId,
+      };
+      node.data.children.push(newNode);
+    }
+  }
+
   addNodeToRoot(tree: TreeModel) {
     tree.nodes.push(this.createNewNode());
   }

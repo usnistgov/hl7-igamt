@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { IgEditActionTypes, IgEditResolverLoad, OpenConformanceStatementSummaryEditorNode, OpenIgMetadataEditorNode, OpenNarrativeEditorNode, OpenValueSetsSummaryEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
+import { IgEditActionTypes, IgEditResolverLoad, OpenConformanceStatementSummaryEditorNode, OpenIgMetadataEditorNode, OpenNarrativeEditorNode, OpenMessageSectionEditorNode, OpenValueSetsSummaryEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
 import { ErrorPageComponent } from '../core/components/error-page/error-page.component';
 import { DamWidgetContainerComponent } from '../dam-framework/components/data-widget/dam-widget-container/dam-widget-container.component';
 import { AuthenticatedGuard } from '../dam-framework/guards/auth-guard.guard';
@@ -18,6 +18,7 @@ import { IG_EDIT_WIDGET_ID, IgEditContainerComponent } from './components/ig-edi
 import { IgListContainerComponent } from './components/ig-list-container/ig-list-container.component';
 import { IgMetadataEditorComponent } from './components/ig-metadata-editor/ig-metadata-editor.component';
 import { IgSectionEditorComponent } from './components/ig-section-editor/ig-section-editor.component';
+import { IgMessageSectionEditorComponent } from './components/ig-message-section-editor/ig-message-section-editor.component';
 import { IgVerificationComponent } from './components/ig-verification/ig-verification.component';
 import { ValueSetsSummaryEditorComponent } from './components/value-set-summary-editor/value-sets-summary-editor.component';
 import { DocumentSessionIdGuard } from './services/document-session-id.guard';
@@ -138,6 +139,25 @@ const routes: Routes = [
             saveTableOfContent: true,
           },
           action: OpenNarrativeEditorNode,
+          idKey: 'sectionId',
+        },
+        canDeactivate: [EditorDeactivateGuard],
+      },
+      {
+        path: 'messagesection/:sectionId',
+        component: IgMessageSectionEditorComponent,
+        canActivate: [EditorActivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.MESSAGE_SECTION,
+            title: 'Message Example',
+            resourceType: Type.MESSAGESECTION,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenMessageSectionEditorNode,
           idKey: 'sectionId',
         },
         canDeactivate: [EditorDeactivateGuard],

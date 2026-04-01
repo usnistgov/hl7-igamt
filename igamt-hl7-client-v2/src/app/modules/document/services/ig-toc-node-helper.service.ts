@@ -21,6 +21,8 @@ export class IgTOCNodeHelper {
       leaf: false,
       isExpanded: true,
       path,
+      messageId: (section as any).messageId,
+      snippetId: (section as any).snippetId,
     };
   }
 
@@ -170,7 +172,7 @@ export class IgTOCNodeHelper {
     }
   }
   static createSectionFromIDisplay(iDisplayElement: IDisplayElement, i: number): IContent {
-    const ret = {
+    const ret: IContent = {
       id: iDisplayElement.id,
       description: iDisplayElement.description,
       type: iDisplayElement.type,
@@ -179,6 +181,12 @@ export class IgTOCNodeHelper {
       label: iDisplayElement.variableName,
       children: [],
     };
+    if ((iDisplayElement as any).messageId) {
+      ret.messageId = (iDisplayElement as any).messageId;
+    }
+    if ((iDisplayElement as any).snippetId) {
+      ret.snippetId = (iDisplayElement as any).snippetId;
+    }
     ret.children = this.updateSections(iDisplayElement.children);
     return ret;
   }

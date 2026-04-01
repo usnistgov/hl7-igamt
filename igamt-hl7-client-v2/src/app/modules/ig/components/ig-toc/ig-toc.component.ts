@@ -129,6 +129,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
         return (
           !this.viewOnly &&
           (node.data.type === Type.TEXT ||
+            node.data.type === Type.MESSAGESECTION ||
             node.data.type === Type.CONFORMANCEPROFILE ||
             node.data.type === Type.PROFILE ||
             node.data.type === Type.PROFILECOMPONENT ||
@@ -139,7 +140,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
         mouse: {
           drop: (tree: TreeModel, node: TreeNode, $event: any, { from, to }) => {
             if (
-              from.data.type === Type.TEXT &&
+              (from.data.type === Type.TEXT || from.data.type === Type.MESSAGESECTION) &&
               ((!this.isOrphan(to) && to.parent.data.type === Type.TEXT) || this.isOrphan(to))
             ) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
@@ -223,6 +224,11 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   addSectionToNode(node) {
     this.nodeHelperService.addNode(node);
+    this.update();
+  }
+
+  addMessageSectionToNode(node) {
+    this.nodeHelperService.addMessageSectionNode(node, null, null, 'Message Example');
     this.update();
   }
 

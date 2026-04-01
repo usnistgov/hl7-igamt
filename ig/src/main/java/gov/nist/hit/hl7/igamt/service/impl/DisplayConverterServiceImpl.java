@@ -678,7 +678,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     if (t.getData() instanceof TextSectionData) {
       s.setDescription(((TextSectionData) t.getData()).getDescription());
     }
-    if (t.getData().getType().equals(Type.TEXT) || t.getData().getType().equals(Type.PROFILE)) {
+    if (t.getData().getType().equals(Type.TEXT) || t.getData().getType().equals(Type.PROFILE) || t.getData().getType().equals(Type.MESSAGESECTION)) {
       if (t.getChildren() != null && !t.getChildren().isEmpty()) {
 
         for (TreeNode child : t.getChildren()) {

@@ -53,6 +53,7 @@ export enum IgEditActionTypes {
   OpenValueSetsSummaryEditorNode = '[Ig Edit TOC] Open Value Sets Summary Editor Node',
 
   OpenIgVerificationEditor = '[Ig verification] Open Ig Verification Editor',
+  OpenMessageSectionEditorNode = '[Ig Edit TOC Message Section] Open Message Section Editor Node',
 
   TableOfContentSave = '[Ig Edit TOC Save] Save Table Of Content',
   TableOfContentSaveSuccess = '[Ig Edit TOC Save] Save Table Of Content Success',
@@ -244,6 +245,17 @@ export abstract class OpenEditorBase implements Action {
 
 export class OpenNarrativeEditorNode extends OpenEditorBase {
   readonly type = IgEditActionTypes.OpenNarrativeEditorNode;
+
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) {
+    super();
+  }
+}
+
+export class OpenMessageSectionEditorNode extends OpenEditorBase {
+  readonly type = IgEditActionTypes.OpenMessageSectionEditorNode;
 
   constructor(readonly payload: {
     id: string,
@@ -524,6 +536,7 @@ export type IgEditActions =
   | VerifyIgFailure
   | RefreshUpdateInfo
   | OpenValueSetsSummaryEditorNode
+  | OpenMessageSectionEditorNode
   | GroupValueSets
   | GroupValueSetsFailure
   | GroupValueSetsSuccess;

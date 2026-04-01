@@ -24,6 +24,13 @@
             >
               <i class="fa fa-plus"></i> Add Section
             </ng-template>
+            <ng-template
+              (execute)="addMessageSectionToNode(node)"
+              contextMenuItem
+              [enabled]="!viewOnly && !delta"
+            >
+              <i class="fa fa-envelope"></i> Add Message Example
+            </ng-template>
             <ng-template (execute)="copySection(node)" contextMenuItem contextMenuItem [enabled]="!viewOnly && !delta">
               <i class="fa fa-copy"></i> Copy Section and Paste to the End
             </ng-template>
@@ -34,6 +41,28 @@
               [enabled]="!viewOnly && !delta"
             >
               <i class="fa fa-remove"></i> Delete Section
+            </ng-template>
+          </context-menu>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'MESSAGESECTION'">
+          <span
+            [id]="'TOC-MESSAGESECTION-' + node.data.id"
+            [contextMenu]="messageSectionContextMenu"
+            [routerLink]="getElementUrl(node.data)"
+            routerLinkActive="active-node"
+            style="display: inline-flex; align-items: center; gap: 4px;"
+          >
+            <i class="fa fa-envelope" style="color: #2196F3;"></i>
+            {{ node.data.path }} {{ node.data.variableName }}
+          </span>
+          <context-menu #messageSectionContextMenu [disabled]="viewOnly || delta">
+            <ng-template
+              (execute)="deleteSection(node)"
+              contextMenuItem
+              [enabled]="!viewOnly && !delta"
+            >
+              <i class="fa fa-remove"></i> Delete Message Example
             </ng-template>
           </context-menu>
         </ng-container>

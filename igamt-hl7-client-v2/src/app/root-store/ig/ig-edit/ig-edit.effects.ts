@@ -66,6 +66,7 @@ import {
   ImportResourceFromFileSuccess,
   OpenIgMetadataEditorNode,
   OpenNarrativeEditorNode,
+  OpenMessageSectionEditorNode,
   TableOfContentSave,
   TableOfContentSaveFailure,
   TableOfContentSaveSuccess,
@@ -287,6 +288,44 @@ export class IgEditEffects extends DamWidgetEffect {
                     id: section.id,
                     label: section.label,
                     description: section.description,
+                  },
+                }),
+              ];
+            }
+          }),
+        );
+    }),
+  );
+
+  @Effect()
+  igEditOpenMessageSectionNode$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.OpenMessageSectionEditorNode),
+    switchMap((action: OpenMessageSectionEditorNode) => {
+      return combineLatest(
+        this.store.select(fromIgamtDisplaySelectors.selectSectionDisplayById, { id: action.payload.id }),
+        this.store.select(selectSectionFromIgById, { id: action.payload.id }),
+        this.store.select(selectIgId))
+        .pipe(
+          take(1),
+          flatMap(([elm, section, igId]): Action[] => {
+            if (!elm || !section || !elm.id || !section.id) {
+              return [
+                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, 'Could not find message section with ID ' + action.payload.id)),
+                new fromDAM.OpenEditorFailure({ id: action.payload.id }),
+              ];
+            } else {
+              return [
+                new fromDAM.OpenEditor({
+                  id: action.payload.id,
+                  display: elm,
+                  editor: action.payload.editor,
+                  initial: {
+                    id: section.id,
+                    label: section.label,
+                    description: section.description,
+                    messageId: section.messageId,
+                    snippetId: section.snippetId,
+                    igId,
                   },
                 }),
               ];

@@ -9,4 +9,7 @@ export interface IContent {
   label: string;
   delta?: DeltaAction;
   children: IContent[];
+  // For MESSAGESECTION type: references to example messages
+  messageId?: string;
+  snippetId?: string;
 }

@@ -30,6 +30,7 @@ import { IgEditToolbarComponent } from './components/ig-edit-toolbar/ig-edit-too
 import { IgListContainerComponent } from './components/ig-list-container/ig-list-container.component';
 import { IgMetadataEditorComponent } from './components/ig-metadata-editor/ig-metadata-editor.component';
 import { IgSectionEditorComponent } from './components/ig-section-editor/ig-section-editor.component';
+import { IgMessageSectionEditorComponent } from './components/ig-message-section-editor/ig-message-section-editor.component';
 import { IgTocFilterComponent } from './components/ig-toc-filter/ig-toc-filter.component';
 import { IgTocComponent } from './components/ig-toc/ig-toc.component';
 import { IgVerificationComponent } from './components/ig-verification/ig-verification.component';
@@ -67,6 +68,7 @@ import { ValueSetsSummaryEditorComponent } from './components/value-set-summary-
     NarrativeSectionFormComponent,
     IgEditActiveTitlebarComponent,
     IgSectionEditorComponent,
+    IgMessageSectionEditorComponent,
     IgMetadataEditorComponent,
     ExportGvtComponent,
     ConformanceStatementsSummaryEditorComponent,
