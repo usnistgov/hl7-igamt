@@ -1,78 +1,127 @@
 <div class="message-section-editor" style="padding: 15px;">
 
-  <div style="margin-bottom: 15px;">
-    <h4 style="margin: 0 0 10px 0;">
-      <i class="fa fa-envelope" style="color: #2196F3; margin-right: 8px;"></i>
-      Message Example Section
-    </h4>
-  </div>
-
-  <!-- Section Label -->
-  <div *ngIf="currentSynchronized$ | async as data" style="margin-bottom: 15px;">
+  <!-- Section Label / Description Form -->
+  <div *ngIf="currentSynchronized$ | async as data" style="margin-bottom: 20px;">
     <app-narrative-section-form [viewOnly]="viewOnly$ | async" [data]="data" (form)="dataChange($event)"></app-narrative-section-form>
   </div>
 
-  <!-- Link to Example Messages page -->
-  <div *ngIf="exampleMessagesUrl" style="margin-bottom: 15px; padding: 10px; background-color: #f5f5f5; border: 1px solid #ddd; border-radius: 4px;">
-    <span style="font-weight: bold; margin-right: 8px;">Example Messages Page:</span>
-    <a [routerLink]="exampleMessagesUrl" target="_blank" style="color: #2196F3;">
-      <i class="fa fa-external-link"></i> Open Example Messages Editor
-    </a>
-  </div>
-
-  <!-- Message Picker -->
-  <div *ngIf="!(viewOnly$ | async)" style="margin-bottom: 15px; padding: 15px; background-color: #fafafa; border: 1px solid #ddd; border-radius: 4px;">
-    <div style="font-weight: bold; margin-bottom: 10px;">Select Example Message:</div>
-
-    <div *ngIf="loadingMessages" style="display: flex; align-items: center; gap: 8px;">
-      <mat-spinner diameter="20"></mat-spinner>
-      <span>Loading available messages...</span>
+  <!-- Attach / Detach Message Controls -->
+  <div style="margin-bottom: 20px; padding: 15px; background-color: #fafafa; border: 1px solid #e0e0e0; border-radius: 4px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+      <h5 style="margin: 0; font-weight: 600; color: #333;">
+        <i class="fa fa-link" style="margin-right: 6px; color: #1565C0;"></i>
+        Attached Example Message
+      </h5>
+      <button *ngIf="selectedMessageId && !(viewOnly$ | async)" class="btn btn-sm btn-outline-danger" (click)="detachMessage()">
+        <i class="fa fa-chain-broken"></i> Detach
+      </button>
     </div>
 
-    <div *ngIf="!loadingMessages && availableMessages && availableMessages.length > 0">
+    <!-- Message Selector -->
+    <div *ngIf="!(viewOnly$ | async)" style="margin-bottom: 12px;">
+      <label style="font-weight: 500; margin-bottom: 4px; display: block; color: #555; font-size: 13px;">Select Example Message:</label>
+      <div *ngIf="loadingMessages" style="display: flex; align-items: center; gap: 8px; padding: 8px 0;">
+        <mat-spinner diameter="18"></mat-spinner>
+        <span style="color: #888; font-size: 13px;">Loading available messages...</span>
+      </div>
+      <div *ngIf="!loadingMessages">
+        <select
+          *ngIf="availableMessages && availableMessages.length > 0"
+          [ngModel]="selectedMessageId"
+          (ngModelChange)="selectMessage($event)"
+          style="width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; background: white;">
+          <option [ngValue]="null">-- Select a message to attach --</option>
+          <option *ngFor="let msg of availableMessages" [ngValue]="msg.id">
+            {{ msg.profileName }} &mdash; {{ msg.name }}
+          </option>
+        </select>
+        <div *ngIf="!availableMessages || availableMessages.length === 0"
+          style="padding: 10px; background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; color: #856404; font-size: 13px;">
+          <i class="fa fa-info-circle" style="margin-right: 6px;"></i>
+          No example messages found.
+          <a *ngIf="exampleMessagesUrl" [routerLink]="exampleMessagesUrl" style="color: #0d47a1; text-decoration: underline;">Create messages in the Example Messages Editor</a>.
+        </div>
+      </div>
+    </div>
+
+    <!-- Snippet Selector (only when message is selected and has snippets) -->
+    <div *ngIf="selectedMessageId && selectedMessageSnippets.length > 0 && !(viewOnly$ | async)" style="margin-bottom: 12px;">
+      <label style="font-weight: 500; margin-bottom: 4px; display: block; color: #555; font-size: 13px;">Select Snippet (optional):</label>
       <select
-        [ngModel]="selectedMessageId"
-        (ngModelChange)="onMessageSelected($event, null)"
-        style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
-        <option [ngValue]="null">-- Select a message --</option>
-        <option *ngFor="let msg of availableMessages" [ngValue]="msg.id">
-          {{ msg.profileName }} - {{ msg.name }}
+        [ngModel]="selectedSnippetId"
+        (ngModelChange)="selectSnippet($event)"
+        style="width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; background: white;">
+        <option [ngValue]="null">-- Entire message (no snippet) --</option>
+        <option *ngFor="let snippet of selectedMessageSnippets" [ngValue]="snippet.id">
+          {{ snippet.name }}
         </option>
       </select>
     </div>
 
-    <div *ngIf="!loadingMessages && (!availableMessages || availableMessages.length === 0)"
-      style="padding: 10px; background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; color: #856404;">
-      <i class="fa fa-info-circle" style="margin-right: 8px;"></i>
-      No example messages available. Create messages first using the
-      <a *ngIf="exampleMessagesUrl" [routerLink]="exampleMessagesUrl" style="color: #2196F3; text-decoration: underline;">Example Messages Editor</a>.
+    <!-- No message attached info -->
+    <div *ngIf="!selectedMessageId && !loadingMessages"
+      style="padding: 12px; background-color: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 4px; color: #2e7d32; font-size: 13px;">
+      <i class="fa fa-info-circle" style="margin-right: 6px;"></i>
+      No example message is currently attached to this section.
+    </div>
+
+    <!-- URL with Copy -->
+    <div *ngIf="messageUrl" style="margin-top: 12px;">
+      <label style="font-weight: 500; margin-bottom: 4px; display: block; color: #555; font-size: 13px;">
+        Message URL
+        <span *ngIf="snippetName" style="color: #6a1b9a;"> &mdash; Snippet: <strong>{{ snippetName }}</strong></span>
+      </label>
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <input
+          type="text"
+          [value]="messageUrl"
+          readonly
+          [style.border-color]="selectedSnippetId ? '#6a1b9a' : '#ccc'"
+          style="flex: 1; padding: 8px 10px; border: 1px solid; border-radius: 4px; font-size: 13px; background-color: #f5f5f5; color: #333; font-family: monospace;"
+        />
+        <button *ngIf="hasClipboard" class="btn btn-sm btn-outline-primary" (click)="copyUrl()" style="white-space: nowrap;">
+          <i class="fa fa-copy"></i> {{ copied ? 'Copied!' : 'Copy URL' }}
+        </button>
+        <a *ngIf="exampleMessagesUrl" [routerLink]="exampleMessagesUrl" class="btn btn-sm btn-outline-secondary" style="white-space: nowrap;">
+          <i class="fa fa-external-link"></i> Open
+        </a>
+      </div>
     </div>
   </div>
 
-  <!-- Referenced Message Content (Readonly) -->
-  <div *ngIf="loading" style="display: flex; align-items: center; justify-content: center; padding: 30px;">
+  <!-- Loading state -->
+  <div *ngIf="loading" style="display: flex; align-items: center; justify-content: center; padding: 40px;">
     <mat-spinner diameter="40"></mat-spinner>
   </div>
 
-  <div *ngIf="!loading && (exampleMessage$ | async) as msg" style="border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
-    <div style="padding: 10px 15px; background-color: #e3f2fd; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 8px;">
-      <i class="fa fa-envelope" style="color: #1565C0;"></i>
-      <strong>{{ msg.name }}</strong>
-      <span *ngIf="msg.profile" style="color: #666; font-size: 0.9em;">
-        ({{ msg.profile.fixedName }}{{ msg.profile.variableName ? '#' + msg.profile.variableName : '' }})
+  <!-- Message Content Display (read-only) -->
+  <div *ngIf="!loading && exampleMessage" style="border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden;">
+
+    <!-- Message Header -->
+    <div style="padding: 10px 15px; background-color: #e3f2fd; border-bottom: 1px solid #bbdefb; display: flex; align-items: center; gap: 10px;">
+      <span style="color: #1565C0; font-size: 16px; font-weight: bold;">M</span>
+      <strong style="color: #1565C0;">{{ exampleMessage.name }}</strong>
+      <span *ngIf="exampleMessage.profile" style="color: #666; font-size: 0.9em;">
+        ( {{ exampleMessage.profile.fixedName }}{{ exampleMessage.profile.variableName ? '#' + exampleMessage.profile.variableName : '' }} )
+      </span>
+      <span *ngIf="snippetName" style="margin-left: auto; background-color: #6a1b9a; color: white; padding: 2px 10px; border-radius: 12px; font-size: 12px;">
+        <i class="fa fa-scissors"></i> {{ snippetName }}
       </span>
     </div>
 
-    <!-- ER7 Message Content -->
-    <div *ngIf="msg.message" style="padding: 15px;">
-      <div style="font-weight: bold; margin-bottom: 8px; color: #333;">ER7 Message:</div>
-      <pre style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 4px; padding: 12px; font-family: 'Courier New', monospace; font-size: 13px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; max-height: 400px; overflow-y: auto;">{{ msg.message }}</pre>
+    <!-- CodeMirror ER7 Panel (read-only, full width) -->
+    <div style="height: 400px; overflow: hidden;">
+      <ngx-codemirror
+        #codemirror
+        [ngModel]="exampleMessage.message"
+        [options]="messageEditorOptions"
+      ></ngx-codemirror>
     </div>
 
-    <!-- Narrative HTML Content -->
-    <div *ngIf="msg.narrativeHTML" style="padding: 15px; border-top: 1px solid #eee;">
-      <div style="font-weight: bold; margin-bottom: 8px; color: #333;">Narrative:</div>
-      <div [innerHTML]="msg.narrativeHTML" style="padding: 10px; background-color: #fafafa; border: 1px solid #eee; border-radius: 4px;"></div>
+    <!-- Narrative Content -->
+    <div *ngIf="exampleMessage.narrativeHTML" style="padding: 15px; border-top: 1px solid #e0e0e0;">
+      <label style="font-weight: 600; margin-bottom: 8px; display: block; color: #333; font-size: 14px;">Narrative:</label>
+      <div [innerHTML]="exampleMessage.narrativeHTML" style="padding: 12px; background-color: #fafafa; border: 1px solid #eee; border-radius: 4px; line-height: 1.6;"></div>
     </div>
   </div>
 

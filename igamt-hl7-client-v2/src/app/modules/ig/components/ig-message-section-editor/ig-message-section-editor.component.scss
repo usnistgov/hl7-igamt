@@ -1,5 +1,51 @@
+:host {
+  display: contents;
+}
+
 .message-section-editor {
-  height: 100%;
-  overflow-y: auto;
+  width: 100%;
+  overflow: auto;
+}
+
+/* Snippet highlight in CodeMirror — purple/violet background */
+::ng-deep .cm-snippet-highlight {
+  background-color: #ce93d8 !important;
+  border-radius: 2px;
+}
+
+/* HL7v2 syntax coloring */
+::ng-deep .cm-segment-name {
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+::ng-deep .cm-field-separator {
+  color: #1565C0;
+  font-weight: bold;
+}
+
+::ng-deep .cm-component-separator {
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+::ng-deep .cm-subcomponent-separator {
+  color: #6a1b9a;
+  font-weight: bold;
+}
+
+::ng-deep .cm-continuation-separator {
+  color: #ef6c00;
+  font-weight: bold;
+}
+
+::ng-deep .CodeMirror {
+  height: 100% !important;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+}
+
+::ng-deep .CodeMirror-cursors {
+  display: none !important;
 }
 

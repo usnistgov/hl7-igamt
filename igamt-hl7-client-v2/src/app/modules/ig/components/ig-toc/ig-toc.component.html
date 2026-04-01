@@ -29,7 +29,7 @@
               contextMenuItem
               [enabled]="!viewOnly && !delta"
             >
-              <i class="fa fa-envelope"></i> Add Message Example
+              <span style="font-weight: bold;">M</span> Add Message Example
             </ng-template>
             <ng-template (execute)="copySection(node)" contextMenuItem contextMenuItem [enabled]="!viewOnly && !delta">
               <i class="fa fa-copy"></i> Copy Section and Paste to the End
@@ -53,7 +53,7 @@
             routerLinkActive="active-node"
             style="display: inline-flex; align-items: center; gap: 4px;"
           >
-            <i class="fa fa-envelope" style="color: #2196F3;"></i>
+            <span style="color: #2196F3; font-weight: bold;">M</span>
             {{ node.data.path }} {{ node.data.variableName }}
           </span>
           <context-menu #messageSectionContextMenu [disabled]="viewOnly || delta">

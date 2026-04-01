@@ -52,9 +52,47 @@ import 'codemirror/addon/fold/foldgutter';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/xml/xml';
+
+import * as CodeMirror from 'codemirror';
+
+// Register hl7v2 mode for CodeMirror (used by message section editor)
+if (!(CodeMirror as any).modes['hl7v2']) {
+  CodeMirror.defineMode('hl7v2', () => {
+    const separators = {
+      field_separator: '|',
+      component_separator: '^',
+      subcomponent_separator: '&',
+      continuation_separator: '~,',
+    };
+    return {
+      token: (stream) => {
+        const ch = stream.next();
+        if (stream.column() <= 2) {
+          return 'segment-name';
+        } else {
+          if (ch === separators.field_separator) {
+            return 'field-separator';
+          }
+          if (ch === separators.component_separator) {
+            return 'component-separator';
+          }
+          if (ch === separators.subcomponent_separator) {
+            return 'subcomponent-separator';
+          }
+          if (ch === separators.continuation_separator) {
+            return 'continuation-separator';
+          }
+          return '';
+        }
+      },
+    };
+  });
+}
+
 import { IgShareLinkDialogComponent } from './components/ig-share-link-dialog/ig-share-link-dialog.component';
 import { BindingSummaryListComponent } from './components/value-set-summary-editor/binding-summary-list/binding-summary-list.component';
 import { ValueSetsSummaryEditorComponent } from './components/value-set-summary-editor/value-sets-summary-editor.component';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 
 @NgModule({
   declarations: [
@@ -98,6 +136,7 @@ import { ValueSetsSummaryEditorComponent } from './components/value-set-summary-
     PanelModule,
     BlockUIModule,
     MatProgressSpinnerModule,
+    CodemirrorModule,
   ],
   entryComponents: [
     IgEditContainerComponent, ManageProfileStructureComponent, IgShareLinkDialogComponent,
