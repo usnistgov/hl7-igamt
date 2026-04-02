@@ -6,6 +6,7 @@ import { Action, Store } from '@ngrx/store';
 import * as _ from 'lodash';
 import { combineLatest, EMPTY, from, Observable, throwError } from 'rxjs';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { ExpandSideBar } from 'src/app/modules/dam-framework/store/data/dam.actions';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { DamAbstractEditorComponent } from 'src/app/modules/dam-framework/services/dam-editor.component';
@@ -14,7 +15,7 @@ import { catchError, concatMap, finalize, flatMap, map, mergeMap, take } from 'r
 import { ExampleMessagesService } from '../../services/example-messages.service';
 import { selectIgExampleMessages } from 'src/app/root-store/example-messages/example-messages.reducer';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
-import { TreeNode } from 'angular-tree-component';
+import { TreeComponent, TreeNode } from 'angular-tree-component';
 import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import * as CodeMirror from 'codemirror';
 import { IExampleMessageSnippet, MessageElement } from '../../domain/example-messages.model';
@@ -52,6 +53,7 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
   snippetToHighlightPath: string | null = null;
 
   @ViewChild('codemirror') private codeEditor!: CodemirrorComponent;
+  @ViewChild('treeroot') private parsedTree: TreeComponent;
 
   constructor(
     actions$: Actions,
@@ -90,6 +92,10 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
       this.snippetId = snippetId;
       this.resolveSnippetPath();
       this.highlightSnippetIfAvailable();
+      // Expand the sidebar when navigating with a snippetId
+      if (snippetId) {
+        this.store.dispatch(new ExpandSideBar());
+      }
     });
   }
 
@@ -160,7 +166,9 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
 
   highlight(element: MessageElement) {
     this.selected = element;
-    this.select(element.start, element.end);
+    if (element && element.start && element.end) {
+      this.select(element.start, element.end);
+    }
   }
 
   createSnippet(element: MessageElement) {
@@ -203,6 +211,9 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
   }
 
   select(from: { line: number, column: number }, to: { line: number, column: number }) {
+    if (!from || !to || !this.codeEditor || !this.codeEditor.codeMirror) {
+      return;
+    }
     const editor = this.codeEditor.codeMirror;
     const doc = editor.getDoc();
 
@@ -275,9 +286,42 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
       return;
     }
     const target = this.findByPositionalPath(this.parsed, this.snippetToHighlightPath);
-    if (target) {
+    if (target && target.start && target.end) {
       this.highlight(target);
+      // Expand the parsed tree to make the snippet node visible
+      setTimeout(() => this.expandTreeToPath(this.snippetToHighlightPath), 200);
     }
+  }
+
+  /**
+   * Walk the angular-tree-component tree and expand parents
+   * so the node matching the given positionalPath is visible.
+   */
+  private expandTreeToPath(positionalPath: string) {
+    if (!this.parsedTree || !this.parsedTree.treeModel) {
+      return;
+    }
+    const roots = this.parsedTree.treeModel.roots || [];
+    for (const root of roots) {
+      if (this.expandNodeToPath(root, positionalPath)) {
+        break;
+      }
+    }
+  }
+
+  private expandNodeToPath(treeNode: any, positionalPath: string): boolean {
+    if (treeNode.data && treeNode.data.positionalPath === positionalPath) {
+      treeNode.ensureVisible();
+      return true;
+    }
+    if (treeNode.children) {
+      for (const child of treeNode.children) {
+        if (this.expandNodeToPath(child, positionalPath)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private findByPositionalPath(node: any, positionalPath: string): MessageElement | null {

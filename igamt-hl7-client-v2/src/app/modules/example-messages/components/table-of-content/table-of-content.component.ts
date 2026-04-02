@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { TreeComponent, TreeNode } from 'angular-tree-component';
 import { NodeHelperService } from '../../../shared/services/node-helper.service';
@@ -9,10 +9,12 @@ import { CreateDialogComponent } from '../create-dialog/create-dialog.component'
   templateUrl: './table-of-content.component.html',
   styleUrls: ['./table-of-content.component.scss'],
 })
-export class TableOfContentComponent implements OnInit {
+export class TableOfContentComponent implements OnInit, OnChanges {
 
   @Input()
   nodes: TreeNode[];
+  @Input()
+  activeMessageId: string;
   @Output()
   onCreateExampleMessage: EventEmitter<{ profileId: string, name: string }>;
   @ViewChild(TreeComponent) private tree: TreeComponent;
@@ -67,5 +69,15 @@ export class TableOfContentComponent implements OnInit {
   ngOnInit() {
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    // Always expand the full tree when nodes load or change
+    if (changes.nodes && this.nodes) {
+      setTimeout(() => {
+        if (this.tree && this.tree.treeModel) {
+          this.tree.treeModel.expandAll();
+        }
+      }, 100);
+    }
+  }
 
 }

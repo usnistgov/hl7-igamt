@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>Select Example Message or Snippet</h2>
+<mat-dialog-content style="min-width: 450px; max-height: 400px; overflow-y: auto;">
+
+  <div *ngIf="tree.length === 0" style="padding: 20px; text-align: center; color: #888;">
+    No example messages available.
+  </div>
+
+  <div *ngFor="let profile of tree" style="margin-bottom: 10px;">
+    <!-- Profile header -->
+    <div style="padding: 6px 10px; background-color: #e3f2fd; border-radius: 4px; font-weight: 600; color: #1565C0; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+      <i class="fa fa-file-text-o"></i>
+      {{ profile.label }}
+    </div>
+
+    <!-- Messages under this profile -->
+    <div *ngFor="let message of profile.children" style="margin-left: 16px;">
+      <div
+        (click)="selectNode(message)"
+        [class.selected-node]="isSelected(message)"
+        style="padding: 6px 10px; cursor: pointer; border-radius: 4px; display: flex; align-items: center; gap: 6px; margin-bottom: 2px;"
+        [style.background-color]="isSelected(message) ? '#bbdefb' : 'transparent'">
+        <span style="font-weight: bold; color: #1565C0; font-size: 13px;">M</span>
+        <span>{{ message.label }}</span>
+      </div>
+
+      <!-- Snippets under this message -->
+      <div *ngFor="let snippet of message.children" style="margin-left: 24px;">
+        <div
+          (click)="selectNode(snippet)"
+          [class.selected-node]="isSelected(snippet)"
+          style="padding: 5px 10px; cursor: pointer; border-radius: 4px; display: flex; align-items: center; gap: 6px; margin-bottom: 2px;"
+          [style.background-color]="isSelected(snippet) ? '#e1bee7' : 'transparent'">
+          <i class="fa fa-scissors" style="color: #6a1b9a; font-size: 12px;"></i>
+          <span>{{ snippet.label }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
+  <button (click)="confirm()" [disabled]="!selectedNode" class="btn btn-sm btn-primary">Attach</button>
+</mat-dialog-actions>
+

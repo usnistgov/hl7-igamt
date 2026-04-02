@@ -20,6 +20,7 @@ import { IExampleMessageDTO, IExampleMessageSnippet, MessageElement } from '../.
 import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import * as CodeMirror from 'codemirror';
 import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
+import { SelectMessageSnippetDialogComponent, ISelectMessageSnippetDialogResult } from '../select-message-snippet-dialog/select-message-snippet-dialog.component';
 
 export interface IAvailableMessage {
   id: string;
@@ -49,6 +50,15 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
   copied = false;
   hasClipboard = !!window.navigator['clipboard'];
   snippetName: string = null;
+
+  // The text displayed in CodeMirror: full message or snippet segment lines
+  displayMessage: string = null;
+  // Canonical snippet descriptor for the URL (e.g. "PID-3" or "L3-L5")
+  snippetCanonical: string = null;
+  // Human-readable snippet location info
+  snippetLocationLabel: string = null;
+  // Section title
+  sectionLabel: string = '';
 
   @ViewChild('codemirror') private codeEditor: CodemirrorComponent;
 
@@ -85,6 +95,9 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
   ngOnInit() {
     this.currentSynchronized$.pipe(
       map((data) => {
+        if (data) {
+          this.sectionLabel = data.label || '';
+        }
         if (data && data.igId) {
           this.igId = data.igId;
           this.exampleMessagesUrl = `/example-messages/${data.igId}`;
@@ -93,33 +106,41 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
           if (data.messageId) {
             this.selectedMessageId = data.messageId;
             this.selectedSnippetId = data.snippetId || null;
-            this.buildMessageUrl(data.igId, data.messageId, data.snippetId);
             this.loadMessage(data.igId, data.messageId, data.snippetId);
           } else {
-            this.selectedMessageId = null;
-            this.selectedSnippetId = null;
-            this.messageUrl = null;
-            this.exampleMessage = null;
-            this.parsed = null;
-            this.snippetName = null;
+            this.resetMessageState();
           }
         } else {
           this.igId = null;
           this.exampleMessagesUrl = null;
-          this.messageUrl = null;
-          this.exampleMessage = null;
-          this.parsed = null;
-          this.snippetName = null;
+          this.resetMessageState();
         }
       }),
     ).subscribe();
   }
 
+  resetMessageState() {
+    this.selectedMessageId = null;
+    this.selectedSnippetId = null;
+    this.messageUrl = null;
+    this.exampleMessage = null;
+    this.displayMessage = null;
+    this.parsed = null;
+    this.snippetName = null;
+    this.snippetCanonical = null;
+    this.snippetLocationLabel = null;
+  }
+
+  /**
+   * Build the URL with normal query params.
+   * Format: /example-messages/{igId}/message/{messageId}
+   * or:     /example-messages/{igId}/message/{messageId}?snippetId={snippetId}
+   */
   buildMessageUrl(igId: string, messageId: string, snippetId?: string) {
     const host = window.location.protocol + '//' + window.location.host;
-    this.messageUrl = host + '/example-messages/' + igId + '?messageId=' + messageId;
+    this.messageUrl = host + '/example-messages/' + igId + '/message/' + messageId;
     if (snippetId) {
-      this.messageUrl += '&snippetId=' + snippetId;
+      this.messageUrl += '?snippetId=' + snippetId;
     }
   }
 
@@ -128,21 +149,30 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
     this.exampleMessagesService.getExampleMessage(igId, messageId).pipe(
       map((msg) => {
         this.exampleMessage = msg;
+        this.displayMessage = msg ? msg.message : null;
         this.loading = false;
         if (msg && msg.message && snippetId) {
-          this.resolveAndHighlightSnippet(igId, messageId, snippetId);
+          this.resolveSnippet(igId, messageId, snippetId);
+        } else {
+          this.snippetCanonical = null;
+          this.snippetLocationLabel = null;
+          this.buildMessageUrl(igId, messageId);
         }
       }),
       catchError(() => {
         this.exampleMessage = null;
+        this.displayMessage = null;
         this.loading = false;
         return of(null);
       }),
     ).subscribe();
   }
 
-  resolveAndHighlightSnippet(igId: string, messageId: string, snippetId: string) {
-    // First get the snippet's positional path from the IG example messages
+  /**
+   * Resolve snippet: find its positional path, parse the message tree to get the
+   * hl7Path (canonical) and line range, then extract the segment lines and highlight.
+   */
+  resolveSnippet(igId: string, messageId: string, snippetId: string) {
     this.exampleMessagesService.getIgExampleMessages(igId).pipe(
       take(1),
       map((igExampleMessages) => {
@@ -163,47 +193,97 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
           }
         }
         if (snippetPath) {
-          this.parseAndHighlight(igId, messageId, snippetPath);
+          this.parseAndApplySnippet(igId, messageId, snippetPath);
+        } else {
+          this.buildMessageUrl(igId, messageId);
         }
       }),
       catchError(() => of(null)),
     ).subscribe();
   }
 
-  parseAndHighlight(igId: string, messageId: string, positionalPath: string) {
+  /**
+   * Parse message, find the snippet element, build canonical URL with hl7Path,
+   * extract the relevant segment lines, and highlight within those lines.
+   */
+  parseAndApplySnippet(igId: string, messageId: string, positionalPath: string) {
     this.exampleMessagesService.parseExampleMessage(igId, messageId).pipe(
       take(1),
       map((parsedResult) => {
         this.parsed = parsedResult;
         const target = this.findByPositionalPath(parsedResult, positionalPath);
-        if (target) {
-          // Wait for CodeMirror to render then highlight
-          setTimeout(() => this.highlightRange(target.start, target.end), 300);
+        if (target && target.start && target.end && this.exampleMessage && this.exampleMessage.message) {
+          // Build canonical identifier from the HL7 path
+          const hl7Path = target.hl7Path;
+          const startLine = target.start.line;
+          const endLine = target.end.line;
+
+          // Canonical: use hl7Path if available, otherwise use line range
+          if (hl7Path) {
+            this.snippetCanonical = hl7Path;
+          } else {
+            this.snippetCanonical = 'L' + startLine + (startLine !== endLine ? '-L' + endLine : '');
+          }
+
+          // Human-readable location label
+          this.snippetLocationLabel = hl7Path
+            ? hl7Path + ' (line ' + startLine + (startLine !== endLine ? '-' + endLine : '') + ')'
+            : 'Line ' + startLine + (startLine !== endLine ? '-' + endLine : '');
+
+          this.buildMessageUrl(igId, messageId, this.selectedSnippetId);
+
+          // Extract the relevant segment lines (minimum = full segment line)
+          // Lines in the message are 1-based in the parsed result
+          const allLines = this.exampleMessage.message.split('\n');
+          const fromLine = startLine - 1; // 0-based
+          const toLine = endLine - 1;     // 0-based inclusive
+          const extractedLines = allLines.slice(fromLine, toLine + 1);
+          this.displayMessage = extractedLines.join('\n');
+
+          // Highlight within the extracted lines
+          // Adjust coordinates: the snippet start/end columns stay the same,
+          // but line numbers are now relative to the extracted block
+          const adjustedStart = {
+            line: target.start.line - startLine + 1,
+            column: target.start.column,
+          };
+          const adjustedEnd = {
+            line: target.end.line - startLine + 1,
+            column: target.end.column,
+          };
+
+          setTimeout(() => this.highlightRange(adjustedStart, adjustedEnd), 300);
+        } else {
+          // No target found, show full message
+          this.displayMessage = this.exampleMessage ? this.exampleMessage.message : null;
+          this.buildMessageUrl(igId, messageId);
         }
       }),
       catchError(() => {
         this.parsed = null;
+        this.displayMessage = this.exampleMessage ? this.exampleMessage.message : null;
         return of(null);
       }),
     ).subscribe();
   }
 
   highlightRange(start: { line: number, column: number }, end: { line: number, column: number }) {
-    if (this.codeEditor && this.codeEditor.codeMirror) {
-      const editor = this.codeEditor.codeMirror;
-      const doc = editor.getDoc();
-      const from = CodeMirror.Pos(start.line - 1, start.column - 1);
-      const to = CodeMirror.Pos(end.line - 1, end.column - 1);
-
-      if (this.highlighted) {
-        this.highlighted.clear();
-      }
-
-      this.highlighted = doc.markText(from, to, {
-        className: 'cm-snippet-highlight',
-      });
-      editor.scrollIntoView(from, 10);
+    if (!start || !end || !this.codeEditor || !this.codeEditor.codeMirror) {
+      return;
     }
+    const editor = this.codeEditor.codeMirror;
+    const doc = editor.getDoc();
+    const from = CodeMirror.Pos(start.line - 1, start.column - 1);
+    const to = CodeMirror.Pos(end.line - 1, end.column - 1);
+
+    if (this.highlighted) {
+      this.highlighted.clear();
+    }
+
+    this.highlighted = doc.markText(from, to, {
+      className: 'cm-snippet-highlight',
+    });
+    editor.scrollIntoView(from, 10);
   }
 
   findByPositionalPath(node: any, positionalPath: string): MessageElement | null {
@@ -268,10 +348,26 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
     ).subscribe();
   }
 
+  onTitleChange(label: string) {
+    this.sectionLabel = label;
+    this.current$.pipe(
+      take(1),
+      map((current) => {
+        this.editorChange({
+          ...current.data,
+          label,
+        }, !!label);
+      }),
+    ).subscribe();
+  }
+
   selectMessage(messageId: string) {
     this.selectedMessageId = messageId;
     this.selectedSnippetId = null;
     this.snippetName = null;
+    this.snippetCanonical = null;
+    this.snippetLocationLabel = null;
+    this.displayMessage = null;
     if (this.highlighted) {
       this.highlighted.clear();
       this.highlighted = null;
@@ -291,11 +387,11 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
     ).subscribe();
 
     if (messageId && this.igId) {
-      this.buildMessageUrl(this.igId, messageId);
       this.loadMessage(this.igId, messageId);
     } else {
       this.messageUrl = null;
       this.exampleMessage = null;
+      this.displayMessage = null;
       this.parsed = null;
     }
   }
@@ -316,16 +412,19 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
     ).subscribe();
 
     if (snippetId && this.igId && this.selectedMessageId) {
-      this.buildMessageUrl(this.igId, this.selectedMessageId, snippetId);
       // Find snippet name
       const selectedMsg = this.availableMessages.find((m) => m.id === this.selectedMessageId);
       if (selectedMsg) {
         const snippet = selectedMsg.snippets.find((s) => s.id === snippetId);
         this.snippetName = snippet ? snippet.name : null;
       }
-      this.resolveAndHighlightSnippet(this.igId, this.selectedMessageId, snippetId);
+      this.resolveSnippet(this.igId, this.selectedMessageId, snippetId);
     } else {
+      // No snippet selected — show full message
       this.snippetName = null;
+      this.snippetCanonical = null;
+      this.snippetLocationLabel = null;
+      this.displayMessage = this.exampleMessage ? this.exampleMessage.message : null;
       this.buildMessageUrl(this.igId, this.selectedMessageId);
       if (this.highlighted) {
         this.highlighted.clear();
@@ -353,10 +452,61 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
       take(1),
       map((confirmed) => {
         if (confirmed) {
-          this.selectMessage(null);
+          this.applySelection(null, null);
         }
       }),
     ).subscribe();
+  }
+
+  openAttachDialog() {
+    const dialogRef = this.dialog.open(SelectMessageSnippetDialogComponent, {
+      data: {
+        availableMessages: this.availableMessages,
+      },
+    });
+    dialogRef.afterClosed().pipe(
+      take(1),
+      map((result: ISelectMessageSnippetDialogResult) => {
+        if (result) {
+          this.applySelection(result.messageId, result.snippetId);
+        }
+      }),
+    ).subscribe();
+  }
+
+  applySelection(messageId: string, snippetId: string) {
+    this.selectedMessageId = messageId;
+    this.selectedSnippetId = snippetId;
+    this.snippetName = null;
+    this.snippetCanonical = null;
+    this.snippetLocationLabel = null;
+    this.displayMessage = null;
+    if (this.highlighted) {
+      this.highlighted.clear();
+      this.highlighted = null;
+    }
+    this.current$.pipe(
+      take(1),
+      map((current) => {
+        this.editorChange(
+          {
+            ...current.data,
+            messageId,
+            snippetId,
+          },
+          true,
+        );
+      }),
+    ).subscribe();
+
+    if (messageId && this.igId) {
+      this.loadMessage(this.igId, messageId, snippetId);
+    } else {
+      this.messageUrl = null;
+      this.exampleMessage = null;
+      this.displayMessage = null;
+      this.parsed = null;
+    }
   }
 
   copyUrl() {
@@ -404,4 +554,3 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
   onDeactivate(): void {
   }
 }
-

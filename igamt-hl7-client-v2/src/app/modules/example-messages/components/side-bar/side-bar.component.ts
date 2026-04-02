@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { EMPTY, Observable } from 'rxjs';
-import { map, tap, take, mergeMap, catchError, finalize } from 'rxjs/operators';
+import { EMPTY, Observable, of, BehaviorSubject } from 'rxjs';
+import { map, tap, take, mergeMap, catchError, finalize, filter } from 'rxjs/operators';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
@@ -23,6 +23,7 @@ export class SideBarComponent {
 
   nodes: Observable<any[]>;
   id$: Observable<string>;
+  activeMessageId$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
   @ViewChild(TableOfContentComponent) toc: TableOfContentComponent;
   readonly SEGMENTS_REPO = 'segment-structures';
@@ -31,10 +32,18 @@ export class SideBarComponent {
   constructor(
     private store: Store<any>,
     private router: Router,
+    private route: ActivatedRoute,
     private dialog: MatDialog,
     private messageService: MessageService,
     private exampleMessageService: ExampleMessagesService,
   ) {
+    // Extract messageId from child route on every navigation
+    this.updateActiveMessageId();
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+    ).subscribe(() => {
+      this.updateActiveMessageId();
+    });
     this.id$ = this.store.select(selectIgExampleMessages).pipe(
       take(1),
       map((igExampleMessages) => igExampleMessages.id)
@@ -123,6 +132,15 @@ export class SideBarComponent {
         this.store.dispatch(new fromDAM.TurnOffLoader());
       })
     ).subscribe();
+  }
+
+  private updateActiveMessageId() {
+    if (this.route.firstChild) {
+      const messageId = this.route.firstChild.snapshot.paramMap.get('messageId');
+      this.activeMessageId$.next(messageId);
+    } else {
+      this.activeMessageId$.next(null);
+    }
   }
 
 }

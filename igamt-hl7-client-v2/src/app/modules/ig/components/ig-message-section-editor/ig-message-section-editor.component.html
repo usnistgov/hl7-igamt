@@ -1,8 +1,19 @@
 <div class="message-section-editor" style="padding: 15px;">
 
-  <!-- Section Label / Description Form -->
-  <div *ngIf="currentSynchronized$ | async as data" style="margin-bottom: 20px;">
-    <app-narrative-section-form [viewOnly]="viewOnly$ | async" [data]="data" (form)="dataChange($event)"></app-narrative-section-form>
+  <!-- Title -->
+  <div style="margin-bottom: 15px;">
+    <label style="font-weight: 600; margin-bottom: 4px; display: block; color: #333;">Title <span style="color: red;">*</span></label>
+    <input
+      *ngIf="!(viewOnly$ | async)"
+      type="text"
+      class="form-control"
+      [ngModel]="sectionLabel"
+      (ngModelChange)="onTitleChange($event)"
+      placeholder="Section title"
+      required
+    />
+    <div *ngIf="!(viewOnly$ | async) && !sectionLabel" style="color: red; font-size: 12px; margin-top: 4px;">Title is required.</div>
+    <span *ngIf="viewOnly$ | async" style="font-size: 14px;">{{ sectionLabel }}</span>
   </div>
 
   <!-- Attach / Detach Message Controls -->
@@ -12,64 +23,49 @@
         <i class="fa fa-link" style="margin-right: 6px; color: #1565C0;"></i>
         Attached Example Message
       </h5>
-      <button *ngIf="selectedMessageId && !(viewOnly$ | async)" class="btn btn-sm btn-outline-danger" (click)="detachMessage()">
-        <i class="fa fa-chain-broken"></i> Detach
-      </button>
-    </div>
-
-    <!-- Message Selector -->
-    <div *ngIf="!(viewOnly$ | async)" style="margin-bottom: 12px;">
-      <label style="font-weight: 500; margin-bottom: 4px; display: block; color: #555; font-size: 13px;">Select Example Message:</label>
-      <div *ngIf="loadingMessages" style="display: flex; align-items: center; gap: 8px; padding: 8px 0;">
-        <mat-spinner diameter="18"></mat-spinner>
-        <span style="color: #888; font-size: 13px;">Loading available messages...</span>
-      </div>
-      <div *ngIf="!loadingMessages">
-        <select
-          *ngIf="availableMessages && availableMessages.length > 0"
-          [ngModel]="selectedMessageId"
-          (ngModelChange)="selectMessage($event)"
-          style="width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; background: white;">
-          <option [ngValue]="null">-- Select a message to attach --</option>
-          <option *ngFor="let msg of availableMessages" [ngValue]="msg.id">
-            {{ msg.profileName }} &mdash; {{ msg.name }}
-          </option>
-        </select>
-        <div *ngIf="!availableMessages || availableMessages.length === 0"
-          style="padding: 10px; background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; color: #856404; font-size: 13px;">
-          <i class="fa fa-info-circle" style="margin-right: 6px;"></i>
-          No example messages found.
-          <a *ngIf="exampleMessagesUrl" [routerLink]="exampleMessagesUrl" style="color: #0d47a1; text-decoration: underline;">Create messages in the Example Messages Editor</a>.
-        </div>
+      <div style="display: flex; gap: 6px;">
+        <button *ngIf="!(viewOnly$ | async)" class="btn btn-sm btn-outline-primary" (click)="openAttachDialog()" [disabled]="loadingMessages">
+          <i class="fa fa-paperclip"></i> {{ selectedMessageId ? 'Change' : 'Attach' }}
+        </button>
+        <button *ngIf="selectedMessageId && !(viewOnly$ | async)" class="btn btn-sm btn-outline-danger" (click)="detachMessage()">
+          <i class="fa fa-chain-broken"></i> Detach
+        </button>
       </div>
     </div>
 
-    <!-- Snippet Selector (only when message is selected and has snippets) -->
-    <div *ngIf="selectedMessageId && selectedMessageSnippets.length > 0 && !(viewOnly$ | async)" style="margin-bottom: 12px;">
-      <label style="font-weight: 500; margin-bottom: 4px; display: block; color: #555; font-size: 13px;">Select Snippet (optional):</label>
-      <select
-        [ngModel]="selectedSnippetId"
-        (ngModelChange)="selectSnippet($event)"
-        style="width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; background: white;">
-        <option [ngValue]="null">-- Entire message (no snippet) --</option>
-        <option *ngFor="let snippet of selectedMessageSnippets" [ngValue]="snippet.id">
-          {{ snippet.name }}
-        </option>
-      </select>
+    <!-- Currently attached info -->
+    <div *ngIf="selectedMessageId && exampleMessage" style="padding: 10px 12px; background-color: #e8eaf6; border: 1px solid #c5cae9; border-radius: 4px; margin-bottom: 12px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-weight: bold; color: #1565C0; font-size: 14px;">M</span>
+        <strong>{{ exampleMessage.name }}</strong>
+        <span *ngIf="exampleMessage.profile" style="color: #666; font-size: 0.85em;">
+          ( {{ exampleMessage.profile.fixedName }}{{ exampleMessage.profile.variableName ? '#' + exampleMessage.profile.variableName : '' }} )
+        </span>
+      </div>
+      <div *ngIf="snippetName" style="margin-top: 6px; display: flex; align-items: center; gap: 6px;">
+        <i class="fa fa-scissors" style="color: #6a1b9a; font-size: 12px;"></i>
+        <span style="color: #6a1b9a; font-weight: 500;">{{ snippetName }}</span>
+        <span *ngIf="snippetLocationLabel" style="color: #888; font-size: 0.85em;">({{ snippetLocationLabel }})</span>
+      </div>
     </div>
 
     <!-- No message attached info -->
     <div *ngIf="!selectedMessageId && !loadingMessages"
       style="padding: 12px; background-color: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 4px; color: #2e7d32; font-size: 13px;">
       <i class="fa fa-info-circle" style="margin-right: 6px;"></i>
-      No example message is currently attached to this section.
+      No example message is currently attached to this section. Click <strong>Attach</strong> to select one.
+    </div>
+
+    <div *ngIf="loadingMessages" style="display: flex; align-items: center; gap: 8px; padding: 8px 0;">
+      <mat-spinner diameter="18"></mat-spinner>
+      <span style="color: #888; font-size: 13px;">Loading available messages...</span>
     </div>
 
     <!-- URL with Copy -->
     <div *ngIf="messageUrl" style="margin-top: 12px;">
       <label style="font-weight: 500; margin-bottom: 4px; display: block; color: #555; font-size: 13px;">
         Message URL
-        <span *ngIf="snippetName" style="color: #6a1b9a;"> &mdash; Snippet: <strong>{{ snippetName }}</strong></span>
+        <span *ngIf="snippetLocationLabel" style="color: #6a1b9a;"> &mdash; <strong>{{ snippetLocationLabel }}</strong></span>
       </label>
       <div style="display: flex; align-items: center; gap: 6px;">
         <input
@@ -82,12 +78,16 @@
         <button *ngIf="hasClipboard" class="btn btn-sm btn-outline-primary" (click)="copyUrl()" style="white-space: nowrap;">
           <i class="fa fa-copy"></i> {{ copied ? 'Copied!' : 'Copy URL' }}
         </button>
-        <a *ngIf="exampleMessagesUrl" [routerLink]="exampleMessagesUrl" class="btn btn-sm btn-outline-secondary" style="white-space: nowrap;">
+        <a *ngIf="exampleMessagesUrl && selectedMessageId"
+          [routerLink]="['/example-messages', igId, 'message', selectedMessageId]"
+          [queryParams]="selectedSnippetId ? { snippetId: selectedSnippetId } : {}"
+          class="btn btn-sm btn-outline-secondary" style="white-space: nowrap;">
           <i class="fa fa-external-link"></i> Open
         </a>
       </div>
     </div>
   </div>
+
 
   <!-- Loading state -->
   <div *ngIf="loading" style="display: flex; align-items: center; justify-content: center; padding: 40px;">
@@ -104,16 +104,16 @@
       <span *ngIf="exampleMessage.profile" style="color: #666; font-size: 0.9em;">
         ( {{ exampleMessage.profile.fixedName }}{{ exampleMessage.profile.variableName ? '#' + exampleMessage.profile.variableName : '' }} )
       </span>
-      <span *ngIf="snippetName" style="margin-left: auto; background-color: #6a1b9a; color: white; padding: 2px 10px; border-radius: 12px; font-size: 12px;">
-        <i class="fa fa-scissors"></i> {{ snippetName }}
+      <span *ngIf="snippetCanonical" style="margin-left: auto; background-color: #6a1b9a; color: white; padding: 2px 10px; border-radius: 12px; font-size: 12px;">
+        <i class="fa fa-scissors"></i> {{ snippetCanonical }}
       </span>
     </div>
 
     <!-- CodeMirror ER7 Panel (read-only, full width) -->
-    <div style="height: 400px; overflow: hidden;">
+    <div [style.height]="selectedSnippetId ? 'auto' : '400px'" [style.min-height]="'60px'" [style.max-height]="'400px'" style="overflow: hidden;">
       <ngx-codemirror
         #codemirror
-        [ngModel]="exampleMessage.message"
+        [ngModel]="displayMessage"
         [options]="messageEditorOptions"
       ></ngx-codemirror>
     </div>

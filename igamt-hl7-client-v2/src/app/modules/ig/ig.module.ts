@@ -36,6 +36,7 @@ import { IgTocComponent } from './components/ig-toc/ig-toc.component';
 import { IgVerificationComponent } from './components/ig-verification/ig-verification.component';
 import { ManageProfileStructureComponent } from './components/manage-profile-structure/manage-profile-structure.component';
 import { NarrativeSectionFormComponent } from './components/narrative-section-form/narrative-section-form.component';
+import { SelectMessageSnippetDialogComponent } from './components/select-message-snippet-dialog/select-message-snippet-dialog.component';
 import { IgRoutingModule } from './ig-routing.module';
 import { DocumentSessionIdInterceptor } from './services/document-session-id.interceptor';
 import { IgListService } from './services/ig-list.service';
@@ -107,6 +108,7 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
     IgEditActiveTitlebarComponent,
     IgSectionEditorComponent,
     IgMessageSectionEditorComponent,
+    SelectMessageSnippetDialogComponent,
     IgMetadataEditorComponent,
     ExportGvtComponent,
     ConformanceStatementsSummaryEditorComponent,
@@ -139,7 +141,7 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
     CodemirrorModule,
   ],
   entryComponents: [
-    IgEditContainerComponent, ManageProfileStructureComponent, IgShareLinkDialogComponent,
+    IgEditContainerComponent, ManageProfileStructureComponent, IgShareLinkDialogComponent, SelectMessageSnippetDialogComponent,
   ],
   providers: [
     IgListService,
