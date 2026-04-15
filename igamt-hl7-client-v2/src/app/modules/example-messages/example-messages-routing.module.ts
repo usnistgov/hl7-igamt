@@ -5,8 +5,9 @@ import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
 import { WidgetDeactivateGuard } from '../dam-framework/guards/widget-deactivate.guard';
 import { WidgetSetupGuard } from '../dam-framework/guards/widget-setup.guard';
 import { EXAMPLE_MESSAGES_WIDGET_ID, ExampleMessagesContainerComponent } from './components/example-messages-container/example-messages-container.component';
-import { ExampleMessagesActionTypes, LoadExampleMessages, OpenExampleMessageEditor } from 'src/app/root-store/example-messages/example-messages.actions';
+import { ExampleMessagesActionTypes, LoadExampleMessages, OpenExampleMessageEditor, OpenExampleSnippetEditor } from 'src/app/root-store/example-messages/example-messages.actions';
 import { MessageEditorComponent } from './components/message-editor/message-editor.component';
+import { SnippetEditorComponent } from './components/snippet-editor/snippet-editor.component';
 import { EditorActivateGuard, EditorDeactivateGuard } from '../dam-framework';
 import { EditorID } from '../shared/models/editor.enum';
 
@@ -48,6 +49,19 @@ const routes: Routes = [
           },
           action: OpenExampleMessageEditor,
           idKey: 'messageId',
+        },
+      },
+      {
+        path: 'message/:messageId/snippet/:snippetId',
+        component: SnippetEditorComponent,
+        canActivate: [EditorActivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.EXAMPLE_SNIPPET,
+            title: 'Snippet',
+          },
+          action: OpenExampleSnippetEditor,
+          idKey: 'snippetId',
         },
       },
     ],

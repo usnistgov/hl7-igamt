@@ -12,6 +12,7 @@ import { TableOfContentComponent } from './components/table-of-content/table-of-
 import { SideBarComponent } from './components/side-bar/side-bar.component';
 import { CreateDialogComponent } from './components/create-dialog/create-dialog.component';
 import { MessageEditorComponent } from './components/message-editor/message-editor.component';
+import { SnippetEditorComponent } from './components/snippet-editor/snippet-editor.component';
 
 import * as CodeMirror from 'codemirror';
 
@@ -59,7 +60,8 @@ CodeMirror.defineMode('hl7v2', () => {
     TableOfContentComponent,
     SideBarComponent,
     CreateDialogComponent,
-    MessageEditorComponent
+    MessageEditorComponent,
+    SnippetEditorComponent,
   ],
   imports: [
     CommonModule,

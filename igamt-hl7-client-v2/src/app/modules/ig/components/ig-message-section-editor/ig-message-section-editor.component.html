@@ -94,6 +94,28 @@
     <mat-spinner diameter="40"></mat-spinner>
   </div>
 
+  <!-- Message not found warning -->
+  <div *ngIf="!loading && messageNotFoundWarning"
+    style="margin-bottom: 15px; padding: 14px 16px; background-color: #fff3e0; border: 1px solid #ffcc80; border-radius: 4px; color: #e65100; font-size: 13px; display: flex; align-items: flex-start; gap: 10px;">
+    <i class="fa fa-exclamation-triangle" style="font-size: 18px; margin-top: 1px;"></i>
+    <div>
+      <strong>Message Not Found</strong>
+      <div style="margin-top: 4px;">{{ messageNotFoundWarning }}</div>
+    </div>
+  </div>
+
+  <!-- Snippet warnings -->
+  <div *ngIf="!loading && snippetWarnings && snippetWarnings.length > 0"
+    style="margin-bottom: 15px; padding: 14px 16px; background-color: #fff8e1; border: 1px solid #ffe082; border-radius: 4px; color: #f57f17; font-size: 13px;">
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+      <i class="fa fa-exclamation-circle" style="font-size: 16px;"></i>
+      <strong>Warning</strong>
+    </div>
+    <ul style="margin: 0; padding-left: 20px;">
+      <li *ngFor="let w of snippetWarnings">{{ w }}</li>
+    </ul>
+  </div>
+
   <!-- Message Content Display (read-only) -->
   <div *ngIf="!loading && exampleMessage" style="border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden;">
 

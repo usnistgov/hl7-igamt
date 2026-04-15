@@ -7,6 +7,8 @@ import * as _ from 'lodash';
 import { combineLatest, EMPTY, from, Observable, throwError } from 'rxjs';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { ExpandSideBar } from 'src/app/modules/dam-framework/store/data/dam.actions';
+import { Notify } from 'src/app/modules/dam-framework/store/messages/messages.actions';
+import { MessageType, UserMessage } from 'src/app/modules/dam-framework/models/messages/message.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { DamAbstractEditorComponent } from 'src/app/modules/dam-framework/services/dam-editor.component';
@@ -48,9 +50,15 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
   staleMessageTree = false;
   highlighted: CodeMirror.TextMarker | null = null;
   selected: MessageElement | null = null;
+  selectedElements: MessageElement[] = [];
+  selectionMarkers: CodeMirror.TextMarker[] = [];
   messageHash: string | null = null;
   snippetId: string;
-  snippetToHighlightPath: string | null = null;
+  snippetToHighlightPaths: string[] = [];
+  activeTab: number = 0;
+  messageName: string = '';
+  messageDescription: string = '';
+  snippetValidationWarnings: { snippetName: string, brokenPaths: string[] }[] = [];
 
   @ViewChild('codemirror') private codeEditor!: CodemirrorComponent;
   @ViewChild('treeroot') private parsedTree: TreeComponent;
@@ -79,6 +87,8 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
         this.message = current.message;
         this.narrative = current.narrativeHTML;
         this.messageId = current.id;
+        this.messageName = current.name || '';
+        this.messageDescription = current.description || '';
         this.resolveSnippetPath();
         if (this.message) {
           await this.parseMessage();
@@ -121,9 +131,8 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
 
   async messageChange() {
     await this.updateStaleMessageState();
-    if (this.staleMessageTree && this.highlighted) {
-      this.highlighted.clear();
-      this.selected = null;
+    if (this.staleMessageTree) {
+      this.clearAllSelections();
     }
     this.change();
   }
@@ -133,9 +142,21 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
       {
         message: this.message,
         narrativeHTML: this.narrative,
+        name: this.messageName,
+        description: this.messageDescription,
       },
       true,
     );
+  }
+
+  onMessageNameChange(name: string) {
+    this.messageName = name;
+    this.change();
+  }
+
+  onMessageDescriptionChange(description: string) {
+    this.messageDescription = description;
+    this.change();
   }
 
   editorDisplayNode(): Observable<IDisplayElement> {
@@ -146,40 +167,152 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
     return combineLatest(this.igId$, this.current$).pipe(
       take(1),
       concatMap(([id, current]) => {
-        console.log(current);
         return this.exampleMessagesService.saveExampleMessage(id, this.messageId, {
           message: current.data.message,
           narrative: current.data.narrativeHTML,
+          name: current.data.name,
+          description: current.data.description,
         }).pipe(
-          flatMap((message) => {
+          flatMap((response) => {
+            // Check for snippet validation warnings in the response data
+            this.snippetValidationWarnings = [];
+            if (response.data && response.data.snippetValidations) {
+              const broken = response.data.snippetValidations.filter((v: any) => v.brokenPaths && v.brokenPaths.length > 0);
+              this.snippetValidationWarnings = broken.map((v: any) => ({
+                snippetName: v.snippetName || v.snippetId,
+                brokenPaths: v.brokenPaths,
+              }));
+              // Dispatch a warning toast for each broken snippet
+              if (broken.length > 0) {
+                const names = broken.map((v: any) => v.snippetName || v.snippetId).join(', ');
+                const warnMsg = `Warning: ${broken.length} snippet(s) have broken references after message change: ${names}`;
+                this.store.dispatch(new Notify(new UserMessage(MessageType.WARNING, warnMsg, null, { closable: true, timeout: 8000 })));
+              }
+            }
             return from(this.parseMessage()).pipe(
               flatMap(() => {
-                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: current.data, updateDate: false }), new fromDam.SetValue({ selected: current.data })];
+                return [this.messageService.messageToAction(response), new fromDam.EditorUpdate({ value: current.data, updateDate: false }), new fromDam.SetValue({ selected: current.data })];
               })
-            )
+            );
           }),
           catchError((error) => throwError(this.messageService.actionFromError(error))),
-        )
+        );
       }),
     );
   }
 
-  highlight(element: MessageElement) {
-    this.selected = element;
-    if (element && element.start && element.end) {
-      this.select(element.start, element.end);
+  highlight(element: MessageElement, event?: MouseEvent) {
+    if (event && (event.ctrlKey || event.metaKey)) {
+      // Multi-select: toggle this element
+      this.toggleSelect(element);
+    } else {
+      // Single select: clear previous and select only this one
+      this.clearAllSelections();
+      this.selected = element;
+      this.selectedElements = [element];
+      if (element && element.start && element.end) {
+        this.markElement(element, 'cm-highlight');
+      }
     }
   }
 
+  toggleSelect(element: MessageElement) {
+    const idx = this.selectedElements.findIndex(
+      (e) => e.positionalPath === element.positionalPath
+    );
+    if (idx >= 0) {
+      // Deselect
+      this.selectedElements.splice(idx, 1);
+    } else {
+      // Add to selection
+      this.selectedElements.push(element);
+    }
+    // Update the primary selected to the last one
+    this.selected = this.selectedElements.length > 0
+      ? this.selectedElements[this.selectedElements.length - 1]
+      : null;
+    // Re-render all highlights
+    this.refreshSelectionMarkers();
+  }
+
+  isElementSelected(element: MessageElement): boolean {
+    return this.selectedElements.some((e) => e.positionalPath === element.positionalPath);
+  }
+
+  clearAllSelections() {
+    this.selected = null;
+    this.selectedElements = [];
+    this.clearAllMarkers();
+  }
+
+  clearAllMarkers() {
+    if (this.highlighted) {
+      this.highlighted.clear();
+      this.highlighted = null;
+    }
+    for (const marker of this.selectionMarkers) {
+      marker.clear();
+    }
+    this.selectionMarkers = [];
+  }
+
+  refreshSelectionMarkers() {
+    this.clearAllMarkers();
+    for (const element of this.selectedElements) {
+      if (element.start && element.end) {
+        this.markElement(element, 'cm-highlight');
+      }
+    }
+  }
+
+  markElement(element: MessageElement, className: string) {
+    if (!element.start || !element.end || !this.codeEditor || !this.codeEditor.codeMirror) {
+      return;
+    }
+    const editor = this.codeEditor.codeMirror;
+    const doc = editor.getDoc();
+    const start = CodeMirror.Pos(element.start.line - 1, element.start.column - 1);
+    const end = CodeMirror.Pos(element.end.line - 1, element.end.column - 1);
+    const marker = doc.markText(start, end, { className });
+    this.selectionMarkers.push(marker);
+    editor.scrollIntoView(start, 10);
+  }
+
   createSnippet(element: MessageElement) {
+    // Single element right-click: add it to selection if not already, then create
+    if (!this.isElementSelected(element)) {
+      this.clearAllSelections();
+      this.selectedElements = [element];
+      this.selected = element;
+      this.refreshSelectionMarkers();
+    }
+    this.createSnippetFromSelection();
+  }
+
+  createSnippetFromSelection() {
+    if (this.selectedElements.length === 0) {
+      return;
+    }
+    const references = this.selectedElements
+      .filter((e) => e.positionalPath)
+      .map((e) => e.positionalPath);
+    if (references.length === 0) {
+      return;
+    }
+
+    const selectionSummary = this.selectedElements.map((e) => e.hl7Path || e.name).join(', ');
+
     this.dialog.open(CreateDialogComponent, {
       data: {
         title: 'Create Snippet',
+        description: this.selectedElements.length > 1
+          ? `Creating snippet from ${this.selectedElements.length} selected elements: ${selectionSummary}`
+          : `Creating snippet from: ${selectionSummary}`,
       },
     }).afterClosed().pipe(
       take(1),
       mergeMap((data) => {
-        if (!data || !data.name || !element || !element.positionalPath) {
+        if (!data || !data.name) {
           return EMPTY;
         }
         return this.igId$.pipe(
@@ -187,7 +320,7 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
           mergeMap((igId) => {
             return this.exampleMessagesService.createExampleMessageSnippet(igId, this.messageId, {
               name: data.name,
-              messageReferences: [element.positionalPath],
+              messageReferences: references,
             }).pipe(
               map((message) => {
                 const actions = [];
@@ -203,7 +336,7 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
                 this.store.dispatch(this.messageService.actionFromError(error));
                 return EMPTY;
               }),
-            )
+            );
           }),
         );
       }),
@@ -260,7 +393,7 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
 
   private resolveSnippetPath() {
     if (!this.snippetId || !this.messageId) {
-      this.snippetToHighlightPath = null;
+      this.snippetToHighlightPaths = [];
       return;
     }
     this.store.select(selectIgExampleMessages).pipe(
@@ -270,26 +403,37 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
           .reduce((acc, profile) => [...acc, ...profile.exampleMessages], []);
         const message = allMessages.find((exampleMessage) => exampleMessage.id === this.messageId);
         if (!message || !message.snippets) {
-          this.snippetToHighlightPath = null;
+          this.snippetToHighlightPaths = [];
           return;
         }
         const snippet = message.snippets.find((entry: IExampleMessageSnippet) => entry.id === this.snippetId);
-        this.snippetToHighlightPath = snippet && snippet.messageReferences && snippet.messageReferences.length > 0
-          ? snippet.messageReferences[0]
-          : null;
+        this.snippetToHighlightPaths = snippet && snippet.messageReferences && snippet.messageReferences.length > 0
+          ? [...snippet.messageReferences]
+          : [];
       }),
     ).subscribe();
   }
 
   private highlightSnippetIfAvailable() {
-    if (!this.parsed || !this.snippetToHighlightPath) {
+    if (!this.parsed || this.snippetToHighlightPaths.length === 0) {
       return;
     }
-    const target = this.findByPositionalPath(this.parsed, this.snippetToHighlightPath);
-    if (target && target.start && target.end) {
-      this.highlight(target);
-      // Expand the parsed tree to make the snippet node visible
-      setTimeout(() => this.expandTreeToPath(this.snippetToHighlightPath), 200);
+    this.clearAllSelections();
+    for (const path of this.snippetToHighlightPaths) {
+      const target = this.findByPositionalPath(this.parsed, path);
+      if (target && target.start && target.end) {
+        this.selectedElements.push(target);
+      }
+    }
+    if (this.selectedElements.length > 0) {
+      this.selected = this.selectedElements[this.selectedElements.length - 1];
+      this.refreshSelectionMarkers();
+      // Expand tree to show all selected paths
+      setTimeout(() => {
+        for (const path of this.snippetToHighlightPaths) {
+          this.expandTreeToPath(path);
+        }
+      }, 200);
     }
   }
 
@@ -347,6 +491,57 @@ export class MessageEditorComponent extends DamAbstractEditorComponent implement
   }
 
   ngOnInit() {
+    // Wait for CodeMirror to be ready, then add mousedown handler for multi-select
+    setTimeout(() => this.setupEditorClickHandler(), 500);
+  }
+
+  setupEditorClickHandler() {
+    if (!this.codeEditor || !this.codeEditor.codeMirror) {
+      return;
+    }
+    const editor = this.codeEditor.codeMirror;
+    editor.on('mousedown', (cm: any, event: MouseEvent) => {
+      if (!this.parsed || this.staleMessageTree) {
+        return;
+      }
+      if (event.ctrlKey || event.metaKey) {
+        event.preventDefault();
+        const pos = cm.coordsChar({ left: event.clientX, top: event.clientY });
+        // pos.line is 0-based, pos.ch is 0-based
+        const line1 = pos.line + 1;
+        const col1 = pos.ch + 1;
+        const element = this.findElementAtPosition(this.parsed, line1, col1);
+        if (element) {
+          this.toggleSelect(element);
+        }
+      }
+    });
+  }
+
+  /**
+   * Find the deepest element in the parsed tree that contains the given position.
+   */
+  findElementAtPosition(node: any, line: number, column: number): MessageElement | null {
+    if (!node) {
+      return null;
+    }
+    const children = node.children || [];
+    // Search children first (deepest match wins)
+    for (const child of children) {
+      const found = this.findElementAtPosition(child, line, column);
+      if (found) {
+        return found;
+      }
+    }
+    // Check if this node contains the position
+    if (node.start && node.end) {
+      const afterStart = (line > node.start.line) || (line === node.start.line && column >= node.start.column);
+      const beforeEnd = (line < node.end.line) || (line === node.end.line && column <= node.end.column);
+      if (afterStart && beforeEnd) {
+        return node as MessageElement;
+      }
+    }
+    return null;
   }
 
 }

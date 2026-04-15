@@ -5,9 +5,10 @@ import { combineLatest, of } from 'rxjs';
 import { catchError, concatMap, map, mergeMap, take } from 'rxjs/operators';
 import * as fromDamActions from 'src/app/modules/dam-framework/store/data/dam.actions';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import * as fromRouterSelector from '../../modules/dam-framework/store/router/router.selectors';
 import { DamWidgetEffect } from '../../modules/dam-framework/store/dam-widget-effect.class';
 import { Type } from '../../modules/shared/constants/type.enum';
-import { ExampleMessagesActionTypes, LoadExampleMessages, LoadExampleMessagesSuccess, OpenExampleMessageEditor } from './example-messages.actions';
+import { ExampleMessagesActionTypes, LoadExampleMessages, LoadExampleMessagesSuccess, OpenExampleMessageEditor, OpenExampleSnippetEditor } from './example-messages.actions';
 import { EXAMPLE_MESSAGES_WIDGET_ID } from 'src/app/modules/example-messages/components/example-messages-container/example-messages-container.component';
 import { ExampleMessagesService } from 'src/app/modules/example-messages/services/example-messages.service';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
@@ -64,6 +65,45 @@ export class ExampleMessagesEffects extends DamWidgetEffect {
           )
         })
       )
+    })
+  );
+
+  @Effect()
+  openSnippetEditor$ = this.actions$.pipe(
+    ofType(ExampleMessagesActionTypes.OpenExampleSnippetEditor),
+    concatMap((action: OpenExampleSnippetEditor) => {
+      return combineLatest(
+        this.store.select(selectIgExampleMessages),
+        this.store.select(fromRouterSelector.selectRouteParams),
+      ).pipe(
+        take(1),
+        mergeMap(([data, routeParams]) => {
+          const snippetId = action.payload.id;
+          const messageId = routeParams['messageId'];
+          return this.exampleMessagesService.renderSnippet(data.id, messageId, snippetId).pipe(
+            map((renderResult) => {
+              return new fromDamActions.OpenEditor({
+                id: action.payload.id,
+                editor: {
+                  id: EditorID.EXAMPLE_SNIPPET,
+                  title: 'Snippet',
+                },
+                display: {},
+                initial: {
+                  ...renderResult,
+                  igId: data.id,
+                },
+              });
+            }),
+            catchError((err) => {
+              return of(
+                this.messageService.actionFromError(err),
+                new fromDamActions.OpenEditorFailure({ id: action.payload.id })
+              );
+            })
+          );
+        })
+      );
     })
   );
 

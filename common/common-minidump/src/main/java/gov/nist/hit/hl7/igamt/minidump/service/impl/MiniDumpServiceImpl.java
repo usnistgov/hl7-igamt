@@ -45,11 +45,15 @@ import java.util.zip.ZipOutputStream;
 import org.bson.BasicBSONEncoder;
 import org.bson.Document;
 import com.mongodb.BasicDBObject;
+import com.mongodb.client.gridfs.model.GridFSFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.bson.types.ObjectId;
 
@@ -58,20 +62,27 @@ public class MiniDumpServiceImpl implements MiniDumpService {
 
   private static final String JSON_FOLDER = "json/";
   private static final String BSON_FOLDER = "bson/";
+  private static final String GRIDFS_FOLDER = "gridfs/";
+  private static final String GRIDFS_MANIFEST = "gridfs/manifest.json";
   private static final String JSON_EXTENSION = ".json";
   private static final String BSON_EXTENSION = ".bson";
 
   private final MongoTemplate mongoTemplate;
   private final ObjectMapper objectMapper;
   private final MappingMongoConverter mongoConverter;
+  private final GridFsTemplate gridFsTemplate;
+  private final GridFsOperations gridFsOperations;
   private final List<UserOwnedCollection> userOwnedCollections;
   private final Map<String, Class<?>> collectionClassMap;
 
   @Autowired
-  public MiniDumpServiceImpl(MongoTemplate mongoTemplate, ObjectMapper objectMapper) {
+  public MiniDumpServiceImpl(MongoTemplate mongoTemplate, ObjectMapper objectMapper,
+                             GridFsTemplate gridFsTemplate, GridFsOperations gridFsOperations) {
     this.mongoTemplate = mongoTemplate;
     this.objectMapper = objectMapper;
     this.mongoConverter = (MappingMongoConverter) mongoTemplate.getConverter();
+    this.gridFsTemplate = gridFsTemplate;
+    this.gridFsOperations = gridFsOperations;
     this.userOwnedCollections = Arrays.asList(
         new UserOwnedCollection(Ig.class, "username"),
         new UserOwnedCollection(DatatypeLibrary.class, "username"),
@@ -117,6 +128,7 @@ public class MiniDumpServiceImpl implements MiniDumpService {
     try {
       byte[] jsonArchive = null;
       byte[] bsonArchive = null;
+      byte[] gridFsArchive = buildGridFsArchive(username);
       if (format == ExportFormat.BOTH || format == ExportFormat.JSON) {
         jsonArchive = buildJsonArchive(archive);
       }
@@ -125,19 +137,24 @@ public class MiniDumpServiceImpl implements MiniDumpService {
       }
 
       if (format == ExportFormat.JSON) {
-        return new DownloadFile(normalizedBaseName + "-json.zip", "application/zip", new ByteArrayInputStream(jsonArchive));
+        // Include gridfs files inside the single json zip
+        return new DownloadFile(normalizedBaseName + "-json.zip", "application/zip",
+            new ByteArrayInputStream(mergeGridFsIntoArchive(jsonArchive, gridFsArchive)));
       }
       if (format == ExportFormat.BSON) {
-        return new DownloadFile(normalizedBaseName + "-bson.zip", "application/zip", new ByteArrayInputStream(bsonArchive));
+        return new DownloadFile(normalizedBaseName + "-bson.zip", "application/zip",
+            new ByteArrayInputStream(mergeGridFsIntoArchive(bsonArchive, gridFsArchive)));
       }
 
       ByteArrayOutputStream combined = new ByteArrayOutputStream();
       try (ZipOutputStream zipOut = new ZipOutputStream(combined)) {
         if (jsonArchive != null) {
-          writeBinaryEntry(zipOut, normalizedBaseName + "-json.zip", jsonArchive);
+          writeBinaryEntry(zipOut, normalizedBaseName + "-json.zip",
+              mergeGridFsIntoArchive(jsonArchive, gridFsArchive));
         }
         if (bsonArchive != null) {
-          writeBinaryEntry(zipOut, normalizedBaseName + "-bson.zip", bsonArchive);
+          writeBinaryEntry(zipOut, normalizedBaseName + "-bson.zip",
+              mergeGridFsIntoArchive(bsonArchive, gridFsArchive));
         }
       }
       return new DownloadFile(normalizedBaseName + "-mini-dump.zip", "application/zip", new ByteArrayInputStream(combined.toByteArray()));
@@ -149,6 +166,8 @@ public class MiniDumpServiceImpl implements MiniDumpService {
   @Override
   public void importUserData(String username, InputStream dumpStream, ImportMode mode) {
     Map<String, List<Document>> collected = new HashMap<>();
+    Map<String, byte[]> gridFsFiles = new HashMap<>();
+    byte[] gridFsManifestBytes = null;
     boolean foundSupportedEntry = false;
 
     try (ZipInputStream zipInputStream = new ZipInputStream(dumpStream)) {
@@ -162,6 +181,11 @@ public class MiniDumpServiceImpl implements MiniDumpService {
             byte[] payload = readAllBytes(zipInputStream);
             collected.put(collection, parseJsonToDocuments(payload));
           }
+        } else if (entry.getName().equals(GRIDFS_MANIFEST)) {
+          gridFsManifestBytes = readAllBytes(zipInputStream);
+        } else if (entry.getName().startsWith(GRIDFS_FOLDER) && !entry.getName().equals(GRIDFS_FOLDER)) {
+          String fileName = entry.getName().substring(GRIDFS_FOLDER.length());
+          gridFsFiles.put(fileName, readAllBytes(zipInputStream));
         }
         zipInputStream.closeEntry();
       }
@@ -227,6 +251,9 @@ public class MiniDumpServiceImpl implements MiniDumpService {
         }
       }
     }
+
+    // Import GridFS files
+    importGridFsFiles(username, gridFsManifestBytes, gridFsFiles, mode);
   }
 
   /**
@@ -520,6 +547,157 @@ public class MiniDumpServiceImpl implements MiniDumpService {
   }
 
 
+  // ──────────────── GridFS export/import helpers ────────────────
+
+  /**
+   * Build a byte[] zip archive containing all GridFS files owned by the user.
+   * Layout inside the zip:
+   *   gridfs/manifest.json   – array of {filename, contentType, metadata}
+   *   gridfs/<filename>      – raw binary content
+   */
+  private byte[] buildGridFsArchive(String username) throws IOException {
+    // Query GridFS for files whose metadata.accountId matches the username
+    Query query = new Query(Criteria.where("metadata.accountId").is(username));
+    List<GridFSFile> files = new ArrayList<>();
+    gridFsTemplate.find(query).into(files);
+
+    if (files.isEmpty()) {
+      return null;
+    }
+
+    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    try (ZipOutputStream zipOut = new ZipOutputStream(buffer)) {
+      writeDirectoryEntry(zipOut, GRIDFS_FOLDER);
+
+      List<Map<String, Object>> manifest = new ArrayList<>();
+      for (GridFSFile file : files) {
+        String filename = file.getFilename();
+        Map<String, Object> entry = new LinkedHashMap<>();
+        entry.put("filename", filename);
+        // Content type is stored in metadata or in the file itself
+        Document metadata = file.getMetadata();
+        if (metadata != null) {
+          entry.put("contentType", metadata.getString("_contentType"));
+          // Export metadata minus internal fields
+          Document metaCopy = new Document(metadata);
+          metaCopy.remove("_contentType");
+          entry.put("metadata", metaCopy);
+        }
+        manifest.add(entry);
+
+        // Write the binary content
+        GridFsResource resource = gridFsOperations.getResource(file);
+        if (resource.exists()) {
+          ZipEntry zipEntry = new ZipEntry(GRIDFS_FOLDER + filename);
+          zipOut.putNextEntry(zipEntry);
+          try (InputStream is = resource.getInputStream()) {
+            copyStream(is, zipOut);
+          }
+          zipOut.closeEntry();
+        }
+      }
+
+      // Write manifest
+      ZipEntry manifestEntry = new ZipEntry(GRIDFS_MANIFEST);
+      zipOut.putNextEntry(manifestEntry);
+      JsonGenerator gen = objectMapper.getFactory().createGenerator(zipOut);
+      gen.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
+      gen.writeObject(manifest);
+      gen.flush();
+      zipOut.closeEntry();
+    }
+    return buffer.toByteArray();
+  }
+
+  /**
+   * Merge gridfs entries from a separate gridfs archive into an existing zip archive.
+   * Returns the combined archive bytes.
+   */
+  private byte[] mergeGridFsIntoArchive(byte[] baseArchive, byte[] gridFsArchive) throws IOException {
+    if (gridFsArchive == null || gridFsArchive.length == 0) {
+      return baseArchive;
+    }
+    ByteArrayOutputStream merged = new ByteArrayOutputStream();
+    try (ZipOutputStream zipOut = new ZipOutputStream(merged)) {
+      // Copy all entries from the base archive
+      if (baseArchive != null) {
+        try (ZipInputStream zipIn = new ZipInputStream(new ByteArrayInputStream(baseArchive))) {
+          ZipEntry entry;
+          while ((entry = zipIn.getNextEntry()) != null) {
+            zipOut.putNextEntry(new ZipEntry(entry.getName()));
+            if (!entry.isDirectory()) {
+              copyStream(zipIn, zipOut);
+            }
+            zipOut.closeEntry();
+            zipIn.closeEntry();
+          }
+        }
+      }
+      // Copy all entries from the gridfs archive
+      try (ZipInputStream zipIn = new ZipInputStream(new ByteArrayInputStream(gridFsArchive))) {
+        ZipEntry entry;
+        while ((entry = zipIn.getNextEntry()) != null) {
+          zipOut.putNextEntry(new ZipEntry(entry.getName()));
+          if (!entry.isDirectory()) {
+            copyStream(zipIn, zipOut);
+          }
+          zipOut.closeEntry();
+          zipIn.closeEntry();
+        }
+      }
+    }
+    return merged.toByteArray();
+  }
+
+  /**
+   * Import GridFS files from the extracted zip data.
+   */
+  @SuppressWarnings("unchecked")
+  private void importGridFsFiles(String username, byte[] manifestBytes, Map<String, byte[]> fileData, ImportMode mode) {
+    if (manifestBytes == null || fileData.isEmpty()) {
+      return;
+    }
+    try {
+      List<Map<String, Object>> manifest = objectMapper.readValue(manifestBytes, List.class);
+      for (Map<String, Object> entry : manifest) {
+        String filename = (String) entry.get("filename");
+        String contentType = (String) entry.get("contentType");
+        if (filename == null || !fileData.containsKey(filename)) {
+          continue;
+        }
+
+        // Check if file already exists in GridFS
+        GridFSFile existing = gridFsTemplate.findOne(new Query(Criteria.where("filename").is(filename)));
+        if (existing != null && mode == ImportMode.MERGE) {
+          continue; // skip — file already present
+        }
+        if (existing != null && mode == ImportMode.OVERRIDE) {
+          gridFsTemplate.delete(new Query(Criteria.where("filename").is(filename)));
+        }
+
+        // Rebuild metadata
+        Document metadata = new Document();
+        if (entry.get("metadata") instanceof Map) {
+          metadata.putAll((Map<String, Object>) entry.get("metadata"));
+        }
+        // Update accountId to the importing user
+        metadata.put("accountId", username);
+
+        byte[] content = fileData.get(filename);
+        gridFsTemplate.store(
+            new ByteArrayInputStream(content),
+            filename,
+            contentType,
+            metadata
+        );
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException("Unable to import GridFS files", e);
+    }
+  }
+
+  // ──────────────── Collection helpers ────────────────
+
   private Map<String, Class<?>> buildCollectionClassMap() {
     Map<String, Class<?>> map = new LinkedHashMap<>();
     registerCollection(map, Ig.class);
@@ -733,6 +911,14 @@ public class MiniDumpServiceImpl implements MiniDumpService {
       buffer.write(data, 0, n);
     }
     return buffer.toByteArray();
+  }
+
+  private void copyStream(InputStream in, java.io.OutputStream out) throws IOException {
+    byte[] buf = new byte[4096];
+    int n;
+    while ((n = in.read(buf, 0, buf.length)) != -1) {
+      out.write(buf, 0, n);
+    }
   }
 
 

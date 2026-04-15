@@ -14,6 +14,7 @@ export interface IProfileExampleMessages {
 export interface IExampleMessage {
     id: string;
     name: string;
+    description: string;
     message: string;
     narrativeHTML: string;
     profileId: string;
@@ -23,16 +24,28 @@ export interface IExampleMessage {
 export interface IExampleMessageSnippet {
     id: string;
     name: string;
+    description: string;
     messageReferences: string[];
     narrativeHTML: string;
+}
+
+export interface ISnippetValidationInfo {
+    snippetId: string;
+    snippetName: string;
+    totalReferences: number;
+    resolvedReferences: number;
+    brokenPaths: string[];
+    fullyResolved: boolean;
 }
 
 export interface IExampleMessageDTO {
     id: string;
     name: string;
+    description: string;
     message: string;
     narrativeHTML: string;
     profile: IDisplayElement;
+    snippetValidations?: ISnippetValidationInfo[];
 }
 
 export interface MessageElement {

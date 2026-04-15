@@ -397,8 +397,7 @@
       [column]="column"
       [id]="header.key"
       [anchor]="anchor"
-      (cellValueChange)="emitChange()"
-    >
+      (cellValueChange)="emitChange()">
     </app-code-cell>
   </ng-template>
 
@@ -478,8 +477,7 @@
       [datatypeTmplRef]="datatypeCell"
       [narrativeTmplRef]="narrativeCell"
       [variesTmplRef]="variesCell"
-      [datatypeId]="dynamicMappingHeaders.datatype ? row.cells[dynamicMappingHeaders.datatype.key]?.datatypeId : undefined"
-    >
+      [datatypeId]="dynamicMappingHeaders.datatype ? row.cells[dynamicMappingHeaders.datatype.key]?.datatypeId : undefined">
     </app-varies-cell>
   </ng-template>
 

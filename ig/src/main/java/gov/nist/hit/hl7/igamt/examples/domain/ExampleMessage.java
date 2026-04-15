@@ -6,6 +6,7 @@ import java.util.List;
 public class ExampleMessage {
     private String id;
     private String name;
+    private String description;
     private String message;
     private String narrativeHTML;
     private String profileId;
@@ -60,5 +61,13 @@ public class ExampleMessage {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

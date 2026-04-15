@@ -9,7 +9,7 @@
           </span>
           {{ node.data.label }}
         </div>
-        <div *ngSwitchCase="'EXAMPLEMESSAGESNIPPET'" [routerLink]="['message', node.data.messageId]" [queryParams]="{ snippetId: node.data.id }" routerLinkActive="active-node" style="display: flex; align-items: center; padding: 3px 6px; gap: 5px;">
+        <div *ngSwitchCase="'EXAMPLEMESSAGESNIPPET'" [routerLink]="['message', node.data.messageId, 'snippet', node.data.id]" routerLinkActive="active-node" style="display: flex; align-items: center; padding: 3px 6px; gap: 5px;">
           <span class="badge badge-primary">
             <i class="fa fa-scissors"></i>
             Snippet

@@ -47,9 +47,14 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
   igId: string = null;
   parsed: any = null;
   highlighted: CodeMirror.TextMarker | null = null;
+  selectionMarkers: CodeMirror.TextMarker[] = [];
   copied = false;
   hasClipboard = !!window.navigator['clipboard'];
   snippetName: string = null;
+
+  // Warning/error messages
+  messageNotFoundWarning: string = null;
+  snippetWarnings: string[] = [];
 
   // The text displayed in CodeMirror: full message or snippet segment lines
   displayMessage: string = null;
@@ -129,6 +134,8 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
     this.snippetName = null;
     this.snippetCanonical = null;
     this.snippetLocationLabel = null;
+    this.messageNotFoundWarning = null;
+    this.snippetWarnings = [];
   }
 
   /**
@@ -146,6 +153,8 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
 
   loadMessage(igId: string, messageId: string, snippetId?: string) {
     this.loading = true;
+    this.messageNotFoundWarning = null;
+    this.snippetWarnings = [];
     this.exampleMessagesService.getExampleMessage(igId, messageId).pipe(
       map((msg) => {
         this.exampleMessage = msg;
@@ -163,108 +172,112 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
         this.exampleMessage = null;
         this.displayMessage = null;
         this.loading = false;
+        this.messageNotFoundWarning = 'The attached example message could not be found. It may have been deleted.';
         return of(null);
       }),
     ).subscribe();
   }
 
   /**
-   * Resolve snippet: find its positional path, parse the message tree to get the
-   * hl7Path (canonical) and line range, then extract the segment lines and highlight.
+   * Use the backend renderSnippet endpoint to resolve, parse, extract and highlight all parts.
    */
   resolveSnippet(igId: string, messageId: string, snippetId: string) {
-    this.exampleMessagesService.getIgExampleMessages(igId).pipe(
+    this.snippetWarnings = [];
+    this.exampleMessagesService.renderSnippet(igId, messageId, snippetId).pipe(
       take(1),
-      map((igExampleMessages) => {
-        let snippetPath: string = null;
-        if (igExampleMessages && igExampleMessages.profileExampleMessages) {
-          for (const profileMessages of igExampleMessages.profileExampleMessages) {
-            for (const msg of profileMessages.exampleMessages) {
-              if (msg.id === messageId && msg.snippets) {
-                const snippet = msg.snippets.find((s) => s.id === snippetId);
-                if (snippet) {
-                  this.snippetName = snippet.name;
-                  if (snippet.messageReferences && snippet.messageReferences.length > 0) {
-                    snippetPath = snippet.messageReferences[0];
-                  }
-                }
-              }
-            }
-          }
+      map((result) => {
+        // Collect any warnings from the backend
+        if (result.warnings && result.warnings.length > 0) {
+          this.snippetWarnings = result.warnings;
         }
-        if (snippetPath) {
-          this.parseAndApplySnippet(igId, messageId, snippetPath);
-        } else {
+
+        // If the snippet was deleted, show full message with warning
+        if (result.snippetNotFound) {
+          this.snippetName = null;
+          this.snippetCanonical = null;
+          this.snippetLocationLabel = null;
+          this.displayMessage = result.fullMessage || (this.exampleMessage ? this.exampleMessage.message : null);
           this.buildMessageUrl(igId, messageId);
+          return;
         }
-      }),
-      catchError(() => of(null)),
-    ).subscribe();
-  }
 
-  /**
-   * Parse message, find the snippet element, build canonical URL with hl7Path,
-   * extract the relevant segment lines, and highlight within those lines.
-   */
-  parseAndApplySnippet(igId: string, messageId: string, positionalPath: string) {
-    this.exampleMessagesService.parseExampleMessage(igId, messageId).pipe(
-      take(1),
-      map((parsedResult) => {
-        this.parsed = parsedResult;
-        const target = this.findByPositionalPath(parsedResult, positionalPath);
-        if (target && target.start && target.end && this.exampleMessage && this.exampleMessage.message) {
-          // Build canonical identifier from the HL7 path
-          const hl7Path = target.hl7Path;
-          const startLine = target.start.line;
-          const endLine = target.end.line;
+        this.snippetName = result.snippetName;
+        this.displayMessage = result.renderedContent;
+        this.buildMessageUrl(igId, messageId, snippetId);
 
-          // Canonical: use hl7Path if available, otherwise use line range
-          if (hl7Path) {
-            this.snippetCanonical = hl7Path;
-          } else {
-            this.snippetCanonical = 'L' + startLine + (startLine !== endLine ? '-L' + endLine : '');
-          }
+        if (result.parts && result.parts.length > 0) {
+          // Build canonical and location label from all parts
+          const labels = result.parts.map((p) => {
+            const hl7Path = p.hl7Path;
+            const startLine = p.startLine;
+            const endLine = p.endLine;
+            return hl7Path || ('L' + startLine + (startLine !== endLine ? '-L' + endLine : ''));
+          });
+          this.snippetCanonical = labels.join(', ');
 
-          // Human-readable location label
-          this.snippetLocationLabel = hl7Path
-            ? hl7Path + ' (line ' + startLine + (startLine !== endLine ? '-' + endLine : '') + ')'
-            : 'Line ' + startLine + (startLine !== endLine ? '-' + endLine : '');
+          const locationLabels = result.parts.map((p) => {
+            const hl7Path = p.hl7Path;
+            const startLine = p.startLine;
+            const endLine = p.endLine;
+            return hl7Path
+              ? hl7Path + ' (line ' + startLine + (startLine !== endLine ? '-' + endLine : '') + ')'
+              : 'Line ' + startLine + (startLine !== endLine ? '-' + endLine : '');
+          });
+          this.snippetLocationLabel = locationLabels.join(', ');
 
-          this.buildMessageUrl(igId, messageId, this.selectedSnippetId);
-
-          // Extract the relevant segment lines (minimum = full segment line)
-          // Lines in the message are 1-based in the parsed result
-          const allLines = this.exampleMessage.message.split('\n');
-          const fromLine = startLine - 1; // 0-based
-          const toLine = endLine - 1;     // 0-based inclusive
-          const extractedLines = allLines.slice(fromLine, toLine + 1);
-          this.displayMessage = extractedLines.join('\n');
-
-          // Highlight within the extracted lines
-          // Adjust coordinates: the snippet start/end columns stay the same,
-          // but line numbers are now relative to the extracted block
-          const adjustedStart = {
-            line: target.start.line - startLine + 1,
-            column: target.start.column,
-          };
-          const adjustedEnd = {
-            line: target.end.line - startLine + 1,
-            column: target.end.column,
-          };
-
-          setTimeout(() => this.highlightRange(adjustedStart, adjustedEnd), 300);
+          // Apply highlights for ALL parts
+          setTimeout(() => this.highlightAllParts(result.parts), 300);
         } else {
-          // No target found, show full message
-          this.displayMessage = this.exampleMessage ? this.exampleMessage.message : null;
-          this.buildMessageUrl(igId, messageId);
+          this.snippetCanonical = null;
+          this.snippetLocationLabel = null;
         }
       }),
       catchError(() => {
-        this.parsed = null;
+        this.snippetWarnings = ['The message may have changed since this snippet was created. The snippet could not be highlighted.'];
         this.displayMessage = this.exampleMessage ? this.exampleMessage.message : null;
+        this.buildMessageUrl(igId, messageId);
         return of(null);
       }),
     ).subscribe();
+  }
+
+  /**
+   * Highlight all snippet parts in the CodeMirror editor.
+   */
+  highlightAllParts(parts: { highlightStart: { line: number, column: number }, highlightEnd: { line: number, column: number } }[]) {
+    this.clearAllMarkers();
+    if (!this.codeEditor || !this.codeEditor.codeMirror || !parts || parts.length === 0) {
+      return;
+    }
+    const editor = this.codeEditor.codeMirror;
+    const doc = editor.getDoc();
+
+    for (const part of parts) {
+      if (!part.highlightStart || !part.highlightEnd) {
+        continue;
+      }
+      const from = CodeMirror.Pos(part.highlightStart.line - 1, part.highlightStart.column - 1);
+      const to = CodeMirror.Pos(part.highlightEnd.line - 1, part.highlightEnd.column - 1);
+      const marker = doc.markText(from, to, { className: 'cm-snippet-highlight' });
+      this.selectionMarkers.push(marker);
+    }
+
+    // Scroll to first highlight
+    if (parts[0].highlightStart) {
+      const firstLine = parts[0].highlightStart.line - 1;
+      editor.scrollIntoView(CodeMirror.Pos(firstLine, 0), 50);
+    }
+  }
+
+  clearAllMarkers() {
+    if (this.highlighted) {
+      this.highlighted.clear();
+      this.highlighted = null;
+    }
+    for (const marker of this.selectionMarkers) {
+      marker.clear();
+    }
+    this.selectionMarkers = [];
   }
 
   highlightRange(start: { line: number, column: number }, end: { line: number, column: number }) {
@@ -368,6 +381,8 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
     this.snippetCanonical = null;
     this.snippetLocationLabel = null;
     this.displayMessage = null;
+    this.messageNotFoundWarning = null;
+    this.snippetWarnings = [];
     if (this.highlighted) {
       this.highlighted.clear();
       this.highlighted = null;
@@ -398,6 +413,7 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
 
   selectSnippet(snippetId: string) {
     this.selectedSnippetId = snippetId;
+    this.snippetWarnings = [];
     this.current$.pipe(
       take(1),
       map((current) => {
@@ -481,6 +497,8 @@ export class IgMessageSectionEditorComponent extends AbstractEditorComponent imp
     this.snippetCanonical = null;
     this.snippetLocationLabel = null;
     this.displayMessage = null;
+    this.messageNotFoundWarning = null;
+    this.snippetWarnings = [];
     if (this.highlighted) {
       this.highlighted.clear();
       this.highlighted = null;

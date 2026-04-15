@@ -1,0 +1,147 @@
+<div class="snippet-editor">
+
+  <p-tabView [(activeIndex)]="activeTab">
+
+    <!-- ==================== CONTENT TAB ==================== -->
+    <p-tabPanel header="Content" [selected]="true">
+      <div style="padding: 15px;">
+
+        <!-- Snippet not found warning -->
+        <div *ngIf="snippetNotFound"
+          style="margin-bottom: 15px; padding: 14px 16px; background-color: #fff3e0; border: 1px solid #ffcc80; border-radius: 4px; color: #e65100; font-size: 13px; display: flex; align-items: flex-start; gap: 10px;">
+          <i class="fa fa-exclamation-triangle" style="font-size: 18px; margin-top: 1px;"></i>
+          <div>
+            <strong>Snippet Not Found</strong>
+            <div style="margin-top: 4px;">The message may have changed since this snippet was created. The snippet could not be highlighted.</div>
+          </div>
+        </div>
+
+        <!-- Warnings -->
+        <div *ngIf="!snippetNotFound && snippetWarnings && snippetWarnings.length > 0"
+          style="margin-bottom: 15px; padding: 14px 16px; background-color: #fff8e1; border: 1px solid #ffe082; border-radius: 4px; color: #f57f17; font-size: 13px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <i class="fa fa-exclamation-circle" style="font-size: 16px;"></i>
+            <strong>Warning</strong>
+          </div>
+          <ul style="margin: 0; padding-left: 20px;">
+            <li *ngFor="let w of snippetWarnings">{{ w }}</li>
+          </ul>
+        </div>
+
+        <!-- Header -->
+        <div class="snippet-header">
+          <div class="snippet-title-row">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <i class="fa fa-scissors" style="color: #6a1b9a; font-size: 18px;"></i>
+              <h4 style="margin: 0; font-weight: 600; color: #333;">{{ snippetName }}</h4>
+            </div>
+            <span class="badge badge-info" style="font-size: 12px;">Read Only</span>
+          </div>
+          <div *ngIf="messageName" style="color: #666; font-size: 13px; margin-top: 4px;">
+            <i class="fa fa-envelope-o" style="margin-right: 4px;"></i>
+            From message: <strong>{{ messageName }}</strong>
+          </div>
+        </div>
+
+        <!-- Snippet Details (element references) -->
+        <div *ngIf="parts && parts.length > 0" class="snippet-metadata">
+          <h5 style="margin: 0 0 10px 0; font-weight: 600; color: #333;">
+            <i class="fa fa-map-marker" style="margin-right: 6px; color: #1976D2;"></i>
+            Referenced Elements
+          </h5>
+          <div class="parts-list">
+            <div *ngFor="let part of parts" class="part-item">
+              <span class="part-badge">{{ part.elementType }}</span>
+              <strong>{{ part.hl7Path || part.elementName }}</strong>
+              <span *ngIf="part.elementName && part.hl7Path" style="color: #888;"> &mdash; {{ part.elementName }}</span>
+              <span class="part-lines">line {{ part.startLine }}<span *ngIf="part.startLine !== part.endLine">-{{ part.endLine }}</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- View Mode Toggle -->
+        <div class="view-toggle">
+          <span style="font-weight: 500; color: #555; margin-right: 10px;">View:</span>
+          <button class="btn btn-sm" [ngClass]="viewMode === 'reduced' ? 'btn-primary' : 'btn-outline-secondary'" (click)="setViewMode('reduced')">
+            <i class="fa fa-compress"></i> Snippet Only
+          </button>
+          <button class="btn btn-sm" [ngClass]="viewMode === 'full' ? 'btn-primary' : 'btn-outline-secondary'" (click)="setViewMode('full')">
+            <i class="fa fa-expand"></i> Full Message
+          </button>
+        </div>
+
+        <!-- ER7 Content (read-only) -->
+        <div class="snippet-content">
+          <div class="content-label">
+            <i class="fa fa-code" style="margin-right: 4px;"></i>
+            {{ viewMode === 'full' ? 'Full Message' : 'Snippet Content' }}
+          </div>
+          <div [style.height]="viewMode === 'full' ? '400px' : 'auto'" [style.min-height]="'60px'" [style.max-height]="'400px'" style="overflow: hidden;">
+            <ngx-codemirror
+              #codemirror
+              [ngModel]="displayMessage"
+              [options]="messageEditorOptions"
+            ></ngx-codemirror>
+          </div>
+        </div>
+
+      </div>
+    </p-tabPanel>
+
+    <!-- ==================== METADATA TAB ==================== -->
+    <p-tabPanel header="Metadata">
+      <div style="padding: 15px;">
+
+        <!-- Name -->
+        <div style="margin-bottom: 20px;">
+          <label style="font-weight: 600; margin-bottom: 4px; display: block; color: #333;">
+            Snippet Name
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            [ngModel]="snippetName"
+            (ngModelChange)="onNameChange($event)"
+            placeholder="Snippet name"
+          />
+        </div>
+
+        <!-- Description / Narrative -->
+        <div style="margin-bottom: 20px;">
+          <label style="font-weight: 600; margin-bottom: 4px; display: block; color: #333;">
+            Description
+          </label>
+          <div style="min-height: 200px;"
+            [froalaEditor]="froalaConfig$ | async"
+            [(ngModel)]="snippetDescription"
+            (ngModelChange)="onDescriptionChange($event)"
+          ></div>
+        </div>
+
+        <!-- Source info (read-only) -->
+        <div style="margin-bottom: 20px; padding: 15px; background-color: #fafafa; border: 1px solid #e0e0e0; border-radius: 4px;">
+          <h5 style="margin: 0 0 10px 0; font-weight: 600; color: #333;">
+            <i class="fa fa-info-circle" style="margin-right: 6px; color: #1976D2;"></i>
+            Source Information
+          </h5>
+          <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+            <div>
+              <span style="color: #888; width: 80px; display: inline-block;">Message:</span>
+              <strong>{{ messageName || 'N/A' }}</strong>
+            </div>
+            <div *ngIf="parts && parts.length > 0">
+              <span style="color: #888; width: 80px; display: inline-block;">Elements:</span>
+              <span *ngFor="let part of parts; let last = last">
+                <strong>{{ part.hl7Path || part.elementName }}</strong><span *ngIf="!last">, </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </p-tabPanel>
+
+  </p-tabView>
+
+</div>
+

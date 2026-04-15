@@ -18,6 +18,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -100,6 +101,9 @@ public class FileStorageController {
       throws UploadImageFileException {
     try {
       GridFSFile dbFile = storageService.findOneByFilename(filename);
+      if (dbFile == null) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      }
       GridFsResource resource = template.getResource(dbFile.getFilename());
       return ResponseEntity.ok().contentLength(dbFile.getLength()).body(resource);
     } catch (RuntimeException e) {

@@ -72,6 +72,10 @@ public class ExampleMessagesService {
 
         exampleMessage.setMessage(saveMessageDTO.getMessage());
         exampleMessage.setNarrativeHTML(saveMessageDTO.getNarrative());
+        if (saveMessageDTO.getName() != null) {
+            exampleMessage.setName(saveMessageDTO.getName());
+        }
+        exampleMessage.setDescription(saveMessageDTO.getDescription());
 
         this.exampleMessagesRepository.save(igExampleMessages);
         return exampleMessage;
@@ -106,6 +110,7 @@ public class ExampleMessagesService {
         ExampleMessageDTO exampleMessageDTO = new ExampleMessageDTO();
         exampleMessageDTO.setId(exampleMessage.getId());
         exampleMessageDTO.setName(exampleMessage.getName());
+        exampleMessageDTO.setDescription(exampleMessage.getDescription());
         exampleMessageDTO.setNarrativeHTML(exampleMessage.getNarrativeHTML());
         exampleMessageDTO.setMessage(exampleMessage.getMessage());
 
@@ -156,6 +161,29 @@ public class ExampleMessagesService {
         exampleMessage.getSnippets().add(snippet);
         this.exampleMessagesRepository.save(igExampleMessages);
         return this.toDTO(igExampleMessages);
+    }
+
+    public MessageSnippet saveSnippet(String igId, String messageId, String snippetId, SaveSnippetDTO saveSnippetDTO) throws ResourceNotFoundException {
+        IgExampleMessages igExampleMessages = this.exampleMessagesRepository.findById(igId).orElse(null);
+        if (igExampleMessages == null) {
+            throw new ResourceNotFoundException(igId, Type.EXAMPLEMESSAGES);
+        }
+
+        ExampleMessage exampleMessage = igExampleMessages.getExampleMessages().stream()
+                .filter((m) -> m.getId().equals(messageId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException(messageId, Type.EXAMPLEMESSAGE));
+
+        MessageSnippet snippet = exampleMessage.getSnippets().stream()
+                .filter((s) -> s.getId().equals(snippetId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException(snippetId, null));
+
+        snippet.setName(saveSnippetDTO.getName());
+        snippet.setDescription(saveSnippetDTO.getDescription());
+
+        this.exampleMessagesRepository.save(igExampleMessages);
+        return snippet;
     }
 
     private ProfileInfo getProfileInfo(String profileId) {

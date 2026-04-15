@@ -2,12 +2,19 @@ package gov.nist.hit.hl7.igamt.examples.dto;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 
+import java.util.List;
+
 public class ExampleMessageDTO {
     private String id;
     private String name;
+    private String description;
     private String message;
     private String narrativeHTML;
     private DisplayElement profile;
+    /**
+     * Snippet validation results (populated after message save)
+     */
+    private List<SnippetValidationInfo> snippetValidations;
 
     public String getId() {
         return id;
@@ -23,6 +30,14 @@ public class ExampleMessageDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getMessage() {
@@ -47,5 +62,13 @@ public class ExampleMessageDTO {
 
     public void setProfile(DisplayElement profile) {
         this.profile = profile;
+    }
+
+    public List<SnippetValidationInfo> getSnippetValidations() {
+        return snippetValidations;
+    }
+
+    public void setSnippetValidations(List<SnippetValidationInfo> snippetValidations) {
+        this.snippetValidations = snippetValidations;
     }
 }
