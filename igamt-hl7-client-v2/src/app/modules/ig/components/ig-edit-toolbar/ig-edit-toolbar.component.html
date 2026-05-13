@@ -43,6 +43,11 @@
     Export Share
   </button>
 
+  <button *ngIf="!viewOnly && (derived$ | async)" class="btn btn-sm btn-outline-warning toolbar-button" (click)="shareDifferential()">
+    <i class="fa fa-external-link" aria-hidden="true"></i>
+    Differential Export Share
+  </button>
+
   <button
     class="btn btn-info btn-sm toolbar-button"
     type="button"

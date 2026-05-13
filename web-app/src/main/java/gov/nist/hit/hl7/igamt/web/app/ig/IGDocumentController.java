@@ -558,12 +558,23 @@ public class IGDocumentController extends BaseController {
 	@RequestMapping(value = "/api/igdocuments/{id}/sharelink/", method = RequestMethod.GET, produces = {"application/json"})
 	@PreAuthorize("AccessResource('IGDOCUMENT', #id, WRITE)")
 	public @ResponseBody Map<String, ExportShareConfiguration> getShareLink(
-			@PathVariable("id") String id
+			@PathVariable("id") String id,
+			@RequestParam(value = "differential", required = false) Boolean differential
 	) throws Exception {
 		Ig ig = findIgById(id);
 		if(ig.getShareLinks() == null) {
 			return new HashMap<>();
 		} else {
+			// Filter by differential flag if parameter is provided
+			if(differential != null) {
+				Map<String, ExportShareConfiguration> filteredLinks = new HashMap<>();
+				for(Map.Entry<String, ExportShareConfiguration> entry : ig.getShareLinks().entrySet()) {
+					if(entry.getValue().isDifferential() == differential) {
+						filteredLinks.put(entry.getKey(), entry.getValue());
+					}
+				}
+				return filteredLinks;
+			}
 			return ig.getShareLinks();
 		}
 	}
@@ -590,6 +601,7 @@ public class IGDocumentController extends BaseController {
 
 		return new ResponseMessage<>(Status.SUCCESS, "Link created deleted", null, new Date());
 	}
+
 
 
 	@RequestMapping(value = "/api/igdocuments/findMessageEvents/{scope}/{version:.+}", method = RequestMethod.GET, produces = {

@@ -299,13 +299,16 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                     for (CoConstraintBinding coConstraintBinding : coConstraintDelta) {
                         Element coConstraintBindingElement = new Element("coConstraintBindingElement");
                         coConstraintsBindingsElement.appendChild(coConstraintBindingElement);
+                        DeltaAction deltaAction = coConstraintBinding.getDelta();
                         if (coConstraintBinding != null) {
-                            if (coConstraintBinding.getContext() != null) {
-                                Element coConstraintContext = new Element("coConstraintContext");
+                            Element coConstraintContext = new Element("coConstraintContext");
+                            if(coConstraintBinding.getContext() == null || Strings.isNullOrEmpty(coConstraintBinding.getContext().getPathId())) {
+                                coConstraintContext.appendChild(conformanceProfileSkeleton.get().getResource().getVariableName());
+                            } else {
                                 ResourceSkeletonBone context = this.coConstraintSerializationHelper.getStructureElementRef(conformanceProfileSkeleton, coConstraintBinding.getContext());
                                 coConstraintContext.appendChild(context.getLocationInfo().getHl7Path());
-                                coConstraintBindingElement.appendChild(coConstraintContext);
                             }
+                            coConstraintBindingElement.appendChild(coConstraintContext);
                             if (coConstraintBinding.getBindings() != null) {
                                 if (conformanceProfileExportConfiguration.getDeltaConfig().getMode().equals(DeltaExportConfigMode.HIDE) ||
                                         conformanceProfileExportConfiguration.getDeltaConfig().getMode().equals(DeltaExportConfigMode.HIDE_WITH_CHANGED_ONLY) ||
@@ -313,6 +316,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                                     coConstraintBinding.setBindings(coConstraintBinding.getBindings().stream().filter(d -> !d.getDelta().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList()));
                                 }
                                 for (CoConstraintBindingSegment coConstraintBindingSegment : coConstraintBinding.getBindings()) {
+                                    deltaAction = coConstraintBindingSegment.getDelta() != null ? coConstraintBindingSegment.getDelta() : deltaAction;
                                     if (coConstraintBindingSegment != null) {
                                         Element coConstraintBindingSegmentElement = new Element("coConstraintBindingSegmentElement");
                                         coConstraintBindingElement.appendChild(coConstraintBindingSegmentElement);
@@ -327,10 +331,11 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                                             coConstraintBindingSegment.setTables(coConstraintBindingSegment.getTables().stream().filter(d -> !d.getDelta().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList()));
                                         }
                                         for (CoConstraintTableConditionalBinding coConstraintTableConditionalBinding : coConstraintBindingSegment.getTables()) {
+                                            deltaAction = coConstraintTableConditionalBinding.getDelta() != null ? coConstraintBindingSegment.getDelta() : deltaAction;
                                             CoConstraintTable mergedCoConstraintTable = coConstraintService.resolveRefAndMerge(coConstraintTableConditionalBinding.getValue());
                                             Element coConstraintTableConditionalBindingElement = new Element("coConstraintTableConditionalBindingElement");
-                                            if(coConstraintTableConditionalBinding.getDelta().equals(DeltaAction.ADDED) || coConstraintTableConditionalBinding.getDelta().equals(DeltaAction.DELETED)){
-                                                coConstraintTableConditionalBindingElement.addAttribute(new Attribute("background", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(coConstraintTableConditionalBinding.getDelta())));
+                                            if(deltaAction.equals(DeltaAction.ADDED) || deltaAction.equals(DeltaAction.DELETED)){
+                                                coConstraintTableConditionalBindingElement.addAttribute(new Attribute("background", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(deltaAction)));
                                             }
                                             coConstraintBindingSegmentElement.appendChild(coConstraintTableConditionalBindingElement);
 

@@ -105,6 +105,26 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
               data: {
                 links,
                 igId,
+                isDifferential: false,
+              },
+            }).afterClosed();
+          }),
+        );
+      }),
+    ).subscribe();
+  }
+
+  shareDifferential() {
+    this.store.select(fromIgDocumentEdit.selectIgId).pipe(
+      take(1),
+      flatMap((igId) => {
+        return this.exportShare.getDifferentialShareLinks(igId).pipe(
+          flatMap((links) => {
+            return this.dialog.open(IgShareLinkDialogComponent, {
+              data: {
+                links,
+                igId,
+                isDifferential: true,
               },
             }).afterClosed();
           }),

@@ -28,7 +28,26 @@ import java.io.PrintWriter;
 import java.util.List;
 
 
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
+import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
+import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
+import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
+import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
+import gov.nist.hit.hl7.igamt.workspace.domain.DocumentLink;
+import gov.nist.hit.hl7.igamt.workspace.domain.Folder;
+import gov.nist.hit.hl7.igamt.workspace.domain.Workspace;
+import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceNotFound;
+import gov.nist.hit.hl7.igamt.workspace.service.WorkspaceService;
 import io.swagger.models.auth.In;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +56,6 @@ import org.springframework.stereotype.Service;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Level;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.StandardKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Status;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetStrength;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
@@ -75,7 +87,9 @@ import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 public class DataFixer {
 
     @Autowired
-    SegmentService segmentsService;
+    SegmentService segmentService;
+    @Autowired
+    ProfileComponentService profileComponentService;
 
     @Autowired
     ConformanceProfileService conformanceProfileService;
@@ -88,6 +102,11 @@ public class DataFixer {
 
     @Autowired
     MessageStructureRepository  messageStructureRepository;
+
+    @Autowired
+    WorkspaceService workspaceService;
+
+
     @Autowired
     ConfigService configService;
 
@@ -101,6 +120,12 @@ public class DataFixer {
 
     @Autowired
     BindingService bindingService;
+
+    @Autowired
+    IgService igService;
+
+    @Autowired
+    CompositeProfileStructureService compositeProfileServie;
 
 //  public void readCsv() throws ValidationException, ForbiddenOperationException {
 //    String csvFile = "/Users/ena3/projects/hl7-igamt/bootstrap/src/main/resources/HL7tables-csv.csv";
@@ -135,7 +160,7 @@ public class DataFixer {
      */
     private void fix(BindingInfo info) throws ValidationException, ForbiddenOperationException {
         // TODO Auto-generated method stub
-        List<Segment>  segments= this.segmentsService.findByDomainInfoScopeAndDomainInfoVersionAndName(Scope.HL7STANDARD.toString(), info.version, info.name);
+        List<Segment>  segments= this.segmentService.findByDomainInfoScopeAndDomainInfoVersionAndName(Scope.HL7STANDARD.toString(), info.version, info.name);
         for(Segment s: segments) {
             fixLocation(s,info.vs, info.position);
         }
@@ -153,7 +178,7 @@ public class DataFixer {
         String vsID= this.valueSetService.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(s.getDomainInfo().getScope().toString(), s.getDomainInfo().getVersion(), vs).get(0).getId();
 
         createBindingStructure(s, vsID, position);
-        this.segmentsService.save(s);
+        this.segmentService.save(s);
 
     }
 
@@ -185,7 +210,7 @@ public class DataFixer {
 
     public void shiftBinding(List<String> versions, String segmentName, String fieldPosition, String newPosition, int defaultLocation) throws ForbiddenOperationException {
         for(String v: versions) {
-            List<Segment> segments = this.segmentsService.findByDomainInfoScopeAndDomainInfoVersionAndName(Scope.HL7STANDARD.toString(), v, segmentName);
+            List<Segment> segments = this.segmentService.findByDomainInfoScopeAndDomainInfoVersionAndName(Scope.HL7STANDARD.toString(), v, segmentName);
             if(segments  != null) {
                 for(Segment seg: segments) {
                     shiftBinding(seg, fieldPosition, newPosition, defaultLocation );
@@ -314,7 +339,7 @@ public class DataFixer {
 
     public void changeHL7SegmentDatatype(String segmentName, String location, String newDatatype, String version) throws ForbiddenOperationException {
 
-        List<Segment> segments = this.segmentsService.findByDomainInfoScopeAndDomainInfoVersionAndName(Scope.HL7STANDARD.toString(), version, segmentName);
+        List<Segment> segments = this.segmentService.findByDomainInfoScopeAndDomainInfoVersionAndName(Scope.HL7STANDARD.toString(), version, segmentName);
         if(segments != null) {
             for (Segment s: segments) {
                 for(Field f: s.getChildren()) {
@@ -322,7 +347,7 @@ public class DataFixer {
                         List<Datatype> datatypes = this.datatypeService.findByDomainInfoScopeAndDomainInfoVersionAndName(Scope.HL7STANDARD.toString(), version, newDatatype);
                         if(datatypes != null && !datatypes.isEmpty() ) {
                             f.getRef().setId(datatypes.get(0).getId());
-                            this.segmentsService.save(s);
+                            this.segmentService.save(s);
                             break;
                         }
                     }
@@ -414,7 +439,7 @@ public class DataFixer {
      *
      */
     public void addStructureIds() throws ForbiddenOperationException {
-        List<Segment>  segments = this.segmentsService.findAll();
+        List<Segment>  segments = this.segmentService.findAll();
         if(segments != null) {
             for(Segment s: segments) {
                 if(s.isCustom()) {
@@ -423,7 +448,7 @@ public class DataFixer {
                     } else {
                         s.setStructureIdentifier(this.findStructureParent(s));
                     }
-                    this.segmentsService.save(s);
+                    this.segmentService.save(s);
                 }
             }
         }
@@ -432,7 +457,7 @@ public class DataFixer {
 
     private String findStructureParent(Segment s) {
         if(s.getFrom() != null) {
-            Segment parent =  this.segmentsService.findById(s.getFrom());
+            Segment parent =  this.segmentService.findById(s.getFrom());
             if(parent != null) {
                 if(parent.getDomainInfo() !=null && parent.getDomainInfo().getScope().equals(Scope.USERCUSTOM)) {
                     return parent.getId();
@@ -478,13 +503,13 @@ public class DataFixer {
      *
      ***/
     public void addFixedExt() throws ForbiddenOperationException {
-        List<Segment> segments =  this.segmentsService.findByDomainInfoScope("USERCUSTOM");
+        List<Segment> segments =  this.segmentService.findByDomainInfoScope("USERCUSTOM");
 
         for(Segment s: segments) {
             if(s.getStatus() != null &&s.getStatus().equals(Status.PUBLISHED)){
                 s.setFixedExtension(s.getExt());
                 s.setExt(null);
-                this.segmentsService.save(s);
+                this.segmentService.save(s);
             }
         }
     }
@@ -507,7 +532,7 @@ public class DataFixer {
             }
         }
 
-        List<Segment> allSegments = this.segmentsService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
+        List<Segment> allSegments = this.segmentService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
         for( Segment segment: allSegments) {
             HashMap<String, String> fieldDtComplex = new HashMap<String, String>();
 
@@ -544,7 +569,7 @@ public class DataFixer {
 
     public void updateUsage(Scope scope, String version, String name, String location, Usage oldUsage,  Usage newUsage) {
 
-        List<Segment>  segments = segmentsService.findByDomainInfoScopeAndDomainInfoVersionAndName(scope.toString(), version, name);
+        List<Segment>  segments = segmentService.findByDomainInfoScopeAndDomainInfoVersionAndName(scope.toString(), version, name);
         for(Segment segment: segments) {
             System.out.println(segment.getId());
             for(Field f: segment.getChildren()) {
@@ -632,7 +657,7 @@ public class DataFixer {
 
     public void removeBindingsV2_9() {
 
-        Segment orc = this.segmentsService.findById("HL7ORC-V2-9");
+        Segment orc = this.segmentService.findById("HL7ORC-V2-9");
 
         orc.getBinding().getChildren().removeIf(sub -> sub.getElementId().equals("17"));
         orc.getBinding().getChildren().removeIf(sub -> sub.getElementId().equals("18"));
@@ -640,12 +665,12 @@ public class DataFixer {
         this.segmentRepo.save(orc);
 
 
-        Segment mfe = this.segmentsService.findById("HL7MFE-V2-9");
+        Segment mfe = this.segmentService.findById("HL7MFE-V2-9");
         mfe.getBinding().getChildren().removeIf(sub -> sub.getElementId().equals("4"));
         this.segmentRepo.save(mfe);
 
 
-        Segment mfa = this.segmentsService.findById("HL7MFA-V2-9");
+        Segment mfa = this.segmentService.findById("HL7MFA-V2-9");
         mfa.getBinding().getChildren().removeIf(sub -> sub.getElementId().equals("5"));
         this.segmentRepo.save(mfa);
 
@@ -678,7 +703,7 @@ public class DataFixer {
 
     public void findSecondLevelBinding() throws ForbiddenOperationException {
         System.out.println("SegmentID, DATATYPEID,FiledID");
-        List<Segment>  segments = segmentsService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
+        List<Segment>  segments = segmentService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
         for (Segment segment : segments) {
             if (segment.getBinding() != null) {
                 for (StructureElementBinding binding : segment.getBinding().getChildren()) {
@@ -733,7 +758,7 @@ public class DataFixer {
 
     public void findWrongLength() {
         System.out.println("Segment,HL7 Version, filed Position, Data Type");
-        List<Segment> segments = segmentsService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
+        List<Segment> segments = segmentService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
         for (Segment s : segments) {
             for (Field f : s.getChildren()) {
                 if(f.getMax() != null && !f.getMax().equals("0") && !f.getUsage().equals(Usage.X)){
@@ -764,7 +789,7 @@ public class DataFixer {
     public void findWrongLengthForX() {
         int total = 0;
         System.out.println("Segment,HL7 Version, filed Position, Data Type");
-        List<Segment> segments = segmentsService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
+        List<Segment> segments = segmentService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
         for (Segment s : segments) {
             for (Field f : s.getChildren()) {
                 if(f.getUsage().equals(Usage.X)){
@@ -808,7 +833,7 @@ public class DataFixer {
         try (PrintWriter writer = new PrintWriter(new FileWriter("All-length_fields-1.csv"))) {
             writer.println("Segment,HL7 Version,Field Position,Data Type, MinLength, MaxLength");
 
-            List<Segment> segments = segmentsService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
+            List<Segment> segments = segmentService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
             for (Segment s : segments) {
                 for (Field f : s.getChildren()) {
                     if (f.getUsage().equals(Usage.X)) {
@@ -912,7 +937,7 @@ public class DataFixer {
         try (PrintWriter writer = new PrintWriter(new FileWriter("All-R-length_fields-1.csv"))) {
             writer.println("Segment,HL7 Version,Usage, Field Position,Data Type, MinLength, MaxLength");
 
-            List<Segment> segments = segmentsService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
+            List<Segment> segments = segmentService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
             for (Segment s : segments) {
                 for (Field f : s.getChildren()) {
                     if (f.getUsage().equals(Usage.R)) {
@@ -976,5 +1001,137 @@ public class DataFixer {
             e.printStackTrace();
         }
     }
+
+
+
+
+    public void unArchiveIGs(Ig ig) throws ForbiddenOperationException {
+
+        if (ig.getDomainInfo() != null) {
+            ig.getDomainInfo().setScope(Scope.USER);
+        }
+        unArchiveConformanceProfiles(ig.getConformanceProfileRegistry());
+        unArchiveCompositeProfiles(ig.getCompositeProfileRegistry());
+        unArchiveProfileComponents(ig.getProfileComponentRegistry());
+        try {
+            unArchiveSegmentRegistry(ig.getSegmentRegistry());
+        } catch (ValidationException e) {
+            e.printStackTrace();
+        }
+        unArchiveDatatypeRegistry(ig.getDatatypeRegistry());
+        unArchiveValueSetRegistry(ig.getValueSetRegistry());
+        this.igService.save(ig);
+    }
+
+    private void unArchiveCompositeProfiles(CompositeProfileRegistry compositeProfileRegistry) {
+        // TODO Auto-generated method stub
+        for (Link l : compositeProfileRegistry.getChildren()) {
+            if (l.getDomainInfo() != null && l.getDomainInfo().getScope().equals(Scope.ARCHIVED)) {
+                l.getDomainInfo().setScope(Scope.USER);
+                CompositeProfileStructure el = compositeProfileServie.findById(l.getId());
+                if (el != null) {
+                    el.getDomainInfo().setScope(Scope.USER);
+                    compositeProfileServie.save(el);
+                }
+            }
+        }
+    }
+
+    private void unArchiveValueSetRegistry(ValueSetRegistry valueSetRegistry) throws ForbiddenOperationException {
+        for (Link l : valueSetRegistry.getChildren()) {
+            if (l.getDomainInfo() != null && l.getDomainInfo().getScope().equals(Scope.ARCHIVED)) {
+                l.getDomainInfo().setScope(Scope.USER);
+                Valueset el = valueSetService.findById(l.getId());
+                if (el != null) {
+                    el.getDomainInfo().setScope(Scope.USER);
+                    valueSetService.save(el);
+                }
+            }
+        }
+    }
+
+    private void unArchiveDatatypeRegistry(DatatypeRegistry datatypeRegistry) throws ForbiddenOperationException {
+        for (Link l : datatypeRegistry.getChildren()) {
+            if (l.getDomainInfo() != null && l.getDomainInfo().getScope().equals(Scope.ARCHIVED)) {
+                l.getDomainInfo().setScope(Scope.USER);
+                Datatype el = datatypeService.findById(l.getId());
+                if (el != null) {
+                    el.getDomainInfo().setScope(Scope.USER);
+                    datatypeService.save(el);
+                }
+            }
+        }
+    }
+
+    private void unArchiveSegmentRegistry(SegmentRegistry segmentRegistry)
+            throws ValidationException, ForbiddenOperationException {
+        // TODO Auto-generated method stub
+        for (Link l : segmentRegistry.getChildren()) {
+            if (l.getDomainInfo() != null && l.getDomainInfo().getScope().equals(Scope.ARCHIVED)) {
+                l.getDomainInfo().setScope(Scope.USER);
+                Segment el = segmentService.findById(l.getId());
+                if (el != null) {
+                    el.getDomainInfo().setScope(Scope.USER);
+                    segmentService.save(el);
+                }
+            }
+        }
+    }
+
+    private void unArchiveProfileComponents(ProfileComponentRegistry profileComponentRegistry) {
+        // TODO Auto-generated method stub
+        for (Link l : profileComponentRegistry.getChildren()) {
+            if (l.getDomainInfo() != null && l.getDomainInfo().getScope().equals(Scope.ARCHIVED)) {
+                l.getDomainInfo().setScope(Scope.USER);
+                ProfileComponent el = profileComponentService.findById(l.getId());
+                if (el != null) {
+                    el.getDomainInfo().setScope(Scope.USER);
+                    profileComponentService.save(el);
+                }
+            }
+        }
+    }
+
+    private void unArchiveConformanceProfiles(ConformanceProfileRegistry compositeProfileRegistry) {
+        // TODO Auto-generated method stub
+        for (Link l : compositeProfileRegistry.getChildren()) {
+            if (l.getDomainInfo() != null && l.getDomainInfo().getScope().equals(Scope.ARCHIVED)) {
+                l.getDomainInfo().setScope(Scope.USER);
+                ConformanceProfile el = conformanceProfileService.findById(l.getId());
+                if (el != null) {
+                    el.getDomainInfo().setScope(Scope.USER);
+                    conformanceProfileService.save(el);
+                }
+            }
+        }
+    }
+
+    public void addToWorkspaceFolder(String igId, String workspaceId, String folderId) throws ForbiddenOperationException, WorkspaceNotFound {
+        Workspace workspace = workspaceService.findById(workspaceId);
+        Folder targetFolder = findFolderById(workspace.getFolders(), folderId);
+
+        DocumentLink documentLink = new DocumentLink();
+        documentLink.setId(igId);
+        documentLink.setType(Type.IGDOCUMENT);
+
+        if (targetFolder.getChildren() == null) {
+            targetFolder.setChildren(new HashSet<>());
+        }
+        targetFolder.getChildren().add(documentLink);
+
+        workspaceService.save(workspace);
+
+    }
+    private Folder findFolderById(Set<Folder> folders, String folderId) {
+        if (folders == null) return null;
+
+        for (Folder folder : folders) {
+            if (folderId.equals(folder.getId())) {
+                return folder;
+            }
+        }
+        return null;
+    }
+
 
 }

@@ -20,6 +20,7 @@ import gov.nist.hit.hl7.igamt.ig.data.fix.PcConformanceStatementsIdFixes;
 import gov.nist.hit.hl7.igamt.valueset.domain.*;
 import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetRepository;
 import gov.nist.hit.hl7.igamt.valueset.repository.CodeSetVersionRepository;
+import gov.nist.hit.hl7.igamt.workspace.exception.WorkspaceNotFound;
 import org.bson.types.ObjectId;
 import org.hl7.fhir.r4.model.Enumerations.ResourceType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -932,6 +933,15 @@ public class BootstrapApplication implements CommandLineRunner {
 
 		//this.dataFixer.fixLength();
 		this.dataFixer.findRLengthSegmentPB();
+	}
+
+
+	@PostConstruct
+	void unArchiveIGs() throws ForbiddenOperationException, WorkspaceNotFound {
+		Ig ig = this.igService.findById("65f1ceb08b87bc0007c39d89");
+
+		this.dataFixer.unArchiveIGs(ig);
+		this.dataFixer.addToWorkspaceFolder(ig.getId(), "650dd3ed8b87bc0006f3c172", "6ada831d-7ed1-4393-9f06-9edd17b97a17");
 	}
 	
 

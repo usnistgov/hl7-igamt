@@ -6,6 +6,7 @@ public class ExportShareConfiguration {
 	private String name;
 	private String configurationId;
 	private ExportFilterDecision exportDecision;
+	private boolean differential = false;
 
 	public String getConfigurationId() {
 		return configurationId;
@@ -29,5 +30,13 @@ public class ExportShareConfiguration {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public boolean isDifferential() {
+		return differential;
+	}
+
+	public void setDifferential(boolean differential) {
+		this.differential = differential;
 	}
 }
